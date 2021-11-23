@@ -156,7 +156,12 @@ const StorageSettings: React.FC<Props> = ({ config, handleSave }) => {
                 )}
               </Grid>
               {edit && (
-                <Grid item container xs={12} className={classes.actions} justifyContent={'flex-end'}>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  className={classes.actions}
+                  justifyContent={'flex-end'}>
                   <Button
                     onClick={() => handleCancel()}
                     className={classes.buttonSpacing}
