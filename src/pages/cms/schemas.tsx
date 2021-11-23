@@ -103,7 +103,7 @@ const Schemas = () => {
         skip,
         limit,
         search: debouncedSearch,
-        enabled: enabled ? 'true' : 'false',
+        enabled: enabled,
       })
     );
   }, [dispatch, skip, limit, debouncedSearch, enabled]);

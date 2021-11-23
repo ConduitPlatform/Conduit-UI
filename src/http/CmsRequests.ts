@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Pagination, Search } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 
-export const getCmsSchemasRequest = (params: Pagination & Search & { enabled?: string }) =>
+export const getCmsSchemasRequest = (params: Pagination & Search & { enabled?: boolean }) =>
   axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
 
 export const getCmsSchemaByIdRequest = (_id: string) =>

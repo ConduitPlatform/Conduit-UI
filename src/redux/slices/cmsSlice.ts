@@ -57,9 +57,10 @@ const initialState: ICmsSlice = {
 
 export const asyncGetCmsSchemas = createAsyncThunk(
   'cms/getSchemas',
-  async (params: Pagination & Search & { enabled?: string }, thunkAPI) => {
+  async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
+      console.log(params);
       const { data } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
