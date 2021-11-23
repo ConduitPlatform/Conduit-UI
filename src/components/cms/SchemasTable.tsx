@@ -5,7 +5,8 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import { makeStyles } from '@material-ui/core/styles';
 import { SchemaUI } from './CmsModels';
-import { Box, Button, Grid } from '@material-ui/core';
+import { Box, Button, Grid, InputAdornment, TextField } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles((theme) => ({
   toggleButton: {
@@ -48,6 +49,8 @@ interface Props {
   disabledActions: any;
   handleActions: any;
   handleAdd: any;
+  search: string;
+  setSearch: (value: string) => void;
 }
 
 const SchemasTable: FC<Props> = ({
@@ -57,6 +60,8 @@ const SchemasTable: FC<Props> = ({
   disabledActions,
   handleActions,
   handleAdd,
+  search,
+  setSearch,
 }) => {
   const classes = useStyles();
   const [selectedSchemas, setSelectedSchemas] = useState<SchemaUI[]>([]);
@@ -131,9 +136,25 @@ const SchemasTable: FC<Props> = ({
   ];
 
   return (
-    <Container maxWidth={'lg'}>
+    <Container maxWidth={'xl'}>
       <Grid container>
-        <Grid item xs={4}></Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find template"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
         <Grid item xs={4}>
           <Box className={classes.toggle}>
             <ToggleButtonGroup value={active} exclusive onChange={handleChange}>

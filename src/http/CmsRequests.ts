@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { Pagination, Search } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 
-export const getCmsSchemasRequest = (skip: number, limit: number) =>
-  axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params: { skip, limit } });
+export const getCmsSchemasRequest = (params: Pagination & Search & { enabled?: string }) =>
+  axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
 
 export const getCmsSchemaByIdRequest = (_id: string) =>
   axios.get(`${CONDUIT_API}/admin/cms/schemas${_id}`);

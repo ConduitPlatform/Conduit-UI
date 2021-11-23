@@ -23,6 +23,7 @@ import { EndpointTypes, Schema, ToggleSchma } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { Pagination, Search } from '../../models/http/HttpModels';
 
 export interface ICmsSlice {
   data: {
@@ -54,44 +55,24 @@ const initialState: ICmsSlice = {
   },
 };
 
-export const asyncGetCmsSchemas = createAsyncThunk<
-  { results: Schema[]; documentsCount: number },
-  number
->('cms/getSchemas', async (limit = 30, thunkAPI) => {
-  thunkAPI.dispatch(setAppLoading(true));
-  try {
-    const { data } = await getCmsSchemasRequest(0, limit);
-    thunkAPI.dispatch(setAppDefaults());
-    return {
-      results: data.results as Schema[],
-      documentsCount: data.documentsCount as number,
-    };
-  } catch (error) {
-    thunkAPI.dispatch(setAppLoading(false));
-    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-    throw error;
+export const asyncGetCmsSchemas = createAsyncThunk(
+  'cms/getSchemas',
+  async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getCmsSchemasRequest(params);
+      thunkAPI.dispatch(setAppDefaults());
+      return {
+        results: data.results as Schema[],
+        documentsCount: data.documentsCount as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
   }
-});
-
-export const asyncGetMoreCmsSchemas = createAsyncThunk<
-  { results: Schema[]; documentsCount: number },
-  any
->('cms/getMoreSchemas', async (arg, thunkAPI: any) => {
-  thunkAPI.dispatch(setAppLoading(true));
-  try {
-    const SchemaLength = thunkAPI.getState().cmsSlice.data.schemas.length;
-    const { data } = await getCmsSchemasRequest(SchemaLength, 20);
-    thunkAPI.dispatch(setAppDefaults());
-    return {
-      results: data.results as Schema[],
-      documentsCount: data.documentsCount as number,
-    };
-  } catch (error) {
-    thunkAPI.dispatch(setAppLoading(false));
-    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-    throw error;
-  }
-});
+);
 
 export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
   'cms/createNewSchema',
@@ -399,10 +380,6 @@ const cmsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
       state.data.schemas = action.payload.results;
-      state.data.count = action.payload.documentsCount;
-    });
-    builder.addCase(asyncGetMoreCmsSchemas.fulfilled, (state, action) => {
-      state.data.schemas.push(...action.payload.results);
       state.data.count = action.payload.documentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
