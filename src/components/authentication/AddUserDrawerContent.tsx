@@ -26,6 +26,7 @@ const useStyles = makeStyles(() => ({
     top: '1%',
     color: 'gray',
   },
+
   centeredImg: {
     display: 'flex',
     alignItems: 'center',
