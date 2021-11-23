@@ -131,8 +131,6 @@ const DataTable: React.FC<Props> = ({
     return 'desc';
   };
 
-  // sdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-
   return (
     <TableContainer
       className={!inner ? classes.tableContainer : classes.innerTableContainer}
