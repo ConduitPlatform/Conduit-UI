@@ -116,7 +116,7 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
               <Grid item xs={12}>
                 <FormInputText name="body" rows={10} label="Body" />
               </Grid>
-              <Grid item container justify="flex-end" xs={12}>
+              <Grid item container justifyContent="flex-end" xs={12}>
                 <Button type="submit" variant="contained" color="primary" startIcon={<Send />}>
                   Send
                 </Button>

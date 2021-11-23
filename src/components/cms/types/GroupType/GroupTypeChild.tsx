@@ -91,7 +91,7 @@ const GroupGroupType: FC<IProps> = ({
             </Tooltip>
           </Box>
         </Grid>
-        <Grid container item xs={6} alignItems={'center'} justify={'flex-end'}>
+        <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>

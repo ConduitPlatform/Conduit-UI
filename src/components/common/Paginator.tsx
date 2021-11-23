@@ -18,16 +18,16 @@ const Paginator: React.FC<Props> = ({
   count,
 }) => {
   return (
-    <Grid container justify="flex-end">
+    <Grid container justifyContent="flex-end">
       <TablePagination
         color="primary"
         rowsPerPageOptions={[10, 25, 50]}
         component="div"
         count={count}
         page={page}
-        onChangePage={handlePageChange}
+        onPageChange={handlePageChange}
         rowsPerPage={limit}
-        onChangeRowsPerPage={(event) => handleLimitChange(parseInt(event.target.value))}
+        onRowsPerPageChange={(event) => handleLimitChange(parseInt(event.target.value))}
       />
     </Grid>
   );

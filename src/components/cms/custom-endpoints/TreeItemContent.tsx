@@ -27,7 +27,7 @@ const TreeItemContent: FC<Props> = ({
 
   return (
     <Box width={'100%'} display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-      <Grid container justify={'space-between'}>
+      <Grid container justifyContent={'space-between'}>
         <Grid container item xs={7} spacing={1}>
           <Grid container item alignItems={'center'}>
             <Grid item>
@@ -46,7 +46,7 @@ const TreeItemContent: FC<Props> = ({
             </Grid>
           </Grid>
         </Grid>
-        <Grid container item xs={5} justify={'flex-end'} spacing={1}>
+        <Grid container item xs={5} justifyContent={'flex-end'} spacing={1}>
           <Grid item>
             <Button
               variant="text"

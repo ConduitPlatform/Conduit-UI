@@ -57,7 +57,7 @@ const CoreSettingsTab: React.FC = () => {
 
   return (
     <Container>
-      <Grid container justify={'center'}>
+      <Grid container justifyContent={'center'}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSaveClick)}>
             <Grid item xs={12}>

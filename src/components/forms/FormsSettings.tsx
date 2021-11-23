@@ -104,7 +104,7 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
                 )}
               </Grid>
               {edit && (
-                <Grid item container xs={12} justify={'flex-end'}>
+                <Grid item container xs={12} justifyContent={'flex-end'}>
                   <Button
                     onClick={() => handleCancel()}
                     className={classes.marginRight}
@@ -121,7 +121,7 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
                 </Grid>
               )}
               {!edit && (
-                <Grid item container xs={12} justify={'flex-end'}>
+                <Grid item container xs={12} justifyContent={'flex-end'}>
                   <Button
                     onClick={() => handleEditClick()}
                     className={classes.marginRight}

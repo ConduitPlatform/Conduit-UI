@@ -54,7 +54,7 @@ const ViewEditForm: React.FC<Props> = ({
         </Paper>
         {!edit && (
           <>
-            <Grid container spacing={2} justify="center">
+            <Grid container spacing={2} justifyContent="center">
               <Grid item>
                 <Button onClick={() => setEdit(!edit)}>Edit</Button>
               </Grid>

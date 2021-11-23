@@ -289,7 +289,7 @@ const Templates = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justify="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
         <Grid item>
           <TextField
             size="small"

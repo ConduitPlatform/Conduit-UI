@@ -1,7 +1,7 @@
 import Collapse from '@material-ui/core/Collapse';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { animated, useSpring } from 'react-spring/web.cjs';
+import { animated, useSpring } from 'react-spring';
 
 const TransitionComponent = (props) => {
   const style = useSpring({

@@ -144,7 +144,7 @@ const CreateDialog: FC<Props> = ({ schema, handleCreate, handleEdit, handleCance
         <Typography variant={'subtitle1'}>/{schema.name}</Typography>
       </Box>
       <Box padding={6}>
-        <Grid container spacing={2} alignItems={'center'} justify={'flex-start'}>
+        <Grid container spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
           <Grid item xs={3}>
             <Typography variant={'body1'}>Field</Typography>
           </Grid>
@@ -176,7 +176,7 @@ const CreateDialog: FC<Props> = ({ schema, handleCreate, handleEdit, handleCance
         justifyContent={'flex-end'}
         alignItems={'center'}>
         <Grid container>
-          <Grid item container xs={12} justify={'flex-end'}>
+          <Grid item container xs={12} justifyContent={'flex-end'}>
             {isDisabled && editData ? (
               <Button variant={'outlined'} onClick={() => setIsDisabled(false)} color={'primary'}>
                 Edit Document

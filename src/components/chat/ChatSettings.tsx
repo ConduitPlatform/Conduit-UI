@@ -126,7 +126,7 @@ const ChatSettings: React.FC<Props> = ({ config, handleSave }) => {
               </>
             )}
           </Grid>
-          <Grid item container xs={12} justify={'flex-end'} style={{ marginTop: 16 }}>
+          <Grid item container xs={12} justifyContent={'flex-end'} style={{ marginTop: 16 }}>
             <Button onClick={() => handleCancel()} style={{ marginRight: 16 }} color={'primary'}>
               Cancel
             </Button>
