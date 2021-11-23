@@ -74,10 +74,13 @@ const SchemasTable: FC<Props> = ({
     } else if (disabledSchemas.length > 0) {
       displayedData = disabledSchemas as SchemaUI[];
     }
+
     if (displayedData !== undefined) {
       displayedData = displayedData.map((d) => ({
         _id: d._id,
         name: d.name,
+        crudOperations: d.crudOperations,
+        authentication: d.authentication,
         createdAt: d.createdAt,
         updatedAt: d.updatedAt,
       }));
@@ -121,6 +124,8 @@ const SchemasTable: FC<Props> = ({
   const headers = [
     { title: '_id', sort: '_id' },
     { title: 'Name', sort: 'name' },
+    { title: 'Authenticated', sort: 'authenticated' },
+    { title: 'CRUD', sort: 'crudOperations' },
     { title: 'Created at', sort: 'createdAt' },
     { title: 'Updated at', sort: 'updatedAt' },
   ];
