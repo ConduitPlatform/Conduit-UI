@@ -305,7 +305,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
                 container
                 spacing={2}
                 alignItems={'center'}
-                justify={'flex-start'}
+                justifyContent={'flex-start'}
                 className={classes.GridContainer}>
                 <Grid item xs={3}>
                   <Typography variant={'body1'}>{arrayIndex}</Typography>
@@ -319,7 +319,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
                 <Grid item xs={1}>
                   <Typography variant={'caption'}>=</Typography>
                 </Grid>
-                <Grid item container justify={'center'} xs={4}>
+                <Grid item container justifyContent={'center'} xs={4}>
                   {renderInputFields(data, firstIndex, secondIndex, thirdIndex, arrayIndex)}
                 </Grid>
               </Grid>
@@ -338,7 +338,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
         container
         spacing={2}
         alignItems={'center'}
-        justify={'flex-start'}
+        justifyContent={'flex-start'}
         className={classes.GridContainer}>
         <Grid item xs={3}>
           <Typography variant={'body1'}>{doc.name}</Typography>
@@ -352,7 +352,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
         <Grid item xs={1}>
           <Typography variant={'caption'}>=</Typography>
         </Grid>
-        <Grid item container justify={'center'} xs={4}>
+        <Grid item container justifyContent={'center'} xs={4}>
           {!isArray ? (
             renderInputFields(doc, index)
           ) : (
@@ -377,7 +377,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
         container
         spacing={2}
         alignItems={'center'}
-        justify={'flex-start'}
+        justifyContent={'flex-start'}
         className={classes.GridContainer}>
         <Grid item xs={3}>
           <Typography variant={'body1'}>{doc.name}</Typography>
@@ -399,7 +399,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
                 container
                 spacing={1}
                 alignItems={'center'}
-                justify={'flex-end'}>
+                justifyContent={'flex-end'}>
                 <Grid item xs={1} />
                 <Grid item xs={2}>
                   <Typography variant={'body1'}>{`${innerDoc.name}`}</Typography>
@@ -413,7 +413,7 @@ const DocumentCreateFields: FC<Props> = ({ disabled, document, setDocument }) =>
                 <Grid item xs={1}>
                   <Typography variant={'caption'}>=</Typography>
                 </Grid>
-                <Grid item container justify={'center'} xs={4}>
+                <Grid item container justifyContent={'center'} xs={4}>
                   {!isArray ? (
                     innerIndexParam ? (
                       renderInputFields(innerDoc, index, innerIndexParam, indexInner)

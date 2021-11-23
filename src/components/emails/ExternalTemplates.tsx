@@ -110,7 +110,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
 
   return (
     <Box className={classes.root}>
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel>{select === -1 ? 'Select template' : 'Selected template'}</InputLabel>
           <Select label="Select your template" value={select} onChange={handleTemplateChange}>
@@ -137,7 +137,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
         <Typography className={classes.header}>No external templates at the moment</Typography>
       )}
       {selectedTemplate.name !== '' && (
-        <Grid container spacing={2} justify="space-around" className={classes.templateInfo}>
+        <Grid container spacing={2} justifyContent="space-around" className={classes.templateInfo}>
           <Grid item xs={12}>
             <Typography variant="subtitle2">Template name:</Typography>
             <Typography variant="body2">{selectedTemplate.name}</Typography>
@@ -173,7 +173,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
         </Grid>
       )}
       {selectedTemplate.name !== '' && (
-        <Grid container xs={12} justify="space-around" style={{ marginTop: '15px' }}>
+        <Grid container xs={12} justifyContent="space-around" style={{ marginTop: '15px' }}>
           <Grid>
             <Button
               variant="contained"

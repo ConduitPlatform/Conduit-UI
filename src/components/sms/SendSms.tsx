@@ -44,7 +44,7 @@ const SendSms: React.FC = () => {
               type={'text'}
             />
           </Grid>
-          <Grid item container style={{ marginTop: 16 }} justify="flex-end" xs={12}>
+          <Grid item container style={{ marginTop: 16 }} justifyContent="flex-end" xs={12}>
             <Button
               variant="outlined"
               color="primary"

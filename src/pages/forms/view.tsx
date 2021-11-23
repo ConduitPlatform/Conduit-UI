@@ -259,7 +259,7 @@ const Create = () => {
 
   return (
     <div>
-      <Grid container justify="space-between" style={{ marginBottom: '5px' }}>
+      <Grid container justifyContent="space-between" style={{ marginBottom: '5px' }}>
         <Grid item>
           <TextField
             size="small"

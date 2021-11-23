@@ -20,7 +20,7 @@ const ViewTransaction: React.FC<Props> = ({ transaction }) => {
     <Container>
       <Box>
         <Paper elevation={0} className={classes.paper}>
-          <Grid container spacing={2} justify="space-around">
+          <Grid container spacing={2} justifyContent="space-around">
             <ExtractView valuesToShow={transaction} />
           </Grid>
         </Paper>

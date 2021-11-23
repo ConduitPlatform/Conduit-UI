@@ -57,7 +57,7 @@ const ViewEditCustomer: React.FC<Props> = ({
     <Container>
       <Box>
         <Paper elevation={0} className={classes.paper}>
-          <Grid container spacing={2} justify="space-around">
+          <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
               <CustomerForm preloadedValues={customer} handleSubmitData={handleSaveClick} />
             ) : (
@@ -65,7 +65,7 @@ const ViewEditCustomer: React.FC<Props> = ({
             )}
           </Grid>
         </Paper>
-        <Grid container item xs={12} justify="space-around" style={{ marginTop: '15px' }}>
+        <Grid container item xs={12} justifyContent="space-around" style={{ marginTop: '15px' }}>
           {!edit && (
             <Button
               disabled

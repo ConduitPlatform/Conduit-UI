@@ -39,7 +39,7 @@ const EnumType: FC<IProps> = ({ item, ...rest }) => {
             </Typography>
           </Box>
         </Grid>
-        <Grid container item xs={6} justify={'flex-end'} alignItems={'center'}>
+        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>
@@ -67,7 +67,7 @@ export const EnumGroupType: FC<IProps> = ({ item, ...rest }) => {
             </Typography>
           </Box>
         </Grid>
-        <Grid container item xs={6} justify={'flex-end'} alignItems={'center'}>
+        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>

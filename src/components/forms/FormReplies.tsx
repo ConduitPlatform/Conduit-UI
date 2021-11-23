@@ -115,7 +115,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
               aria-controls="panel1a-content"
               color="primary"
               id="panel1a-header">
-              <Grid container justify="space-around">
+              <Grid container justifyContent="space-around">
                 <Grid item xs={9}>
                   <Typography>Reply {index + 1}</Typography>
                 </Grid>
