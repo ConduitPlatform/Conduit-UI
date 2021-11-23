@@ -92,9 +92,7 @@ const Schemas = () => {
     asc: false,
     index: null,
   });
-
   const debouncedSearch: string = useDebounce(search, 500);
-
   const { schemas } = useAppSelector((state) => state.cmsSlice.data);
 
   useEffect(() => {
@@ -145,36 +143,6 @@ const Schemas = () => {
     { title: 'Delete', type: 'delete' },
   ];
 
-  const handleAdd = () => {
-    setOpen(true);
-  };
-
-  const handleActions = (action: any, data: any) => {
-    switch (action.type) {
-      case 'edit':
-        dispatch(setSelectedSchema(data._id));
-        router.push(
-          { pathname: '/cms/build-types', query: { schemaId: data.id ? data.id : null } },
-          '/cms/build-types'
-        );
-        break;
-      case 'archive':
-        setSelectedSchemaForAction({ data, action: 'archive' });
-        setOpenDialog(true);
-        break;
-      case 'enable':
-        setSelectedSchemaForAction({ data, action: 'enable' });
-        setOpenDialog(true);
-        break;
-      case 'delete':
-        setSelectedSchemaForAction({ data, action: 'delete' });
-        setOpenDialog(true);
-        break;
-      default:
-        break;
-    }
-  };
-
   const handleSelect = (id: string) => {
     const foundSchema = schemas?.find((item) => item._id === id);
     const newSelectedElements = [...selectedSchemas];
@@ -206,6 +174,36 @@ const Schemas = () => {
       return;
     }
     if (schemas !== null && schemas !== undefined) setSelectedSchemas(schemas);
+  };
+
+  const handleAdd = () => {
+    setOpen(true);
+  };
+
+  const handleActions = (action: any, data: any) => {
+    switch (action.type) {
+      case 'edit':
+        dispatch(setSelectedSchema(data._id));
+        router.push(
+          { pathname: '/cms/build-types', query: { schemaId: data.id ? data.id : null } },
+          '/cms/build-types'
+        );
+        break;
+      case 'archive':
+        setSelectedSchemaForAction({ data, action: 'archive' });
+        setOpenDialog(true);
+        break;
+      case 'enable':
+        setSelectedSchemaForAction({ data, action: 'enable' });
+        setOpenDialog(true);
+        break;
+      case 'delete':
+        setSelectedSchemaForAction({ data, action: 'delete' });
+        setOpenDialog(true);
+        break;
+      default:
+        break;
+    }
   };
 
   const headers = [

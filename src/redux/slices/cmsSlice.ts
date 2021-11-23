@@ -60,7 +60,6 @@ export const asyncGetCmsSchemas = createAsyncThunk(
   async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      console.log(params);
       const { data } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
