@@ -30,4 +30,4 @@ jobs:
           url: "http://20.101.9.248/admin/conduit-grp/"
           method: "POST"
           username: admin
-          password: ${{ secrets.KUBECTLPROXY_PASSWORD }}
+          password: ${{ secrets.ROLLOUT_PROXY }}
