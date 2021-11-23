@@ -128,7 +128,7 @@ const PaymentSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
                 )}
               </Grid>
               {edit && (
-                <Grid item container xs={12} justify={'flex-end'}>
+                <Grid item container xs={12} justifyContent={'flex-end'}>
                   <Button
                     onClick={() => handleCancel()}
                     style={{ marginRight: 16 }}
@@ -145,7 +145,7 @@ const PaymentSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
                 </Grid>
               )}
               {!edit && (
-                <Grid item container xs={12} justify={'flex-end'}>
+                <Grid item container xs={12} justifyContent={'flex-end'}>
                   <Button
                     onClick={() => handleEditClick()}
                     style={{ marginRight: 16 }}

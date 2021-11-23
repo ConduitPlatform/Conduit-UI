@@ -173,7 +173,7 @@ const SmsProviderDetails: React.FC = () => {
           <Grid container spacing={2} className={classes.innerGrid}>
             {configState.active && renderSettingsFields()}
           </Grid>
-          <Grid item container xs={12} justify={'flex-end'}>
+          <Grid item container xs={12} justifyContent={'flex-end'}>
             <Button onClick={() => handleCancel()} style={{ marginRight: 16 }} color={'primary'}>
               Cancel
             </Button>

@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
 const primary = '#5B44F2';
 const secondary = '#07D9C4';
@@ -6,7 +6,7 @@ const error = '#DC004E';
 const warning = '#E265AB';
 const disabled = '#808080';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: 'dark',
     primary: {

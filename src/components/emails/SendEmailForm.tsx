@@ -193,7 +193,7 @@ const SendEmailForm: React.FC<Props> = ({ templates }) => {
                   </Grid>
                 ))}
               </Grid>
-              <Grid item container justify="flex-end" xs={12}>
+              <Grid item container justifyContent="flex-end" xs={12}>
                 <Box marginTop={3}>
                   <Button
                     variant="outlined"

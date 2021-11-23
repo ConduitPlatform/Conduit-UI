@@ -45,7 +45,7 @@ const ViewEditProduct: React.FC<Props> = ({
     <Container>
       <Box>
         <Paper elevation={0} className={classes.paper}>
-          <Grid container spacing={2} justify="space-around">
+          <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
               <ProductForm preloadedValues={product} handleSubmitData={handleSaveClick} />
             ) : (
@@ -55,7 +55,7 @@ const ViewEditProduct: React.FC<Props> = ({
         </Paper>
 
         {!edit && (
-          <Grid container spacing={2} justify="center">
+          <Grid container spacing={2} justifyContent="center">
             <Grid item>
               <Button onClick={() => setEdit(!edit)}>Edit</Button>
             </Grid>

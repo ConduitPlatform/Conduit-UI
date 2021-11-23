@@ -19,7 +19,7 @@ const SaveSection: FC<Props> = ({
   handleCancelClick,
 }) => {
   return (
-    <Grid container justify="flex-end" spacing={1} style={{ paddingTop: '30px' }}>
+    <Grid container justifyContent="flex-end" spacing={1} style={{ paddingTop: '30px' }}>
       <Grid item xs={4} md={2}>
         <Button variant="contained" color="secondary" onClick={handleCancelClick}>
           Cancel

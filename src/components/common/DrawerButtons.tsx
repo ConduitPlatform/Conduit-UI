@@ -19,7 +19,7 @@ const DrawerButtons: FC<Props> = ({
 }) => {
   return (
     <>
-      <Grid container item xs={12} justify="space-around" style={{ marginTop: '35px' }}>
+      <Grid container item xs={12} justifyContent="space-around" style={{ marginTop: '35px' }}>
         {!edit ? (
           <Button
             variant="contained"

@@ -39,7 +39,7 @@ const ObjectIdType: FC<IProps> = ({ item, ...rest }) => {
             </Typography>
           </Box>
         </Grid>
-        <Grid container item xs={6} alignItems={'center'} justify={'flex-end'}>
+        <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>
@@ -67,7 +67,7 @@ export const ObjectIdGroupType: FC<IProps> = ({ item, ...rest }) => {
             </Typography>
           </Box>
         </Grid>
-        <Grid container item xs={6} alignItems={'center'} justify={'flex-end'}>
+        <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>

@@ -86,7 +86,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
       <Box>
         <Paper elevation={0} className={classes.paper}>
           <Typography style={{ marginBottom: '25px' }}>Transactions: </Typography>
-          <Grid container spacing={2} justify="space-around">
+          <Grid container spacing={2} justifyContent="space-around">
             {transactions.length ? (
               <>
                 <DataTable dsData={formatData(transactions)} headers={headers} />
@@ -102,7 +102,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
               <Typography style={{ textAlign: 'center' }}>No available transactions </Typography>
             )}
           </Grid>
-          <Grid container spacing={2} justify="space-around" className={classes.chip}>
+          <Grid container spacing={2} justifyContent="space-around" className={classes.chip}>
             {chipsToDisplay(subscription)}
           </Grid>
         </Paper>

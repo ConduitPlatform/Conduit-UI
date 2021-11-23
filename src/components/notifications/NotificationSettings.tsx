@@ -210,7 +210,7 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
                   </>
                 )}
               </Grid>
-              <Grid item container justify="flex-end" xs={12}>
+              <Grid item container justifyContent="flex-end" xs={12}>
                 {edit && (
                   <>
                     <Button
