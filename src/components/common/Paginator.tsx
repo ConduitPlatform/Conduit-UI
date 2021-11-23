@@ -25,9 +25,9 @@ const Paginator: React.FC<Props> = ({
         component="div"
         count={count}
         page={page}
-        onChangePage={handlePageChange}
+        onPageChange={handlePageChange}
         rowsPerPage={limit}
-        onChangeRowsPerPage={(event) => handleLimitChange(parseInt(event.target.value))}
+        onRowsPerPageChange={(event) => handleLimitChange(parseInt(event.target.value))}
       />
     </Grid>
   );
