@@ -1,4 +1,4 @@
-FROM conduit-builder:latest
+FROM node:fermium
 
 COPY . /app
 
