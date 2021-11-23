@@ -13,7 +13,6 @@
     "clean": "rm -rf public/ .next/",
     "next-lint": "next lint",
     "prepare": "husky install",
-    "prettier:write": "npx prettier --write **/*.{js,ts,tsx} && npx prettier --write *.{js,ts,tsx}",
     "lint": "tsc --noEmit && eslint --ext .js,.ts,.tsx ./"
   },
   "dependencies": {
