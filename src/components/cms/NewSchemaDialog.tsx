@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,6 +37,14 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
     right: theme.spacing(2),
   },
+  textField: {
+    width: '100%',
+    marginBottom: 16,
+  },
+  dialogTitle: {
+    textAlign: 'center',
+    marginBottom: 16,
+  },
 }));
 
 interface Props {
@@ -46,6 +55,7 @@ interface Props {
 const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [typeName, setTypeName] = useState('');
 
   const handleTypeName = (value: string) => {
@@ -75,17 +85,22 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
       onClose={handleCloseClick}
       classes={{ paper: classes.paper }}>
       <Box maxWidth={600}>
-        <DialogTitle id="new-custom-type" style={{ textAlign: 'center', marginBottom: 16 }}>
+        <DialogTitle id="new-custom-type" className={classes.dialogTitle}>
           Create new Schema
         </DialogTitle>
-        <DialogContent style={{ marginBottom: 16 }}>
+        <DialogContent>
           <TextField
-            style={{ width: '100%', marginBottom: 16 }}
+            className={classes.textField}
             id="type-name"
             label="Enter your type name"
-            variant="standard"
+            variant="outlined"
             value={typeName}
             onChange={(event) => handleTypeName(event.target.value)}
+            onKeyPress={(event) => {
+              if (event.key === 'Enter' && typeName !== '') {
+                router.push({ pathname: '/cms/build-types', query: { name: typeName } });
+              }
+            }}
           />
         </DialogContent>
         <DialogActions style={{ justifyContent: 'center' }}>
@@ -97,7 +112,6 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
                 onClick={handleAddType}
                 color="primary"
                 variant="contained"
-                style={{ textTransform: 'none' }}
                 disabled={typeName === ''}>
                 Create new Schema
               </Button>
