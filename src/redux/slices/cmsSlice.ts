@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
-  deleteCmsSchemaRequest,
+  deleteCmsSchemasRequest,
   getCmsDocumentsByNameRequest,
   getCmsSchemasRequest,
   postCmsSchemaRequest,
@@ -125,15 +125,22 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
   }
 );
 
-export const asyncDeleteSelectedSchema = createAsyncThunk<string, { _id: string }>(
+export const asyncDeleteSelectedSchemas = createAsyncThunk(
   'cms/deleteSchema',
-  async (args, thunkAPI) => {
+  async (args: { ids: string[]; deleteData: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await deleteCmsSchemaRequest(args._id);
-      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted schema with id: ${args}`));
+      await deleteCmsSchemasRequest(args);
+      if (args.ids.length > 1) {
+        thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted selected schemas`));
+      } else {
+        thunkAPI.dispatch(
+          enqueueSuccessNotification(`Successfully deleted schema with id: ${args.ids[0]}`)
+        );
+      }
+
       thunkAPI.dispatch(setAppDefaults());
-      return args._id;
+      return args.ids;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -385,7 +392,7 @@ const cmsSlice = createSlice({
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
       state.data.schemas = updateSchemaStatusByName(action.payload, state.data.schemas);
     });
-    builder.addCase(asyncDeleteSelectedSchema.fulfilled, (state, action) => {
+    builder.addCase(asyncDeleteSelectedSchemas.fulfilled, (state, action) => {
       state.data.schemas = deleteSchemaStatusById(action.payload, state.data.schemas);
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {

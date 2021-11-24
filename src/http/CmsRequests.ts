@@ -14,8 +14,9 @@ export const postCmsSchemaRequest = (data: any) =>
 export const putCmsSchemaRequest = (_id: string, data: any) =>
   axios.put(`${CONDUIT_API}/admin/cms/schemas/${_id}`, { ...data });
 
-export const deleteCmsSchemaRequest = (_id: string) =>
-  axios.delete(`${CONDUIT_API}/admin/cms/schemas/${_id}`);
+export const deleteCmsSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
+  return axios.delete(`${CONDUIT_API}/admin/cms/schemas`, { params });
+};
 
 export const toggleSchemaByIdRequest = (_id: string) =>
   axios.put(`${CONDUIT_API}/admin/cms/schemas/toggle/${_id}`);

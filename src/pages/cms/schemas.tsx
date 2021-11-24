@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
 import {
-  asyncDeleteSelectedSchema,
+  asyncDeleteSelectedSchemas,
   asyncGetCmsSchemas,
   asyncToggleSchema,
   setSelectedSchema,
@@ -11,14 +11,21 @@ import { Schema } from '../../models/cms/CmsModels';
 import { useRouter } from 'next/router';
 import NewSchemaDialog from '../../components/cms/NewSchemaDialog';
 import DisableSchemaDialog from '../../components/cms/DisableSchemaDialog';
-import { Grid, makeStyles } from '@material-ui/core';
+import {
+  Grid,
+  makeStyles,
+  IconButton,
+  Tooltip,
+  Container,
+  Box,
+  Button,
+  InputAdornment,
+  TextField,
+} from '@material-ui/core';
 import useDebounce from '../../hooks/useDebounce';
 import DataTable from '../../components/common/DataTable';
-import Container from '@material-ui/core/Container';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import { Box, Button, InputAdornment, TextField } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
+import { Delete, Search } from '@material-ui/icons';
 import Paginator from '../../components/common/Paginator';
 import { SchemaUI } from '../../components/cms/CmsModels';
 import { prepareSort } from '../../utils/prepareSort';
@@ -108,6 +115,12 @@ const Schemas = () => {
     );
   }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
 
+  useEffect(() => {
+    setSkip(0);
+    setPage(0);
+    setLimit(10);
+  }, [debouncedSearch, sort]);
+
   const handleLimitChange = (value: number) => {
     setLimit(value);
     setSkip(0);
@@ -130,8 +143,20 @@ const Schemas = () => {
     setOpenDialog(false);
   };
 
-  const handleDeleteSchema = () => {
-    dispatch(asyncDeleteSelectedSchema(selectedSchemaForAction.data));
+  const handleDeleteSchema = (deleteData: boolean) => {
+    dispatch(
+      asyncDeleteSelectedSchemas({
+        ids: [selectedSchemaForAction.data._id],
+        deleteData: deleteData,
+      })
+    );
+    setSelectedSchemaForAction({ data: {}, action: '' });
+    setOpenDialog(false);
+  };
+
+  const handleDeleteSchemas = (deleteData: boolean) => {
+    const ids = selectedSchemaForAction.data.map((schema: Schema) => schema._id);
+    dispatch(asyncDeleteSelectedSchemas({ ids: ids, deleteData: deleteData }));
     setSelectedSchemaForAction({ data: {}, action: '' });
     setOpenDialog(false);
   };
@@ -160,6 +185,7 @@ const Schemas = () => {
   };
 
   const handleChange = (event: any, newValue: any) => {
+    setSelectedSchemas([]);
     setEnabled(newValue);
   };
 
@@ -208,14 +234,10 @@ const Schemas = () => {
     }
   };
 
-  const headers = [
-    { title: '_id', sort: '_id' },
-    { title: 'Name', sort: 'name' },
-    { title: 'Authenticated', sort: 'authenticated' },
-    { title: 'CRUD', sort: 'crudOperations' },
-    { title: 'Created at', sort: 'createdAt' },
-    { title: 'Updated at', sort: 'updatedAt' },
-  ];
+  const handleMultipleDelete = () => {
+    setSelectedSchemaForAction({ data: selectedSchemas, action: 'deleteMany' });
+    setOpenDialog(true);
+  };
 
   const handleCloseDisable = () => {
     setSelectedSchemaForAction({ data: {}, action: '' });
@@ -225,6 +247,15 @@ const Schemas = () => {
   const handleDialogClose = () => {
     setOpen(false);
   };
+
+  const headers = [
+    { title: '_id', sort: '_id' },
+    { title: 'Name', sort: 'name' },
+    { title: 'Authenticated', sort: 'authenticated' },
+    { title: 'CRUD', sort: 'crudOperations' },
+    { title: 'Created at', sort: 'createdAt' },
+    { title: 'Updated at', sort: 'updatedAt' },
+  ];
 
   const formatSchemas = (schemas: Schema[]) => {
     if (schemas !== undefined) {
@@ -254,7 +285,7 @@ const Schemas = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <Search />
                   </InputAdornment>
                 ),
               }}
@@ -274,6 +305,16 @@ const Schemas = () => {
           </Grid>
           <Grid item xs={4}>
             <Box className={classes.create}>
+              {selectedSchemas.length > 0 && !enabled && (
+                <IconButton
+                  aria-label="block"
+                  color="primary"
+                  onClick={() => handleMultipleDelete()}>
+                  <Tooltip title="Block multiple users">
+                    <Delete />
+                  </Tooltip>
+                </IconButton>
+              )}
               <Button
                 variant="contained"
                 color="primary"
@@ -312,13 +353,13 @@ const Schemas = () => {
           </>
         )}
       </Container>
-
       <NewSchemaDialog open={open} handleClose={handleDialogClose} />
       <DisableSchemaDialog
         open={openDialog}
         handleClose={handleCloseDisable}
         handleToggle={handleToggleSchema}
         handleDelete={handleDeleteSchema}
+        handleDeleteSchemas={handleDeleteSchemas}
         selectedSchema={selectedSchemaForAction}
       />
     </>

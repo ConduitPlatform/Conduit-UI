@@ -1,12 +1,11 @@
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
+import React, { FC, useState } from 'react';
+import { DialogTitle, DialogContent, DialogActions, Dialog, Button } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import Dialog from '@material-ui/core/Dialog';
-import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Checkbox, FormControlLabel, FormGroup } from '@material-ui/core';
+import { Checkbox, Chip, FormControlLabel, FormGroup } from '@material-ui/core';
+import { isArray } from 'lodash';
+import { Schema } from '../../models/cms/CmsModels';
+import { SchemaUI } from './CmsModels';
 
 const useStyles = makeStyles((theme) => ({
   closeIcon: {
@@ -33,6 +32,7 @@ interface Props {
   handleClose: () => void;
   handleToggle: any;
   handleDelete: any;
+  handleDeleteSchemas: any;
   selectedSchema: any;
 }
 
@@ -41,11 +41,13 @@ const DisableSchemaDialog: FC<Props> = ({
   handleClose,
   handleToggle,
   handleDelete,
+  handleDeleteSchemas,
   selectedSchema,
 }) => {
   const classes = useStyles();
+  const [deleteData, setDeleteData] = useState<boolean>(false);
 
-  const createDialogTitle = (action: 'enable' | 'archive' | 'delete') => {
+  const createDialogTitle = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
     switch (action) {
       case 'enable': {
         return 'Enable CMS schema:';
@@ -56,12 +58,15 @@ const DisableSchemaDialog: FC<Props> = ({
       case 'delete': {
         return 'Delete CMS schema:';
       }
+      case 'deleteMany': {
+        return 'Delete CMS schemas:';
+      }
       default:
         return '';
     }
   };
 
-  const createDialogInfo = (action: 'enable' | 'archive' | 'delete') => {
+  const createDialogInfo = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
     switch (action) {
       case 'enable': {
         return 'This operation with enable the schema.';
@@ -78,17 +83,41 @@ const DisableSchemaDialog: FC<Props> = ({
                 control={<Checkbox defaultChecked />}
                 label="Selected schema will be deleted"
               />
-              <FormControlLabel control={<Checkbox />} label="Preserve schema data" />
+              <FormControlLabel
+                control={
+                  <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
+                }
+                label="Delete schema data"
+              />
             </FormGroup>
           </>
         );
       }
-      default:
+      case 'deleteMany':
+        {
+          return (
+            <>
+              <FormGroup>
+                <FormControlLabel
+                  disabled
+                  control={<Checkbox defaultChecked />}
+                  label="Selected schemas will be deleted"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
+                  }
+                  label="Delete schema data"
+                />
+              </FormGroup>
+            </>
+          );
+        }
         return '';
     }
   };
 
-  const generateButtonClass = (action: 'enable' | 'archive' | 'delete') => {
+  const generateButtonClass = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
     switch (action) {
       case 'enable': {
         return classes.enableButton;
@@ -99,10 +128,13 @@ const DisableSchemaDialog: FC<Props> = ({
       case 'delete': {
         return classes.deleteButton;
       }
+      case 'deleteMany': {
+        return classes.deleteButton;
+      }
     }
   };
 
-  const generateButtonName = (action: 'enable' | 'archive' | 'delete') => {
+  const generateButtonName = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
     switch (action) {
       case 'enable': {
         return 'Enable';
@@ -111,6 +143,9 @@ const DisableSchemaDialog: FC<Props> = ({
         return 'Archive';
       }
       case 'delete': {
+        return 'Delete';
+      }
+      case 'deleteMany': {
         return 'Delete';
       }
       default:
@@ -125,11 +160,24 @@ const DisableSchemaDialog: FC<Props> = ({
         handleToggle();
         break;
       case 'delete':
-        handleDelete();
+        handleDelete(deleteData);
+        break;
+      case 'deleteMany':
+        handleDeleteSchemas(deleteData);
         break;
       default:
         break;
     }
+  };
+
+  const extractNames = () => {
+    if (isArray(selectedSchema.data)) {
+      return selectedSchema.data.map((schema: Schema | SchemaUI, index: number) => (
+        <Chip color="secondary" key={index} label={schema.name} />
+      ));
+    }
+
+    return selectedSchema ? selectedSchema.data.name : '';
   };
 
   return (
@@ -138,7 +186,7 @@ const DisableSchemaDialog: FC<Props> = ({
         {createDialogTitle(selectedSchema.action)}
       </DialogTitle>
       <DialogContent>
-        <span style={{ fontWeight: 'bold' }}>{selectedSchema ? selectedSchema.data.name : ''}</span>
+        <span style={{ fontWeight: 'bold' }}>{extractNames()}</span>
       </DialogContent>
       <DialogContent>{createDialogInfo(selectedSchema.action)}</DialogContent>
       <DialogActions>
