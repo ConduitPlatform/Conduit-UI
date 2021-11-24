@@ -21,6 +21,7 @@ import {
   Button,
   InputAdornment,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import useDebounce from '../../hooks/useDebounce';
 import DataTable from '../../components/common/DataTable';
@@ -77,6 +78,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignContent: 'end',
     justifyContent: 'flex-end',
+  },
+  noSchemas: {
+    textAlign: 'center',
+    marginTop: '200px',
   },
 }));
 
@@ -281,7 +286,7 @@ const Schemas = () => {
               name="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              label="Find template"
+              label="Find schemas"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -325,7 +330,7 @@ const Schemas = () => {
             </Box>
           </Grid>
         </Grid>
-        {schemas.length > 0 && (
+        {schemas.length > 0 ? (
           <>
             <DataTable
               headers={headers}
@@ -351,6 +356,10 @@ const Schemas = () => {
               </Grid>
             </Grid>
           </>
+        ) : (
+          <Box className={classes.noSchemas}>
+            <Typography>Oops! There are no schemas</Typography>
+          </Box>
         )}
       </Container>
       <NewSchemaDialog open={open} handleClose={handleDialogClose} />
