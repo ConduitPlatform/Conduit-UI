@@ -23,7 +23,7 @@ import { EndpointTypes, Schema, ToggleSchma } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import { Pagination, Search } from '../../models/http/HttpModels';
+import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
 export interface ICmsSlice {
   data: {
@@ -57,7 +57,7 @@ const initialState: ICmsSlice = {
 
 export const asyncGetCmsSchemas = createAsyncThunk(
   'cms/getSchemas',
-  async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
+  async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCmsSchemasRequest(params);

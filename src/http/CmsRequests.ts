@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { Pagination, Search } from '../models/http/HttpModels';
+import { Pagination, Search, Sort } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 
-export const getCmsSchemasRequest = (params: Pagination & Search & { enabled?: boolean }) =>
+export const getCmsSchemasRequest = (params: Pagination & Search & Sort & { enabled?: boolean }) =>
   axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
 
 export const getCmsSchemaByIdRequest = (_id: string) =>

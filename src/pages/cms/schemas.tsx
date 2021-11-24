@@ -21,6 +21,7 @@ import { Box, Button, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Paginator from '../../components/common/Paginator';
 import { SchemaUI } from '../../components/cms/CmsModels';
+import { prepareSort } from '../../utils/prepareSort';
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -79,7 +80,7 @@ const Schemas = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(50);
+  const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState<string>('');
   const [open, setOpen] = useState(false);
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<any>({
@@ -101,10 +102,11 @@ const Schemas = () => {
         skip,
         limit,
         search: debouncedSearch,
+        sort: prepareSort(sort),
         enabled: enabled,
       })
     );
-  }, [dispatch, skip, limit, debouncedSearch, enabled]);
+  }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
@@ -238,53 +240,52 @@ const Schemas = () => {
   };
 
   return (
-    schemas &&
-    schemas.length > 0 && (
-      <>
-        <Container maxWidth={'xl'}>
-          <Grid container>
-            <Grid item xs={4}>
-              <TextField
-                size="small"
-                variant="outlined"
-                name="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                label="Find template"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Box className={classes.toggle}>
-                <ToggleButtonGroup value={enabled} exclusive onChange={handleChange}>
-                  <ToggleButton key={1} value={true} className={classes.toggleButton}>
-                    Active Schemas
-                  </ToggleButton>
-                  <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
-                    Archived Schemas
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              <Box className={classes.create}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{ textTransform: 'capitalize' }}
-                  onClick={handleAdd}>
-                  Create new
-                </Button>
-              </Box>
-            </Grid>
+    <>
+      <Container maxWidth={'xl'}>
+        <Grid container>
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              variant="outlined"
+              name="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              label="Find template"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Grid>
-          {schemas.length > 0 && (
+          <Grid item xs={4}>
+            <Box className={classes.toggle}>
+              <ToggleButtonGroup value={enabled} exclusive onChange={handleChange}>
+                <ToggleButton key={1} value={true} className={classes.toggleButton}>
+                  Active Schemas
+                </ToggleButton>
+                <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
+                  Archived Schemas
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Box className={classes.create}>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ textTransform: 'capitalize' }}
+                onClick={handleAdd}>
+                Create new
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+        {schemas.length > 0 && (
+          <>
             <DataTable
               headers={headers}
               sort={sort}
@@ -296,30 +297,31 @@ const Schemas = () => {
               handleSelectAll={handleSelectAll}
               handleAction={handleActions}
             />
-          )}
-        </Container>
-        <Grid container className={classes.paginator}>
-          <Grid item xs={7} />
-          <Grid item xs={5}>
-            <Paginator
-              handlePageChange={handlePageChange}
-              limit={limit}
-              handleLimitChange={handleLimitChange}
-              page={page}
-              count={schemas.length}
-            />
-          </Grid>
-        </Grid>
-        <NewSchemaDialog open={open} handleClose={handleDialogClose} />
-        <DisableSchemaDialog
-          open={openDialog}
-          handleClose={handleCloseDisable}
-          handleToggle={handleToggleSchema}
-          handleDelete={handleDeleteSchema}
-          selectedSchema={selectedSchemaForAction}
-        />
-      </>
-    )
+            <Grid container className={classes.paginator}>
+              <Grid item xs={7} />
+              <Grid item xs={5}>
+                <Paginator
+                  handlePageChange={handlePageChange}
+                  limit={limit}
+                  handleLimitChange={handleLimitChange}
+                  page={page}
+                  count={schemas.length}
+                />
+              </Grid>
+            </Grid>
+          </>
+        )}
+      </Container>
+
+      <NewSchemaDialog open={open} handleClose={handleDialogClose} />
+      <DisableSchemaDialog
+        open={openDialog}
+        handleClose={handleCloseDisable}
+        handleToggle={handleToggleSchema}
+        handleDelete={handleDeleteSchema}
+        selectedSchema={selectedSchemaForAction}
+      />
+    </>
   );
 };
 
