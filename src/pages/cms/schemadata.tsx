@@ -14,7 +14,7 @@ const SchemaDataPage = () => {
   };
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas(50));
+    dispatch(asyncGetCmsSchemas(200));
   }, [dispatch]);
 
   const getActiveSchemas = () => {

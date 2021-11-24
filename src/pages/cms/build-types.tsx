@@ -427,7 +427,7 @@ const BuildTypes: React.FC = () => {
       dispatch(asyncCreateNewSchema(newSchema));
     }
     dispatch(clearSelectedSchema());
-    router.push({ pathname: '/cms' });
+    router.push({ pathname: '/cms/schemas' });
   };
 
   return (

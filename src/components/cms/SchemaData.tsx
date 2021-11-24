@@ -10,14 +10,10 @@ import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
+import { KeyboardArrowDown } from '@material-ui/icons';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
-import { MoreVert } from '@material-ui/icons';
 import CardContent from '@material-ui/core/CardContent';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import CreateDialog from './DocumentCreateDialog';
@@ -25,13 +21,16 @@ import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
   asyncEditSchemaDocument,
-  asyncGetMoreSchemaDocuments,
 } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import TextField from '@material-ui/core/TextField';
+import Paginator from '../common/Paginator';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: '80vh',
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
     display: 'flex',
@@ -65,12 +64,12 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     margin: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+    position: 'relative',
   },
   cardContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    flex: 1,
+    overflowY: 'scroll',
+    width: '100%',
   },
   bold: {
     fontWeight: 'bold',
@@ -96,9 +95,33 @@ const TabPanel: FC = ({ children }) => {
   return <Box className={classes.cardContainer}>{children}</Box>;
 };
 
-const ITEM_HEIGHT = 48;
+interface TreeItemLabelProps {
+  docItem: DocItem;
+}
 
-interface Nodes {
+const TreeItemLabel: FC<TreeItemLabelProps> = ({ docItem }) => {
+  const classes = useStyles();
+  return (
+    <Typography variant={'subtitle2'}>
+      <Typography component={'span'} className={classes.bold}>{`${docItem.id}: `}</Typography>
+      {Array.isArray(docItem.data)
+        ? docItem.data.length > 0
+          ? '[...]'
+          : '[ ]'
+        : typeof docItem.data !== 'string' && docItem.data && Object.keys(docItem.data).length > 0
+        ? '{...}'
+        : `${docItem.data}`}
+    </Typography>
+  );
+};
+
+const createDocumentArray = (document: any) => {
+  return Object.keys(document).map((key) => {
+    return { id: key, data: document[key] };
+  });
+};
+
+interface DocItem {
   id: string;
   data: any;
 }
@@ -113,16 +136,12 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
   const dispatch = useAppDispatch();
 
   const { documents } = useAppSelector((state) => state.cmsSlice?.data.documents);
-  const documentsObj = useAppSelector((state) => state.cmsSlice.data?.documents);
 
   const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [docIndex, setDocIndex] = useState<any>(null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [createDocument, setCreateDocument] = useState(false);
-
-  const open = Boolean(anchorEl);
 
   const handleCreateDialog = (create: boolean) => {
     if (!create) {
@@ -131,15 +150,9 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     setCreateDocument(!createDocument);
   };
 
-  const handleClick = (event: any, idx: number) => {
-    setDocIndex(idx);
-    setAnchorEl(event.currentTarget);
-  };
-
   const handleConfirmationDialogClose = () => {
     setDeleteDialogOpen(false);
     setDocIndex(null);
-    setAnchorEl(null);
   };
 
   const handleChange = (event: React.ChangeEvent<any>, newValue: number) => {
@@ -148,14 +161,7 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     handleSchemaChange(name);
   };
 
-  const createDocumentArray = (document: any) => {
-    return Object.keys(document).map((key) => {
-      return { id: key, data: document[key] };
-    });
-  };
-
   const handleEditClick = () => {
-    setAnchorEl(null);
     const currentSelectedDocument = documents[docIndex];
     setSelectedDocument(currentSelectedDocument);
     setCreateDocument(true);
@@ -163,13 +169,11 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
   };
 
   const handleDeleteClick = () => {
-    setAnchorEl(null);
     setDeleteDialogOpen(true);
   };
 
   const handleMenuClose = () => {
     setDocIndex(null);
-    setAnchorEl(null);
   };
 
   const addNewDocument = () => {
@@ -179,7 +183,6 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
 
   const handleCloseDeleteConfirmationDialog = () => {
     setDocIndex(null);
-    setAnchorEl(null);
     setDeleteDialogOpen(false);
   };
 
@@ -201,41 +204,18 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     setCreateDocument(false);
   };
 
-  const renderTree = (nodes: Nodes) => {
+  const renderTree = (docItem: DocItem) => {
     return (
-      <TreeItem
-        key={nodes.id}
-        nodeId={nodes.id}
-        label={
-          <Typography variant={'subtitle2'}>
-            <Typography component={'span'} className={classes.bold}>{`${nodes.id}: `}</Typography>
-            {Array.isArray(nodes.data)
-              ? nodes.data.length > 0
-                ? '[...]'
-                : '[ ]'
-              : typeof nodes.data !== 'string' && nodes.data && Object.keys(nodes.data).length > 0
-              ? '{...}'
-              : `${nodes.data}`}
-          </Typography>
-        }>
-        {Array.isArray(nodes.data)
-          ? nodes.data.map((node: any, index: number) =>
+      <TreeItem key={docItem.id} nodeId={docItem.id} label={<TreeItemLabel docItem={docItem} />}>
+        {Array.isArray(docItem.data)
+          ? docItem.data.map((node: any, index: number) =>
               renderTree({ id: index.toString(), data: node })
             )
-          : typeof nodes.data !== 'string' && nodes.data && Object.keys(nodes.data).length > 0
-          ? createDocumentArray(nodes.data).map((node) => renderTree(node))
+          : typeof docItem.data !== 'string' && docItem.data && Object.keys(docItem.data).length > 0
+          ? createDocumentArray(docItem.data).map((node) => renderTree(node))
           : null}
       </TreeItem>
     );
-  };
-
-  const onViewMorePress = () => {
-    const schemaName = schemas[selectedSchema].name;
-
-    const documentLength = documents.length;
-    // const documentsCount = schemaDocuments.documentsCount;
-    // console.log(documentLength, documentsCount);
-    dispatch(asyncGetMoreSchemaDocuments({ name: schemaName, skip: documentLength }));
   };
 
   return (
@@ -252,35 +232,63 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
             return <Tab key={`tabs${index}`} label={d.name} />;
           })}
         </Tabs>
+        <Box style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <Box
+            style={{
+              display: 'flex',
+              padding: 8,
+              paddingBottom: 0,
+              justifyContent: 'space-between',
+            }}>
+            <TextField label="Search" variant="outlined" style={{ flex: 1 }} />
+            <Box style={{ width: 8 }} />
+            <Button variant="contained" color="secondary" onClick={() => console.log('refresh')}>
+              <RefreshIcon />
+              Refresh
+            </Button>
+            <Box style={{ width: 8 }} />
+            <Button variant="contained" color="primary" onClick={() => addNewDocument()}>
+              Add Document
+            </Button>
+          </Box>
+          <Paginator
+            handlePageChange={() => console.log('handlePageChange')}
+            limit={25}
+            handleLimitChange={() => console.log('handleLimitChange')}
+            page={0}
+            count={5}
+            style={{ borderBottom: '1px solid rgb(255 255 255 / 12%)' }}
+          />
 
-        <TabPanel>
           {documents.length > 0 ? (
-            <>
+            <TabPanel>
               {documents.map((doc: any, index: number) => {
                 return (
                   <Card key={`card${index}`} className={classes.card} variant={'outlined'}>
-                    <CardHeader
-                      title={doc._id}
-                      action={
-                        <>
-                          <IconButton
-                            aria-label="settings"
-                            onClick={(event) => handleClick(event, index)}>
-                            <MoreVert />
-                          </IconButton>
-                        </>
-                      }
-                    />
+                    <Box
+                      style={{
+                        background: 'grey',
+                        position: 'absolute',
+                        height: 24,
+                        width: 24,
+                        borderRadius: 4,
+                        left: 8,
+                        top: 16,
+                        transform: 'rotate(-90deg)',
+                      }}>
+                      <KeyboardArrowDown />
+                    </Box>
                     <CardContent>
-                      {createDocumentArray(doc).map((obj, index) => {
+                      {createDocumentArray(doc).map((docItem, index) => {
                         return (
                           <TreeView
                             key={`treeView${index}`}
                             className={classes.tree}
+                            disableSelection
                             defaultCollapseIcon={<ExpandMoreIcon />}
                             defaultExpanded={['root']}
                             defaultExpandIcon={<ChevronRightIcon />}>
-                            {renderTree(obj)}
+                            {renderTree(docItem)}
                           </TreeView>
                         );
                       })}
@@ -288,31 +296,16 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
                   </Card>
                 );
               })}
-              <Box className={classes.addDocBox}>
-                <Button
-                  style={{ marginRight: 15 }}
-                  color="primary"
-                  variant={'outlined'}
-                  disabled={documentsObj?.documentsCount === documents.length}
-                  onClick={onViewMorePress}>
-                  View More documents
-                </Button>
-                <Button variant="contained" color="primary" onClick={() => addNewDocument()}>
-                  Add Document
-                </Button>
-              </Box>
-            </>
+            </TabPanel>
           ) : (
-            <>
-              <Box className={classes.emptyDocuments}>
-                <p>No documents are availables.</p>
-                <Button variant="contained" color="primary" onClick={() => addNewDocument()}>
-                  Add Document
-                </Button>
-              </Box>
-            </>
+            <Box className={classes.emptyDocuments}>
+              <p>No documents are available.</p>
+              <Button variant="contained" color="primary" onClick={() => addNewDocument()}>
+                Add Document
+              </Button>
+            </Box>
           )}
-        </TabPanel>
+        </Box>
       </Box>
       <Dialog
         open={createDocument}
@@ -351,21 +344,6 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Menu
-        id="long-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleMenuClose}
-        PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: '20ch',
-          },
-        }}>
-        <MenuItem onClick={handleEditClick}>Edit</MenuItem>
-        <MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
-      </Menu>
     </Container>
   );
 };
