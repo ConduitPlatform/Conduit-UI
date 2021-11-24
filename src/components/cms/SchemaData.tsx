@@ -4,16 +4,8 @@ import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
 import React, { FC, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem from '@material-ui/lab/TreeItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { KeyboardArrowDown } from '@material-ui/icons';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
-import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import CreateDialog from './DocumentCreateDialog';
@@ -27,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import TextField from '@material-ui/core/TextField';
 import Paginator from '../common/Paginator';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import SchemaDataCard from './SchemaDataCard';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,9 +64,6 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'scroll',
     width: '100%',
   },
-  bold: {
-    fontWeight: 'bold',
-  },
   emptyDocuments: {
     margin: 'auto',
     display: 'flex',
@@ -94,37 +84,6 @@ const TabPanel: FC = ({ children }) => {
   const classes = useStyles();
   return <Box className={classes.cardContainer}>{children}</Box>;
 };
-
-interface TreeItemLabelProps {
-  docItem: DocItem;
-}
-
-const TreeItemLabel: FC<TreeItemLabelProps> = ({ docItem }) => {
-  const classes = useStyles();
-  return (
-    <Typography variant={'subtitle2'}>
-      <Typography component={'span'} className={classes.bold}>{`${docItem.id}: `}</Typography>
-      {Array.isArray(docItem.data)
-        ? docItem.data.length > 0
-          ? '[...]'
-          : '[ ]'
-        : typeof docItem.data !== 'string' && docItem.data && Object.keys(docItem.data).length > 0
-        ? '{...}'
-        : `${docItem.data}`}
-    </Typography>
-  );
-};
-
-const createDocumentArray = (document: any) => {
-  return Object.keys(document).map((key) => {
-    return { id: key, data: document[key] };
-  });
-};
-
-interface DocItem {
-  id: string;
-  data: any;
-}
 
 interface Props {
   schemas: Schema[];
@@ -204,20 +163,6 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     setCreateDocument(false);
   };
 
-  const renderTree = (docItem: DocItem) => {
-    return (
-      <TreeItem key={docItem.id} nodeId={docItem.id} label={<TreeItemLabel docItem={docItem} />}>
-        {Array.isArray(docItem.data)
-          ? docItem.data.map((node: any, index: number) =>
-              renderTree({ id: index.toString(), data: node })
-            )
-          : typeof docItem.data !== 'string' && docItem.data && Object.keys(docItem.data).length > 0
-          ? createDocumentArray(docItem.data).map((node) => renderTree(node))
-          : null}
-      </TreeItem>
-    );
-  };
-
   return (
     <Container>
       <Box className={classes.root}>
@@ -262,38 +207,9 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
 
           {documents.length > 0 ? (
             <TabPanel>
-              {documents.map((doc: any, index: number) => {
+              {documents.map((docs: any, index: number) => {
                 return (
-                  <Card key={`card${index}`} className={classes.card} variant={'outlined'}>
-                    <Box
-                      style={{
-                        background: 'grey',
-                        position: 'absolute',
-                        height: 24,
-                        width: 24,
-                        borderRadius: 4,
-                        left: 8,
-                        top: 16,
-                        transform: 'rotate(-90deg)',
-                      }}>
-                      <KeyboardArrowDown />
-                    </Box>
-                    <CardContent>
-                      {createDocumentArray(doc).map((docItem, index) => {
-                        return (
-                          <TreeView
-                            key={`treeView${index}`}
-                            className={classes.tree}
-                            disableSelection
-                            defaultCollapseIcon={<ExpandMoreIcon />}
-                            defaultExpanded={['root']}
-                            defaultExpandIcon={<ChevronRightIcon />}>
-                            {renderTree(docItem)}
-                          </TreeView>
-                        );
-                      })}
-                    </CardContent>
-                  </Card>
+                  <SchemaDataCard documents={docs} className={classes.card} key={`card${index}`} />
                 );
               })}
             </TabPanel>
