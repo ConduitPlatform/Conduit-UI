@@ -262,8 +262,8 @@ const Schemas = () => {
       return schemasToFormat.map((d) => ({
         _id: d._id,
         name: d.name,
-        crudOperations: d.crudOperations,
         authentication: d.authentication,
+        crudOperations: d.crudOperations,
         createdAt: d.createdAt,
         updatedAt: d.updatedAt,
       }));

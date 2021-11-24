@@ -97,7 +97,7 @@ const BuildTypes: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas(30));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 100 }));
     dispatch(asyncFetchSchemasFromOtherModules(''));
   }, [dispatch]);
 
@@ -405,13 +405,13 @@ const BuildTypes: React.FC = () => {
     });
   };
 
-  const handleSave = (name: string, authentication: boolean) => {
+  const handleSave = (name: string, authenticate: boolean, allowCrud: boolean) => {
     if (data && data.selectedSchema) {
       const { _id } = data.selectedSchema;
       const editableSchemaFields = prepareFields(schemaFields.newTypeFields);
       const editableSchema = {
-        authentication,
-        crudOperations,
+        authentication: authenticate,
+        crudOperations: allowCrud,
         fields: { ...editableSchemaFields },
       };
 
@@ -420,10 +420,11 @@ const BuildTypes: React.FC = () => {
       const newSchemaFields = prepareFields(schemaFields.newTypeFields);
       const newSchema = {
         name: name,
-        authentication,
-        crudOperations,
+        authentication: authenticate,
+        crudOperations: allowCrud,
         fields: newSchemaFields,
       };
+
       dispatch(asyncCreateNewSchema(newSchema));
     }
     dispatch(clearSelectedSchema());

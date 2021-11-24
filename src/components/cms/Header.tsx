@@ -1,17 +1,12 @@
 import React, { FC, useEffect, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Input from '@material-ui/core/Input';
-import SaveIcon from '@material-ui/icons/Save';
+import { Box, Typography, Button, Input, Checkbox } from '@material-ui/core';
+import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/cmsSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 
 export const headerHeight = 64;
@@ -79,7 +74,7 @@ interface Props {
   authentication: boolean;
   crudOperations: boolean;
   readOnly: boolean;
-  handleSave: (name: string, readOnly: boolean) => void;
+  handleSave: (name: string, readOnly: boolean, crud: boolean) => void;
 }
 
 const Header: FC<Props> = ({
@@ -117,7 +112,7 @@ const Header: FC<Props> = ({
   };
 
   const handleData = () => {
-    handleSave(schemaName, schemaAuthentication);
+    handleSave(schemaName, schemaAuthentication, schemaCrudOperations);
   };
 
   const handleBackButtonClick = () => {
