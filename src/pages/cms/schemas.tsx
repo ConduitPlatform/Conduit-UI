@@ -257,9 +257,9 @@ const Schemas = () => {
     { title: 'Updated at', sort: 'updatedAt' },
   ];
 
-  const formatSchemas = (schemas: Schema[]) => {
-    if (schemas !== undefined) {
-      return schemas.map((d) => ({
+  const formatSchemas = (schemasToFormat: Schema[]) => {
+    if (schemasToFormat !== undefined) {
+      return schemasToFormat.map((d) => ({
         _id: d._id,
         name: d.name,
         crudOperations: d.crudOperations,

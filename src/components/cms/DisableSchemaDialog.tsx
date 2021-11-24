@@ -1,8 +1,17 @@
 import React, { FC, useState } from 'react';
-import { DialogTitle, DialogContent, DialogActions, Dialog, Button } from '@material-ui/core';
+import {
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Dialog,
+  Button,
+  Checkbox,
+  Chip,
+  FormControlLabel,
+  FormGroup,
+} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
-import { Checkbox, Chip, FormControlLabel, FormGroup } from '@material-ui/core';
 import { isArray } from 'lodash';
 import { Schema } from '../../models/cms/CmsModels';
 import { SchemaUI } from './CmsModels';
@@ -36,6 +45,8 @@ interface Props {
   selectedSchema: any;
 }
 
+type actions = 'enable' | 'archive' | 'delete' | 'deleteMany';
+
 const DisableSchemaDialog: FC<Props> = ({
   open,
   handleClose,
@@ -47,7 +58,7 @@ const DisableSchemaDialog: FC<Props> = ({
   const classes = useStyles();
   const [deleteData, setDeleteData] = useState<boolean>(false);
 
-  const createDialogTitle = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
+  const createDialogTitle = (action: actions) => {
     switch (action) {
       case 'enable': {
         return 'Enable CMS schema:';
@@ -66,7 +77,7 @@ const DisableSchemaDialog: FC<Props> = ({
     }
   };
 
-  const createDialogInfo = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
+  const createDialogInfo = (action: actions) => {
     switch (action) {
       case 'enable': {
         return 'This operation with enable the schema.';
@@ -93,31 +104,31 @@ const DisableSchemaDialog: FC<Props> = ({
           </>
         );
       }
-      case 'deleteMany':
-        {
-          return (
-            <>
-              <FormGroup>
-                <FormControlLabel
-                  disabled
-                  control={<Checkbox defaultChecked />}
-                  label="Selected schemas will be deleted"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
-                  }
-                  label="Delete schema data"
-                />
-              </FormGroup>
-            </>
-          );
-        }
+      case 'deleteMany': {
+        return (
+          <>
+            <FormGroup>
+              <FormControlLabel
+                disabled
+                control={<Checkbox defaultChecked />}
+                label="Selected schemas will be deleted"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
+                }
+                label="Delete schema data"
+              />
+            </FormGroup>
+          </>
+        );
+      }
+      default:
         return '';
     }
   };
 
-  const generateButtonClass = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
+  const generateButtonClass = (action: actions) => {
     switch (action) {
       case 'enable': {
         return classes.enableButton;
@@ -134,7 +145,7 @@ const DisableSchemaDialog: FC<Props> = ({
     }
   };
 
-  const generateButtonName = (action: 'enable' | 'archive' | 'delete' | 'deleteMany') => {
+  const generateButtonName = (action: actions) => {
     switch (action) {
       case 'enable': {
         return 'Enable';
