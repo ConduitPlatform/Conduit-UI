@@ -63,6 +63,18 @@ const SchemaDataCard: FC<Props> = ({ documents, ...rest }) => {
   const [expandable, setExpandable] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
 
+  const handleToggle = (nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  };
+
+  const handleExpandAll = () => {
+    if (expandable.length !== expanded.length || expanded.length < 1) {
+      setExpanded(expandable);
+      return;
+    }
+    setExpanded([]);
+  };
+
   const renderTree = (document: Document) => {
     const isArray = Array.isArray(document.data);
     const isObject = typeof document.data !== 'string' && Object.keys(document.data).length > 0;
@@ -100,7 +112,7 @@ const SchemaDataCard: FC<Props> = ({ documents, ...rest }) => {
           transform: 'rotate(-90deg)',
           cursor: 'pointer',
         }}
-        onClick={() => setExpanded(expandable)}>
+        onClick={() => handleExpandAll()}>
         <KeyboardArrowDown />
       </Box>
       <CardContent>
@@ -113,7 +125,8 @@ const SchemaDataCard: FC<Props> = ({ documents, ...rest }) => {
               expanded={expanded}
               defaultCollapseIcon={<ExpandMoreIcon />}
               defaultExpanded={['root']}
-              defaultExpandIcon={<ChevronRightIcon />}>
+              defaultExpandIcon={<ChevronRightIcon />}
+              onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
               {renderTree(document)}
             </TreeView>
           );
