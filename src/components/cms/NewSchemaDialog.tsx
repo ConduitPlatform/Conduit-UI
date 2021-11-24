@@ -1,17 +1,19 @@
-import Box from '@material-ui/core/Box';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
-import Dialog from '@material-ui/core/Dialog';
 import React, { FC, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
+import Box from '@material-ui/core/Box';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from '@material-ui/core';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { useRouter } from 'next/router';
+import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
+import Link from 'next/link';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,6 +46,12 @@ const useStyles = makeStyles((theme) => ({
   dialogTitle: {
     textAlign: 'center',
     marginBottom: 16,
+  },
+  anchor: {
+    textDecoration: 'none',
+  },
+  actions: {
+    justifyContent: 'center',
   },
 }));
 
@@ -103,11 +111,11 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
             }}
           />
         </DialogContent>
-        <DialogActions style={{ justifyContent: 'center' }}>
+        <DialogActions className={classes.actions}>
           <Link
             href={{ pathname: '/cms/build-types', query: { name: typeName } }}
             as={'/cms/build-types'}>
-            <a style={{ textDecoration: 'none' }}>
+            <a className={classes.anchor}>
               <Button
                 onClick={handleAddType}
                 color="primary"
