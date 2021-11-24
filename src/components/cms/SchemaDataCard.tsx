@@ -9,14 +9,28 @@ import Card, { CardProps } from '@material-ui/core/Card';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   tree: {
     flexGrow: 1,
-    maxWidth: 400,
   },
   bold: {
     fontWeight: 'bold',
+  },
+  arrow: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+    background: theme.palette.grey[600],
+    position: 'absolute',
+    left: theme.spacing(1),
+    top: theme.spacing(2),
+    borderRadius: theme.spacing(0.5),
+    transform: 'rotate(-90deg)',
+    cursor: 'pointer',
+  },
+  arrowExpanded: {
+    transform: 'rotate(0)',
   },
 }));
 
@@ -101,17 +115,7 @@ const SchemaDataCard: FC<Props> = ({ documents, ...rest }) => {
   return (
     <Card variant={'outlined'} {...rest}>
       <Box
-        style={{
-          background: 'grey',
-          position: 'absolute',
-          height: 24,
-          width: 24,
-          borderRadius: 4,
-          left: 8,
-          top: 16,
-          transform: 'rotate(-90deg)',
-          cursor: 'pointer',
-        }}
+        className={expanded.length < 1 ? classes.arrow : clsx(classes.arrow, classes.arrowExpanded)}
         onClick={() => handleExpandAll()}>
         <KeyboardArrowDown />
       </Box>
