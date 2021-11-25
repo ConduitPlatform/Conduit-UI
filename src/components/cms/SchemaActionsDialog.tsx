@@ -47,14 +47,21 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   open: boolean;
   handleClose: () => void;
-  handleToggle: any;
-  handleToggleSchemas: any;
-  handleDelete: any;
-  handleDeleteSchemas: any;
+  handleToggle: () => void;
+  handleToggleSchemas: () => void;
+  handleDelete: (deleteData: boolean) => void;
+  handleDeleteSchemas: (deleteData: boolean) => void;
   selectedSchema: any;
 }
 
-type actions = 'enable' | 'archive' | 'enableMany' | 'archiveMany' | 'delete' | 'deleteMany';
+export type actions =
+  | ''
+  | 'enable'
+  | 'archive'
+  | 'enableMany'
+  | 'archiveMany'
+  | 'delete'
+  | 'deleteMany';
 
 const SchemaActionsDialog: FC<Props> = ({
   open,

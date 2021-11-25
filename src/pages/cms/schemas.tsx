@@ -11,7 +11,7 @@ import {
 import { Schema } from '../../models/cms/CmsModels';
 import { useRouter } from 'next/router';
 import NewSchemaDialog from '../../components/cms/NewSchemaDialog';
-import SchemaActionsDialog from '../../components/cms/SchemaActionsDialog';
+import SchemaActionsDialog, { actions } from '../../components/cms/SchemaActionsDialog';
 import {
   Grid,
   makeStyles,
@@ -96,7 +96,10 @@ const Schemas = () => {
   const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState<string>('');
   const [open, setOpen] = useState(false);
-  const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<any>({
+  const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
+    data: any;
+    action: actions;
+  }>({
     data: {},
     action: '',
   });
@@ -271,10 +274,10 @@ const Schemas = () => {
   };
 
   const headers = [
-    { title: '_id', sort: '_id' },
+    { title: '_id' },
     { title: 'Name', sort: 'name' },
-    { title: 'Authenticated', sort: 'authenticated' },
-    { title: 'CRUD', sort: 'crudOperations' },
+    { title: 'Authenticated' },
+    { title: 'CRUD' },
     { title: 'Created at', sort: 'createdAt' },
     { title: 'Updated at', sort: 'updatedAt' },
   ];
