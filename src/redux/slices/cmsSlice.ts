@@ -122,7 +122,7 @@ export const asyncToggleMultipleSchemas = createAsyncThunk(
       await toggleMultipleSchemasRequest(params);
       thunkAPI.dispatch(
         enqueueSuccessNotification(
-          `Successfully ${!params.enabled ? `archived` : 'enabled'} selected schemas`
+          `Successfully ${!params.enabled ? 'archived' : 'enabled'} selected schemas`
         )
       );
       thunkAPI.dispatch(setAppDefaults());
