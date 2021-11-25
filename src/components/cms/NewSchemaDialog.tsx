@@ -69,7 +69,12 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
   const handleTypeName = (value: string) => {
     const regex = /[^a-z0-9_]/gi;
     if (regex.test(value)) {
-      dispatch(enqueueInfoNotification('The schema name can only contain alpharithmetics and _'));
+      dispatch(
+        enqueueInfoNotification(
+          'The schema name can only contain alpharithmetics and _',
+          'duplicate'
+        )
+      );
     }
 
     setTypeName(value.replace(/[^a-z0-9_]/gi, ''));
