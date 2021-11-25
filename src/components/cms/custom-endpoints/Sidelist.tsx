@@ -34,12 +34,27 @@ const useStyles = makeStyles((theme) => ({
       height: '2px',
       background: theme.palette.primary.main,
       borderRadius: '4px',
-      margin: theme.spacing(1),
+      margin: theme.spacing(0.5),
     },
   },
   button: {
     margin: theme.spacing(1),
     textTransform: 'none',
+    color: 'white',
+  },
+  getBadge: {
+    backgroundColor: theme.palette.info.main,
+    color: 'white',
+  },
+  putBadge: {
+    backgroundColor: theme.palette.warning.main,
+    color: 'white',
+  },
+  postBadge: {
+    backgroundColor: theme.palette.success.main,
+  },
+  deleteBadge: {
+    backgroundColor: theme.palette.error.main,
   },
   list: {
     '&.MuiList-root': {
@@ -87,6 +102,21 @@ const SideList: FC<Props> = ({
 }) => {
   const classes = useStyles();
 
+  const getBadgeColor = (endpoint: any) => {
+    if (endpoint.operation === OperationsEnum.POST) {
+      return classes.postBadge;
+    }
+    if (endpoint.operation === OperationsEnum.PUT) {
+      return classes.putBadge;
+    }
+    if (endpoint.operation === OperationsEnum.DELETE) {
+      return classes.deleteBadge;
+    }
+    if (endpoint.operation === OperationsEnum.GET) {
+      return classes.getBadge;
+    }
+  };
+
   const getOperation = (endpoint: any) => {
     if (endpoint.operation === OperationsEnum.POST) {
       return 'POST';
@@ -111,7 +141,7 @@ const SideList: FC<Props> = ({
             name="Search"
             // value={search}
             // onChange={(e) => setSearch(e.target.value)}
-            label="Find template"
+            label="Find endpoint"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -155,7 +185,9 @@ const SideList: FC<Props> = ({
             onClick={() => handleListItemSelect(endpoint)}
             selected={selectedEndpoint?._id === endpoint?._id}>
             <ListItemText primary={endpoint.name} />
-            <Button disabled>{getOperation(endpoint)}</Button>
+            <Button classes={{ root: classes.button, disabled: getBadgeColor(endpoint) }} disabled>
+              {getOperation(endpoint)}
+            </Button>
           </ListItem>
         ))}
       </List>

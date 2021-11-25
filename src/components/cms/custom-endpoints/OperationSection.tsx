@@ -5,7 +5,9 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
+  MenuItem,
   Select,
+  TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import OperationsEnum from '../../../models/OperationsEnum';
@@ -97,46 +99,36 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   return (
     <>
       <Grid item xs={3}>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select_operation">Select Operation</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            value={endpoint.operation}
-            onChange={handleOperationChange}
-            labelWidth={100}
-            inputProps={{
-              name: 'select_operation',
-              id: 'select_operation',
-            }}>
-            <option aria-label="None" value="" />
-            <option value={OperationsEnum.GET}>Find/Get</option>
-            <option value={OperationsEnum.POST}>Create</option>
-            <option value={OperationsEnum.PUT}>Update/Edit</option>
-            <option value={OperationsEnum.DELETE}>Delete</option>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Select Operation'}
+          variant="outlined"
+          className={classes.formControl}
+          value={endpoint.operation}
+          disabled={!editMode}
+          onChange={handleOperationChange}>
+          <MenuItem aria-label="None" value="" />
+          <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
+          <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
+          <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
+          <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
+        </TextField>
       </Grid>
       <Grid item xs={3}>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select_schema">Select Schema</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            value={endpoint.selectedSchema}
-            onChange={handleSchemaChange}
-            inputProps={{
-              name: 'select_schema',
-              id: 'select_schema',
-            }}>
-            <option aria-label="None" value="" />
-            {availableSchemas.map((schema, index: number) => (
-              <option key={`schema-${index}`} value={schema._id}>
-                {schema.name}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Select Schema'}
+          disabled={!editMode}
+          variant="outlined"
+          className={classes.formControl}
+          value={endpoint.selectedSchema}
+          onChange={handleSchemaChange}>
+          {availableSchemas.map((schema, index: number) => (
+            <MenuItem key={`schema-${index}`} value={schema._id}>
+              {schema.name}
+            </MenuItem>
+          ))}
+        </TextField>
       </Grid>
       <Grid item xs={endpoint.operation === OperationsEnum.GET ? 2 : 4}>
         <FormControlLabel
