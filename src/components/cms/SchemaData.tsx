@@ -4,7 +4,6 @@ import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
 import React, { FC, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import CreateDialog from './DocumentCreateDialog';
 import {
@@ -14,11 +13,10 @@ import {
 } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import TextField from '@material-ui/core/TextField';
-import Paginator from '../common/Paginator';
-import RefreshIcon from '@material-ui/icons/Refresh';
 import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import SchemaDataHeader from './SchemaDataHeader';
+import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,25 +33,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  grid: {
-    marginBottom: theme.spacing(3),
-  },
-  multiline: {
-    width: '100%',
-  },
-  textField: {
-    width: '95%',
-  },
-  tree: {
-    flexGrow: 1,
-    maxWidth: 400,
-  },
-  'Mui-selected': {
-    background: 'none',
-    '&:hover': {
-      background: 'none !important',
-    },
-  },
   card: {
     margin: theme.spacing(1),
     paddingLeft: theme.spacing(2),
@@ -62,20 +41,6 @@ const useStyles = makeStyles((theme) => ({
   cardContainer: {
     overflowY: 'scroll',
     width: '100%',
-  },
-  emptyDocuments: {
-    margin: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  addDocBox: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: theme.spacing(3),
-  },
-  deleteButton: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.error.contrastText,
   },
 }));
 
@@ -186,33 +151,7 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
           })}
         </Tabs>
         <Box style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-          <Box
-            style={{
-              display: 'flex',
-              padding: 8,
-              paddingBottom: 0,
-              justifyContent: 'space-between',
-            }}>
-            <TextField label="Search" variant="outlined" style={{ flex: 1 }} />
-            <Box style={{ width: 8 }} />
-            <Button variant="contained" color="secondary" onClick={() => console.log('refresh')}>
-              <RefreshIcon />
-              Refresh
-            </Button>
-            <Box style={{ width: 8 }} />
-            <Button variant="contained" color="primary" onClick={() => onCreateDocument()}>
-              Add Document
-            </Button>
-          </Box>
-          <Paginator
-            handlePageChange={() => console.log('handlePageChange')}
-            limit={25}
-            handleLimitChange={() => console.log('handleLimitChange')}
-            page={0}
-            count={5}
-            style={{ borderBottom: '1px solid rgb(255 255 255 / 12%)' }}
-          />
-
+          <SchemaDataHeader onCreateDocument={onCreateDocument} />
           {documents.length > 0 ? (
             <TabPanel>
               {documents.map((docs: any, index: number) => {
@@ -228,12 +167,7 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
               })}
             </TabPanel>
           ) : (
-            <Box className={classes.emptyDocuments}>
-              <p>No documents are available.</p>
-              <Button variant="contained" color="primary" onClick={() => onCreateDocument()}>
-                Add Document
-              </Button>
-            </Box>
+            <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
           )}
         </Box>
       </Box>
