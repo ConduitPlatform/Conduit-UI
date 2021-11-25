@@ -48,7 +48,7 @@ const theme = createTheme({
             borderRadius: 8,
             backgroundColor: '#6b6b6b',
             minHeight: 24,
-            border: '3px solid #2b2b2b',
+            border: '2px solid #2b2b2b',
           },
           '&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus': {
             backgroundColor: '#959595',

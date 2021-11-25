@@ -1,8 +1,25 @@
-import { Box, Button, Divider, List, ListItem, ListItemText } from '@material-ui/core';
+import React, { FC } from 'react';
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import React, { FC } from 'react';
+
 import OperationsEnum from '../../../models/OperationsEnum';
+import { Search } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -15,8 +32,9 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     '&.MuiDivider-root': {
       height: '2px',
-      background: '#000000',
+      background: theme.palette.primary.main,
       borderRadius: '4px',
+      margin: theme.spacing(1),
     },
   },
   button: {
@@ -28,26 +46,29 @@ const useStyles = makeStyles((theme) => ({
       maxHeight: '580px',
       overflowY: 'auto',
       width: '100%',
-      //   '&::-webkit-scrollbar': {
-      //     display: 'none',
-      //   },
     },
   },
   listItem: {
     '&.MuiListItem-root:hover': {
-      background: 'rgba(0, 83, 156, 0.2)',
+      background: theme.palette.grey[600],
       borderRadius: '4px',
     },
     '&.Mui-selected': {
-      background: '#00539C',
+      background: theme.palette.grey[700],
       borderRadius: '4px',
       color: '#ffffff',
     },
     '&.Mui-selected:hover': {
-      background: '#00539C',
+      background: theme.palette.grey[800],
       borderRadius: '4px',
       color: '#ffffff',
     },
+  },
+  actions: {
+    padding: theme.spacing(1),
+  },
+  formControl: {
+    minWidth: 150,
   },
 }));
 
@@ -82,15 +103,48 @@ const SideList: FC<Props> = ({
   };
 
   return (
-    <Box className={classes.listBox}>
-      <Button
-        variant="contained"
-        color={'primary'}
-        className={classes.button}
-        endIcon={<AddCircleOutlineIcon />}
-        onClick={handleAddNewEndpoint}>
-        Add endpoint
-      </Button>
+    <Box>
+      <Grid className={classes.actions} spacing={1} container>
+        <Grid item sm={5}>
+          <TextField
+            variant="outlined"
+            name="Search"
+            // value={search}
+            // onChange={(e) => setSearch(e.target.value)}
+            label="Find template"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid item sm={6}>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel>Operation</InputLabel>
+            <Select
+              label="Provider"
+              // value={filter}
+              // onChange={(event) => handleFilterChange(event.target.value)}
+            >
+              <MenuItem value="">
+                <em>All</em>
+              </MenuItem>
+              <MenuItem value="local">GET</MenuItem>
+              <MenuItem value="google">POST</MenuItem>
+              <MenuItem value="facebook">PUT</MenuItem>
+              <MenuItem value="twitch">DELETE</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item sm={1}>
+          <IconButton color="secondary" onClick={handleAddNewEndpoint}>
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
       <Divider flexItem variant="middle" className={classes.divider} />
       <List className={classes.list}>
         {endpoints.map((endpoint: any) => (
