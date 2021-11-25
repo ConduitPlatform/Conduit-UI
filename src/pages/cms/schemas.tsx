@@ -4,13 +4,14 @@ import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
 import {
   asyncDeleteSelectedSchemas,
   asyncGetCmsSchemas,
+  asyncToggleMultipleSchemas,
   asyncToggleSchema,
   setSelectedSchema,
 } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
 import { useRouter } from 'next/router';
 import NewSchemaDialog from '../../components/cms/NewSchemaDialog';
-import DisableSchemaDialog from '../../components/cms/DisableSchemaDialog';
+import SchemaActionsDialog from '../../components/cms/SchemaActionsDialog';
 import {
   Grid,
   makeStyles,
@@ -26,7 +27,7 @@ import {
 import useDebounce from '../../hooks/useDebounce';
 import DataTable from '../../components/common/DataTable';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
-import { Delete, Search } from '@material-ui/icons';
+import { Archive, CheckCircle, Delete, Search } from '@material-ui/icons';
 import Paginator from '../../components/common/Paginator';
 import { SchemaUI } from '../../components/cms/CmsModels';
 import { prepareSort } from '../../utils/prepareSort';
@@ -106,7 +107,7 @@ const Schemas = () => {
     index: null,
   });
   const debouncedSearch: string = useDebounce(search, 500);
-  const { schemas } = useAppSelector((state) => state.cmsSlice.data);
+  const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
 
   useEffect(() => {
     dispatch(
@@ -148,6 +149,13 @@ const Schemas = () => {
     setOpenDialog(false);
   };
 
+  const handleToggleMultiple = () => {
+    const ids = selectedSchemaForAction.data.map((schema: Schema) => schema._id);
+    dispatch(asyncToggleMultipleSchemas({ ids: ids, enabled: !enabled }));
+    setSelectedSchemaForAction({ data: {}, action: '' });
+    setOpenDialog(false);
+  };
+
   const handleDeleteSchema = (deleteData: boolean) => {
     dispatch(
       asyncDeleteSelectedSchemas({
@@ -159,34 +167,11 @@ const Schemas = () => {
     setOpenDialog(false);
   };
 
-  const handleDeleteSchemas = (deleteData: boolean) => {
+  const handleDeleteMultiple = (deleteData: boolean) => {
     const ids = selectedSchemaForAction.data.map((schema: Schema) => schema._id);
     dispatch(asyncDeleteSelectedSchemas({ ids: ids, deleteData: deleteData }));
     setSelectedSchemaForAction({ data: {}, action: '' });
     setOpenDialog(false);
-  };
-
-  const enabledActions = [
-    { title: 'Edit', type: 'edit' },
-    { title: 'Archive', type: 'archive' },
-  ];
-  const disabledActions = [
-    { title: 'Enable', type: 'enable' },
-    { title: 'Delete', type: 'delete' },
-  ];
-
-  const handleSelect = (id: string) => {
-    const foundSchema = schemas?.find((item) => item._id === id);
-    const newSelectedElements = [...selectedSchemas];
-    const schemaChecked = selectedSchemas.find((schema) => schema?._id === foundSchema?._id);
-
-    if (schemaChecked) {
-      const index = newSelectedElements.findIndex((element) => element._id === foundSchema?._id);
-      newSelectedElements.splice(index, 1);
-    } else {
-      foundSchema !== undefined && newSelectedElements.push(foundSchema);
-    }
-    setSelectedSchemas(newSelectedElements);
   };
 
   const handleChange = (event: any, newValue: any) => {
@@ -194,19 +179,20 @@ const Schemas = () => {
     setEnabled(newValue);
   };
 
+  const enabledActions = [
+    { title: 'Edit', type: 'edit' },
+    { title: 'Archive', type: 'archive' },
+  ];
+  const archivedActions = [
+    { title: 'Enable', type: 'enable' },
+    { title: 'Delete', type: 'delete' },
+  ];
+
   const getActions = () => {
     if (enabled) {
       return enabledActions;
     }
-    return disabledActions;
-  };
-
-  const handleSelectAll = (elements: any) => {
-    if (selectedSchemas.length === elements.length) {
-      setSelectedSchemas([]);
-      return;
-    }
-    if (schemas !== null && schemas !== undefined) setSelectedSchemas(schemas);
+    return archivedActions;
   };
 
   const handleAdd = () => {
@@ -239,6 +225,14 @@ const Schemas = () => {
     }
   };
 
+  const handleMultipleToggle = () => {
+    setSelectedSchemaForAction({
+      data: selectedSchemas,
+      action: enabled ? 'archiveMany' : 'enableMany',
+    });
+    setOpenDialog(true);
+  };
+
   const handleMultipleDelete = () => {
     setSelectedSchemaForAction({ data: selectedSchemas, action: 'deleteMany' });
     setOpenDialog(true);
@@ -251,6 +245,29 @@ const Schemas = () => {
 
   const handleDialogClose = () => {
     setOpen(false);
+  };
+
+  const handleSelect = (id: string) => {
+    const foundSchema = schemaDocuments?.find((item) => item._id === id);
+    const newSelectedElements = [...selectedSchemas];
+    const schemaChecked = selectedSchemas.find((schema) => schema?._id === foundSchema?._id);
+
+    if (schemaChecked) {
+      const index = newSelectedElements.findIndex((element) => element._id === foundSchema?._id);
+      newSelectedElements.splice(index, 1);
+    } else {
+      foundSchema !== undefined && newSelectedElements.push(foundSchema);
+    }
+    setSelectedSchemas(newSelectedElements);
+  };
+
+  const handleSelectAll = (elements: any) => {
+    if (selectedSchemas.length === elements.length) {
+      setSelectedSchemas([]);
+      return;
+    }
+    if (schemaDocuments !== null && schemaDocuments !== undefined)
+      setSelectedSchemas(schemaDocuments);
   };
 
   const headers = [
@@ -310,15 +327,35 @@ const Schemas = () => {
           </Grid>
           <Grid item xs={4}>
             <Box className={classes.create}>
-              {selectedSchemas.length > 0 && !enabled && (
+              {selectedSchemas.length > 0 && enabled && (
                 <IconButton
                   aria-label="block"
                   color="primary"
-                  onClick={() => handleMultipleDelete()}>
-                  <Tooltip title="Block multiple users">
-                    <Delete />
+                  onClick={() => handleMultipleToggle()}>
+                  <Tooltip title="Toggle schemas">
+                    <Archive />
                   </Tooltip>
                 </IconButton>
+              )}
+              {selectedSchemas.length > 0 && !enabled && (
+                <>
+                  <IconButton
+                    aria-label="block"
+                    color="primary"
+                    onClick={() => handleMultipleToggle()}>
+                    <Tooltip title="Enable multiple schemas">
+                      <CheckCircle />
+                    </Tooltip>
+                  </IconButton>
+                  <IconButton
+                    aria-label="block"
+                    color="primary"
+                    onClick={() => handleMultipleDelete()}>
+                    <Tooltip title="Delete multiple schemas">
+                      <Delete />
+                    </Tooltip>
+                  </IconButton>
+                </>
               )}
               <Button
                 variant="contained"
@@ -330,13 +367,13 @@ const Schemas = () => {
             </Box>
           </Grid>
         </Grid>
-        {schemas.length > 0 ? (
+        {schemaDocuments.length > 0 ? (
           <>
             <DataTable
               headers={headers}
               sort={sort}
               setSort={setSort}
-              dsData={formatSchemas(schemas)}
+              dsData={formatSchemas(schemaDocuments)}
               actions={getActions()}
               selectedItems={selectedSchemas}
               handleSelect={handleSelect}
@@ -351,7 +388,7 @@ const Schemas = () => {
                   limit={limit}
                   handleLimitChange={handleLimitChange}
                   page={page}
-                  count={schemas.length}
+                  count={schemasCount}
                 />
               </Grid>
             </Grid>
@@ -363,12 +400,13 @@ const Schemas = () => {
         )}
       </Container>
       <NewSchemaDialog open={open} handleClose={handleDialogClose} />
-      <DisableSchemaDialog
+      <SchemaActionsDialog
         open={openDialog}
         handleClose={handleCloseDisable}
         handleToggle={handleToggleSchema}
+        handleToggleSchemas={handleToggleMultiple}
         handleDelete={handleDeleteSchema}
-        handleDeleteSchemas={handleDeleteSchemas}
+        handleDeleteSchemas={handleDeleteMultiple}
         selectedSchema={selectedSchemaForAction}
       />
     </>

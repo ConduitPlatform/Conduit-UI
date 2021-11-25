@@ -34,23 +34,33 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     color: theme.palette.common.white,
   },
+  chip: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    '& > *': {
+      margin: theme.spacing(0.5),
+    },
+  },
 }));
 
 interface Props {
   open: boolean;
   handleClose: () => void;
   handleToggle: any;
+  handleToggleSchemas: any;
   handleDelete: any;
   handleDeleteSchemas: any;
   selectedSchema: any;
 }
 
-type actions = 'enable' | 'archive' | 'delete' | 'deleteMany';
+type actions = 'enable' | 'archive' | 'enableMany' | 'archiveMany' | 'delete' | 'deleteMany';
 
-const DisableSchemaDialog: FC<Props> = ({
+const SchemaActionsDialog: FC<Props> = ({
   open,
   handleClose,
   handleToggle,
+  handleToggleSchemas,
   handleDelete,
   handleDeleteSchemas,
   selectedSchema,
@@ -65,6 +75,12 @@ const DisableSchemaDialog: FC<Props> = ({
       }
       case 'archive': {
         return 'Archive CMS schema:';
+      }
+      case 'enableMany': {
+        return 'Enable selected CSM schemas:';
+      }
+      case 'archiveMany': {
+        return 'Archive selected CSM schemas:';
       }
       case 'delete': {
         return 'Delete CMS schema:';
@@ -84,6 +100,12 @@ const DisableSchemaDialog: FC<Props> = ({
       }
       case 'archive': {
         return "This operation won't delete existing documents.";
+      }
+      case 'enableMany': {
+        return 'This operation will enable selected schemas.';
+      }
+      case 'archiveMany': {
+        return 'This operation will archive selected schemas.';
       }
       case 'delete': {
         return (
@@ -136,6 +158,12 @@ const DisableSchemaDialog: FC<Props> = ({
       case 'archive': {
         return classes.archiveButton;
       }
+      case 'enableMany': {
+        return classes.enableButton;
+      }
+      case 'archiveMany': {
+        return classes.archiveButton;
+      }
       case 'delete': {
         return classes.deleteButton;
       }
@@ -152,6 +180,12 @@ const DisableSchemaDialog: FC<Props> = ({
       }
       case 'archive': {
         return 'Archive';
+      }
+      case 'enableMany': {
+        return 'Enable Schemas';
+      }
+      case 'archiveMany': {
+        return 'Archive Schemas';
       }
       case 'delete': {
         return 'Delete';
@@ -176,6 +210,12 @@ const DisableSchemaDialog: FC<Props> = ({
       case 'deleteMany':
         handleDeleteSchemas(deleteData);
         break;
+      case 'archiveMany':
+        handleToggleSchemas();
+        break;
+      case 'enableMany':
+        handleToggleSchemas();
+        break;
       default:
         break;
     }
@@ -183,9 +223,13 @@ const DisableSchemaDialog: FC<Props> = ({
 
   const extractNames = () => {
     if (isArray(selectedSchema.data)) {
-      return selectedSchema.data.map((schema: Schema | SchemaUI, index: number) => (
-        <Chip color="secondary" key={index} label={schema.name} />
-      ));
+      return (
+        <div className={classes.chip}>
+          {selectedSchema.data.map((schema: Schema | SchemaUI, index: number) => (
+            <Chip color="secondary" key={index} label={schema.name} />
+          ))}
+        </div>
+      );
     }
 
     return selectedSchema ? selectedSchema.data.name : '';
@@ -219,4 +263,4 @@ const DisableSchemaDialog: FC<Props> = ({
   );
 };
 
-export default DisableSchemaDialog;
+export default SchemaActionsDialog;
