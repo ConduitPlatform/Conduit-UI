@@ -156,6 +156,7 @@ const Schemas = () => {
     const ids = selectedSchemaForAction.data.map((schema: Schema) => schema._id);
     dispatch(asyncToggleMultipleSchemas({ ids: ids, enabled: !enabled }));
     setSelectedSchemaForAction({ data: {}, action: '' });
+    setSelectedSchemas([]);
     setOpenDialog(false);
   };
 
@@ -167,6 +168,7 @@ const Schemas = () => {
       })
     );
     setSelectedSchemaForAction({ data: {}, action: '' });
+    setSelectedSchemas([]);
     setOpenDialog(false);
   };
 

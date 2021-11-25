@@ -20,7 +20,7 @@ import {
   editCustomEndpointsRequest,
   deleteCustomEndpointsRequest,
 } from '../../http/CustomEndpointsRequests';
-import { EndpointTypes, Schema, ToggleSchma } from '../../models/cms/CmsModels';
+import { EndpointTypes, Schema } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
@@ -98,14 +98,14 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
   }
 );
 
-export const asyncToggleSchema = createAsyncThunk<ToggleSchma, string>(
+export const asyncToggleSchema = createAsyncThunk(
   'cms/toggleSchema',
-  async (_id, thunkAPI) => {
+  async (_id: string, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await toggleSchemaByIdRequest(_id);
+      await toggleSchemaByIdRequest(_id);
       thunkAPI.dispatch(setAppDefaults());
-      return data as ToggleSchma;
+      return _id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -115,13 +115,18 @@ export const asyncToggleSchema = createAsyncThunk<ToggleSchma, string>(
 );
 
 export const asyncToggleMultipleSchemas = createAsyncThunk(
-  'cms/toggleSchema',
+  'cms/toggleMultiple',
   async (params: { ids: string[]; enabled: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await toggleMultipleSchemasRequest(params);
+      await toggleMultipleSchemasRequest(params);
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(
+          `Successfully ${!params.enabled ? `archived` : 'enabled'} selected schemas`
+        )
+      );
       thunkAPI.dispatch(setAppDefaults());
-      return data as ToggleSchma;
+      return params;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -377,25 +382,6 @@ const findSchemaById = (_id: string, schemas: any) => {
   return found ? found : null;
 };
 
-const updateSchemaStatusByName = (updated: any, schemas: any) => {
-  return schemas.schemaDocuments.map((schema: any) => {
-    if (schema.name === updated.name) {
-      return {
-        ...schema,
-        enabled: updated.enabled,
-      };
-    } else {
-      return schema;
-    }
-  });
-};
-
-const deleteSchemaStatusById = (deleted: any, schemas: any) => {
-  return schemas.schemaDocuments.filter((schema: any) => {
-    return schema._id !== deleted;
-  });
-};
-
 const cmsSlice = createSlice({
   name: 'cms',
   initialState,
@@ -413,16 +399,22 @@ const cmsSlice = createSlice({
       state.data.schemas.schemasCount = action.payload.documentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
-      state.data.schemas.schemaDocuments = updateSchemaStatusByName(
-        action.payload,
-        state.data.schemas
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
+        (schema) => schema._id !== action.payload
       );
+      state.data.schemas.schemasCount = state.data.schemas.schemasCount - 1;
+    });
+    builder.addCase(asyncToggleMultipleSchemas.fulfilled, (state, action) => {
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
+        (schema) =>
+          schema.enabled !== action.payload.enabled && !action.payload.ids.includes(schema._id)
+      );
+      state.data.schemas.schemasCount = state.data.schemas.schemasCount - action.payload.ids.length;
     });
     builder.addCase(asyncDeleteSelectedSchemas.fulfilled, (state, action) => {
-      state.data.schemas.schemaDocuments = deleteSchemaStatusById(
-        action.payload,
-        state.data.schemas
-      );
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter((schema) => {
+        !action.payload.includes(schema._id);
+      });
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
       state.data.documents = action.payload;
