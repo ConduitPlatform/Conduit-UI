@@ -4,8 +4,6 @@ import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
 import React, { FC, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import CreateDialog from './DocumentCreateDialog';
@@ -96,6 +94,11 @@ interface Props {
   handleSchemaChange: any;
 }
 
+const initialDocumentDialogState: DocumentDialog = {
+  open: false,
+  type: 'create',
+};
+
 const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
@@ -105,22 +108,11 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
   const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);
-  const [documentDialog, setDocumentDialog] = useState<DocumentDialog>({
-    open: false,
-    type: 'create',
-  });
+  const [documentDialog, setDocumentDialog] = useState<DocumentDialog>(initialDocumentDialogState);
 
-  console.log('selectedDocument', selectedDocument);
-  const handleCreateDialog = (create: boolean) => {
-    // if (!create) {
-    //   setSelectedDocument(null);
-    // }
-    // setDocumentDialog(!documentDialog);
-  };
-
-  const handleChange = (event: React.ChangeEvent<any>, newValue: number) => {
-    setSelectedSchema(newValue);
-    const name = schemas[newValue].name;
+  const handleChange = (value: number) => {
+    setSelectedSchema(value);
+    const name = schemas[value].name;
     handleSchemaChange(name);
   };
 
@@ -132,22 +124,25 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     setSelectedDocument(documents[index]);
   };
 
-  const onDelete = (index: number) => {
-    setDeleteDocumentDialog(true);
-    setSelectedDocument(documents[index]);
-  };
-
-  const handleCloseDialog = () => {
-    setDocumentDialog({
-      open: false,
-      type: 'create',
-    });
+  const handleEditDocument = (schemaName: string, document: any) => {
+    const params = {
+      schemaName: schemaName,
+      documentId: selectedDocument._id,
+      documentData: document,
+    };
+    dispatch(asyncEditSchemaDocument(params));
+    setDocumentDialog(initialDocumentDialogState);
     setSelectedDocument(undefined);
   };
 
   const handleCloseDeleteDialog = () => {
     setDeleteDocumentDialog(false);
     setSelectedDocument(undefined);
+  };
+
+  const onDelete = (index: number) => {
+    setDeleteDocumentDialog(true);
+    setSelectedDocument(documents[index]);
   };
 
   const handleDelete = () => {
@@ -159,20 +154,9 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     handleCloseDeleteDialog();
   };
 
-  // const handleEditClick = () => {
-  //   // const currentSelectedDocument = documents[docIndex];
-  //   // setSelectedDocument(currentSelectedDocument);
-  //   // setDocumentDialog(true);
-  //   // setDocIndex(null);
-  // };
-
-  // const handleDeleteClick = () => {
-  //   setDeleteDialogOpen(true);
-  // };
-
-  const addNewDocument = () => {
-    // setSelectedDocument(null);
-    handleCreateDialog(true);
+  const handleCloseDialog = () => {
+    setDocumentDialog(initialDocumentDialogState);
+    setSelectedDocument(undefined);
   };
 
   const onCreateDocument = () => {
@@ -182,26 +166,9 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     });
   };
 
-  // const handleDelete = () => {
-  //   // const documentId = documents[docIndex]._id;
-  //   // const schemaName = schemas[selectedSchema].name;
-  //   // dispatch(asyncDeleteSchemaDocument({ schemaName, documentId }));
-  //   handleCloseDeleteConfirmationDialog();
-  // };
-
   const handleCreateDocument = (schemaName: string, document: any) => {
     dispatch(asyncCreateSchemaDocument({ schemaName, document }));
-    // setDocumentDialog(false);
-  };
-
-  const handleEditDocument = (schemaName: string, document: any) => {
-    // const params = {
-    //   schemaName: schemaName,
-    //   documentId: document._id,
-    //   documentData: document,
-    // };
-    // dispatch(asyncEditSchemaDocument(params));
-    // setDocumentDialog(false);
+    setDocumentDialog(initialDocumentDialogState);
   };
 
   return (
@@ -209,7 +176,7 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
       <Box className={classes.root}>
         <Tabs
           value={selectedSchema}
-          onChange={handleChange}
+          onChange={(event, value) => handleChange(value)}
           orientation="vertical"
           variant="scrollable"
           aria-label="Vertical tabs"
