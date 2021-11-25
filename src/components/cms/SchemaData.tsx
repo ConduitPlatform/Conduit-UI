@@ -20,6 +20,7 @@ import TextField from '@material-ui/core/TextField';
 import Paginator from '../common/Paginator';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SchemaDataCard from './SchemaDataCard';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,6 +86,11 @@ const TabPanel: FC = ({ children }) => {
   return <Box className={classes.cardContainer}>{children}</Box>;
 };
 
+interface DocumentDialog {
+  open: boolean;
+  type: 'create' | 'edit';
+}
+
 interface Props {
   schemas: Schema[];
   handleSchemaChange: any;
@@ -98,20 +104,18 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
 
   const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
-  const [docIndex, setDocIndex] = useState<any>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [createDocument, setCreateDocument] = useState(false);
+  const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);
+  const [documentDialog, setDocumentDialog] = useState<DocumentDialog>({
+    open: false,
+    type: 'create',
+  });
 
+  console.log('selectedDocument', selectedDocument);
   const handleCreateDialog = (create: boolean) => {
-    if (!create) {
-      setSelectedDocument(null);
-    }
-    setCreateDocument(!createDocument);
-  };
-
-  const handleConfirmationDialogClose = () => {
-    setDeleteDialogOpen(false);
-    setDocIndex(null);
+    // if (!create) {
+    //   setSelectedDocument(null);
+    // }
+    // setDocumentDialog(!documentDialog);
   };
 
   const handleChange = (event: React.ChangeEvent<any>, newValue: number) => {
@@ -120,47 +124,84 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
     handleSchemaChange(name);
   };
 
-  const handleEditClick = () => {
-    const currentSelectedDocument = documents[docIndex];
-    setSelectedDocument(currentSelectedDocument);
-    setCreateDocument(true);
-    // setDocIndex(null);
+  const onEdit = (index: number) => {
+    setDocumentDialog({
+      open: true,
+      type: 'edit',
+    });
+    setSelectedDocument(documents[index]);
   };
 
-  const handleDeleteClick = () => {
-    setDeleteDialogOpen(true);
+  const onDelete = (index: number) => {
+    setDeleteDocumentDialog(true);
+    setSelectedDocument(documents[index]);
   };
 
-  const handleMenuClose = () => {
-    setDocIndex(null);
+  const handleCloseDialog = () => {
+    setDocumentDialog({
+      open: false,
+      type: 'create',
+    });
+    setSelectedDocument(undefined);
   };
 
-  const addNewDocument = () => {
-    setSelectedDocument(null);
-    handleCreateDialog(true);
-  };
-
-  const handleCloseDeleteConfirmationDialog = () => {
-    setDocIndex(null);
-    setDeleteDialogOpen(false);
+  const handleCloseDeleteDialog = () => {
+    setDeleteDocumentDialog(false);
+    setSelectedDocument(undefined);
   };
 
   const handleDelete = () => {
-    const documentId = documents[docIndex]._id;
-    const schemaName = schemas[selectedSchema].name;
-    dispatch(asyncDeleteSchemaDocument({ schemaName, documentId }));
-    handleCloseDeleteConfirmationDialog();
+    const params = {
+      schemaName: schemas[selectedSchema].name,
+      documentId: selectedDocument._id,
+    };
+    dispatch(asyncDeleteSchemaDocument(params));
+    handleCloseDeleteDialog();
   };
+
+  // const handleEditClick = () => {
+  //   // const currentSelectedDocument = documents[docIndex];
+  //   // setSelectedDocument(currentSelectedDocument);
+  //   // setDocumentDialog(true);
+  //   // setDocIndex(null);
+  // };
+
+  // const handleDeleteClick = () => {
+  //   setDeleteDialogOpen(true);
+  // };
+
+  const addNewDocument = () => {
+    // setSelectedDocument(null);
+    handleCreateDialog(true);
+  };
+
+  const onCreateDocument = () => {
+    setDocumentDialog({
+      open: true,
+      type: 'create',
+    });
+  };
+
+  // const handleDelete = () => {
+  //   // const documentId = documents[docIndex]._id;
+  //   // const schemaName = schemas[selectedSchema].name;
+  //   // dispatch(asyncDeleteSchemaDocument({ schemaName, documentId }));
+  //   handleCloseDeleteConfirmationDialog();
+  // };
 
   const handleCreateDocument = (schemaName: string, document: any) => {
     dispatch(asyncCreateSchemaDocument({ schemaName, document }));
-    setCreateDocument(false);
+    // setDocumentDialog(false);
   };
 
   const handleEditDocument = (schemaName: string, document: any) => {
-    const _id = selectedDocument?._id;
-    dispatch(asyncEditSchemaDocument({ schemaName, documentId: _id, documentData: document }));
-    setCreateDocument(false);
+    // const params = {
+    //   schemaName: schemaName,
+    //   documentId: document._id,
+    //   documentData: document,
+    // };
+    // dispatch(asyncEditSchemaDocument(params));
+    // setDocumentDialog(false);
   };
 
   return (
@@ -192,7 +233,7 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
               Refresh
             </Button>
             <Box style={{ width: 8 }} />
-            <Button variant="contained" color="primary" onClick={() => addNewDocument()}>
+            <Button variant="contained" color="primary" onClick={() => onCreateDocument()}>
               Add Document
             </Button>
           </Box>
@@ -209,14 +250,20 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
             <TabPanel>
               {documents.map((docs: any, index: number) => {
                 return (
-                  <SchemaDataCard documents={docs} className={classes.card} key={`card${index}`} />
+                  <SchemaDataCard
+                    documents={docs}
+                    className={classes.card}
+                    handleEdit={() => onEdit(index)}
+                    handleDelete={() => onDelete(index)}
+                    key={`card${index}`}
+                  />
                 );
               })}
             </TabPanel>
           ) : (
             <Box className={classes.emptyDocuments}>
               <p>No documents are available.</p>
-              <Button variant="contained" color="primary" onClick={() => addNewDocument()}>
+              <Button variant="contained" color="primary" onClick={() => onCreateDocument()}>
                 Add Document
               </Button>
             </Box>
@@ -224,42 +271,27 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
         </Box>
       </Box>
       <Dialog
-        open={createDocument}
-        onClose={() => handleCreateDialog(false)}
+        open={documentDialog.open}
+        onClose={handleCloseDialog}
         maxWidth={'md'}
         fullWidth={true}>
         <CreateDialog
           schema={schemas[selectedSchema]}
           handleCreate={handleCreateDocument}
           handleEdit={handleEditDocument}
-          handleCancel={() => handleCreateDialog(false)}
+          handleCancel={handleCloseDialog}
           editData={selectedDocument}
         />
       </Dialog>
-      <Dialog
-        fullWidth
-        maxWidth={'sm'}
-        open={deleteDialogOpen}
-        onClose={handleConfirmationDialogClose}>
-        <DialogTitle id="new-custom-type" style={{ marginBottom: 16 }}>
-          Delete document : {documents[docIndex]?._id}
-        </DialogTitle>
-        <DialogActions>
-          <Button
-            onClick={handleCloseDeleteConfirmationDialog}
-            variant="contained"
-            style={{ textTransform: 'none' }}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDelete}
-            className={classes.deleteButton}
-            variant="contained"
-            style={{ textTransform: 'none' }}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+        buttonText="Delete"
+        open={deleteDocumentDialog}
+        title="Delete document"
+        description={`You are about to
+        delete document with id:${selectedDocument?._id}`}
+        handleClose={handleCloseDeleteDialog}
+        buttonAction={handleDelete}
+      />
     </Container>
   );
 };

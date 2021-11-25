@@ -1,15 +1,19 @@
-import React, { FC, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import { KeyboardArrowDown } from '@material-ui/icons';
-import CardContent from '@material-ui/core/CardContent';
+import React, { FC, useEffect, useState } from 'react';
+import {
+  KeyboardArrowDown,
+  DeleteOutline,
+  ChevronRight,
+  ExpandMore,
+  EditOutlined,
+} from '@material-ui/icons';
 import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Card, { CardProps } from '@material-ui/core/Card';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
+import { Typography, Tooltip, CardContent, Box } from '@material-ui/core';
+
+const buttonDimensions = 18;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,6 +23,12 @@ const useStyles = makeStyles((theme) => ({
     '&:hover $arrow': {
       display: 'block',
     },
+    '& $actionContainer': {
+      display: 'none',
+    },
+    '&:hover $actionContainer': {
+      display: 'flex',
+    },
   },
   tree: {
     flexGrow: 1,
@@ -27,18 +37,39 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
   },
   arrow: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    background: theme.palette.grey[600],
     position: 'absolute',
     left: theme.spacing(1),
     top: theme.spacing(2),
-    borderRadius: theme.spacing(0.5),
     transform: 'rotate(-90deg)',
-    cursor: 'pointer',
   },
   arrowExpanded: {
     transform: 'rotate(0)',
+  },
+  actionContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(2),
+    zIndex: 1,
+  },
+  buttonContainer: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+    background: theme.palette.grey[600],
+    borderRadius: theme.spacing(0.5),
+    cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  marginRight: {
+    marginRight: theme.spacing(1),
+  },
+  actionButton: {
+    height: buttonDimensions,
+    width: buttonDimensions,
   },
 }));
 
@@ -77,13 +108,19 @@ const createDocumentArray = (document: any) => {
 
 interface Props extends CardProps {
   documents: any;
+  handleEdit: () => void;
+  handleDelete: () => void;
 }
 
-const SchemaDataCard: FC<Props> = ({ documents, className, ...rest }) => {
+const SchemaDataCard: FC<Props> = ({ documents, handleEdit, handleDelete, className, ...rest }) => {
   const classes = useStyles();
 
   const [expandable, setExpandable] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
+
+  useEffect(() => {
+    setExpandable([]);
+  }, [documents]);
 
   const handleToggle = (nodeIds: string[]) => {
     setExpanded(nodeIds);
@@ -98,8 +135,9 @@ const SchemaDataCard: FC<Props> = ({ documents, className, ...rest }) => {
   };
 
   const renderTree = (document: Document) => {
-    const isArray = Array.isArray(document.data);
-    const isObject = typeof document.data !== 'string' && Object.keys(document.data).length > 0;
+    const isArray = document.data && Array.isArray(document.data);
+    const isObject =
+      document.data && typeof document.data !== 'string' && Object.keys(document.data).length > 0;
 
     if ((isArray || isObject) && !expandable.includes(document.id)) {
       setExpandable((prevState) => [...prevState, document.id]);
@@ -129,11 +167,26 @@ const SchemaDataCard: FC<Props> = ({ documents, className, ...rest }) => {
         <Box
           className={
             expanded.length < 1 ? classes.arrow : clsx(classes.arrow, classes.arrowExpanded)
-          }
-          onClick={() => handleExpandAll()}>
-          <KeyboardArrowDown />
+          }>
+          <Box className={classes.buttonContainer} onClick={() => handleExpandAll()}>
+            <KeyboardArrowDown />
+          </Box>
         </Box>
       )}
+      <Box className={classes.actionContainer}>
+        <Tooltip title="Edit document">
+          <Box
+            className={clsx(classes.buttonContainer, classes.marginRight)}
+            onClick={() => handleEdit()}>
+            <EditOutlined className={classes.actionButton} />
+          </Box>
+        </Tooltip>
+        <Tooltip title="Delete document">
+          <Box className={classes.buttonContainer} onClick={() => handleDelete()}>
+            <DeleteOutline className={classes.actionButton} />
+          </Box>
+        </Tooltip>
+      </Box>
       <CardContent>
         {createDocumentArray(documents).map((document, index) => {
           return (
@@ -142,9 +195,9 @@ const SchemaDataCard: FC<Props> = ({ documents, className, ...rest }) => {
               className={classes.tree}
               disableSelection
               expanded={expanded}
-              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultCollapseIcon={<ExpandMore />}
               defaultExpanded={['root']}
-              defaultExpandIcon={<ChevronRightIcon />}
+              defaultExpandIcon={<ChevronRight />}
               onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
               {renderTree(document)}
             </TreeView>
