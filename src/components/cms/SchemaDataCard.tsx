@@ -12,6 +12,14 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    '& $arrow': {
+      display: 'none',
+    },
+    '&:hover $arrow': {
+      display: 'block',
+    },
+  },
   tree: {
     flexGrow: 1,
   },
@@ -71,7 +79,7 @@ interface Props extends CardProps {
   documents: any;
 }
 
-const SchemaDataCard: FC<Props> = ({ documents, ...rest }) => {
+const SchemaDataCard: FC<Props> = ({ documents, className, ...rest }) => {
   const classes = useStyles();
 
   const [expandable, setExpandable] = useState<string[]>([]);
@@ -113,12 +121,19 @@ const SchemaDataCard: FC<Props> = ({ documents, ...rest }) => {
   };
 
   return (
-    <Card variant={'outlined'} {...rest}>
-      <Box
-        className={expanded.length < 1 ? classes.arrow : clsx(classes.arrow, classes.arrowExpanded)}
-        onClick={() => handleExpandAll()}>
-        <KeyboardArrowDown />
-      </Box>
+    <Card
+      className={expanded.length < 1 ? clsx(classes.root, className) : className}
+      variant={'outlined'}
+      {...rest}>
+      {expandable.length > 0 && (
+        <Box
+          className={
+            expanded.length < 1 ? classes.arrow : clsx(classes.arrow, classes.arrowExpanded)
+          }
+          onClick={() => handleExpandAll()}>
+          <KeyboardArrowDown />
+        </Box>
+      )}
       <CardContent>
         {createDocumentArray(documents).map((document, index) => {
           return (
