@@ -2,6 +2,7 @@ import { Box, Button, Divider, List, ListItem, ListItemText } from '@material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import React, { FC } from 'react';
+import OperationsEnum from '../../../models/OperationsEnum';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -65,6 +66,21 @@ const SideList: FC<Props> = ({
 }) => {
   const classes = useStyles();
 
+  const getOperation = (endpoint: any) => {
+    if (endpoint.operation === OperationsEnum.POST) {
+      return 'POST';
+    }
+    if (endpoint.operation === OperationsEnum.PUT) {
+      return 'PUT';
+    }
+    if (endpoint.operation === OperationsEnum.DELETE) {
+      return 'DELETE';
+    }
+    if (endpoint.operation === OperationsEnum.GET) {
+      return 'GET';
+    }
+  };
+
   return (
     <Box className={classes.listBox}>
       <Button
@@ -85,6 +101,7 @@ const SideList: FC<Props> = ({
             onClick={() => handleListItemSelect(endpoint)}
             selected={selectedEndpoint?._id === endpoint?._id}>
             <ListItemText primary={endpoint.name} />
+            <Button disabled>{getOperation(endpoint)}</Button>
           </ListItem>
         ))}
       </List>

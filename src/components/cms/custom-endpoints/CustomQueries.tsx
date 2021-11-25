@@ -333,7 +333,7 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
   return (
     <Box className={classes.root}>
       <Grid container spacing={2} className={classes.grid}>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <SideList
             endpoints={customEndpoints}
             selectedEndpoint={selectedEndpoint}
@@ -341,7 +341,7 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
             handleListItemSelect={handleListItemSelect}
           />
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           {renderMainContent()}
         </Grid>
       </Grid>
