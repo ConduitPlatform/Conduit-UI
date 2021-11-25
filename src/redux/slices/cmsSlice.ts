@@ -412,9 +412,9 @@ const cmsSlice = createSlice({
       state.data.schemas.schemasCount = state.data.schemas.schemasCount - action.payload.ids.length;
     });
     builder.addCase(asyncDeleteSelectedSchemas.fulfilled, (state, action) => {
-      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter((schema) => {
-        !action.payload.includes(schema._id);
-      });
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
+        (schema) => !action.payload.includes(schema._id)
+      );
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
       state.data.documents = action.payload;
