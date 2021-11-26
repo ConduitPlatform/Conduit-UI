@@ -6,6 +6,8 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import Paginator from '../common/Paginator';
 import { BoxProps } from '@material-ui/core/Box/Box';
 import { makeStyles } from '@material-ui/core/styles';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles((theme) => ({
   topContainer: {
@@ -25,16 +27,76 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props extends BoxProps {
-  onCreateDocument: () => void;
+interface Filters {
+  page: number;
+  skip: number;
+  limit: number;
 }
 
-const SchemaDataHeader: FC<Props> = ({ onCreateDocument, ...rest }) => {
+interface Props extends BoxProps {
+  onCreateDocument: () => void;
+  filters: Filters;
+  setFilters: (data: Filters) => void;
+  search: string;
+  setSearch: (value: string) => void;
+  count: number;
+}
+
+const SchemaDataHeader: FC<Props> = ({
+  onCreateDocument,
+  filters,
+  setFilters,
+  search,
+  setSearch,
+  count,
+  ...rest
+}) => {
   const classes = useStyles();
+
+  const handleLimitChange = (value: number) => {
+    setFilters({
+      ...filters,
+      limit: value,
+      skip: 0,
+      page: 0,
+    });
+  };
+
+  const handlePageChange = (value: number) => {
+    if (value > filters.page) {
+      setFilters({
+        ...filters,
+        page: filters.page + 1,
+        skip: filters.skip + filters.limit,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        page: filters.page - 1,
+        skip: filters.skip - filters.limit,
+      });
+    }
+  };
+
   return (
     <Box {...rest}>
       <Box className={classes.topContainer}>
-        <TextField label="Search" variant="outlined" className={classes.searchInput} />
+        <TextField
+          size="small"
+          variant="outlined"
+          className={classes.searchInput}
+          name="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          label="search"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
         <Box className={classes.divider} />
         <Button variant="contained" color="secondary" onClick={() => console.log('refresh')}>
           <RefreshIcon />
@@ -46,11 +108,11 @@ const SchemaDataHeader: FC<Props> = ({ onCreateDocument, ...rest }) => {
         </Button>
       </Box>
       <Paginator
-        handlePageChange={() => console.log('handlePageChange')}
-        limit={25}
-        handleLimitChange={() => console.log('handleLimitChange')}
-        page={0}
-        count={5}
+        handlePageChange={(event, value) => handlePageChange(value)}
+        limit={filters.limit}
+        handleLimitChange={handleLimitChange}
+        page={filters.page}
+        count={count}
         className={classes.paginator}
       />
     </Box>

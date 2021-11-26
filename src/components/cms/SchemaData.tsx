@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import CreateDialog from './DocumentCreateDialog';
@@ -10,6 +10,7 @@ import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
   asyncEditSchemaDocument,
+  asyncGetSchemaDocuments,
 } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -17,6 +18,7 @@ import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import SchemaDataHeader from './SchemaDataHeader';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
+import useDebounce from '../../hooks/useDebounce';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,6 +51,12 @@ const TabPanel: FC = ({ children }) => {
   return <Box className={classes.cardContainer}>{children}</Box>;
 };
 
+interface Filters {
+  page: number;
+  skip: number;
+  limit: number;
+}
+
 interface DocumentDialog {
   open: boolean;
   type: 'create' | 'edit';
@@ -56,7 +64,6 @@ interface DocumentDialog {
 
 interface Props {
   schemas: Schema[];
-  handleSchemaChange: any;
 }
 
 const initialDocumentDialogState: DocumentDialog = {
@@ -64,21 +71,43 @@ const initialDocumentDialogState: DocumentDialog = {
   type: 'create',
 };
 
-const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
+const SchemaData: FC<Props> = ({ schemas }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const { documents } = useAppSelector((state) => state.cmsSlice?.data.documents);
+  const { documents, documentsCount } = useAppSelector((state) => state.cmsSlice.data.documents);
 
   const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);
   const [documentDialog, setDocumentDialog] = useState<DocumentDialog>(initialDocumentDialogState);
 
+  const [filters, setFilters] = useState<Filters>({
+    page: 0,
+    skip: 0,
+    limit: 10,
+  });
+  const [search, setSearch] = useState<string>('');
+
+  const debouncedSearch: string = useDebounce(search, 500);
+
+  const getSchemaDocuments = useCallback(() => {
+    if (schemas.length < 1) return;
+    const params = {
+      name: schemas[selectedSchema]?.name,
+      skip: filters.skip,
+      limit: filters.limit,
+      search: debouncedSearch,
+    };
+    dispatch(asyncGetSchemaDocuments(params));
+  }, [debouncedSearch, dispatch, filters.limit, filters.skip, schemas, selectedSchema]);
+
+  useEffect(() => {
+    getSchemaDocuments();
+  }, [getSchemaDocuments]);
+
   const handleChange = (value: number) => {
     setSelectedSchema(value);
-    const name = schemas[value].name;
-    handleSchemaChange(name);
   };
 
   const onEdit = (index: number) => {
@@ -151,7 +180,14 @@ const SchemaData: FC<Props> = ({ schemas, handleSchemaChange }) => {
           })}
         </Tabs>
         <Box style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-          <SchemaDataHeader onCreateDocument={onCreateDocument} />
+          <SchemaDataHeader
+            onCreateDocument={onCreateDocument}
+            filters={filters}
+            setFilters={setFilters}
+            search={search}
+            setSearch={setSearch}
+            count={documentsCount}
+          />
           {documents.length > 0 ? (
             <TabPanel>
               {documents.map((docs: any, index: number) => {

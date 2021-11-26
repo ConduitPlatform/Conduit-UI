@@ -161,32 +161,13 @@ export const asyncDeleteSelectedSchema = createAsyncThunk<string, { _id: string 
   }
 );
 
-export const asyncGetSchemaDocuments = createAsyncThunk<any, string>(
+export const asyncGetSchemaDocuments = createAsyncThunk(
   'cms/getDocs',
-  async (name, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
+  async (params: { name: string; skip: number; limit: number; search?: string }, thunkAPI) => {
     try {
-      const { data } = await getCmsDocumentsByNameRequest(name);
-      thunkAPI.dispatch(setAppDefaults());
+      const { data } = await getCmsDocumentsByNameRequest(params);
       return data;
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncGetMoreSchemaDocuments = createAsyncThunk<any, { name: string; skip: number }>(
-  'cms/getMoreDocs',
-  async (params, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const { data } = await getCmsDocumentsByNameRequest(params.name, params.skip, 20);
-      thunkAPI.dispatch(setAppDefaults());
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -219,7 +200,7 @@ export const asyncCreateSchemaDocument = createAsyncThunk<
       body.inputDocument = { ...body.inputDocument, ...field };
     });
     await createSchemaDocumentRequest(params.schemaName, body);
-    thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
+    // thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
     return;
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
@@ -235,7 +216,7 @@ export const asyncDeleteSchemaDocument = createAsyncThunk<
   thunkAPI.dispatch(setAppLoading(true));
   try {
     await deleteSchemaDocumentRequest(params.schemaName, params.documentId);
-    thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
+    // thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
     thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -260,7 +241,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
       });
 
       await editSchemaDocumentRequest(params.schemaName, params.documentId, body);
-      thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
+      // thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
       return params.schemaName;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -413,9 +394,6 @@ const cmsSlice = createSlice({
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
       state.data.documents = action.payload;
-    });
-    builder.addCase(asyncGetMoreSchemaDocuments.fulfilled, (state, action) => {
-      state.data.documents.documents.push(...action.payload.documents);
     });
     builder.addCase(asyncGetCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints = action.payload;

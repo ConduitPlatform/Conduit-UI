@@ -19,8 +19,12 @@ export const deleteCmsSchemaRequest = (_id: string) =>
 export const toggleSchemaByIdRequest = (_id: string) =>
   axios.put(`${CONDUIT_API}/admin/cms/schemas/toggle/${_id}`);
 
-export const getCmsDocumentsByNameRequest = (name: string, skip = 0, limit = 10) =>
-  axios.get(`${CONDUIT_API}/admin/cms/content/${name}`, { params: { skip, limit } });
+export const getCmsDocumentsByNameRequest = (params: {
+  name: string;
+  skip: number;
+  limit: number;
+  search?: string;
+}) => axios.get(`${CONDUIT_API}/admin/cms/content/${params.name}`, { params: params });
 
 export const schemasFromOtherModules = () => {
   return axios.get(`${CONDUIT_API}/admin/cms/schemasFromOtherModules`);
