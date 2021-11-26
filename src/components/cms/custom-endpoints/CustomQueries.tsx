@@ -171,14 +171,16 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
   };
 
   const handleSubmit = (edit = false) => {
-    const schema = schemaDocuments.find((schema: Schema) => schema._id === endpoint.selectedSchema);
+    const schemaToSubmit = schemaDocuments.find(
+      (schemaDocument: Schema) => schemaDocument._id === endpoint.selectedSchema
+    );
 
     const query = prepareQuery(endpoint.queries);
 
     const data = {
       name: endpoint.name,
       operation: Number(endpoint.operation),
-      selectedSchema: schema?._id,
+      selectedSchema: schemaToSubmit?._id,
       authentication: endpoint.authentication,
       paginated: endpoint.paginated,
       sorted: endpoint.sorted,
