@@ -6,6 +6,7 @@ import {
   Grid,
   IconButton,
   InputLabel,
+  MenuItem,
   Select,
   TextField,
   Typography,
@@ -89,6 +90,7 @@ const EndpointInputs: FC<Props> = ({
       </Grid>
       <Grid item xs={3}>
         <TextField
+          variant="outlined"
           placeholder={'Input name'}
           fullWidth
           disabled={!editMode}
@@ -97,36 +99,35 @@ const EndpointInputs: FC<Props> = ({
         />
       </Grid>
       <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel>Type</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            value={input.type}
-            onChange={(event) => handleInputTypeChange(event, index)}>
-            <option aria-label="None" value="" />
-            <option value={'String'}>String</option>
-            <option value={'Number'}>Number</option>
-            <option value={'Boolean'}>Boolean</option>
-            <option value={'ObjectId'}>ObjectId</option>
-            <option value={'Date'}>Date</option>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Select Operation'}
+          variant="outlined"
+          fullWidth
+          value={input.type}
+          disabled={!editMode}
+          onChange={(event) => handleInputTypeChange(event, index)}>
+          <MenuItem value={'String'}>String</MenuItem>
+          <MenuItem value={'Number'}>Number</MenuItem>
+          <MenuItem value={'Boolean'}>Boolean</MenuItem>
+          <MenuItem value={'ObjectId'}>ObjectId</MenuItem>
+          <MenuItem value={'Date'}>Date</MenuItem>
+        </TextField>
       </Grid>
       <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel>Location</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            value={input.location}
-            onChange={(event) => handleInputLocationChange(event, index)}>
-            <option aria-label="None" value="" />
-            <option value={InputLocationEnum.QUERY_PARAMS}>Query params</option>
-            <option value={InputLocationEnum.BODY}>Body</option>
-            <option value={InputLocationEnum.URL_PARAMS}>URL</option>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Location'}
+          variant="outlined"
+          fullWidth
+          value={input.location}
+          disabled={!editMode}
+          onChange={(event) => handleInputLocationChange(event, index)}>
+          <MenuItem aria-label="None" value="" />
+          <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Boolean</MenuItem>
+          <MenuItem value={InputLocationEnum.BODY}>ObjectId</MenuItem>
+          <MenuItem value={InputLocationEnum.URL_PARAMS}>Date</MenuItem>
+        </TextField>
       </Grid>
       <Grid item xs={1} />
       <Grid container item xs={2}>
