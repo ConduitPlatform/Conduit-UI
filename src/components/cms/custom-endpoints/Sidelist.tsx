@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'white',
   },
   getBadge: {
-    backgroundColor: theme.palette.info.main,
+    backgroundColor: '#61affe',
     color: 'white',
     padding: theme.spacing(0.5),
     width: '65px',
@@ -52,7 +52,15 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   putBadge: {
-    backgroundColor: theme.palette.warning.main,
+    backgroundColor: '#fca130',
+    color: 'white',
+    padding: theme.spacing(0.5),
+    width: '65px',
+    textAlign: 'center',
+    marginRight: theme.spacing(1),
+  },
+  patchBadge: {
+    backgroundColor: '#50e3c2',
     color: 'white',
     padding: theme.spacing(0.5),
     width: '65px',
@@ -60,14 +68,14 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   postBadge: {
-    backgroundColor: theme.palette.success.main,
+    backgroundColor: '#49cc90',
     padding: theme.spacing(0.5),
     width: '65px',
     textAlign: 'center',
     marginRight: theme.spacing(1),
   },
   deleteBadge: {
-    backgroundColor: theme.palette.error.main,
+    backgroundColor: '#f93e3e',
     padding: theme.spacing(0.5),
     width: '65px',
     textAlign: 'center',
