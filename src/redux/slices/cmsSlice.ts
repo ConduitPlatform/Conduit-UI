@@ -387,7 +387,10 @@ const cmsSlice = createSlice({
   initialState,
   reducers: {
     setSelectedSchema(state, action) {
-      state.data.selectedSchema = findSchemaById(action.payload, state.data.schemas);
+      state.data.selectedSchema = findSchemaById(
+        action.payload,
+        state.data.schemas.schemaDocuments
+      );
     },
     clearSelectedSchema(state) {
       state.data.selectedSchema = null;

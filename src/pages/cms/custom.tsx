@@ -15,7 +15,7 @@ const Custom = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas(50));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50 }));
     dispatch(asyncGetCustomEndpoints(''));
   }, [dispatch]);
 

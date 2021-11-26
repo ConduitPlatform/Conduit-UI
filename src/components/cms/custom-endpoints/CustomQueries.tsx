@@ -71,13 +71,16 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
 
-  const { schemas, customEndpoints } = useAppSelector((state) => state.cmsSlice.data);
+  const {
+    schemas: { schemaDocuments },
+    customEndpoints,
+  } = useAppSelector((state) => state.cmsSlice.data);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   const initializeData = useCallback(() => {
     if (selectedEndpoint) {
-      const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemas);
+      const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemaDocuments);
       let inputs = [];
       const queryGroup: any = [];
       let assignments = [];
@@ -148,7 +151,7 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
       );
       dispatch(setSchemaFields(fieldsWithTypes));
     }
-  }, [dispatch, schemas, selectedEndpoint]);
+  }, [dispatch, schemaDocuments, selectedEndpoint]);
 
   useEffect(() => {
     initializeData();
@@ -168,7 +171,7 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
   };
 
   const handleSubmit = (edit = false) => {
-    const schema = schemas.find((schema: Schema) => schema._id === endpoint.selectedSchema);
+    const schema = schemaDocuments.find((schema: Schema) => schema._id === endpoint.selectedSchema);
 
     const query = prepareQuery(endpoint.queries);
 
@@ -321,7 +324,11 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
                 </IconButton>
               )}
             </Grid>
-            <OperationSection schemas={schemas} editMode={editMode} availableSchemas={schemas} />
+            <OperationSection
+              schemas={schemaDocuments}
+              editMode={editMode}
+              availableSchemas={schemaDocuments}
+            />
             {renderDetails()}
             {renderSaveSection()}
           </Grid>
