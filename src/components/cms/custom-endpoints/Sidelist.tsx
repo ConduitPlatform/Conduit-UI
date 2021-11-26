@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import {
   Box,
-  Button,
   Divider,
   Grid,
   List,
@@ -14,6 +13,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Paper,
+  ListItemIcon,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -45,16 +46,32 @@ const useStyles = makeStyles((theme) => ({
   getBadge: {
     backgroundColor: theme.palette.info.main,
     color: 'white',
+    padding: theme.spacing(0.5),
+    width: '65px',
+    textAlign: 'center',
+    marginRight: theme.spacing(1),
   },
   putBadge: {
     backgroundColor: theme.palette.warning.main,
     color: 'white',
+    padding: theme.spacing(0.5),
+    width: '65px',
+    textAlign: 'center',
+    marginRight: theme.spacing(1),
   },
   postBadge: {
     backgroundColor: theme.palette.success.main,
+    padding: theme.spacing(0.5),
+    width: '65px',
+    textAlign: 'center',
+    marginRight: theme.spacing(1),
   },
   deleteBadge: {
     backgroundColor: theme.palette.error.main,
+    padding: theme.spacing(0.5),
+    width: '65px',
+    textAlign: 'center',
+    marginRight: theme.spacing(1),
   },
   list: {
     '&.MuiList-root': {
@@ -139,8 +156,6 @@ const SideList: FC<Props> = ({
           <TextField
             variant="outlined"
             name="Search"
-            // value={search}
-            // onChange={(e) => setSearch(e.target.value)}
             label="Find endpoint"
             InputProps={{
               startAdornment: (
@@ -154,11 +169,7 @@ const SideList: FC<Props> = ({
         <Grid item sm={6}>
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Operation</InputLabel>
-            <Select
-              label="Provider"
-              // value={filter}
-              // onChange={(event) => handleFilterChange(event.target.value)}
-            >
+            <Select label="Provider">
               <MenuItem value="">
                 <em>All</em>
               </MenuItem>
@@ -184,10 +195,12 @@ const SideList: FC<Props> = ({
             className={classes.listItem}
             onClick={() => handleListItemSelect(endpoint)}
             selected={selectedEndpoint?._id === endpoint?._id}>
+            <ListItemIcon>
+              <Paper elevation={12} className={getBadgeColor(endpoint)}>
+                {getOperation(endpoint)}
+              </Paper>
+            </ListItemIcon>
             <ListItemText primary={endpoint.name} />
-            <Button classes={{ root: classes.button, disabled: getBadgeColor(endpoint) }} disabled>
-              {getOperation(endpoint)}
-            </Button>
           </ListItem>
         ))}
       </List>

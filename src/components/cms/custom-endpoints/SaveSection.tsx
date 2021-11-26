@@ -20,13 +20,13 @@ const SaveSection: FC<Props> = ({
 }) => {
   return (
     <Grid container justifyContent="flex-end" spacing={1} style={{ paddingTop: '30px' }}>
-      <Grid item xs={4} md={2}>
+      <Grid item xs={3} md={1}>
         <Button variant="contained" color="secondary" onClick={handleCancelClick}>
           Cancel
         </Button>
       </Grid>
 
-      <Grid item xs={4} md={2}>
+      <Grid item xs={3} md={1}>
         <Button
           disabled={disableSubmit}
           variant="contained"
