@@ -117,6 +117,10 @@ interface Props {
   selectedEndpoint: any;
   handleAddNewEndpoint: () => void;
   handleListItemSelect: (endpoint: any) => void;
+  search: string;
+  setSearch: (search: string) => void;
+  operation: number;
+  setOperation: (operation: number) => void;
 }
 
 const SideList: FC<Props> = ({
@@ -124,6 +128,10 @@ const SideList: FC<Props> = ({
   selectedEndpoint,
   handleAddNewEndpoint,
   handleListItemSelect,
+  search,
+  setSearch,
+  operation,
+  setOperation,
 }) => {
   const classes = useStyles();
 
@@ -165,6 +173,8 @@ const SideList: FC<Props> = ({
             variant="outlined"
             name="Search"
             label="Find endpoint"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -177,14 +187,17 @@ const SideList: FC<Props> = ({
         <Grid item sm={6}>
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel>Operation</InputLabel>
-            <Select label="Provider">
+            <Select
+              label="Provider"
+              value={operation}
+              onChange={(event) => setOperation(event.target.value as number)}>
               <MenuItem value="">
                 <em>All</em>
               </MenuItem>
-              <MenuItem value="local">GET</MenuItem>
-              <MenuItem value="google">POST</MenuItem>
-              <MenuItem value="facebook">PUT</MenuItem>
-              <MenuItem value="twitch">DELETE</MenuItem>
+              <MenuItem value={0}>GET</MenuItem>
+              <MenuItem value={1}>POST</MenuItem>
+              <MenuItem value={2}>PUT</MenuItem>
+              <MenuItem value={3}>DELETE</MenuItem>
             </Select>
           </FormControl>
         </Grid>

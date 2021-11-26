@@ -23,6 +23,7 @@ import { EndpointTypes, Schema, ToggleSchma } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { Search } from '../../models/http/HttpModels';
 
 export interface ICmsSlice {
   data: {
@@ -270,12 +271,12 @@ export const asyncEditSchemaDocument = createAsyncThunk(
   }
 );
 
-export const asyncGetCustomEndpoints = createAsyncThunk<EndpointTypes[], any>(
+export const asyncGetCustomEndpoints = createAsyncThunk(
   'cms/getEndpoints',
-  async (arg, thunkAPI) => {
+  async (params: Search & { operation: number }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCustomEndpointsRequest();
+      const { data } = await getCustomEndpointsRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return data.results as EndpointTypes[];
     } catch (error) {
@@ -286,13 +287,13 @@ export const asyncGetCustomEndpoints = createAsyncThunk<EndpointTypes[], any>(
   }
 );
 
-export const asyncUpdateCustomEndpoints = createAsyncThunk<any, { _id: string; endpointData: any }>(
+export const asyncUpdateCustomEndpoints = createAsyncThunk(
   'cms/updateEndpoints',
-  async (params, thunkAPI) => {
+  async (params: { _id: string; endpointData: any; getEndpoints: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
-      thunkAPI.dispatch(asyncGetCustomEndpoints(''));
+      params.getEndpoints();
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -302,14 +303,13 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk<any, { _id: string; e
   }
 );
 
-export const asyncDeleteCustomEndpoints = createAsyncThunk<any, string>(
+export const asyncDeleteCustomEndpoints = createAsyncThunk(
   'cms/deleteEndpoints',
-  async (_id, thunkAPI) => {
+  async (params: { _id: string; getEndpoints: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await deleteCustomEndpointsRequest(_id);
-      thunkAPI.dispatch(asyncGetCustomEndpoints(''));
-
+      const { data } = await deleteCustomEndpointsRequest(params._id);
+      params.getEndpoints();
       return data.results;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -319,24 +319,24 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk<any, string>(
   }
 );
 
-export const asyncCreateCustomEndpoints = createAsyncThunk<any, any>(
+export const asyncCreateCustomEndpoints = createAsyncThunk(
   'cms/createEndpoints',
-  async (endPointData, thunkAPI) => {
+  async (params: { endpointData: any; getEndpoints: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const body = {
-        name: endPointData.name,
-        operation: endPointData.operation,
-        selectedSchema: endPointData.selectedSchema,
-        authentication: endPointData.authentication,
-        paginated: endPointData.paginated,
-        sorted: endPointData.sorted,
-        inputs: endPointData.inputs,
-        query: endPointData.query,
-        assignments: endPointData.assignments,
+        name: params.endpointData.name,
+        operation: params.endpointData.operation,
+        selectedSchema: params.endpointData.selectedSchema,
+        authentication: params.endpointData.authentication,
+        paginated: params.endpointData.paginated,
+        sorted: params.endpointData.sorted,
+        inputs: params.endpointData.inputs,
+        query: params.endpointData.query,
+        assignments: params.endpointData.assignments,
       };
       await createCustomEndpointsRequest(body);
-      thunkAPI.dispatch(asyncGetCustomEndpoints(''));
+      params.getEndpoints();
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

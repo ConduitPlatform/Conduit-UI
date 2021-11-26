@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
 import {
@@ -10,33 +10,50 @@ import {
 } from '../../redux/slices/cmsSlice';
 
 import CustomQueries from '../../components/cms/custom-endpoints/CustomQueries';
+import useDebounce from '../../hooks/useDebounce';
 
 const Custom = () => {
   const dispatch = useAppDispatch();
+  const [search, setSearch] = useState<string>('');
+  const [operation, setOperation] = useState<number>(-5);
+
+  const debouncedSearch = useDebounce(search, 500);
 
   useEffect(() => {
     dispatch(asyncGetCmsSchemas(50));
-    dispatch(asyncGetCustomEndpoints(''));
-  }, [dispatch]);
+    dispatch(asyncGetCustomEndpoints({ search: debouncedSearch, operation: operation }));
+  }, [dispatch, debouncedSearch, operation]);
+
+  const getEndpointsCallback = useCallback(() => {
+    dispatch(asyncGetCustomEndpoints({ search, operation: operation }));
+  }, [dispatch, search, operation]);
 
   const handleCreateCustomEndpoint = (data: any) => {
     if (data) {
-      dispatch(asyncCreateCustomEndpoints(data));
+      dispatch(
+        asyncCreateCustomEndpoints({ endpointData: data, getEndpoints: getEndpointsCallback })
+      );
     }
   };
 
   const handleDeleteCustomEndpoint = (endpointId: string) => {
     if (endpointId) {
-      dispatch(asyncDeleteCustomEndpoints(endpointId));
+      dispatch(asyncDeleteCustomEndpoints({ _id: endpointId, getEndpoints: getEndpointsCallback }));
     }
   };
 
   const handleEditCustomEndpoint = (_id: string, data: any) => {
-    dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
+    dispatch(
+      asyncUpdateCustomEndpoints({ _id, endpointData: data, getEndpoints: getEndpointsCallback })
+    );
   };
 
   return (
     <CustomQueries
+      operation={operation}
+      setOperation={setOperation}
+      search={search}
+      setSearch={setSearch}
       handleCreate={handleCreateCustomEndpoint}
       handleEdit={handleEditCustomEndpoint}
       handleDelete={handleDeleteCustomEndpoint}

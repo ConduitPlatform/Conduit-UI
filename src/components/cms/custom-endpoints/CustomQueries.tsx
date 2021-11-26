@@ -58,9 +58,21 @@ interface Props {
   handleCreate: any;
   handleEdit: any;
   handleDelete: any;
+  search: string;
+  setSearch: (search: string) => void;
+  operation: number;
+  setOperation: (operation: number) => void;
 }
 
-const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) => {
+const CustomQueries: FC<Props> = ({
+  handleCreate,
+  handleEdit,
+  handleDelete,
+  search,
+  setSearch,
+  operation,
+  setOperation,
+}) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
@@ -334,6 +346,10 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
       <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={4}>
           <SideList
+            operation={operation}
+            setOperation={setOperation}
+            search={search}
+            setSearch={setSearch}
             endpoints={customEndpoints}
             selectedEndpoint={selectedEndpoint}
             handleAddNewEndpoint={handleAddNewEndpoint}
