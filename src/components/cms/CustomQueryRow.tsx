@@ -218,66 +218,54 @@ const CustomQueryRow: FC<Props> = ({
   return (
     <>
       <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel>Field of schema</InputLabel>
-          <Select
-            fullWidth
-            disabled={!editMode}
-            value={query.schemaField}
-            onChange={(event) => {
-              handleQueryFieldChange(event, index);
-            }}
-            MenuProps={{
-              anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'left',
-              },
-              transformOrigin: {
-                vertical: 'top',
-                horizontal: 'left',
-              },
-              getContentAnchorEl: null,
-            }}>
-            <option aria-label="None" value="" />
-            {prepareOptions()}
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Schema Field'}
+          variant="outlined"
+          fullWidth
+          value={query.schemaField}
+          disabled={!editMode}
+          onChange={(event) => {
+            handleQueryFieldChange(event, index);
+          }}>
+          <MenuItem aria-label="None" value="" />
+          {prepareOptions()}
+        </TextField>
       </Grid>
       <Grid item xs={3}>
-        <FormControl fullWidth>
-          <InputLabel>Operator</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            fullWidth
-            value={query.operation}
-            onChange={(event) => handleQueryConditionChange(event, index)}>
-            <option aria-label="None" value="" />
-            <option value={ConditionsEnum.EQUAL}>(==) equal to</option>
-            <option value={ConditionsEnum.NEQUAL}>(!=) not equal to</option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER}>
-              {'(>) greater than'}
-            </option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER_EQ}>
-              {'(>=) greater that or equal to'}
-            </option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.LESS}>
-              {'(<) less than'}
-            </option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.LESS_EQ}>
-              {'(<=) less that or equal to'}
-            </option>
-            <option disabled={selectedType !== 'array'} value={ConditionsEnum.EQUAL_SET}>
-              (in) equal to any of the following
-            </option>
-            <option disabled={selectedType !== 'array'} value={ConditionsEnum.NEQUAL_SET}>
-              (not-in) not equal to any of the following
-            </option>
-            <option disabled={selectedType !== 'array'} value={ConditionsEnum.CONTAIN}>
-              (array-contains) an array containing
-            </option>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label="Operator"
+          variant="outlined"
+          fullWidth
+          value={query.operation}
+          disabled={!editMode}
+          onChange={(event) => handleQueryConditionChange(event, index)}>
+          <MenuItem aria-label="None" value="" />
+          <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
+          <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
+          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER}>
+            {'(>) greater than'}
+          </MenuItem>
+          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER_EQ}>
+            {'(>=) greater that or equal to'}
+          </MenuItem>
+          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.LESS}>
+            {'(<) less than'}
+          </MenuItem>
+          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.LESS_EQ}>
+            {'(<=) less that or equal to'}
+          </MenuItem>
+          <MenuItem disabled={selectedType !== 'array'} value={ConditionsEnum.EQUAL_SET}>
+            (in) equal to any of the following
+          </MenuItem>
+          <MenuItem disabled={selectedType !== 'array'} value={ConditionsEnum.NEQUAL_SET}>
+            (not-in) not equal to any of the following
+          </MenuItem>
+          <MenuItem disabled={selectedType !== 'array'} value={ConditionsEnum.CONTAIN}>
+            (array-contains) an array containing
+          </MenuItem>
+        </TextField>
       </Grid>
       <Grid item xs={2}>
         <FormControl fullWidth>
@@ -285,6 +273,7 @@ const CustomQueryRow: FC<Props> = ({
           <Select
             fullWidth
             disabled={!editMode}
+            variant="outlined"
             native
             value={
               query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'

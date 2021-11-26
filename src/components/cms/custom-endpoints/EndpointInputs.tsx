@@ -124,9 +124,9 @@ const EndpointInputs: FC<Props> = ({
           disabled={!editMode}
           onChange={(event) => handleInputLocationChange(event, index)}>
           <MenuItem aria-label="None" value="" />
-          <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Boolean</MenuItem>
-          <MenuItem value={InputLocationEnum.BODY}>ObjectId</MenuItem>
-          <MenuItem value={InputLocationEnum.URL_PARAMS}>Date</MenuItem>
+          <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Query params</MenuItem>
+          <MenuItem value={InputLocationEnum.BODY}>Body</MenuItem>
+          <MenuItem value={InputLocationEnum.URL_PARAMS}>URL</MenuItem>
         </TextField>
       </Grid>
       <Grid item xs={1} />
