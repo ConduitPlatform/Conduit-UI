@@ -377,8 +377,8 @@ export const asyncFetchSchemasFromOtherModules = createAsyncThunk<any, any>(
   }
 );
 
-const findSchemaById = (_id: string, schemas: any) => {
-  const found = schemas.schemaDocuments.find((s: any) => s._id === _id);
+const findSchemaById = (_id: string, schemaDocuments: Schema[]) => {
+  const found = schemaDocuments.find((s) => s._id === _id);
   return found ? found : null;
 };
 
