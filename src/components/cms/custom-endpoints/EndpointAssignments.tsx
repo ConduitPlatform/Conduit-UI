@@ -1,4 +1,12 @@
-import { FormControl, Grid, IconButton, Select, TextField, Typography } from '@material-ui/core';
+import {
+  FormControl,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import React, { FC, Fragment, useCallback } from 'react';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
@@ -127,55 +135,56 @@ const EndpointAssignments: FC<Props> = ({
           <Typography>{index + 1}.</Typography>
         </Grid>
         <Grid item xs={3}>
-          <FormControl>
-            <Select
-              fullWidth
-              disabled={!editMode}
-              native
-              value={assignment.schemaField}
-              onChange={(event) => handleAssignmentFieldChange(event, index)}>
-              <option aria-label="None" value="" />
-              {availableFieldsOfSchema.map((field: any, index: number) => (
-                <option key={`idx-${index}-field`} value={field.name}>
-                  {field.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            select
+            label={'Schema Field'}
+            variant="outlined"
+            fullWidth
+            value={assignment.schemaField}
+            disabled={!editMode}
+            onChange={(event) => handleAssignmentFieldChange(event, index)}>
+            <MenuItem aria-label="None" value="" />
+            {availableFieldsOfSchema.map((field: any, index: number) => (
+              <MenuItem key={`idx-${index}-field`} value={field.name}>
+                {field.name}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
         <Grid item xs={3}>
-          <FormControl>
-            <Select
-              disabled={!editMode}
-              native
-              fullWidth
-              value={assignment.action}
-              onChange={(event) => handleAssignmentActionChange(event, index)}>
-              <option aria-label="None" value="" />
-              <option value={ActionTypes.SET}>SET</option>
-              <option
-                disabled={!isNumberType(assignment.schemaField)}
-                value={ActionTypes.INCREMENT}>
-                INCREMENT
-              </option>
-              <option
-                disabled={!isNumberType(assignment.schemaField)}
-                value={ActionTypes.DECREMENT}>
-                DECREMENT
-              </option>
-              <option disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.APPEND}>
-                APPEND
-              </option>
-              <option disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.REMOVE}>
-                REMOVE
-              </option>
-            </Select>
-          </FormControl>
+          <TextField
+            select
+            label={'Actions'}
+            variant="outlined"
+            fullWidth
+            value={assignment.action}
+            disabled={!editMode}
+            onChange={(event) => handleAssignmentActionChange(event, index)}>
+            <MenuItem aria-label="None" value="" />
+            <MenuItem value={ActionTypes.SET}>SET</MenuItem>
+            <MenuItem
+              disabled={!isNumberType(assignment.schemaField)}
+              value={ActionTypes.INCREMENT}>
+              INCREMENT
+            </MenuItem>
+            <MenuItem
+              disabled={!isNumberType(assignment.schemaField)}
+              value={ActionTypes.DECREMENT}>
+              DECREMENT
+            </MenuItem>
+            <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.APPEND}>
+              APPEND
+            </MenuItem>
+            <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.REMOVE}>
+              REMOVE
+            </MenuItem>
+          </TextField>
         </Grid>
         <Grid item xs={2}>
           <FormControl>
             <Select
               fullWidth
+              variant="outlined"
               disabled={!editMode}
               native
               value={

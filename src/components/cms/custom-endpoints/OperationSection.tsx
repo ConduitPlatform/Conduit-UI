@@ -3,10 +3,10 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  FormGroup,
+  FormLabel,
   Grid,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,7 +19,6 @@ import { Assignment } from '../../../models/customEndpoints/customEndpointsModel
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(1),
     minWidth: 180,
   },
   divider: {
@@ -28,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
       background: '#000000',
       borderRadius: '4px',
     },
+  },
+  alignOptions: {
+    marginBottom: theme.spacing(-3),
   },
 }));
 
@@ -98,9 +100,11 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
 
   return (
     <>
+      <Grid item xs={1} />
       <Grid item xs={3}>
         <TextField
           select
+          fullWidth
           label={'Select Operation'}
           variant="outlined"
           className={classes.formControl}
@@ -114,7 +118,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
         </TextField>
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         <TextField
           select
           label={'Select Schema'}
@@ -130,52 +134,54 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           ))}
         </TextField>
       </Grid>
-      <Grid item xs={endpoint.operation === OperationsEnum.GET ? 2 : 4}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              disabled={!editMode}
-              color={'primary'}
-              checked={endpoint.authentication}
-              onChange={handleAuthenticationChange}
-              name="authentication"
-            />
-          }
-          label="Authenticated"
-        />
+      <Grid item xs={1} />
+      <Grid item xs={2} className={classes.alignOptions}>
+        <FormControl>
+          <FormLabel>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    disabled={!editMode}
+                    color={'primary'}
+                    checked={endpoint.authentication}
+                    onChange={handleAuthenticationChange}
+                    name="authentication"
+                  />
+                }
+                label="Authenticated"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                    color={'primary'}
+                    checked={endpoint.paginated}
+                    onChange={handlePaginatedChange}
+                    name="paginated"
+                  />
+                }
+                label="Paginated"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                    color={'primary'}
+                    checked={endpoint.sorted}
+                    onChange={handleSortedChange}
+                    name="sorted"
+                  />
+                }
+                label="Sorted"
+              />
+            </FormGroup>
+          </FormLabel>
+        </FormControl>
       </Grid>
-      {endpoint.operation === OperationsEnum.GET && (
-        <Grid item xs={2}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                disabled={!editMode}
-                color={'primary'}
-                checked={endpoint.paginated}
-                onChange={handlePaginatedChange}
-                name="paginated"
-              />
-            }
-            label="Paginated"
-          />
-        </Grid>
-      )}
-      {endpoint.operation === OperationsEnum.GET && (
-        <Grid item xs={2}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                disabled={!editMode}
-                color={'primary'}
-                checked={endpoint.sorted}
-                onChange={handleSortedChange}
-                name="sorted"
-              />
-            }
-            label="Sorted"
-          />
-        </Grid>
-      )}
     </>
   );
 };

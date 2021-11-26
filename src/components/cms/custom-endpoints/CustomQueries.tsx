@@ -52,9 +52,6 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
-  textField: {
-    width: '245px',
-  },
 }));
 
 interface Props {
@@ -299,16 +296,18 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
       return (
         <Box>
           <Grid container spacing={2} alignItems="flex-end">
-            <Grid item xs={7}>
+            <Grid item xs={1} />
+            <Grid item xs={5}>
               <TextField
                 disabled={!editMode}
+                fullWidth
                 variant={'outlined'}
-                className={classes.textField}
                 label={'Name'}
                 value={endpoint.name}
                 onChange={handleNameChange}
               />
             </Grid>
+            <Grid item xs={1} />
             <Grid item xs={5} style={{ textAlign: 'end' }}>
               {!editMode && (
                 <IconButton aria-label="delete" onClick={handleDeleteClick}>

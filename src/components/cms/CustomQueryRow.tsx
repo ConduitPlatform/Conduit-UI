@@ -32,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  alignment: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 interface Props {
@@ -324,9 +329,8 @@ const CustomQueryRow: FC<Props> = ({
               label={
                 query.comparisonField.type === 'Custom' ? 'Custom value' : 'Select from context'
               }
-              variant={'filled'}
+              variant={'outlined'}
               disabled={!editMode}
-              size={'small'}
               fullWidth
               placeholder={
                 query.comparisonField.type === 'Custom' ? getCustomPlaceHolder() : 'ex. user._id'
@@ -339,7 +343,7 @@ const CustomQueryRow: FC<Props> = ({
       ) : (
         <Grid item xs={2} />
       )}
-      <Grid item xs={2}>
+      <Grid item className={classes.alignment} xs={2}>
         <FormControlLabel
           control={
             <Checkbox
@@ -354,7 +358,7 @@ const CustomQueryRow: FC<Props> = ({
           label="Like"
         />
       </Grid>
-      <Grid item xs={1}>
+      <Grid item className={classes.alignment} xs={1}>
         <IconButton disabled={!editMode} size="small" onClick={handleRemoveQuery}>
           <RemoveCircleOutlineIcon />
         </IconButton>

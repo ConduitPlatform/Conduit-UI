@@ -126,7 +126,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
 
   return (
     <>
-      <Grid item xs={6} style={{ padding: '0 0 0 10px' }}>
+      <Grid item xs={6}>
         <Typography>
           <strong>Inputs</strong>
         </Typography>

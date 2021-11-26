@@ -1,13 +1,10 @@
 import React, { FC, Fragment } from 'react';
 import {
   Checkbox,
-  FormControl,
   FormControlLabel,
   Grid,
   IconButton,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@material-ui/core';

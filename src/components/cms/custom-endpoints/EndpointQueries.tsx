@@ -6,14 +6,16 @@ import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { TreeView } from '@material-ui/lab';
-import MinusSquare from '../../../assets/svgs/MinusSquare';
-import PlusSquare from '../../../assets/svgs/PlusSquare';
-import CloseSquare from '../../../assets/svgs/CloseSquare';
 import { deepClone } from '../../../utils/deepClone';
+import { Add, Remove } from '@material-ui/icons';
+import Close from '@material-ui/icons/Close';
 
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
+  },
+  queries: {
+    padding: '5px',
   },
 });
 
@@ -204,6 +206,7 @@ const EndpointQueries: FC<Props> = ({
               container
               alignItems={'flex-end'}
               spacing={2}
+              className={classes.queries}
               key={`query-${selectedSchema}-${node._id}`}>
               <CustomQueryRow
                 query={node}
@@ -226,12 +229,12 @@ const EndpointQueries: FC<Props> = ({
   };
 
   return (
-    <Box padding={5} width={'100%'}>
+    <Box padding={6} width={'100%'}>
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<MinusSquare />}
-        defaultExpandIcon={<PlusSquare />}
-        defaultEndIcon={<CloseSquare />}
+        defaultCollapseIcon={<Remove />}
+        defaultExpandIcon={<Add />}
+        defaultEndIcon={<Close />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}
         onNodeToggle={(e) => e.preventDefault()}>
         {selectedQueries.map((q: any) => renderItem(q))}
