@@ -1,5 +1,6 @@
 import React, { FC, Fragment } from 'react';
 import {
+  Box,
   Checkbox,
   FormControlLabel,
   Grid,
@@ -11,6 +12,13 @@ import {
 import InputLocationEnum from '../../../models/InputLocationEnum';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  checkBox: {
+    marginBottom: theme.spacing(-1.5),
+  },
+}));
 
 interface Props {
   editMode: boolean;
@@ -25,6 +33,7 @@ const EndpointInputs: FC<Props> = ({
   setSelectedInputs,
   handleRemoveInput,
 }) => {
+  const classes = useStyles();
   const handleInputNameChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
     const value = event.target.value;
     const currentInputs = selectedInputs.slice();
@@ -90,6 +99,7 @@ const EndpointInputs: FC<Props> = ({
           variant="outlined"
           placeholder={'Input name'}
           fullWidth
+          label="Input name"
           disabled={!editMode}
           value={input.name}
           onChange={(event) => handleInputNameChange(event, index)}
@@ -127,8 +137,8 @@ const EndpointInputs: FC<Props> = ({
         </TextField>
       </Grid>
       <Grid item xs={1} />
-      <Grid container item xs={2}>
-        <Grid item xs={12}>
+      <Grid item xs={2}>
+        <Box className={classes.checkBox}>
           <FormControlLabel
             control={
               <Checkbox
@@ -142,8 +152,6 @@ const EndpointInputs: FC<Props> = ({
             }
             label="Array"
           />
-        </Grid>
-        <Grid item xs={12}>
           <FormControlLabel
             control={
               <Checkbox
@@ -157,10 +165,10 @@ const EndpointInputs: FC<Props> = ({
             }
             label="Optional"
           />
-        </Grid>
+        </Box>
       </Grid>
       <Grid item xs={1}>
-        <IconButton disabled={!editMode} size="small" onClick={() => handleRemoveInput(index)}>
+        <IconButton disabled={!editMode} onClick={() => handleRemoveInput(index)}>
           <RemoveCircleOutlineIcon />
         </IconButton>
       </Grid>

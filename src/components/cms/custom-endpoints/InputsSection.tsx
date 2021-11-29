@@ -151,9 +151,6 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}
       />
-      <Grid item xs={12} style={{ padding: '0' }}>
-        <Divider />
-      </Grid>
     </>
   );
 };

@@ -13,6 +13,9 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     textTransform: 'none',
   },
+  divider: {
+    paddingBottom: theme.spacing(1),
+  },
 }));
 
 interface Props {
@@ -56,7 +59,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           Add another
         </Button>
       </Grid>
-      <Grid item xs={12} style={{ padding: '0' }}>
+      <Grid item xs={12} className={classes.divider}>
         <Divider />
       </Grid>
       <EndpointAssignments

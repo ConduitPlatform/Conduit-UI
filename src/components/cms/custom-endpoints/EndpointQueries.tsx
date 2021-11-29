@@ -9,13 +9,14 @@ import { TreeView } from '@material-ui/lab';
 import { deepClone } from '../../../utils/deepClone';
 import { Add, Remove } from '@material-ui/icons';
 import Close from '@material-ui/icons/Close';
+import theme from '../../../theme';
 
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
   },
   queries: {
-    padding: '5px',
+    padding: theme.spacing(1.5),
   },
 });
 
@@ -229,7 +230,7 @@ const EndpointQueries: FC<Props> = ({
   };
 
   return (
-    <Box padding={6} width={'100%'}>
+    <Box padding={2} width={'100%'}>
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<Remove />}

@@ -1,10 +1,8 @@
 import {
   Checkbox,
-  FormControl,
   FormControlLabel,
   Grid,
   IconButton,
-  InputLabel,
   MenuItem,
   Select,
   TextField,
@@ -33,9 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   alignment: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: theme.spacing(1),
   },
   item: {
     paddingLeft: theme.spacing(4),

@@ -244,6 +244,7 @@ const EndpointAssignments: FC<Props> = ({
         ) : (
           <Grid item xs={2} />
         )}
+        <Grid item xs={1} />
         <Grid item xs={1}>
           {operationType !== OperationEnum.POST && (
             <IconButton
