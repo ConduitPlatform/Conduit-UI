@@ -10,3 +10,7 @@ export type Populate = {
 export type Search = {
   search?: string;
 };
+
+export type Sort = {
+  sort?: string;
+};
