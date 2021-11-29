@@ -1,12 +1,5 @@
-import {
-  FormControl,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Grid, IconButton, MenuItem, TextField, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { FC, Fragment, useCallback } from 'react';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
@@ -23,6 +16,16 @@ interface Props {
   availableFieldsOfSchema: [];
 }
 
+const useStyles = makeStyles((theme) => ({
+  item: {
+    paddingLeft: theme.spacing(4),
+  },
+  group: {
+    fontWeight: 'inherit',
+    opacity: '1',
+  },
+}));
+
 const EndpointAssignments: FC<Props> = ({
   editMode,
   operationType,
@@ -31,6 +34,7 @@ const EndpointAssignments: FC<Props> = ({
   setSelectedAssignments,
   availableFieldsOfSchema,
 }) => {
+  const classes = useStyles();
   const handleAssignmentFieldChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
     const value = event.target.value;
     const currentAssignments = selectedAssignments.slice();
@@ -181,35 +185,44 @@ const EndpointAssignments: FC<Props> = ({
           </TextField>
         </Grid>
         <Grid item xs={2}>
-          <FormControl>
-            <Select
-              fullWidth
-              variant="outlined"
-              disabled={!editMode}
-              native
-              value={
-                assignment.assignmentField.type === 'Custom' ||
-                assignment.assignmentField.type === 'Context'
-                  ? assignment.assignmentField.type
-                  : assignment.assignmentField.type + '-' + assignment.assignmentField.value
-              }
-              onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
-              <option aria-label="None" value="" />
-              <optgroup label="Custom Value">
-                <option value={'Custom'}>Add a custom value</option>
-              </optgroup>
-              <optgroup label="Context Value">
-                <option value={'Context'}>Add a value from context</option>
-              </optgroup>
-              <optgroup label="Input Fields">
-                {selectedInputs.map((input: any, index: number) => (
-                  <option key={`idx-${index}-input`} value={'Input-' + input.name}>
-                    {input.name}
-                  </option>
-                ))}
-              </optgroup>
-            </Select>
-          </FormControl>
+          <TextField
+            select
+            label={'Assignment value'}
+            variant="outlined"
+            fullWidth
+            value={
+              assignment.assignmentField.type === 'Custom' ||
+              assignment.assignmentField.type === 'Context'
+                ? assignment.assignmentField.type
+                : assignment.assignmentField.type + '-' + assignment.assignmentField.value
+            }
+            disabled={!editMode}
+            onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
+            <MenuItem aria-label="None" value="" />
+            <MenuItem disabled className={classes.group}>
+              Custom Value
+            </MenuItem>
+            <MenuItem className={classes.item} value={'Custom'}>
+              Add a custom value
+            </MenuItem>
+            <MenuItem disabled className={classes.group}>
+              Context Value
+            </MenuItem>
+            <MenuItem className={classes.item} value={'Context'}>
+              Add a value from context
+            </MenuItem>
+            <MenuItem disabled className={classes.group}>
+              Input Fields
+            </MenuItem>
+            {selectedInputs.map((input: any, index: number) => (
+              <MenuItem
+                className={classes.item}
+                key={`idx-${index}-input`}
+                value={'Input-' + input.name}>
+                {input.name}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
         {assignment.assignmentField.type === 'Custom' ||
         assignment.assignmentField.type === 'Context' ? (
