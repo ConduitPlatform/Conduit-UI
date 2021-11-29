@@ -3,7 +3,6 @@ import {
   deleteCmsSchemasRequest,
   getCmsDocumentsByNameRequest,
   getCmsSchemasRequest,
-  getCmsSchemasRequestDialog,
   postCmsSchemaRequest,
   putCmsSchemaRequest,
   schemasFromOtherModules,
@@ -95,7 +94,7 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
   async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCmsSchemasRequestDialog(params);
+      const { data } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
         results: data.results as Schema[],

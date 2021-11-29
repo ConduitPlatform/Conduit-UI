@@ -5,9 +5,6 @@ import { CONDUIT_API } from './requestsConfig';
 export const getCmsSchemasRequest = (params: Pagination & Search & Sort & { enabled?: boolean }) =>
   axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
 
-export const getCmsSchemasRequestDialog = (params: Pagination & Search & { enabled?: boolean }) =>
-  axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
-
 export const getCmsSchemaByIdRequest = (_id: string) =>
   axios.get(`${CONDUIT_API}/admin/cms/schemas${_id}`);
 

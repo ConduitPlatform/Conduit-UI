@@ -6,6 +6,7 @@ import {
   Grid,
   InputLabel,
   Select,
+  TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import OperationsEnum from '../../../models/OperationsEnum';
@@ -16,7 +17,7 @@ import { Schema } from '../../../models/cms/CmsModels';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
-import { asyncGetCmsSchemas, asyncGetCmsSchemasDialog } from '../../../redux/slices/cmsSlice';
+import { asyncGetCmsSchemasDialog } from '../../../redux/slices/cmsSlice';
 import SelectedElements from '../../common/SelectedElements';
 
 const useStyles = makeStyles((theme) => ({
@@ -66,26 +67,11 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     dispatch(setEndpointData({ operation, assignments }));
   };
 
-  const handleSchemaChange = (event: React.ChangeEvent<{ value: any }>) => {
-    const assignments: Assignment[] = [];
-    const selectedSchema = event.target.value;
-    const fields = getAvailableFieldsOfSchema(selectedSchema, schemas);
-    const fieldsWithTypes = findFieldsWithTypes(fields);
-    if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
-      const fieldKeys = Object.keys(fields);
-
-      fieldKeys.forEach((field) => {
-        const assignment: Assignment = {
-          schemaField: field,
-          action: 0,
-          assignmentField: { type: '', value: '' },
-        };
-        assignments.push(assignment);
-      });
-    }
-    dispatch(setEndpointData({ selectedSchema, assignments }));
-    dispatch(setSchemaFields(fieldsWithTypes));
-  };
+  useEffect(() => {
+    if (endpoint.selectedSchema);
+    const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
+    foundSchema && setSelectedSchema([foundSchema]);
+  }, [endpoint, availableSchemas]);
 
   const handleAuthenticationChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
     dispatch(setEndpointData({ authentication: event.target.checked }));
@@ -104,27 +90,27 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   );
 
   useEffect(() => {
-    const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
-    foundSchema && setSelectedSchema([foundSchema]);
-    const assignments: Assignment[] = [];
-    const fields = getAvailableFieldsOfSchema(selectedSchema[0]._id, schemas);
-    console.log(fields);
-    const fieldsWithTypes = findFieldsWithTypes(fields);
+    if (selectedSchema[0] !== undefined) {
+      const assignments: Assignment[] = [];
+      const fields = getAvailableFieldsOfSchema(selectedSchema[0]._id, schemas);
+      const fieldsWithTypes = findFieldsWithTypes(fields);
 
-    if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
-      const fieldKeys = Object.keys(fields);
+      if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
+        const fieldKeys = Object.keys(fields);
 
-      fieldKeys.forEach((field) => {
-        const assignment: Assignment = {
-          schemaField: field,
-          action: 0,
-          assignmentField: { type: '', value: '' },
-        };
-        assignments.push(assignment);
-      });
+        fieldKeys.forEach((field) => {
+          const assignment: Assignment = {
+            schemaField: field,
+            action: 0,
+            assignmentField: { type: '', value: '' },
+          };
+          assignments.push(assignment);
+        });
+      }
+
+      dispatch(setEndpointData({ selectedSchema, assignments }));
+      dispatch(setSchemaFields(fieldsWithTypes));
     }
-    dispatch(setEndpointData({ selectedSchema, assignments }));
-    dispatch(setSchemaFields(fieldsWithTypes));
   }, [endpoint.selectedSchema, availableSchemas, selectedSchema, endpoint.operation]);
 
   const getData = useCallback(
@@ -133,8 +119,6 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     },
     [dispatch]
   );
-
-  console.log(schemasForDialog);
 
   const headers = [
     { title: '_id' },
@@ -189,7 +173,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
       <Grid item xs={3}>
         <Grid item sm={12}>
           <SelectedElements
-            selectedElements={selectedSchema.map((schema) => schema.name)}
+            selectedElements={selectedSchema[0] && [selectedSchema[0].name]}
             handleButtonAction={() => setDrawer(true)}
             removeSelectedElement={removeSelectedSchema}
             buttonText={'Select Schema'}
@@ -243,21 +227,23 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           />
         </Grid>
       )}
-      <TableDialog
-        open={drawer}
-        singleSelect
-        title={'Select schema'}
-        headers={headers}
-        getData={getData}
-        data={{
-          tableData: schemasForDialog && formatSchemas(schemasForDialog),
-          count: schemasCount,
-        }}
-        handleClose={() => setDrawer(false)}
-        buttonText={'Select schema'}
-        setExternalElements={setSelectedSchema}
-        externalElements={selectedSchema}
-      />
+      {editMode && (
+        <TableDialog
+          open={drawer}
+          singleSelect
+          title={'Select schema'}
+          headers={headers}
+          getData={getData}
+          data={{
+            tableData: schemasForDialog !== undefined ? formatSchemas(schemasForDialog) : [],
+            count: schemasCount,
+          }}
+          handleClose={() => setDrawer(false)}
+          buttonText={'Select schema'}
+          setExternalElements={setSelectedSchema}
+          externalElements={selectedSchema}
+        />
+      )}
     </>
   );
 };
