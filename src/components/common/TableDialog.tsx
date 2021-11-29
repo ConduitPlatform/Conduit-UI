@@ -34,7 +34,7 @@ interface Props {
   open: boolean;
   singleSelect?: boolean;
   title?: string;
-  headers?: { title: string; sort: string }[];
+  headers?: { title: string; sort?: string }[];
   returnSelected?: string[];
   buttonText?: string;
   handleClose: () => void;

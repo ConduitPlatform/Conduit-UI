@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   Checkbox,
   FormControl,
@@ -14,6 +14,10 @@ import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEn
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Schema } from '../../../models/cms/CmsModels';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
+import TableDialog from '../../common/TableDialog';
+import { Pagination, Search } from '../../../models/http/HttpModels';
+import { asyncGetCmsSchemas, asyncGetCmsSchemasDialog } from '../../../redux/slices/cmsSlice';
+import SelectedElements from '../../common/SelectedElements';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -38,7 +42,8 @@ interface Props {
 const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
+  const [drawer, setDrawer] = useState<boolean>(false);
+  const [selectedSchema, setSelectedSchema] = useState<Schema[]>([]);
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   const handleOperationChange = (event: React.ChangeEvent<{ value: any }>) => {
@@ -94,6 +99,70 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     dispatch(setEndpointData({ sorted: event.target.checked }));
   };
 
+  const { schemas: schemasForDialog, schemasCount } = useAppSelector(
+    (state) => state.cmsSlice.data.schemasForDialog
+  );
+
+  useEffect(() => {
+    const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
+    foundSchema && setSelectedSchema([foundSchema]);
+    const assignments: Assignment[] = [];
+    const fields = getAvailableFieldsOfSchema(selectedSchema[0]._id, schemas);
+    console.log(fields);
+    const fieldsWithTypes = findFieldsWithTypes(fields);
+
+    if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
+      const fieldKeys = Object.keys(fields);
+
+      fieldKeys.forEach((field) => {
+        const assignment: Assignment = {
+          schemaField: field,
+          action: 0,
+          assignmentField: { type: '', value: '' },
+        };
+        assignments.push(assignment);
+      });
+    }
+    dispatch(setEndpointData({ selectedSchema, assignments }));
+    dispatch(setSchemaFields(fieldsWithTypes));
+  }, [endpoint.selectedSchema, availableSchemas, selectedSchema, endpoint.operation]);
+
+  const getData = useCallback(
+    (params: Pagination & Search) => {
+      dispatch(asyncGetCmsSchemasDialog({ ...params, enabled: true }));
+    },
+    [dispatch]
+  );
+
+  console.log(schemasForDialog);
+
+  const headers = [
+    { title: '_id' },
+    { title: 'Name', sort: 'name' },
+    { title: 'Authenticated' },
+    { title: 'CRUD' },
+    { title: 'Created at', sort: 'createdAt' },
+    { title: 'Updated at', sort: 'updatedAt' },
+  ];
+
+  const formatSchemas = (schemasToFormat: Schema[]) => {
+    if (schemasToFormat !== undefined) {
+      return schemasToFormat.map((d) => ({
+        _id: d._id,
+        name: d.name,
+        authentication: d.authentication,
+        crudOperations: d.crudOperations,
+        createdAt: d.createdAt,
+        updatedAt: d.updatedAt,
+      }));
+    }
+  };
+
+  const removeSelectedSchema = (i: number) => {
+    const filteredArray = selectedSchema.filter((user, index) => index !== i);
+    setSelectedSchema(filteredArray);
+  };
+
   return (
     <>
       <Grid item xs={3}>
@@ -118,25 +187,15 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
         </FormControl>
       </Grid>
       <Grid item xs={3}>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select_schema">Select Schema</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            value={endpoint.selectedSchema}
-            onChange={handleSchemaChange}
-            inputProps={{
-              name: 'select_schema',
-              id: 'select_schema',
-            }}>
-            <option aria-label="None" value="" />
-            {availableSchemas.map((schema, index: number) => (
-              <option key={`schema-${index}`} value={schema._id}>
-                {schema.name}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+        <Grid item sm={12}>
+          <SelectedElements
+            selectedElements={selectedSchema.map((schema) => schema.name)}
+            handleButtonAction={() => setDrawer(true)}
+            removeSelectedElement={removeSelectedSchema}
+            buttonText={'Select Schema'}
+            header={'Selected schema'}
+          />
+        </Grid>
       </Grid>
       <Grid item xs={endpoint.operation === OperationsEnum.GET ? 2 : 4}>
         <FormControlLabel
@@ -184,6 +243,21 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           />
         </Grid>
       )}
+      <TableDialog
+        open={drawer}
+        singleSelect
+        title={'Select schema'}
+        headers={headers}
+        getData={getData}
+        data={{
+          tableData: schemasForDialog && formatSchemas(schemasForDialog),
+          count: schemasCount,
+        }}
+        handleClose={() => setDrawer(false)}
+        buttonText={'Select schema'}
+        setExternalElements={setSelectedSchema}
+        externalElements={selectedSchema}
+      />
     </>
   );
 };
