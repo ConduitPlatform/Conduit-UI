@@ -26,6 +26,9 @@ export const getCmsDocumentsByNameRequest = (params: {
   search?: string;
 }) => axios.get(`${CONDUIT_API}/admin/cms/content/${params.name}`, { params: params });
 
+export const getCmsDocumentByIdRequest = (params: { schemaName: string; id: string }) =>
+  axios.get(`${CONDUIT_API}/admin/cms/content/${params.schemaName}/${params.id}`);
+
 export const schemasFromOtherModules = () => {
   return axios.get(`${CONDUIT_API}/admin/cms/schemasFromOtherModules`);
 };

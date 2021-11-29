@@ -105,6 +105,7 @@ const CreateDialog: FC<Props> = ({ schema, handleCreate, handleEdit, handleCance
   };
 
   const initDocument = useCallback(() => {
+    if (!schema) return;
     const fields = schema.fields;
     const documentFields = deconstructFields(fields);
     populateEditData(documentFields);
@@ -116,13 +117,12 @@ const CreateDialog: FC<Props> = ({ schema, handleCreate, handleEdit, handleCance
     } else {
       setDocument(documentFields);
     }
-  }, [deconstructFields, populateEditData, schema.fields, editData]);
+  }, [schema, deconstructFields, populateEditData, editData]);
 
   useEffect(() => {
-    if (schema) {
-      initDocument();
-      if (document.length > 0) populateEditData();
-    }
+    if (!schema) return;
+    initDocument();
+    if (document.length > 0) populateEditData();
   }, [document.length, initDocument, populateEditData, schema]);
 
   const handleCancelClick = () => {

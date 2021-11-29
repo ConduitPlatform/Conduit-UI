@@ -10,6 +10,7 @@ import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
   asyncEditSchemaDocument,
+  asyncGetSchemaDocument,
   asyncGetSchemaDocuments,
 } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
@@ -104,7 +105,12 @@ const SchemaData: FC<Props> = ({ schemas }) => {
 
   useEffect(() => {
     getSchemaDocuments();
-  }, [getSchemaDocuments]);
+    const params = {
+      schemaName: 'positions',
+      id: '606b5630a7dd3e001bc85e19',
+    };
+    dispatch(asyncGetSchemaDocument(params));
+  }, [dispatch, getSchemaDocuments]);
 
   const handleChange = (value: number) => {
     setSelectedSchema(value);
@@ -123,6 +129,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
       schemaName: schemaName,
       documentId: selectedDocument._id,
       documentData: document,
+      getSchemaDocuments: getSchemaDocuments,
     };
     dispatch(asyncEditSchemaDocument(params));
     setDocumentDialog(initialDocumentDialogState);
@@ -143,6 +150,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     const params = {
       schemaName: schemas[selectedSchema].name,
       documentId: selectedDocument._id,
+      getSchemaDocuments: getSchemaDocuments,
     };
     dispatch(asyncDeleteSchemaDocument(params));
     handleCloseDeleteDialog();
@@ -161,7 +169,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   };
 
   const handleCreateDocument = (schemaName: string, document: any) => {
-    dispatch(asyncCreateSchemaDocument({ schemaName, document }));
+    dispatch(asyncCreateSchemaDocument({ schemaName, document, getSchemaDocuments }));
     setDocumentDialog(initialDocumentDialogState);
   };
 
