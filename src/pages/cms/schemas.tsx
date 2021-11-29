@@ -146,17 +146,17 @@ const Schemas = () => {
     }
   };
 
-  const handleToggleSchema = () => {
-    dispatch(asyncToggleSchema(selectedSchemaForAction.data._id));
-    setSelectedSchemaForAction({ data: {}, action: '' });
-    setOpenDialog(false);
-  };
-
   const handleToggleMultiple = () => {
     const ids = selectedSchemaForAction.data.map((schema: Schema) => schema._id);
     dispatch(asyncToggleMultipleSchemas({ ids: ids, enabled: !enabled }));
     setSelectedSchemaForAction({ data: {}, action: '' });
     setSelectedSchemas([]);
+    setOpenDialog(false);
+  };
+
+  const handleToggleSchema = () => {
+    dispatch(asyncToggleSchema(selectedSchemaForAction.data._id));
+    setSelectedSchemaForAction({ data: {}, action: '' });
     setOpenDialog(false);
   };
 
@@ -182,6 +182,7 @@ const Schemas = () => {
   const handleChange = (event: any, newValue: any) => {
     setSelectedSchemas([]);
     setEnabled(newValue);
+    handleLimitChange(10);
   };
 
   const enabledActions = [

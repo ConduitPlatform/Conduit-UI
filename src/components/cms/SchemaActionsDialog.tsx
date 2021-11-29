@@ -42,6 +42,15 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(0.5),
     },
   },
+  dialogTitle: {
+    marginBottom: '16px',
+  },
+  dialogContent: {
+    fontWeight: 'bold',
+  },
+  dialogActionButtons: {
+    textTransform: 'none',
+  },
 }));
 
 interface Props {
@@ -244,22 +253,24 @@ const SchemaActionsDialog: FC<Props> = ({
 
   return (
     <Dialog fullWidth={true} maxWidth={'md'} open={open} onClose={handleClose}>
-      <DialogTitle id="new-custom-type" style={{ marginBottom: 16 }}>
+      <DialogTitle id="new-custom-type" className={classes.dialogTitle}>
         {createDialogTitle(selectedSchema.action)}
       </DialogTitle>
       <DialogContent>
-        <span style={{ fontWeight: 'bold' }}>{extractNames()}</span>
+        <span className={classes.dialogContent}>{extractNames()}</span>
       </DialogContent>
       <DialogContent>{createDialogInfo(selectedSchema.action)}</DialogContent>
       <DialogActions>
-        <Button onClick={() => handleClose()} variant="contained" style={{ textTransform: 'none' }}>
+        <Button
+          onClick={() => handleClose()}
+          variant="contained"
+          className={classes.dialogActionButtons}>
           Cancel
         </Button>
         <Button
           onClick={handleClick}
           className={generateButtonClass(selectedSchema?.action)}
-          variant="contained"
-          style={{ textTransform: 'none' }}>
+          variant="contained">
           {generateButtonName(selectedSchema.action)}
         </Button>
       </DialogActions>
