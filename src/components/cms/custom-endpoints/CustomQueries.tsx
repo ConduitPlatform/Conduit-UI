@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  mainContentInfo: {
+    padding: theme.spacing(1),
+  },
 }));
 
 interface Props {
@@ -307,7 +310,7 @@ const CustomQueries: FC<Props> = ({
     } else {
       return (
         <Box>
-          <Grid container spacing={2} alignItems="flex-end">
+          <Grid container className={classes.mainContentInfo} spacing={2} alignItems="flex-end">
             <Grid item xs={1} />
             <Grid item xs={5}>
               <TextField

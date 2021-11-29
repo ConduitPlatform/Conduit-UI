@@ -155,7 +155,7 @@ const EndpointAssignments: FC<Props> = ({
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <TextField
             select
             label={'Actions'}

@@ -37,6 +37,13 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  item: {
+    paddingLeft: theme.spacing(4),
+  },
+  group: {
+    fontWeight: 'inherit',
+    opacity: '1',
+  },
 }));
 
 interface Props {
@@ -273,42 +280,54 @@ const CustomQueryRow: FC<Props> = ({
         </TextField>
       </Grid>
       <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel>Value</InputLabel>
-          <Select
-            fullWidth
-            disabled={!editMode}
-            variant="outlined"
-            native
-            value={
-              query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'
-                ? query.comparisonField.type
-                : query.comparisonField.type + '-' + query.comparisonField.value
-            }
-            onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
-            <option aria-label="None" value="" />
-            <optgroup label="System Values">
-              <option value={'Context'}>Add value from context</option>
-            </optgroup>
-            <optgroup label="Custom Value">
-              <option value={'Custom'}>Add a custom value</option>
-            </optgroup>
-            <optgroup label="Schema Fields">
-              {availableFieldsOfSchema.map((field: any, index: number) => (
-                <option key={`idxS-${index}-field`} value={'Schema-' + field.name}>
-                  {field.name}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="Input Fields">
-              {selectedInputs.map((input, index) => (
-                <option key={`idxF-${index}-input`} value={'Input-' + input.name}>
-                  {input.name}
-                </option>
-              ))}
-            </optgroup>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Value'}
+          variant="outlined"
+          fullWidth
+          value={
+            query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'
+              ? query.comparisonField.type
+              : query.comparisonField.type + '-' + query.comparisonField.value
+          }
+          disabled={!editMode}
+          onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
+          <MenuItem aria-label="None" value="" />
+          <MenuItem disabled className={classes.group}>
+            System Values
+          </MenuItem>
+          <MenuItem className={classes.item} value={'Context'}>
+            Add a value from context
+          </MenuItem>
+          <MenuItem disabled className={classes.group}>
+            Custom Value
+          </MenuItem>
+          <MenuItem className={classes.item} value={'Custom'}>
+            Add a custom value
+          </MenuItem>
+          <MenuItem disabled className={classes.group}>
+            Schema Fields
+          </MenuItem>
+          {availableFieldsOfSchema.map((field: any, index: number) => (
+            <MenuItem
+              className={classes.item}
+              key={`idxS-${index}-field`}
+              value={'Schema-' + field.name}>
+              {field.name}
+            </MenuItem>
+          ))}
+          <MenuItem disabled className={classes.group}>
+            Input Fields
+          </MenuItem>
+          {selectedInputs.map((input, index) => (
+            <MenuItem
+              className={classes.item}
+              key={`idxF-${index}-input`}
+              value={'Input-' + input.name}>
+              {input.name}
+            </MenuItem>
+          ))}
+        </TextField>
       </Grid>
       {query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context' ? (
         <Grid item xs={2}>
