@@ -77,12 +77,10 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   }, [endpoint, availableSchemas]);
 
   useEffect(() => {
-    if (selectedSchema[0] !== undefined) {
+    if (selectedSchema[0] !== undefined && selectedSchema[0]._id === endpoint.selectedSchema) {
       const assignments: Assignment[] = [];
       const fields = getAvailableFieldsOfSchema(selectedSchema[0]._id, schemas);
       const fieldsWithTypes = findFieldsWithTypes(fields);
-
-      console.log(fieldsWithTypes);
 
       if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
         const fieldKeys = Object.keys(fields);
@@ -97,13 +95,17 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
         });
       }
 
-      console.log(assignments);
-
-      dispatch(setEndpointData({ selectedSchema, assignments }));
+      dispatch(
+        setEndpointData({
+          selectedSchema,
+          assignments: assignments.length ? assignments : endpoint.assignments,
+        })
+      );
       dispatch(setSchemaFields(fieldsWithTypes));
     }
   }, [
     endpoint.selectedSchema,
+    endpoint.assignments,
     availableSchemas,
     selectedSchema,
     endpoint.operation,
