@@ -24,6 +24,7 @@ import { EndpointTypes, Schema, ToggleSchma } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { set } from 'lodash';
 
 export interface ICmsSlice {
   data: {
@@ -177,10 +178,22 @@ export const asyncGetSchemaDocuments = createAsyncThunk(
 
 export const asyncGetSchemaDocument = createAsyncThunk(
   'cms/getDoc',
-  async (params: { schemaName: string; id: string }, thunkAPI) => {
+  async (
+    params: {
+      schemaName: string;
+      id: string;
+      path: string[];
+      documentId: string;
+    },
+    thunkAPI
+  ) => {
     try {
       const { data } = await getCmsDocumentByIdRequest(params);
-      return data;
+      return {
+        document: data,
+        path: params.path,
+        documentId: params.documentId,
+      };
     } catch (error) {
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
@@ -425,14 +438,11 @@ const cmsSlice = createSlice({
       state.data.documents = action.payload;
     });
     builder.addCase(asyncGetSchemaDocument.fulfilled, (state, action) => {
-      // console.log('action.payload', action.payload);
-      const newDocuments = state.data.documents.documents.map((document: any) => {
-        if (document._id === action.payload._id) {
-          return action.payload;
-        }
-        return document;
-      });
-      state.data.documents.documents = newDocuments;
+      const documentIndex = state.data.documents.documents.findIndex(
+        (document: any) => document._id === action.payload.documentId
+      );
+      const selectedDocument = state.data.documents.documents[documentIndex];
+      set(selectedDocument, action.payload.path, action.payload.document);
     });
     builder.addCase(asyncGetCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints = action.payload;

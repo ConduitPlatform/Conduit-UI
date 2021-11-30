@@ -5,6 +5,7 @@ import {
   ChevronRight,
   ExpandMore,
   EditOutlined,
+  AccountTree,
 } from '@material-ui/icons';
 import TreeView from '@material-ui/lab/TreeView';
 import Card, { CardProps } from '@material-ui/core/Card';
@@ -13,6 +14,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Typography, Tooltip, CardContent, Box } from '@material-ui/core';
 import { Schema } from '../../models/cms/CmsModels';
+import getDeepValue from '../../utils/getDeepValue';
+import { asyncGetSchemaDocument } from '../../redux/slices/cmsSlice';
+import { useAppDispatch } from '../../redux/store';
 
 const buttonDimensions = 18;
 
@@ -81,22 +85,31 @@ interface Document {
 
 interface TreeItemLabelProps {
   document: Document;
+  isRelation: boolean;
 }
 
-const TreeItemLabel: FC<TreeItemLabelProps> = ({ document }) => {
+const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation }) => {
   const classes = useStyles();
   return (
-    <Typography variant={'subtitle2'}>
+    <Typography
+      variant={'subtitle2'}
+      style={{ display: 'flex', alignItems: 'center', padding: '2px 0' }}>
       <Typography component={'span'} className={classes.bold}>{`${document.id}: `}</Typography>
-      {Array.isArray(document.data)
-        ? document.data.length > 0
-          ? '[...]'
-          : '[ ]'
-        : typeof document.data !== 'string' &&
-          document.data &&
-          Object.keys(document.data).length > 0
-        ? '{...}'
-        : `${document.data}`}
+      {Array.isArray(document.data) ? (
+        document.data.length > 0 ? (
+          '[...]'
+        ) : (
+          '[ ]'
+        )
+      ) : typeof document.data !== 'string' &&
+        document.data &&
+        Object.keys(document.data).length > 0 ? (
+        '{...}'
+      ) : isRelation ? (
+        <AccountTree color="primary" />
+      ) : (
+        `${document.data}`
+      )}
     </Typography>
   );
 };
@@ -123,10 +136,9 @@ const SchemaDataCard: FC<Props> = ({
   ...rest
 }) => {
   const classes = useStyles();
-
+  const dispatch = useAppDispatch();
   const [expandable, setExpandable] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
-
   useEffect(() => {
     setExpandable([]);
   }, [documents]);
@@ -142,32 +154,30 @@ const SchemaDataCard: FC<Props> = ({
     }
     setExpanded([]);
   };
-  //must handle array too
-  const handleItemClick = (document: Document, parents: any) => {
-    const parentArray = parents.map((parent: any) => parent.id);
 
-    const deep_value = (object: any, array: any) =>
-      array.reduce((objectItem: any, key: any) => {
-        if (objectItem.type) return objectItem.type[key];
-        return objectItem[key];
-      }, object);
-
-    const value = deep_value(schema.fields, parentArray);
-    if (!value) return;
-    if (value.type === 'Relation') {
-      console.log('agios o theos');
-    }
+  const handleRelationClick = (schemaName: string, id: string, path: string[]) => {
+    const params = {
+      schemaName: schemaName,
+      id: id,
+      path: path,
+      documentId: documents._id,
+    };
+    dispatch(asyncGetSchemaDocument(params));
   };
 
   const renderTree = (document: Document, parents?: any) => {
     const parentsArray = parents ? [...parents, document] : [document];
+    const parentArray = parentsArray.map((parent: any) => parent.id);
+
+    const value = schema && getDeepValue(schema.fields, parentArray);
+
     const isArray = document.data && Array.isArray(document.data);
     const isObject =
       document.data && typeof document.data !== 'string' && Object.keys(document.data).length > 0;
-    if (isArray || isObject) {
-      if (!expandable.includes(document.id)) {
-        setExpandable((prevState) => [...prevState, document.id]);
-      }
+    const isRelation = value && value.type === 'Relation';
+
+    if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
+      setExpandable((prevState) => [...prevState, document.id]);
     }
 
     return (
@@ -175,9 +185,10 @@ const SchemaDataCard: FC<Props> = ({
         key={document.id}
         nodeId={document.id}
         onClick={() => {
-          handleItemClick(document, parentsArray);
+          if (!isRelation || typeof document.data !== 'string') return;
+          handleRelationClick(value.model, document.data, parentArray);
         }}
-        label={<TreeItemLabel document={document} />}>
+        label={<TreeItemLabel document={document} isRelation={isRelation} />}>
         {isArray
           ? document.data.map((node: Document, index: number) =>
               renderTree({ id: index.toString(), data: node }, parentsArray)
