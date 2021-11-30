@@ -57,7 +57,7 @@ const SelectedElements: FC<Props> = ({
           {buttonText}
         </Button>
       </Grid>
-      {selectedElements.length > 0 && (
+      {selectedElements && selectedElements.length > 0 && (
         <>
           <Grid className={classes.center} item xs={12}>
             <Typography className={classes.center} variant="caption">

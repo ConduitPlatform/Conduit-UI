@@ -34,13 +34,14 @@ interface Props {
   open: boolean;
   singleSelect?: boolean;
   title?: string;
-  headers?: { title: string; sort: string }[];
+  headers?: { title: string; sort?: string }[];
   returnSelected?: string[];
   buttonText?: string;
   handleClose: () => void;
   data: { tableData: any[]; count: number };
   getData: any;
   externalElements?: any[];
+  dialogAction?: any;
   setExternalElements?: (values: any[]) => void;
 }
 
@@ -53,6 +54,7 @@ const TableDialog: React.FC<Props> = ({
   handleClose,
   data,
   getData,
+  dialogAction,
   externalElements,
   setExternalElements,
 }) => {
@@ -82,8 +84,12 @@ const TableDialog: React.FC<Props> = ({
   }, [externalElements]);
 
   const handleAction = () => {
-    if (externalElements !== undefined && setExternalElements !== undefined)
+    if (externalElements !== undefined && setExternalElements !== undefined) {
       setExternalElements(selectedElements);
+    }
+    if (dialogAction) {
+      dialogAction(selectedElements);
+    }
     handleClose();
   };
 

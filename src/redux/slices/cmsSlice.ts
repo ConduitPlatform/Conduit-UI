@@ -32,6 +32,10 @@ export interface ICmsSlice {
       schemaDocuments: Schema[];
       schemasCount: number;
     };
+    dialogSchemas: {
+      schemas: Schema[];
+      schemasCount: number;
+    };
     schemasFromOtherModules: Schema[];
     documents: {
       documents: any;
@@ -48,6 +52,10 @@ const initialState: ICmsSlice = {
   data: {
     schemas: {
       schemaDocuments: [],
+      schemasCount: 0,
+    },
+    dialogSchemas: {
+      schemas: [],
       schemasCount: 0,
     },
     schemasFromOtherModules: [],
@@ -72,6 +80,25 @@ export const asyncGetCmsSchemas = createAsyncThunk(
       return {
         results: data.results as Schema[],
         documentsCount: data.documentsCount as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetCmsSchemasDialog = createAsyncThunk(
+  'cms/getSchemasDialog',
+  async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getCmsSchemasRequest(params);
+      thunkAPI.dispatch(setAppDefaults());
+      return {
+        dialogResults: data.results as Schema[],
+        dialogDocumentsCount: data.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -400,6 +427,10 @@ const cmsSlice = createSlice({
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = action.payload.results;
       state.data.schemas.schemasCount = action.payload.documentsCount;
+    });
+    builder.addCase(asyncGetCmsSchemasDialog.fulfilled, (state, action) => {
+      state.data.dialogSchemas.schemas = action.payload.dialogResults;
+      state.data.dialogSchemas.schemasCount = action.payload.dialogDocumentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
