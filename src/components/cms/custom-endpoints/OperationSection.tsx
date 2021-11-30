@@ -116,7 +116,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const getData = useCallback(
     (params: Pagination & Search) => {
       if (drawer) {
-        dispatch(asyncGetCmsSchemasDialog({ ...params, enabled: true }));
+        dispatch(asyncGetCmsSchemasDialog({ ...params }));
       }
     },
     [dispatch, drawer]
@@ -127,6 +127,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     { title: 'Name' },
     { title: 'Authenticated' },
     { title: 'CRUD' },
+    { title: 'Enabled' },
     { title: 'Created at' },
     { title: 'Updated at' },
   ];
@@ -137,6 +138,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
       name: d.name,
       authentication: d.authentication,
       crudOperations: d.crudOperations,
+      enabled: d.enabled,
       createdAt: d.createdAt,
       updatedAt: d.updatedAt,
     }));
