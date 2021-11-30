@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'inherit',
     opacity: '1',
   },
+  remove: {
+    marginBottom: theme.spacing(1.5),
+  },
 }));
 
 const EndpointAssignments: FC<Props> = ({
@@ -245,7 +248,7 @@ const EndpointAssignments: FC<Props> = ({
           <Grid item xs={2} />
         )}
         <Grid item xs={1} />
-        <Grid item xs={1}>
+        <Grid item xs={1} className={classes.remove}>
           {operationType !== OperationEnum.POST && (
             <IconButton
               disabled={!editMode}

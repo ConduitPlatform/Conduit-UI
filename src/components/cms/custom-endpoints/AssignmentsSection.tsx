@@ -56,7 +56,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddAssignment}>
-          Add another
+          Add assignment
         </Button>
       </Grid>
       <Grid item xs={12} className={classes.divider}>

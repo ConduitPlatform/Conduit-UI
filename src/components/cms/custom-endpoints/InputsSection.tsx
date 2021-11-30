@@ -139,7 +139,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddInput}>
-          Add another
+          Add input
         </Button>
       </Grid>
       <Grid item xs={12} style={{ padding: '0' }}>

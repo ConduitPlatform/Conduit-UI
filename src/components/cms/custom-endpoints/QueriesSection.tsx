@@ -149,7 +149,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
     <>
       <Grid item xs={6}>
         <Typography>
-          <strong>Query</strong>
+          <strong>Queries</strong>
         </Typography>
       </Grid>
       <Grid item xs={6} style={{ textAlign: 'end', padding: '0' }}>
@@ -160,7 +160,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddParentNode}>
-          Add another
+          Add query
         </Button>
       </Grid>
       <Grid item xs={12} style={{ padding: '0' }}>
