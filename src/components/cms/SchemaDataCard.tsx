@@ -12,6 +12,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Typography, Tooltip, CardContent, Box } from '@material-ui/core';
+import { Schema } from '../../models/cms/CmsModels';
 
 const buttonDimensions = 18;
 
@@ -110,9 +111,17 @@ interface Props extends CardProps {
   documents: any;
   handleEdit: () => void;
   handleDelete: () => void;
+  schema: Schema;
 }
 
-const SchemaDataCard: FC<Props> = ({ documents, handleEdit, handleDelete, className, ...rest }) => {
+const SchemaDataCard: FC<Props> = ({
+  documents,
+  handleEdit,
+  handleDelete,
+  schema,
+  className,
+  ...rest
+}) => {
   const classes = useStyles();
 
   const [expandable, setExpandable] = useState<string[]>([]);
@@ -133,26 +142,48 @@ const SchemaDataCard: FC<Props> = ({ documents, handleEdit, handleDelete, classN
     }
     setExpanded([]);
   };
+  //must handle array too
+  const handleItemClick = (document: Document, parents: any) => {
+    const parentArray = parents.map((parent: any) => parent.id);
 
-  const renderTree = (document: Document) => {
+    const deep_value = (object: any, array: any) =>
+      array.reduce((objectItem: any, key: any) => {
+        if (objectItem.type) return objectItem.type[key];
+        return objectItem[key];
+      }, object);
+
+    const value = deep_value(schema.fields, parentArray);
+    if (!value) return;
+    if (value.type === 'Relation') {
+      console.log('agios o theos');
+    }
+  };
+
+  const renderTree = (document: Document, parents?: any) => {
+    const parentsArray = parents ? [...parents, document] : [document];
     const isArray = document.data && Array.isArray(document.data);
     const isObject =
       document.data && typeof document.data !== 'string' && Object.keys(document.data).length > 0;
-
-    if ((isArray || isObject) && !expandable.includes(document.id)) {
-      setExpandable((prevState) => [...prevState, document.id]);
+    if (isArray || isObject) {
+      if (!expandable.includes(document.id)) {
+        setExpandable((prevState) => [...prevState, document.id]);
+      }
     }
+
     return (
       <TreeItem
         key={document.id}
         nodeId={document.id}
+        onClick={() => {
+          handleItemClick(document, parentsArray);
+        }}
         label={<TreeItemLabel document={document} />}>
         {isArray
           ? document.data.map((node: Document, index: number) =>
-              renderTree({ id: index.toString(), data: node })
+              renderTree({ id: index.toString(), data: node }, parentsArray)
             )
           : isObject
-          ? createDocumentArray(document.data).map((node) => renderTree(node))
+          ? createDocumentArray(document.data).map((node) => renderTree(node, parentsArray))
           : null}
       </TreeItem>
     );
@@ -188,21 +219,19 @@ const SchemaDataCard: FC<Props> = ({ documents, handleEdit, handleDelete, classN
         </Tooltip>
       </Box>
       <CardContent>
-        {createDocumentArray(documents).map((document, index) => {
-          return (
-            <TreeView
-              key={`treeView${index}`}
-              className={classes.tree}
-              disableSelection
-              expanded={expanded}
-              defaultCollapseIcon={<ExpandMore />}
-              defaultExpanded={['root']}
-              defaultExpandIcon={<ChevronRight />}
-              onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
-              {renderTree(document)}
-            </TreeView>
-          );
-        })}
+        {createDocumentArray(documents).map((document, index) => (
+          <TreeView
+            key={`treeView${index}`}
+            className={classes.tree}
+            disableSelection
+            expanded={expanded}
+            defaultCollapseIcon={<ExpandMore />}
+            defaultExpanded={['root']}
+            defaultExpandIcon={<ChevronRight />}
+            onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
+            {renderTree(document)}
+          </TreeView>
+        ))}
       </CardContent>
     </Card>
   );

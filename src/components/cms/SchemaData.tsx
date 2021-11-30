@@ -201,6 +201,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
               {documents.map((docs: any, index: number) => {
                 return (
                   <SchemaDataCard
+                    schema={schemas[selectedSchema]}
                     documents={docs}
                     className={classes.card}
                     handleEdit={() => onEdit(index)}
