@@ -45,6 +45,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
 
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
+  console.log(endpoint);
   const handleAddInput = () => {
     const input = {
       name: '',
@@ -135,7 +136,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         <Button
           disabled={!editMode || maxInputs()}
           variant="text"
-          color={'primary'}
+          color={'secondary'}
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddInput}>
@@ -147,6 +148,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
       </Grid>
       <EndpointInputs
         editMode={editMode}
+        operationType={endpoint.operation && endpoint.operation}
         selectedInputs={endpoint.inputs}
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}

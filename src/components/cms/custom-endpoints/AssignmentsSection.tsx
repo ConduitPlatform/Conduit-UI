@@ -52,7 +52,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
         <Button
           disabled={!editMode || endpoint.operation === OperationsEnum.POST}
           variant="text"
-          color={'primary'}
+          color={'secondary'}
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddAssignment}>

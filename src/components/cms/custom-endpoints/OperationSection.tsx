@@ -1,15 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Grid,
-  MenuItem,
-  TextField,
-} from '@material-ui/core';
+import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import OperationsEnum from '../../../models/OperationsEnum';
 import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
@@ -33,10 +23,16 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: '4px',
     },
   },
+  operationContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    textAlign: 'center',
   },
 }));
 
@@ -153,8 +149,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   return (
     <>
       <Grid item container spacing={6} xs={12}>
-        <Grid item xs={1} />
-        <Grid item xs={3} className={classes.container}>
+        <Grid item xs={3} className={classes.operationContainer}>
           <TextField
             select
             fullWidth
@@ -174,6 +169,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
         <Grid item xs={3} className={classes.container}>
           <Grid item sm={12}>
             <Button
+              size="small"
               variant="contained"
               color="secondary"
               disabled={!editMode}
@@ -183,54 +179,57 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             </Button>
           </Grid>
         </Grid>
-
-        <Grid item xs={1}>
-          <FormControl>
-            <FormLabel>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode}
-                      color={'primary'}
-                      checked={endpoint.authentication}
-                      onChange={handleAuthenticationChange}
-                      name="authentication"
-                    />
-                  }
-                  label="Authenticated"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                      color={'primary'}
-                      checked={endpoint.paginated}
-                      onChange={handlePaginatedChange}
-                      name="paginated"
-                    />
-                  }
-                  label="Paginated"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                      color={'primary'}
-                      checked={endpoint.sorted}
-                      onChange={handleSortedChange}
-                      name="sorted"
-                    />
-                  }
-                  label="Sorted"
-                />
-              </FormGroup>
-            </FormLabel>
-          </FormControl>
+        <Grid item xs={2} className={classes.container}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                disabled={!editMode}
+                color={'primary'}
+                checked={endpoint.authentication}
+                onChange={handleAuthenticationChange}
+                name="authentication"
+              />
+            }
+            label="Authenticated"
+          />
         </Grid>
+        {endpoint.operation === OperationsEnum.GET ? (
+          <>
+            <Grid item xs={2} className={classes.container}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    disabled={!editMode}
+                    color={'primary'}
+                    checked={endpoint.paginated}
+                    onChange={handlePaginatedChange}
+                    name="paginated"
+                  />
+                }
+                label="Paginated"
+              />
+            </Grid>
+            <Grid item xs={2} className={classes.container}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                    color={'primary'}
+                    checked={endpoint.sorted}
+                    onChange={handleSortedChange}
+                    name="sorted"
+                  />
+                }
+                label="Sorted"
+              />
+            </Grid>
+          </>
+        ) : (
+          <Grid item xs={4} />
+        )}
       </Grid>
       {editMode && (
         <TableDialog

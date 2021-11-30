@@ -13,6 +13,7 @@ import InputLocationEnum from '../../../models/InputLocationEnum';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
 import { makeStyles } from '@material-ui/core/styles';
+import OperationEnum from '../../../models/OperationsEnum';
 
 const useStyles = makeStyles((theme) => ({
   checkBox: {
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   editMode: boolean;
   selectedInputs: any;
+  operationType: any;
   setSelectedInputs: (inputs: any) => void;
   handleRemoveInput: (index: number) => void;
 }
@@ -30,6 +32,7 @@ interface Props {
 const EndpointInputs: FC<Props> = ({
   editMode,
   selectedInputs,
+  operationType,
   setSelectedInputs,
   handleRemoveInput,
 }) => {
@@ -89,6 +92,7 @@ const EndpointInputs: FC<Props> = ({
       setSelectedInputs(currentInputs);
     }
   };
+
   return selectedInputs.map((input: Input, index: number) => (
     <Fragment key={`input-${index}`}>
       <Grid item xs={1} key={index}>
@@ -133,7 +137,11 @@ const EndpointInputs: FC<Props> = ({
           <MenuItem aria-label="None" value="" />
           <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Query params</MenuItem>
           <MenuItem value={InputLocationEnum.BODY}>Body</MenuItem>
-          <MenuItem value={InputLocationEnum.URL_PARAMS}>URL</MenuItem>
+          <MenuItem
+            disabled={operationType === OperationEnum.DELETE || operationType === OperationEnum.GET}
+            value={InputLocationEnum.URL_PARAMS}>
+            URL
+          </MenuItem>
         </TextField>
       </Grid>
       <Grid item xs={1} />
@@ -147,7 +155,7 @@ const EndpointInputs: FC<Props> = ({
                 onChange={(event) => handleInputIsArray(event, index)}
                 name="Array"
                 size={'small'}
-                disabled={!editMode}
+                disabled={!editMode || input.location === InputLocationEnum.URL_PARAMS}
               />
             }
             label="Array"

@@ -156,7 +156,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
         <Button
           disabled={!editMode}
           variant="text"
-          color={'primary'}
+          color={'secondary'}
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddParentNode}>
