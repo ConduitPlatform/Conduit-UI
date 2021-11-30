@@ -76,9 +76,9 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     dispatch(setEndpointData({ operation, assignments }));
   };
 
-  const handleSchemaChange = (changedSchema: any) => {
+  const handleSchemaChange = (changedSchema: Schema[]) => {
     const assignments: Assignment[] = [];
-    const selectedSchema = changedSchema[0];
+    const selectedSchema = changedSchema[0]._id;
     const fields = getAvailableFieldsOfSchema(selectedSchema, schemas);
     const fieldsWithTypes = findFieldsWithTypes(fields);
     if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
