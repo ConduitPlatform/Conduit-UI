@@ -167,6 +167,7 @@ const TableDialog: React.FC<Props> = ({
               headers={headers}
               dsData={data.tableData}
               handleSelect={handleSelect}
+              handleSelectAll={handleSelectAll}
               selectedItems={selectedElements}
             />
             <Paginator

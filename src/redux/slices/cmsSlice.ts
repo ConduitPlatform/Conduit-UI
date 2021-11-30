@@ -97,8 +97,8 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
       const { data } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
-        results: data.results as Schema[],
-        documentsCount: data.documentsCount as number,
+        dialogResults: data.results as Schema[],
+        dialogDocumentsCount: data.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -429,8 +429,8 @@ const cmsSlice = createSlice({
       state.data.schemas.schemasCount = action.payload.documentsCount;
     });
     builder.addCase(asyncGetCmsSchemasDialog.fulfilled, (state, action) => {
-      state.data.dialogSchemas.schemas = action.payload.results;
-      state.data.dialogSchemas.schemasCount = action.payload.documentsCount;
+      state.data.dialogSchemas.schemas = action.payload.dialogResults;
+      state.data.dialogSchemas.schemasCount = action.payload.dialogDocumentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
