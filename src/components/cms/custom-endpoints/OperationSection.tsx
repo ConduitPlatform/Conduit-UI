@@ -44,15 +44,15 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [drawer, setDrawer] = useState<boolean>(false);
-  const [schemaToShow, setSchemaToShow] = useState<Schema[]>([]);
+  const [displayedSchema, setDisplayedSchema] = useState<Schema[]>([]);
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   useEffect(() => {
     if (endpoint.selectedSchema) {
       const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
-      foundSchema && setSchemaToShow([foundSchema]);
+      foundSchema && setDisplayedSchema([foundSchema]);
     } else {
-      setSchemaToShow([]);
+      setDisplayedSchema([]);
     }
   }, [endpoint.selectedSchema, availableSchemas]);
 
@@ -173,9 +173,9 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             variant="contained"
             color="secondary"
             disabled={!editMode}
-            endIcon={editMode ? <Loop /> : ''}
+            endIcon={editMode && <Loop />}
             onClick={() => setDrawer(true)}>
-            {schemaToShow[0] ? schemaToShow[0].name : 'Select Schema'}
+            {displayedSchema[0] ? displayedSchema[0].name : 'Select Schema'}
           </Button>
         </Grid>
       </Grid>
@@ -239,8 +239,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           handleClose={() => setDrawer(false)}
           buttonText={'Select schema'}
           dialogAction={handleSchemaChange}
-          setExternalElements={setSchemaToShow}
-          externalElements={schemaToShow}
+          setExternalElements={setDisplayedSchema}
+          externalElements={displayedSchema}
         />
       )}
     </>
