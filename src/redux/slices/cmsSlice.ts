@@ -32,7 +32,7 @@ export interface ICmsSlice {
       schemaDocuments: Schema[];
       schemasCount: number;
     };
-    schemasForDialog: {
+    dialogSchemas: {
       schemas: Schema[];
       schemasCount: number;
     };
@@ -54,7 +54,7 @@ const initialState: ICmsSlice = {
       schemaDocuments: [],
       schemasCount: 0,
     },
-    schemasForDialog: {
+    dialogSchemas: {
       schemas: [],
       schemasCount: 0,
     },
@@ -429,8 +429,8 @@ const cmsSlice = createSlice({
       state.data.schemas.schemasCount = action.payload.documentsCount;
     });
     builder.addCase(asyncGetCmsSchemasDialog.fulfilled, (state, action) => {
-      state.data.schemasForDialog.schemas = action.payload.results;
-      state.data.schemasForDialog.schemasCount = action.payload.documentsCount;
+      state.data.dialogSchemas.schemas = action.payload.results;
+      state.data.dialogSchemas.schemasCount = action.payload.documentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(

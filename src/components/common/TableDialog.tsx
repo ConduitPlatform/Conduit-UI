@@ -157,10 +157,10 @@ const TableDialog: React.FC<Props> = ({
         {data.tableData.length ? (
           <>
             <DataTable
+              singleSelect
               headers={headers}
               dsData={data.tableData}
               handleSelect={handleSelect}
-              handleSelectAll={handleSelectAll}
               selectedItems={selectedElements}
             />
             <Paginator

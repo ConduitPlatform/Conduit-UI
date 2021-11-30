@@ -1,12 +1,12 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
+  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
   Grid,
   InputLabel,
   Select,
-  TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import OperationsEnum from '../../../models/OperationsEnum';
@@ -18,7 +18,7 @@ import { Assignment } from '../../../models/customEndpoints/customEndpointsModel
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetCmsSchemasDialog } from '../../../redux/slices/cmsSlice';
-import SelectedElements from '../../common/SelectedElements';
+import { AddCircle, Loop } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -68,32 +68,21 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   };
 
   useEffect(() => {
-    if (endpoint.selectedSchema);
-    const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
-    foundSchema && setSelectedSchema([foundSchema]);
+    if (endpoint.selectedSchema) {
+      const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
+      foundSchema && setSelectedSchema([foundSchema]);
+    } else {
+      setSelectedSchema([]);
+    }
   }, [endpoint, availableSchemas]);
-
-  const handleAuthenticationChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
-    dispatch(setEndpointData({ authentication: event.target.checked }));
-  };
-
-  const handlePaginatedChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
-    dispatch(setEndpointData({ paginated: event.target.checked }));
-  };
-
-  const handleSortedChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
-    dispatch(setEndpointData({ sorted: event.target.checked }));
-  };
-
-  const { schemas: schemasForDialog, schemasCount } = useAppSelector(
-    (state) => state.cmsSlice.data.schemasForDialog
-  );
 
   useEffect(() => {
     if (selectedSchema[0] !== undefined) {
       const assignments: Assignment[] = [];
       const fields = getAvailableFieldsOfSchema(selectedSchema[0]._id, schemas);
       const fieldsWithTypes = findFieldsWithTypes(fields);
+
+      console.log(fieldsWithTypes);
 
       if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
         const fieldKeys = Object.keys(fields);
@@ -108,43 +97,63 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
         });
       }
 
+      console.log(assignments);
+
       dispatch(setEndpointData({ selectedSchema, assignments }));
       dispatch(setSchemaFields(fieldsWithTypes));
     }
-  }, [endpoint.selectedSchema, availableSchemas, selectedSchema, endpoint.operation]);
+  }, [
+    endpoint.selectedSchema,
+    availableSchemas,
+    selectedSchema,
+    endpoint.operation,
+    dispatch,
+    schemas,
+  ]);
+
+  const handleAuthenticationChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
+    dispatch(setEndpointData({ authentication: event.target.checked }));
+  };
+
+  const handlePaginatedChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
+    dispatch(setEndpointData({ paginated: event.target.checked }));
+  };
+
+  const handleSortedChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
+    dispatch(setEndpointData({ sorted: event.target.checked }));
+  };
+
+  const { schemas: schemasForDialog, schemasCount } = useAppSelector(
+    (state) => state.cmsSlice.data.dialogSchemas
+  );
 
   const getData = useCallback(
     (params: Pagination & Search) => {
-      dispatch(asyncGetCmsSchemasDialog({ ...params, enabled: true }));
+      if (drawer) {
+        dispatch(asyncGetCmsSchemasDialog({ ...params, enabled: true }));
+      }
     },
-    [dispatch]
+    [dispatch, drawer]
   );
 
   const headers = [
     { title: '_id' },
-    { title: 'Name', sort: 'name' },
+    { title: 'Name' },
     { title: 'Authenticated' },
     { title: 'CRUD' },
-    { title: 'Created at', sort: 'createdAt' },
-    { title: 'Updated at', sort: 'updatedAt' },
+    { title: 'Created at' },
+    { title: 'Updated at' },
   ];
 
   const formatSchemas = (schemasToFormat: Schema[]) => {
-    if (schemasToFormat !== undefined) {
-      return schemasToFormat.map((d) => ({
-        _id: d._id,
-        name: d.name,
-        authentication: d.authentication,
-        crudOperations: d.crudOperations,
-        createdAt: d.createdAt,
-        updatedAt: d.updatedAt,
-      }));
-    }
-  };
-
-  const removeSelectedSchema = (i: number) => {
-    const filteredArray = selectedSchema.filter((user, index) => index !== i);
-    setSelectedSchema(filteredArray);
+    return schemasToFormat.map((d) => ({
+      _id: d._id,
+      name: d.name,
+      authentication: d.authentication,
+      crudOperations: d.crudOperations,
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
+    }));
   };
 
   return (
@@ -172,13 +181,14 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
       </Grid>
       <Grid item xs={3}>
         <Grid item sm={12}>
-          <SelectedElements
-            selectedElements={selectedSchema[0] && [selectedSchema[0].name]}
-            handleButtonAction={() => setDrawer(true)}
-            removeSelectedElement={removeSelectedSchema}
-            buttonText={'Select Schema'}
-            header={'Selected schema'}
-          />
+          <Button
+            variant="contained"
+            color="secondary"
+            disabled={!editMode}
+            endIcon={editMode ? <Loop /> : <AddCircle />}
+            onClick={() => setDrawer(true)}>
+            {selectedSchema[0] ? selectedSchema[0].name : 'Select Schema'}
+          </Button>
         </Grid>
       </Grid>
       <Grid item xs={endpoint.operation === OperationsEnum.GET ? 2 : 4}>
@@ -235,7 +245,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           headers={headers}
           getData={getData}
           data={{
-            tableData: schemasForDialog !== undefined ? formatSchemas(schemasForDialog) : [],
+            tableData: formatSchemas(schemasForDialog),
             count: schemasCount,
           }}
           handleClose={() => setDrawer(false)}

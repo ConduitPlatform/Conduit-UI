@@ -73,6 +73,7 @@ interface Props extends PaperProps {
   handleRowClick?: (data: any) => void;
   tableRowProps?: TableRowProps;
   placeholder?: string;
+  singleSelect?: boolean;
 }
 
 const DataTable: React.FC<Props> = ({
@@ -91,6 +92,7 @@ const DataTable: React.FC<Props> = ({
   handleRowClick,
   tableRowProps,
   placeholder,
+  singleSelect,
   ...rest
 }) => {
   const classes = useStyles();
@@ -140,7 +142,7 @@ const DataTable: React.FC<Props> = ({
         <TableHead>
           <TableRow>
             <TableCell className={classes.header} align="left" padding="none">
-              {!collapsible && selectable && (
+              {!collapsible && selectable && !singleSelect && (
                 <Checkbox
                   color="primary"
                   onChange={onMenuItemSelectAll}
