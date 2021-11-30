@@ -83,13 +83,16 @@ const CustomQueries: FC<Props> = ({
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
 
-  const { schemas, customEndpoints } = useAppSelector((state) => state.cmsSlice.data);
+  const {
+    schemas: { schemaDocuments },
+    customEndpoints,
+  } = useAppSelector((state) => state.cmsSlice.data);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   const initializeData = useCallback(() => {
     if (selectedEndpoint) {
-      const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemas);
+      const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemaDocuments);
       let inputs = [];
       const queryGroup: any = [];
       let assignments = [];
@@ -160,7 +163,7 @@ const CustomQueries: FC<Props> = ({
       );
       dispatch(setSchemaFields(fieldsWithTypes));
     }
-  }, [dispatch, schemas, selectedEndpoint]);
+  }, [dispatch, schemaDocuments, selectedEndpoint]);
 
   useEffect(() => {
     initializeData();
@@ -180,14 +183,16 @@ const CustomQueries: FC<Props> = ({
   };
 
   const handleSubmit = (edit = false) => {
-    const schema = schemas.find((schema: Schema) => schema._id === endpoint.selectedSchema);
+    const schemaToSubmit = schemaDocuments.find(
+      (schemaDocument: Schema) => schemaDocument._id === endpoint.selectedSchema
+    );
 
     const query = prepareQuery(endpoint.queries);
 
     const data = {
       name: endpoint.name,
       operation: Number(endpoint.operation),
-      selectedSchema: schema?._id,
+      selectedSchema: schemaToSubmit?._id,
       authentication: endpoint.authentication,
       paginated: endpoint.paginated,
       sorted: endpoint.sorted,
@@ -335,7 +340,11 @@ const CustomQueries: FC<Props> = ({
                 </IconButton>
               )}
             </Grid>
-            <OperationSection schemas={schemas} editMode={editMode} availableSchemas={schemas} />
+            <OperationSection
+              schemas={schemaDocuments}
+              editMode={editMode}
+              availableSchemas={schemaDocuments}
+            />
             {renderDetails()}
             {renderSaveSection()}
           </Grid>

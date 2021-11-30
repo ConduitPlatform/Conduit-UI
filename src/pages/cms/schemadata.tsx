@@ -14,20 +14,20 @@ const SchemaDataPage = () => {
   };
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas(50));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50 }));
   }, [dispatch]);
 
   const getActiveSchemas = () => {
-    if (!data || !data.schemas) {
+    if (!data || !data.schemas.schemaDocuments) {
       return [];
     }
-    return data.schemas.filter((s: Schema) => s.enabled);
+    return data.schemas.schemaDocuments.filter((s: Schema) => s.enabled);
   };
 
   return (
     data &&
     data.schemas &&
-    data.schemas.length > 0 && (
+    data.schemas.schemaDocuments.length > 0 && (
       <SchemaData schemas={getActiveSchemas()} handleSchemaChange={handleSelectSchema} />
     )
   );

@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
-  deleteCmsSchemaRequest,
+  deleteCmsSchemasRequest,
   getCmsDocumentsByNameRequest,
   getCmsSchemasRequest,
   postCmsSchemaRequest,
   putCmsSchemaRequest,
   schemasFromOtherModules,
+  toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
 } from '../../http/CmsRequests';
 import {
@@ -19,15 +20,22 @@ import {
   editCustomEndpointsRequest,
   deleteCustomEndpointsRequest,
 } from '../../http/CustomEndpointsRequests';
-import { EndpointTypes, Schema, ToggleSchma } from '../../models/cms/CmsModels';
+import { EndpointTypes, Schema } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import { Search } from '../../models/http/HttpModels';
+import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
 export interface ICmsSlice {
   data: {
-    schemas: Schema[];
+    schemas: {
+      schemaDocuments: Schema[];
+      schemasCount: number;
+    };
+    dialogSchemas: {
+      schemas: Schema[];
+      schemasCount: number;
+    };
     schemasFromOtherModules: Schema[];
     documents: {
       documents: any;
@@ -42,7 +50,14 @@ export interface ICmsSlice {
 
 const initialState: ICmsSlice = {
   data: {
-    schemas: [],
+    schemas: {
+      schemaDocuments: [],
+      schemasCount: 0,
+    },
+    dialogSchemas: {
+      schemas: [],
+      schemasCount: 0,
+    },
     schemasFromOtherModules: [],
     documents: {
       documents: [],
@@ -55,44 +70,43 @@ const initialState: ICmsSlice = {
   },
 };
 
-export const asyncGetCmsSchemas = createAsyncThunk<
-  { results: Schema[]; documentsCount: number },
-  number
->('cms/getSchemas', async (limit = 30, thunkAPI) => {
-  thunkAPI.dispatch(setAppLoading(true));
-  try {
-    const { data } = await getCmsSchemasRequest(0, limit);
-    thunkAPI.dispatch(setAppDefaults());
-    return {
-      results: data.results as Schema[],
-      documentsCount: data.documentsCount as number,
-    };
-  } catch (error) {
-    thunkAPI.dispatch(setAppLoading(false));
-    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-    throw error;
+export const asyncGetCmsSchemas = createAsyncThunk(
+  'cms/getSchemas',
+  async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getCmsSchemasRequest(params);
+      thunkAPI.dispatch(setAppDefaults());
+      return {
+        results: data.results as Schema[],
+        documentsCount: data.documentsCount as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
   }
-});
+);
 
-export const asyncGetMoreCmsSchemas = createAsyncThunk<
-  { results: Schema[]; documentsCount: number },
-  any
->('cms/getMoreSchemas', async (arg, thunkAPI: any) => {
-  thunkAPI.dispatch(setAppLoading(true));
-  try {
-    const SchemaLength = thunkAPI.getState().cmsSlice.data.schemas.length;
-    const { data } = await getCmsSchemasRequest(SchemaLength, 20);
-    thunkAPI.dispatch(setAppDefaults());
-    return {
-      results: data.results as Schema[],
-      documentsCount: data.documentsCount as number,
-    };
-  } catch (error) {
-    thunkAPI.dispatch(setAppLoading(false));
-    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-    throw error;
+export const asyncGetCmsSchemasDialog = createAsyncThunk(
+  'cms/getSchemasDialog',
+  async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getCmsSchemasRequest(params);
+      thunkAPI.dispatch(setAppDefaults());
+      return {
+        dialogResults: data.results as Schema[],
+        dialogDocumentsCount: data.documentsCount as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
   }
-});
+);
 
 export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
   'cms/createNewSchema',
@@ -111,14 +125,35 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
   }
 );
 
-export const asyncToggleSchema = createAsyncThunk<ToggleSchma, string>(
+export const asyncToggleSchema = createAsyncThunk(
   'cms/toggleSchema',
-  async (_id, thunkAPI) => {
+  async (_id: string, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await toggleSchemaByIdRequest(_id);
+      await toggleSchemaByIdRequest(_id);
       thunkAPI.dispatch(setAppDefaults());
-      return data as ToggleSchma;
+      return _id;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncToggleMultipleSchemas = createAsyncThunk(
+  'cms/toggleMultiple',
+  async (params: { ids: string[]; enabled: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await toggleMultipleSchemasRequest(params);
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(
+          `Successfully ${!params.enabled ? 'archived' : 'enabled'} selected schemas`
+        )
+      );
+      thunkAPI.dispatch(setAppDefaults());
+      return params;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -145,15 +180,22 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
   }
 );
 
-export const asyncDeleteSelectedSchema = createAsyncThunk<string, { _id: string }>(
+export const asyncDeleteSelectedSchemas = createAsyncThunk(
   'cms/deleteSchema',
-  async (args, thunkAPI) => {
+  async (args: { ids: string[]; deleteData: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await deleteCmsSchemaRequest(args._id);
-      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted schema with id: ${args}`));
+      await deleteCmsSchemasRequest(args);
+      if (args.ids.length > 1) {
+        thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted selected schemas`));
+      } else {
+        thunkAPI.dispatch(
+          enqueueSuccessNotification(`Successfully deleted schema with id: ${args.ids[0]}`)
+        );
+      }
+
       thunkAPI.dispatch(setAppDefaults());
-      return args._id;
+      return args.ids;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -361,28 +403,9 @@ export const asyncFetchSchemasFromOtherModules = createAsyncThunk<any, any>(
   }
 );
 
-const findSchemaById = (_id: string, schemas: any) => {
-  const found = schemas.find((s: any) => s._id === _id);
+const findSchemaById = (_id: string, schemaDocuments: Schema[]) => {
+  const found = schemaDocuments.find((s) => s._id === _id);
   return found ? found : null;
-};
-
-const updateSchemaStatusByName = (updated: any, schemas: any) => {
-  return schemas.map((schema: any) => {
-    if (schema.name === updated.name) {
-      return {
-        ...schema,
-        enabled: updated.enabled,
-      };
-    } else {
-      return schema;
-    }
-  });
-};
-
-const deleteSchemaStatusById = (deleted: any, schemas: any) => {
-  return schemas.filter((schema: any) => {
-    return schema._id !== deleted;
-  });
 };
 
 const cmsSlice = createSlice({
@@ -390,7 +413,10 @@ const cmsSlice = createSlice({
   initialState,
   reducers: {
     setSelectedSchema(state, action) {
-      state.data.selectedSchema = findSchemaById(action.payload, state.data.schemas);
+      state.data.selectedSchema = findSchemaById(
+        action.payload,
+        state.data.schemas.schemaDocuments
+      );
     },
     clearSelectedSchema(state) {
       state.data.selectedSchema = null;
@@ -398,18 +424,30 @@ const cmsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
-      state.data.schemas = action.payload.results;
-      state.data.count = action.payload.documentsCount;
+      state.data.schemas.schemaDocuments = action.payload.results;
+      state.data.schemas.schemasCount = action.payload.documentsCount;
     });
-    builder.addCase(asyncGetMoreCmsSchemas.fulfilled, (state, action) => {
-      state.data.schemas.push(...action.payload.results);
-      state.data.count = action.payload.documentsCount;
+    builder.addCase(asyncGetCmsSchemasDialog.fulfilled, (state, action) => {
+      state.data.dialogSchemas.schemas = action.payload.dialogResults;
+      state.data.dialogSchemas.schemasCount = action.payload.dialogDocumentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
-      state.data.schemas = updateSchemaStatusByName(action.payload, state.data.schemas);
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
+        (schema) => schema._id !== action.payload
+      );
+      state.data.schemas.schemasCount = state.data.schemas.schemasCount - 1;
     });
-    builder.addCase(asyncDeleteSelectedSchema.fulfilled, (state, action) => {
-      state.data.schemas = deleteSchemaStatusById(action.payload, state.data.schemas);
+    builder.addCase(asyncToggleMultipleSchemas.fulfilled, (state, action) => {
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
+        (schema) =>
+          schema.enabled !== action.payload.enabled && !action.payload.ids.includes(schema._id)
+      );
+      state.data.schemas.schemasCount = state.data.schemas.schemasCount - action.payload.ids.length;
+    });
+    builder.addCase(asyncDeleteSelectedSchemas.fulfilled, (state, action) => {
+      state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
+        (schema) => !action.payload.includes(schema._id)
+      );
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
       state.data.documents = action.payload;

@@ -1,5 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
+  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -16,6 +17,10 @@ import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEn
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Schema } from '../../../models/cms/CmsModels';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
+import TableDialog from '../../common/TableDialog';
+import { Pagination, Search } from '../../../models/http/HttpModels';
+import { asyncGetCmsSchemasDialog } from '../../../redux/slices/cmsSlice';
+import { Loop } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -28,8 +33,10 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: '4px',
     },
   },
-  alignOptions: {
-    marginBottom: theme.spacing(-3),
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
@@ -42,8 +49,18 @@ interface Props {
 const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
+  const [drawer, setDrawer] = useState<boolean>(false);
+  const [displayedSchema, setDisplayedSchema] = useState<Schema[]>([]);
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
+
+  useEffect(() => {
+    if (endpoint.selectedSchema) {
+      const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
+      foundSchema && setDisplayedSchema([foundSchema]);
+    } else {
+      setDisplayedSchema([]);
+    }
+  }, [endpoint.selectedSchema, availableSchemas]);
 
   const handleOperationChange = (event: React.ChangeEvent<{ value: any }>) => {
     const operation = Number(event.target.value);
@@ -65,9 +82,9 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     dispatch(setEndpointData({ operation, assignments }));
   };
 
-  const handleSchemaChange = (event: React.ChangeEvent<{ value: any }>) => {
+  const handleSchemaChange = (changedSchema: Schema[]) => {
     const assignments: Assignment[] = [];
-    const selectedSchema = event.target.value;
+    const selectedSchema = changedSchema[0]._id;
     const fields = getAvailableFieldsOfSchema(selectedSchema, schemas);
     const fieldsWithTypes = findFieldsWithTypes(fields);
     if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
@@ -98,90 +115,141 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     dispatch(setEndpointData({ sorted: event.target.checked }));
   };
 
+  const { schemas: schemasForDialog, schemasCount } = useAppSelector(
+    (state) => state.cmsSlice.data.dialogSchemas
+  );
+
+  const getData = useCallback(
+    (params: Pagination & Search) => {
+      if (drawer) {
+        dispatch(asyncGetCmsSchemasDialog({ ...params }));
+      }
+    },
+    [dispatch, drawer]
+  );
+
+  const headers = [
+    { title: '_id' },
+    { title: 'Name' },
+    { title: 'Authenticated' },
+    { title: 'CRUD' },
+    { title: 'Enabled' },
+    { title: 'Created at' },
+    { title: 'Updated at' },
+  ];
+
+  const formatSchemas = (schemasToFormat: Schema[]) => {
+    return schemasToFormat.map((d) => ({
+      _id: d._id,
+      name: d.name,
+      authentication: d.authentication,
+      crudOperations: d.crudOperations,
+      enabled: d.enabled,
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
+    }));
+  };
+
   return (
     <>
-      <Grid item xs={1} />
-      <Grid item xs={3}>
-        <TextField
-          select
-          fullWidth
-          label={'Select Operation'}
-          variant="outlined"
-          className={classes.formControl}
-          value={endpoint.operation}
-          disabled={!editMode}
-          onChange={handleOperationChange}>
-          <MenuItem aria-label="None" value="" />
-          <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
-          <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
-          <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
-          <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
-        </TextField>
+      <Grid item container spacing={6} xs={12}>
+        <Grid item xs={1} />
+        <Grid item xs={3} className={classes.container}>
+          <TextField
+            select
+            fullWidth
+            label={'Select Operation'}
+            variant="outlined"
+            className={classes.formControl}
+            value={endpoint.operation}
+            disabled={!editMode}
+            onChange={handleOperationChange}>
+            <MenuItem aria-label="None" value="" />
+            <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
+            <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
+            <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
+            <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
+          </TextField>
+        </Grid>
+        <Grid item xs={3} className={classes.container}>
+          <Grid item sm={12}>
+            <Button
+              variant="contained"
+              color="secondary"
+              disabled={!editMode}
+              endIcon={editMode && <Loop />}
+              onClick={() => setDrawer(true)}>
+              {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
+            </Button>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={1}>
+          <FormControl>
+            <FormLabel>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      disabled={!editMode}
+                      color={'primary'}
+                      checked={endpoint.authentication}
+                      onChange={handleAuthenticationChange}
+                      name="authentication"
+                    />
+                  }
+                  label="Authenticated"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                      color={'primary'}
+                      checked={endpoint.paginated}
+                      onChange={handlePaginatedChange}
+                      name="paginated"
+                    />
+                  }
+                  label="Paginated"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                      color={'primary'}
+                      checked={endpoint.sorted}
+                      onChange={handleSortedChange}
+                      name="sorted"
+                    />
+                  }
+                  label="Sorted"
+                />
+              </FormGroup>
+            </FormLabel>
+          </FormControl>
+        </Grid>
       </Grid>
-      <Grid item xs={4}>
-        <TextField
-          select
-          label={'Select Schema'}
-          disabled={!editMode}
-          variant="outlined"
-          className={classes.formControl}
-          value={endpoint.selectedSchema}
-          onChange={handleSchemaChange}>
-          {availableSchemas.map((schema, index: number) => (
-            <MenuItem key={`schema-${index}`} value={schema._id}>
-              {schema.name}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid>
-      <Grid item xs={1} />
-      <Grid item xs={2} className={classes.alignOptions}>
-        <FormControl>
-          <FormLabel>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    disabled={!editMode}
-                    color={'primary'}
-                    checked={endpoint.authentication}
-                    onChange={handleAuthenticationChange}
-                    name="authentication"
-                  />
-                }
-                label="Authenticated"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                    color={'primary'}
-                    checked={endpoint.paginated}
-                    onChange={handlePaginatedChange}
-                    name="paginated"
-                  />
-                }
-                label="Paginated"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                    color={'primary'}
-                    checked={endpoint.sorted}
-                    onChange={handleSortedChange}
-                    name="sorted"
-                  />
-                }
-                label="Sorted"
-              />
-            </FormGroup>
-          </FormLabel>
-        </FormControl>
-      </Grid>
+      {editMode && (
+        <TableDialog
+          open={drawer}
+          singleSelect
+          title={'Select schema'}
+          headers={headers}
+          getData={getData}
+          data={{
+            tableData: formatSchemas(schemasForDialog),
+            count: schemasCount,
+          }}
+          handleClose={() => setDrawer(false)}
+          buttonText={'Select schema'}
+          dialogAction={handleSchemaChange}
+          setExternalElements={setDisplayedSchema}
+          externalElements={displayedSchema}
+        />
+      )}
     </>
   );
 };
