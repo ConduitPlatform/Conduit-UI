@@ -77,36 +77,34 @@ const CustomQueryRow: FC<Props> = ({
 }) => {
   const classes = useStyles();
 
-  const [selectedType, setSelectedType] = useState('');
+  const [schemaType, setSchemaType] = useState('');
 
   useEffect(() => {
-    let type = 'string';
-    if (typeof query.comparisonField.value === 'string') {
-      type = 'string';
-    } else if (typeof query.comparisonField.value === 'boolean') {
-      type = 'boolean';
-    } else if (typeof query.comparisonField.value === 'number') {
-      type = 'number';
-    } else if (Array.isArray(query.comparisonField.value)) {
-      type = 'array';
-    }
+    if (query.schemaField) {
+      if (query.schemaField.indexOf('.') !== -1) {
+        const splitQuery = query.schemaField.split('.');
+        const foundInnerSchema = availableFieldsOfSchema.find(
+          (field: any) => field.name === splitQuery[0]
+        );
+        if (foundInnerSchema.type) {
+          const innerSchemaType = foundInnerSchema.type[splitQuery[1]]?.type;
 
-    if (query.comparisonField.type === 'Input') {
-      const selectedInput = selectedInputs.find(
-        (input) => input.name === query.comparisonField.value
-      );
-      if (selectedInput && selectedInput.array) {
-        type = 'array';
+          setSchemaType(innerSchemaType);
+          return;
+        }
+        return;
+      } else {
+        const foundSchema = availableFieldsOfSchema.find(
+          (schema: any) => schema.name === query.schemaField
+        );
+        if (foundSchema && Array.isArray(foundSchema.type)) {
+          setSchemaType('Array');
+        } else {
+          foundSchema && setSchemaType(foundSchema.type);
+        }
       }
     }
-    setSelectedType(type);
-  }, [
-    query.schemaField,
-    query.type,
-    query.comparisonField.value,
-    query.comparisonField.type,
-    selectedInputs,
-  ]);
+  }, [availableFieldsOfSchema, query.schemaField]);
 
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
@@ -152,6 +150,7 @@ const CustomQueryRow: FC<Props> = ({
 
       const itemTop = (
         <MenuItem
+          disabled
           className={classes.menuItem}
           style={{
             fontWeight: 'bold',
@@ -199,24 +198,17 @@ const CustomQueryRow: FC<Props> = ({
           </MenuItem>
         );
       }
-
       return getSubFields(field);
     });
   };
 
-  const getCustomPlaceHolder = () => {
-    if (selectedType === 'number') {
-      return 'ex. 15';
-    }
-    return 'ex. John snow';
-  };
-
   const inputCustomChange = (e: React.ChangeEvent<{ value: any }>, i: number) => {
     let value = e.target.value;
-    if (selectedType === 'boolean') {
+
+    if (schemaType === 'Boolean') {
       value = value !== 'false';
     }
-    if (selectedType === 'number') {
+    if (schemaType === 'Number') {
       value = parseInt(value);
     }
 
@@ -252,25 +244,25 @@ const CustomQueryRow: FC<Props> = ({
           <MenuItem aria-label="None" value="" />
           <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
           <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
-          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER}>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER}>
             {'(>) greater than'}
           </MenuItem>
-          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER_EQ}>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER_EQ}>
             {'(>=) greater that or equal to'}
           </MenuItem>
-          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.LESS}>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS}>
             {'(<) less than'}
           </MenuItem>
-          <MenuItem disabled={selectedType !== 'number'} value={ConditionsEnum.LESS_EQ}>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS_EQ}>
             {'(<=) less that or equal to'}
           </MenuItem>
-          <MenuItem disabled={selectedType !== 'array'} value={ConditionsEnum.EQUAL_SET}>
+          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.EQUAL_SET}>
             (in) equal to any of the following
           </MenuItem>
-          <MenuItem disabled={selectedType !== 'array'} value={ConditionsEnum.NEQUAL_SET}>
+          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.NEQUAL_SET}>
             (not-in) not equal to any of the following
           </MenuItem>
-          <MenuItem disabled={selectedType !== 'array'} value={ConditionsEnum.CONTAIN}>
+          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.CONTAIN}>
             (array-contains) an array containing
           </MenuItem>
         </TextField>
@@ -327,7 +319,7 @@ const CustomQueryRow: FC<Props> = ({
       </Grid>
       {query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context' ? (
         <Grid item xs={2}>
-          {selectedType === 'Boolean' ? (
+          {schemaType === 'Boolean' ? (
             <Select
               disabled={!editMode}
               value={query.comparisonField.value}
@@ -340,16 +332,16 @@ const CustomQueryRow: FC<Props> = ({
             </Select>
           ) : (
             <TextField
-              type={selectedType?.toLowerCase()}
+              type={schemaType?.toLowerCase()}
               label={
-                query.comparisonField.type === 'Custom' ? 'Custom value' : 'Select from context'
+                query.comparisonField.type === 'Custom'
+                  ? `Custom (${schemaType})`
+                  : 'Select from context'
               }
               variant={'outlined'}
               disabled={!editMode}
               fullWidth
-              placeholder={
-                query.comparisonField.type === 'Custom' ? getCustomPlaceHolder() : 'ex. user._id'
-              }
+              placeholder={'ex. user._id'}
               value={query.comparisonField.value}
               onChange={(event) => inputCustomChange(event, index)}
             />
