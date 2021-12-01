@@ -5,20 +5,19 @@ import {
   ChevronRight,
   ExpandMore,
   EditOutlined,
-  AccountTree,
 } from '@material-ui/icons';
 import TreeView from '@material-ui/lab/TreeView';
 import Card, { CardProps } from '@material-ui/core/Card';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Typography, Tooltip, CardContent, Box } from '@material-ui/core';
+import { Tooltip, CardContent, Box } from '@material-ui/core';
 import { Schema } from '../../../models/cms/CmsModels';
 import getDeepValue from '../../../utils/getDeepValue';
 import { asyncGetSchemaDocument } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch } from '../../../redux/store';
-
-const buttonDimensions = 18;
+import TreeItemLabel from './TreeItemLabel';
+import { isFieldArray, isFieldObject, isFieldRelation } from './SchemaDataUtils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,9 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
   tree: {
     flexGrow: 1,
-  },
-  bold: {
-    fontWeight: 'bold',
   },
   arrow: {
     position: 'absolute',
@@ -73,8 +69,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   actionButton: {
-    height: buttonDimensions,
-    width: buttonDimensions,
+    height: theme.spacing(2.75),
+    width: theme.spacing(2.75),
   },
 }));
 
@@ -82,37 +78,6 @@ interface Document {
   id: string;
   data: any;
 }
-
-interface TreeItemLabelProps {
-  document: Document;
-  isRelation: boolean;
-}
-
-const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation }) => {
-  const classes = useStyles();
-  return (
-    <Typography
-      variant={'subtitle2'}
-      style={{ display: 'flex', alignItems: 'center', padding: '2px 0' }}>
-      <Typography component={'span'} className={classes.bold}>{`${document.id}: `}</Typography>
-      {Array.isArray(document.data) ? (
-        document.data.length > 0 ? (
-          '[...]'
-        ) : (
-          '[ ]'
-        )
-      ) : typeof document.data !== 'string' &&
-        document.data &&
-        Object.keys(document.data).length > 0 ? (
-        '{...}'
-      ) : isRelation ? (
-        <AccountTree color="primary" />
-      ) : (
-        `${document.data}`
-      )}
-    </Typography>
-  );
-};
 
 const createDocumentArray = (document: any) => {
   return Object.keys(document).map((key) => {
@@ -171,10 +136,9 @@ const SchemaDataCard: FC<Props> = ({
 
     const value = schema && getDeepValue(schema.fields, parentArray);
 
-    const isArray = document.data && Array.isArray(document.data);
-    const isObject =
-      document.data && typeof document.data !== 'string' && Object.keys(document.data).length > 0;
-    const isRelation = value && value.type === 'Relation';
+    const isArray = isFieldArray(document.data);
+    const isObject = isFieldObject(document.data);
+    const isRelation = isFieldRelation(value);
 
     if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
       setExpandable((prevState) => [...prevState, document.id]);
