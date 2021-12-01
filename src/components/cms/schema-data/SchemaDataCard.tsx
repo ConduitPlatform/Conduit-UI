@@ -1,23 +1,23 @@
 import React, { FC, useEffect, useState } from 'react';
-import {
-  KeyboardArrowDown,
-  DeleteOutline,
-  ChevronRight,
-  ExpandMore,
-  EditOutlined,
-} from '@material-ui/icons';
+import { ChevronRight, ExpandMore } from '@material-ui/icons';
 import TreeView from '@material-ui/lab/TreeView';
 import Card, { CardProps } from '@material-ui/core/Card';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Tooltip, CardContent, Box } from '@material-ui/core';
+import { CardContent } from '@material-ui/core';
 import { Schema } from '../../../models/cms/CmsModels';
 import getDeepValue from '../../../utils/getDeepValue';
 import { asyncGetSchemaDocument } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch } from '../../../redux/store';
 import TreeItemLabel from './TreeItemLabel';
-import { isFieldArray, isFieldObject, isFieldRelation } from './SchemaDataUtils';
+import {
+  createDocumentArray,
+  isFieldArray,
+  isFieldObject,
+  isFieldRelation,
+} from './SchemaDataUtils';
+import { DocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,35 +55,12 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
     zIndex: 1,
   },
-  buttonContainer: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    background: theme.palette.grey[600],
-    borderRadius: theme.spacing(0.5),
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  marginRight: {
-    marginRight: theme.spacing(1),
-  },
-  actionButton: {
-    height: theme.spacing(2.75),
-    width: theme.spacing(2.75),
-  },
 }));
 
 interface Document {
   id: string;
   data: any;
 }
-
-const createDocumentArray = (document: any) => {
-  return Object.keys(document).map((key) => {
-    return { id: key, data: document[key] };
-  });
-};
 
 interface Props extends CardProps {
   documents: any;
@@ -104,6 +81,7 @@ const SchemaDataCard: FC<Props> = ({
   const dispatch = useAppDispatch();
   const [expandable, setExpandable] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
+
   useEffect(() => {
     setExpandable([]);
   }, [documents]);
@@ -128,6 +106,16 @@ const SchemaDataCard: FC<Props> = ({
       documentId: documents._id,
     };
     dispatch(asyncGetSchemaDocument(params));
+  };
+
+  const handleArrowClasses = () => {
+    if (expanded.length < 1) return classes.arrow;
+    return clsx(classes.arrow, classes.arrowExpanded);
+  };
+
+  const handleCardClasses = () => {
+    if (expanded.length < 1) return clsx(classes.root, className);
+    return className;
   };
 
   const renderTree = (document: Document, parents?: any) => {
@@ -165,34 +153,17 @@ const SchemaDataCard: FC<Props> = ({
   };
 
   return (
-    <Card
-      className={expanded.length < 1 ? clsx(classes.root, className) : className}
-      variant={'outlined'}
-      {...rest}>
-      {expandable.length > 0 && (
-        <Box
-          className={
-            expanded.length < 1 ? classes.arrow : clsx(classes.arrow, classes.arrowExpanded)
-          }>
-          <Box className={classes.buttonContainer} onClick={() => handleExpandAll()}>
-            <KeyboardArrowDown />
-          </Box>
-        </Box>
-      )}
-      <Box className={classes.actionContainer}>
-        <Tooltip title="Edit document">
-          <Box
-            className={clsx(classes.buttonContainer, classes.marginRight)}
-            onClick={() => handleEdit()}>
-            <EditOutlined className={classes.actionButton} />
-          </Box>
-        </Tooltip>
-        <Tooltip title="Delete document">
-          <Box className={classes.buttonContainer} onClick={() => handleDelete()}>
-            <DeleteOutline className={classes.actionButton} />
-          </Box>
-        </Tooltip>
-      </Box>
+    <Card className={handleCardClasses()} variant={'outlined'} {...rest}>
+      <ExpandableArrow
+        className={handleArrowClasses()}
+        expandable={expandable}
+        handleExpandAll={handleExpandAll}
+      />
+      <DocumentActions
+        className={classes.actionContainer}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
       <CardContent>
         {createDocumentArray(documents).map((document, index) => (
           <TreeView

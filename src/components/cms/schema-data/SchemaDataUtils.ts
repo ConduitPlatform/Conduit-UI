@@ -9,3 +9,9 @@ export const isFieldArray = (data: any) => {
 export const isFieldRelation = (value: any) => {
   return value && value.type === 'Relation';
 };
+
+export const createDocumentArray = (document: any) => {
+  return Object.keys(document).map((key) => {
+    return { id: key, data: document[key] };
+  });
+};
