@@ -45,7 +45,6 @@ const InputsSection: FC<Props> = ({ editMode }) => {
 
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
-  console.log(endpoint);
   const handleAddInput = () => {
     const input = {
       name: '',

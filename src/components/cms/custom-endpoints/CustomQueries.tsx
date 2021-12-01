@@ -316,7 +316,6 @@ const CustomQueries: FC<Props> = ({
       return (
         <Box>
           <Grid container className={classes.mainContentInfo} spacing={2} alignItems="flex-end">
-            <Grid item xs={1} />
             <Grid item xs={5}>
               <TextField
                 disabled={!editMode}
@@ -327,7 +326,7 @@ const CustomQueries: FC<Props> = ({
                 onChange={handleNameChange}
               />
             </Grid>
-            <Grid item xs={1} />
+            <Grid item xs={2} />
             <Grid item xs={5} style={{ textAlign: 'end' }}>
               {!editMode && (
                 <IconButton aria-label="delete" onClick={handleDeleteClick}>

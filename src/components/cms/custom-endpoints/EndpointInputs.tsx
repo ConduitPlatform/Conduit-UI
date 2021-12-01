@@ -112,7 +112,7 @@ const EndpointInputs: FC<Props> = ({
       <Grid item xs={2}>
         <TextField
           select
-          label={'Select Operation'}
+          label={'Select Types'}
           variant="outlined"
           fullWidth
           value={input.type}
@@ -168,7 +168,7 @@ const EndpointInputs: FC<Props> = ({
                 onChange={(event) => handleInputIsOptional(event, index)}
                 name="Optional"
                 size={'small'}
-                disabled={!editMode}
+                disabled={!editMode || input.location === InputLocationEnum.URL_PARAMS}
               />
             }
             label="Optional"
