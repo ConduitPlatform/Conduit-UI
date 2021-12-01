@@ -11,14 +11,14 @@ import {
   asyncDeleteSchemaDocument,
   asyncEditSchemaDocument,
   asyncGetSchemaDocuments,
-} from '../../redux/slices/cmsSlice';
-import { Schema } from '../../models/cms/CmsModels';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+} from '../../../redux/slices/cmsSlice';
+import { Schema } from '../../../models/cms/CmsModels';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
-import ConfirmationDialog from '../common/ConfirmationDialog';
+import ConfirmationDialog from '../../common/ConfirmationDialog';
 import SchemaDataHeader from './SchemaDataHeader';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
-import useDebounce from '../../hooks/useDebounce';
+import useDebounce from '../../../hooks/useDebounce';
 
 const useStyles = makeStyles((theme) => ({
   root: {

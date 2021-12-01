@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
 import { asyncGetCmsSchemas } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
-import SchemaData from '../../components/cms/SchemaData';
+import SchemaData from '../../components/cms/schema-data/SchemaData';
 
 const SchemaDataPage = () => {
   const dispatch = useAppDispatch();

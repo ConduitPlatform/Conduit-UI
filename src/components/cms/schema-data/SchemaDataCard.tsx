@@ -13,10 +13,10 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Typography, Tooltip, CardContent, Box } from '@material-ui/core';
-import { Schema } from '../../models/cms/CmsModels';
-import getDeepValue from '../../utils/getDeepValue';
-import { asyncGetSchemaDocument } from '../../redux/slices/cmsSlice';
-import { useAppDispatch } from '../../redux/store';
+import { Schema } from '../../../models/cms/CmsModels';
+import getDeepValue from '../../../utils/getDeepValue';
+import { asyncGetSchemaDocument } from '../../../redux/slices/cmsSlice';
+import { useAppDispatch } from '../../../redux/store';
 
 const buttonDimensions = 18;
 

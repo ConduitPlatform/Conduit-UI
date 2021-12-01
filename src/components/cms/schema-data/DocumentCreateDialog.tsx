@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Schema } from '../../models/cms/CmsModels';
+import { Schema } from '../../../models/cms/CmsModels';
 import DocumentCreateFields from './DocumentCreateFields';
 
 const useStyles = makeStyles((theme) => ({
