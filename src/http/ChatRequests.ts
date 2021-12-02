@@ -6,7 +6,7 @@ export const getChatConfig = () => axios.get(`${CONDUIT_API}/admin/config/chat`)
 
 export const putChatConfig = (params: IChatConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/chat`, {
-    ...params,
+    config: { ...params },
   });
 
 export const createChatRoom = (params: { name: string; participants: string[] }) =>

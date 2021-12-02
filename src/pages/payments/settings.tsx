@@ -24,7 +24,6 @@ const Settings = () => {
     };
     dispatch(asyncUpdatePaymentSettings(body));
   };
-
   return <PaymentSettings handleSave={handleSettingsSave} settingsData={settings} />;
 };
 
