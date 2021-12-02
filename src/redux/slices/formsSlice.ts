@@ -129,9 +129,11 @@ export const asyncGetFormReplies = createAsyncThunk(
 export const asyncGetFormsConfig = createAsyncThunk('formsConfig/get', async (args, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
-    const { data } = await getFormsConfig();
+    const {
+      data: { config },
+    } = await getFormsConfig();
     thunkAPI.dispatch(setAppDefaults());
-    return data;
+    return config;
   } catch (error) {
     thunkAPI.dispatch(
       enqueueErrorNotification(`Could not get the forms config:${getErrorData(error)}`)
@@ -148,7 +150,7 @@ export const asyncEditFormsConfig = createAsyncThunk(
     try {
       const { data } = await updateFormsConfig(config);
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return data.config;
     } catch (error) {
       thunkAPI.dispatch(
         enqueueErrorNotification(`Could not update the config:${getErrorData(error)}`)

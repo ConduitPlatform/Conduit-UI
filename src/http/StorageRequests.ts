@@ -16,7 +16,9 @@ export const getStorageSettings = () => axios.get(`${CONDUIT_API}/admin/config/s
 
 export const putStorageSettings = (storageData: IStorageConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/storage`, {
-    ...storageData,
+    config: {
+      ...storageData,
+    },
   });
 
 export const getStorageContainers = (params: IGetStorageContainers) =>
