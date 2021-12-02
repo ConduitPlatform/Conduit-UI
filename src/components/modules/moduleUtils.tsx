@@ -18,7 +18,7 @@ export const getModuleIcon = (moduleName: string) => {
   switch (moduleName) {
     case 'authentication':
       return <People color={'inherit'} />;
-    case 'push-notifications':
+    case 'pushNotifications':
       return <Notifications color={'inherit'} />;
     case 'sms':
       return <Sms color={'inherit'} />;
@@ -41,6 +41,11 @@ export const getModuleIcon = (moduleName: string) => {
     default:
       return <ViewModule color={'inherit'} />;
   }
+};
+
+export const getModuleName = (moduleName: string) => {
+  if (moduleName === 'pushNotifications') return 'Push Notifications';
+  return moduleName;
 };
 
 export const handleModuleNavigation = (moduleName: string) => {
