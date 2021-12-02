@@ -60,7 +60,7 @@ export const handleModuleNavigation = (moduleName: string) => {
       return '/storage/files';
     case 'settings':
       return '/settings/clientsdk';
-    case 'push-notifications':
+    case 'pushNotifications':
       return '/push-notifications/send';
     case 'forms':
       return '/forms/view';

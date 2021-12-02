@@ -55,9 +55,11 @@ export const asyncGetNotificationConfig = createAsyncThunk(
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getNotificationConfig();
+      const {
+        data: { config },
+      } = await getNotificationConfig();
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -71,9 +73,11 @@ export const asyncSaveNotificationConfig = createAsyncThunk(
   async (settings: INotificationSettings, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putNotificationConfig(settings);
+      const {
+        data: { config },
+      } = await putNotificationConfig(settings);
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
