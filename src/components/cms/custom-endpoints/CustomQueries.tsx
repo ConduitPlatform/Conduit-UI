@@ -258,6 +258,12 @@ const CustomQueries: FC<Props> = ({
       if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
       invalidAssignments = hasInvalidAssignments(endpoint.assignments);
     }
+    if (endpoint.operation === OperationsEnum.PATCH) {
+      if (!endpoint.queries || endpoint.queries.length === 0) return true;
+      invalidQueries = hasInvalidQueries(endpoint.queries);
+      if (!endpoint.assignments || endpoint.assignments.length < 1) return true;
+      invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+    }
     if (endpoint.operation === OperationsEnum.DELETE) {
       if (!endpoint.queries || endpoint.queries.length === 0) return true;
       invalidQueries = hasInvalidQueries(endpoint.queries);
@@ -300,7 +306,10 @@ const CustomQueries: FC<Props> = ({
         <InputsSection editMode={editMode} />
         {endpoint.operation !== OperationsEnum.POST && <QueriesSection editMode={editMode} />}
         {(endpoint.operation === OperationsEnum.PUT ||
-          endpoint.operation === OperationsEnum.POST) && <AssignmentsSection editMode={editMode} />}
+          endpoint.operation === OperationsEnum.POST ||
+          endpoint.operation === OperationsEnum.PATCH) && (
+          <AssignmentsSection editMode={editMode} />
+        )}
       </>
     );
   };
@@ -334,7 +343,7 @@ const CustomQueries: FC<Props> = ({
                 </IconButton>
               )}
               {!editMode && (
-                <IconButton aria-label="edit" onClick={handleEditClick}>
+                <IconButton color="secondary" aria-label="edit" onClick={handleEditClick}>
                   <EditIcon />
                 </IconButton>
               )}

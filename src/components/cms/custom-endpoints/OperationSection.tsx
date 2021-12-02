@@ -83,7 +83,11 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     const selectedSchema = changedSchema[0]._id;
     const fields = getAvailableFieldsOfSchema(selectedSchema, schemas);
     const fieldsWithTypes = findFieldsWithTypes(fields);
-    if (endpoint.operation && endpoint.operation === OperationsEnum.POST) {
+
+    if (
+      endpoint.operation &&
+      (endpoint.operation === OperationsEnum.POST || endpoint.operation === OperationsEnum.PATCH)
+    ) {
       const fieldKeys = Object.keys(fields);
 
       fieldKeys.forEach((field) => {
@@ -118,7 +122,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const getData = useCallback(
     (params: Pagination & Search) => {
       if (drawer) {
-        dispatch(asyncGetCmsSchemasDialog({ ...params }));
+        dispatch(asyncGetCmsSchemasDialog({ ...params, enabled: true }));
       }
     },
     [dispatch, drawer]
@@ -135,7 +139,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   ];
 
   const formatSchemas = (schemasToFormat: Schema[]) => {
-    return schemasToFormat.map((d) => ({
+    return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
       authentication: d.authentication,
@@ -164,6 +168,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
             <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
             <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
+            <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={3} className={classes.container}>

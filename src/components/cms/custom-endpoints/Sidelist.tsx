@@ -197,13 +197,14 @@ const SideList: FC<Props> = ({
               label="Provider"
               value={operation}
               onChange={(event) => setOperation(event.target.value as number)}>
-              <MenuItem value="">
+              <MenuItem value="-2">
                 <em>All</em>
               </MenuItem>
               <MenuItem value={0}>GET</MenuItem>
               <MenuItem value={1}>POST</MenuItem>
               <MenuItem value={2}>PUT</MenuItem>
               <MenuItem value={3}>DELETE</MenuItem>
+              <MenuItem value={4}>PATCH</MenuItem>
             </Select>
           </FormControl>
         </Grid>
