@@ -272,9 +272,11 @@ export const asyncGetPaymentSettings = createAsyncThunk(
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getPaymentSettingsRequest();
+      const {
+        data: { config },
+      } = await getPaymentSettingsRequest();
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -288,9 +290,11 @@ export const asyncUpdatePaymentSettings = createAsyncThunk(
   async (body: any, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putPaymentSettingsRequest(body);
+      const {
+        data: { config },
+      } = await putPaymentSettingsRequest(body);
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

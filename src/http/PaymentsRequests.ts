@@ -54,4 +54,4 @@ export const getSubscriptionsRequest = (params: IRequest) =>
 export const getPaymentSettingsRequest = () => axios.get(`${CONDUIT_API}/admin/config/payments`);
 
 export const putPaymentSettingsRequest = (data: PaymentSettings) =>
-  axios.put(`${CONDUIT_API}/admin/config/payments`, { ...data });
+  axios.put(`${CONDUIT_API}/admin/config/payments`, { config: { ...data } });

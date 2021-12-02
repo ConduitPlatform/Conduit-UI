@@ -31,7 +31,7 @@ export const syncExternalTemplates = () =>
 export const getEmailSettingsRequest = () => axios.get(`${CONDUIT_API}/admin/config/email`);
 
 export const putEmailSettingsRequest = (data: EmailSettings) =>
-  axios.put(`${CONDUIT_API}/admin/config/email`, { ...data });
+  axios.put(`${CONDUIT_API}/admin/config/email`, { config: { ...data } });
 
 export const sendEmailRequest = (data: SendEmailData) =>
   axios.post(`${CONDUIT_API}/admin/email/send`, { ...data });

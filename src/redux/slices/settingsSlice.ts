@@ -26,9 +26,11 @@ export const asyncGetAvailableClients = createAsyncThunk(
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getAvailableClientsRequest();
+      const {
+        data: { clients },
+      } = await getAvailableClientsRequest();
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return clients;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -44,7 +46,6 @@ export const asyncGenerateNewClient = createAsyncThunk(
     try {
       const { data } = await generateNewClientRequest(platform);
       thunkAPI.dispatch(setAppDefaults());
-
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

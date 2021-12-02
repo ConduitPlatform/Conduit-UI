@@ -22,4 +22,6 @@ export const updateForm = (id: string, data: FormsModel) =>
 export const getFormsConfig = () => axios.get(`${CONDUIT_API}/admin/config/forms`);
 
 export const updateFormsConfig = (body: FormSettingsConfig) =>
-  axios.put(`${CONDUIT_API}/admin/config/forms`, body);
+  axios.put(`${CONDUIT_API}/admin/config/forms`, {
+    config: { ...body },
+  });
