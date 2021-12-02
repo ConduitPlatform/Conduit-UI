@@ -75,11 +75,13 @@ export const asyncGetCmsSchemas = createAsyncThunk(
   async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCmsSchemasRequest(params);
+      const {
+        data: { results },
+      } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
-        results: data.results as Schema[],
-        documentsCount: data.documentsCount as number,
+        results: results.schemas as Schema[],
+        documentsCount: results.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -94,11 +96,13 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
   async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCmsSchemasRequest(params);
+      const {
+        data: { results },
+      } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
-        dialogResults: data.results as Schema[],
-        dialogDocumentsCount: data.documentsCount as number,
+        dialogResults: results.schemas as Schema[],
+        dialogDocumentsCount: results.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
