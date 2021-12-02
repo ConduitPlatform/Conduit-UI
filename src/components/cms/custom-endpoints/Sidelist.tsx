@@ -148,6 +148,9 @@ const SideList: FC<Props> = ({
     if (endpoint.operation === OperationsEnum.GET) {
       return classes.getBadge;
     }
+    if (endpoint.operation === OperationsEnum.PATCH) {
+      return classes.patchBadge;
+    }
   };
 
   const getOperation = (endpoint: any) => {
@@ -162,6 +165,9 @@ const SideList: FC<Props> = ({
     }
     if (endpoint.operation === OperationsEnum.GET) {
       return 'GET';
+    }
+    if (endpoint.operation === OperationsEnum.PATCH) {
+      return 'PATCH';
     }
   };
 

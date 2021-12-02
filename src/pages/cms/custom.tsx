@@ -15,13 +15,18 @@ import useDebounce from '../../hooks/useDebounce';
 const Custom = () => {
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState<string>('');
-  const [operation, setOperation] = useState<number>(-5);
+  const [operation, setOperation] = useState<number>(-2);
 
   const debouncedSearch = useDebounce(search, 500);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50 }));
-    dispatch(asyncGetCustomEndpoints({ search: debouncedSearch, operation: operation }));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50, enabled: true }));
+    dispatch(
+      asyncGetCustomEndpoints({
+        search: debouncedSearch,
+        operation: operation !== -2 ? operation : undefined,
+      })
+    );
   }, [dispatch, debouncedSearch, operation]);
 
   const getEndpointsCallback = useCallback(() => {

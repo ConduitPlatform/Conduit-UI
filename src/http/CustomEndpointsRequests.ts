@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Search } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 
-export const getCustomEndpointsRequest = (params: Search & { operation: number }) => {
+export const getCustomEndpointsRequest = (params: Search & { operation?: number }) => {
   return axios.get(`${CONDUIT_API}/admin/cms/customEndpoints`, { params });
 };
 export const editCustomEndpointsRequest = (_id: string, endpointData: any) => {

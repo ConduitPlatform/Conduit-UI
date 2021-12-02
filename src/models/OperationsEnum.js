@@ -3,5 +3,6 @@ const OperationsEnum = {
   POST: 1, //'CREATE'
   PUT: 2, //'UPDATE/EDIT'
   DELETE: 3, //'DELETE'
+  PATCH: 4,
 };
 export default OperationsEnum;

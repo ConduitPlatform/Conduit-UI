@@ -77,9 +77,10 @@ export const asyncGetCmsSchemas = createAsyncThunk(
     try {
       const { data } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
+
       return {
-        results: data.results as Schema[],
-        documentsCount: data.documentsCount as number,
+        results: data.results.schemas as Schema[],
+        documentsCount: data.results.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -315,7 +316,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
 
 export const asyncGetCustomEndpoints = createAsyncThunk(
   'cms/getEndpoints',
-  async (params: Search & { operation: number }, thunkAPI) => {
+  async (params: Search & { operation?: number }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCustomEndpointsRequest(params);
