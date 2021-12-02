@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Typography } from '@material-ui/core';
+import { Input, Typography } from '@material-ui/core';
 import { AccountTree } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -12,6 +12,10 @@ const useStyles = makeStyles((theme) => ({
   bold: {
     fontWeight: 'bold',
   },
+  textInput: {
+    padding: 0,
+    fontSize: '14px',
+  },
 }));
 
 interface Document {
@@ -22,16 +26,16 @@ interface Document {
 interface TreeItemLabelProps {
   document: Document;
   isRelation: boolean;
+  edit: boolean;
 }
 
-const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation }) => {
+const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit }) => {
   const classes = useStyles();
 
   const handleLabelContent = () => {
     const isArray = Array.isArray(document.data);
     const isObject =
       typeof document.data !== 'string' && document.data && Object.keys(document.data).length > 0;
-
     if (isArray) {
       if (document.data.length > 0) {
         return '[...]';
@@ -44,12 +48,25 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation }) => {
     if (isRelation) {
       return <AccountTree color="primary" />;
     }
+    if (edit) {
+      return (
+        <Input
+          className={classes.textInput}
+          autoComplete="new-password"
+          value={document.data}
+          onChange={(event) => console.log(event.target.value)}
+          fullWidth
+        />
+      );
+    }
     return `${document.data}`;
   };
 
   return (
     <Typography variant={'subtitle2'} className={classes.root}>
-      <Typography component={'span'} className={classes.bold}>{`${document.id}: `}</Typography>
+      <Typography component={'span'} className={classes.bold}>
+        {`${document.id}: `}
+      </Typography>
       {handleLabelContent()}
     </Typography>
   );

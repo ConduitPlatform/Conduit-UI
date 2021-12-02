@@ -31,10 +31,6 @@ const useStyles = makeStyles((theme) => ({
     borderRight: `1px solid ${theme.palette.divider}`,
     minWidth: '300px',
   },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
   card: {
     margin: theme.spacing(1),
     paddingLeft: theme.spacing(2),
@@ -198,8 +194,8 @@ const SchemaData: FC<Props> = ({ schemas }) => {
                     schema={schemas[selectedSchema]}
                     documents={docs}
                     className={classes.card}
-                    handleEdit={() => onEdit(index)}
-                    handleDelete={() => onDelete(index)}
+                    // handleEdit={() => onEdit(index)}
+                    onDelete={() => onDelete(index)}
                     key={`card${index}`}
                   />
                 );
@@ -219,7 +215,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
           schema={schemas[selectedSchema]}
           handleCreate={handleCreateDocument}
           handleEdit={handleEditDocument}
-          handleCancel={handleCloseDialog}
+          // handleCancel={handleCloseDialog}
           editData={selectedDocument}
         />
       </Dialog>

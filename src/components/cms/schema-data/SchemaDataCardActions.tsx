@@ -48,16 +48,46 @@ export const ExpandableArrow: FC<ExpandableArrowProps> = ({
 };
 
 interface DocumentActionsProps extends BoxProps {
-  handleEdit: () => void;
-  handleDelete: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  edit: boolean;
 }
 
-export const DocumentActions: FC<DocumentActionsProps> = ({
+export const DocumentActions: FC<DocumentActionsProps> = ({ onEdit, onDelete, edit, ...rest }) => {
+  const classes = useStyles();
+  if (edit) return <></>;
+  return (
+    <Box {...rest}>
+      <Tooltip title="Edit document">
+        <Box
+          className={clsx(classes.buttonContainer, classes.marginRight)}
+          onClick={() => onEdit()}>
+          <EditOutlined className={classes.actionButton} />
+        </Box>
+      </Tooltip>
+      <Tooltip title="Delete document">
+        <Box className={classes.buttonContainer} onClick={() => onDelete()}>
+          <DeleteOutline className={classes.actionButton} />
+        </Box>
+      </Tooltip>
+    </Box>
+  );
+};
+
+interface EditDocumentActionsProps extends BoxProps {
+  handleEdit: () => void;
+  handleDelete: () => void;
+  edit: boolean;
+}
+
+export const EditDocumentActions: FC<EditDocumentActionsProps> = ({
   handleEdit,
   handleDelete,
+  edit,
   ...rest
 }) => {
   const classes = useStyles();
+  if (edit) return <></>;
   return (
     <Box {...rest}>
       <Tooltip title="Edit document">

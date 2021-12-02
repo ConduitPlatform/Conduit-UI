@@ -5,7 +5,7 @@ import Card, { CardProps } from '@material-ui/core/Card';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { CardContent } from '@material-ui/core';
+import { Box, CardContent } from '@material-ui/core';
 import { Schema } from '../../../models/cms/CmsModels';
 import getDeepValue from '../../../utils/getDeepValue';
 import { asyncGetSchemaDocument } from '../../../redux/slices/cmsSlice';
@@ -64,15 +64,15 @@ interface Document {
 
 interface Props extends CardProps {
   documents: any;
-  handleEdit: () => void;
-  handleDelete: () => void;
+  // handleEdit: () => void;
+  onDelete: () => void;
   schema: Schema;
 }
 
 const SchemaDataCard: FC<Props> = ({
   documents,
-  handleEdit,
-  handleDelete,
+  // handleEdit,
+  onDelete,
   schema,
   className,
   ...rest
@@ -81,6 +81,7 @@ const SchemaDataCard: FC<Props> = ({
   const dispatch = useAppDispatch();
   const [expandable, setExpandable] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [edit, setEdit] = useState<boolean>(false);
 
   useEffect(() => {
     setExpandable([]);
@@ -118,6 +119,10 @@ const SchemaDataCard: FC<Props> = ({
     return className;
   };
 
+  const onEdit = () => {
+    setEdit(!edit);
+  };
+
   const renderTree = (document: Document, parents?: any) => {
     const parentsArray = parents ? [...parents, document] : [document];
     const parentArray = parentsArray.map((parent: any) => parent.id);
@@ -140,7 +145,7 @@ const SchemaDataCard: FC<Props> = ({
           if (!isRelation || typeof document.data !== 'string') return;
           handleRelationClick(value.model, document.data, parentArray);
         }}
-        label={<TreeItemLabel document={document} isRelation={isRelation} />}>
+        label={<TreeItemLabel document={document} isRelation={isRelation} edit={edit} />}>
         {isArray
           ? document.data.map((node: Document, index: number) =>
               renderTree({ id: index.toString(), data: node }, parentsArray)
@@ -161,8 +166,9 @@ const SchemaDataCard: FC<Props> = ({
       />
       <DocumentActions
         className={classes.actionContainer}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        edit={edit}
       />
       <CardContent>
         {createDocumentArray(documents).map((document, index) => (
@@ -179,6 +185,7 @@ const SchemaDataCard: FC<Props> = ({
           </TreeView>
         ))}
       </CardContent>
+      {/*<Box>hello world</Box>*/}
     </Card>
   );
 };
