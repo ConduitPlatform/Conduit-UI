@@ -75,9 +75,14 @@ export const asyncGetCmsSchemas = createAsyncThunk(
   async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data: results } = await getCmsSchemasRequest(params);
+      const {
+        data: { results },
+      } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
-      return results;
+      return {
+        results: results.schemas as Schema[],
+        documentsCount: results.documentsCount as number,
+      };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -91,9 +96,14 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
   async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data: results } = await getCmsSchemasRequest(params);
+      const {
+        data: { results },
+      } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
-      return results;
+      return {
+        dialogResults: results.schemas as Schema[],
+        dialogDocumentsCount: results.documentsCount as number,
+      };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -419,13 +429,12 @@ const cmsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
-      console.log(action.payload);
-      state.data.schemas.schemaDocuments = action.payload.results.schemas;
-      state.data.schemas.schemasCount = action.payload.results.documentsCount;
+      state.data.schemas.schemaDocuments = action.payload.results;
+      state.data.schemas.schemasCount = action.payload.documentsCount;
     });
     builder.addCase(asyncGetCmsSchemasDialog.fulfilled, (state, action) => {
-      state.data.dialogSchemas.schemas = action.payload.results.schemas;
-      state.data.dialogSchemas.schemasCount = action.payload.results.dialogDocumentsCount;
+      state.data.dialogSchemas.schemas = action.payload.dialogResults;
+      state.data.dialogSchemas.schemasCount = action.payload.dialogDocumentsCount;
     });
     builder.addCase(asyncToggleSchema.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
