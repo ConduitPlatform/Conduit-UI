@@ -43,7 +43,6 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
           if (disabled) {
             return (
               <CustomListItem
-                selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}
                 title={getModuleName(module.moduleName)}
                 onClick={() => handleDisabledClick()}
