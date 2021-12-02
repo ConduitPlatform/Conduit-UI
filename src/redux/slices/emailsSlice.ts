@@ -191,9 +191,11 @@ export const asyncGetEmailSettings = createAsyncThunk(
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getEmailSettingsRequest();
+      const {
+        data: { config },
+      } = await getEmailSettingsRequest();
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -207,9 +209,11 @@ export const asyncUpdateEmailSettings = createAsyncThunk(
   async (updatedSettings: EmailSettings, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putEmailSettingsRequest(updatedSettings);
+      const {
+        data: { config },
+      } = await putEmailSettingsRequest(updatedSettings);
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
