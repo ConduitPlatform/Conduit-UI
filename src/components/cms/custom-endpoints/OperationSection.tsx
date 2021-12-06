@@ -96,7 +96,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           action: 0,
           assignmentField: { type: '', value: '' },
         };
-        assignments.push(assignment);
+
+        if (fields[field].required) assignments.push(assignment);
       });
     }
     dispatch(setEndpointData({ selectedSchema, assignments }));

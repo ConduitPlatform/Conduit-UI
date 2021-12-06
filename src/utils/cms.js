@@ -12,7 +12,11 @@ const findFieldsWithTypes = (fields) => {
   const fieldKeys = Object.keys(fields);
   const fieldsWithTypes = [];
   fieldKeys.forEach((field) => {
-    fieldsWithTypes.push({ name: field, type: fields[field].type });
+    fieldsWithTypes.push({
+      name: field,
+      type: fields[field].type,
+      required: fields[field].required,
+    });
   });
   return fieldsWithTypes;
 };
