@@ -1,6 +1,6 @@
 import { Grid, IconButton, MenuItem, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { FC, Fragment, useCallback } from 'react';
+import React, { FC, Fragment, useCallback, useState } from 'react';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import OperationEnum from '../../../models/OperationsEnum';
@@ -56,6 +56,7 @@ const EndpointAssignments: FC<Props> = ({
   availableFieldsOfSchema,
 }) => {
   const classes = useStyles();
+
   const handleAssignmentFieldChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
     const value = event.target.value;
     const currentAssignments = selectedAssignments.slice();
@@ -71,6 +72,17 @@ const EndpointAssignments: FC<Props> = ({
 
   const isArrayType = useCallback(
     (fieldName) => {
+      if (fieldName && fieldName.indexOf('.') !== -1) {
+        const splitQuery = fieldName.split('.');
+        const foundInnerSchema = availableFieldsOfSchema.find(
+          (field: any) => field.name === splitQuery[0]
+        );
+        if (foundInnerSchema?.type) {
+          const innerSchemaType = foundInnerSchema?.type[splitQuery[1]]?.type;
+          return Array.isArray(innerSchemaType);
+        }
+      }
+
       const field: any = availableFieldsOfSchema.find((f: any) => f.name === fieldName);
       if (field) {
         return Array.isArray(field.type);
@@ -82,6 +94,16 @@ const EndpointAssignments: FC<Props> = ({
 
   const isNumberType = useCallback(
     (fieldName) => {
+      if (fieldName && fieldName.indexOf('.') !== -1) {
+        const splitQuery = fieldName.split('.');
+        const foundInnerSchema = availableFieldsOfSchema.find(
+          (field: any) => field.name === splitQuery[0]
+        );
+        if (foundInnerSchema?.type) {
+          const innerSchemaType = foundInnerSchema?.type[splitQuery[1]]?.type;
+          return innerSchemaType === 'Number';
+        }
+      }
       const field: any = availableFieldsOfSchema.find((f: any) => f.name === fieldName);
       if (field) {
         return field.type === 'Number';
@@ -98,6 +120,7 @@ const EndpointAssignments: FC<Props> = ({
     const value = event.target.value;
     const currentAssignments = deepClone(selectedAssignments);
     const input = currentAssignments[index];
+    console.log(input);
     if (input) {
       input.action = Number(value);
       setSelectedAssignments(currentAssignments);
@@ -159,6 +182,9 @@ const EndpointAssignments: FC<Props> = ({
       <MenuItem
         className={classes.menuItem}
         dense
+        disabled={selectedAssignments.find((assignment: any) =>
+          assignment.schemaField.includes(`${valuePrefix}.${suffix}`)
+        )}
         style={{
           fontWeight: 'bold',
           paddingLeft: 8,
@@ -175,7 +201,12 @@ const EndpointAssignments: FC<Props> = ({
           <MenuItem
             dense
             className={classes.menuItem}
-            disabled={Array.isArray(field.type)}
+            disabled={
+              Array.isArray(field.type) ||
+              selectedAssignments.find((assignment: any) =>
+                assignment.schemaField.includes(field.name)
+              )
+            }
             style={{
               background: 'rgba(0, 0, 0, 0.15)',
               paddingLeft: 24,
@@ -218,7 +249,13 @@ const EndpointAssignments: FC<Props> = ({
             <MenuItem
               dense
               className={classes.menuItem}
-              disabled={Array.isArray(field.type)}
+              disabled={
+                Array.isArray(field.type) ||
+                (selectedAssignments &&
+                  selectedAssignments.find(
+                    (assignment: any) => assignment.schemaField === `${field.name}.${item}`
+                  ))
+              }
               style={{
                 background: 'rgba(0, 0, 0, 0.05)',
               }}
@@ -240,7 +277,14 @@ const EndpointAssignments: FC<Props> = ({
     return availableFieldsOfSchema.map((field: any, index: number) => {
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
-          <MenuItem className={classes.menuItem} key={`idxO-${index}-field`} value={field.name}>
+          <MenuItem
+            disabled={
+              selectedAssignments &&
+              selectedAssignments.find((assignment: any) => assignment.schemaField === field.name)
+            }
+            className={classes.menuItem}
+            key={`idxO-${index}-field`}
+            value={field.name}>
             {field.name}
           </MenuItem>
         );
