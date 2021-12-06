@@ -37,6 +37,8 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
     dispatch(setEndpointData({ assignments: [...endpoint.assignments, assignment] }));
   };
 
+  console.log('log', endpoint.assignments);
+
   const handleAssignmentChanges = (assignments: Assignment[]) => {
     dispatch(setEndpointData({ assignments }));
   };
@@ -50,7 +52,11 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
       </Grid>
       <Grid item xs={6} style={{ textAlign: 'end', padding: '0' }}>
         <Button
-          disabled={!editMode || endpoint.operation === OperationsEnum.POST}
+          disabled={
+            !editMode ||
+            (endpoint.operation === OperationsEnum.POST &&
+              schemaFields.length <= endpoint.assignments.length)
+          }
           variant="text"
           color={'secondary'}
           className={classes.button}

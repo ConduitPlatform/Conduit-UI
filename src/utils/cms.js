@@ -1,12 +1,3 @@
-const findFieldsWithTypes = (fields) => {
-  const fieldKeys = Object.keys(fields);
-  const fieldsWithTypes = [];
-  fieldKeys.forEach((field) => {
-    fieldsWithTypes.push({ name: field, type: fields[field].type });
-  });
-  return fieldsWithTypes;
-};
-
 const getAvailableFieldsOfSchema = (schemaSelected, schemas) => {
   if (schemaSelected) {
     const found = schemas.find((schema) => schema._id === schemaSelected);
@@ -15,6 +6,15 @@ const getAvailableFieldsOfSchema = (schemaSelected, schemas) => {
     }
     return {};
   }
+};
+
+const findFieldsWithTypes = (fields) => {
+  const fieldKeys = Object.keys(fields);
+  const fieldsWithTypes = [];
+  fieldKeys.forEach((field) => {
+    fieldsWithTypes.push({ name: field, type: fields[field].type });
+  });
+  return fieldsWithTypes;
 };
 
 const hasInvalidQueries = (queriesGroup) => {

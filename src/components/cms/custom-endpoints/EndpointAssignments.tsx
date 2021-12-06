@@ -27,11 +27,29 @@ const useStyles = makeStyles((theme) => ({
   remove: {
     marginBottom: theme.spacing(1.5),
   },
+  menuItem: {
+    minHeight: 0,
+    margin: theme.spacing(0),
+    padding: theme.spacing(0),
+    '&.MuiMenuItem-dense': {
+      paddingLeft: 12,
+    },
+    '&.Mui-selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: 'white',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
+    },
+  },
+  alignment: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 const EndpointAssignments: FC<Props> = ({
   editMode,
-  operationType,
   selectedInputs,
   selectedAssignments,
   setSelectedAssignments,
@@ -135,6 +153,102 @@ const EndpointAssignments: FC<Props> = ({
     setSelectedAssignments(currentAssignments);
   };
 
+  const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
+    const keys = Object?.keys(field?.type);
+    const itemTop = (
+      <MenuItem
+        className={classes.menuItem}
+        dense
+        style={{
+          fontWeight: 'bold',
+          paddingLeft: 8,
+          background: 'rgba(0, 0, 0, 0.05)',
+        }}
+        value={`${valuePrefix}.${suffix}`}>
+        {suffix}
+      </MenuItem>
+    );
+
+    const restItems = keys?.map((item, i) => {
+      if (typeof field.type === 'string' || Array.isArray(field.type)) {
+        return (
+          <MenuItem
+            dense
+            className={classes.menuItem}
+            disabled={Array.isArray(field.type)}
+            style={{
+              background: 'rgba(0, 0, 0, 0.15)',
+              paddingLeft: 24,
+            }}
+            key={`ido-${i}-field`}
+            value={`${valuePrefix}.${suffix}.${item}`}>
+            {item}
+          </MenuItem>
+        );
+      }
+    });
+
+    return [itemTop, ...restItems];
+  };
+
+  const getSubFields = (field: any) => {
+    if (field?.type) {
+      const keys = Object?.keys(field?.type);
+
+      const itemTop = (
+        <MenuItem
+          disabled
+          className={classes.menuItem}
+          style={{
+            fontWeight: 'bold',
+          }}
+          value={field.name}>
+          {field.name}
+        </MenuItem>
+      );
+
+      const restItems = keys?.map((item, i) => {
+        if (
+          typeof field.type?.[item]?.type === 'string' ||
+          field.type?.[item]?.type instanceof String ||
+          field.type?.[item]?.type === undefined ||
+          Array.isArray(field.type?.[item]?.type)
+        ) {
+          return (
+            <MenuItem
+              dense
+              className={classes.menuItem}
+              disabled={Array.isArray(field.type)}
+              style={{
+                background: 'rgba(0, 0, 0, 0.05)',
+              }}
+              key={`idSec-${i}-field`}
+              value={`${field.name}.${item}`}>
+              {item}
+            </MenuItem>
+          );
+        } else {
+          return getSecondSubField(field.type?.[item], field.name, item);
+        }
+      });
+
+      return [itemTop, ...restItems];
+    }
+  };
+
+  const prepareOptions = () => {
+    return availableFieldsOfSchema.map((field: any, index: number) => {
+      if (typeof field.type === 'string' || Array.isArray(field.type)) {
+        return (
+          <MenuItem className={classes.menuItem} key={`idxO-${index}-field`} value={field.name}>
+            {field.name}
+          </MenuItem>
+        );
+      }
+      return getSubFields(field);
+    });
+  };
+
   return selectedAssignments.map((assignment: Assignment, index: number) => (
     <>
       <Fragment key={`assignment-${index}`}>
@@ -151,11 +265,7 @@ const EndpointAssignments: FC<Props> = ({
             disabled={!editMode}
             onChange={(event) => handleAssignmentFieldChange(event, index)}>
             <MenuItem aria-label="None" value="" />
-            {availableFieldsOfSchema.map((field: any, index: number) => (
-              <MenuItem key={`idx-${index}-field`} value={field.name}>
-                {field.name}
-              </MenuItem>
-            ))}
+            {prepareOptions()}
           </TextField>
         </Grid>
         <Grid item xs={2}>
@@ -249,14 +359,12 @@ const EndpointAssignments: FC<Props> = ({
         )}
         <Grid item xs={1} />
         <Grid item xs={1} className={classes.remove}>
-          {operationType !== OperationEnum.POST && (
-            <IconButton
-              disabled={!editMode}
-              size="small"
-              onClick={() => handleRemoveAssignment(index)}>
-              <RemoveCircleOutlineIcon />
-            </IconButton>
-          )}
+          <IconButton
+            disabled={!editMode}
+            size="small"
+            onClick={() => handleRemoveAssignment(index)}>
+            <RemoveCircleOutlineIcon />
+          </IconButton>
         </Grid>
       </Fragment>
     </>
