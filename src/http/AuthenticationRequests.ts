@@ -13,7 +13,7 @@ export const createNewUsers = (values: { email: string; password: string }) =>
   });
 
 export const editUser = (values: AuthUser) =>
-  axios.put(`${CONDUIT_API}/admin/authentication/users/${values._id}`, {
+  axios.patch(`${CONDUIT_API}/admin/authentication/users/${values._id}`, {
     ...values,
   });
 
