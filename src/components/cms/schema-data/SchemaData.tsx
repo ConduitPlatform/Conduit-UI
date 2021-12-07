@@ -19,6 +19,8 @@ import ConfirmationDialog from '../../common/ConfirmationDialog';
 import SchemaDataHeader from './SchemaDataHeader';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 import useDebounce from '../../../hooks/useDebounce';
+import parse from 'mongodb-query-parser';
+import { accepts } from 'mongodb-language-model';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,6 +87,13 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   });
   const [search, setSearch] = useState<string>('');
 
+  useEffect(() => {
+    console.log(accepts(search));
+    if (accepts(search)) {
+      console.log(parse.parseFilter(search));
+    }
+  }, [search]);
+
   const debouncedSearch: string = useDebounce(search, 500);
 
   const getSchemaDocuments = useCallback(() => {
@@ -93,9 +102,9 @@ const SchemaData: FC<Props> = ({ schemas }) => {
       name: schemas[selectedSchema]?.name,
       skip: filters.skip,
       limit: filters.limit,
-      search: debouncedSearch,
+      search: debouncedSearch ? debouncedSearch : {},
     };
-    dispatch(asyncGetSchemaDocuments(params));
+    // dispatch(asyncGetSchemaDocuments(params));
   }, [debouncedSearch, dispatch, filters.limit, filters.skip, schemas, selectedSchema]);
 
   useEffect(() => {

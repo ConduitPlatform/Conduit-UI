@@ -30,6 +30,8 @@
     "lodash": "^4.17.15",
     "memoize-one": "^6.0.0",
     "moment": "^2.24.0",
+    "mongodb-language-model": "^2.3.0",
+    "mongodb-query-parser": "^2.4.3",
     "next": "^11.1.2",
     "next-redux-wrapper": "^5.0.0",
     "notistack": "^1.0.10",
