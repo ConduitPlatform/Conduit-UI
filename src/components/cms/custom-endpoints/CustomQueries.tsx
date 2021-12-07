@@ -62,6 +62,8 @@ interface Props {
   handleDelete: any;
   search: string;
   setSearch: (search: string) => void;
+  limit: number;
+  setLimit: (limit: number) => void;
   operation: number;
   setOperation: (operation: number) => void;
 }
@@ -70,6 +72,8 @@ const CustomQueries: FC<Props> = ({
   handleCreate,
   handleEdit,
   handleDelete,
+  limit,
+  setLimit,
   search,
   setSearch,
   operation,
@@ -84,7 +88,7 @@ const CustomQueries: FC<Props> = ({
 
   const {
     schemas: { schemaDocuments },
-    customEndpoints,
+    customEndpoints: { endpoints },
   } = useAppSelector((state) => state.cmsSlice.data);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -369,10 +373,12 @@ const CustomQueries: FC<Props> = ({
             setOperation={setOperation}
             search={search}
             setSearch={setSearch}
-            endpoints={customEndpoints}
+            endpoints={endpoints}
             selectedEndpoint={selectedEndpoint}
             handleAddNewEndpoint={handleAddNewEndpoint}
             handleListItemSelect={handleListItemSelect}
+            limit={limit}
+            setLimit={setLimit}
           />
         </Grid>
         <Grid item xs={8}>

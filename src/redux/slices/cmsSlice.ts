@@ -41,7 +41,11 @@ export interface ICmsSlice {
       documents: any;
       documentsCount: number;
     };
-    customEndpoints: EndpointTypes[];
+    customEndpoints: {
+      endpoints: EndpointTypes[];
+      count: number;
+      loading: boolean;
+    };
     count: number;
     config: any;
     selectedSchema: Schema | null;
@@ -63,7 +67,11 @@ const initialState: ICmsSlice = {
       documents: [],
       documentsCount: 0,
     },
-    customEndpoints: [],
+    customEndpoints: {
+      endpoints: [],
+      count: 0,
+      loading: false,
+    },
     count: 0,
     config: null,
     selectedSchema: null,
@@ -316,12 +324,14 @@ export const asyncEditSchemaDocument = createAsyncThunk(
 
 export const asyncGetCustomEndpoints = createAsyncThunk(
   'cms/getEndpoints',
-  async (params: Search & { operation?: number }, thunkAPI) => {
+  async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCustomEndpointsRequest(params);
+      const {
+        data: { customEndpoints, count },
+      } = await getCustomEndpointsRequest(params);
       thunkAPI.dispatch(setAppDefaults());
-      return data.results as EndpointTypes[];
+      return { endpoints: customEndpoints as EndpointTypes[], count: count };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -457,7 +467,12 @@ const cmsSlice = createSlice({
       state.data.documents.documents.push(...action.payload.documents);
     });
     builder.addCase(asyncGetCustomEndpoints.fulfilled, (state, action) => {
-      state.data.customEndpoints = action.payload;
+      state.data.customEndpoints.endpoints = action.payload.endpoints;
+      state.data.customEndpoints.count = action.payload.count;
+      state.data.customEndpoints.loading = false;
+    });
+    builder.addCase(asyncGetCustomEndpoints.pending, (state, action) => {
+      state.data.customEndpoints.loading = true;
     });
     builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
       state.data.schemasFromOtherModules = action.payload.results;

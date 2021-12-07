@@ -15,6 +15,7 @@ import useDebounce from '../../hooks/useDebounce';
 const Custom = () => {
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState<string>('');
+  const [limit, setLimit] = useState<number>(10);
   const [operation, setOperation] = useState<number>(-2);
 
   const debouncedSearch = useDebounce(search, 500);
@@ -23,15 +24,17 @@ const Custom = () => {
     dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50, enabled: true }));
     dispatch(
       asyncGetCustomEndpoints({
+        skip: 0,
+        limit: limit,
         search: debouncedSearch,
         operation: operation !== -2 ? operation : undefined,
       })
     );
-  }, [dispatch, debouncedSearch, operation]);
+  }, [dispatch, debouncedSearch, operation, limit]);
 
   const getEndpointsCallback = useCallback(() => {
-    dispatch(asyncGetCustomEndpoints({ search, operation: operation }));
-  }, [dispatch, search, operation]);
+    dispatch(asyncGetCustomEndpoints({ skip: 0, limit: limit, search, operation: operation }));
+  }, [dispatch, search, operation, limit]);
 
   const handleCreateCustomEndpoint = (data: any) => {
     if (data) {
@@ -59,6 +62,8 @@ const Custom = () => {
       setOperation={setOperation}
       search={search}
       setSearch={setSearch}
+      limit={limit}
+      setLimit={setLimit}
       handleCreate={handleCreateCustomEndpoint}
       handleEdit={handleEditCustomEndpoint}
       handleDelete={handleDeleteCustomEndpoint}

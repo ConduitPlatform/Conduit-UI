@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useRef } from 'react';
 import {
   Box,
   Divider,
@@ -21,6 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
 
 import OperationsEnum from '../../../models/OperationsEnum';
+import { useAppSelector } from '../../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -125,6 +126,8 @@ interface Props {
   setSearch: (search: string) => void;
   operation: number;
   setOperation: (operation: number) => void;
+  limit: number;
+  setLimit: (limit: number) => void;
 }
 
 const SideList: FC<Props> = ({
@@ -136,8 +139,29 @@ const SideList: FC<Props> = ({
   setSearch,
   operation,
   setOperation,
+  limit,
+  setLimit,
 }) => {
   const classes = useStyles();
+
+  const observer: any = useRef();
+
+  const { count, loading } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+
+  const lastEndpointElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (count < limit) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setLimit((prevLimit) => prevLimit + 10);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading]
+  );
 
   const getBadgeColor = (endpoint: any) => {
     if (endpoint.operation === OperationsEnum.POST) {
@@ -172,6 +196,38 @@ const SideList: FC<Props> = ({
     }
     if (endpoint.operation === OperationsEnum.PATCH) {
       return 'PATCH';
+    }
+  };
+
+  const prepareEndpoints = () => {
+    if (endpoints && endpoints.length) {
+      return (
+        <List className={classes.list}>
+          {endpoints.map((endpoint: any) => (
+            <ListItem
+              button
+              ref={lastEndpointElementRef}
+              key={`endpoint-${endpoint._id}`}
+              className={classes.listItem}
+              onClick={() => handleListItemSelect(endpoint)}
+              selected={selectedEndpoint?._id === endpoint?._id}>
+              <ListItemIcon>
+                <Paper elevation={12} className={getBadgeColor(endpoint)}>
+                  {getOperation(endpoint)}
+                </Paper>
+              </ListItemIcon>
+              <ListItemText primary={endpoint.name} />
+            </ListItem>
+          ))}
+        </List>
+      );
+    }
+    if (!endpoints || !endpoints.length) {
+      return (
+        <Box className={classes.noEndpoints}>
+          <Typography>No available endpoints</Typography>
+        </Box>
+      );
     }
   };
 
@@ -219,29 +275,7 @@ const SideList: FC<Props> = ({
         </Grid>
       </Grid>
       <Divider flexItem variant="middle" className={classes.divider} />
-      <List className={classes.list}>
-        {endpoints.length ? (
-          endpoints.map((endpoint: any) => (
-            <ListItem
-              button
-              key={`endpoint-${endpoint._id}`}
-              className={classes.listItem}
-              onClick={() => handleListItemSelect(endpoint)}
-              selected={selectedEndpoint?._id === endpoint?._id}>
-              <ListItemIcon>
-                <Paper elevation={12} className={getBadgeColor(endpoint)}>
-                  {getOperation(endpoint)}
-                </Paper>
-              </ListItemIcon>
-              <ListItemText primary={endpoint.name} />
-            </ListItem>
-          ))
-        ) : (
-          <Box className={classes.noEndpoints}>
-            <Typography>No available endpoints</Typography>
-          </Box>
-        )}
-      </List>
+      {prepareEndpoints()}
     </Box>
   );
 };
