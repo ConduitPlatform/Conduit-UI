@@ -212,7 +212,7 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
 
 export const asyncGetSchemaDocuments = createAsyncThunk(
   'cms/getDocs',
-  async (params: { name: string; skip: number; limit: number; search?: string }, thunkAPI) => {
+  async (params: { name: string; skip: number; limit: number; query: any }, thunkAPI) => {
     try {
       const { data } = await getCmsDocumentsByNameRequest(params);
       return data;

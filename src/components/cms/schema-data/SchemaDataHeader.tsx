@@ -8,6 +8,7 @@ import { BoxProps } from '@material-ui/core/Box/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
+import useParseQuery from './useParseQuery';
 
 const useStyles = makeStyles((theme) => ({
   topContainer: {
@@ -18,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
   searchInput: {
     flex: 1,
+    borderColor: 'red',
   },
   divider: {
     width: theme.spacing(1),
@@ -52,6 +54,12 @@ const SchemaDataHeader: FC<Props> = ({
   ...rest
 }) => {
   const classes = useStyles();
+
+  const isValidSearch = useParseQuery(search, 0);
+
+  const isSearchError = () => {
+    if (search && Object.keys(isValidSearch).length === 0) return true;
+  };
 
   const handleLimitChange = (value: number) => {
     setFilters({
@@ -96,6 +104,7 @@ const SchemaDataHeader: FC<Props> = ({
               </InputAdornment>
             ),
           }}
+          error={isSearchError()}
         />
         <Box className={classes.divider} />
         <Button variant="contained" color="secondary" onClick={() => console.log('refresh')}>

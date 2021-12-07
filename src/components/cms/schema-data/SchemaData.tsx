@@ -18,9 +18,7 @@ import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
 import SchemaDataHeader from './SchemaDataHeader';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
-import useDebounce from '../../../hooks/useDebounce';
-import parse from 'mongodb-query-parser';
-import { accepts } from 'mongodb-language-model';
+import useParseQuery from './useParseQuery';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,7 +77,6 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);
   const [documentDialog, setDocumentDialog] = useState<DocumentDialog>(initialDocumentDialogState);
-
   const [filters, setFilters] = useState<Filters>({
     page: 0,
     skip: 0,
@@ -87,14 +84,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   });
   const [search, setSearch] = useState<string>('');
 
-  useEffect(() => {
-    console.log(accepts(search));
-    if (accepts(search)) {
-      console.log(parse.parseFilter(search));
-    }
-  }, [search]);
-
-  const debouncedSearch: string = useDebounce(search, 500);
+  const debouncedSearch: string = useParseQuery(search, 500);
 
   const getSchemaDocuments = useCallback(() => {
     if (schemas.length < 1) return;
@@ -102,9 +92,9 @@ const SchemaData: FC<Props> = ({ schemas }) => {
       name: schemas[selectedSchema]?.name,
       skip: filters.skip,
       limit: filters.limit,
-      search: debouncedSearch ? debouncedSearch : {},
+      query: debouncedSearch ? debouncedSearch : {},
     };
-    // dispatch(asyncGetSchemaDocuments(params));
+    dispatch(asyncGetSchemaDocuments(params));
   }, [debouncedSearch, dispatch, filters.limit, filters.skip, schemas, selectedSchema]);
 
   useEffect(() => {
