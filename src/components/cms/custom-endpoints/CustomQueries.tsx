@@ -100,7 +100,7 @@ const CustomQueries: FC<Props> = ({
         fieldsWithTypes = findFieldsWithTypes(fields);
       }
 
-      if (selectedEndpoint.queries) {
+      if (selectedEndpoint.queries.length) {
         const query = selectedEndpoint.query;
 
         const keys = Object.keys(query);

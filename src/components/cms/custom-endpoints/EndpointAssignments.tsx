@@ -69,7 +69,7 @@ const EndpointAssignments: FC<Props> = ({
     }
   };
 
-  const getSchemaType = (fieldName, externalInputType: string) => {
+  const getSchemaType = (fieldName: string, externalInputType: string) => {
     if (typeof fieldName === 'string') {
       if (fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
@@ -97,7 +97,7 @@ const EndpointAssignments: FC<Props> = ({
   };
 
   const isArrayType = useCallback(
-    (fieldName) => {
+    (fieldName: string) => {
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema = availableFieldsOfSchema.find(
@@ -119,7 +119,7 @@ const EndpointAssignments: FC<Props> = ({
   );
 
   const isNumberType = useCallback(
-    (fieldName) => {
+    (fieldName: string) => {
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema = availableFieldsOfSchema.find(
