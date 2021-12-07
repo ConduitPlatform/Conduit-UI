@@ -69,6 +69,33 @@ const EndpointAssignments: FC<Props> = ({
     }
   };
 
+  const getSchemaType = (fieldName, externalInputType: string) => {
+    if (typeof fieldName === 'string') {
+      if (fieldName.indexOf('.') !== -1) {
+        const splitQuery = fieldName.split('.');
+        const foundInnerSchema = availableFieldsOfSchema.find(
+          (field: any) => field.name === splitQuery[0]
+        );
+        if (foundInnerSchema?.type) {
+          const innerSchemaType = foundInnerSchema.type[splitQuery[1]]?.type;
+
+          if (innerSchemaType === externalInputType) return false;
+          return true;
+        }
+        return;
+      } else {
+        const foundSchema = availableFieldsOfSchema.find(
+          (schema: any) => schema.name === fieldName
+        );
+
+        if (foundSchema && foundSchema.type) {
+          if (foundSchema?.type === externalInputType) return false;
+          return true;
+        }
+      }
+    }
+  };
+
   const isArrayType = useCallback(
     (fieldName) => {
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
@@ -372,6 +399,7 @@ const EndpointAssignments: FC<Props> = ({
             </MenuItem>
             {selectedInputs.map((input: any, index: number) => (
               <MenuItem
+                disabled={getSchemaType(assignment.schemaField, input.type)}
                 className={classes.item}
                 key={`idx-${index}-input`}
                 value={'Input-' + input.name}>
