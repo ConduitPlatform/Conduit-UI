@@ -45,4 +45,4 @@ export const getAuthenticationConfig = () =>
   axios.get(`${CONDUIT_API}/admin/config/authentication`);
 
 export const putAuthenticationConfig = (body: any) =>
-  axios.put(`${CONDUIT_API}/admin/config/authentication`, body);
+  axios.put(`${CONDUIT_API}/admin/config/authentication`, { config: { ...body } });

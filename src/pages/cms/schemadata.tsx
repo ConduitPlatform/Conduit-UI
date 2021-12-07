@@ -12,12 +12,12 @@ const SchemaDataPage = () => {
   const [enabledSchemas, setEnabledSchemas] = useState<Schema[]>([]);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas(200));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50 }));
   }, [dispatch]);
 
   useEffect(() => {
-    if (!schemas) return;
-    const localEnabledSchemas = schemas.filter((s: Schema) => s.enabled);
+    if (!schemas.schemaDocuments) return;
+    const localEnabledSchemas = schemas.schemaDocuments.filter((s: Schema) => s.enabled);
     setEnabledSchemas(localEnabledSchemas);
   }, [schemas]);
 

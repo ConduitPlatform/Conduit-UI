@@ -41,42 +41,10 @@ export const Layout: React.FC = ({ children, ...rest }) => {
 
   useEffect(() => {
     const splitUri = router.pathname.split('/')[1];
-    switch (splitUri) {
-      case 'authentication':
-        setItemSelected('authentication');
-        break;
-      case 'push-notifications':
-        setItemSelected('push-notifications');
-        break;
-      case 'sms':
-        setItemSelected('sms');
-        break;
-      case 'emails':
-        setItemSelected('email');
-        break;
-      case 'cms':
-        setItemSelected('cms');
-        break;
-      case 'storage':
-        setItemSelected('storage');
-        break;
-      case 'settings':
-        setItemSelected('settings');
-        break;
-      case 'chat':
-        setItemSelected('chat');
-        break;
-      case 'forms':
-        setItemSelected('forms');
-        break;
-      case 'payments':
-        setItemSelected('payments');
-        break;
-      case 'database-provider':
-        setItemSelected('database-provider');
-        break;
-      default:
-        setItemSelected('');
+    if (splitUri === 'push-notifications') {
+      setItemSelected('pushNotifications');
+    } else {
+      setItemSelected(splitUri);
     }
 
     if (router.pathname === '/login' || router.pathname === '/cms/build-types') {

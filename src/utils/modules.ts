@@ -6,7 +6,7 @@ const modules = [
   'cms',
   'storage',
   'forms',
-  'push-notifications',
+  'pushNotifications',
   'sms',
   'chat',
   'payments',

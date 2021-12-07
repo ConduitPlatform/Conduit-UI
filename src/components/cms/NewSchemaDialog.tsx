@@ -1,16 +1,19 @@
-import Box from '@material-ui/core/Box';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
-import Dialog from '@material-ui/core/Dialog';
 import React, { FC, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
+import Box from '@material-ui/core/Box';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from '@material-ui/core';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { useRouter } from 'next/router';
+import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
+import Link from 'next/link';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,6 +39,20 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
     right: theme.spacing(2),
   },
+  textField: {
+    width: '100%',
+    marginBottom: 16,
+  },
+  dialogTitle: {
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  anchor: {
+    textDecoration: 'none',
+  },
+  actions: {
+    justifyContent: 'center',
+  },
 }));
 
 interface Props {
@@ -46,12 +63,18 @@ interface Props {
 const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [typeName, setTypeName] = useState('');
 
   const handleTypeName = (value: string) => {
     const regex = /[^a-z0-9_]/gi;
     if (regex.test(value)) {
-      dispatch(enqueueInfoNotification('The schema name can only contain alpharithmetics and _'));
+      dispatch(
+        enqueueInfoNotification(
+          'The schema name can only contain alpharithmetics and _',
+          'duplicate'
+        )
+      );
     }
 
     setTypeName(value.replace(/[^a-z0-9_]/gi, ''));
@@ -75,29 +98,33 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
       onClose={handleCloseClick}
       classes={{ paper: classes.paper }}>
       <Box maxWidth={600}>
-        <DialogTitle id="new-custom-type" style={{ textAlign: 'center', marginBottom: 16 }}>
+        <DialogTitle id="new-custom-type" className={classes.dialogTitle}>
           Create new Schema
         </DialogTitle>
-        <DialogContent style={{ marginBottom: 16 }}>
+        <DialogContent>
           <TextField
-            style={{ width: '100%', marginBottom: 16 }}
+            className={classes.textField}
             id="type-name"
             label="Enter your type name"
-            variant="standard"
+            variant="outlined"
             value={typeName}
             onChange={(event) => handleTypeName(event.target.value)}
+            onKeyPress={(event) => {
+              if (event.key === 'Enter' && typeName !== '') {
+                router.push({ pathname: '/cms/build-types', query: { name: typeName } });
+              }
+            }}
           />
         </DialogContent>
-        <DialogActions style={{ justifyContent: 'center' }}>
+        <DialogActions className={classes.actions}>
           <Link
             href={{ pathname: '/cms/build-types', query: { name: typeName } }}
             as={'/cms/build-types'}>
-            <a style={{ textDecoration: 'none' }}>
+            <a className={classes.anchor}>
               <Button
                 onClick={handleAddType}
                 color="primary"
                 variant="contained"
-                style={{ textTransform: 'none' }}
                 disabled={typeName === ''}>
                 Create new Schema
               </Button>
