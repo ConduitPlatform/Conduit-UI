@@ -312,6 +312,7 @@ const CustomQueryRow: FC<Props> = ({
           </MenuItem>
           {selectedInputs.map((input, index) => (
             <MenuItem
+              disabled={schemaType !== input.type}
               className={classes.item}
               key={`idxF-${index}-input`}
               value={'Input-' + input.name}>
