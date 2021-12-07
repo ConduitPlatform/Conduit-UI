@@ -1,7 +1,7 @@
+import React, { FC } from 'react';
 import { Button, Divider, Grid, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import EndpointInputs from './EndpointInputs';
-import React, { FC } from 'react';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';

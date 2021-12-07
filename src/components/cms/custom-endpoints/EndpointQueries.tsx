@@ -2,23 +2,20 @@ import React, { FC } from 'react';
 import CustomQueryRow from '../CustomQueryRow';
 import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
-import { Grid } from '@material-ui/core';
+import { Grid, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import { TreeView } from '@material-ui/lab';
 import { deepClone } from '../../../utils/deepClone';
-import { Add, Remove } from '@material-ui/icons';
-import Close from '@material-ui/icons/Close';
-import theme from '../../../theme';
+import { Add, Remove, Close } from '@material-ui/icons';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
   queries: {
     padding: theme.spacing(1.5),
   },
-});
+}));
 
 interface Props {
   editMode: boolean;

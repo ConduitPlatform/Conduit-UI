@@ -1,12 +1,7 @@
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Box, Grid, IconButton, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import OperationsEnum from '../../../models/OperationsEnum';
-import ConfirmationDialog from '../../common/ConfirmationDialog';
-import OperationSection from './OperationSection';
-import SideList from './Sidelist';
+import { Delete, Edit } from '@material-ui/icons';
 import {
   findFieldsWithTypes,
   getAvailableFieldsOfSchema,
@@ -15,6 +10,10 @@ import {
   hasInvalidQueries,
   prepareQuery,
 } from '../../../utils/cms';
+import OperationsEnum from '../../../models/OperationsEnum';
+import ConfirmationDialog from '../../common/ConfirmationDialog';
+import OperationSection from './OperationSection';
+import SideList from './Sidelist';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
 import AssignmentsSection from './AssignmentsSection';
@@ -339,12 +338,12 @@ const CustomQueries: FC<Props> = ({
             <Grid item xs={5} style={{ textAlign: 'end' }}>
               {!editMode && (
                 <IconButton aria-label="delete" onClick={handleDeleteClick}>
-                  <DeleteIcon />
+                  <Delete />
                 </IconButton>
               )}
               {!editMode && (
                 <IconButton color="secondary" aria-label="edit" onClick={handleEditClick}>
-                  <EditIcon />
+                  <Edit />
                 </IconButton>
               )}
             </Grid>

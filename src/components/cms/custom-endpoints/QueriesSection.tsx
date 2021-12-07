@@ -1,11 +1,11 @@
+import React, { FC } from 'react';
 import { Button, Divider, Grid, Typography } from '@material-ui/core';
 import EndpointQueries from './EndpointQueries';
-import React, { FC } from 'react';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { makeStyles } from '@material-ui/core/styles';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
 import { recursiveNodeIteration } from '../../../utils/cms';
 import { v4 as uuidv4 } from 'uuid';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { makeStyles } from '@material-ui/core/styles';
 import { deepClone } from '../../../utils/deepClone';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 

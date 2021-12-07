@@ -1,7 +1,6 @@
-import { Box, Button, Grid, Switch, Typography } from '@material-ui/core';
 import React, { FC } from 'react';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import { Box, Button, Grid, Switch, Typography } from '@material-ui/core';
+import { AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
 
 interface Props {
   operator: any;
@@ -51,7 +50,7 @@ const TreeItemContent: FC<Props> = ({
             <Button
               variant="text"
               color={'secondary'}
-              startIcon={<AddCircleOutlineIcon />}
+              startIcon={<AddCircleOutline />}
               disabled={!editMode}
               onClick={handleAddNode}>
               Node
@@ -61,7 +60,7 @@ const TreeItemContent: FC<Props> = ({
             <Button
               variant="text"
               color={'secondary'}
-              startIcon={<RemoveCircleOutlineIcon />}
+              startIcon={<RemoveCircleOutline />}
               disabled={!editMode}
               onClick={handleRemoveNode}>
               Node
@@ -71,7 +70,7 @@ const TreeItemContent: FC<Props> = ({
             <Button
               variant="text"
               color={'secondary'}
-              startIcon={<AddCircleOutlineIcon />}
+              startIcon={<AddCircleOutline />}
               disabled={!editMode}
               onClick={handleAddQuery}>
               Condition

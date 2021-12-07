@@ -9,10 +9,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import InputLocationEnum from '../../../models/InputLocationEnum';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
-import { makeStyles } from '@material-ui/core/styles';
 import OperationEnum from '../../../models/OperationsEnum';
 
 const useStyles = makeStyles((theme) => ({

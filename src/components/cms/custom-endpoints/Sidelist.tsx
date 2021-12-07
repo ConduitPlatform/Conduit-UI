@@ -17,10 +17,9 @@ import {
   ListItemIcon,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { AddCircleOutline, Search } from '@material-ui/icons';
 
 import OperationsEnum from '../../../models/OperationsEnum';
-import { Search } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -210,7 +209,7 @@ const SideList: FC<Props> = ({
         </Grid>
         <Grid item sm={1}>
           <IconButton color="secondary" onClick={handleAddNewEndpoint}>
-            <AddCircleOutlineIcon />
+            <AddCircleOutline />
           </IconButton>
         </Grid>
       </Grid>

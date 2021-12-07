@@ -1,9 +1,8 @@
+import React, { FC, Fragment, useCallback } from 'react';
 import { Grid, IconButton, MenuItem, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { FC, Fragment, useCallback, useState } from 'react';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import OperationEnum from '../../../models/OperationsEnum';
 import { deepClone } from '../../../utils/deepClone';
 import { Assignment, Input } from '../../../models/customEndpoints/customEndpointsModels';
 
@@ -72,7 +71,7 @@ const EndpointAssignments: FC<Props> = ({
 
   const isArrayType = useCallback(
     (fieldName) => {
-      if (fieldName && fieldName.indexOf('.') !== -1) {
+      if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema = availableFieldsOfSchema.find(
           (field: any) => field.name === splitQuery[0]
@@ -94,7 +93,7 @@ const EndpointAssignments: FC<Props> = ({
 
   const isNumberType = useCallback(
     (fieldName) => {
-      if (fieldName && fieldName.indexOf('.') !== -1) {
+      if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema = availableFieldsOfSchema.find(
           (field: any) => field.name === splitQuery[0]
@@ -120,7 +119,7 @@ const EndpointAssignments: FC<Props> = ({
     const value = event.target.value;
     const currentAssignments = deepClone(selectedAssignments);
     const input = currentAssignments[index];
-    console.log(input);
+
     if (input) {
       input.action = Number(value);
       setSelectedAssignments(currentAssignments);

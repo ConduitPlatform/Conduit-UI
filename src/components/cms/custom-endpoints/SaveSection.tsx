@@ -1,5 +1,5 @@
-import { Button, Grid } from '@material-ui/core';
 import React, { FC } from 'react';
+import { Button, Grid } from '@material-ui/core';
 
 interface Props {
   editMode: boolean;

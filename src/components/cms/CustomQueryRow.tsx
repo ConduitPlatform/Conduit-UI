@@ -1,3 +1,4 @@
+import React, { FC, useEffect, useState } from 'react';
 import {
   Checkbox,
   FormControlLabel,
@@ -6,9 +7,8 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from '@material-ui/core';
-import React, { FC, useEffect, useState } from 'react';
-
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import ConditionsEnum from '../../models/ConditionsEnum';
@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   group: {
     fontWeight: 'inherit',
     opacity: '1',
+  },
+  customValue: {
+    fontSize: '10px',
   },
 }));
 
@@ -334,9 +337,11 @@ const CustomQueryRow: FC<Props> = ({
             <TextField
               type={schemaType?.toLowerCase()}
               label={
-                query.comparisonField.type === 'Custom'
-                  ? `Custom (${schemaType})`
-                  : 'Select from context'
+                <Typography className={classes.customValue}>
+                  {query.comparisonField.type === 'Custom'
+                    ? `Custom (${schemaType})`
+                    : 'Select from context'}
+                </Typography>
               }
               variant={'outlined'}
               disabled={!editMode}
