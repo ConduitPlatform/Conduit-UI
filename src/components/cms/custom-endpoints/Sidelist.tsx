@@ -15,6 +15,7 @@ import {
   MenuItem,
   Paper,
   ListItemIcon,
+  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
@@ -109,6 +110,10 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     minWidth: 150,
   },
+  noEndpoints: {
+    textAlign: 'center',
+    marginTop: '100px',
+  },
 }));
 
 interface Props {
@@ -196,7 +201,7 @@ const SideList: FC<Props> = ({
               label="Provider"
               value={operation}
               onChange={(event) => setOperation(event.target.value as number)}>
-              <MenuItem value="-2">
+              <MenuItem value={-2}>
                 <em>All</em>
               </MenuItem>
               <MenuItem value={0}>GET</MenuItem>
@@ -215,21 +220,27 @@ const SideList: FC<Props> = ({
       </Grid>
       <Divider flexItem variant="middle" className={classes.divider} />
       <List className={classes.list}>
-        {endpoints.map((endpoint: any) => (
-          <ListItem
-            button
-            key={`endpoint-${endpoint._id}`}
-            className={classes.listItem}
-            onClick={() => handleListItemSelect(endpoint)}
-            selected={selectedEndpoint?._id === endpoint?._id}>
-            <ListItemIcon>
-              <Paper elevation={12} className={getBadgeColor(endpoint)}>
-                {getOperation(endpoint)}
-              </Paper>
-            </ListItemIcon>
-            <ListItemText primary={endpoint.name} />
-          </ListItem>
-        ))}
+        {endpoints.length ? (
+          endpoints.map((endpoint: any) => (
+            <ListItem
+              button
+              key={`endpoint-${endpoint._id}`}
+              className={classes.listItem}
+              onClick={() => handleListItemSelect(endpoint)}
+              selected={selectedEndpoint?._id === endpoint?._id}>
+              <ListItemIcon>
+                <Paper elevation={12} className={getBadgeColor(endpoint)}>
+                  {getOperation(endpoint)}
+                </Paper>
+              </ListItemIcon>
+              <ListItemText primary={endpoint.name} />
+            </ListItem>
+          ))
+        ) : (
+          <Box className={classes.noEndpoints}>
+            <Typography>No available endpoints</Typography>
+          </Box>
+        )}
       </List>
     </Box>
   );
