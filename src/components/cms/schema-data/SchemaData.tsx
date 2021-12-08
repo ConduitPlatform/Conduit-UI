@@ -88,6 +88,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
 
   const getSchemaDocuments = useCallback(() => {
     if (schemas.length < 1) return;
+    if (!schemas[selectedSchema]?.name) return;
     const params = {
       name: schemas[selectedSchema]?.name,
       skip: filters.skip,
@@ -195,6 +196,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
                     className={classes.card}
                     // handleEdit={() => onEdit(index)}
                     onDelete={() => onDelete(index)}
+                    getSchemaDocuments={getSchemaDocuments}
                     key={`card${index}`}
                   />
                 );

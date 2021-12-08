@@ -13,5 +13,5 @@ export const editSchemaDocumentRequest = (
   documentData: any
 ) =>
   axios.put(`${CONDUIT_API}/admin/cms/schemas/${schemaName}/${documentId}`, {
-    ...documentData,
+    changedDocument: { ...documentData },
   });

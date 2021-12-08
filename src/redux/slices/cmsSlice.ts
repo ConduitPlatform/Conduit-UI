@@ -307,7 +307,6 @@ export const asyncEditSchemaDocument = createAsyncThunk(
   async (
     params: {
       schemaName: string;
-      documentId: string;
       documentData: any;
       getSchemaDocuments: () => void;
     },
@@ -315,21 +314,13 @@ export const asyncEditSchemaDocument = createAsyncThunk(
   ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const body = {
-        schemaName: params.schemaName,
-        id: params.documentId,
-        changedDocument: {},
-      };
-
-      params.documentData.forEach((d: any) => {
-        const field = prepareDocumentField(d);
-        body.changedDocument = { ...body.changedDocument, ...field };
-      });
-
-      await editSchemaDocumentRequest(params.schemaName, params.documentId, body);
+      await editSchemaDocumentRequest(
+        params.schemaName,
+        params.documentData._id,
+        params.documentData
+      );
       thunkAPI.dispatch(setAppLoading(false));
       params.getSchemaDocuments();
-      return params.schemaName;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

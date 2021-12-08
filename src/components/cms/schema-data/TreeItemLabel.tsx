@@ -30,9 +30,10 @@ interface TreeItemLabelProps {
   document: Document;
   isRelation: boolean;
   edit: boolean;
+  onChange: (value: string) => void;
 }
 
-const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit }) => {
+const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit, onChange }) => {
   const classes = useStyles();
 
   const handleLabelContent = () => {
@@ -57,7 +58,7 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit }) =
           className={classes.textInput}
           autoComplete="new-password"
           value={document.data}
-          onChange={(event) => console.log(event.target.value)}
+          onChange={(event) => onChange(event.target.value)}
           fullWidth
           classes={{
             input: classes.textInputProps,
