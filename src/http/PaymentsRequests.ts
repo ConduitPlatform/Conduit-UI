@@ -32,8 +32,8 @@ export const getProductsRequest = (params: IRequest) =>
 export const postProductsRequest = (data: Product) =>
   axios.post(`${CONDUIT_API}/admin/payments/products`, { ...data });
 
-export const putProductRequest = (productId: string, data: Product) =>
-  axios.put(`${CONDUIT_API}/admin/payments/products/${productId}`, { ...data });
+export const patchProductRequest = (productId: string, data: Product) =>
+  axios.patch(`${CONDUIT_API}/admin/payments/products/${productId}`, { ...data });
 
 export const deleteProductRequest = (ids: string[]) =>
   axios.delete(`${CONDUIT_API}/admin/payments/products`, { data: { ids: ids } });

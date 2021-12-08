@@ -4,7 +4,7 @@ import {
   getCmsDocumentsByNameRequest,
   getCmsSchemasRequest,
   postCmsSchemaRequest,
-  putCmsSchemaRequest,
+  patchCmsSchemaRequest,
   schemasFromOtherModules,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
@@ -171,7 +171,7 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
   async (params, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await putCmsSchemaRequest(params._id, params.data);
+      await patchCmsSchemaRequest(params._id, params.data);
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
       );

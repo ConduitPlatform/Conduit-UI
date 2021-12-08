@@ -14,8 +14,8 @@ export const getEmailTemplateRequest = (params: Pagination & Search) =>
 export const postEmailTemplateRequest = (data: EmailData) =>
   axios.post(`${CONDUIT_API}/admin/email/templates`, { ...data });
 
-export const putEmailTemplateRequest = (templateId: string, data: EmailData) =>
-  axios.put(`${CONDUIT_API}/admin/email/templates/${templateId}`, { ...data });
+export const patchEmailTemplateRequest = (templateId: string, data: EmailData) =>
+  axios.patch(`${CONDUIT_API}/admin/email/templates/${templateId}`, { ...data });
 
 export const deleteEmailTemplateRequest = (ids: string[]) => {
   return axios.delete(`${CONDUIT_API}/admin/email/templates`, { data: { ids: ids } });
