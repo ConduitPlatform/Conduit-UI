@@ -301,6 +301,7 @@ const CustomQueryRow: FC<Props> = ({
           </MenuItem>
           {availableFieldsOfSchema.map((field: any, index: number) => (
             <MenuItem
+              disabled={schemaType !== field.type}
               className={classes.item}
               key={`idxS-${index}-field`}
               value={'Schema-' + field.name}>
@@ -336,7 +337,7 @@ const CustomQueryRow: FC<Props> = ({
             </Select>
           ) : (
             <TextField
-              type={schemaType?.toLowerCase()}
+              type={query.comparisonField.type === 'Custom' ? schemaType?.toLowerCase() : 'string'}
               label={
                 <Typography className={classes.customValue}>
                   {query.comparisonField.type === 'Custom'
