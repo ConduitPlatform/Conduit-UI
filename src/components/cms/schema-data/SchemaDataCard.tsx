@@ -17,7 +17,7 @@ import {
   isFieldObject,
   isFieldRelation,
 } from './SchemaDataUtils';
-import { DocumentActions, ExpandableArrow } from './SchemaDataCardActions';
+import { DocumentActions, EditDocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -123,6 +123,16 @@ const SchemaDataCard: FC<Props> = ({
     setEdit(!edit);
   };
 
+  const handleSave = () => {
+    setEdit(false);
+    console.log('handleSave');
+  };
+
+  const handleCancel = () => {
+    setEdit(false);
+    console.log('handleCancel');
+  };
+
   const renderTree = (document: Document, parents?: any) => {
     const parentsArray = parents ? [...parents, document] : [document];
     const parentArray = parentsArray.map((parent: any) => parent.id);
@@ -185,7 +195,7 @@ const SchemaDataCard: FC<Props> = ({
           </TreeView>
         ))}
       </CardContent>
-      {/*<Box>hello world</Box>*/}
+      <EditDocumentActions edit={edit} handleCancel={handleCancel} handleSave={handleSave} />
     </Card>
   );
 };

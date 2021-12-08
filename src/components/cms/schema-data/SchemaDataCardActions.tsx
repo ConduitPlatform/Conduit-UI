@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { DeleteOutline, EditOutlined, KeyboardArrowDown } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { BoxProps } from '@material-ui/core/Box/Box';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -22,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
   actionButton: {
     height: theme.spacing(2.75),
     width: theme.spacing(2.75),
+  },
+  editRoot: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(2),
   },
 }));
 
@@ -75,33 +81,27 @@ export const DocumentActions: FC<DocumentActionsProps> = ({ onEdit, onDelete, ed
 };
 
 interface EditDocumentActionsProps extends BoxProps {
-  handleEdit: () => void;
-  handleDelete: () => void;
+  handleCancel: () => void;
+  handleSave: () => void;
   edit: boolean;
 }
 
 export const EditDocumentActions: FC<EditDocumentActionsProps> = ({
-  handleEdit,
-  handleDelete,
+  handleCancel,
+  handleSave,
   edit,
   ...rest
 }) => {
   const classes = useStyles();
-  if (edit) return <></>;
+  if (!edit) return <></>;
   return (
-    <Box {...rest}>
-      <Tooltip title="Edit document">
-        <Box
-          className={clsx(classes.buttonContainer, classes.marginRight)}
-          onClick={() => handleEdit()}>
-          <EditOutlined className={classes.actionButton} />
-        </Box>
-      </Tooltip>
-      <Tooltip title="Delete document">
-        <Box className={classes.buttonContainer} onClick={() => handleDelete()}>
-          <DeleteOutline className={classes.actionButton} />
-        </Box>
-      </Tooltip>
+    <Box className={classes.editRoot} {...rest}>
+      <Button variant={'contained'} className={classes.marginRight} onClick={handleCancel}>
+        Cancel
+      </Button>
+      <Button color="primary" variant={'contained'} onClick={handleSave}>
+        Save
+      </Button>
     </Box>
   );
 };

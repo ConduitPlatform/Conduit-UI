@@ -205,19 +205,19 @@ const SchemaData: FC<Props> = ({ schemas }) => {
           )}
         </Box>
       </Box>
-      <Dialog
-        open={documentDialog.open}
-        onClose={handleCloseDialog}
-        maxWidth={'md'}
-        fullWidth={true}>
-        <CreateDialog
-          schema={schemas[selectedSchema]}
-          handleCreate={handleCreateDocument}
-          handleEdit={handleEditDocument}
-          // handleCancel={handleCloseDialog}
-          editData={selectedDocument}
-        />
-      </Dialog>
+      {/*<Dialog*/}
+      {/*  open={documentDialog.open}*/}
+      {/*  onClose={handleCloseDialog}*/}
+      {/*  maxWidth={'md'}*/}
+      {/*  fullWidth={true}>*/}
+      {/*  <CreateDialog*/}
+      {/*    schema={schemas[selectedSchema]}*/}
+      {/*    handleCreate={handleCreateDocument}*/}
+      {/*    handleEdit={handleEditDocument}*/}
+      {/*    // handleCancel={handleCloseDialog}*/}
+      {/*    editData={selectedDocument}*/}
+      {/*  />*/}
+      {/*</Dialog>*/}
       <ConfirmationDialog
         buttonText="Delete"
         open={deleteDocumentDialog}

@@ -13,8 +13,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
   },
   textInput: {
-    padding: 0,
+    // padding: 0,
     fontSize: '14px',
+  },
+  textInputProps: {
+    padding: theme.spacing(0.25, 0),
   },
 }));
 
@@ -56,6 +59,9 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit }) =
           value={document.data}
           onChange={(event) => console.log(event.target.value)}
           fullWidth
+          classes={{
+            input: classes.textInputProps,
+          }}
         />
       );
     }
