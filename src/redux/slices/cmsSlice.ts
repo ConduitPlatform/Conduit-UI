@@ -325,12 +325,11 @@ export const asyncEditSchemaDocument = createAsyncThunk(
 export const asyncGetCustomEndpoints = createAsyncThunk(
   'cms/getEndpoints',
   async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { customEndpoints, count },
       } = await getCustomEndpointsRequest(params);
-      thunkAPI.dispatch(setAppDefaults());
+
       return { endpoints: customEndpoints as EndpointTypes[], count: count };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

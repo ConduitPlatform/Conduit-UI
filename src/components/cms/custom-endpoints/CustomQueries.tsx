@@ -374,7 +374,6 @@ const CustomQueries: FC<Props> = ({
             search={search}
             setSearch={setSearch}
             endpoints={endpoints}
-            selectedEndpoint={selectedEndpoint}
             handleAddNewEndpoint={handleAddNewEndpoint}
             handleListItemSelect={handleListItemSelect}
             limit={limit}

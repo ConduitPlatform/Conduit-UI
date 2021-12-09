@@ -1,11 +1,8 @@
-import React, { FC, useCallback, useRef } from 'react';
+import React, { FC } from 'react';
 import {
   Box,
   Divider,
   Grid,
-  List,
-  ListItem,
-  ListItemText,
   IconButton,
   TextField,
   InputAdornment,
@@ -13,15 +10,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Paper,
-  ListItemIcon,
-  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
-
-import OperationsEnum from '../../../models/OperationsEnum';
-import { useAppSelector } from '../../../redux/store';
+import EndpointsList from './EndpointsList';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -44,67 +36,6 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
     color: 'white',
   },
-  getBadge: {
-    backgroundColor: '#61affe',
-    color: 'white',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
-  },
-  putBadge: {
-    backgroundColor: '#fca130',
-    color: 'white',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
-  },
-  patchBadge: {
-    backgroundColor: '#50e3c2',
-    color: 'white',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
-  },
-  postBadge: {
-    backgroundColor: '#49cc90',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
-  },
-  deleteBadge: {
-    backgroundColor: '#f93e3e',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
-  },
-  list: {
-    '&.MuiList-root': {
-      maxHeight: '580px',
-      overflowY: 'auto',
-      width: '100%',
-    },
-  },
-  listItem: {
-    '&.MuiListItem-root:hover': {
-      background: theme.palette.grey[600],
-      borderRadius: '4px',
-    },
-    '&.Mui-selected': {
-      background: theme.palette.grey[700],
-      borderRadius: '4px',
-      color: '#ffffff',
-    },
-    '&.Mui-selected:hover': {
-      background: theme.palette.grey[800],
-      borderRadius: '4px',
-      color: '#ffffff',
-    },
-  },
   actions: {
     padding: theme.spacing(1),
   },
@@ -115,11 +46,13 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     marginTop: '100px',
   },
+  loadMore: {
+    textAlign: 'center',
+  },
 }));
 
 interface Props {
   endpoints: any;
-  selectedEndpoint: any;
   handleAddNewEndpoint: () => void;
   handleListItemSelect: (endpoint: any) => void;
   search: string;
@@ -132,104 +65,14 @@ interface Props {
 
 const SideList: FC<Props> = ({
   endpoints,
-  selectedEndpoint,
   handleAddNewEndpoint,
   handleListItemSelect,
   search,
   setSearch,
   operation,
   setOperation,
-  limit,
-  setLimit,
 }) => {
   const classes = useStyles();
-
-  const observer: any = useRef();
-
-  const { count, loading } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
-
-  const lastEndpointElementRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (count < limit) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setLimit((prevLimit) => prevLimit + 10);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading]
-  );
-
-  const getBadgeColor = (endpoint: any) => {
-    if (endpoint.operation === OperationsEnum.POST) {
-      return classes.postBadge;
-    }
-    if (endpoint.operation === OperationsEnum.PUT) {
-      return classes.putBadge;
-    }
-    if (endpoint.operation === OperationsEnum.DELETE) {
-      return classes.deleteBadge;
-    }
-    if (endpoint.operation === OperationsEnum.GET) {
-      return classes.getBadge;
-    }
-    if (endpoint.operation === OperationsEnum.PATCH) {
-      return classes.patchBadge;
-    }
-  };
-
-  const getOperation = (endpoint: any) => {
-    if (endpoint.operation === OperationsEnum.POST) {
-      return 'POST';
-    }
-    if (endpoint.operation === OperationsEnum.PUT) {
-      return 'PUT';
-    }
-    if (endpoint.operation === OperationsEnum.DELETE) {
-      return 'DELETE';
-    }
-    if (endpoint.operation === OperationsEnum.GET) {
-      return 'GET';
-    }
-    if (endpoint.operation === OperationsEnum.PATCH) {
-      return 'PATCH';
-    }
-  };
-
-  const prepareEndpoints = () => {
-    if (endpoints && endpoints.length) {
-      return (
-        <List className={classes.list}>
-          {endpoints.map((endpoint: any) => (
-            <ListItem
-              button
-              ref={lastEndpointElementRef}
-              key={`endpoint-${endpoint._id}`}
-              className={classes.listItem}
-              onClick={() => handleListItemSelect(endpoint)}
-              selected={selectedEndpoint?._id === endpoint?._id}>
-              <ListItemIcon>
-                <Paper elevation={12} className={getBadgeColor(endpoint)}>
-                  {getOperation(endpoint)}
-                </Paper>
-              </ListItemIcon>
-              <ListItemText primary={endpoint.name} />
-            </ListItem>
-          ))}
-        </List>
-      );
-    }
-    if (!endpoints || !endpoints.length) {
-      return (
-        <Box className={classes.noEndpoints}>
-          <Typography>No available endpoints</Typography>
-        </Box>
-      );
-    }
-  };
 
   return (
     <Box>
@@ -275,7 +118,13 @@ const SideList: FC<Props> = ({
         </Grid>
       </Grid>
       <Divider flexItem variant="middle" className={classes.divider} />
-      {prepareEndpoints()}
+      <Box height="60vh">
+        <EndpointsList
+          handleListItemSelect={handleListItemSelect}
+          search={search}
+          operation={operation}
+        />
+      </Box>
     </Box>
   );
 };

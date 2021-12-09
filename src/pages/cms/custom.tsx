@@ -33,7 +33,14 @@ const Custom = () => {
   }, [dispatch, debouncedSearch, operation, limit]);
 
   const getEndpointsCallback = useCallback(() => {
-    dispatch(asyncGetCustomEndpoints({ skip: 0, limit: limit, search, operation: operation }));
+    dispatch(
+      asyncGetCustomEndpoints({
+        skip: 0,
+        limit: limit,
+        search,
+        operation: operation !== -2 ? operation : undefined,
+      })
+    );
   }, [dispatch, search, operation, limit]);
 
   const handleCreateCustomEndpoint = (data: any) => {
