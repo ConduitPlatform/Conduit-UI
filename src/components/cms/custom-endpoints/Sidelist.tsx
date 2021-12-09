@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Divider,
@@ -14,6 +14,20 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
 import EndpointsList from './EndpointsList';
+import {
+  asyncCreateCustomEndpoints,
+  asyncDeleteCustomEndpoints,
+  asyncGetCmsSchemas,
+  asyncGetCustomEndpoints,
+  asyncUpdateCustomEndpoints,
+} from '../../../redux/slices/cmsSlice';
+import { useAppDispatch } from '../../../redux/store';
+import useDebounce from '../../../hooks/useDebounce';
+import {
+  endpointCleanSlate,
+  setEndpointData,
+  setSelectedEndPoint,
+} from '../../../redux/slices/customEndpointsSlice';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -52,27 +66,90 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  endpoints: any;
-  handleAddNewEndpoint: () => void;
-  handleListItemSelect: (endpoint: any) => void;
-  search: string;
-  setSearch: (search: string) => void;
-  operation: number;
-  setOperation: (operation: number) => void;
-  limit: number;
-  setLimit: (limit: number) => void;
+  action: { action: string; data: any };
+  setAction: any;
+  setEditMode: (edit: boolean) => void;
+  setCreateMode: (create: boolean) => void;
 }
 
-const SideList: FC<Props> = ({
-  endpoints,
-  handleAddNewEndpoint,
-  handleListItemSelect,
-  search,
-  setSearch,
-  operation,
-  setOperation,
-}) => {
+const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+  const [search, setSearch] = useState('');
+  const [operation, setOperation] = useState(-2);
+  const [limit, setLimit] = useState(10);
+  const debouncedSearch = useDebounce(search, 500);
+
+  useEffect(() => {
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50, enabled: true }));
+    dispatch(
+      asyncGetCustomEndpoints({
+        skip: 0,
+        limit: limit,
+        search: debouncedSearch,
+        operation: operation !== -2 ? operation : undefined,
+      })
+    );
+  }, [dispatch, debouncedSearch, operation, limit]);
+
+  const getEndpointsCallback = useCallback(() => {
+    dispatch(
+      asyncGetCustomEndpoints({
+        skip: 0,
+        limit: limit,
+        search,
+        operation: operation !== -2 ? operation : undefined,
+      })
+    );
+  }, [dispatch, search, operation, limit]);
+
+  useEffect(() => {
+    switch (action.action) {
+      case 'edit':
+        if (action.data.id && action.data.data) {
+          asyncUpdateCustomEndpoints({
+            _id: action.data.id,
+            endpointData: action.data.data,
+            getEndpoints: getEndpointsCallback,
+          });
+        }
+        setAction({ action: '', data: {} });
+        break;
+      case 'create':
+        if (action.data) {
+          dispatch(
+            asyncCreateCustomEndpoints({
+              endpointData: action.data,
+              getEndpoints: getEndpointsCallback,
+            })
+          );
+        }
+        setAction({ action: '', data: {} });
+        break;
+      case 'delete':
+        if (action.data) {
+          dispatch(
+            asyncDeleteCustomEndpoints({ _id: action.data, getEndpoints: getEndpointsCallback })
+          );
+          break;
+        }
+        setAction({ action: '', data: {} });
+      default:
+        break;
+    }
+  }, [action, dispatch, getEndpointsCallback]);
+
+  const handleListItemSelect = (endpoint: any) => {
+    dispatch(setSelectedEndPoint(endpoint));
+    dispatch(setEndpointData({ ...endpoint }));
+    setCreateMode(false);
+  };
+
+  const handleAddNewEndpoint = () => {
+    dispatch(endpointCleanSlate());
+    setEditMode(true);
+    setCreateMode(true);
+  };
 
   return (
     <Box>

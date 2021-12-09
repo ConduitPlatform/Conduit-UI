@@ -189,7 +189,7 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
   useEffect(() => {
     if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache();
+      infiniteLoaderRef.current.resetloadMoreItemsCache(true);
       tabsStatusMap = {};
     }
     hasMountedRef.current = true;
