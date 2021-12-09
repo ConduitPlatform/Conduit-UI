@@ -80,3 +80,36 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit, onC
 };
 
 export default TreeItemLabel;
+
+interface CreateTreeItemLabelProps {
+  field: any;
+  onChange: (value: string) => void;
+}
+
+export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({ field, onChange }) => {
+  const classes = useStyles();
+
+  const handleLabelContent = () => {
+    return (
+      <Input
+        className={classes.textInput}
+        autoComplete="new-password"
+        value=""
+        onChange={(event) => onChange(event.target.value)}
+        fullWidth
+        classes={{
+          input: classes.textInputProps,
+        }}
+      />
+    );
+  };
+
+  return (
+    <Typography variant={'subtitle2'} className={classes.root}>
+      <Typography component={'span'} className={classes.bold}>
+        {`${field.name}: `}
+      </Typography>
+      {handleLabelContent()}
+    </Typography>
+  );
+};

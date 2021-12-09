@@ -1,204 +1,159 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC } from 'react';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
 import { Schema } from '../../../models/cms/CmsModels';
-import DocumentCreateFields from './DocumentCreateFields';
+import { Box, TextField } from '@material-ui/core';
+import { ChevronRight, ExpandMore } from '@material-ui/icons';
+import TreeView from '@material-ui/lab/TreeView';
+import getDeepValue from '../../../utils/getDeepValue';
+import { isFieldArray, isFieldObject, isFieldRelation } from './SchemaDataUtils';
+import TreeItem from '@material-ui/lab/TreeItem';
+import { CreateTreeItemLabel } from './TreeItemLabel';
 
 const useStyles = makeStyles((theme) => ({
-  headerContainer: {
-    background: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+  paperRoot: {
+    height: '100%',
+    maxHeight: '80vh',
   },
-  'MuiInputBase-root': {
-    background: 'red',
+  dialogContent: {
+    display: 'flex',
+    flexDirection: 'column',
   },
-  divider: {
-    width: '100%',
-  },
-  GridContainer: {
-    background: 'rgba(0, 83, 156, .07)',
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    borderRadius: 4,
-  },
-  Divider: {
-    marginBottom: theme.spacing(1),
+  textField: {
+    marginBottom: theme.spacing(2),
   },
 }));
 
 interface Props {
+  open: boolean;
+  handleClose: () => void;
+  handleCreate: () => void;
   schema: Schema;
-  handleCreate: any;
-  handleEdit: any;
-  handleCancel: any;
-  editData: any;
 }
 
-const CreateDialog: FC<Props> = ({ schema, handleCreate, handleEdit, handleCancel, editData }) => {
+const getFields = (schemaFields: any[], depth: number) => {
+  const fields: any = [];
+
+  console.log('schemaFields', schemaFields);
+
+  Object.keys(schemaFields).forEach((key: any) => {
+    const fieldContent = schemaFields[key];
+    // if (!fieldContent.type) return;
+
+    if (fieldContent.type && Object.keys(fieldContent.type).length < 1) return;
+
+    console.log(depth, 'schemaFields[key]', fieldContent.type);
+
+    if (fieldContent.type) {
+      console.log('schemaFields[key] group', getFields(fieldContent.type, depth + 1));
+    }
+
+    // let fieldItem: any;
+
+    // if (fieldContent.type) {
+    //   fieldItem = getFields(fieldContent.type);
+    // } else {
+    //   fieldItem = {
+    //     name: key,
+    //     data: fieldContent,
+    //   };
+    // }
+
+    const fieldItem = {
+      name: key,
+      data: fieldContent,
+    };
+    fields.push(fieldItem);
+  });
+
+  return fields;
+};
+
+const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, schema }) => {
   const classes = useStyles();
-  const [document, setDocument] = useState([]);
-  const [isDisabled, setIsDisabled] = useState(true);
-  const populateEditData = useCallback(
-    (documentsData?: any) => {
-      if (!editData) return;
-      const keys = Object.keys(editData);
-      // eslint-disable-next-line no-unused-expressions
-      keys?.forEach((k) => {
-        const found = documentsData?.find((d: any) => d.name === k);
-        if (found) {
-          found.value = editData[k];
-        }
-      });
-    },
-    [editData]
-  );
 
-  const deconstructFields = useCallback((fields) => {
-    const documentKeys = Object.keys(fields);
-    const documentFields: any = [];
-    documentKeys.forEach((k) => {
-      if (typeof fields[k] !== 'string') {
-        if (
-          fields[k].type &&
-          Array.isArray(fields[k].type) &&
-          fields[k].type &&
-          typeof fields[k].type[0] === 'string'
-        ) {
-          documentFields.push({ name: k, ...fields[k], value: fields[k].default });
-        } else {
-          if (fields[k].type && typeof fields[k].type !== 'string') {
-            const innerFields = fields[k].type;
-            documentFields.push({ name: k, fields: deconstructFields(innerFields) });
-          } else {
-            documentFields.push({ name: k, ...fields[k], value: fields[k].default });
-          }
-        }
-      }
-    });
-    return documentFields;
-  }, []);
-
-  const prepareField = (field: any, editData: any) => {
-    const newField = field;
-    if (newField.fields) {
-      newField.fields.forEach((f: any, i: number) => {
-        if (newField.fields[i].fields) {
-          newField.fields[i].fields.forEach((ff: any, j: number) => {
-            newField.fields[i].fields[j].value = editData[newField.name][f.name][ff.name];
-          });
-        } else {
-          if (editData[newField.name]) {
-            newField.fields[i].value = editData[newField.name][f.name];
-          } else {
-            newField.fields[i].value = undefined;
-          }
-        }
-      });
-    } else {
-      newField.value = editData[field.name];
-    }
-    return newField;
+  const onChange = (value: string) => {
+    console.log(value);
   };
 
-  const initDocument = useCallback(() => {
-    if (!schema) return;
-    const fields = schema.fields;
-    const documentFields = deconstructFields(fields);
-    populateEditData(documentFields);
-    if (editData) {
-      const newData = documentFields.map((field: any) => {
-        return prepareField(field, editData);
-      });
-      setDocument(newData);
-    } else {
-      setDocument(documentFields);
-    }
-  }, [schema, deconstructFields, populateEditData, editData]);
+  const renderTree = (field: any) => {
+    console.log('field', field);
+    // const parentsArray = parents ? [...parents, document] : [document];
+    // const parentArray = parentsArray.map((parent: any) => parent.id);
+    //
+    // const value = schema && getDeepValue(schema.fields, parentArray);
+    //
+    // const isArray = isFieldArray(field);
+    // const isObject = isFieldObject(field);
+    // const isRelation = isFieldRelation(value);
 
-  useEffect(() => {
-    if (!schema) return;
-    initDocument();
-    if (document.length > 0) populateEditData();
-  }, [document.length, initDocument, populateEditData, schema]);
+    // if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
+    //   setExpandable((prevState) => [...prevState, document.id]);
+    // }
 
-  const handleCancelClick = () => {
-    handleCancel();
-  };
-
-  const handleSaveClick = () => {
-    if (editData) {
-      handleEdit(schema.name, document);
-    } else {
-      handleCreate(schema.name, document);
-    }
+    return (
+      <TreeItem
+        key={field.name}
+        nodeId={field.name}
+        // onClick={() => {
+        //   if (!isRelation || typeof document.data !== 'string') return;
+        //   handleRelationClick(value.model, document.data, parentArray);
+        // }}
+        label={<CreateTreeItemLabel field={field} onChange={onChange} />}>
+        {/*{field.data.type && renderTree}*/}
+        {/*{isArray*/}
+        {/*  ? document.data.map((node: Document, index: number) =>*/}
+        {/*      renderTree({ id: index.toString(), data: node }, parentsArray)*/}
+        {/*    )*/}
+        {/*  : isObject*/}
+        {/*  ? createDocumentArray(document.data).map((node) => renderTree(node, parentsArray))*/}
+        {/*  : null}*/}
+      </TreeItem>
+    );
   };
 
   return (
-    <>
-      <Box className={classes.headerContainer} padding={2}>
-        <Typography variant={'h5'}>Add a document</Typography>
-        <Typography variant={'subtitle1'}>/{schema.name}</Typography>
-      </Box>
-      <Box padding={6}>
-        <Grid container spacing={2} alignItems={'center'} justifyContent={'flex-start'}>
-          <Grid item xs={3}>
-            <Typography variant={'body1'}>Field</Typography>
-          </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={3}>
-            <Typography variant={'body1'}>Type</Typography>
-          </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={3}>
-            <Typography variant={'body1'}>Value</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Divider className={classes.divider} />
-          </Grid>
-        </Grid>
-        <DocumentCreateFields
-          disabled={isDisabled && editData}
-          document={document}
-          setDocument={setDocument}
-        />
-      </Box>
-
-      <Divider className={classes.divider} />
-
-      <Box
-        padding={2}
-        width={'100%'}
-        display={'inline-flex'}
-        justifyContent={'flex-end'}
-        alignItems={'center'}>
-        <Grid container>
-          <Grid item container xs={12} justifyContent={'flex-end'}>
-            {isDisabled && editData ? (
-              <Button variant={'outlined'} onClick={() => setIsDisabled(false)} color={'primary'}>
-                Edit Document
-              </Button>
-            ) : (
-              <>
-                <Button
-                  variant={'outlined'}
-                  style={{ marginRight: 16 }}
-                  onClick={handleCancelClick}>
-                  Cancel
-                </Button>
-                <Button variant={'contained'} color={'primary'} onClick={handleSaveClick}>
-                  Save
-                </Button>
-              </>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-    </>
+    <Dialog
+      classes={{ paper: classes.paperRoot }}
+      fullWidth
+      maxWidth="lg"
+      open={open}
+      onClose={handleClose}>
+      <DialogTitle>Create Document</DialogTitle>
+      <DialogContent className={classes.dialogContent}>
+        {schema &&
+          schema.fields &&
+          getFields(schema.fields, 0).map((field: any, index: number) => {
+            return (
+              <TreeView
+                key={`treeView${index}`}
+                // className={classes.tree}
+                disableSelection
+                // expanded={expanded}
+                defaultCollapseIcon={<ExpandMore />}
+                defaultExpanded={['root']}
+                defaultExpandIcon={<ChevronRight />}
+                // onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}
+              >
+                {renderTree(field)}
+              </TreeView>
+            );
+          })}
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button variant="contained" onClick={handleCreate} color="primary" autoFocus>
+          Create
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default CreateDialog;
+export default DocumentCreateDialog;

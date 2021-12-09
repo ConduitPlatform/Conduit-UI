@@ -4,21 +4,14 @@ import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import CreateDialog from './DocumentCreateDialog';
-import {
-  asyncCreateSchemaDocument,
-  asyncDeleteSchemaDocument,
-  asyncEditSchemaDocument,
-  asyncGetSchemaDocuments,
-} from '../../../redux/slices/cmsSlice';
+import { asyncDeleteSchemaDocument, asyncGetSchemaDocuments } from '../../../redux/slices/cmsSlice';
 import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
 import SchemaDataHeader from './SchemaDataHeader';
-import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 import useParseQuery from './useParseQuery';
+import DocumentCreateDialog from './DocumentCreateDialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,30 +46,23 @@ interface Filters {
   limit: number;
 }
 
-interface DocumentDialog {
-  open: boolean;
-  type: 'create' | 'edit';
-}
-
 interface Props {
   schemas: Schema[];
 }
-
-const initialDocumentDialogState: DocumentDialog = {
-  open: false,
-  type: 'create',
-};
 
 const SchemaData: FC<Props> = ({ schemas }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { documents, documentsCount } = useAppSelector((state) => state.cmsSlice.data.documents);
-
+  const [documentsState, setDocumentsState] = useState({
+    data: [],
+    count: 0,
+  });
+  const [createDialog, setCreateDialog] = useState<boolean>(false);
   const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);
-  const [documentDialog, setDocumentDialog] = useState<DocumentDialog>(initialDocumentDialogState);
   const [filters, setFilters] = useState<Filters>({
     page: 0,
     skip: 0,
@@ -102,28 +88,15 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     getSchemaDocuments();
   }, [dispatch, getSchemaDocuments]);
 
+  useEffect(() => {
+    setDocumentsState({
+      data: documents,
+      count: documentsCount,
+    });
+  }, [documents, documentsCount]);
+
   const handleChange = (value: number) => {
     setSelectedSchema(value);
-  };
-
-  const onEdit = (index: number) => {
-    setDocumentDialog({
-      open: true,
-      type: 'edit',
-    });
-    setSelectedDocument(documents[index]);
-  };
-
-  const handleEditDocument = (schemaName: string, document: any) => {
-    const params = {
-      schemaName: schemaName,
-      documentId: selectedDocument._id,
-      documentData: document,
-      getSchemaDocuments: getSchemaDocuments,
-    };
-    dispatch(asyncEditSchemaDocument(params));
-    setDocumentDialog(initialDocumentDialogState);
-    setSelectedDocument(undefined);
   };
 
   const handleCloseDeleteDialog = () => {
@@ -133,7 +106,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
 
   const onDelete = (index: number) => {
     setDeleteDocumentDialog(true);
-    setSelectedDocument(documents[index]);
+    setSelectedDocument(documentsState.data[index]);
   };
 
   const handleDelete = () => {
@@ -146,21 +119,16 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     handleCloseDeleteDialog();
   };
 
-  const handleCloseDialog = () => {
-    setDocumentDialog(initialDocumentDialogState);
-    setSelectedDocument(undefined);
-  };
-
   const onCreateDocument = () => {
-    setDocumentDialog({
-      open: true,
-      type: 'create',
-    });
+    setCreateDialog(true);
   };
 
-  const handleCreateDocument = (schemaName: string, document: any) => {
-    dispatch(asyncCreateSchemaDocument({ schemaName, document, getSchemaDocuments }));
-    setDocumentDialog(initialDocumentDialogState);
+  const handleCreate = () => {
+    setCreateDialog(false);
+  };
+
+  const handleClose = () => {
+    setCreateDialog(false);
   };
 
   return (
@@ -184,11 +152,11 @@ const SchemaData: FC<Props> = ({ schemas }) => {
             setFilters={setFilters}
             search={search}
             setSearch={setSearch}
-            count={documentsCount}
+            count={documentsState.count}
           />
-          {documents.length > 0 ? (
+          {documentsState.data.length > 0 ? (
             <TabPanel>
-              {documents.map((docs: any, index: number) => {
+              {documentsState.data.map((docs: any, index: number) => {
                 return (
                   <SchemaDataCard
                     schema={schemas[selectedSchema]}
@@ -203,23 +171,11 @@ const SchemaData: FC<Props> = ({ schemas }) => {
               })}
             </TabPanel>
           ) : (
-            <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
+            <></>
+            // <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
           )}
         </Box>
       </Box>
-      {/*<Dialog*/}
-      {/*  open={documentDialog.open}*/}
-      {/*  onClose={handleCloseDialog}*/}
-      {/*  maxWidth={'md'}*/}
-      {/*  fullWidth={true}>*/}
-      {/*  <CreateDialog*/}
-      {/*    schema={schemas[selectedSchema]}*/}
-      {/*    handleCreate={handleCreateDocument}*/}
-      {/*    handleEdit={handleEditDocument}*/}
-      {/*    // handleCancel={handleCloseDialog}*/}
-      {/*    editData={selectedDocument}*/}
-      {/*  />*/}
-      {/*</Dialog>*/}
       <ConfirmationDialog
         buttonText="Delete"
         open={deleteDocumentDialog}
@@ -228,6 +184,12 @@ const SchemaData: FC<Props> = ({ schemas }) => {
         delete document with id:${selectedDocument?._id}`}
         handleClose={handleCloseDeleteDialog}
         buttonAction={handleDelete}
+      />
+      <DocumentCreateDialog
+        open={createDialog}
+        handleCreate={handleCreate}
+        handleClose={handleClose}
+        schema={schemas[selectedSchema]}
       />
     </Container>
   );
