@@ -84,9 +84,10 @@ export default TreeItemLabel;
 interface CreateTreeItemLabelProps {
   field: any;
   onChange: (value: string) => void;
+  edit: boolean;
 }
 
-export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({ field, onChange }) => {
+export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({ field, onChange, edit }) => {
   const classes = useStyles();
 
   const handleLabelContent = () => {
@@ -109,7 +110,7 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({ field, onCha
       <Typography component={'span'} className={classes.bold}>
         {`${field.name}: `}
       </Typography>
-      {handleLabelContent()}
+      {edit && handleLabelContent()}
     </Typography>
   );
 };

@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
-import React, { FC } from 'react';
+import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,6 +13,7 @@ import getDeepValue from '../../../utils/getDeepValue';
 import { isFieldArray, isFieldObject, isFieldRelation } from './SchemaDataUtils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { CreateTreeItemLabel } from './TreeItemLabel';
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
   paperRoot: {
@@ -35,37 +36,18 @@ interface Props {
   schema: Schema;
 }
 
-const getFields = (schemaFields: any[], depth: number) => {
+const getFields = (schemaFields: any) => {
   const fields: any = [];
 
-  console.log('schemaFields', schemaFields);
-
-  Object.keys(schemaFields).forEach((key: any) => {
-    const fieldContent = schemaFields[key];
-    // if (!fieldContent.type) return;
+  Object.keys(schemaFields).forEach((objectKey: any) => {
+    const fieldContent = schemaFields[objectKey];
 
     if (fieldContent.type && Object.keys(fieldContent.type).length < 1) return;
 
-    console.log(depth, 'schemaFields[key]', fieldContent.type);
-
-    if (fieldContent.type) {
-      console.log('schemaFields[key] group', getFields(fieldContent.type, depth + 1));
-    }
-
-    // let fieldItem: any;
-
-    // if (fieldContent.type) {
-    //   fieldItem = getFields(fieldContent.type);
-    // } else {
-    //   fieldItem = {
-    //     name: key,
-    //     data: fieldContent,
-    //   };
-    // }
-
     const fieldItem = {
-      name: key,
+      name: objectKey,
       data: fieldContent,
+      // key: uuidv4(),
     };
     fields.push(fieldItem);
   });
@@ -76,45 +58,28 @@ const getFields = (schemaFields: any[], depth: number) => {
 const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, schema }) => {
   const classes = useStyles();
 
+  // const [expandable, setExpandable] = useState<string[]>([]);
+  // const [expanded, setExpanded] = useState<string[]>([]);
+
   const onChange = (value: string) => {
     console.log(value);
   };
 
-  const renderTree = (field: any) => {
-    console.log('field', field);
-    // const parentsArray = parents ? [...parents, document] : [document];
-    // const parentArray = parentsArray.map((parent: any) => parent.id);
-    //
-    // const value = schema && getDeepValue(schema.fields, parentArray);
-    //
-    // const isArray = isFieldArray(field);
-    // const isObject = isFieldObject(field);
-    // const isRelation = isFieldRelation(value);
-
-    // if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
-    //   setExpandable((prevState) => [...prevState, document.id]);
-    // }
+  const renderTree = useCallback((field: any) => {
+    const isObject = field.data.type && typeof field.data.type !== 'string';
 
     return (
       <TreeItem
         key={field.name}
         nodeId={field.name}
-        // onClick={() => {
-        //   if (!isRelation || typeof document.data !== 'string') return;
-        //   handleRelationClick(value.model, document.data, parentArray);
-        // }}
-        label={<CreateTreeItemLabel field={field} onChange={onChange} />}>
-        {/*{field.data.type && renderTree}*/}
-        {/*{isArray*/}
-        {/*  ? document.data.map((node: Document, index: number) =>*/}
-        {/*      renderTree({ id: index.toString(), data: node }, parentsArray)*/}
-        {/*    )*/}
-        {/*  : isObject*/}
-        {/*  ? createDocumentArray(document.data).map((node) => renderTree(node, parentsArray))*/}
-        {/*  : null}*/}
+        label={<CreateTreeItemLabel field={field} onChange={onChange} edit={!isObject} />}>
+        {isObject &&
+          Object.keys(field.data.type).map((node) =>
+            renderTree({ name: node, data: field.data.type[node] })
+          )}
       </TreeItem>
     );
-  };
+  }, []);
 
   return (
     <Dialog
@@ -127,18 +92,14 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
       <DialogContent className={classes.dialogContent}>
         {schema &&
           schema.fields &&
-          getFields(schema.fields, 0).map((field: any, index: number) => {
+          getFields(schema.fields).map((field: any, index: number) => {
             return (
               <TreeView
                 key={`treeView${index}`}
-                // className={classes.tree}
                 disableSelection
-                // expanded={expanded}
                 defaultCollapseIcon={<ExpandMore />}
                 defaultExpanded={['root']}
-                defaultExpandIcon={<ChevronRight />}
-                // onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}
-              >
+                defaultExpandIcon={<ChevronRight />}>
                 {renderTree(field)}
               </TreeView>
             );
@@ -156,4 +117,4 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
   );
 };
 
-export default DocumentCreateDialog;
+export default memo(DocumentCreateDialog);

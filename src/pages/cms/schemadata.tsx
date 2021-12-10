@@ -12,7 +12,7 @@ const SchemaDataPage = () => {
   const [enabledSchemas, setEnabledSchemas] = useState<Schema[]>([]);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 100 }));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 200 }));
   }, [dispatch]);
 
   useEffect(() => {
