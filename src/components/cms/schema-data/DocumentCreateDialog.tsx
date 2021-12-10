@@ -1,19 +1,16 @@
 import { makeStyles } from '@material-ui/core/styles';
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useState } from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import { Schema } from '../../../models/cms/CmsModels';
-import { Box, TextField } from '@material-ui/core';
 import { ChevronRight, ExpandMore } from '@material-ui/icons';
 import TreeView from '@material-ui/lab/TreeView';
-import getDeepValue from '../../../utils/getDeepValue';
-import { isFieldArray, isFieldObject, isFieldRelation } from './SchemaDataUtils';
+import { getExpandableFields, getFieldsArray } from './SchemaDataUtils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { CreateTreeItemLabel } from './TreeItemLabel';
-import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
   paperRoot: {
@@ -36,34 +33,28 @@ interface Props {
   schema: Schema;
 }
 
-const getFields = (schemaFields: any) => {
-  const fields: any = [];
-
-  Object.keys(schemaFields).forEach((objectKey: any) => {
-    const fieldContent = schemaFields[objectKey];
-
-    if (fieldContent.type && Object.keys(fieldContent.type).length < 1) return;
-
-    const fieldItem = {
-      name: objectKey,
-      data: fieldContent,
-      // key: uuidv4(),
-    };
-    fields.push(fieldItem);
-  });
-
-  return fields;
-};
-
 const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, schema }) => {
   const classes = useStyles();
 
-  // const [expandable, setExpandable] = useState<string[]>([]);
-  // const [expanded, setExpanded] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>([]);
+
+  const [fieldsArray, setFieldsArray] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (schema && schema.fields) {
+      setFieldsArray(getFieldsArray(schema.fields));
+    }
+  }, [schema]);
 
   const onChange = (value: string) => {
     console.log(value);
   };
+
+  useEffect(() => {
+    if (schema && schema.fields) {
+      setExpanded(getExpandableFields(schema.fields));
+    }
+  }, [schema]);
 
   const renderTree = useCallback((field: any) => {
     const isObject = field.data.type && typeof field.data.type !== 'string';
@@ -90,20 +81,19 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
       onClose={handleClose}>
       <DialogTitle>Create Document</DialogTitle>
       <DialogContent className={classes.dialogContent}>
-        {schema &&
-          schema.fields &&
-          getFields(schema.fields).map((field: any, index: number) => {
-            return (
-              <TreeView
-                key={`treeView${index}`}
-                disableSelection
-                defaultCollapseIcon={<ExpandMore />}
-                defaultExpanded={['root']}
-                defaultExpandIcon={<ChevronRight />}>
-                {renderTree(field)}
-              </TreeView>
-            );
-          })}
+        {fieldsArray.map((field: any, index: number) => {
+          return (
+            <TreeView
+              key={`treeView${index}`}
+              disableSelection
+              expanded={expanded}
+              defaultCollapseIcon={<ExpandMore />}
+              defaultExpanded={['root']}
+              defaultExpandIcon={<ChevronRight />}>
+              {renderTree(field)}
+            </TreeView>
+          );
+        })}
       </DialogContent>
       <DialogActions>
         <Button variant="contained" onClick={handleClose}>
