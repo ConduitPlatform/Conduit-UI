@@ -96,6 +96,36 @@ const EndpointAssignments: FC<Props> = ({
     }
   };
 
+  const fieldType = (fieldName: string) => {
+    if (typeof fieldName === 'string') {
+      if (fieldName.indexOf('.') !== -1) {
+        const splitQuery = fieldName.split('.');
+        const foundInnerSchema = availableFieldsOfSchema.find(
+          (field: any) => field.name === splitQuery[0]
+        );
+        if (foundInnerSchema?.type) {
+          const innerSchemaType = foundInnerSchema.type[splitQuery[1]]?.type;
+
+          if (innerSchemaType) {
+            return innerSchemaType;
+          }
+        }
+        return;
+      } else {
+        const foundSchema = availableFieldsOfSchema.find(
+          (schema: any) => schema.name === fieldName
+        );
+
+        if (foundSchema && foundSchema.type) {
+          if (foundSchema?.type) {
+            return foundSchema?.type;
+          }
+          return true;
+        }
+      }
+    }
+  };
+
   const isArrayType = useCallback(
     (fieldName: string) => {
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
@@ -412,7 +442,12 @@ const EndpointAssignments: FC<Props> = ({
         assignment.assignmentField.type === 'Context' ? (
           <Grid item xs={2}>
             <TextField
-              label={assignment.assignmentField.type + ' Value'}
+              label={
+                assignment.assignmentField.type === 'Custom'
+                  ? `Custom (${fieldType(assignment.schemaField)})`
+                  : 'Context value'
+              }
+              type={fieldType(assignment.schemaField)}
               variant={'outlined'}
               disabled={!editMode}
               fullWidth
