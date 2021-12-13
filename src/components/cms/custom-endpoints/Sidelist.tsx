@@ -77,31 +77,18 @@ const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) 
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
   const [operation, setOperation] = useState(-2);
-  const [limit, setLimit] = useState(10);
   const debouncedSearch = useDebounce(search, 500);
-
-  useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50, enabled: true }));
-    dispatch(
-      asyncGetCustomEndpoints({
-        skip: 0,
-        limit: limit,
-        search: debouncedSearch,
-        operation: operation !== -2 ? operation : undefined,
-      })
-    );
-  }, [dispatch, debouncedSearch, operation, limit]);
 
   const getEndpointsCallback = useCallback(() => {
     dispatch(
       asyncGetCustomEndpoints({
         skip: 0,
-        limit: limit,
+        limit: 10,
         search,
         operation: operation !== -2 ? operation : undefined,
       })
     );
-  }, [dispatch, search, operation, limit]);
+  }, [dispatch, search]);
 
   useEffect(() => {
     switch (action.action) {
@@ -198,7 +185,7 @@ const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) 
       <Box height="60vh">
         <EndpointsList
           handleListItemSelect={handleListItemSelect}
-          search={search}
+          search={debouncedSearch}
           operation={operation}
         />
       </Box>

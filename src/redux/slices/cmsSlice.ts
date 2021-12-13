@@ -431,6 +431,9 @@ const cmsSlice = createSlice({
     clearSelectedSchema(state) {
       state.data.selectedSchema = null;
     },
+    clearEndpoints(state) {
+      state.data.customEndpoints.endpoints = [];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
@@ -466,13 +469,14 @@ const cmsSlice = createSlice({
       state.data.documents.documents.push(...action.payload.documents);
     });
     builder.addCase(asyncGetCustomEndpoints.fulfilled, (state, action) => {
-      state.data.customEndpoints.endpoints = action.payload.endpoints;
+      state.data.customEndpoints.endpoints = [
+        ...state.data.customEndpoints.endpoints,
+        ...action.payload.endpoints,
+      ];
       state.data.customEndpoints.count = action.payload.count;
       state.data.customEndpoints.loading = false;
     });
-    builder.addCase(asyncGetCustomEndpoints.pending, (state, action) => {
-      state.data.customEndpoints.loading = true;
-    });
+
     builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
       state.data.schemasFromOtherModules = action.payload.results;
     });
@@ -480,4 +484,4 @@ const cmsSlice = createSlice({
 });
 
 export default cmsSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema } = cmsSlice.actions;
+export const { setSelectedSchema, clearSelectedSchema, clearEndpoints } = cmsSlice.actions;

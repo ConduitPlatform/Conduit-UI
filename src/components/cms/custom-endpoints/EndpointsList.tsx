@@ -5,12 +5,11 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch } from '../../../redux/store';
 import { makeStyles } from '@material-ui/core/styles';
-import memoize from 'memoize-one';
 import { ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
 import OperationsEnum from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { Skeleton } from '@material-ui/lab';
-import { asyncGetCustomEndpoints } from '../../../redux/slices/cmsSlice';
+import { asyncGetCustomEndpoints, clearEndpoints } from '../../../redux/slices/cmsSlice';
 import { useAppSelector } from '../../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
@@ -115,61 +114,6 @@ interface ItemStatus {
 const timeoutAmount = 750;
 let tabsStatusMap: ItemStatus = {};
 
-const EndpointRow = ({ data, index, style }: ListChildComponentProps) => {
-  const { endpoints, selectedEndpoint, handleListItemSelect, classes } = data;
-  const rowItem = endpoints[index];
-  const loading = !(tabsStatusMap[index] === 'LOADED' && rowItem);
-
-  const getBadgeColor = (endpoint: any) => {
-    if (endpoint.operation === OperationsEnum.POST) {
-      return classes.postBadge;
-    }
-    if (endpoint.operation === OperationsEnum.PUT) {
-      return classes.putBadge;
-    }
-    if (endpoint.operation === OperationsEnum.DELETE) {
-      return classes.deleteBadge;
-    }
-    if (endpoint.operation === OperationsEnum.GET) {
-      return classes.getBadge;
-    }
-    if (endpoint.operation === OperationsEnum.PATCH) {
-      return classes.patchBadge;
-    }
-  };
-
-  return (
-    <div style={style as CSSProperties}>
-      {loading ? (
-        <Typography variant="h2">
-          <Skeleton />
-        </Typography>
-      ) : (
-        <ListItem
-          button
-          key={`endpoint-${rowItem._id}`}
-          className={classes.listItem}
-          onClick={() => handleListItemSelect(rowItem)}
-          selected={selectedEndpoint?._id === rowItem?._id}>
-          <ListItemIcon>
-            <Paper elevation={12} className={getBadgeColor(rowItem)}>
-              {getOperation(rowItem)}
-            </Paper>
-          </ListItemIcon>
-          <ListItemText primary={rowItem.name} />
-        </ListItem>
-      )}
-    </div>
-  );
-};
-
-const createItemData = memoize((endpoints, selectedEndpoint, handleListItemSelect, classes) => ({
-  endpoints,
-  selectedEndpoint,
-  handleListItemSelect,
-  classes,
-}));
-
 const isItemLoaded = (index: number) => !!tabsStatusMap[index];
 
 interface Props {
@@ -187,18 +131,20 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
 
   const { endpoints, count } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
+
   useEffect(() => {
     if (infiniteLoaderRef.current && hasMountedRef.current) {
       infiniteLoaderRef.current.resetloadMoreItemsCache(true);
       tabsStatusMap = {};
     }
     hasMountedRef.current = true;
-  }, [search, operation]);
+    dispatch(clearEndpoints());
+  }, [search, operation, dispatch]);
 
   const getEndpoints = useCallback(
     (skip: number, limit: number) => {
       const params = {
-        skip: 0,
+        skip: skip,
         limit: limit,
         search: search,
         operation: operation !== -2 ? operation : undefined,
@@ -213,22 +159,74 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
     timeoutAmount
   );
 
-  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
-    const limit = stopIndex + 1;
-    debouncedGetApiItems(endpoints.length, limit);
-    await new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        for (let index = startIndex; index <= stopIndex; index++) {
-          tabsStatusMap[index] = 'LOADED';
-        }
-        resolve(undefined);
-        clearTimeout(timeout);
-      }, timeoutAmount);
-      return timeout;
-    });
-  };
+  const loadMoreItems = useCallback(
+    async (startIndex: number, stopIndex: number) => {
+      const limit = stopIndex + 1;
+      debouncedGetApiItems(endpoints.length, limit);
+      await new Promise((resolve) => {
+        const timeout = setTimeout(() => {
+          for (let index = startIndex; index <= stopIndex; index++) {
+            tabsStatusMap[index] = 'LOADED';
+          }
+          resolve(undefined);
+          clearTimeout(timeout);
+        }, timeoutAmount);
+        return timeout;
+      });
+    },
+    [debouncedGetApiItems, endpoints.length]
+  );
 
-  const itemData = createItemData(endpoints, selectedEndpoint, handleListItemSelect, classes);
+  useEffect(() => {
+    getEndpoints(0, 15);
+  }, [getEndpoints, operation]);
+
+  const EndpointRow = ({ data, index, style }: ListChildComponentProps) => {
+    const rowItem = endpoints[index];
+    const loading = !(tabsStatusMap[index] === 'LOADED' && rowItem);
+
+    const getBadgeColor = (endpoint: any) => {
+      if (endpoint.operation === OperationsEnum.POST) {
+        return classes.postBadge;
+      }
+      if (endpoint.operation === OperationsEnum.PUT) {
+        return classes.putBadge;
+      }
+      if (endpoint.operation === OperationsEnum.DELETE) {
+        return classes.deleteBadge;
+      }
+      if (endpoint.operation === OperationsEnum.GET) {
+        return classes.getBadge;
+      }
+      if (endpoint.operation === OperationsEnum.PATCH) {
+        return classes.patchBadge;
+      }
+    };
+
+    return (
+      <div style={style as CSSProperties}>
+        {loading ? (
+          <Typography variant="h2">
+            <Skeleton />
+          </Typography>
+        ) : (
+          <ListItem
+            button
+            key={`endpoint-${rowItem._id}`}
+            className={classes.listItem}
+            onClick={() => handleListItemSelect(rowItem)}
+            selected={selectedEndpoint?._id === rowItem?._id}>
+            <ListItemIcon>
+              <Paper elevation={12} className={getBadgeColor(rowItem)}>
+                {getOperation(rowItem)}
+              </Paper>
+            </ListItemIcon>
+            <ListItemText primary={rowItem.name} />
+          </ListItem>
+        )}
+      </div>
+    );
+  };
 
   return (
     <AutoSizer>
@@ -250,7 +248,6 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
                   itemSize={56}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
-                  itemData={itemData}
                   width={width}>
                   {EndpointRow}
                 </List>
