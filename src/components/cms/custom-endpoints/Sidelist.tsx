@@ -17,7 +17,6 @@ import EndpointsList from './EndpointsList';
 import {
   asyncCreateCustomEndpoints,
   asyncDeleteCustomEndpoints,
-  asyncGetCmsSchemas,
   asyncGetCustomEndpoints,
   asyncUpdateCustomEndpoints,
 } from '../../../redux/slices/cmsSlice';
@@ -83,12 +82,12 @@ const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) 
     dispatch(
       asyncGetCustomEndpoints({
         skip: 0,
-        limit: 10,
-        search,
-        operation: operation !== -2 ? operation : undefined,
+        limit: 15,
       })
     );
-  }, [dispatch, search]);
+    setOperation(-2);
+    setSearch('');
+  }, [dispatch]);
 
   useEffect(() => {
     switch (action.action) {
@@ -184,6 +183,7 @@ const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) 
       <Divider flexItem variant="middle" className={classes.divider} />
       <Box height="60vh">
         <EndpointsList
+          action={action}
           handleListItemSelect={handleListItemSelect}
           search={debouncedSearch}
           operation={operation}

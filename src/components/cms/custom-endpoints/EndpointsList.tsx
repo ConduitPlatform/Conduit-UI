@@ -5,7 +5,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch } from '../../../redux/store';
 import { makeStyles } from '@material-ui/core/styles';
-import { ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
+import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
 import OperationsEnum from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { Skeleton } from '@material-ui/lab';
@@ -117,12 +117,13 @@ let tabsStatusMap: ItemStatus = {};
 const isItemLoaded = (index: number) => !!tabsStatusMap[index];
 
 interface Props {
+  action: any;
   handleListItemSelect: (endpoint: any) => void;
   search: string;
   operation: number;
 }
 
-const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) => {
+const EndpointsList: FC<Props> = ({ action, handleListItemSelect, search, operation }) => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
 
@@ -133,13 +134,16 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   useEffect(() => {
-    if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache(true);
+    if (
+      (infiniteLoaderRef.current && hasMountedRef.current) ||
+      (action.action !== '' && endpoints.length)
+    ) {
+      infiniteLoaderRef.current.resetloadMoreItemsCache();
       tabsStatusMap = {};
     }
     hasMountedRef.current = true;
     dispatch(clearEndpoints());
-  }, [search, operation, dispatch]);
+  }, [search, operation, dispatch, action]);
 
   const getEndpoints = useCallback(
     (skip: number, limit: number) => {
@@ -179,6 +183,9 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
 
   useEffect(() => {
     getEndpoints(0, 15);
+    for (let index = 0; index <= 15; index++) {
+      tabsStatusMap[index] = 'LOADED';
+    }
   }, [getEndpoints, operation]);
 
   const EndpointRow = ({ data, index, style }: ListChildComponentProps) => {
@@ -232,14 +239,19 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
     <AutoSizer>
       {({ height, width }) => {
         if (!count) {
-          return <></>;
+          return (
+            <Box width={width}>
+              <Typography className={classes.noEndpoints}>No endpoints available</Typography>
+            </Box>
+          );
         }
         return (
           <InfiniteLoader
             ref={infiniteLoaderRef}
             isItemLoaded={isItemLoaded}
             itemCount={count}
-            loadMoreItems={loadMoreItems}>
+            loadMoreItems={loadMoreItems}
+            threshold={count}>
             {({ onItemsRendered, ref }) => {
               return (
                 <List

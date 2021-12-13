@@ -346,6 +346,7 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk(
     try {
       const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
       params.getEndpoints();
+      thunkAPI.dispatch(setAppDefaults());
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -359,9 +360,11 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk(
   'cms/deleteEndpoints',
   async (params: { _id: string; getEndpoints: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
+
     try {
       const { data } = await deleteCustomEndpointsRequest(params._id);
       params.getEndpoints();
+      thunkAPI.dispatch(setAppDefaults());
       return data.results;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -388,6 +391,7 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
         assignments: params.endpointData.assignments,
       };
       await createCustomEndpointsRequest(body);
+      thunkAPI.dispatch(setAppDefaults());
       params.getEndpoints();
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
