@@ -83,11 +83,17 @@ export default TreeItemLabel;
 
 interface CreateTreeItemLabelProps {
   field: any;
+  value: string;
   onChange: (value: string) => void;
   edit: boolean;
 }
 
-export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({ field, onChange, edit }) => {
+export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
+  field,
+  value,
+  onChange,
+  edit,
+}) => {
   const classes = useStyles();
 
   const handleLabelContent = () => {
@@ -95,7 +101,7 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({ field, onCha
       <Input
         className={classes.textInput}
         autoComplete="new-password"
-        value=""
+        value={value}
         onChange={(event) => onChange(event.target.value)}
         fullWidth
         classes={{

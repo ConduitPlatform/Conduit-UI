@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
-import React, { FC, memo, useCallback, useEffect, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -11,6 +11,8 @@ import TreeView from '@material-ui/lab/TreeView';
 import { getExpandableFields, getFieldsArray } from './SchemaDataUtils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { CreateTreeItemLabel } from './TreeItemLabel';
+import { set, cloneDeep } from 'lodash';
+import getDeepValue from '../../../utils/getDeepValue';
 
 const useStyles = makeStyles((theme) => ({
   paperRoot: {
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   open: boolean;
   handleClose: () => void;
-  handleCreate: () => void;
+  handleCreate: (fieldValues: any) => void;
   schema: Schema;
 }
 
@@ -37,8 +39,8 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
   const classes = useStyles();
 
   const [expanded, setExpanded] = useState<string[]>([]);
-
   const [fieldsArray, setFieldsArray] = useState<any[]>([]);
+  const [fieldValues, setFieldValues] = useState<any>({});
 
   useEffect(() => {
     if (schema && schema.fields) {
@@ -46,8 +48,10 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     }
   }, [schema]);
 
-  const onChange = (value: string) => {
-    console.log(value);
+  const onChange = (value: string, parents: string[]) => {
+    const fieldValuesClone = cloneDeep(fieldValues);
+    const fieldValuesCloneSet = set(fieldValuesClone, parents, value);
+    setFieldValues(fieldValuesCloneSet);
   };
 
   useEffect(() => {
@@ -56,21 +60,38 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     }
   }, [schema]);
 
-  const renderTree = useCallback((field: any) => {
+  const renderTree = (field: any, parents?: any) => {
+    switch (field.name) {
+      case 'createdAt':
+      case 'updatedAt':
+        return <></>;
+    }
+    const parentsArray = parents ? [...parents, field.name] : [field.name];
+
     const isObject = field.data.type && typeof field.data.type !== 'string';
+
+    const value = !isObject && getDeepValue(fieldValues, parents ? parents : []);
+    const inputValue = value ? value[field.name] : '';
 
     return (
       <TreeItem
         key={field.name}
         nodeId={field.name}
-        label={<CreateTreeItemLabel field={field} onChange={onChange} edit={!isObject} />}>
+        label={
+          <CreateTreeItemLabel
+            field={field}
+            value={inputValue}
+            onChange={(event) => onChange(event, parentsArray)}
+            edit={!isObject}
+          />
+        }>
         {isObject &&
           Object.keys(field.data.type).map((node) =>
-            renderTree({ name: node, data: field.data.type[node] })
+            renderTree({ name: node, data: field.data.type[node] }, parentsArray)
           )}
       </TreeItem>
     );
-  }, []);
+  };
 
   return (
     <Dialog
@@ -99,7 +120,11 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
         <Button variant="contained" onClick={handleClose}>
           Cancel
         </Button>
-        <Button variant="contained" onClick={handleCreate} color="primary" autoFocus>
+        <Button
+          variant="contained"
+          onClick={() => handleCreate(fieldValues)}
+          color="primary"
+          autoFocus>
           Create
         </Button>
       </DialogActions>

@@ -123,7 +123,9 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     setCreateDialog(true);
   };
 
-  const handleCreate = () => {
+  const handleCreate = (values: any) => {
+    console.log('values', values);
+    return;
     setCreateDialog(false);
   };
 
