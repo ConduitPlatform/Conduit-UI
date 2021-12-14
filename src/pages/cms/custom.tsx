@@ -1,13 +1,7 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
-import {
-  asyncCreateCustomEndpoints,
-  asyncDeleteCustomEndpoints,
-  asyncGetCmsSchemas,
-  asyncGetCustomEndpoints,
-  asyncUpdateCustomEndpoints,
-} from '../../redux/slices/cmsSlice';
+import { asyncGetCmsSchemas } from '../../redux/slices/cmsSlice';
 
 import CustomQueries from '../../components/cms/custom-endpoints/CustomQueries';
 

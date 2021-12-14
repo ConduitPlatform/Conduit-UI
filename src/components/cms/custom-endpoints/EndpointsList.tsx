@@ -162,8 +162,6 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
     [search, operation, dispatch]
   );
 
-  console.log('action:', action);
-
   const debouncedGetApiItems = debounce(
     (skip: number, limit: number) => getEndpoints(skip, limit),
     timeoutAmount
