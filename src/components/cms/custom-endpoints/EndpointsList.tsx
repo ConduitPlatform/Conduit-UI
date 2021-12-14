@@ -9,7 +9,12 @@ import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@m
 import OperationsEnum from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { Skeleton } from '@material-ui/lab';
-import { asyncGetCustomEndpoints, clearEndpoints } from '../../../redux/slices/cmsSlice';
+import {
+  asyncGetCustomEndpoints,
+  clearEndpoints,
+  EndpointActionsEnum,
+  setEndpointAction,
+} from '../../../redux/slices/cmsSlice';
 import { useAppSelector } from '../../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
@@ -117,31 +122,30 @@ let tabsStatusMap: ItemStatus = {};
 const isItemLoaded = (index: number) => !!tabsStatusMap[index];
 
 interface Props {
-  action: any;
   handleListItemSelect: (endpoint: any) => void;
   search: string;
   operation: number;
 }
 
-const EndpointsList: FC<Props> = ({ action, handleListItemSelect, search, operation }) => {
+const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
 
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
-  const { endpoints, count } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+  const { endpoints, count, action } = useAppSelector(
+    (state) => state.cmsSlice.data.customEndpoints
+  );
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   useEffect(() => {
-    if (
-      (infiniteLoaderRef.current && hasMountedRef.current) ||
-      (action.action !== '' && endpoints.length)
-    ) {
+    if (infiniteLoaderRef.current && hasMountedRef.current) {
       infiniteLoaderRef.current.resetloadMoreItemsCache();
       tabsStatusMap = {};
     }
     hasMountedRef.current = true;
+    dispatch(setEndpointAction(EndpointActionsEnum.None));
     dispatch(clearEndpoints());
   }, [search, operation, dispatch, action]);
 
@@ -157,6 +161,8 @@ const EndpointsList: FC<Props> = ({ action, handleListItemSelect, search, operat
     },
     [search, operation, dispatch]
   );
+
+  console.log('action:', action);
 
   const debouncedGetApiItems = debounce(
     (skip: number, limit: number) => getEndpoints(skip, limit),

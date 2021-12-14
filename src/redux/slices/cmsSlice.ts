@@ -26,6 +26,13 @@ import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
+export enum EndpointActionsEnum {
+  None,
+  Create,
+  Update,
+  Delete,
+}
+
 export interface ICmsSlice {
   data: {
     schemas: {
@@ -45,6 +52,7 @@ export interface ICmsSlice {
       endpoints: EndpointTypes[];
       count: number;
       loading: boolean;
+      action: EndpointActionsEnum;
     };
     count: number;
     config: any;
@@ -71,6 +79,7 @@ const initialState: ICmsSlice = {
       endpoints: [],
       count: 0,
       loading: false,
+      action: EndpointActionsEnum.None,
     },
     count: 0,
     config: null,
@@ -341,11 +350,10 @@ export const asyncGetCustomEndpoints = createAsyncThunk(
 
 export const asyncUpdateCustomEndpoints = createAsyncThunk(
   'cms/updateEndpoints',
-  async (params: { _id: string; endpointData: any; getEndpoints: any }, thunkAPI) => {
+  async (params: { _id: string; endpointData: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
-      params.getEndpoints();
       thunkAPI.dispatch(setAppDefaults());
       return data;
     } catch (error) {
@@ -358,14 +366,12 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk(
 
 export const asyncDeleteCustomEndpoints = createAsyncThunk(
   'cms/deleteEndpoints',
-  async (params: { _id: string; getEndpoints: any }, thunkAPI) => {
+  async (params: { _id: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
-
     try {
       const { data } = await deleteCustomEndpointsRequest(params._id);
-      params.getEndpoints();
       thunkAPI.dispatch(setAppDefaults());
-      return data.results;
+      return params._id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -376,7 +382,7 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk(
 
 export const asyncCreateCustomEndpoints = createAsyncThunk(
   'cms/createEndpoints',
-  async (params: { endpointData: any; getEndpoints: any }, thunkAPI) => {
+  async (params: { endpointData: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const body = {
@@ -392,7 +398,6 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
       };
       await createCustomEndpointsRequest(body);
       thunkAPI.dispatch(setAppDefaults());
-      params.getEndpoints();
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -438,6 +443,9 @@ const cmsSlice = createSlice({
     clearEndpoints(state) {
       state.data.customEndpoints.endpoints = [];
     },
+    setEndpointAction(state, action) {
+      state.data.customEndpoints.action = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
@@ -480,6 +488,13 @@ const cmsSlice = createSlice({
       state.data.customEndpoints.count = action.payload.count;
       state.data.customEndpoints.loading = false;
     });
+    builder.addCase(asyncDeleteCustomEndpoints.fulfilled, (state, action) => {
+      state.data.customEndpoints.endpoints = state.data.customEndpoints.endpoints.filter(
+        (endpoint) => endpoint._id !== action.payload
+      );
+      state.data.customEndpoints.count = state.data.customEndpoints.count - 1;
+      state.data.customEndpoints.loading = false;
+    });
 
     builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
       state.data.schemasFromOtherModules = action.payload.results;
@@ -488,4 +503,5 @@ const cmsSlice = createSlice({
 });
 
 export default cmsSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema, clearEndpoints } = cmsSlice.actions;
+export const { setSelectedSchema, clearSelectedSchema, clearEndpoints, setEndpointAction } =
+  cmsSlice.actions;

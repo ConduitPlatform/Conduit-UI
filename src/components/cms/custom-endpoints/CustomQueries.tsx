@@ -26,6 +26,13 @@ import {
 } from '../../../redux/slices/customEndpointsSlice';
 import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import {
+  asyncCreateCustomEndpoints,
+  asyncDeleteCustomEndpoints,
+  asyncUpdateCustomEndpoints,
+  EndpointActionsEnum,
+  setEndpointAction,
+} from '../../../redux/slices/cmsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,7 +68,6 @@ const CustomQueries: FC = () => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
-  const [action, setAction] = useState({ action: '', data: {} });
 
   const {
     schemas: { schemaDocuments },
@@ -182,10 +188,12 @@ const CustomQueries: FC = () => {
 
     if (edit) {
       const _id = selectedEndpoint._id;
-      setAction({ action: 'edit', data: { id: _id, data: data } });
+      dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
+      dispatch(setEndpointAction(EndpointActionsEnum.Update));
       dispatch(setSelectedEndPoint(''));
     } else {
-      setAction({ action: 'create', data: data });
+      dispatch(asyncCreateCustomEndpoints({ endpointData: data }));
+      dispatch(setEndpointAction(EndpointActionsEnum.Create));
       dispatch(setSelectedEndPoint(''));
     }
     setCreateMode(false);
@@ -201,7 +209,8 @@ const CustomQueries: FC = () => {
   const handleDeleteConfirmed = () => {
     handleConfirmationDialogClose();
     dispatch(setSelectedEndPoint(undefined));
-    setAction({ action: 'delete', data: selectedEndpoint._id });
+    dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
+    dispatch(setEndpointAction(EndpointActionsEnum.Delete));
   };
 
   const handleNameChange = (event: any) => {
@@ -333,12 +342,7 @@ const CustomQueries: FC = () => {
     <Box className={classes.root}>
       <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={4}>
-          <SideList
-            action={action}
-            setAction={setAction}
-            setEditMode={setEditMode}
-            setCreateMode={setCreateMode}
-          />
+          <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} />
         </Grid>
         <Grid item xs={8}>
           {renderMainContent()}

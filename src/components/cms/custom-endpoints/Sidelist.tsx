@@ -14,12 +14,6 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
 import EndpointsList from './EndpointsList';
-import {
-  asyncCreateCustomEndpoints,
-  asyncDeleteCustomEndpoints,
-  asyncGetCustomEndpoints,
-  asyncUpdateCustomEndpoints,
-} from '../../../redux/slices/cmsSlice';
 import { useAppDispatch } from '../../../redux/store';
 import useDebounce from '../../../hooks/useDebounce';
 import {
@@ -65,65 +59,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  action: { action: string; data: any };
-  setAction: any;
   setEditMode: (edit: boolean) => void;
   setCreateMode: (create: boolean) => void;
 }
 
-const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) => {
+const SideList: FC<Props> = ({ setEditMode, setCreateMode }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
   const [operation, setOperation] = useState(-2);
   const debouncedSearch = useDebounce(search, 500);
-
-  const getEndpointsCallback = useCallback(() => {
-    dispatch(
-      asyncGetCustomEndpoints({
-        skip: 0,
-        limit: 15,
-      })
-    );
-    setOperation(-2);
-    setSearch('');
-  }, [dispatch]);
-
-  useEffect(() => {
-    switch (action.action) {
-      case 'edit':
-        if (action.data.id && action.data.data) {
-          asyncUpdateCustomEndpoints({
-            _id: action.data.id,
-            endpointData: action.data.data,
-            getEndpoints: getEndpointsCallback,
-          });
-        }
-        setAction({ action: '', data: {} });
-        break;
-      case 'create':
-        if (action.data) {
-          dispatch(
-            asyncCreateCustomEndpoints({
-              endpointData: action.data,
-              getEndpoints: getEndpointsCallback,
-            })
-          );
-        }
-        setAction({ action: '', data: {} });
-        break;
-      case 'delete':
-        if (action.data) {
-          dispatch(
-            asyncDeleteCustomEndpoints({ _id: action.data, getEndpoints: getEndpointsCallback })
-          );
-          break;
-        }
-        setAction({ action: '', data: {} });
-      default:
-        break;
-    }
-  }, [action, dispatch, getEndpointsCallback]);
 
   const handleListItemSelect = (endpoint: any) => {
     dispatch(setSelectedEndPoint(endpoint));
@@ -183,7 +128,6 @@ const SideList: FC<Props> = ({ action, setAction, setEditMode, setCreateMode }) 
       <Divider flexItem variant="middle" className={classes.divider} />
       <Box height="60vh">
         <EndpointsList
-          action={action}
           handleListItemSelect={handleListItemSelect}
           search={debouncedSearch}
           operation={operation}
