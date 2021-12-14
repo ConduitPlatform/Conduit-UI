@@ -20,13 +20,19 @@ import AssignmentsSection from './AssignmentsSection';
 import InputsSection from './InputsSection';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  endpointCleanSlate,
   setEndpointData,
   setSchemaFields,
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
 import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import {
+  asyncCreateCustomEndpoints,
+  asyncDeleteCustomEndpoints,
+  asyncUpdateCustomEndpoints,
+  EndpointActionsEnum,
+  setEndpointAction,
+} from '../../../redux/slices/cmsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,39 +62,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  handleCreate: any;
-  handleEdit: any;
-  handleDelete: any;
-  search: string;
-  setSearch: (search: string) => void;
-  limit: number;
-  setLimit: (limit: number) => void;
-  operation: number;
-  setOperation: (operation: number) => void;
-}
-
-const CustomQueries: FC<Props> = ({
-  handleCreate,
-  handleEdit,
-  handleDelete,
-  limit,
-  setLimit,
-  search,
-  setSearch,
-  operation,
-  setOperation,
-}) => {
+const CustomQueries: FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
 
   const {
     schemas: { schemaDocuments },
-    customEndpoints: { endpoints },
   } = useAppSelector((state) => state.cmsSlice.data);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -206,10 +188,12 @@ const CustomQueries: FC<Props> = ({
 
     if (edit) {
       const _id = selectedEndpoint._id;
-      handleEdit(_id, data);
+      dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
+      dispatch(setEndpointAction(EndpointActionsEnum.Update));
       dispatch(setSelectedEndPoint(''));
     } else {
-      handleCreate(data);
+      dispatch(asyncCreateCustomEndpoints({ endpointData: data }));
+      dispatch(setEndpointAction(EndpointActionsEnum.Create));
       dispatch(setSelectedEndPoint(''));
     }
     setCreateMode(false);
@@ -225,22 +209,12 @@ const CustomQueries: FC<Props> = ({
   const handleDeleteConfirmed = () => {
     handleConfirmationDialogClose();
     dispatch(setSelectedEndPoint(undefined));
-    handleDelete(selectedEndpoint._id);
-  };
-
-  const handleListItemSelect = (endpoint: any) => {
-    dispatch(setSelectedEndPoint(endpoint));
-    dispatch(setEndpointData({ ...endpoint }));
+    dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
+    dispatch(setEndpointAction(EndpointActionsEnum.Delete));
   };
 
   const handleNameChange = (event: any) => {
     dispatch(setEndpointData({ name: event.target.value }));
-  };
-
-  const handleAddNewEndpoint = () => {
-    dispatch(endpointCleanSlate());
-    setEditMode(true);
-    setCreateMode(true);
   };
 
   const disableSubmit = () => {
@@ -368,18 +342,7 @@ const CustomQueries: FC<Props> = ({
     <Box className={classes.root}>
       <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={4}>
-          <SideList
-            operation={operation}
-            setOperation={setOperation}
-            search={search}
-            setSearch={setSearch}
-            endpoints={endpoints}
-            selectedEndpoint={selectedEndpoint}
-            handleAddNewEndpoint={handleAddNewEndpoint}
-            handleListItemSelect={handleListItemSelect}
-            limit={limit}
-            setLimit={setLimit}
-          />
+          <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} />
         </Grid>
         <Grid item xs={8}>
           {renderMainContent()}
