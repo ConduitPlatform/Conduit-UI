@@ -6,7 +6,7 @@ import {
   getExternalTemplatesRequest,
   postEmailTemplateRequest,
   putEmailSettingsRequest,
-  putEmailTemplateRequest,
+  patchEmailTemplateRequest,
   sendEmailRequest,
   syncExternalTemplates,
   uploadTemplateRequest,
@@ -119,7 +119,7 @@ export const asyncSaveEmailTemplateChanges = createAsyncThunk(
     try {
       const {
         data: { updatedTemplate: updateEmailData },
-      } = await putEmailTemplateRequest(dataForThunk._id, dataForThunk.data);
+      } = await patchEmailTemplateRequest(dataForThunk._id, dataForThunk.data);
       thunkAPI.dispatch(
         enqueueSuccessNotification(
           `Successfully saved changes for the template ${dataForThunk.data.name}!`

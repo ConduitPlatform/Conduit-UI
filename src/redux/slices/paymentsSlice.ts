@@ -15,7 +15,7 @@ import {
   postProductsRequest,
   putCustomerRequest,
   putPaymentSettingsRequest,
-  putProductRequest,
+  patchProductRequest,
 } from '../../http/PaymentsRequests';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import {
@@ -187,7 +187,7 @@ export const asyncSaveProductChanges = createAsyncThunk(
     try {
       const {
         data: { updatedProduct },
-      } = await putProductRequest(dataForThunk._id, dataForThunk.data);
+      } = await patchProductRequest(dataForThunk._id, dataForThunk.data);
       thunkAPI.dispatch(
         enqueueSuccessNotification(
           `Successfully saved changes for the product ${dataForThunk.data.name}!`
