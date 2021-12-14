@@ -1,3 +1,5 @@
+import { isArray } from 'lodash';
+
 const getAvailableFieldsOfSchema = (schemaSelected, schemas) => {
   if (schemaSelected) {
     const found = schemas.find((schema) => schema._id === schemaSelected);
@@ -6,6 +8,83 @@ const getAvailableFieldsOfSchema = (schemaSelected, schemas) => {
     }
     return {};
   }
+};
+
+export const isValueIncompatible = (
+  fieldName: string,
+  externalInputType: string,
+  availableFieldsOfSchema: any
+) => {
+  if (typeof fieldName === 'string') {
+    if (fieldName.indexOf('.') !== -1) {
+      const splitQuery = fieldName.split('.');
+      const foundInnerSchema: any = availableFieldsOfSchema.find(
+        (field: any) => field.name === splitQuery[0]
+      );
+      if (foundInnerSchema?.type) {
+        const innerSchemaType = foundInnerSchema.type[splitQuery[1]]?.type;
+        if (isArray(innerSchemaType) && externalInputType === 'Array') {
+          return false;
+        }
+        if (innerSchemaType === externalInputType) return false;
+        return true;
+      }
+      return;
+    } else {
+      const foundSchema: any = availableFieldsOfSchema.find(
+        (schema: any) => schema.name === fieldName
+      );
+
+      if (foundSchema && foundSchema.type) {
+        if (isArray(foundSchema.type) && externalInputType === 'Array') {
+          return false;
+        }
+        if (foundSchema?.type === externalInputType) return false;
+        return true;
+      }
+    }
+  }
+};
+
+export const getTypeOfValue = (fieldName: string, availableFieldsOfSchema: any) => {
+  if (typeof fieldName === 'string') {
+    if (fieldName.indexOf('.') !== -1) {
+      const splitQuery = fieldName.split('.');
+      const foundInnerSchema: any = availableFieldsOfSchema.find(
+        (field: any) => field.name === splitQuery[0]
+      );
+      if (foundInnerSchema?.type) {
+        const innerSchemaType = foundInnerSchema.type[splitQuery[1]]?.type;
+
+        if (innerSchemaType) {
+          return innerSchemaType;
+        }
+      }
+      return;
+    } else {
+      const foundSchema: any = availableFieldsOfSchema.find(
+        (schema: any) => schema.name === fieldName
+      );
+
+      if (foundSchema && foundSchema.type) {
+        if (isArray(foundSchema.type)) {
+          return 'Array';
+        } else {
+          return foundSchema?.type;
+        }
+      }
+    }
+  }
+};
+
+export const extractInputValueType = (type: any) => {
+  if (type === undefined) {
+    return '';
+  }
+  if (isArray(type)) {
+    return '(Array)';
+  }
+  return `(${type})`;
 };
 
 const findFieldsWithTypes = (fields) => {

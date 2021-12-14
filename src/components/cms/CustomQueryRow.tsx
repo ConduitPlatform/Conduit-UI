@@ -13,6 +13,7 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import ConditionsEnum from '../../models/ConditionsEnum';
 import { isArray } from 'lodash';
+import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
 
 const useStyles = makeStyles((theme) => ({
   menuItem: {
@@ -110,23 +111,13 @@ const CustomQueryRow: FC<Props> = ({
     }
   }, [availableFieldsOfSchema, query.schemaField]);
 
-  const isValueIncompatible = (type) => {
+  const isValueInputIncompatible = (type: any) => {
     if (isArray(type) && schemaType === 'Array') {
       return false;
     }
     if (schemaType !== type) {
       return true;
     }
-  };
-
-  const extractValueType = (type) => {
-    if (type === undefined) {
-      return '';
-    }
-    if (isArray(type)) {
-      return '(Array)';
-    }
-    return `(${type})`;
   };
 
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
@@ -149,11 +140,9 @@ const CustomQueryRow: FC<Props> = ({
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
           <MenuItem
-            dense
             className={classes.menuItem}
             disabled={Array.isArray(field.type)}
             style={{
-              background: 'rgba(0, 0, 0, 0.15)',
               paddingLeft: 24,
             }}
             key={`ido-${i}-field`}
@@ -167,7 +156,7 @@ const CustomQueryRow: FC<Props> = ({
     return [itemTop, ...restItems];
   };
 
-  const getSubFields = (field: any) => {
+  const getSubFields = (field: any, comparisonField?: boolean) => {
     if (field?.type) {
       const keys = Object?.keys(field?.type);
 
@@ -178,7 +167,7 @@ const CustomQueryRow: FC<Props> = ({
           style={{
             fontWeight: 'bold',
           }}
-          value={field.name}>
+          value={comparisonField ? 'Schema-' + field.name : field.name}>
           {field.name}
         </MenuItem>
       );
@@ -192,15 +181,25 @@ const CustomQueryRow: FC<Props> = ({
         ) {
           return (
             <MenuItem
-              dense
               className={classes.menuItem}
-              disabled={Array.isArray(field.type)}
+              disabled={
+                Array.isArray(field.type) ||
+                (comparisonField &&
+                  isValueIncompatible(`${field.name}.${item}`, schemaType, availableFieldsOfSchema))
+              }
               style={{
-                background: 'rgba(0, 0, 0, 0.05)',
+                paddingLeft: 24,
               }}
               key={`idSec-${i}-field`}
-              value={`${field.name}.${item}`}>
-              {item}
+              value={
+                comparisonField ? 'Schema-' + `${field.name}.${item}` : `${field.name}.${item}`
+              }>
+              {comparisonField
+                ? item +
+                  ' (' +
+                  getTypeOfValue(`${field.name}.${item}`, availableFieldsOfSchema) +
+                  ')'
+                : item}
             </MenuItem>
           );
         } else {
@@ -212,16 +211,31 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
-  const prepareOptions = () => {
+  const isOuterFieldArray = (fieldType: any) => {
+    if (isArray(fieldType)) {
+      return ' (Array)';
+    } else {
+      return ` (${fieldType})`;
+    }
+  };
+
+  const prepareOptions = (comparisonField?: boolean) => {
     return availableFieldsOfSchema.map((field: any, index: number) => {
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
-          <MenuItem className={classes.menuItem} key={`idxO-${index}-field`} value={field.name}>
-            {field.name}
+          <MenuItem
+            className={classes.menuItem}
+            disabled={
+              comparisonField &&
+              isValueIncompatible(`${field.name}`, schemaType, availableFieldsOfSchema)
+            }
+            key={`idxO-${index}-field`}
+            value={comparisonField ? 'Schema-' + field.name : field.name}>
+            {comparisonField ? field.name + isOuterFieldArray(field.type) : field.name}
           </MenuItem>
         );
       }
-      return getSubFields(field);
+      return getSubFields(field, comparisonField);
     });
   };
 
@@ -319,25 +333,17 @@ const CustomQueryRow: FC<Props> = ({
           <MenuItem disabled className={classes.group}>
             Schema Fields
           </MenuItem>
-          {availableFieldsOfSchema.map((field: any, index: number) => (
-            <MenuItem
-              disabled={isValueIncompatible(field.type)}
-              className={classes.item}
-              key={`idxS-${index}-field`}
-              value={'Schema-' + field.name}>
-              {`${field.name} ${extractValueType(field.type)}`}
-            </MenuItem>
-          ))}
+          {prepareOptions(true)}
           <MenuItem disabled className={classes.group}>
-            Input Fields {!selectedInputs.length && '(not available)'}
+            Input Fields {!selectedInputs.length && '(none available)'}
           </MenuItem>
           {selectedInputs.map((input, index) => (
             <MenuItem
-              disabled={isValueIncompatible(input.type)}
+              disabled={isValueInputIncompatible(input.type)}
               className={classes.item}
               key={`idxF-${index}-input`}
               value={'Input-' + input.name}>
-              {`${input.name} ${extractValueType(input.type)}`}
+              {`${input.name} ${extractInputValueType(input.type)}`}
             </MenuItem>
           ))}
         </TextField>
