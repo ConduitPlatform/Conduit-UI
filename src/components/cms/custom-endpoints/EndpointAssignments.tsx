@@ -84,7 +84,7 @@ const EndpointAssignments: FC<Props> = ({
         }
         return;
       } else {
-        const foundSchema = availableFieldsOfSchema.find(
+        const foundSchema: any = availableFieldsOfSchema.find(
           (schema: any) => schema.name === fieldName
         );
 
@@ -96,11 +96,11 @@ const EndpointAssignments: FC<Props> = ({
     }
   };
 
-  const fieldType = (fieldName: string) => {
+  const getCustomFieldType = (fieldName: string) => {
     if (typeof fieldName === 'string') {
       if (fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
-        const foundInnerSchema = availableFieldsOfSchema.find(
+        const foundInnerSchema: any = availableFieldsOfSchema.find(
           (field: any) => field.name === splitQuery[0]
         );
         if (foundInnerSchema?.type) {
@@ -444,10 +444,10 @@ const EndpointAssignments: FC<Props> = ({
             <TextField
               label={
                 assignment.assignmentField.type === 'Custom'
-                  ? `Custom (${fieldType(assignment.schemaField)})`
+                  ? `Custom (${getCustomFieldType(assignment.schemaField)})`
                   : 'Context value'
               }
-              type={fieldType(assignment.schemaField)}
+              type={getCustomFieldType(assignment.schemaField)}
               variant={'outlined'}
               disabled={!editMode}
               fullWidth

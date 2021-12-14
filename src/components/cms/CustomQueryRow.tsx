@@ -12,6 +12,7 @@ import {
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import ConditionsEnum from '../../models/ConditionsEnum';
+import { isArray } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   menuItem: {
@@ -108,6 +109,25 @@ const CustomQueryRow: FC<Props> = ({
       }
     }
   }, [availableFieldsOfSchema, query.schemaField]);
+
+  const isValueIncompatible = (type) => {
+    if (isArray(type) && schemaType === 'Array') {
+      return false;
+    }
+    if (schemaType !== type) {
+      return true;
+    }
+  };
+
+  const extractValueType = (type) => {
+    if (type === undefined) {
+      return '';
+    }
+    if (isArray(type)) {
+      return '(Array)';
+    }
+    return `(${type})`;
+  };
 
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
@@ -293,7 +313,7 @@ const CustomQueryRow: FC<Props> = ({
           <MenuItem disabled className={classes.group}>
             Custom Value
           </MenuItem>
-          <MenuItem className={classes.item} value={'Custom'}>
+          <MenuItem disabled={schemaType === 'Array'} className={classes.item} value={'Custom'}>
             Add a custom value
           </MenuItem>
           <MenuItem disabled className={classes.group}>
@@ -301,23 +321,23 @@ const CustomQueryRow: FC<Props> = ({
           </MenuItem>
           {availableFieldsOfSchema.map((field: any, index: number) => (
             <MenuItem
-              disabled={schemaType !== field.type}
+              disabled={isValueIncompatible(field.type)}
               className={classes.item}
               key={`idxS-${index}-field`}
               value={'Schema-' + field.name}>
-              {field.name}
+              {`${field.name} ${extractValueType(field.type)}`}
             </MenuItem>
           ))}
           <MenuItem disabled className={classes.group}>
-            Input Fields
+            Input Fields {!selectedInputs.length && '(not available)'}
           </MenuItem>
           {selectedInputs.map((input, index) => (
             <MenuItem
-              disabled={schemaType !== input.type}
+              disabled={isValueIncompatible(input.type)}
               className={classes.item}
               key={`idxF-${index}-input`}
               value={'Input-' + input.name}>
-              {input.name}
+              {`${input.name} ${extractValueType(input.type)}`}
             </MenuItem>
           ))}
         </TextField>
