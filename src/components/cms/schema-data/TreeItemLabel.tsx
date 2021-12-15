@@ -2,22 +2,34 @@ import React, { FC } from 'react';
 import { Input, Typography } from '@material-ui/core';
 import { AccountTree } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import CustomDatepicker from '../../common/CustomDatepicker';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0.25, 0),
+    minHeight: 42,
   },
   bold: {
     fontWeight: 'bold',
   },
   textInput: {
-    // padding: 0,
     fontSize: '14px',
   },
   textInputProps: {
     padding: theme.spacing(0.25, 0),
+  },
+  asterisk: {
+    marginRight: theme.spacing(0.25),
+  },
+  muiSelect: {
+    padding: 0,
+    '& .MuiSelect-outlined': {
+      padding: theme.spacing(1, 5, 1, 1),
+    },
   },
 }));
 
@@ -86,6 +98,7 @@ interface CreateTreeItemLabelProps {
   value: string;
   onChange: (value: string) => void;
   edit: boolean;
+  required: boolean;
 }
 
 export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
@@ -93,27 +106,64 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
   value,
   onChange,
   edit,
+  required,
 }) => {
   const classes = useStyles();
 
   const handleLabelContent = () => {
-    return (
-      <Input
-        className={classes.textInput}
-        autoComplete="new-password"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        fullWidth
-        classes={{
-          input: classes.textInputProps,
-        }}
-      />
-    );
+    switch (field.data.type) {
+      case 'Boolean':
+        return (
+          <TextField
+            select
+            label=""
+            value={value}
+            onChange={(event) => {
+              onChange(event.target.value);
+            }}
+            classes={{
+              root: classes.muiSelect,
+            }}
+            variant="outlined">
+            <MenuItem value={''}>None</MenuItem>
+            <MenuItem value={'true'}>True</MenuItem>
+            <MenuItem value={'false'}>False</MenuItem>
+          </TextField>
+        );
+      case 'Date':
+        return (
+          <CustomDatepicker
+            value={value}
+            setValue={(event) => {
+              if (event) onChange(event.toISOString());
+            }}
+          />
+        );
+      default:
+        return (
+          <Input
+            className={classes.textInput}
+            autoComplete="new-password"
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            fullWidth
+            classes={{
+              input: classes.textInputProps,
+            }}
+            required={required}
+          />
+        );
+    }
   };
 
   return (
     <Typography variant={'subtitle2'} className={classes.root}>
-      <Typography component={'span'} className={classes.bold}>
+      {required && (
+        <Typography component="span" variant="body2" className={classes.asterisk}>
+          {'*'}
+        </Typography>
+      )}
+      <Typography component="span" className={classes.bold}>
         {`${field.name}: `}
       </Typography>
       {edit && handleLabelContent()}

@@ -71,7 +71,8 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     const isObject = field.data.type && typeof field.data.type !== 'string';
 
     const value = !isObject && getDeepValue(fieldValues, parents ? parents : []);
-    const inputValue = value ? value[field.name] : '';
+    const inputValue = value && value[field.name] ? value[field.name] : '';
+    const isRequired = field.data.required;
 
     return (
       <TreeItem
@@ -83,6 +84,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
             value={inputValue}
             onChange={(event) => onChange(event, parentsArray)}
             edit={!isObject}
+            required={isRequired}
           />
         }>
         {isObject &&
