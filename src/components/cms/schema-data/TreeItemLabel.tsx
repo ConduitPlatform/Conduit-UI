@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
   bold: {
     fontWeight: 'bold',
+    whiteSpace: 'nowrap',
   },
   textInput: {
     fontSize: '14px',
@@ -164,7 +165,8 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
         </Typography>
       )}
       <Typography component="span" className={classes.bold}>
-        {`${field.name}: `}
+        {field.name}
+        {field.data.type === 'Relation' ? `( ${field.data.model} )` : ''}:
       </Typography>
       {edit && handleLabelContent()}
     </Typography>
