@@ -172,12 +172,6 @@ const CustomQueries: FC = () => {
       (schemaDocument: Schema) => schemaDocument._id === endpoint.selectedSchema
     );
 
-    console.log(endpoint);
-
-    console.log(endpoint.queries);
-
-    console.log(prepareQuery(endpoint.queries));
-
     const query = prepareQuery(endpoint.queries);
 
     const data = {

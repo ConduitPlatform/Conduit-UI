@@ -20,6 +20,12 @@ const useStyles = makeStyles((theme) => ({
   item: {
     paddingLeft: theme.spacing(4),
   },
+  schemaItem: {
+    paddingLeft: theme.spacing(1),
+  },
+  schemaInnerItem: {
+    paddingLeft: theme.spacing(3),
+  },
   group: {
     fontWeight: 'inherit',
     opacity: '1',
@@ -199,7 +205,6 @@ const EndpointAssignments: FC<Props> = ({
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
           <MenuItem
-            dense
             className={classes.menuItem}
             disabled={
               Array.isArray(field.type) ||
@@ -247,8 +252,7 @@ const EndpointAssignments: FC<Props> = ({
         ) {
           return (
             <MenuItem
-              dense
-              className={classes.menuItem}
+              className={classes.schemaInnerItem}
               disabled={
                 Array.isArray(field.type) ||
                 (selectedAssignments &&
@@ -282,7 +286,7 @@ const EndpointAssignments: FC<Props> = ({
               selectedAssignments &&
               selectedAssignments.find((assignment: any) => assignment.schemaField === field.name)
             }
-            className={classes.menuItem}
+            className={classes.schemaItem}
             key={`idxO-${index}-field`}
             value={field.name}>
             {field.name}

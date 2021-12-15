@@ -185,7 +185,10 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             </Button>
           </Grid>
         </Grid>
-        <Grid item xs={2} className={classes.container}>
+        <Grid
+          item
+          xs={endpoint.operation === OperationsEnum.GET ? 2 : 3}
+          className={classes.container}>
           <FormControlLabel
             control={
               <Checkbox

@@ -1,8 +1,8 @@
 import { isArray } from 'lodash';
 
-const getAvailableFieldsOfSchema = (schemaSelected, schemas) => {
+const getAvailableFieldsOfSchema = (schemaSelected: any, schemas: any) => {
   if (schemaSelected) {
-    const found = schemas.find((schema) => schema._id === schemaSelected);
+    const found = schemas.find((schema: any) => schema._id === schemaSelected);
     if (found) {
       return found.fields;
     }
@@ -87,9 +87,9 @@ export const extractInputValueType = (type: any) => {
   return `(${type})`;
 };
 
-const findFieldsWithTypes = (fields) => {
+const findFieldsWithTypes = (fields: any) => {
   const fieldKeys = Object.keys(fields);
-  const fieldsWithTypes = [];
+  const fieldsWithTypes: any = [];
   fieldKeys.forEach((field) => {
     fieldsWithTypes.push({
       name: field,
@@ -100,15 +100,15 @@ const findFieldsWithTypes = (fields) => {
   return fieldsWithTypes;
 };
 
-const hasInvalidQueries = (queriesGroup) => {
-  let queries = [];
-  queriesGroup.forEach((q1) => {
+const hasInvalidQueries = (queriesGroup: any) => {
+  let queries: any = [];
+  queriesGroup.forEach((q1: any) => {
     if (!q1.queries) return;
     queries = queries.concat(q1.queries);
-    q1.queries.forEach((q2) => {
+    q1.queries.forEach((q2: any) => {
       if (!q2.queries) return;
       queries = queries.concat(q2.queries);
-      q2.queries.forEach((q3) => {
+      q2.queries.forEach((q3: any) => {
         if (!q3.queries) return;
         queries = queries.concat(q3.queries);
       });
@@ -116,7 +116,7 @@ const hasInvalidQueries = (queriesGroup) => {
   });
 
   return queries.some(
-    (query) =>
+    (query: any) =>
       query.schemaField === '' ||
       query.operation === -1 ||
       query.comparisonField.type === '' ||
@@ -124,9 +124,9 @@ const hasInvalidQueries = (queriesGroup) => {
   );
 };
 
-const hasInvalidAssignments = (assignments) => {
+const hasInvalidAssignments = (assignments: any) => {
   return assignments.some(
-    (assignment) =>
+    (assignment: any) =>
       assignment.schemaField === '' ||
       assignment.action === -1 ||
       assignment.assignmentField.type === '' ||
@@ -134,14 +134,14 @@ const hasInvalidAssignments = (assignments) => {
   );
 };
 
-const hasInvalidInputs = (inputs) =>
-  inputs.some((input) => input.name === '' || input.type === '' || input.location === -1);
+const hasInvalidInputs = (inputs: any) =>
+  inputs.some((input: any) => input.name === '' || input.type === '' || input.location === -1);
 
-const recursiveNodeIteration = (node, _id) => {
+const recursiveNodeIteration = (node: any, _id: any) => {
   if (node._id === _id) return node;
   if ('queries' in node) {
     let found;
-    node.queries.forEach((q) => {
+    node.queries.forEach((q: any) => {
       if (q._id === _id) {
         found = q;
         return;
@@ -155,20 +155,20 @@ const recursiveNodeIteration = (node, _id) => {
   }
 };
 
-const prepareQuery = (selectedQueries) => {
+const prepareQuery = (selectedQueries: any) => {
   let query = {};
 
-  selectedQueries.forEach((node) => {
-    const queries = [];
+  selectedQueries.forEach((node: any) => {
+    const queries: any = [];
 
     if ('operator' in node) {
-      node.queries.forEach((q1) => {
-        const level1NodeQueries = [];
+      node.queries.forEach((q1: any) => {
+        const level1NodeQueries: any[] = [];
         if ('operator' in q1) {
-          const level2NodeQueries = [];
-          q1.queries.forEach((q2) => {
+          const level2NodeQueries: any[] = [];
+          q1.queries.forEach((q2: any) => {
             if ('operator' in q2) {
-              q2.queries.forEach((q3) => {
+              q2.queries.forEach((q3: any) => {
                 level2NodeQueries.push(q3);
               });
               level1NodeQueries.push({ [q2.operator]: level2NodeQueries });

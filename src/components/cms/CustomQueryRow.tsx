@@ -32,12 +32,32 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  schemaMenuItem: {
+    minHeight: 0,
+    margin: theme.spacing(0),
+    padding: theme.spacing(0),
+    '&.MuiMenuItem-dense': {
+      paddingLeft: 12,
+    },
+    '&.Mui-selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: 'white',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
+    },
+  },
   alignment: {
     marginBottom: theme.spacing(1),
   },
   item: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(3),
   },
+  schemaItem: {
+    paddingLeft: theme.spacing(1),
+  },
+
   group: {
     fontWeight: 'inherit',
     opacity: '1',
@@ -163,6 +183,7 @@ const CustomQueryRow: FC<Props> = ({
       const itemTop = (
         <MenuItem
           disabled
+          dense
           className={classes.menuItem}
           style={{
             fontWeight: 'bold',
@@ -224,7 +245,7 @@ const CustomQueryRow: FC<Props> = ({
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
           <MenuItem
-            className={classes.menuItem}
+            className={comparisonField ? classes.item : classes.schemaItem}
             disabled={
               comparisonField &&
               isValueIncompatible(`${field.name}`, schemaType, availableFieldsOfSchema)
