@@ -86,7 +86,7 @@ const CustomQueries: FC = () => {
         fieldsWithTypes = findFieldsWithTypes(fields);
       }
 
-      if (selectedEndpoint.queries.length) {
+      if (selectedEndpoint.query) {
         const query = selectedEndpoint.query;
 
         const keys = Object.keys(query);
@@ -171,6 +171,12 @@ const CustomQueries: FC = () => {
     const schemaToSubmit = schemaDocuments.find(
       (schemaDocument: Schema) => schemaDocument._id === endpoint.selectedSchema
     );
+
+    console.log(endpoint);
+
+    console.log(endpoint.queries);
+
+    console.log(prepareQuery(endpoint.queries));
 
     const query = prepareQuery(endpoint.queries);
 

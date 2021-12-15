@@ -6,7 +6,7 @@ export const getCustomEndpointsRequest = (params: Pagination & Search & { operat
   return axios.get(`${CONDUIT_API}/admin/cms/customEndpoints`, { params });
 };
 export const editCustomEndpointsRequest = (_id: string, endpointData: any) => {
-  return axios.put(`${CONDUIT_API}/admin/cms/customEndpoints/${_id}`, endpointData);
+  return axios.patch(`${CONDUIT_API}/admin/cms/customEndpoints/${_id}`, endpointData);
 };
 export const deleteCustomEndpointsRequest = (_id: string) => {
   return axios.delete(`${CONDUIT_API}/admin/cms/customEndpoints/${_id}`);
