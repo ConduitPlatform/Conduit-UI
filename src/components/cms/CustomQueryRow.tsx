@@ -140,6 +140,63 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
+  const inputCustomChange = (e: React.ChangeEvent<{ value: any }>, i: number) => {
+    let value = e.target.value;
+
+    if (schemaType === 'Boolean') {
+      value = value !== 'false';
+    }
+    if (schemaType === 'Number') {
+      value = parseInt(value);
+    }
+
+    handleCustomValueChange(value, i);
+  };
+
+  const isSchemaIncompatible = (isComparisonField: any, schemaName: string) => {
+    if (!isComparisonField) {
+      return false;
+    } else {
+      return isValueIncompatible(schemaName, schemaType, availableFieldsOfSchema);
+    }
+  };
+
+  const extractCustomField = () => {
+    if (schemaType === 'Boolean') {
+      return (
+        <Select
+          disabled={!editMode}
+          value={query.comparisonField.value}
+          native
+          fullWidth
+          onChange={(event) => inputCustomChange(event, index)}>
+          <option />
+          <option value="true">true</option>
+          <option value="false">false</option>
+        </Select>
+      );
+    } else {
+      return (
+        <TextField
+          type={query.comparisonField.type === 'Custom' ? schemaType?.toLowerCase() : 'string'}
+          label={
+            <Typography className={classes.customValue}>
+              {query.comparisonField.type === 'Custom'
+                ? `Custom (${schemaType})`
+                : 'Select from context'}
+            </Typography>
+          }
+          variant={'outlined'}
+          disabled={!editMode}
+          fullWidth
+          placeholder={'ex. user._id'}
+          value={query.comparisonField.value}
+          onChange={(event) => inputCustomChange(event, index)}
+        />
+      );
+    }
+  };
+
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
     const itemTop = (
@@ -203,11 +260,7 @@ const CustomQueryRow: FC<Props> = ({
           return (
             <MenuItem
               className={classes.menuItem}
-              disabled={
-                Array.isArray(field.type) ||
-                (comparisonField &&
-                  isValueIncompatible(`${field.name}.${item}`, schemaType, availableFieldsOfSchema))
-              }
+              disabled={isSchemaIncompatible(comparisonField, `${field.name}.${item}`)}
               style={{
                 paddingLeft: 24,
               }}
@@ -246,10 +299,7 @@ const CustomQueryRow: FC<Props> = ({
         return (
           <MenuItem
             className={comparisonField ? classes.item : classes.schemaItem}
-            disabled={
-              comparisonField &&
-              isValueIncompatible(`${field.name}`, schemaType, availableFieldsOfSchema)
-            }
+            disabled={isSchemaIncompatible(comparisonField, `${field.name}`)}
             key={`idxO-${index}-field`}
             value={comparisonField ? 'Schema-' + field.name : field.name}>
             {comparisonField ? field.name + isOuterFieldArray(field.type) : field.name}
@@ -258,19 +308,6 @@ const CustomQueryRow: FC<Props> = ({
       }
       return getSubFields(field, comparisonField);
     });
-  };
-
-  const inputCustomChange = (e: React.ChangeEvent<{ value: any }>, i: number) => {
-    let value = e.target.value;
-
-    if (schemaType === 'Boolean') {
-      value = value !== 'false';
-    }
-    if (schemaType === 'Number') {
-      value = parseInt(value);
-    }
-
-    handleCustomValueChange(value, i);
   };
 
   return (
@@ -371,35 +408,7 @@ const CustomQueryRow: FC<Props> = ({
       </Grid>
       {query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context' ? (
         <Grid item xs={2}>
-          {schemaType === 'Boolean' ? (
-            <Select
-              disabled={!editMode}
-              value={query.comparisonField.value}
-              native
-              fullWidth
-              onChange={(event) => inputCustomChange(event, index)}>
-              <option />
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Select>
-          ) : (
-            <TextField
-              type={query.comparisonField.type === 'Custom' ? schemaType?.toLowerCase() : 'string'}
-              label={
-                <Typography className={classes.customValue}>
-                  {query.comparisonField.type === 'Custom'
-                    ? `Custom (${schemaType})`
-                    : 'Select from context'}
-                </Typography>
-              }
-              variant={'outlined'}
-              disabled={!editMode}
-              fullWidth
-              placeholder={'ex. user._id'}
-              value={query.comparisonField.value}
-              onChange={(event) => inputCustomChange(event, index)}
-            />
-          )}
+          {extractCustomField()}
         </Grid>
       ) : (
         <Grid item xs={2} />

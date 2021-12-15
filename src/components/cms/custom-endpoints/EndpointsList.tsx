@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
