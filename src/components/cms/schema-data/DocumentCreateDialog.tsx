@@ -17,7 +17,7 @@ import getDeepValue from '../../../utils/getDeepValue';
 const useStyles = makeStyles((theme) => ({
   paperRoot: {
     height: '100%',
-    maxHeight: '80vh',
+    maxHeight: '70vh',
   },
   dialogContent: {
     display: 'flex',
@@ -99,7 +99,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     <Dialog
       classes={{ paper: classes.paperRoot }}
       fullWidth
-      maxWidth="lg"
+      maxWidth="md"
       open={open}
       onClose={handleClose}>
       <DialogTitle>Create Document</DialogTitle>
