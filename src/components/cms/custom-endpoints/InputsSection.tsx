@@ -147,7 +147,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
       </Grid>
       <EndpointInputs
         editMode={editMode}
-        operationType={endpoint.operation && endpoint.operation}
+        operationType={endpoint && endpoint.operation}
         selectedInputs={endpoint.inputs}
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}

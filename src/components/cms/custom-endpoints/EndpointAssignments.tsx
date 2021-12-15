@@ -81,7 +81,7 @@ const EndpointAssignments: FC<Props> = ({
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema: any = availableFieldsOfSchema.find(
-          (field: any) => field.name === splitQuery[0]
+          (innerField: any) => innerField.name === splitQuery[0]
         );
         if (foundInnerSchema?.type) {
           const innerSchemaType = foundInnerSchema?.type[splitQuery[1]]?.type;
@@ -103,7 +103,7 @@ const EndpointAssignments: FC<Props> = ({
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema: any = availableFieldsOfSchema.find(
-          (field: any) => field.name === splitQuery[0]
+          (innerField: any) => innerField.name === splitQuery[0]
         );
         if (foundInnerSchema?.type) {
           const innerSchemaType = foundInnerSchema?.type[splitQuery[1]]?.type;
@@ -225,6 +225,14 @@ const EndpointAssignments: FC<Props> = ({
     });
 
     return [itemTop, ...restItems];
+  };
+
+  const extractCustomLabel = (assignmentField: any, schemaField: any) => {
+    if (assignmentField === 'Custom') {
+      return `Custom (${getTypeOfValue(schemaField, availableFieldsOfSchema)})`;
+    } else {
+      return 'Context value';
+    }
   };
 
   const getSubFields = (field: any) => {
@@ -394,11 +402,7 @@ const EndpointAssignments: FC<Props> = ({
         assignment.assignmentField.type === 'Context' ? (
           <Grid item xs={2}>
             <TextField
-              label={
-                assignment.assignmentField.type === 'Custom'
-                  ? `Custom (${getTypeOfValue(assignment.schemaField, availableFieldsOfSchema)})`
-                  : 'Context value'
-              }
+              label={extractCustomLabel(assignment.assignmentField.type, assignment.schemaField)}
               type={getTypeOfValue(assignment.schemaField, availableFieldsOfSchema)}
               variant={'outlined'}
               disabled={!editMode}

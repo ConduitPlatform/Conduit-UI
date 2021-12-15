@@ -372,7 +372,7 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk(
   async (params: { _id: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await deleteCustomEndpointsRequest(params._id);
+      await deleteCustomEndpointsRequest(params._id);
       thunkAPI.dispatch(setAppDefaults());
       thunkAPI.dispatch(enqueueSuccessNotification(`Endpoint deleted! `));
       return params._id;

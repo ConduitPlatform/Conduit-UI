@@ -3,7 +3,7 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
-import { useAppDispatch } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
 import OperationsEnum from '../../../models/OperationsEnum';
@@ -15,7 +15,6 @@ import {
   EndpointActionsEnum,
   setEndpointAction,
 } from '../../../redux/slices/cmsSlice';
-import { useAppSelector } from '../../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -221,7 +220,7 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
     };
 
     return (
-      <div style={style as CSSProperties}>
+      <div style={style}>
         {loading ? (
           <Typography variant="h2">
             <Skeleton />
