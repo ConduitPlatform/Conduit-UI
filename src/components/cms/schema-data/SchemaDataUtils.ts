@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 export const isFieldObject = (data: any) => {
   return data && typeof data !== 'string' && Object.keys(data).length > 0;
 };
