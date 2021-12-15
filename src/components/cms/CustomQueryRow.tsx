@@ -197,6 +197,22 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
+  const getInnerSchemaName = (isComparisonField: any, item: any) => {
+    if (!isComparisonField) {
+      return item;
+    } else {
+      return getTypeOfValue(item, availableFieldsOfSchema);
+    }
+  };
+
+  const getSchemaValue = (isComparisonField: any, item: string) => {
+    if (!isComparisonField) {
+      return item;
+    } else {
+      return 'Schema-' + item;
+    }
+  };
+
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
     const itemTop = (
@@ -265,15 +281,8 @@ const CustomQueryRow: FC<Props> = ({
                 paddingLeft: 24,
               }}
               key={`idSec-${i}-field`}
-              value={
-                comparisonField ? 'Schema-' + `${field.name}.${item}` : `${field.name}.${item}`
-              }>
-              {comparisonField
-                ? item +
-                  ' (' +
-                  getTypeOfValue(`${field.name}.${item}`, availableFieldsOfSchema) +
-                  ')'
-                : item}
+              value={getSchemaValue(comparisonField, `${field.name}.${item}`)}>
+              {getInnerSchemaName(comparisonField, `${field.name}.${item}`)}
             </MenuItem>
           );
         } else {
@@ -301,7 +310,7 @@ const CustomQueryRow: FC<Props> = ({
             className={comparisonField ? classes.item : classes.schemaItem}
             disabled={isSchemaIncompatible(comparisonField, `${field.name}`)}
             key={`idxO-${index}-field`}
-            value={comparisonField ? 'Schema-' + field.name : field.name}>
+            value={getSchemaValue(comparisonField, field.name)}>
             {comparisonField ? field.name + isOuterFieldArray(field.type) : field.name}
           </MenuItem>
         );
