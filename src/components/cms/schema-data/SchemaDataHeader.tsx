@@ -37,6 +37,7 @@ interface Filters {
 
 interface Props extends BoxProps {
   onCreateDocument: () => void;
+  onRefresh: () => void;
   filters: Filters;
   setFilters: (data: Filters) => void;
   search: string;
@@ -46,6 +47,7 @@ interface Props extends BoxProps {
 
 const SchemaDataHeader: FC<Props> = ({
   onCreateDocument,
+  onRefresh,
   filters,
   setFilters,
   search,
@@ -107,7 +109,7 @@ const SchemaDataHeader: FC<Props> = ({
           error={isSearchError()}
         />
         <Box className={classes.divider} />
-        <Button variant="contained" color="secondary" onClick={() => console.log('refresh')}>
+        <Button variant="contained" color="secondary" onClick={() => onRefresh()}>
           <RefreshIcon />
           Refresh
         </Button>

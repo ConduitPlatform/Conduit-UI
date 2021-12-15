@@ -213,10 +213,13 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
 export const asyncGetSchemaDocuments = createAsyncThunk(
   'cms/getDocs',
   async (params: { name: string; skip: number; limit: number; query: any }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCmsDocumentsByNameRequest(params);
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }

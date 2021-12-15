@@ -159,6 +159,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
         <Box style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <SchemaDataHeader
             onCreateDocument={onCreateDocument}
+            onRefresh={getSchemaDocuments}
             filters={filters}
             setFilters={setFilters}
             search={search}
