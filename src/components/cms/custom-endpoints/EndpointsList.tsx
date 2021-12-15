@@ -169,6 +169,13 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
 
   const loadMoreItems = useCallback(
     async (startIndex: number, stopIndex: number) => {
+      if (
+        infiniteLoaderRef.current &&
+        infiniteLoaderRef.current._listRef &&
+        endpoints.length === 0
+      ) {
+        infiniteLoaderRef.current._listRef.scrollTo(0);
+      }
       const limit = stopIndex + 1;
       debouncedGetApiItems(endpoints.length, limit);
       await new Promise((resolve) => {
@@ -186,11 +193,10 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
   );
 
   useEffect(() => {
-    getEndpoints(0, 15);
-    for (let index = 0; index <= 15; index++) {
-      tabsStatusMap[index] = 'LOADED';
+    if (!infiniteLoaderRef.current || endpoints.length === 0) {
+      loadMoreItems(0, 15);
     }
-  }, [getEndpoints, operation]);
+  }, [loadMoreItems, endpoints.length]);
 
   const EndpointRow = ({ data, index, style }: ListChildComponentProps) => {
     const rowItem = endpoints[index];
