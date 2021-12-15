@@ -270,15 +270,10 @@ export const asyncCreateSchemaDocument = createAsyncThunk<
 >('cms/createDoc', async (params, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
-    const body = { schemaName: params.schemaName, inputDocument: {} };
-    params.document.forEach((d: any) => {
-      const field = prepareDocumentField(d);
-      body.inputDocument = { ...body.inputDocument, ...field };
-    });
+    const body = { schemaName: params.schemaName, inputDocument: params.document };
     await createSchemaDocumentRequest(params.schemaName, body);
     thunkAPI.dispatch(setAppLoading(false));
     params.getSchemaDocuments();
-    return;
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
     thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

@@ -112,6 +112,28 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
   const classes = useStyles();
 
   const handleLabelContent = () => {
+    if (field.data.enum) {
+      return (
+        <TextField
+          select
+          label=""
+          value={value}
+          onChange={(event) => {
+            onChange(event.target.value);
+          }}
+          classes={{
+            root: classes.muiSelect,
+          }}
+          variant="outlined">
+          <MenuItem value={''}>None</MenuItem>
+          {field.data.enum.map((option: string, index: number) => (
+            <MenuItem value={option} key={index}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+      );
+    }
     switch (field.data.type) {
       case 'Boolean':
         return (

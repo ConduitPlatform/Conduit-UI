@@ -4,7 +4,11 @@ import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { asyncDeleteSchemaDocument, asyncGetSchemaDocuments } from '../../../redux/slices/cmsSlice';
+import {
+  asyncCreateSchemaDocument,
+  asyncDeleteSchemaDocument,
+  asyncGetSchemaDocuments,
+} from '../../../redux/slices/cmsSlice';
 import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
@@ -12,6 +16,7 @@ import ConfirmationDialog from '../../common/ConfirmationDialog';
 import SchemaDataHeader from './SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';
+import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,8 +129,12 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   };
 
   const handleCreate = (values: any) => {
-    console.log('values', values);
-    return;
+    const params = {
+      schemaName: schemas[selectedSchema].name,
+      document: values,
+      getSchemaDocuments: getSchemaDocuments,
+    };
+    dispatch(asyncCreateSchemaDocument(params));
     setCreateDialog(false);
   };
 
@@ -173,8 +182,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
               })}
             </TabPanel>
           ) : (
-            <></>
-            // <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
+            <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
           )}
         </Box>
       </Box>
