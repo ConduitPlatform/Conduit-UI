@@ -160,8 +160,6 @@ const CustomQueryRow: FC<Props> = ({
     handleCustomValueChange(value, i);
   };
 
-  console.log(query);
-
   const isSchemaIncompatible = (isComparisonField: any, schemaName: string) => {
     if (!isComparisonField) {
       return false;
@@ -329,7 +327,7 @@ const CustomQueryRow: FC<Props> = ({
       return getSubFields(field, comparisonField);
     });
   };
-  console.log(query);
+
   return (
     <>
       <Grid item xs={2}>
