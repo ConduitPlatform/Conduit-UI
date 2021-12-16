@@ -131,6 +131,8 @@ const CustomQueryRow: FC<Props> = ({
     }
   }, [availableFieldsOfSchema, query.schemaField]);
 
+  console.log(query);
+
   const isValueInputIncompatible = (type: any) => {
     if (isArray(type) && schemaType === 'Array') {
       return false;
@@ -148,6 +150,10 @@ const CustomQueryRow: FC<Props> = ({
     }
     if (schemaType === 'Number') {
       value = parseInt(value);
+    }
+    if (schemaType === 'Array') {
+      const regex = /:\s|,\s/;
+      value = value.split(regex);
     }
 
     handleCustomValueChange(value, i);
@@ -198,10 +204,12 @@ const CustomQueryRow: FC<Props> = ({
   };
 
   const getInnerSchemaName = (isComparisonField: any, item: any) => {
+    const splitString = item.split('.');
+    const suffix = splitString[1];
     if (!isComparisonField) {
-      return item;
+      return suffix;
     } else {
-      return getTypeOfValue(item, availableFieldsOfSchema);
+      return `${suffix} (${getTypeOfValue(item, availableFieldsOfSchema)})`;
     }
   };
 
@@ -394,7 +402,7 @@ const CustomQueryRow: FC<Props> = ({
           <MenuItem disabled className={classes.group}>
             Custom Value
           </MenuItem>
-          <MenuItem disabled={schemaType === 'Array'} className={classes.item} value={'Custom'}>
+          <MenuItem className={classes.item} value={'Custom'}>
             Add a custom value
           </MenuItem>
           <MenuItem disabled className={classes.group}>
