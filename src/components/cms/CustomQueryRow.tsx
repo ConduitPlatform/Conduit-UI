@@ -14,6 +14,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import ConditionsEnum from '../../models/ConditionsEnum';
 import { isArray } from 'lodash';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
+import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { useAppDispatch } from '../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
   menuItem: {
@@ -101,6 +103,7 @@ const CustomQueryRow: FC<Props> = ({
   handleRemoveQuery,
 }) => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
   const [schemaType, setSchemaType] = useState('');
 
@@ -150,12 +153,14 @@ const CustomQueryRow: FC<Props> = ({
       value = parseInt(value);
     }
     if (schemaType === 'Array') {
-      const regex = /:\s|,\s/;
-      value = value.split(regex);
+      dispatch(enqueueInfoNotification('Split elements with comma, without spaces', 'duplicate'));
+      value = value.split(',');
     }
 
     handleCustomValueChange(value, i);
   };
+
+  console.log(query);
 
   const isSchemaIncompatible = (isComparisonField: any, schemaName: string) => {
     if (!isComparisonField) {
@@ -324,7 +329,7 @@ const CustomQueryRow: FC<Props> = ({
       return getSubFields(field, comparisonField);
     });
   };
-
+  console.log(query);
   return (
     <>
       <Grid item xs={2}>

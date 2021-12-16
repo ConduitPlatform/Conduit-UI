@@ -8,6 +8,7 @@ import { Assignment, Input } from '../../../models/customEndpoints/customEndpoin
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../../utils/cms';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import { useAppDispatch } from '../../../redux/store';
+import SelectedElements from '../../common/SelectedElements';
 
 interface Props {
   editMode: boolean;
