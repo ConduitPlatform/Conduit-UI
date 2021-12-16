@@ -21,7 +21,7 @@ import {
   getStorageSettings,
   putStorageSettings,
 } from '../../http/StorageRequests';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { concat } from 'lodash';
@@ -82,9 +82,11 @@ export const asyncGetStorageConfig = createAsyncThunk(
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getStorageSettings();
-      thunkAPI.dispatch(setAppDefaults());
-      return data;
+      const {
+        data: { config },
+      } = await getStorageSettings();
+      thunkAPI.dispatch(setAppLoading(false));
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -98,9 +100,11 @@ export const asyncSaveStorageConfig = createAsyncThunk(
   async (dataForConfig: IStorageConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putStorageSettings(dataForConfig);
-      thunkAPI.dispatch(setAppDefaults());
-      return data;
+      const {
+        data: { config },
+      } = await putStorageSettings(dataForConfig);
+      thunkAPI.dispatch(setAppLoading(false));
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -121,7 +125,7 @@ export const asyncGetStorageContainers = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getStorageContainers(params);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -167,7 +171,7 @@ export const asyncGetStorageContainerData = createAsyncThunk(
 
       const totalCount = folderData.folderCount + fileData.filesCount;
 
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       if (fileLimit < 1) {
         return { data: folderData.folders, totalCount: totalCount };
       }
@@ -187,7 +191,7 @@ export const asyncAddStorageFile = createAsyncThunk(
     try {
       const { data } = await createStorageFile(params.fileData);
       params.getContainerData();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification('Successfully added file!'));
       return data;
     } catch (error) {
@@ -211,7 +215,7 @@ export const asyncAddStorageFolder = createAsyncThunk(
     try {
       const { data } = await createStorageFolder(params.folderData);
       params.getContainerData();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification('Successfully added folder!'));
       return data;
     } catch (error) {
@@ -232,7 +236,7 @@ export const asyncAddStorageContainer = createAsyncThunk(
     try {
       const { data } = await createStorageContainer(params.containerData);
       params.getContainers();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification('Successfully added container!'));
       return data;
     } catch (error) {
@@ -250,7 +254,7 @@ export const asyncDeleteStorageFile = createAsyncThunk(
     try {
       await deleteStorageFile(params.id);
       params.getContainerData();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification('Successfully deleted file!'));
       return params.id;
     } catch (error) {
@@ -271,7 +275,7 @@ export const asyncDeleteStorageFolder = createAsyncThunk(
     try {
       await deleteStorageFolder(params);
       params.getContainerData();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification('Successfully deleted folder!'));
       return params.id;
     } catch (error) {
@@ -289,7 +293,7 @@ export const asyncDeleteStorageContainer = createAsyncThunk(
     try {
       await deleteStorageContainer(params);
       params.getContainers();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification('Successfully deleted container!'));
       return params.id;
     } catch (error) {
@@ -338,7 +342,7 @@ export const asyncSetSelectedStorageFile = createAsyncThunk(
       } else {
         url = file.url;
       }
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return url;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

@@ -192,9 +192,11 @@ export const asyncGetAuthenticationConfig = createAsyncThunk(
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getAuthenticationConfig();
+      const {
+        data: { config },
+      } = await getAuthenticationConfig();
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -208,9 +210,11 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
   async (body: any, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putAuthenticationConfig(body);
+      const {
+        data: { config },
+      } = await putAuthenticationConfig(body);
       thunkAPI.dispatch(setAppDefaults());
-      return data;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

@@ -16,7 +16,9 @@ export const getStorageSettings = () => axios.get(`${CONDUIT_API}/admin/config/s
 
 export const putStorageSettings = (storageData: IStorageConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/storage`, {
-    ...storageData,
+    config: {
+      ...storageData,
+    },
   });
 
 export const getStorageContainers = (params: IGetStorageContainers) =>
@@ -53,7 +55,7 @@ export const getStorageFileUrl = (id: string, redirect: boolean) =>
 // export const updateStorageFile = (fileData: IStorageFile) =>
 export const updateStorageFile = (
   fileData: any //not working
-) => axios.put(`${CONDUIT_API}/admin/storage/file/${fileData.id}`, { ...fileData });
+) => axios.patch(`${CONDUIT_API}/admin/storage/file/${fileData.id}`, { ...fileData });
 
 export const createStorageFile = (fileData: ICreateStorageFile) =>
   axios.post(`${CONDUIT_API}/admin/storage/file`, { ...fileData });

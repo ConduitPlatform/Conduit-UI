@@ -1,6 +1,6 @@
 import React from 'react';
 import { Home } from '@material-ui/icons';
-import { getModuleIcon, handleModuleNavigation } from './moduleUtils';
+import { getModuleIcon, getModuleName, handleModuleNavigation } from './moduleUtils';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import CustomListItem from '../navigation/CustomListItem';
@@ -43,9 +43,8 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
           if (disabled) {
             return (
               <CustomListItem
-                selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}
-                title={module.moduleName}
+                title={getModuleName(module.moduleName)}
                 onClick={() => handleDisabledClick()}
                 key={index}
               />
@@ -57,7 +56,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
               <CustomListItem
                 selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}
-                title={module.moduleName}
+                title={getModuleName(module.moduleName)}
               />
             </Link>
           );

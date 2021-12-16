@@ -15,5 +15,5 @@ export const getNotificationConfig = () =>
 
 export const putNotificationConfig = (data: INotificationSettings) =>
   axios.put(`${CONDUIT_API}/admin/config/pushNotifications`, {
-    ...data,
+    config: { ...data },
   });

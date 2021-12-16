@@ -4,7 +4,7 @@ import {
   getCmsDocumentsByNameRequest,
   getCmsSchemasRequest,
   postCmsSchemaRequest,
-  putCmsSchemaRequest,
+  patchCmsSchemaRequest,
   schemasFromOtherModules,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
@@ -92,12 +92,14 @@ export const asyncGetCmsSchemas = createAsyncThunk(
   async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCmsSchemasRequest(params);
+      const {
+        data: { results },
+      } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
 
       return {
-        results: data.results.schemas as Schema[],
-        documentsCount: data.results.documentsCount as number,
+        results: results.schemas as Schema[],
+        documentsCount: results.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -112,11 +114,13 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
   async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCmsSchemasRequest(params);
+      const {
+        data: { results },
+      } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
       return {
-        dialogResults: data.results.schemas as Schema[],
-        dialogDocumentsCount: data.results.documentsCount as number,
+        dialogResults: results.schemas as Schema[],
+        dialogDocumentsCount: results.documentsCount as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -185,7 +189,7 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
   async (params, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await putCmsSchemaRequest(params._id, params.data);
+      await patchCmsSchemaRequest(params._id, params.data);
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
       );

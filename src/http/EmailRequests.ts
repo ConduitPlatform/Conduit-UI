@@ -14,8 +14,8 @@ export const getEmailTemplateRequest = (params: Pagination & Search) =>
 export const postEmailTemplateRequest = (data: EmailData) =>
   axios.post(`${CONDUIT_API}/admin/email/templates`, { ...data });
 
-export const putEmailTemplateRequest = (templateId: string, data: EmailData) =>
-  axios.put(`${CONDUIT_API}/admin/email/templates/${templateId}`, { ...data });
+export const patchEmailTemplateRequest = (templateId: string, data: EmailData) =>
+  axios.patch(`${CONDUIT_API}/admin/email/templates/${templateId}`, { ...data });
 
 export const deleteEmailTemplateRequest = (ids: string[]) => {
   return axios.delete(`${CONDUIT_API}/admin/email/templates`, { data: { ids: ids } });
@@ -31,7 +31,7 @@ export const syncExternalTemplates = () =>
 export const getEmailSettingsRequest = () => axios.get(`${CONDUIT_API}/admin/config/email`);
 
 export const putEmailSettingsRequest = (data: EmailSettings) =>
-  axios.put(`${CONDUIT_API}/admin/config/email`, { ...data });
+  axios.put(`${CONDUIT_API}/admin/config/email`, { config: { ...data } });
 
 export const sendEmailRequest = (data: SendEmailData) =>
   axios.post(`${CONDUIT_API}/admin/email/send`, { ...data });

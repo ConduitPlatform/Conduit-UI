@@ -13,7 +13,7 @@ export const createNewUsers = (values: { email: string; password: string }) =>
   });
 
 export const editUser = (values: AuthUser) =>
-  axios.put(`${CONDUIT_API}/admin/authentication/users/${values._id}`, {
+  axios.patch(`${CONDUIT_API}/admin/authentication/users/${values._id}`, {
     ...values,
   });
 
@@ -45,4 +45,4 @@ export const getAuthenticationConfig = () =>
   axios.get(`${CONDUIT_API}/admin/config/authentication`);
 
 export const putAuthenticationConfig = (body: any) =>
-  axios.put(`${CONDUIT_API}/admin/config/authentication`, body);
+  axios.put(`${CONDUIT_API}/admin/config/authentication`, { config: { ...body } });
