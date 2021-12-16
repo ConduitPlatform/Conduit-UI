@@ -131,8 +131,6 @@ const CustomQueryRow: FC<Props> = ({
     }
   }, [availableFieldsOfSchema, query.schemaField]);
 
-  console.log(query);
-
   const isValueInputIncompatible = (type: any) => {
     if (isArray(type) && schemaType === 'Array') {
       return false;

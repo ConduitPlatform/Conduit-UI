@@ -152,9 +152,23 @@ const EndpointAssignments: FC<Props> = ({
 
   const handleAssignmentCustomValueChange = (
     event: React.ChangeEvent<{ value: any }>,
-    index: number
+    index: number,
+    schemaField: any
   ) => {
-    const value = event.target.value;
+    let value = event.target.value;
+    const schemaType = getTypeOfValue(schemaField, availableFieldsOfSchema);
+
+    if (schemaType === 'Boolean') {
+      value = value !== 'false';
+    }
+    if (schemaType === 'Number') {
+      value = parseInt(value);
+    }
+    if (schemaType === 'Array') {
+      const regex = /:\s|,\s/;
+      value = value.split(regex);
+    }
+
     const currentAssignments = deepClone(selectedAssignments);
     const assignment = currentAssignments[index];
     if (assignment) {
@@ -411,7 +425,7 @@ const EndpointAssignments: FC<Props> = ({
               value={assignment.assignmentField.value}
               onChange={(event) =>
                 assignment.assignmentField.type === 'Custom'
-                  ? handleAssignmentCustomValueChange(event, index)
+                  ? handleAssignmentCustomValueChange(event, index, assignment.schemaField)
                   : handleAssignmentContextValueChange(event, index)
               }
             />
