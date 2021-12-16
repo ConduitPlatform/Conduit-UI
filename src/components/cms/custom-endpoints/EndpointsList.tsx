@@ -163,45 +163,42 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
   };
 
   const EndpointRow = ({ index, style }: ListChildComponentProps) => {
-    const rowItem = endpoints[index];
+    const endpoint = endpoints[index];
 
     const getBadgeColor = (endpoint: any) => {
-      if (endpoint.operation === OperationsEnum.POST) {
-        return classes.postBadge;
-      }
-      if (endpoint.operation === OperationsEnum.PUT) {
-        return classes.putBadge;
-      }
-      if (endpoint.operation === OperationsEnum.DELETE) {
-        return classes.deleteBadge;
-      }
-      if (endpoint.operation === OperationsEnum.GET) {
-        return classes.getBadge;
-      }
-      if (endpoint.operation === OperationsEnum.PATCH) {
-        return classes.patchBadge;
+      switch (endpoint.operation) {
+        case OperationsEnum.POST:
+          return classes.postBadge;
+        case OperationsEnum.PUT:
+          return classes.putBadge;
+        case OperationsEnum.DELETE:
+          return classes.deleteBadge;
+        case OperationsEnum.GET:
+          return classes.getBadge;
+        case OperationsEnum.PATCH:
+          return classes.patchBadge;
       }
     };
 
     return (
       <div style={style}>
-        {!rowItem ? (
+        {!endpoint ? (
           <Typography variant="h2">
             <Skeleton />
           </Typography>
         ) : (
           <ListItem
             button
-            key={`endpoint-${rowItem._id}`}
+            key={`endpoint-${endpoint._id}`}
             className={classes.listItem}
-            onClick={() => handleListItemSelect(rowItem)}
-            selected={selectedEndpoint?._id === rowItem?._id}>
+            onClick={() => handleListItemSelect(endpoint)}
+            selected={selectedEndpoint?._id === endpoint?._id}>
             <ListItemIcon>
-              <Paper elevation={12} className={getBadgeColor(rowItem)}>
-                {getOperation(rowItem)}
+              <Paper elevation={12} className={getBadgeColor(endpoint)}>
+                {getOperation(endpoint)}
               </Paper>
             </ListItemIcon>
-            <ListItemText primary={rowItem.name} />
+            <ListItemText primary={endpoint.name} />
           </ListItem>
         )}
       </div>
