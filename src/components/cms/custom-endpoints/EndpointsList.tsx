@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -9,12 +9,7 @@ import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@m
 import OperationsEnum from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { Skeleton } from '@material-ui/lab';
-import {
-  asyncGetCustomEndpoints,
-  clearEndpoints,
-  EndpointActionsEnum,
-  setEndpointAction,
-} from '../../../redux/slices/cmsSlice';
+import { asyncAddCustomEndpoints, asyncSetCustomEndpoints } from '../../../redux/slices/cmsSlice';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -112,13 +107,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
   },
 }));
-interface ItemStatus {
-  [key: string]: string;
-}
 const timeoutAmount = 750;
-let tabsStatusMap: ItemStatus = {};
-
-const isItemLoaded = (index: number) => !!tabsStatusMap[index];
 
 interface Props {
   handleListItemSelect: (endpoint: any) => void;
@@ -133,73 +122,48 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
-  const { endpoints, count, action } = useAppSelector(
-    (state) => state.cmsSlice.data.customEndpoints
-  );
+  const { endpoints, count } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
+
+  const isItemLoaded = (index: number) => !!endpoints[index];
 
   useEffect(() => {
     if (infiniteLoaderRef.current && hasMountedRef.current) {
       infiniteLoaderRef.current.resetloadMoreItemsCache();
-      tabsStatusMap = {};
+      infiniteLoaderRef.current._listRef.scrollTo(0);
     }
     hasMountedRef.current = true;
-    dispatch(setEndpointAction(EndpointActionsEnum.None));
-    dispatch(clearEndpoints());
-  }, [search, operation, dispatch, action]);
+    const params = {
+      skip: 0,
+      limit: 15,
+      search: search,
+      operation: operation !== -2 ? operation : undefined,
+    };
+    dispatch(asyncSetCustomEndpoints(params));
+  }, [dispatch, operation, search]);
 
-  const getEndpoints = useCallback(
-    (skip: number, limit: number) => {
-      const params = {
-        skip: skip,
-        limit: limit,
-        search: search,
-        operation: operation !== -2 ? operation : undefined,
-      };
-      dispatch(asyncGetCustomEndpoints(params));
-    },
-    [search, operation, dispatch]
-  );
+  const addEndpoints = (skip: number, limit: number) => {
+    const params = {
+      skip: skip,
+      limit: limit,
+      search: search,
+      operation: operation !== -2 ? operation : undefined,
+    };
+    dispatch(asyncAddCustomEndpoints(params));
+  };
 
   const debouncedGetApiItems = debounce(
-    (skip: number, limit: number) => getEndpoints(skip, limit),
+    (skip: number, limit: number) => addEndpoints(skip, limit),
     timeoutAmount
   );
 
-  const loadMoreItems = useCallback(
-    async (startIndex: number, stopIndex: number) => {
-      if (
-        infiniteLoaderRef.current &&
-        infiniteLoaderRef.current._listRef &&
-        endpoints.length === 0
-      ) {
-        infiniteLoaderRef.current._listRef.scrollTo(0);
-      }
-      const limit = stopIndex + 1;
-      debouncedGetApiItems(endpoints.length, limit);
-      await new Promise((resolve) => {
-        const timeout = setTimeout(() => {
-          for (let index = startIndex; index <= stopIndex; index++) {
-            tabsStatusMap[index] = 'LOADED';
-          }
-          resolve(undefined);
-          clearTimeout(timeout);
-        }, timeoutAmount);
-        return timeout;
-      });
-    },
-    [debouncedGetApiItems, endpoints.length]
-  );
+  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
+    const limit = stopIndex + 1;
+    debouncedGetApiItems(endpoints.length, limit);
+  };
 
-  useEffect(() => {
-    if (!infiniteLoaderRef.current || endpoints.length === 0) {
-      loadMoreItems(0, 15);
-    }
-  }, [loadMoreItems, endpoints.length]);
-
-  const EndpointRow = ({ data, index, style }: ListChildComponentProps) => {
+  const EndpointRow = ({ index, style }: ListChildComponentProps) => {
     const rowItem = endpoints[index];
-    const loading = !(tabsStatusMap[index] === 'LOADED' && rowItem);
 
     const getBadgeColor = (endpoint: any) => {
       if (endpoint.operation === OperationsEnum.POST) {
@@ -221,7 +185,7 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
 
     return (
       <div style={style}>
-        {loading ? (
+        {!rowItem ? (
           <Typography variant="h2">
             <Skeleton />
           </Typography>
@@ -260,7 +224,7 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
             isItemLoaded={isItemLoaded}
             itemCount={count}
             loadMoreItems={loadMoreItems}
-            threshold={count}>
+            threshold={4}>
             {({ onItemsRendered, ref }) => {
               return (
                 <List

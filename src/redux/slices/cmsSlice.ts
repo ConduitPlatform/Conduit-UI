@@ -51,7 +51,6 @@ export interface ICmsSlice {
     customEndpoints: {
       endpoints: EndpointTypes[];
       count: number;
-      loading: boolean;
       action: EndpointActionsEnum;
     };
     count: number;
@@ -78,7 +77,6 @@ const initialState: ICmsSlice = {
     customEndpoints: {
       endpoints: [],
       count: 0,
-      loading: false,
       action: EndpointActionsEnum.None,
     },
     count: 0,
@@ -335,8 +333,8 @@ export const asyncEditSchemaDocument = createAsyncThunk(
   }
 );
 
-export const asyncGetCustomEndpoints = createAsyncThunk(
-  'cms/getEndpoints',
+export const asyncSetCustomEndpoints = createAsyncThunk(
+  'cms/setEndpoints',
   async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
     try {
       const {
@@ -345,7 +343,22 @@ export const asyncGetCustomEndpoints = createAsyncThunk(
 
       return { endpoints: customEndpoints as EndpointTypes[], count: count };
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncAddCustomEndpoints = createAsyncThunk(
+  'cms/addEndpoints',
+  async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
+    try {
+      const {
+        data: { customEndpoints },
+      } = await getCustomEndpointsRequest(params);
+
+      return { endpoints: customEndpoints as EndpointTypes[] };
+    } catch (error) {
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -491,20 +504,21 @@ const cmsSlice = createSlice({
     builder.addCase(asyncGetMoreSchemaDocuments.fulfilled, (state, action) => {
       state.data.documents.documents.push(...action.payload.documents);
     });
-    builder.addCase(asyncGetCustomEndpoints.fulfilled, (state, action) => {
+    builder.addCase(asyncSetCustomEndpoints.fulfilled, (state, action) => {
+      state.data.customEndpoints.endpoints = action.payload.endpoints;
+      state.data.customEndpoints.count = action.payload.count;
+    });
+    builder.addCase(asyncAddCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints.endpoints = [
         ...state.data.customEndpoints.endpoints,
         ...action.payload.endpoints,
       ];
-      state.data.customEndpoints.count = action.payload.count;
-      state.data.customEndpoints.loading = false;
     });
     builder.addCase(asyncDeleteCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints.endpoints = state.data.customEndpoints.endpoints.filter(
         (endpoint) => endpoint._id !== action.payload
       );
       state.data.customEndpoints.count = state.data.customEndpoints.count - 1;
-      state.data.customEndpoints.loading = false;
     });
 
     builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
@@ -514,5 +528,4 @@ const cmsSlice = createSlice({
 });
 
 export default cmsSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema, clearEndpoints, setEndpointAction } =
-  cmsSlice.actions;
+export const { setSelectedSchema, clearSelectedSchema, setEndpointAction } = cmsSlice.actions;
