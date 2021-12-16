@@ -6,6 +6,8 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { deepClone } from '../../../utils/deepClone';
 import { Assignment, Input } from '../../../models/customEndpoints/customEndpointsModels';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../../utils/cms';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
+import { useAppDispatch } from '../../../redux/store';
 
 interface Props {
   editMode: boolean;
@@ -62,6 +64,7 @@ const EndpointAssignments: FC<Props> = ({
   availableFieldsOfSchema,
 }) => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
   const handleAssignmentFieldChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
     const value = event.target.value;
@@ -165,8 +168,8 @@ const EndpointAssignments: FC<Props> = ({
       value = parseInt(value);
     }
     if (schemaType === 'Array') {
-      const regex = /:\s|,\s/;
-      value = value.split(regex);
+      dispatch(enqueueInfoNotification('Split elements with comma, without spaces', 'duplicate'));
+      value = value.split(',');
     }
 
     const currentAssignments = deepClone(selectedAssignments);
