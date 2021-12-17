@@ -27,16 +27,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ItemStatus {
-  [key: string]: string;
-}
 const timeoutAmount = 750;
-let messagesStatusMap: ItemStatus = {};
 
 const Row = ({ data, index, style }: ListChildComponentProps) => {
   const { messages, messagesCount, selectedMessages, onPress, onLongPress, classes } = data;
   const rowItem = messages[messagesCount - index - 1];
-  const loading = !(messagesStatusMap[index] === 'LOADED' && rowItem);
   const isSelected = rowItem && selectedMessages.includes(rowItem._id);
 
   const getClassName = () => {
@@ -48,7 +43,7 @@ const Row = ({ data, index, style }: ListChildComponentProps) => {
 
   return (
     <div style={style as CSSProperties}>
-      {loading ? (
+      {!rowItem ? (
         <ChatRoomBubbleSkeleton className={classes.bubble} />
       ) : (
         <ChatRoomBubble
@@ -72,10 +67,6 @@ const createItemData = memoize(
     classes,
   })
 );
-
-const isItemLoaded = (index: number) => {
-  return !!messagesStatusMap[index];
-};
 
 interface Props {
   roomId: string;
@@ -101,10 +92,13 @@ const ChatRoomMessages: FC<Props> = ({
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
+  const isItemLoaded = (index: number) => {
+    return !!data[count - index - 1];
+  };
+
   useEffect(() => {
     if (infiniteLoaderRef.current && hasMountedRef.current) {
       infiniteLoaderRef.current.resetloadMoreItemsCache();
-      messagesStatusMap = {};
     }
     hasMountedRef.current = true;
   }, [selectedPanel, count]);
@@ -130,19 +124,9 @@ const ChatRoomMessages: FC<Props> = ({
     timeoutAmount
   );
 
-  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
+  const loadMoreItems = async (startIndex: number) => {
     const limit = count - startIndex - data.length;
     debouncedGetApiItems(data.length, limit);
-    await new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        for (let index = startIndex; index <= stopIndex; index++) {
-          messagesStatusMap[index] = 'LOADED';
-        }
-        resolve(undefined);
-        clearTimeout(timeout);
-      }, timeoutAmount);
-      return timeout;
-    });
   };
 
   const itemData = createItemData(data, count, selectedMessages, onPress, onLongPress, classes);
@@ -160,7 +144,8 @@ const ChatRoomMessages: FC<Props> = ({
             ref={infiniteLoaderRef}
             isItemLoaded={isItemLoaded}
             itemCount={count}
-            loadMoreItems={loadMoreItems}>
+            loadMoreItems={loadMoreItems}
+            threshold={4}>
             {({ onItemsRendered, ref }) => {
               return (
                 <List
