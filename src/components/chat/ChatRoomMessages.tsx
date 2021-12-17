@@ -1,5 +1,5 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useRef } from 'react';
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import { ListChildComponentProps, VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
@@ -151,10 +151,14 @@ const ChatRoomMessages: FC<Props> = ({
                 <List
                   height={height}
                   itemCount={count}
-                  itemSize={56}
+                  itemSize={(index) => {
+                    const wordCount = data[count - index - 1].message.trim().split(/\s+/).length;
+                    console.log('wordCount', wordCount);
+                    return (wordCount / 10) * 24;
+                  }}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
-                  initialScrollOffset={count * 56}
+                  // initialScrollOffset={count * 56}
                   itemData={itemData}
                   width={width}>
                   {Row}
