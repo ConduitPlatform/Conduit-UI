@@ -33,16 +33,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ItemStatus {
-  [key: string]: string;
-}
 const timeoutAmount = 750;
-let tabsStatusMap: ItemStatus = {};
 
 const Row = ({ data, index, style }: ListChildComponentProps) => {
   const { rooms, onPress, onLongPress, selectedTab, classes } = data;
   const rowItem = rooms[index];
-  const loading = !(tabsStatusMap[index] === 'LOADED' && rowItem);
   const isSelected = selectedTab === index;
 
   const getClassName = () => {
@@ -53,7 +48,7 @@ const Row = ({ data, index, style }: ListChildComponentProps) => {
 
   return (
     <div style={style as CSSProperties}>
-      {loading ? (
+      {!rowItem ? (
         <ChatRoomTabSkeleton />
       ) : (
         <ChatRoomTab
@@ -74,8 +69,6 @@ const createItemData = memoize((rooms, onPress, onLongPress, selectedTab, classe
   selectedTab,
   classes,
 }));
-
-const isItemLoaded = (index: number) => !!tabsStatusMap[index];
 
 interface Props {
   chatRooms: IChatRoom[];
@@ -102,10 +95,11 @@ const ChatRoomTabs: FC<Props> = ({
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
+  const isItemLoaded = (index: number) => !!chatRooms[index];
+
   useEffect(() => {
     if (infiniteLoaderRef.current && hasMountedRef.current) {
       infiniteLoaderRef.current.resetloadMoreItemsCache();
-      tabsStatusMap = {};
     }
     hasMountedRef.current = true;
   }, [debouncedSearch]);
@@ -130,16 +124,6 @@ const ChatRoomTabs: FC<Props> = ({
   const loadMoreItems = async (startIndex: number, stopIndex: number) => {
     const limit = stopIndex + 1;
     debouncedGetApiItems(chatRooms.length, limit);
-    await new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        for (let index = startIndex; index <= stopIndex; index++) {
-          tabsStatusMap[index] = 'LOADED';
-        }
-        resolve(undefined);
-        clearTimeout(timeout);
-      }, timeoutAmount);
-      return timeout;
-    });
   };
 
   const itemData = createItemData(chatRooms, onPress, onLongPress, selectedTab, classes);
@@ -157,7 +141,8 @@ const ChatRoomTabs: FC<Props> = ({
             ref={infiniteLoaderRef}
             isItemLoaded={isItemLoaded}
             itemCount={chatRoomCount}
-            loadMoreItems={loadMoreItems}>
+            loadMoreItems={loadMoreItems}
+            threshold={4}>
             {({ onItemsRendered, ref }) => {
               return (
                 <List
