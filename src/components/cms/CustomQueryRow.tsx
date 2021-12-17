@@ -170,9 +170,9 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
-  const convertToLowerCase = (schemaType: any) => {
+  const convertToLowerCase = (item: any) => {
     if (typeof schemaType === 'string') {
-      return schemaType.toLowerCase();
+      return item.toLowerCase();
     }
   };
 
