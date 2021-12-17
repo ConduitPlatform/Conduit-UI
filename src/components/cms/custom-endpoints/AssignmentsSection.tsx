@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Button, Divider, Grid, Typography } from '@material-ui/core';
-import OperationsEnum from '../../../models/OperationsEnum';
+import { OperationsEnum } from '../../../models/OperationsEnum';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import EndpointAssignments from './EndpointAssignments';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     paddingBottom: theme.spacing(1),
+  },
+  addAssignmentBtn: {
+    textAlign: 'end',
+    padding: '0',
   },
 }));
 
@@ -48,7 +52,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           <strong>Assignments</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6} style={{ textAlign: 'end', padding: '0' }}>
+      <Grid item xs={6} className={classes.addAssignmentBtn}>
         <Button
           disabled={
             !editMode ||

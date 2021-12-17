@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0),
     '&.MuiMenuItem-dense': {
       paddingLeft: 12,
+      fontWeight: 'bold',
     },
     '&.Mui-selected': {
       backgroundColor: theme.palette.primary.main,
@@ -161,9 +162,7 @@ const CustomQueryRow: FC<Props> = ({
   };
 
   const isSchemaIncompatible = (isComparisonField: any, schemaName: string) => {
-    if (!isComparisonField) {
-      return false;
-    } else {
+    if (isComparisonField) {
       return isValueIncompatible(schemaName, schemaType, availableFieldsOfSchema);
     }
   };
@@ -225,15 +224,7 @@ const CustomQueryRow: FC<Props> = ({
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
     const itemTop = (
-      <MenuItem
-        className={classes.menuItem}
-        dense
-        style={{
-          fontWeight: 'bold',
-          paddingLeft: 8,
-          background: 'rgba(0, 0, 0, 0.05)',
-        }}
-        value={`${valuePrefix}.${suffix}`}>
+      <MenuItem className={classes.menuItem} dense value={`${valuePrefix}.${suffix}`}>
         {suffix}
       </MenuItem>
     );
@@ -267,9 +258,6 @@ const CustomQueryRow: FC<Props> = ({
           disabled
           dense
           className={classes.menuItem}
-          style={{
-            fontWeight: 'bold',
-          }}
           value={comparisonField ? 'Schema-' + field.name : field.name}>
           {field.name}
         </MenuItem>

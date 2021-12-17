@@ -10,7 +10,7 @@ import {
   hasInvalidQueries,
   prepareQuery,
 } from '../../../utils/cms';
-import OperationsEnum from '../../../models/OperationsEnum';
+import { OperationsEnum } from '../../../models/OperationsEnum';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
 import OperationSection from './OperationSection';
 import SideList from './Sidelist';

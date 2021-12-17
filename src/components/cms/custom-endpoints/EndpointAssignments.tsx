@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0),
     '&.MuiMenuItem-dense': {
       paddingLeft: 12,
+      fontWeight: 'bold',
     },
     '&.Mui-selected': {
       backgroundColor: theme.palette.primary.main,
@@ -208,11 +209,6 @@ const EndpointAssignments: FC<Props> = ({
         disabled={selectedAssignments.find((assignment: any) =>
           assignment.schemaField.includes(`${valuePrefix}.${suffix}`)
         )}
-        style={{
-          fontWeight: 'bold',
-          paddingLeft: 8,
-          background: 'rgba(0, 0, 0, 0.05)',
-        }}
         value={`${valuePrefix}.${suffix}`}>
         {suffix}
       </MenuItem>
@@ -257,13 +253,7 @@ const EndpointAssignments: FC<Props> = ({
       const keys = Object?.keys(field?.type);
 
       const itemTop = (
-        <MenuItem
-          disabled
-          className={classes.menuItem}
-          style={{
-            fontWeight: 'bold',
-          }}
-          value={field.name}>
+        <MenuItem disabled className={classes.menuItem} value={field.name}>
           {field.name}
         </MenuItem>
       );
@@ -285,9 +275,6 @@ const EndpointAssignments: FC<Props> = ({
                     (assignment: any) => assignment.schemaField === `${field.name}.${item}`
                   ))
               }
-              style={{
-                background: 'rgba(0, 0, 0, 0.05)',
-              }}
               key={`idSec-${i}-field`}
               value={`${field.name}.${item}`}>
               {item}

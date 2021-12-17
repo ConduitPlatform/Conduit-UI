@@ -405,17 +405,18 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
   'cms/createEndpoints',
   async (params: { endpointData: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
+    const data = params.endpointData;
     try {
       const body = {
-        name: params.endpointData.name,
-        operation: params.endpointData.operation,
-        selectedSchema: params.endpointData.selectedSchema,
-        authentication: params.endpointData.authentication,
-        paginated: params.endpointData.paginated,
-        sorted: params.endpointData.sorted,
-        inputs: params.endpointData.inputs,
-        query: params.endpointData.query,
-        assignments: params.endpointData.assignments,
+        name: data.name,
+        operation: data.operation,
+        selectedSchema: data.selectedSchema,
+        authentication: data.authentication,
+        paginated: data.paginated,
+        sorted: data.sorted,
+        inputs: data.inputs,
+        query: data.query,
+        assignments: data.assignments,
       };
       await createCustomEndpointsRequest(body);
       thunkAPI.dispatch(

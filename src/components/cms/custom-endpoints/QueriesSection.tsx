@@ -14,6 +14,13 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     textTransform: 'none',
   },
+  addQueryBtn: {
+    textAlign: 'end',
+    padding: '0',
+  },
+  divider: {
+    padding: '0',
+  },
 }));
 
 interface Props {
@@ -152,7 +159,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
           <strong>Queries</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6} style={{ textAlign: 'end', padding: '0' }}>
+      <Grid item xs={6} className={classes.addQueryBtn}>
         <Button
           disabled={!editMode}
           variant="text"
@@ -163,7 +170,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
           Add query
         </Button>
       </Grid>
-      <Grid item xs={12} style={{ padding: '0' }}>
+      <Grid item xs={12} className={classes.divider}>
         <Divider />
       </Grid>
       <EndpointQueries

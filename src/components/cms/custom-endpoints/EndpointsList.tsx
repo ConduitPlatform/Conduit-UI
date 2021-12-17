@@ -6,10 +6,11 @@ import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
-import OperationsEnum from '../../../models/OperationsEnum';
+import { OperationsEnum } from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { Skeleton } from '@material-ui/lab';
 import { asyncAddCustomEndpoints, asyncSetCustomEndpoints } from '../../../redux/slices/cmsSlice';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -32,43 +33,27 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
     color: 'white',
   },
-  getBadge: {
-    backgroundColor: '#61affe',
+  badge: {
     color: 'white',
     padding: theme.spacing(0.5),
     width: '65px',
     textAlign: 'center',
     marginRight: theme.spacing(1),
+  },
+  getBadge: {
+    backgroundColor: '#61affe',
   },
   putBadge: {
     backgroundColor: '#fca130',
-    color: 'white',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
   },
   patchBadge: {
     backgroundColor: '#50e3c2',
-    color: 'white',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
   },
   postBadge: {
     backgroundColor: '#49cc90',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
   },
   deleteBadge: {
     backgroundColor: '#f93e3e',
-    padding: theme.spacing(0.5),
-    width: '65px',
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
   },
   list: {
     '&.MuiList-root': {
@@ -168,15 +153,15 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
     const getBadgeColor = (endpoint: any) => {
       switch (endpoint.operation) {
         case OperationsEnum.POST:
-          return classes.postBadge;
+          return clsx(classes.badge, classes.postBadge);
         case OperationsEnum.PUT:
-          return classes.putBadge;
+          return clsx(classes.badge, classes.putBadge);
         case OperationsEnum.DELETE:
-          return classes.deleteBadge;
+          return clsx(classes.badge, classes.deleteBadge);
         case OperationsEnum.GET:
-          return classes.getBadge;
+          return clsx(classes.badge, classes.getBadge);
         case OperationsEnum.PATCH:
-          return classes.patchBadge;
+          return clsx(classes.badge, classes.patchBadge);
       }
     };
 
