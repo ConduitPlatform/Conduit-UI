@@ -150,8 +150,8 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
   const EndpointRow = ({ index, style }: ListChildComponentProps) => {
     const endpoint = endpoints[index];
 
-    const getBadgeColor = (endpoint: any) => {
-      switch (endpoint.operation) {
+    const getBadgeColor = (endpointForBadge: any) => {
+      switch (endpointForBadge.operation) {
         case OperationsEnum.POST:
           return clsx(classes.badge, classes.postBadge);
         case OperationsEnum.PUT:

@@ -14,7 +14,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
 import EndpointsList from './EndpointsList';
-import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { useAppDispatch } from '../../../redux/store';
 import useDebounce from '../../../hooks/useDebounce';
 import {
   endpointCleanSlate,
@@ -68,7 +68,6 @@ interface Props {
 const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
