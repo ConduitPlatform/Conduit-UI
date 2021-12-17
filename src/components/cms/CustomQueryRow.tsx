@@ -170,6 +170,12 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
+  const convertToLowerCase = (schemaType: any) => {
+    if (typeof schemaType === 'string') {
+      return schemaType.toLowerCase();
+    }
+  };
+
   const extractCustomField = () => {
     if (schemaType === 'Boolean') {
       return (
@@ -187,11 +193,7 @@ const CustomQueryRow: FC<Props> = ({
     }
     return (
       <TextField
-        type={
-          query.comparisonField.type === 'Custom'
-            ? typeof schemaType === 'string' && schemaType?.toLowerCase()
-            : 'string'
-        }
+        type={query.comparisonField.type === 'Custom' ? convertToLowerCase(schemaType) : 'string'}
         label={
           <Typography className={classes.customValue}>
             {query.comparisonField.type === 'Custom'

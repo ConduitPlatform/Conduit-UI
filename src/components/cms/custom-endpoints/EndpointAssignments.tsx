@@ -81,7 +81,7 @@ const EndpointAssignments: FC<Props> = ({
   };
 
   const isArrayType = useCallback(
-    (fieldName: string) => {
+    (fieldName: any) => {
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema: any = availableFieldsOfSchema.find(
@@ -103,7 +103,7 @@ const EndpointAssignments: FC<Props> = ({
   );
 
   const isNumberType = useCallback(
-    (fieldName: string) => {
+    (fieldName: any) => {
       if (typeof fieldName === 'string' && fieldName.indexOf('.') !== -1) {
         const splitQuery = fieldName.split('.');
         const foundInnerSchema: any = availableFieldsOfSchema.find(
