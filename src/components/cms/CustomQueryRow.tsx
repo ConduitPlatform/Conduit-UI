@@ -16,6 +16,7 @@ import { isArray } from 'lodash';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { useAppDispatch } from '../../redux/store';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   menuItem: {
@@ -60,13 +61,15 @@ const useStyles = makeStyles((theme) => ({
   schemaItem: {
     paddingLeft: theme.spacing(1),
   },
-
   group: {
     fontWeight: 'inherit',
     opacity: '1',
   },
   customValue: {
     fontSize: '10px',
+  },
+  paddingLeft: {
+    paddingLeft: theme.spacing(3),
   },
 }));
 
@@ -181,26 +184,25 @@ const CustomQueryRow: FC<Props> = ({
           <option value="false">false</option>
         </Select>
       );
-    } else {
-      return (
-        <TextField
-          type={query.comparisonField.type === 'Custom' ? schemaType?.toLowerCase() : 'string'}
-          label={
-            <Typography className={classes.customValue}>
-              {query.comparisonField.type === 'Custom'
-                ? `Custom (${schemaType})`
-                : 'Select from context'}
-            </Typography>
-          }
-          variant={'outlined'}
-          disabled={!editMode}
-          fullWidth
-          placeholder={'ex. user._id'}
-          value={query.comparisonField.value}
-          onChange={(event) => inputCustomChange(event, index)}
-        />
-      );
     }
+    return (
+      <TextField
+        type={query.comparisonField.type === 'Custom' ? schemaType?.toLowerCase() : 'string'}
+        label={
+          <Typography className={classes.customValue}>
+            {query.comparisonField.type === 'Custom'
+              ? `Custom (${schemaType})`
+              : 'Select from context'}
+          </Typography>
+        }
+        variant={'outlined'}
+        disabled={!editMode}
+        fullWidth
+        placeholder={'ex. user._id'}
+        value={query.comparisonField.value}
+        onChange={(event) => inputCustomChange(event, index)}
+      />
+    );
   };
 
   const getInnerSchemaName = (isComparisonField: any, item: any) => {
@@ -233,11 +235,8 @@ const CustomQueryRow: FC<Props> = ({
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
           <MenuItem
-            className={classes.menuItem}
+            className={clsx(classes.menuItem, classes.paddingLeft)}
             disabled={Array.isArray(field.type)}
-            style={{
-              paddingLeft: 24,
-            }}
             key={`ido-${i}-field`}
             value={`${valuePrefix}.${suffix}.${item}`}>
             {item}
@@ -272,11 +271,8 @@ const CustomQueryRow: FC<Props> = ({
         ) {
           return (
             <MenuItem
-              className={classes.menuItem}
+              className={clsx(classes.menuItem, classes.paddingLeft)}
               disabled={isSchemaIncompatible(comparisonField, `${field.name}.${item}`)}
-              style={{
-                paddingLeft: 24,
-              }}
               key={`idSec-${i}-field`}
               value={getSchemaValue(comparisonField, `${field.name}.${item}`)}>
               {getInnerSchemaName(comparisonField, `${field.name}.${item}`)}
