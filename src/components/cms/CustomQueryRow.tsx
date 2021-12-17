@@ -338,7 +338,7 @@ const CustomQueryRow: FC<Props> = ({
           value={query.operation}
           disabled={!editMode}
           onChange={(event) => handleQueryConditionChange(event, index)}>
-          <MenuItem aria-label="None" value="" />
+          <MenuItem aria-label="None" value="-1" />
           <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
           <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
           <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER}>
@@ -377,7 +377,7 @@ const CustomQueryRow: FC<Props> = ({
           }
           disabled={!editMode}
           onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
-          <MenuItem aria-label="None" value="" />
+          <MenuItem aria-label="None" value="-" />
           <MenuItem disabled className={classes.group}>
             System Values
           </MenuItem>

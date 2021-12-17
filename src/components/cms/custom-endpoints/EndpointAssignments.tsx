@@ -324,7 +324,7 @@ const EndpointAssignments: FC<Props> = ({
             value={assignment.schemaField}
             disabled={!editMode}
             onChange={(event) => handleAssignmentFieldChange(event, index)}>
-            <MenuItem aria-label="None" value="" />
+            <MenuItem aria-label="None" value="-" />
             {prepareOptions()}
           </TextField>
         </Grid>

@@ -180,6 +180,7 @@ const EndpointQueries: FC<Props> = ({
               <TreeItemContent
                 editMode={editMode}
                 operator={node.operator}
+                key={node._id}
                 handleAddQuery={() => handleAddQuery(node._id)}
                 handleAddNode={() => handleAddNode(node._id)}
                 handleRemoveNode={() => handleRemoveNode(node._id)}
