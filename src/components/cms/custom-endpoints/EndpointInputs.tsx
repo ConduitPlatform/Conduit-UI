@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import InputLocationEnum from '../../../models/InputLocationEnum';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
-import OperationEnum from '../../../models/OperationsEnum';
+import { OperationsEnum } from '../../../models/OperationsEnum';
 
 const useStyles = makeStyles((theme) => ({
   checkBox: {
@@ -138,7 +138,9 @@ const EndpointInputs: FC<Props> = ({
           <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Query params</MenuItem>
           <MenuItem value={InputLocationEnum.BODY}>Body</MenuItem>
           <MenuItem
-            disabled={operationType === OperationEnum.DELETE || operationType === OperationEnum.GET}
+            disabled={
+              operationType === OperationsEnum.DELETE || operationType === OperationsEnum.GET
+            }
             value={InputLocationEnum.URL_PARAMS}>
             URL
           </MenuItem>

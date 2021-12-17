@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import OperationsEnum from '../../../models/OperationsEnum';
+import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
