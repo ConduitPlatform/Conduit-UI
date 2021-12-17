@@ -47,7 +47,7 @@ export const isValueIncompatible = (
 };
 
 export const getTypeOfValue = (fieldName: string, availableFieldsOfSchema: any) => {
-  if (fieldName) {
+  if (typeof fieldName === 'string') {
     if (fieldName.indexOf('.') !== -1) {
       const splitQuery = fieldName.split('.');
       const foundInnerSchema: any = availableFieldsOfSchema.find(

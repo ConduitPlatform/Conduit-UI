@@ -112,7 +112,7 @@ const CustomQueryRow: FC<Props> = ({
   const [schemaType, setSchemaType] = useState('');
 
   useEffect(() => {
-    if (query.schemaField) {
+    if (typeof query.schemaField === 'string') {
       if (query.schemaField.indexOf('.') !== -1) {
         const splitQuery = query.schemaField.split('.');
         const foundInnerSchema = availableFieldsOfSchema.find(
@@ -187,7 +187,11 @@ const CustomQueryRow: FC<Props> = ({
     }
     return (
       <TextField
-        type={query.comparisonField.type === 'Custom' ? schemaType?.toLowerCase() : 'string'}
+        type={
+          query.comparisonField.type === 'Custom'
+            ? typeof schemaType === 'string' && schemaType?.toLowerCase()
+            : 'string'
+        }
         label={
           <Typography className={classes.customValue}>
             {query.comparisonField.type === 'Custom'

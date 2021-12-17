@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TreeView } from '@material-ui/lab';
 import { deepClone } from '../../../utils/deepClone';
 import { Add, Remove, Close } from '@material-ui/icons';
+import { v4 as uuidV4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -173,8 +174,8 @@ const EndpointQueries: FC<Props> = ({
       return (
         <Box key={node._id}>
           <StyledTreeItem
-            key={node._id}
-            nodeId={node._id}
+            key={node._id ? node._id : uuidV4()}
+            nodeId={node._id ? node._id : 'defaultNodeId'}
             onLabelClick={(e: any) => e.preventDefault()}
             label={
               <TreeItemContent
@@ -197,8 +198,8 @@ const EndpointQueries: FC<Props> = ({
     if ('schemaField' in node) {
       return (
         <StyledTreeItem
-          key={node._id}
-          nodeId={node._id}
+          key={node._id ? node._id : uuidV4()}
+          nodeId={node._id ? node._id : 'defaultNodeId'}
           onLabelClick={(e: any) => e.preventDefault()}
           label={
             <Grid

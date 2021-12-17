@@ -51,10 +51,9 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
 
   useEffect(() => {
     if (endpoint.selectedSchema) {
+      setDisplayedSchema([]);
       const foundSchema = availableSchemas.find((schema) => schema._id === endpoint.selectedSchema);
       foundSchema && setDisplayedSchema([foundSchema]);
-    } else {
-      setDisplayedSchema([]);
     }
   }, [endpoint.selectedSchema, availableSchemas]);
 
