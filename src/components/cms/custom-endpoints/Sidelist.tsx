@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Divider,
@@ -14,13 +14,14 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
 import EndpointsList from './EndpointsList';
-import { useAppDispatch } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import useDebounce from '../../../hooks/useDebounce';
 import {
   endpointCleanSlate,
   setEndpointData,
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
+import { setEndpointsOperation, setEndpointsSearch } from '../../../redux/slices/cmsSlice';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -61,14 +62,19 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   setEditMode: (edit: boolean) => void;
   setCreateMode: (create: boolean) => void;
+  filters: { search: string; operation: number };
 }
 
-const SideList: FC<Props> = ({ setEditMode, setCreateMode }) => {
+const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+
   const [search, setSearch] = useState('');
-  const [operation, setOperation] = useState(-2);
   const debouncedSearch = useDebounce(search, 500);
+
+  useEffect(() => {
+    dispatch(setEndpointsSearch(debouncedSearch));
+  }, [debouncedSearch, dispatch]);
 
   const handleListItemSelect = (endpoint: any) => {
     dispatch(setSelectedEndPoint(endpoint));
@@ -106,8 +112,10 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode }) => {
             <InputLabel>Operation</InputLabel>
             <Select
               label="Provider"
-              value={operation}
-              onChange={(event) => setOperation(event.target.value as number)}>
+              value={filters.operation}
+              onChange={(event) => {
+                dispatch(setEndpointsOperation(event.target.value as number));
+              }}>
               <MenuItem value={-2}>
                 <em>All</em>
               </MenuItem>
@@ -129,8 +137,8 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode }) => {
       <Box height="60vh">
         <EndpointsList
           handleListItemSelect={handleListItemSelect}
-          search={debouncedSearch}
-          operation={operation}
+          search={filters.search}
+          operation={filters.operation}
         />
       </Box>
     </Box>

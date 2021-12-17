@@ -51,7 +51,10 @@ export interface ICmsSlice {
     customEndpoints: {
       endpoints: EndpointTypes[];
       count: number;
-      action: EndpointActionsEnum;
+      filters: {
+        search: string;
+        operation: number;
+      };
     };
     count: number;
     config: any;
@@ -77,7 +80,10 @@ const initialState: ICmsSlice = {
     customEndpoints: {
       endpoints: [],
       count: 0,
-      action: EndpointActionsEnum.None,
+      filters: {
+        search: '',
+        operation: -2,
+      },
     },
     count: 0,
     config: null,
@@ -403,7 +409,14 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk(
 
 export const asyncCreateCustomEndpoints = createAsyncThunk(
   'cms/createEndpoints',
-  async (params: { endpointData: any }, thunkAPI) => {
+  async (
+    params: {
+      endpointData: any;
+      filters: { search: string; operation: number };
+      endpointsLength: number;
+    },
+    thunkAPI
+  ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const body = {
@@ -418,6 +431,13 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
         assignments: params.endpointData.assignments,
       };
       await createCustomEndpointsRequest(body);
+      const getEndpointsParams = {
+        skip: 0,
+        limit: params.endpointsLength,
+        search: params.filters.search,
+        operation: params.filters.operation !== -2 ? params.filters.operation : undefined,
+      };
+      thunkAPI.dispatch(asyncSetCustomEndpoints(getEndpointsParams));
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Endpoint ${params.endpointData.name} created! `)
       );
@@ -467,8 +487,11 @@ const cmsSlice = createSlice({
     clearEndpoints(state) {
       state.data.customEndpoints.endpoints = [];
     },
-    setEndpointAction(state, action) {
-      state.data.customEndpoints.action = action.payload;
+    setEndpointsSearch(state, action) {
+      state.data.customEndpoints.filters.search = action.payload;
+    },
+    setEndpointsOperation(state, action) {
+      state.data.customEndpoints.filters.operation = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -528,4 +551,5 @@ const cmsSlice = createSlice({
 });
 
 export default cmsSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema, setEndpointAction } = cmsSlice.actions;
+export const { setSelectedSchema, clearSelectedSchema, setEndpointsSearch, setEndpointsOperation } =
+  cmsSlice.actions;

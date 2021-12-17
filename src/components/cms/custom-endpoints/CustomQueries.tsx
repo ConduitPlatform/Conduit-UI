@@ -30,8 +30,6 @@ import {
   asyncCreateCustomEndpoints,
   asyncDeleteCustomEndpoints,
   asyncUpdateCustomEndpoints,
-  EndpointActionsEnum,
-  setEndpointAction,
 } from '../../../redux/slices/cmsSlice';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +66,9 @@ const CustomQueries: FC = () => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
+
+  const { filters } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+  const { endpoints } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
 
   const {
     schemas: { schemaDocuments },
@@ -189,11 +190,15 @@ const CustomQueries: FC = () => {
     if (edit) {
       const _id = selectedEndpoint._id;
       dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
-      dispatch(setEndpointAction(EndpointActionsEnum.Update));
       dispatch(setSelectedEndPoint(''));
     } else {
-      dispatch(asyncCreateCustomEndpoints({ endpointData: data }));
-      dispatch(setEndpointAction(EndpointActionsEnum.Create));
+      dispatch(
+        asyncCreateCustomEndpoints({
+          endpointData: data,
+          filters,
+          endpointsLength: endpoints.length,
+        })
+      );
       dispatch(setSelectedEndPoint(''));
     }
     setCreateMode(false);
@@ -210,7 +215,6 @@ const CustomQueries: FC = () => {
     handleConfirmationDialogClose();
     dispatch(setSelectedEndPoint(undefined));
     dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
-    dispatch(setEndpointAction(EndpointActionsEnum.Delete));
   };
 
   const handleNameChange = (event: any) => {
@@ -342,7 +346,7 @@ const CustomQueries: FC = () => {
     <Box className={classes.root}>
       <Grid container spacing={2} className={classes.grid}>
         <Grid item xs={4}>
-          <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} />
+          <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>
         <Grid item xs={8}>
           {renderMainContent()}
