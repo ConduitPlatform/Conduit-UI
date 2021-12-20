@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 const EndpointAssignments: FC<Props> = ({
   editMode,
   selectedInputs,
+  operationType,
   selectedAssignments,
   setSelectedAssignments,
   availableFieldsOfSchema,
@@ -310,130 +311,124 @@ const EndpointAssignments: FC<Props> = ({
   };
 
   return selectedAssignments.map((assignment: Assignment, index: number) => (
-    <>
-      <Fragment key={`assignment-${index}`}>
-        <Grid item xs={1}>
-          <Typography>{index + 1}.</Typography>
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            select
-            label={'Schema Field'}
-            variant="outlined"
-            fullWidth
-            value={assignment.schemaField}
-            disabled={!editMode}
-            onChange={(event) => handleAssignmentFieldChange(event, index)}>
-            <MenuItem aria-label="None" value="-" />
-            {prepareOptions()}
-          </TextField>
-        </Grid>
+    <Fragment key={`assignment-${index}`}>
+      <Grid item xs={1}>
+        <Typography>{index + 1}.</Typography>
+      </Grid>
+      <Grid item xs={3}>
+        <TextField
+          select
+          label={'Schema Field'}
+          variant="outlined"
+          fullWidth
+          value={assignment.schemaField}
+          disabled={!editMode}
+          onChange={(event) => handleAssignmentFieldChange(event, index)}>
+          <MenuItem aria-label="None" value="-" />
+          {prepareOptions()}
+        </TextField>
+      </Grid>
+      <Grid item xs={2}>
+        <TextField
+          select
+          label={'Actions'}
+          variant="outlined"
+          fullWidth
+          value={assignment.action}
+          disabled={!editMode}
+          onChange={(event) => handleAssignmentActionChange(event, index)}>
+          <MenuItem aria-label="None" value="" />
+          <MenuItem value={ActionTypes.SET}>SET</MenuItem>
+          <MenuItem disabled={!isNumberType(assignment.schemaField)} value={ActionTypes.INCREMENT}>
+            INCREMENT
+          </MenuItem>
+          <MenuItem disabled={!isNumberType(assignment.schemaField)} value={ActionTypes.DECREMENT}>
+            DECREMENT
+          </MenuItem>
+          <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.APPEND}>
+            APPEND
+          </MenuItem>
+          <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.REMOVE}>
+            REMOVE
+          </MenuItem>
+        </TextField>
+      </Grid>
+      <Grid item xs={2}>
+        <TextField
+          select
+          label={'Assignment value'}
+          variant="outlined"
+          fullWidth
+          value={
+            assignment.assignmentField.type === 'Custom' ||
+            assignment.assignmentField.type === 'Context'
+              ? assignment.assignmentField.type
+              : assignment.assignmentField.type + '-' + assignment.assignmentField.value
+          }
+          disabled={!editMode}
+          onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
+          <MenuItem aria-label="None" value="-" />
+          <MenuItem disabled className={classes.group}>
+            Custom Value
+          </MenuItem>
+          <MenuItem className={classes.item} value={'Custom'}>
+            Add a custom value
+          </MenuItem>
+          <MenuItem disabled className={classes.group}>
+            Context Value
+          </MenuItem>
+          <MenuItem className={classes.item} value={'Context'}>
+            Add a value from context
+          </MenuItem>
+          <MenuItem disabled className={classes.group}>
+            Input Fields
+          </MenuItem>
+          {selectedInputs.map((input: any, index: number) => (
+            <MenuItem
+              disabled={isValueIncompatible(
+                assignment.schemaField,
+                input.type,
+                availableFieldsOfSchema
+              )}
+              className={classes.item}
+              key={`idx-${index}-input`}
+              value={'Input-' + input.name}>
+              {`${input.name} ${extractInputValueType(input.type)}`}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
+      {assignment.assignmentField.type === 'Custom' ||
+      assignment.assignmentField.type === 'Context' ? (
         <Grid item xs={2}>
           <TextField
-            select
-            label={'Actions'}
-            variant="outlined"
-            fullWidth
-            value={assignment.action}
-            disabled={!editMode}
-            onChange={(event) => handleAssignmentActionChange(event, index)}>
-            <MenuItem aria-label="None" value="" />
-            <MenuItem value={ActionTypes.SET}>SET</MenuItem>
-            <MenuItem
-              disabled={!isNumberType(assignment.schemaField)}
-              value={ActionTypes.INCREMENT}>
-              INCREMENT
-            </MenuItem>
-            <MenuItem
-              disabled={!isNumberType(assignment.schemaField)}
-              value={ActionTypes.DECREMENT}>
-              DECREMENT
-            </MenuItem>
-            <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.APPEND}>
-              APPEND
-            </MenuItem>
-            <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.REMOVE}>
-              REMOVE
-            </MenuItem>
-          </TextField>
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            select
-            label={'Assignment value'}
-            variant="outlined"
-            fullWidth
-            value={
-              assignment.assignmentField.type === 'Custom' ||
-              assignment.assignmentField.type === 'Context'
-                ? assignment.assignmentField.type
-                : assignment.assignmentField.type + '-' + assignment.assignmentField.value
+            label={extractCustomLabel(assignment.assignmentField.type, assignment.schemaField)}
+            type={
+              assignment.assignmentField.type === 'Custom' &&
+              getTypeOfValue(assignment.schemaField, availableFieldsOfSchema)
             }
+            variant={'outlined'}
             disabled={!editMode}
-            onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
-            <MenuItem aria-label="None" value="" />
-            <MenuItem disabled className={classes.group}>
-              Custom Value
-            </MenuItem>
-            <MenuItem className={classes.item} value={'Custom'}>
-              Add a custom value
-            </MenuItem>
-            <MenuItem disabled className={classes.group}>
-              Context Value
-            </MenuItem>
-            <MenuItem className={classes.item} value={'Context'}>
-              Add a value from context
-            </MenuItem>
-            <MenuItem disabled className={classes.group}>
-              Input Fields
-            </MenuItem>
-            {selectedInputs.map((input: any, index: number) => (
-              <MenuItem
-                disabled={isValueIncompatible(
-                  assignment.schemaField,
-                  input.type,
-                  availableFieldsOfSchema
-                )}
-                className={classes.item}
-                key={`idx-${index}-input`}
-                value={'Input-' + input.name}>
-                {`${input.name} ${extractInputValueType(input.type)}`}
-              </MenuItem>
-            ))}
-          </TextField>
+            fullWidth
+            placeholder={'Value'}
+            value={assignment.assignmentField.value}
+            onChange={(event) =>
+              assignment.assignmentField.type === 'Custom'
+                ? handleAssignmentCustomValueChange(event, index, assignment.schemaField)
+                : handleAssignmentContextValueChange(event, index)
+            }
+          />
         </Grid>
-        {assignment.assignmentField.type === 'Custom' ||
-        assignment.assignmentField.type === 'Context' ? (
-          <Grid item xs={2}>
-            <TextField
-              label={extractCustomLabel(assignment.assignmentField.type, assignment.schemaField)}
-              type={getTypeOfValue(assignment.schemaField, availableFieldsOfSchema)}
-              variant={'outlined'}
-              disabled={!editMode}
-              fullWidth
-              placeholder={'Value'}
-              value={assignment.assignmentField.value}
-              onChange={(event) =>
-                assignment.assignmentField.type === 'Custom'
-                  ? handleAssignmentCustomValueChange(event, index, assignment.schemaField)
-                  : handleAssignmentContextValueChange(event, index)
-              }
-            />
-          </Grid>
-        ) : (
-          <Grid item xs={2} />
-        )}
-        <Grid item xs={1} />
-        <Grid item xs={1} className={classes.remove}>
-          <IconButton
-            disabled={!editMode}
-            size="small"
-            onClick={() => handleRemoveAssignment(index)}>
-            <RemoveCircleOutlineIcon />
-          </IconButton>
-        </Grid>
-      </Fragment>
-    </>
+      ) : (
+        <Grid item xs={2} />
+      )}
+      <Grid item xs={1} />
+      <Grid item xs={1} className={classes.remove}>
+        <IconButton disabled={!editMode} size="small" onClick={() => handleRemoveAssignment(index)}>
+          <RemoveCircleOutlineIcon />
+        </IconButton>
+      </Grid>
+    </Fragment>
   ));
 };
 
