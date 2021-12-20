@@ -1,7 +1,6 @@
-import { Box, Button, Grid, Switch, Typography } from '@material-ui/core';
 import React, { FC } from 'react';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import { Box, Button, Grid, Switch, Typography } from '@material-ui/core';
+import { AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
 
 interface Props {
   operator: any;
@@ -50,8 +49,8 @@ const TreeItemContent: FC<Props> = ({
           <Grid item>
             <Button
               variant="text"
-              color={'primary'}
-              startIcon={<AddCircleOutlineIcon />}
+              color={'secondary'}
+              startIcon={<AddCircleOutline />}
               disabled={!editMode}
               onClick={handleAddNode}>
               Node
@@ -60,8 +59,8 @@ const TreeItemContent: FC<Props> = ({
           <Grid item>
             <Button
               variant="text"
-              color={'primary'}
-              startIcon={<RemoveCircleOutlineIcon />}
+              color={'secondary'}
+              startIcon={<RemoveCircleOutline />}
               disabled={!editMode}
               onClick={handleRemoveNode}>
               Node
@@ -70,11 +69,11 @@ const TreeItemContent: FC<Props> = ({
           <Grid item>
             <Button
               variant="text"
-              color={'primary'}
-              startIcon={<AddCircleOutlineIcon />}
+              color={'secondary'}
+              startIcon={<AddCircleOutline />}
               disabled={!editMode}
               onClick={handleAddQuery}>
-              Query
+              Condition
             </Button>
           </Grid>
         </Grid>

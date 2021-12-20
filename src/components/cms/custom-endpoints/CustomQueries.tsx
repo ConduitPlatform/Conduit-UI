@@ -1,12 +1,7 @@
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Box, Grid, IconButton, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import OperationsEnum from '../../../models/OperationsEnum';
-import ConfirmationDialog from '../../common/ConfirmationDialog';
-import OperationSection from './OperationSection';
-import SideList from './Sidelist';
+import { Delete, Edit } from '@material-ui/icons';
 import {
   findFieldsWithTypes,
   getAvailableFieldsOfSchema,
@@ -15,19 +10,27 @@ import {
   hasInvalidQueries,
   prepareQuery,
 } from '../../../utils/cms';
+import { OperationsEnum } from '../../../models/OperationsEnum';
+import ConfirmationDialog from '../../common/ConfirmationDialog';
+import OperationSection from './OperationSection';
+import SideList from './Sidelist';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
 import AssignmentsSection from './AssignmentsSection';
 import InputsSection from './InputsSection';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  endpointCleanSlate,
   setEndpointData,
   setSchemaFields,
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
 import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import {
+  asyncCreateCustomEndpoints,
+  asyncDeleteCustomEndpoints,
+  asyncUpdateCustomEndpoints,
+} from '../../../redux/slices/cmsSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,28 +55,23 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
-  textField: {
-    width: '245px',
+  mainContentInfo: {
+    padding: theme.spacing(1),
   },
 }));
 
-interface Props {
-  handleCreate: any;
-  handleEdit: any;
-  handleDelete: any;
-}
-
-const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) => {
+const CustomQueries: FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
 
+  const { filters } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+  const { endpoints } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+
   const {
     schemas: { schemaDocuments },
-    customEndpoints,
   } = useAppSelector((state) => state.cmsSlice.data);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -89,7 +87,7 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
         fieldsWithTypes = findFieldsWithTypes(fields);
       }
 
-      if (selectedEndpoint.queries) {
+      if (selectedEndpoint.query) {
         const query = selectedEndpoint.query;
 
         const keys = Object.keys(query);
@@ -191,10 +189,16 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
 
     if (edit) {
       const _id = selectedEndpoint._id;
-      handleEdit(_id, data);
+      dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
       dispatch(setSelectedEndPoint(''));
     } else {
-      handleCreate(data);
+      dispatch(
+        asyncCreateCustomEndpoints({
+          endpointData: data,
+          filters,
+          endpointsLength: endpoints.length,
+        })
+      );
       dispatch(setSelectedEndPoint(''));
     }
     setCreateMode(false);
@@ -210,22 +214,11 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
   const handleDeleteConfirmed = () => {
     handleConfirmationDialogClose();
     dispatch(setSelectedEndPoint(undefined));
-    handleDelete(selectedEndpoint._id);
-  };
-
-  const handleListItemSelect = (endpoint: any) => {
-    dispatch(setSelectedEndPoint(endpoint));
-    dispatch(setEndpointData({ ...endpoint }));
+    dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
   };
 
   const handleNameChange = (event: any) => {
     dispatch(setEndpointData({ name: event.target.value }));
-  };
-
-  const handleAddNewEndpoint = () => {
-    dispatch(endpointCleanSlate());
-    setEditMode(true);
-    setCreateMode(true);
   };
 
   const disableSubmit = () => {
@@ -244,6 +237,12 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
       if (!endpoint.queries || endpoint.queries.length === 0) return true;
       invalidQueries = hasInvalidQueries(endpoint.queries);
       if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
+      invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+    }
+    if (endpoint.operation === OperationsEnum.PATCH) {
+      if (!endpoint.queries || endpoint.queries.length === 0) return true;
+      invalidQueries = hasInvalidQueries(endpoint.queries);
+      if (!endpoint.assignments || endpoint.assignments.length < 1) return true;
       invalidAssignments = hasInvalidAssignments(endpoint.assignments);
     }
     if (endpoint.operation === OperationsEnum.DELETE) {
@@ -288,7 +287,10 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
         <InputsSection editMode={editMode} />
         {endpoint.operation !== OperationsEnum.POST && <QueriesSection editMode={editMode} />}
         {(endpoint.operation === OperationsEnum.PUT ||
-          endpoint.operation === OperationsEnum.POST) && <AssignmentsSection editMode={editMode} />}
+          endpoint.operation === OperationsEnum.POST ||
+          endpoint.operation === OperationsEnum.PATCH) && (
+          <AssignmentsSection editMode={editMode} />
+        )}
       </>
     );
   };
@@ -303,26 +305,27 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
     } else {
       return (
         <Box>
-          <Grid container spacing={2} alignItems="flex-end">
-            <Grid item xs={7}>
+          <Grid container className={classes.mainContentInfo} spacing={2} alignItems="flex-end">
+            <Grid item xs={5}>
               <TextField
                 disabled={!editMode}
+                fullWidth
                 variant={'outlined'}
-                className={classes.textField}
                 label={'Name'}
                 value={endpoint.name}
                 onChange={handleNameChange}
               />
             </Grid>
+            <Grid item xs={2} />
             <Grid item xs={5} style={{ textAlign: 'end' }}>
               {!editMode && (
                 <IconButton aria-label="delete" onClick={handleDeleteClick}>
-                  <DeleteIcon />
+                  <Delete />
                 </IconButton>
               )}
               {!editMode && (
-                <IconButton aria-label="edit" onClick={handleEditClick}>
-                  <EditIcon />
+                <IconButton color="secondary" aria-label="edit" onClick={handleEditClick}>
+                  <Edit />
                 </IconButton>
               )}
             </Grid>
@@ -342,15 +345,10 @@ const CustomQueries: FC<Props> = ({ handleCreate, handleEdit, handleDelete }) =>
   return (
     <Box className={classes.root}>
       <Grid container spacing={2} className={classes.grid}>
-        <Grid item xs={3}>
-          <SideList
-            endpoints={customEndpoints}
-            selectedEndpoint={selectedEndpoint}
-            handleAddNewEndpoint={handleAddNewEndpoint}
-            handleListItemSelect={handleListItemSelect}
-          />
+        <Grid item xs={4}>
+          <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           {renderMainContent()}
         </Grid>
       </Grid>

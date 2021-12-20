@@ -1,5 +1,6 @@
-import { Button, Grid } from '@material-ui/core';
 import React, { FC } from 'react';
+import { Button, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 interface Props {
   editMode: boolean;
@@ -10,6 +11,12 @@ interface Props {
   handleCancelClick: () => void;
 }
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    paddingTop: '30px',
+  },
+}));
+
 const SaveSection: FC<Props> = ({
   editMode,
   createMode,
@@ -18,15 +25,16 @@ const SaveSection: FC<Props> = ({
   handleCreateClick,
   handleCancelClick,
 }) => {
+  const classes = useStyles();
   return (
-    <Grid container justifyContent="flex-end" spacing={1} style={{ paddingTop: '30px' }}>
-      <Grid item xs={4} md={2}>
+    <Grid container justifyContent="flex-end" spacing={1} className={classes.container}>
+      <Grid item xs={3} md={1}>
         <Button variant="contained" color="secondary" onClick={handleCancelClick}>
           Cancel
         </Button>
       </Grid>
 
-      <Grid item xs={4} md={2}>
+      <Grid item xs={3} md={1}>
         <Button
           disabled={disableSubmit}
           variant="contained"
