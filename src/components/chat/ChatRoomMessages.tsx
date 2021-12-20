@@ -1,5 +1,5 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useRef } from 'react';
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import { ListChildComponentProps, VariableSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
@@ -27,17 +27,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ItemStatus {
-  [key: string]: string;
-}
 const timeoutAmount = 750;
-let messagesStatusMap: ItemStatus = {};
 
 const Row = ({ data, index, style }: ListChildComponentProps) => {
-  const { messages, messagesCount, selectedMessages, onPress, onLongPress, classes } = data;
+  const { messages, messagesCount, selectedMessages, onPress, onLongPress, setRowHeight, classes } =
+    data;
   const rowItem = messages[messagesCount - index - 1];
-  const loading = !(messagesStatusMap[index] === 'LOADED' && rowItem);
   const isSelected = rowItem && selectedMessages.includes(rowItem._id);
+
+  const rowRef = useRef<any>({});
+
+  useEffect(() => {
+    if (rowRef.current) {
+      setRowHeight(index, rowRef.current.clientHeight);
+    }
+  }, [rowRef]);
 
   const getClassName = () => {
     if (isSelected) {
@@ -48,34 +52,33 @@ const Row = ({ data, index, style }: ListChildComponentProps) => {
 
   return (
     <div style={style as CSSProperties}>
-      {loading ? (
+      {!rowItem ? (
         <ChatRoomBubbleSkeleton className={classes.bubble} />
       ) : (
-        <ChatRoomBubble
-          data={rowItem}
-          className={getClassName()}
-          onLongPress={onLongPress}
-          onPress={onPress}
-        />
+        <div ref={rowRef} id={`bubble-${index}`}>
+          <ChatRoomBubble
+            data={rowItem}
+            className={getClassName()}
+            onLongPress={onLongPress}
+            onPress={onPress}
+          />
+        </div>
       )}
     </div>
   );
 };
 
 const createItemData = memoize(
-  (messages, messagesCount, selectedMessages, onPress, onLongPress, classes) => ({
+  (messages, messagesCount, selectedMessages, onPress, onLongPress, classes, setRowHeight) => ({
     messages,
     messagesCount,
     selectedMessages,
     onPress,
     onLongPress,
     classes,
+    setRowHeight,
   })
 );
-
-const isItemLoaded = (index: number) => {
-  return !!messagesStatusMap[index];
-};
 
 interface Props {
   roomId: string;
@@ -100,11 +103,24 @@ const ChatRoomMessages: FC<Props> = ({
 
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
+  const rowHeights = useRef<any>({});
+
+  const getRowHeight = (index: number) => {
+    return rowHeights.current[index] + 8 || 56;
+  };
+
+  const setRowHeight = (index: number, size: number) => {
+    // infiniteLoaderRef.current._listRef.resetAfterIndex(0);
+    rowHeights.current = { ...rowHeights.current, [index]: size };
+  };
+
+  const isItemLoaded = (index: number) => {
+    return !!data[count - index - 1];
+  };
 
   useEffect(() => {
     if (infiniteLoaderRef.current && hasMountedRef.current) {
       infiniteLoaderRef.current.resetloadMoreItemsCache();
-      messagesStatusMap = {};
     }
     hasMountedRef.current = true;
   }, [selectedPanel, count]);
@@ -130,22 +146,20 @@ const ChatRoomMessages: FC<Props> = ({
     timeoutAmount
   );
 
-  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
+  const loadMoreItems = async (startIndex: number) => {
     const limit = count - startIndex - data.length;
     debouncedGetApiItems(data.length, limit);
-    await new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        for (let index = startIndex; index <= stopIndex; index++) {
-          messagesStatusMap[index] = 'LOADED';
-        }
-        resolve(undefined);
-        clearTimeout(timeout);
-      }, timeoutAmount);
-      return timeout;
-    });
   };
 
-  const itemData = createItemData(data, count, selectedMessages, onPress, onLongPress, classes);
+  const itemData = createItemData(
+    data,
+    count,
+    selectedMessages,
+    onPress,
+    onLongPress,
+    classes,
+    setRowHeight
+  );
 
   return (
     <AutoSizer>
@@ -160,16 +174,17 @@ const ChatRoomMessages: FC<Props> = ({
             ref={infiniteLoaderRef}
             isItemLoaded={isItemLoaded}
             itemCount={count}
-            loadMoreItems={loadMoreItems}>
+            loadMoreItems={loadMoreItems}
+            threshold={4}>
             {({ onItemsRendered, ref }) => {
               return (
                 <List
                   height={height}
                   itemCount={count}
-                  itemSize={56}
+                  itemSize={(index) => getRowHeight(count - index - 1)}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
-                  initialScrollOffset={count * 56}
+                  initialScrollOffset={count * 500}
                   itemData={itemData}
                   width={width}>
                   {Row}

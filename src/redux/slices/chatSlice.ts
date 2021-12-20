@@ -85,10 +85,7 @@ export const asyncPutChatConfig = createAsyncThunk(
 
 export const asyncGetChatRooms = createAsyncThunk(
   'chat/getChatRooms',
-  async (
-    params: { skip: number; limit: number; search?: string; searchChange?: boolean },
-    thunkAPI
-  ) => {
+  async (params: { skip: number; limit: number; search?: string }, thunkAPI) => {
     try {
       const {
         data: { chatRoomDocuments, totalCount },
