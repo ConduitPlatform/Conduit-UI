@@ -1,19 +1,13 @@
-import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
+import React, { FC, Fragment, useCallback } from 'react';
 import { Grid, IconButton, MenuItem, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { deepClone } from '../../../utils/deepClone';
 import { Assignment, Input } from '../../../models/customEndpoints/customEndpointsModels';
-import {
-  extractInputValueType,
-  getTypeOfValue,
-  isValueIncompatible,
-  prepareSchemaValues,
-} from '../../../utils/cms';
+import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../../utils/cms';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import { useAppDispatch } from '../../../redux/store';
-import { flattenDepth } from 'lodash';
 
 interface Props {
   editMode: boolean;

@@ -46,14 +46,6 @@ export const isValueIncompatible = (
   }
 };
 
-export const prepareSchemaValues = (options: any) => {
-  return options.map((option: any) => {
-    if (option !== undefined) {
-      return isArray(option) ? prepareSchemaValues(option) : option.props.value;
-    }
-  });
-};
-
 export const getTypeOfValue = (fieldName: string, availableFieldsOfSchema: any) => {
   if (typeof fieldName === 'string') {
     if (fieldName.indexOf('.') !== -1) {
