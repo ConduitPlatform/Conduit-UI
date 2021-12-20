@@ -28,6 +28,13 @@ import { enqueueErrorNotification, enqueueSuccessNotification } from '../../util
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 
+export enum EndpointActionsEnum {
+  None,
+  Create,
+  Update,
+  Delete,
+}
+
 export interface ICmsSlice {
   data: {
     schemas: {
@@ -43,7 +50,14 @@ export interface ICmsSlice {
       documents: any;
       documentsCount: number;
     };
-    customEndpoints: EndpointTypes[];
+    customEndpoints: {
+      endpoints: EndpointTypes[];
+      count: number;
+      filters: {
+        search: string;
+        operation: number;
+      };
+    };
     count: number;
     config: any;
     selectedSchema: Schema | null;
@@ -65,7 +79,14 @@ const initialState: ICmsSlice = {
       documents: [],
       documentsCount: 0,
     },
-    customEndpoints: [],
+    customEndpoints: {
+      endpoints: [],
+      count: 0,
+      filters: {
+        search: '',
+        operation: -2,
+      },
+    },
     count: 0,
     config: null,
     selectedSchema: null,
@@ -81,6 +102,7 @@ export const asyncGetCmsSchemas = createAsyncThunk(
         data: { results },
       } = await getCmsSchemasRequest(params);
       thunkAPI.dispatch(setAppDefaults());
+
       return {
         results: results.schemas as Schema[],
         documentsCount: results.documentsCount as number,
@@ -327,29 +349,48 @@ export const asyncEditSchemaDocument = createAsyncThunk(
   }
 );
 
-export const asyncGetCustomEndpoints = createAsyncThunk<EndpointTypes[], any>(
-  'cms/getEndpoints',
-  async (arg, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
+export const asyncSetCustomEndpoints = createAsyncThunk(
+  'cms/setEndpoints',
+  async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
     try {
-      const { data } = await getCustomEndpointsRequest();
-      thunkAPI.dispatch(setAppDefaults());
-      return data.results as EndpointTypes[];
+      const {
+        data: { customEndpoints, count },
+      } = await getCustomEndpointsRequest(params);
+
+      return { endpoints: customEndpoints as EndpointTypes[], count: count };
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
   }
 );
 
-export const asyncUpdateCustomEndpoints = createAsyncThunk<any, { _id: string; endpointData: any }>(
+export const asyncAddCustomEndpoints = createAsyncThunk(
+  'cms/addEndpoints',
+  async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
+    try {
+      const {
+        data: { customEndpoints },
+      } = await getCustomEndpointsRequest(params);
+
+      return { endpoints: customEndpoints as EndpointTypes[] };
+    } catch (error) {
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncUpdateCustomEndpoints = createAsyncThunk(
   'cms/updateEndpoints',
-  async (params, thunkAPI) => {
+  async (params: { _id: string; endpointData: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
-      thunkAPI.dispatch(asyncGetCustomEndpoints(''));
+      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(`Endpoint ${params.endpointData.name} edited! `)
+      );
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -360,15 +401,15 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk<any, { _id: string; e
   }
 );
 
-export const asyncDeleteCustomEndpoints = createAsyncThunk<any, string>(
+export const asyncDeleteCustomEndpoints = createAsyncThunk(
   'cms/deleteEndpoints',
-  async (_id, thunkAPI) => {
+  async (params: { _id: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await deleteCustomEndpointsRequest(_id);
-      thunkAPI.dispatch(asyncGetCustomEndpoints(''));
+      await deleteCustomEndpointsRequest(params._id);
       thunkAPI.dispatch(setAppLoading(false));
-      return data.results;
+      thunkAPI.dispatch(enqueueSuccessNotification(`Endpoint deleted! `));
+      return params._id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -377,25 +418,42 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk<any, string>(
   }
 );
 
-export const asyncCreateCustomEndpoints = createAsyncThunk<any, any>(
+export const asyncCreateCustomEndpoints = createAsyncThunk(
   'cms/createEndpoints',
-  async (endPointData, thunkAPI) => {
+  async (
+    params: {
+      endpointData: any;
+      filters: { search: string; operation: number };
+      endpointsLength: number;
+    },
+    thunkAPI
+  ) => {
     thunkAPI.dispatch(setAppLoading(true));
+    const data = params.endpointData;
     try {
       const body = {
-        name: endPointData.name,
-        operation: endPointData.operation,
-        selectedSchema: endPointData.selectedSchema,
-        authentication: endPointData.authentication,
-        paginated: endPointData.paginated,
-        sorted: endPointData.sorted,
-        inputs: endPointData.inputs,
-        query: endPointData.query,
-        assignments: endPointData.assignments,
+        name: data.name,
+        operation: data.operation,
+        selectedSchema: data.selectedSchema,
+        authentication: data.authentication,
+        paginated: data.paginated,
+        sorted: data.sorted,
+        inputs: data.inputs,
+        query: data.query,
+        assignments: data.assignments,
       };
       await createCustomEndpointsRequest(body);
+      const getEndpointsParams = {
+        skip: 0,
+        limit: params.endpointsLength,
+        search: params.filters.search,
+        operation: params.filters.operation !== -2 ? params.filters.operation : undefined,
+      };
+      thunkAPI.dispatch(asyncSetCustomEndpoints(getEndpointsParams));
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(`Endpoint ${params.endpointData.name} created! `)
+      );
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(asyncGetCustomEndpoints(''));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -438,6 +496,15 @@ const cmsSlice = createSlice({
     clearSelectedSchema(state) {
       state.data.selectedSchema = null;
     },
+    clearEndpoints(state) {
+      state.data.customEndpoints.endpoints = [];
+    },
+    setEndpointsSearch(state, action) {
+      state.data.customEndpoints.filters.search = action.payload;
+    },
+    setEndpointsOperation(state, action) {
+      state.data.customEndpoints.filters.operation = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
@@ -476,9 +543,23 @@ const cmsSlice = createSlice({
       const selectedDocument = state.data.documents.documents[documentIndex];
       set(selectedDocument, action.payload.path, action.payload.document);
     });
-    builder.addCase(asyncGetCustomEndpoints.fulfilled, (state, action) => {
-      state.data.customEndpoints = action.payload;
+    builder.addCase(asyncSetCustomEndpoints.fulfilled, (state, action) => {
+      state.data.customEndpoints.endpoints = action.payload.endpoints;
+      state.data.customEndpoints.count = action.payload.count;
     });
+    builder.addCase(asyncAddCustomEndpoints.fulfilled, (state, action) => {
+      state.data.customEndpoints.endpoints = [
+        ...state.data.customEndpoints.endpoints,
+        ...action.payload.endpoints,
+      ];
+    });
+    builder.addCase(asyncDeleteCustomEndpoints.fulfilled, (state, action) => {
+      state.data.customEndpoints.endpoints = state.data.customEndpoints.endpoints.filter(
+        (endpoint) => endpoint._id !== action.payload
+      );
+      state.data.customEndpoints.count = state.data.customEndpoints.count - 1;
+    });
+
     builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
       state.data.schemasFromOtherModules = action.payload.results;
     });
@@ -486,4 +567,5 @@ const cmsSlice = createSlice({
 });
 
 export default cmsSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema } = cmsSlice.actions;
+export const { setSelectedSchema, clearSelectedSchema, setEndpointsSearch, setEndpointsOperation } =
+  cmsSlice.actions;

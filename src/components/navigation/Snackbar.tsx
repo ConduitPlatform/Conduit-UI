@@ -28,18 +28,19 @@ const useStyles = makeStyles((theme) => ({
   },
   error: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.text.primary,
   },
   success: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.success.main,
+    color: theme.palette.text.primary,
   },
   info: {
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.info.main,
+    color: theme.palette.text.primary,
   },
   warning: {
-    backgroundColor: theme.palette.warning.dark,
-    color: theme.palette.warning.contrastText,
+    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -59,14 +60,14 @@ const Snackbar = forwardRef<HTMLDivElement, IProps>((props, ref) => {
 
   const getVariantColor = (variant: Variant) => {
     switch (variant) {
-      case 'success':
-        return classes.success;
+      case 'info':
+        return classes.info;
       case 'error':
         return classes.error;
       case 'warning':
         return classes.warning;
       default:
-        return classes.info;
+        return classes.success;
     }
   };
 

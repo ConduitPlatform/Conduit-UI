@@ -1,11 +1,11 @@
+import React, { FC } from 'react';
 import { Button, Divider, Grid, Typography } from '@material-ui/core';
 import EndpointQueries from './EndpointQueries';
-import React, { FC } from 'react';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { makeStyles } from '@material-ui/core/styles';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
 import { recursiveNodeIteration } from '../../../utils/cms';
 import { v4 as uuidv4 } from 'uuid';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { makeStyles } from '@material-ui/core/styles';
 import { deepClone } from '../../../utils/deepClone';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 
@@ -13,6 +13,13 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
     textTransform: 'none',
+  },
+  addQueryBtn: {
+    textAlign: 'end',
+    padding: '0',
+  },
+  divider: {
+    padding: '0',
   },
 }));
 
@@ -147,23 +154,23 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
 
   return (
     <>
-      <Grid item xs={6} style={{ padding: '0 0 0 10px' }}>
+      <Grid item xs={6}>
         <Typography>
-          <strong>Query</strong>
+          <strong>Queries</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6} style={{ textAlign: 'end', padding: '0' }}>
+      <Grid item xs={6} className={classes.addQueryBtn}>
         <Button
           disabled={!editMode}
           variant="text"
-          color={'primary'}
+          color={'secondary'}
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddParentNode}>
-          Add another
+          Add query
         </Button>
       </Grid>
-      <Grid item xs={12} style={{ padding: '0' }}>
+      <Grid item xs={12} className={classes.divider}>
         <Divider />
       </Grid>
       <EndpointQueries

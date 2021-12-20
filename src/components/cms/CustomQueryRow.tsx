@@ -1,22 +1,42 @@
+import React, { FC, useEffect, useState } from 'react';
 import {
   Checkbox,
-  FormControl,
   FormControlLabel,
   Grid,
   IconButton,
-  InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from '@material-ui/core';
-import React, { FC, useEffect, useState } from 'react';
-
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import ConditionsEnum from '../../models/ConditionsEnum';
+import { isArray } from 'lodash';
+import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
+import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { useAppDispatch } from '../../redux/store';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   menuItem: {
+    minHeight: 0,
+    margin: theme.spacing(0),
+    padding: theme.spacing(0),
+    '&.MuiMenuItem-dense': {
+      paddingLeft: 12,
+      fontWeight: 'bold',
+    },
+    '&.Mui-selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: 'white',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
+    },
+  },
+  schemaMenuItem: {
     minHeight: 0,
     margin: theme.spacing(0),
     padding: theme.spacing(0),
@@ -31,6 +51,25 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
       },
     },
+  },
+  alignment: {
+    marginBottom: theme.spacing(1),
+  },
+  item: {
+    paddingLeft: theme.spacing(3),
+  },
+  schemaItem: {
+    paddingLeft: theme.spacing(1),
+  },
+  group: {
+    fontWeight: 'inherit',
+    opacity: '1',
+  },
+  customValue: {
+    fontSize: '10px',
+  },
+  paddingLeft: {
+    paddingLeft: theme.spacing(3),
   },
 }));
 
@@ -68,50 +107,132 @@ const CustomQueryRow: FC<Props> = ({
   handleRemoveQuery,
 }) => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
-  const [selectedType, setSelectedType] = useState('');
+  const [schemaType, setSchemaType] = useState('');
 
   useEffect(() => {
-    let type = 'string';
-    if (typeof query.comparisonField.value === 'string') {
-      type = 'string';
-    } else if (typeof query.comparisonField.value === 'boolean') {
-      type = 'boolean';
-    } else if (typeof query.comparisonField.value === 'number') {
-      type = 'number';
-    } else if (Array.isArray(query.comparisonField.value)) {
-      type = 'array';
-    }
+    if (typeof query.schemaField === 'string') {
+      if (query.schemaField.indexOf('.') !== -1) {
+        const splitQuery = query.schemaField.split('.');
+        const foundInnerSchema = availableFieldsOfSchema.find(
+          (field: any) => field.name === splitQuery[0]
+        );
+        if (foundInnerSchema.type) {
+          const innerSchemaType = foundInnerSchema.type[splitQuery[1]]?.type;
 
-    if (query.comparisonField.type === 'Input') {
-      const selectedInput = selectedInputs.find(
-        (input) => input.name === query.comparisonField.value
-      );
-      if (selectedInput && selectedInput.array) {
-        type = 'array';
+          setSchemaType(innerSchemaType);
+          return;
+        }
+        return;
+      } else {
+        const foundSchema = availableFieldsOfSchema.find(
+          (schema: any) => schema.name === query.schemaField
+        );
+        if (foundSchema && Array.isArray(foundSchema.type)) {
+          setSchemaType('Array');
+        } else {
+          foundSchema && setSchemaType(foundSchema.type);
+        }
       }
     }
-    setSelectedType(type);
-  }, [
-    query.schemaField,
-    query.type,
-    query.comparisonField.value,
-    query.comparisonField.type,
-    selectedInputs,
-  ]);
+  }, [availableFieldsOfSchema, query.schemaField]);
+
+  const isValueInputIncompatible = (type: any) => {
+    if (isArray(type) && schemaType === 'Array') {
+      return false;
+    }
+    if (schemaType !== type) {
+      return true;
+    }
+  };
+
+  const inputCustomChange = (e: React.ChangeEvent<{ value: any }>, i: number) => {
+    let value = e.target.value;
+
+    if (schemaType === 'Boolean') {
+      value = value !== 'false';
+    }
+    if (schemaType === 'Number') {
+      value = parseInt(value);
+    }
+    if (schemaType === 'Array') {
+      dispatch(enqueueInfoNotification('Split elements with comma, without spaces', 'duplicate'));
+      value = value.split(',');
+    }
+
+    handleCustomValueChange(value, i);
+  };
+
+  const isSchemaIncompatible = (isComparisonField: any, schemaName: string) => {
+    if (isComparisonField) {
+      return isValueIncompatible(schemaName, schemaType, availableFieldsOfSchema);
+    }
+  };
+
+  const convertToLowerCase = (item: any) => {
+    if (typeof schemaType === 'string') {
+      return item.toLowerCase();
+    }
+  };
+
+  const extractCustomField = () => {
+    if (schemaType === 'Boolean') {
+      return (
+        <Select
+          disabled={!editMode}
+          value={query.comparisonField.value}
+          native
+          fullWidth
+          onChange={(event) => inputCustomChange(event, index)}>
+          <option />
+          <option value="true">true</option>
+          <option value="false">false</option>
+        </Select>
+      );
+    }
+    return (
+      <TextField
+        type={query.comparisonField.type === 'Custom' ? convertToLowerCase(schemaType) : 'string'}
+        label={
+          <Typography className={classes.customValue}>
+            {query.comparisonField.type === 'Custom'
+              ? `Custom (${schemaType})`
+              : 'Select from context'}
+          </Typography>
+        }
+        variant={'outlined'}
+        disabled={!editMode}
+        fullWidth
+        placeholder={'ex. user._id'}
+        value={query.comparisonField.value}
+        onChange={(event) => inputCustomChange(event, index)}
+      />
+    );
+  };
+
+  const getInnerSchemaName = (isComparisonField: any, item: any) => {
+    const splitString = item.split('.');
+    const suffix = splitString[1];
+    if (!isComparisonField) {
+      return suffix;
+    } else {
+      return `${suffix} (${getTypeOfValue(item, availableFieldsOfSchema)})`;
+    }
+  };
+
+  const getSchemaValue = (isComparisonField: any, item: string) => {
+    if (!isComparisonField) {
+      return item;
+    } else {
+      return 'Schema-' + item;
+    }
+  };
 
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
     const itemTop = (
-      <MenuItem
-        className={classes.menuItem}
-        dense
-        style={{
-          fontWeight: 'bold',
-          paddingLeft: 8,
-          background: 'rgba(0, 0, 0, 0.05)',
-        }}
-        value={`${valuePrefix}.${suffix}`}>
+      <MenuItem className={classes.menuItem} dense value={`${valuePrefix}.${suffix}`}>
         {suffix}
       </MenuItem>
     );
@@ -120,13 +241,8 @@ const CustomQueryRow: FC<Props> = ({
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
           <MenuItem
-            dense
-            className={classes.menuItem}
+            className={clsx(classes.menuItem, classes.paddingLeft)}
             disabled={Array.isArray(field.type)}
-            style={{
-              background: 'rgba(0, 0, 0, 0.15)',
-              paddingLeft: 24,
-            }}
             key={`ido-${i}-field`}
             value={`${valuePrefix}.${suffix}.${item}`}>
             {item}
@@ -138,17 +254,16 @@ const CustomQueryRow: FC<Props> = ({
     return [itemTop, ...restItems];
   };
 
-  const getSubFields = (field: any) => {
+  const getSubFields = (field: any, comparisonField?: boolean) => {
     if (field?.type) {
       const keys = Object?.keys(field?.type);
 
       const itemTop = (
         <MenuItem
+          disabled
+          dense
           className={classes.menuItem}
-          style={{
-            fontWeight: 'bold',
-          }}
-          value={field.name}>
+          value={comparisonField ? 'Schema-' + field.name : field.name}>
           {field.name}
         </MenuItem>
       );
@@ -162,15 +277,11 @@ const CustomQueryRow: FC<Props> = ({
         ) {
           return (
             <MenuItem
-              dense
-              className={classes.menuItem}
-              disabled={Array.isArray(field.type)}
-              style={{
-                background: 'rgba(0, 0, 0, 0.05)',
-              }}
+              className={clsx(classes.menuItem, classes.paddingLeft)}
+              disabled={isSchemaIncompatible(comparisonField, `${field.name}.${item}`)}
               key={`idSec-${i}-field`}
-              value={`${field.name}.${item}`}>
-              {item}
+              value={getSchemaValue(comparisonField, `${field.name}.${item}`)}>
+              {getInnerSchemaName(comparisonField, `${field.name}.${item}`)}
             </MenuItem>
           );
         } else {
@@ -182,175 +293,135 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
-  const prepareOptions = () => {
+  const isOuterFieldArray = (fieldType: any) => {
+    if (isArray(fieldType)) {
+      return ' (Array)';
+    } else {
+      return ` (${fieldType})`;
+    }
+  };
+
+  const prepareOptions = (comparisonField?: boolean) => {
     return availableFieldsOfSchema.map((field: any, index: number) => {
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
-          <MenuItem className={classes.menuItem} key={`idxO-${index}-field`} value={field.name}>
-            {field.name}
+          <MenuItem
+            className={comparisonField ? classes.item : classes.schemaItem}
+            disabled={isSchemaIncompatible(comparisonField, `${field.name}`)}
+            key={`idxO-${index}-field`}
+            value={getSchemaValue(comparisonField, field.name)}>
+            {comparisonField ? field.name + isOuterFieldArray(field.type) : field.name}
           </MenuItem>
         );
       }
-
-      return getSubFields(field);
+      return getSubFields(field, comparisonField);
     });
-  };
-
-  const getCustomPlaceHolder = () => {
-    if (selectedType === 'number') {
-      return 'ex. 15';
-    }
-    return 'ex. John snow';
-  };
-
-  const inputCustomChange = (e: React.ChangeEvent<{ value: any }>, i: number) => {
-    let value = e.target.value;
-    if (selectedType === 'boolean') {
-      value = value !== 'false';
-    }
-    if (selectedType === 'number') {
-      value = parseInt(value);
-    }
-
-    handleCustomValueChange(value, i);
   };
 
   return (
     <>
       <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel>Field of schema</InputLabel>
-          <Select
-            fullWidth
-            disabled={!editMode}
-            value={query.schemaField}
-            onChange={(event) => {
-              handleQueryFieldChange(event, index);
-            }}
-            MenuProps={{
-              anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'left',
-              },
-              transformOrigin: {
-                vertical: 'top',
-                horizontal: 'left',
-              },
-              getContentAnchorEl: null,
-            }}>
-            <option aria-label="None" value="" />
-            {prepareOptions()}
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Schema Field'}
+          variant="outlined"
+          fullWidth
+          value={query.schemaField}
+          disabled={!editMode}
+          onChange={(event) => {
+            handleQueryFieldChange(event, index);
+          }}>
+          <MenuItem aria-label="None" value="" />
+          {prepareOptions()}
+        </TextField>
       </Grid>
       <Grid item xs={3}>
-        <FormControl fullWidth>
-          <InputLabel>Operator</InputLabel>
-          <Select
-            disabled={!editMode}
-            native
-            fullWidth
-            value={query.operation}
-            onChange={(event) => handleQueryConditionChange(event, index)}>
-            <option aria-label="None" value="" />
-            <option value={ConditionsEnum.EQUAL}>(==) equal to</option>
-            <option value={ConditionsEnum.NEQUAL}>(!=) not equal to</option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER}>
-              {'(>) greater than'}
-            </option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.GREATER_EQ}>
-              {'(>=) greater that or equal to'}
-            </option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.LESS}>
-              {'(<) less than'}
-            </option>
-            <option disabled={selectedType !== 'number'} value={ConditionsEnum.LESS_EQ}>
-              {'(<=) less that or equal to'}
-            </option>
-            <option disabled={selectedType !== 'array'} value={ConditionsEnum.EQUAL_SET}>
-              (in) equal to any of the following
-            </option>
-            <option disabled={selectedType !== 'array'} value={ConditionsEnum.NEQUAL_SET}>
-              (not-in) not equal to any of the following
-            </option>
-            <option disabled={selectedType !== 'array'} value={ConditionsEnum.CONTAIN}>
-              (array-contains) an array containing
-            </option>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label="Operator"
+          variant="outlined"
+          fullWidth
+          value={query.operation}
+          disabled={!editMode}
+          onChange={(event) => handleQueryConditionChange(event, index)}>
+          <MenuItem aria-label="None" value="-1" />
+          <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
+          <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER}>
+            {'(>) greater than'}
+          </MenuItem>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER_EQ}>
+            {'(>=) greater that or equal to'}
+          </MenuItem>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS}>
+            {'(<) less than'}
+          </MenuItem>
+          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS_EQ}>
+            {'(<=) less that or equal to'}
+          </MenuItem>
+          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.EQUAL_SET}>
+            (in) equal to any of the following
+          </MenuItem>
+          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.NEQUAL_SET}>
+            (not-in) not equal to any of the following
+          </MenuItem>
+          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.CONTAIN}>
+            (array-contains) an array containing
+          </MenuItem>
+        </TextField>
       </Grid>
       <Grid item xs={2}>
-        <FormControl fullWidth>
-          <InputLabel>Value</InputLabel>
-          <Select
-            fullWidth
-            disabled={!editMode}
-            native
-            value={
-              query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'
-                ? query.comparisonField.type
-                : query.comparisonField.type + '-' + query.comparisonField.value
-            }
-            onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
-            <option aria-label="None" value="" />
-            <optgroup label="System Values">
-              <option value={'Context'}>Add value from context</option>
-            </optgroup>
-            <optgroup label="Custom Value">
-              <option value={'Custom'}>Add a custom value</option>
-            </optgroup>
-            <optgroup label="Schema Fields">
-              {availableFieldsOfSchema.map((field: any, index: number) => (
-                <option key={`idxS-${index}-field`} value={'Schema-' + field.name}>
-                  {field.name}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="Input Fields">
-              {selectedInputs.map((input, index) => (
-                <option key={`idxF-${index}-input`} value={'Input-' + input.name}>
-                  {input.name}
-                </option>
-              ))}
-            </optgroup>
-          </Select>
-        </FormControl>
+        <TextField
+          select
+          label={'Value'}
+          variant="outlined"
+          fullWidth
+          value={
+            query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'
+              ? query.comparisonField.type
+              : query.comparisonField.type + '-' + query.comparisonField.value
+          }
+          disabled={!editMode}
+          onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
+          <MenuItem aria-label="None" value="-" />
+          <MenuItem disabled className={classes.group}>
+            System Values
+          </MenuItem>
+          <MenuItem className={classes.item} value={'Context'}>
+            Add a value from context
+          </MenuItem>
+          <MenuItem disabled className={classes.group}>
+            Custom Value
+          </MenuItem>
+          <MenuItem className={classes.item} value={'Custom'}>
+            Add a custom value
+          </MenuItem>
+          <MenuItem disabled className={classes.group}>
+            Schema Fields
+          </MenuItem>
+          {prepareOptions(true)}
+          <MenuItem disabled className={classes.group}>
+            Input Fields {!selectedInputs.length && '(none available)'}
+          </MenuItem>
+          {selectedInputs.map((input, index) => (
+            <MenuItem
+              disabled={isValueInputIncompatible(input.type)}
+              className={classes.item}
+              key={`idxF-${index}-input`}
+              value={'Input-' + input.name}>
+              {`${input.name} ${extractInputValueType(input.type)}`}
+            </MenuItem>
+          ))}
+        </TextField>
       </Grid>
       {query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context' ? (
         <Grid item xs={2}>
-          {selectedType === 'Boolean' ? (
-            <Select
-              disabled={!editMode}
-              value={query.comparisonField.value}
-              native
-              fullWidth
-              onChange={(event) => inputCustomChange(event, index)}>
-              <option />
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </Select>
-          ) : (
-            <TextField
-              type={selectedType?.toLowerCase()}
-              label={
-                query.comparisonField.type === 'Custom' ? 'Custom value' : 'Select from context'
-              }
-              variant={'filled'}
-              disabled={!editMode}
-              size={'small'}
-              fullWidth
-              placeholder={
-                query.comparisonField.type === 'Custom' ? getCustomPlaceHolder() : 'ex. user._id'
-              }
-              value={query.comparisonField.value}
-              onChange={(event) => inputCustomChange(event, index)}
-            />
-          )}
+          {extractCustomField()}
         </Grid>
       ) : (
         <Grid item xs={2} />
       )}
-      <Grid item xs={2}>
+      <Grid item className={classes.alignment} xs={2}>
         <FormControlLabel
           control={
             <Checkbox
@@ -365,7 +436,7 @@ const CustomQueryRow: FC<Props> = ({
           label="Like"
         />
       </Grid>
-      <Grid item xs={1}>
+      <Grid item className={classes.alignment} xs={1}>
         <IconButton disabled={!editMode} size="small" onClick={handleRemoveQuery}>
           <RemoveCircleOutlineIcon />
         </IconButton>

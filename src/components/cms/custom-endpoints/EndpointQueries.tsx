@@ -2,20 +2,21 @@ import React, { FC } from 'react';
 import CustomQueryRow from '../CustomQueryRow';
 import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
-import { Grid } from '@material-ui/core';
+import { Grid, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import { TreeView } from '@material-ui/lab';
-import MinusSquare from '../../../assets/svgs/MinusSquare';
-import PlusSquare from '../../../assets/svgs/PlusSquare';
-import CloseSquare from '../../../assets/svgs/CloseSquare';
 import { deepClone } from '../../../utils/deepClone';
+import { Add, Remove, Close } from '@material-ui/icons';
+import { v4 as uuidV4 } from 'uuid';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-});
+  queries: {
+    padding: theme.spacing(1.5),
+  },
+}));
 
 interface Props {
   editMode: boolean;
@@ -173,13 +174,14 @@ const EndpointQueries: FC<Props> = ({
       return (
         <Box key={node._id}>
           <StyledTreeItem
-            key={node._id}
-            nodeId={node._id}
+            key={node._id ? node._id : uuidV4()}
+            nodeId={node._id ? node._id : 'defaultNodeId'}
             onLabelClick={(e: any) => e.preventDefault()}
             label={
               <TreeItemContent
                 editMode={editMode}
                 operator={node.operator}
+                key={node._id}
                 handleAddQuery={() => handleAddQuery(node._id)}
                 handleAddNode={() => handleAddNode(node._id)}
                 handleRemoveNode={() => handleRemoveNode(node._id)}
@@ -196,14 +198,15 @@ const EndpointQueries: FC<Props> = ({
     if ('schemaField' in node) {
       return (
         <StyledTreeItem
-          key={node._id}
-          nodeId={node._id}
+          key={node._id ? node._id : uuidV4()}
+          nodeId={node._id ? node._id : 'defaultNodeId'}
           onLabelClick={(e: any) => e.preventDefault()}
           label={
             <Grid
               container
               alignItems={'flex-end'}
               spacing={2}
+              className={classes.queries}
               key={`query-${selectedSchema}-${node._id}`}>
               <CustomQueryRow
                 query={node}
@@ -226,12 +229,12 @@ const EndpointQueries: FC<Props> = ({
   };
 
   return (
-    <Box padding={5} width={'100%'}>
+    <Box padding={2} width={'100%'}>
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<MinusSquare />}
-        defaultExpandIcon={<PlusSquare />}
-        defaultEndIcon={<CloseSquare />}
+        defaultCollapseIcon={<Remove />}
+        defaultExpandIcon={<Add />}
+        defaultEndIcon={<Close />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}
         onNodeToggle={(e) => e.preventDefault()}>
         {selectedQueries.map((q: any) => renderItem(q))}

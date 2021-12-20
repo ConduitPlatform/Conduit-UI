@@ -1,13 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
-import {
-  asyncCreateCustomEndpoints,
-  asyncDeleteCustomEndpoints,
-  asyncGetCmsSchemas,
-  asyncGetCustomEndpoints,
-  asyncUpdateCustomEndpoints,
-} from '../../redux/slices/cmsSlice';
+import { asyncGetCmsSchemas } from '../../redux/slices/cmsSlice';
 
 import CustomQueries from '../../components/cms/custom-endpoints/CustomQueries';
 
@@ -15,33 +9,10 @@ const Custom = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50 }));
-    dispatch(asyncGetCustomEndpoints(''));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50, enabled: true }));
   }, [dispatch]);
 
-  const handleCreateCustomEndpoint = (data: any) => {
-    if (data) {
-      dispatch(asyncCreateCustomEndpoints(data));
-    }
-  };
-
-  const handleDeleteCustomEndpoint = (endpointId: string) => {
-    if (endpointId) {
-      dispatch(asyncDeleteCustomEndpoints(endpointId));
-    }
-  };
-
-  const handleEditCustomEndpoint = (_id: string, data: any) => {
-    dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
-  };
-
-  return (
-    <CustomQueries
-      handleCreate={handleCreateCustomEndpoint}
-      handleEdit={handleEditCustomEndpoint}
-      handleDelete={handleDeleteCustomEndpoint}
-    />
-  );
+  return <CustomQueries />;
 };
 
 Custom.getLayout = function getLayout(page: ReactElement) {

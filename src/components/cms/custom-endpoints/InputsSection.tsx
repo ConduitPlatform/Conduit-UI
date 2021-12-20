@@ -1,7 +1,7 @@
+import React, { FC } from 'react';
 import { Button, Divider, Grid, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import EndpointInputs from './EndpointInputs';
-import React, { FC } from 'react';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
@@ -126,7 +126,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
 
   return (
     <>
-      <Grid item xs={6} style={{ padding: '0 0 0 10px' }}>
+      <Grid item xs={6}>
         <Typography>
           <strong>Inputs</strong>
         </Typography>
@@ -135,11 +135,11 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         <Button
           disabled={!editMode || maxInputs()}
           variant="text"
-          color={'primary'}
+          color={'secondary'}
           className={classes.button}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddInput}>
-          Add another
+          Add input
         </Button>
       </Grid>
       <Grid item xs={12} style={{ padding: '0' }}>
@@ -147,13 +147,11 @@ const InputsSection: FC<Props> = ({ editMode }) => {
       </Grid>
       <EndpointInputs
         editMode={editMode}
+        operationType={endpoint && endpoint.operation}
         selectedInputs={endpoint.inputs}
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}
       />
-      <Grid item xs={12} style={{ padding: '0' }}>
-        <Divider />
-      </Grid>
     </>
   );
 };

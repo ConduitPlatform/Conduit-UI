@@ -1,6 +1,6 @@
 //TODO schemas, schemaDocuments, customEndpoints, config, schemaFields, queries
 //We need further testing
-import OperationsEnum from '../OperationsEnum';
+import { OperationsEnum } from '../OperationsEnum';
 
 export interface Schema {
   _id: string;
@@ -29,7 +29,7 @@ export interface EndpointTypes {
   _id: string;
   enabled: boolean;
   name: string;
-  operation: typeof OperationsEnum;
+  operation: OperationsEnum;
   selectedSchema: string;
   selectedSchemaName: string;
   returns: 'string';
