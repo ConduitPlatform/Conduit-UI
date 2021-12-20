@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     width: '30%',
     borderRadius: theme.spacing(2),
   },
+  iconOuterContainer: {
+    alignSelf: 'flex-end',
+  },
   iconContainer: {
     height: theme.spacing(4),
     width: theme.spacing(4),
@@ -70,11 +73,13 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
 
   return (
     <div className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
-      <Tooltip title={data.senderUser.email} placement="left">
-        <Box className={classes.iconContainer}>
-          <Typography className={classes.name}>{data.senderUser.email.charAt(0)}</Typography>
-        </Box>
-      </Tooltip>
+      <Box className={classes.iconOuterContainer}>
+        <Tooltip title={data.senderUser.email} placement="left">
+          <Box className={classes.iconContainer}>
+            <Typography className={classes.name}>{data.senderUser.email.charAt(0)}</Typography>
+          </Box>
+        </Tooltip>
+      </Box>
       <Tooltip
         title={`Sent: ${moment(data?.createdAt).format('MMM Do YYYY, h:mm:ss a')}`}
         placement="right">
