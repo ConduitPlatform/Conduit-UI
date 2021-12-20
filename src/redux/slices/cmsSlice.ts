@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   deleteCmsSchemasRequest,
+  getCmsDocumentByIdRequest,
   getCmsDocumentsByNameRequest,
   getCmsSchemasRequest,
   postCmsSchemaRequest,
@@ -11,20 +12,21 @@ import {
 } from '../../http/CmsRequests';
 import {
   createSchemaDocumentRequest,
-  editSchemaDocumentRequest,
   deleteSchemaDocumentRequest,
+  editSchemaDocumentRequest,
 } from '../../http/SchemasRequests';
 import {
-  getCustomEndpointsRequest,
   createCustomEndpointsRequest,
-  editCustomEndpointsRequest,
   deleteCustomEndpointsRequest,
+  editCustomEndpointsRequest,
+  getCustomEndpointsRequest,
 } from '../../http/CustomEndpointsRequests';
 import { EndpointTypes, Schema } from '../../models/cms/CmsModels';
 import { setAppDefaults, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
+import { set } from 'lodash';
 
 export enum EndpointActionsEnum {
   None,
@@ -230,13 +232,13 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
   }
 );
 
-export const asyncGetSchemaDocuments = createAsyncThunk<any, string>(
+export const asyncGetSchemaDocuments = createAsyncThunk(
   'cms/getDocs',
-  async (name, thunkAPI) => {
+  async (params: { name: string; skip: number; limit: number; query: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCmsDocumentsByNameRequest(name);
-      thunkAPI.dispatch(setAppDefaults());
+      const { data } = await getCmsDocumentsByNameRequest(params);
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -246,16 +248,25 @@ export const asyncGetSchemaDocuments = createAsyncThunk<any, string>(
   }
 );
 
-export const asyncGetMoreSchemaDocuments = createAsyncThunk<any, { name: string; skip: number }>(
-  'cms/getMoreDocs',
-  async (params, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
+export const asyncGetSchemaDocument = createAsyncThunk(
+  'cms/getDoc',
+  async (
+    params: {
+      schemaName: string;
+      id: string;
+      path: string[];
+      documentId: string;
+    },
+    thunkAPI
+  ) => {
     try {
-      const { data } = await getCmsDocumentsByNameRequest(params.name, params.skip, 20);
-      thunkAPI.dispatch(setAppDefaults());
-      return data;
+      const { data } = await getCmsDocumentByIdRequest(params);
+      return {
+        document: data,
+        path: params.path,
+        documentId: params.documentId,
+      };
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -263,33 +274,31 @@ export const asyncGetMoreSchemaDocuments = createAsyncThunk<any, { name: string;
 );
 
 const prepareDocumentField = (doc: any) => {
-  const field = { [doc.name]: null };
   if (doc.fields) {
-    doc.fields.forEach((subField: any) => {
-      const tempObj = field[doc.name];
-      const preppedFields = prepareDocumentField(subField);
-      field[doc.name] = Object.assign({ tempObj, ...preppedFields });
+    const fields: any = {};
+    doc.fields.forEach((field: any) => {
+      if (field.fields) {
+        const childFields = prepareDocumentField(field);
+        fields[field.name] = childFields[field.name];
+      } else {
+        fields[field.name] = field.value;
+      }
     });
-  } else {
-    field[doc.name] = doc.value;
+    return { [doc.name]: fields };
   }
-  return field;
+  return { [doc.name]: doc.value };
 };
 
 export const asyncCreateSchemaDocument = createAsyncThunk<
   any,
-  { schemaName: string; document: any }
+  { schemaName: string; document: any; getSchemaDocuments: () => void }
 >('cms/createDoc', async (params, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
-    const body = { schemaName: params.schemaName, inputDocument: {} };
-    params.document.forEach((d: any) => {
-      const field = prepareDocumentField(d);
-      body.inputDocument = { ...body.inputDocument, ...field };
-    });
+    const body = { schemaName: params.schemaName, inputDocument: params.document };
     await createSchemaDocumentRequest(params.schemaName, body);
-    thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
-    return;
+    thunkAPI.dispatch(setAppLoading(false));
+    params.getSchemaDocuments();
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
     thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -299,12 +308,13 @@ export const asyncCreateSchemaDocument = createAsyncThunk<
 
 export const asyncDeleteSchemaDocument = createAsyncThunk<
   any,
-  { schemaName: string; documentId: string }
+  { schemaName: string; documentId: string; getSchemaDocuments: () => void }
 >('cms/deleteDoc', async (params, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
     await deleteSchemaDocumentRequest(params.schemaName, params.documentId);
-    thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
+    params.getSchemaDocuments();
+    thunkAPI.dispatch(setAppLoading(false));
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
     thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -314,23 +324,23 @@ export const asyncDeleteSchemaDocument = createAsyncThunk<
 
 export const asyncEditSchemaDocument = createAsyncThunk(
   'cms/editDoc',
-  async (params: { schemaName: string; documentId: string; documentData: any }, thunkAPI) => {
+  async (
+    params: {
+      schemaName: string;
+      documentData: any;
+      getSchemaDocuments: () => void;
+    },
+    thunkAPI
+  ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const body = {
-        schemaName: params.schemaName,
-        id: params.documentId,
-        changedDocument: {},
-      };
-
-      params.documentData.forEach((d: any) => {
-        const field = prepareDocumentField(d);
-        body.changedDocument = { ...body.changedDocument, ...field };
-      });
-
-      await editSchemaDocumentRequest(params.schemaName, params.documentId, body);
-      thunkAPI.dispatch(asyncGetSchemaDocuments(params.schemaName));
-      return params.schemaName;
+      await editSchemaDocumentRequest(
+        params.schemaName,
+        params.documentData._id,
+        params.documentData
+      );
+      thunkAPI.dispatch(setAppLoading(false));
+      params.getSchemaDocuments();
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -381,6 +391,7 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk(
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Endpoint ${params.endpointData.name} edited! `)
       );
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -396,7 +407,7 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await deleteCustomEndpointsRequest(params._id);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Endpoint deleted! `));
       return params._id;
     } catch (error) {
@@ -442,7 +453,7 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Endpoint ${params.endpointData.name} created! `)
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -525,8 +536,12 @@ const cmsSlice = createSlice({
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
       state.data.documents = action.payload;
     });
-    builder.addCase(asyncGetMoreSchemaDocuments.fulfilled, (state, action) => {
-      state.data.documents.documents.push(...action.payload.documents);
+    builder.addCase(asyncGetSchemaDocument.fulfilled, (state, action) => {
+      const documentIndex = state.data.documents.documents.findIndex(
+        (document: any) => document._id === action.payload.documentId
+      );
+      const selectedDocument = state.data.documents.documents[documentIndex];
+      set(selectedDocument, action.payload.path, action.payload.document);
     });
     builder.addCase(asyncSetCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints.endpoints = action.payload.endpoints;

@@ -1,36 +1,27 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
-import { asyncGetCmsSchemas, asyncGetSchemaDocuments } from '../../redux/slices/cmsSlice';
+import { asyncGetCmsSchemas } from '../../redux/slices/cmsSlice';
 import { Schema } from '../../models/cms/CmsModels';
-import SchemaData from '../../components/cms/SchemaData';
+import SchemaData from '../../components/cms/schema-data/SchemaData';
 
 const SchemaDataPage = () => {
   const dispatch = useAppDispatch();
-  const data = useAppSelector((state) => state.cmsSlice.data);
+  const { schemas } = useAppSelector((state) => state.cmsSlice.data);
 
-  const handleSelectSchema = (name: string) => {
-    dispatch(asyncGetSchemaDocuments(name));
-  };
+  const [enabledSchemas, setEnabledSchemas] = useState<Schema[]>([]);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50 }));
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 200 }));
   }, [dispatch]);
 
-  const getActiveSchemas = () => {
-    if (!data || !data.schemas.schemaDocuments) {
-      return [];
-    }
-    return data.schemas.schemaDocuments.filter((s: Schema) => s.enabled);
-  };
+  useEffect(() => {
+    if (!schemas.schemaDocuments) return;
+    const localEnabledSchemas = schemas.schemaDocuments.filter((s: Schema) => s.enabled);
+    setEnabledSchemas(localEnabledSchemas);
+  }, [schemas]);
 
-  return (
-    data &&
-    data.schemas &&
-    data.schemas.schemaDocuments.length > 0 && (
-      <SchemaData schemas={getActiveSchemas()} handleSchemaChange={handleSelectSchema} />
-    )
-  );
+  return <SchemaData schemas={enabledSchemas} />;
 };
 
 SchemaDataPage.getLayout = function getLayout(page: ReactElement) {

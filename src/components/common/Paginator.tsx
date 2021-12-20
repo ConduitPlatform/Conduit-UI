@@ -1,8 +1,8 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid, { GridProps } from '@material-ui/core/Grid';
 import TablePagination from '@material-ui/core/TablePagination';
 
-interface Props {
+interface Props extends GridProps {
   page: number;
   limit: number;
   handlePageChange: (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => void;
@@ -16,9 +16,10 @@ const Paginator: React.FC<Props> = ({
   limit,
   handleLimitChange,
   count,
+  ...rest
 }) => {
   return (
-    <Grid container justifyContent="flex-end">
+    <Grid container justifyContent="flex-end" {...rest}>
       <TablePagination
         color="primary"
         rowsPerPageOptions={[10, 25, 50]}
