@@ -17,7 +17,9 @@ const SchemaDataPage = () => {
 
   useEffect(() => {
     if (!schemas.schemaDocuments) return;
-    const localEnabledSchemas = schemas.schemaDocuments.filter((s: Schema) => s.enabled);
+    const localEnabledSchemas = schemas.schemaDocuments.filter(
+      (s: Schema) => s.modelOptions.conduit.cms.enabled
+    );
     setEnabledSchemas(localEnabledSchemas);
   }, [schemas]);
 

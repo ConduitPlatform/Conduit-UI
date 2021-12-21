@@ -517,7 +517,8 @@ const cmsSlice = createSlice({
     builder.addCase(asyncToggleMultipleSchemas.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
         (schema) =>
-          schema.enabled !== action.payload.enabled && !action.payload.ids.includes(schema._id)
+          schema.modelOptions.conduit.cms.enabled !== action.payload.enabled &&
+          !action.payload.ids.includes(schema._id)
       );
       state.data.schemas.schemasCount = state.data.schemas.schemasCount - action.payload.ids.length;
     });
