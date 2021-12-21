@@ -12,6 +12,9 @@ const useStyles = makeStyles(() => ({
       color: '#262840',
     },
   },
+  button: {
+    width: '36px',
+  },
 }));
 
 interface Props {
@@ -53,14 +56,14 @@ const TreeItemContent: FC<Props> = ({
                 value="AND"
                 aria-label="left aligned"
                 color="primary"
-                classes={{ selected: classes.selected }}>
+                classes={{ selected: classes.selected, root: classes.button }}>
                 AND
               </ToggleButton>
               <ToggleButton
                 disabled={!editMode}
                 value="OR"
                 aria-label="centered"
-                classes={{ selected: classes.selected }}>
+                classes={{ selected: classes.selected, root: classes.button }}>
                 OR
               </ToggleButton>
             </ToggleButtonGroup>

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import CustomQueryRow from '../CustomQueryRow';
 import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
@@ -45,6 +45,8 @@ const EndpointQueries: FC<Props> = ({
 }) => {
   const classes = useStyles();
 
+  const [expanded, setExpanded] = useState<string[]>([]);
+
   const deconstructQueries = (queries: any) => {
     let allQueries: any = [];
     queries.forEach((query: any) => {
@@ -61,6 +63,10 @@ const EndpointQueries: FC<Props> = ({
   const findModifiedQuery = (allQueries: any, queryId: any) => {
     allQueries = deconstructQueries(allQueries);
     return allQueries.find((q: any) => q._id === queryId);
+  };
+
+  const handleToggle = (nodeIds: string[]) => {
+    setExpanded(nodeIds);
   };
 
   const handleQueryFieldChange = (event: React.ChangeEvent<{ value: any }>, queryId: string) => {
@@ -169,6 +175,13 @@ const EndpointQueries: FC<Props> = ({
     handleChangeNodeOperator(index, oldOperator, newOperator);
   };
 
+  const handleAdd = (nodeId: string) => {
+    handleAddQuery(nodeId);
+    if (expanded[0] !== nodeId) {
+      setExpanded([...expanded, nodeId]);
+    }
+  };
+
   const renderItem = (node: any) => {
     if ('operator' in node && node.queries) {
       return (
@@ -182,7 +195,7 @@ const EndpointQueries: FC<Props> = ({
                 editMode={editMode}
                 operator={node.operator}
                 key={node._id}
-                handleAddQuery={() => handleAddQuery(node._id)}
+                handleAddQuery={() => handleAdd(node._id)}
                 handleAddNode={() => handleAddNode(node._id)}
                 handleRemoveNode={() => handleRemoveNode(node._id)}
                 handleOperatorChange={(operator: any) =>
@@ -231,12 +244,13 @@ const EndpointQueries: FC<Props> = ({
   return (
     <Box padding={2} width={'100%'}>
       <TreeView
+        expanded={expanded}
         className={classes.root}
         defaultCollapseIcon={<Remove />}
         defaultExpandIcon={<Add />}
         defaultEndIcon={<Close />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}
-        onNodeToggle={(e) => e.preventDefault()}>
+        onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
         {selectedQueries.map((q: any) => renderItem(q))}
       </TreeView>
     </Box>
