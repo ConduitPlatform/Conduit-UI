@@ -14,10 +14,6 @@ export const deleteClientRequest = (_id: string) => {
   return axios.delete(`${CONDUIT_API}/admin/security/client/${_id}`);
 };
 
-export const putCoreRequest = (data: any) => {
-  return axios.put(`${CONDUIT_API}/config/core`, data);
-};
-
 export const getAdminModulesRequest = () => {
   return axios.get(`${CONDUIT_API}/admin/config/modules`);
 };

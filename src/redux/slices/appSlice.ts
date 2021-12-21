@@ -29,9 +29,6 @@ const appSlice = createSlice({
     setAppLoading: (state, action) => {
       state.loading = action.payload;
     },
-    setAppDefaults: (state) => {
-      state.loading = false;
-    },
     clearAppNotifications: (state) => {
       state.notifications = [];
     },
@@ -57,7 +54,7 @@ const appSlice = createSlice({
   },
 });
 
-export const { setAppLoading, setAppDefaults, addSnackbar, removeSnackbar, clearAppNotifications } =
+export const { setAppLoading, addSnackbar, removeSnackbar, clearAppNotifications } =
   appSlice.actions;
 
 export default appSlice.reducer;

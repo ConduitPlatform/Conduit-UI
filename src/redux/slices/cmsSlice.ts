@@ -22,7 +22,7 @@ import {
   getCustomEndpointsRequest,
 } from '../../http/CustomEndpointsRequests';
 import { EndpointTypes, Schema } from '../../models/cms/CmsModels';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
@@ -94,8 +94,7 @@ export const asyncGetCmsSchemas = createAsyncThunk(
       const {
         data: { results },
       } = await getCmsSchemasRequest(params);
-      thunkAPI.dispatch(setAppDefaults());
-
+      thunkAPI.dispatch(setAppLoading(false));
       return {
         results: results.schemas as Schema[],
         documentsCount: results.documentsCount as number,
@@ -116,7 +115,7 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
       const {
         data: { results },
       } = await getCmsSchemasRequest(params);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return {
         dialogResults: results.schemas as Schema[],
         dialogDocumentsCount: results.documentsCount as number,
@@ -136,7 +135,7 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
     try {
       const { data } = await postCmsSchemaRequest(dataForSchema);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created ${dataForSchema.name}`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data as Schema;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -152,7 +151,7 @@ export const asyncToggleSchema = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await toggleSchemaByIdRequest(_id);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return _id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -173,7 +172,7 @@ export const asyncToggleMultipleSchemas = createAsyncThunk(
           `Successfully ${!params.enabled ? 'archived' : 'enabled'} selected schemas`
         )
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return params;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -192,7 +191,7 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -214,8 +213,7 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
           enqueueSuccessNotification(`Successfully deleted schema with id: ${args.ids[0]}`)
         );
       }
-
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return args.ids;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -380,7 +378,7 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Endpoint ${params.endpointData.name} edited! `)
       );
@@ -461,7 +459,7 @@ export const asyncFetchSchemasFromOtherModules = createAsyncThunk<any, any>(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await schemasFromOtherModules();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

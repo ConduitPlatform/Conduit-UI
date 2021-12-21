@@ -18,7 +18,7 @@ import {
   SendEmailData,
   TransportProviders,
 } from '../../models/emails/EmailModels';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
@@ -86,10 +86,8 @@ export const asyncGetExternalTemplates = createAsyncThunk(
   async (params, thunkAPI) => {
     try {
       const { data } = await getExternalTemplatesRequest();
-      thunkAPI.dispatch(setAppDefaults());
       return data;
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -101,11 +99,9 @@ export const asyncUploadTemplate = createAsyncThunk(
   async (_id: string, thunkAPI) => {
     try {
       await uploadTemplateRequest(_id);
-      thunkAPI.dispatch(setAppDefaults());
       thunkAPI.dispatch(enqueueSuccessNotification('Email template was uploaded successfully!'));
       return _id;
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -125,7 +121,7 @@ export const asyncSaveEmailTemplateChanges = createAsyncThunk(
           `Successfully saved changes for the template ${dataForThunk.data.name}!`
         )
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return updateEmailData;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -144,7 +140,7 @@ export const asyncCreateNewEmailTemplate = createAsyncThunk(
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully created template ${newEmailData.name}!`)
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -161,7 +157,7 @@ export const asyncSyncTemplates = createAsyncThunk(
     try {
       await syncExternalTemplates();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully synced templates!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -178,7 +174,7 @@ export const asyncDeleteTemplates = createAsyncThunk(
       await deleteEmailTemplateRequest(params.ids);
       params.getTemplates();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted templates!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -194,7 +190,7 @@ export const asyncGetEmailSettings = createAsyncThunk(
       const {
         data: { config },
       } = await getEmailSettingsRequest();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -212,7 +208,7 @@ export const asyncUpdateEmailSettings = createAsyncThunk(
       const {
         data: { config },
       } = await putEmailSettingsRequest(updatedSettings);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -228,7 +224,7 @@ export const asyncSendEmail = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await sendEmailRequest(dataToSend);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
