@@ -36,7 +36,7 @@ export const getModuleIcon = (moduleName: string) => {
       return <FormatAlignLeft color={'inherit'} />;
     case 'payments':
       return <Payment color={'inherit'} />;
-    case 'database-provider':
+    case 'database':
       return <FilterDrama color={'inherit'} />;
     default:
       return <ViewModule color={'inherit'} />;

@@ -11,10 +11,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const DatabaseProvider: React.FC = () => {
+const Database: React.FC = () => {
   const classes = useStyles();
 
   return <Box className={classes.root}>Coming not so soon</Box>;
 };
 
-export default DatabaseProvider;
+export default Database;

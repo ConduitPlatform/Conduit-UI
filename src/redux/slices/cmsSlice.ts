@@ -28,13 +28,6 @@ import { enqueueErrorNotification, enqueueSuccessNotification } from '../../util
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 
-export enum EndpointActionsEnum {
-  None,
-  Create,
-  Update,
-  Delete,
-}
-
 export interface ICmsSlice {
   data: {
     schemas: {
