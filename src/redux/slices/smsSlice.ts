@@ -58,7 +58,7 @@ export const asyncGetSmsConfig = createAsyncThunk('sms/getConfig', async (arg, t
 });
 
 export const asyncPutSmsConfig = createAsyncThunk(
-  'sms/getConfig',
+  'sms/putConfig',
   async (params: ISmsConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
