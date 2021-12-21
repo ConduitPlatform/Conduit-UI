@@ -1,8 +1,4 @@
 import React, { ReactElement, useEffect } from 'react';
-import {
-  asyncGetAuthenticationConfig,
-  asyncUpdateAuthenticationConfig,
-} from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormsSettings from '../../components/forms/FormsSettings';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
