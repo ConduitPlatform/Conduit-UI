@@ -42,7 +42,7 @@ interface IPaymentsSlice {
       count: number;
     };
     subscriptionData: { subscriptions: Subscription[]; count: number };
-    settings: PaymentSettings;
+    config: PaymentSettings;
   };
 }
 
@@ -64,7 +64,7 @@ const initialState: IPaymentsSlice = {
       subscriptions: [],
       count: 0,
     },
-    settings: {
+    config: {
       active: false,
       stripe: {
         enabled: false,
@@ -351,10 +351,10 @@ const paymentsSlice = createSlice({
       state.data.subscriptionData.count = action.payload.totalCount;
     });
     builder.addCase(asyncGetPaymentSettings.fulfilled, (state, action) => {
-      state.data.settings = action.payload;
+      state.data.config = action.payload;
     });
     builder.addCase(asyncUpdatePaymentSettings.fulfilled, (state, action) => {
-      state.data.settings = action.payload;
+      state.data.config = action.payload;
     });
   },
 });

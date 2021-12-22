@@ -8,7 +8,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
     '/payments/products',
     '/payments/transactions',
     '/payments/subscriptions',
-    '/payments/settings',
+    '/payments/config',
   ];
 
   const labels = [
@@ -16,7 +16,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
     { name: 'products', id: 'products' },
     { name: 'transactions', id: 'transactions' },
     { name: 'subscriptions', id: 'subscriptions' },
-    { name: 'settings', id: 'settings' },
+    { name: 'config', id: 'config' },
   ];
 
   return (
