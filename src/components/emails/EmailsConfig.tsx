@@ -12,7 +12,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-  EmailConfig,
+  EmailConfig as IEmailConfig,
   ITransportSettings,
   MailgunSettings,
   MandrillSettings,
@@ -94,11 +94,11 @@ const EmailConfig: React.FC = () => {
       },
     },
   };
-  const [settingsState, setSettingsState] = useState<EmailConfig>(initialSettingsState);
+  const [settingsState, setSettingsState] = useState<IEmailConfig>(initialSettingsState);
 
   const initializeSettings = useCallback(
     (prevState) => {
-      let settingsObj: EmailConfig = { ...prevState };
+      let settingsObj: IEmailConfig = { ...prevState };
 
       transportProviders.forEach((provider) => {
         const providerSettings:
@@ -153,11 +153,11 @@ const EmailConfig: React.FC = () => {
         newTransportSettings = { ...newTransportSettings, [k]: null };
       }
     });
-    const newSettings: EmailConfig = {
+    const emailConfig: IEmailConfig = {
       ...settingsState,
       transportSettings: newTransportSettings,
     };
-    dispatch(asyncUpdateEmailConfig(newSettings));
+    dispatch(asyncUpdateEmailConfig(emailConfig));
     setOpenSaveDialog(false);
   };
 

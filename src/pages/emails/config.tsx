@@ -1,14 +1,14 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import EmailsLayout from '../../components/navigation/InnerLayouts/emailsLayout';
-import { asyncGetEmailSettings } from '../../redux/slices/emailsSlice';
+import { asyncGetEmailConfig } from '../../redux/slices/emailsSlice';
 import EmailConfig from '../../components/emails/EmailsConfig';
 
 const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetEmailSettings());
+    dispatch(asyncGetEmailConfig());
   }, [dispatch]);
 
   return <EmailConfig />;

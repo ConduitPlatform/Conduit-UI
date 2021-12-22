@@ -4,7 +4,7 @@ import { useAppDispatch } from '../../redux/store';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
 import AuthConfig from '../../components/authentication/AuthConfig';
 
-const Settings = () => {
+const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -14,8 +14,8 @@ const Settings = () => {
   return <AuthConfig />;
 };
 
-Settings.getLayout = function getLayout(page: ReactElement) {
+Config.getLayout = function getLayout(page: ReactElement) {
   return <AuthenticationLayout>{page}</AuthenticationLayout>;
 };
 
-export default Settings;
+export default Config;

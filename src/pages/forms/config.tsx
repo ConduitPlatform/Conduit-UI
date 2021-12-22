@@ -4,7 +4,7 @@ import FormsConfig from '../../components/forms/FormsConfig';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
 import { asyncGetFormsConfig } from '../../redux/slices/formsSlice';
 
-const Settings = () => {
+const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -14,8 +14,8 @@ const Settings = () => {
   return <FormsConfig />;
 };
 
-Settings.getLayout = function getLayout(page: ReactElement) {
+Config.getLayout = function getLayout(page: ReactElement) {
   return <FormsLayout>{page}</FormsLayout>;
 };
 
-export default Settings;
+export default Config;

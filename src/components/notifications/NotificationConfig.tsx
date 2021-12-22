@@ -92,7 +92,7 @@ const NotificationConfig: FC = () => {
 
   const onSubmit = (data: INotificationConfig) => {
     setEdit(false);
-    const config = {
+    const configToSave = {
       active: data.active,
       providerName: data.providerName,
       firebase: {
@@ -102,7 +102,7 @@ const NotificationConfig: FC = () => {
       },
     };
 
-    dispatch(asyncSaveNotificationConfig(config));
+    dispatch(asyncSaveNotificationConfig(configToSave));
   };
 
   const handleFileChange = (file: File) => {

@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import { FormsConfig } from '../../models/forms/FormsModels';
+import { FormsConfig as IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
@@ -40,7 +40,7 @@ const FormsConfig: React.FC = () => {
   const [edit, setEdit] = useState<boolean>(false);
   const { config: formsConfig } = useAppSelector((state) => state.formsSlice.data);
 
-  const methods = useForm<FormsConfig>({
+  const methods = useForm<IFormsConfig>({
     defaultValues: useMemo(() => {
       return formsConfig;
     }, [formsConfig]),
@@ -65,7 +65,7 @@ const FormsConfig: React.FC = () => {
     setEdit(true);
   };
 
-  const onSubmit = (data: FormsConfig) => {
+  const onSubmit = (data: IFormsConfig) => {
     setEdit(false);
     const config = {
       ...formsConfig,

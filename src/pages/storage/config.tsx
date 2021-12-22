@@ -5,7 +5,7 @@ import StorageConfig from '../../components/storage/StorageConfig';
 import { asyncGetStorageConfig } from '../../redux/slices/storageSlice';
 import { useAppDispatch } from '../../redux/store';
 
-const Files = () => {
+const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -15,8 +15,8 @@ const Files = () => {
   return <StorageConfig />;
 };
 
-Files.getLayout = function getLayout(page: ReactElement) {
+Config.getLayout = function getLayout(page: ReactElement) {
   return <StorageLayout>{page}</StorageLayout>;
 };
 
-export default Files;
+export default Config;

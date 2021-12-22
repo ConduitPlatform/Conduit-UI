@@ -4,7 +4,7 @@ import NotificationConfig from '../../components/notifications/NotificationConfi
 import { asyncGetNotificationConfig } from '../../redux/slices/notificationsSlice';
 import { useAppDispatch } from '../../redux/store';
 
-const Settings = () => {
+const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -14,8 +14,8 @@ const Settings = () => {
   return <NotificationConfig />;
 };
 
-Settings.getLayout = function getLayout(page: ReactElement) {
+Config.getLayout = function getLayout(page: ReactElement) {
   return <NotificationLayout>{page}</NotificationLayout>;
 };
 
-export default Settings;
+export default Config;
