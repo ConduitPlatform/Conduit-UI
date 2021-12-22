@@ -320,7 +320,7 @@ export const asyncDeleteStorageContainer = createAsyncThunk(
 //       };
 //       const { data } = await updateStorageFile(fileData);
 //       thunkAPI.dispatch(enqueueSuccessNotification('Successfully updated file!'));
-//       thunkAPI.dispatch(setAppDefaults());
+//       thunkAPI.dispatch(setAppLoading(false));
 //       return data;
 //     } catch (error) {
 //       thunkAPI.dispatch(setAppLoading(false));

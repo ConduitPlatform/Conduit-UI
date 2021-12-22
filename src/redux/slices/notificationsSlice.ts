@@ -8,7 +8,7 @@ import {
   getNotificationConfig,
   putNotificationConfig,
 } from '../../http/NotificationsRequests';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 
@@ -40,7 +40,7 @@ export const asyncSendNewNotification = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await sendNotification(data);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -58,7 +58,7 @@ export const asyncGetNotificationConfig = createAsyncThunk(
       const {
         data: { config },
       } = await getNotificationConfig();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -76,7 +76,7 @@ export const asyncSaveNotificationConfig = createAsyncThunk(
       const {
         data: { config },
       } = await putNotificationConfig(settings);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

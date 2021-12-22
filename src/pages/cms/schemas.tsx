@@ -119,7 +119,6 @@ const Schemas = () => {
         limit,
         search: debouncedSearch,
         sort: prepareSort(sort),
-        enabled: enabled,
       })
     );
   }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
@@ -290,8 +289,8 @@ const Schemas = () => {
       return schemasToFormat.map((d) => ({
         _id: d._id,
         name: d.name,
-        authentication: d.authentication,
-        crudOperations: d.crudOperations,
+        authentication: d.modelOptions.conduit.cms.authentication,
+        crudOperations: d.modelOptions.conduit.cms.crudOperations,
         createdAt: d.createdAt,
         updatedAt: d.updatedAt,
       }));

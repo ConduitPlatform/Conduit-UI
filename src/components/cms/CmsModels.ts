@@ -3,6 +3,12 @@ export interface SchemaUI {
   name: string;
   updatedAt: string;
   _id: string;
-  authentication: boolean;
-  crudOperations: boolean;
+  modelOptions: {
+    conduit: {
+      cms: {
+        authentication: boolean;
+        crudOperations: boolean;
+      };
+    };
+  };
 }

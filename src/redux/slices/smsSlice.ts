@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { sendSmsRequest } from '../../http/SmsRequests';
+import { getSmsConfig, putSmsConfig, sendSmsRequest } from '../../http/SmsRequests';
 import { ISmsConfig, ISmsProviders } from '../../models/sms/SmsModels';
 
 interface ISmsSlice {
@@ -33,7 +33,7 @@ export const asyncSendSms = createAsyncThunk('sms/sendSms', async (arg, thunkAPI
   thunkAPI.dispatch(setAppLoading(true));
   try {
     const { data } = await sendSmsRequest();
-    thunkAPI.dispatch(setAppDefaults());
+    thunkAPI.dispatch(setAppLoading(false));
     return data;
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
@@ -41,6 +41,37 @@ export const asyncSendSms = createAsyncThunk('sms/sendSms', async (arg, thunkAPI
     throw error;
   }
 });
+
+export const asyncGetSmsConfig = createAsyncThunk('sms/getConfig', async (arg, thunkAPI) => {
+  thunkAPI.dispatch(setAppLoading(true));
+  try {
+    const {
+      data: { config },
+    } = await getSmsConfig();
+    thunkAPI.dispatch(setAppLoading(false));
+    return config;
+  } catch (error) {
+    thunkAPI.dispatch(setAppLoading(false));
+    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+    throw error;
+  }
+});
+
+export const asyncPutSmsConfig = createAsyncThunk(
+  'sms/putConfig',
+  async (params: ISmsConfig, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await putSmsConfig(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      // return config;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
 
 const smsSlice = createSlice({
   name: 'sms',
@@ -51,8 +82,8 @@ const smsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(asyncSendSms.fulfilled, (state, action) => {
-      //do something
+    builder.addCase(asyncGetSmsConfig.fulfilled, (state, action) => {
+      state.data.config = action.payload;
     });
   },
 });

@@ -111,16 +111,16 @@ const BuildTypes: React.FC = () => {
     if (data && data.selectedSchema) {
       setSchemaName(data.selectedSchema.name);
       if (
-        data.selectedSchema.authentication !== null &&
-        data.selectedSchema.authentication !== undefined
+        data.selectedSchema.modelOptions.conduit.cms.authentication !== null &&
+        data.selectedSchema.modelOptions.conduit.cms.authentication !== undefined
       ) {
-        setAuthentication(data.selectedSchema.authentication);
+        setAuthentication(data.selectedSchema.modelOptions.conduit.cms.authentication);
       }
       if (
-        data.selectedSchema.crudOperations !== null &&
-        data.selectedSchema.crudOperations !== undefined
+        data.selectedSchema.modelOptions.conduit.cms.crudOperations !== null &&
+        data.selectedSchema.modelOptions.conduit.cms.crudOperations !== undefined
       ) {
-        setCrudOperations(data.selectedSchema.crudOperations);
+        setCrudOperations(data.selectedSchema.modelOptions.conduit.cms.crudOperations);
       }
       const formattedFields = getSchemaFieldsWithExtra(data.selectedSchema.fields);
       setSchemaFields({ newTypeFields: formattedFields });

@@ -11,7 +11,7 @@ import {
   putAuthenticationConfig,
   unblockUser,
 } from '../../http/AuthenticationRequests';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
@@ -75,10 +75,8 @@ export const asyncGetAuthUserData = createAsyncThunk(
   async (params: Pagination & Search & { provider: string }, thunkAPI) => {
     try {
       const { data } = await getAuthUsersDataReq(params);
-      thunkAPI.dispatch(setAppDefaults());
       return data;
     } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -96,7 +94,7 @@ export const asyncAddNewUser = createAsyncThunk(
       await createNewUsers(params.values);
       params.getUsers();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully added ${params.values.email}!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -112,7 +110,7 @@ export const asyncEditUser = createAsyncThunk(
     try {
       await editUser(values);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully edited user ${values.email}!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return values;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -128,7 +126,7 @@ export const asyncBlockUserUI = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await blockUser(id);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -144,7 +142,7 @@ export const asyncBlockUnblockUsers = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await blockUnblockUsers(params.body);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       params.getUsers();
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -160,7 +158,7 @@ export const asyncUnblockUserUI = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await unblockUser(id);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -178,7 +176,7 @@ export const asyncDeleteUsers = createAsyncThunk(
       await deleteUsers(params.ids);
       params.getUsers();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted users!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -195,7 +193,7 @@ export const asyncGetAuthenticationConfig = createAsyncThunk(
       const {
         data: { config },
       } = await getAuthenticationConfig();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -213,7 +211,7 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
       const {
         data: { config },
       } = await putAuthenticationConfig(body);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

@@ -94,7 +94,7 @@ const RelationForm: FC<IProps> = ({
 
   useEffect(() => {
     const systemModules = schemasFromOtherModules.map((s) => ({ ...s, enabled: true }));
-    let activeModules = schemaDocuments.filter((s) => s.enabled);
+    let activeModules = schemaDocuments.filter((s) => s.modelOptions.conduit.cms.enabled);
     if (selectedSchema) {
       activeModules = schemaDocuments.filter((s) => s.name !== selectedSchema.name);
     }
