@@ -13,7 +13,9 @@ const useStyles = makeStyles(() => ({
     },
   },
   button: {
-    width: '36px',
+    width: '52px',
+    height: '35px',
+    fontWeight: 'bold',
   },
 }));
 
