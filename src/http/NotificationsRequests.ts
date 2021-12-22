@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { CONDUIT_API } from './requestsConfig';
-import {
-  INotificationSettings,
-  NotificationData,
-} from '../models/notifications/NotificationModels';
+import { INotificationConfig, NotificationData } from '../models/notifications/NotificationModels';
 
 export const sendNotification = (data: NotificationData) =>
   axios.post(`${CONDUIT_API}/admin/pushNotifications/sendToManyDevices`, {
@@ -13,7 +10,7 @@ export const sendNotification = (data: NotificationData) =>
 export const getNotificationConfig = () =>
   axios.get(`${CONDUIT_API}/admin/config/pushNotifications`);
 
-export const putNotificationConfig = (data: INotificationSettings) =>
+export const putNotificationConfig = (data: INotificationConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/pushNotifications`, {
     config: { ...data },
   });

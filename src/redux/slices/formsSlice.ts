@@ -11,7 +11,7 @@ import {
   updateForm,
   updateFormsConfig,
 } from '../../http/FormsRequests';
-import { FormReplies, FormSettingsConfig, FormsModel } from '../../models/forms/FormsModels';
+import { FormReplies, FormsConfig, FormsModel } from '../../models/forms/FormsModels';
 import { Pagination, Search } from '../../models/http/HttpModels';
 
 export type FormsState = {
@@ -19,7 +19,7 @@ export type FormsState = {
     forms: FormsModel[];
     count: number;
     replies: FormReplies[];
-    config: FormSettingsConfig;
+    config: FormsConfig;
   };
 };
 
@@ -145,7 +145,7 @@ export const asyncGetFormsConfig = createAsyncThunk('formsConfig/get', async (ar
 
 export const asyncEditFormsConfig = createAsyncThunk(
   'formsConfig/edit',
-  async (config: FormSettingsConfig, thunkAPI) => {
+  async (config: FormsConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await updateFormsConfig(config);
