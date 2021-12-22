@@ -1,43 +1,45 @@
-import { Container, makeStyles } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, FormProvider, useWatch } from 'react-hook-form';
-import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { Container } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import { SettingsStateTypes, SignInMethods } from '../../models/authentication/AuthModels';
-import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { FormInputText } from '../common/FormComponents/FormInputText';
-import { camelCase, startCase } from 'lodash';
+import { IChatConfig } from '../../models/chat/ChatModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
+import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     color: theme.palette.text.secondary,
+  },
+  innerGrid: {
+    paddingLeft: theme.spacing(4),
   },
   divider: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
     width: '100%',
   },
-  innerGrid: {
-    padding: theme.spacing(3),
-  },
 }));
 
-const AuthConfig: React.FC = () => {
-  const dispatch = useAppDispatch();
+const ChatConfig: React.FC = () => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
-  const { signInMethods: config } = useAppSelector((state) => state.authenticationSlice.data);
+
+  const { config } = useAppSelector((state) => state.chatSlice);
+
   console.log(config);
-  const methods = useForm<SignInMethods>({
+
+  const methods = useForm<IChatConfig>({
     defaultValues: useMemo(() => {
-      return config;
+      return { config };
     }, [config]),
   });
 
@@ -57,63 +59,54 @@ const AuthConfig: React.FC = () => {
     methods.reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
-  const onSubmit = (data: SignInMethods) => {
+  const onSubmit = (data: IChatConfig) => {
     setEdit(false);
-    const body = {
-      ...config,
-      ...data,
+    console.log(data);
+    const datafor = {
+      active: false,
+      allowMessageEdit: false,
+      allowMessageDelete: false,
     };
-    dispatch(asyncUpdateAuthenticationConfig(body));
-  };
 
-  const inputFields = [
-    'rateLimit',
-    'tokenInvalidationPeriod',
-    'refreshTokenInvalidationPeriod',
-    'jwtSecret',
-  ];
+    dispatch(asyncPutChatConfig(datafor));
+  };
 
   return (
-    <Container maxWidth="md">
+    <Container>
       <Paper className={classes.paper}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
-            <Grid container spacing={3}>
+            <Grid container>
               <Box
                 width={'100%'}
                 display={'inline-flex'}
                 justifyContent={'space-between'}
                 alignItems={'center'}>
-                <Typography variant={'h6'}>Activate Authentication Module</Typography>
+                <Typography variant={'h6'}>Activate Chat Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
               <Divider className={classes.divider} />
               <Grid container spacing={2} className={classes.innerGrid}>
                 {isActive && (
                   <>
-                    {inputFields.map((field, index) => (
-                      <Grid key={index} item xs={6}>
-                        <FormInputText
-                          name={field}
-                          label={startCase(camelCase(field))}
-                          disabled={!edit}
-                        />
-                      </Grid>
-                    ))}
                     <Grid item xs={6}>
                       <Box
                         width={'100%'}
                         display={'inline-flex'}
                         justifyContent={'space-between'}
                         alignItems={'center'}>
-                        <Typography variant={'subtitle1'}>
-                          Allow Refresh Token generation
-                        </Typography>
-                        <FormInputSwitch name={'generateRefreshToken'} disabled={!edit} />
+                        <Typography variant={'subtitle1'}>Allow Message Edit</Typography>
+                        <FormInputSwitch name={'allowMessageEdit'} disabled={!edit} />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box
+                        width={'100%'}
+                        display={'inline-flex'}
+                        justifyContent={'space-between'}
+                        alignItems={'center'}>
+                        <Typography variant={'subtitle1'}>Allow Message Delete</Typography>
+                        <FormInputSwitch name={'allowMessageDelete'} disabled={!edit} />
                       </Box>
                     </Grid>
                   </>
@@ -139,7 +132,7 @@ const AuthConfig: React.FC = () => {
               {!edit && (
                 <Grid item container xs={12} justifyContent={'flex-end'}>
                   <Button
-                    onClick={() => handleEditClick()}
+                    onClick={() => setEdit(true)}
                     style={{ marginRight: 16 }}
                     color={'primary'}>
                     Edit
@@ -154,4 +147,4 @@ const AuthConfig: React.FC = () => {
   );
 };
 
-export default AuthConfig;
+export default ChatConfig;
