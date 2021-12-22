@@ -4,7 +4,7 @@ export interface NotificationData {
   body: string;
 }
 
-export interface INotificationSettings {
+export interface INotificationConfig {
   active: boolean;
   providerName: string;
   firebase: FirebaseSettings;

@@ -20,7 +20,7 @@ import {
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import {
   Customer,
-  PaymentSettings,
+  PaymentsConfig,
   Product,
   Subscription,
   Transaction,
@@ -42,7 +42,7 @@ interface IPaymentsSlice {
       count: number;
     };
     subscriptionData: { subscriptions: Subscription[]; count: number };
-    config: PaymentSettings;
+    config: PaymentsConfig;
   };
 }
 

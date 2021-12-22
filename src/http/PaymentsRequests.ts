@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Customer, PaymentSettings, Product } from '../models/payments/PaymentsModels';
+import { Customer, PaymentsConfig, Product } from '../models/payments/PaymentsModels';
 import { CONDUIT_API } from './requestsConfig';
 
 export interface IRequest {
@@ -53,5 +53,5 @@ export const getSubscriptionsRequest = (params: IRequest) =>
 
 export const getPaymentSettingsRequest = () => axios.get(`${CONDUIT_API}/admin/config/payments`);
 
-export const putPaymentSettingsRequest = (data: PaymentSettings) =>
+export const putPaymentSettingsRequest = (data: PaymentsConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/payments`, { config: { ...data } });
