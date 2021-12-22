@@ -7,7 +7,7 @@ export interface Schema {
   modelOptions: {
     conduit: {
       cms: {
-        enabled?: boolean;
+        enabled: boolean;
         authentication: boolean;
         crudOperations: boolean;
       };
