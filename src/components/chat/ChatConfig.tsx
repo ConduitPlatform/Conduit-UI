@@ -6,12 +6,12 @@ import { Container } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import { IChatConfig } from '../../models/chat/ChatModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -103,33 +103,7 @@ const ChatConfig: React.FC = () => {
                   </>
                 )}
               </Grid>
-              {edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    style={{ marginRight: 16 }}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ alignSelf: 'flex-end' }}
-                    type="submit">
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => setEdit(true)}
-                    style={{ marginRight: 16 }}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>

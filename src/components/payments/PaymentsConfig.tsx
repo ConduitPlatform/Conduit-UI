@@ -7,11 +7,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdatePaymentSettings } from '../../redux/slices/paymentsSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -70,10 +70,6 @@ const PaymentsConfig: React.FC = () => {
     reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
   const onSubmit = (dataToSubmit: FormProps) => {
     const data = {
       active: dataToSubmit.active,
@@ -130,33 +126,7 @@ const PaymentsConfig: React.FC = () => {
                   </>
                 )}
               </Grid>
-              {edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    style={{ marginRight: 16 }}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ alignSelf: 'flex-end' }}
-                    type="submit">
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleEditClick()}
-                    style={{ marginRight: 16 }}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>
