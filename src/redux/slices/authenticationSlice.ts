@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AuthUser, SignInMethods } from '../../models/authentication/AuthModels';
+import { AuthUser, AuthenticationConfig } from '../../models/authentication/AuthModels';
 import {
   blockUnblockUsers,
   blockUser,
@@ -22,7 +22,7 @@ interface IAuthenticationSlice {
       users: AuthUser[];
       count: number;
     };
-    signInMethods: SignInMethods;
+    config: AuthenticationConfig;
   };
 }
 
@@ -32,7 +32,7 @@ const initialState: IAuthenticationSlice = {
       users: [],
       count: 0,
     },
-    signInMethods: {
+    config: {
       active: false,
       facebook: {
         enabled: false,
@@ -255,10 +255,10 @@ const authenticationSlice = createSlice({
       }
     });
     builder.addCase(asyncGetAuthenticationConfig.fulfilled, (state, action) => {
-      state.data.signInMethods = action.payload;
+      state.data.config = action.payload;
     });
     builder.addCase(asyncUpdateAuthenticationConfig.fulfilled, (state, action) => {
-      state.data.signInMethods = action.payload;
+      state.data.config = action.payload;
     });
   },
 });

@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import { SignInMethods } from '../../models/authentication/AuthModels';
+import { AuthenticationConfig } from '../../models/authentication/AuthModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';
@@ -33,8 +33,8 @@ const AuthConfig: React.FC = () => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
   const [edit, setEdit] = useState<boolean>(false);
-  const { signInMethods: config } = useAppSelector((state) => state.authenticationSlice.data);
-  const methods = useForm<SignInMethods>({
+  const { config } = useAppSelector((state) => state.authenticationSlice.data);
+  const methods = useForm<AuthenticationConfig>({
     defaultValues: useMemo(() => {
       return config;
     }, [config]),
@@ -60,7 +60,7 @@ const AuthConfig: React.FC = () => {
     setEdit(true);
   };
 
-  const onSubmit = (data: SignInMethods) => {
+  const onSubmit = (data: AuthenticationConfig) => {
     setEdit(false);
     const body = {
       ...config,
