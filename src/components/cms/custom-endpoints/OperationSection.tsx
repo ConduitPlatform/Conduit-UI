@@ -142,9 +142,9 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
-      authentication: d.authentication,
-      crudOperations: d.crudOperations,
-      enabled: d.enabled,
+      authentication: d.modelOptions.conduit.cms.authentication,
+      crudOperations: d.modelOptions.conduit.cms.crudOperations,
+      enabled: d.modelOptions.conduit.cms.enabled,
       createdAt: d.createdAt,
       updatedAt: d.updatedAt,
     }));

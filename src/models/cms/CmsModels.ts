@@ -4,9 +4,15 @@ import { OperationsEnum } from '../OperationsEnum';
 
 export interface Schema {
   _id: string;
-  enabled?: boolean;
-  authentication: boolean;
-  crudOperations: boolean;
+  modelOptions: {
+    conduit: {
+      cms: {
+        enabled: boolean;
+        authentication: boolean;
+        crudOperations: boolean;
+      };
+    };
+  };
   name: string;
   fields: SchemaFields[];
   createdAt: string;
