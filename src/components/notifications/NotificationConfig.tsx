@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Container, Grid, Paper, Typography } from '@material-ui/core';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import { Edit, Save, SettingsOutlined } from '@material-ui/icons';
+import { SettingsOutlined } from '@material-ui/icons';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -12,6 +12,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -84,10 +85,6 @@ const NotificationConfig: FC = () => {
   const handleCancel = () => {
     setEdit(!edit);
     reset();
-  };
-
-  const handleEditClick = () => {
-    setEdit(true);
   };
 
   const onSubmit = (data: INotificationConfig) => {
@@ -164,7 +161,6 @@ const NotificationConfig: FC = () => {
                         }))}
                       />
                     </Grid>
-
                     {hasProvider && (
                       <>
                         <Grid item xs={12}>
@@ -209,34 +205,7 @@ const NotificationConfig: FC = () => {
                 )}
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
-                {edit && (
-                  <>
-                    <Button
-                      variant="outlined"
-                      className={classes.buttonSpacing}
-                      onClick={() => handleCancel()}
-                      color="primary">
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      className={classes.buttonSpacing}
-                      color="primary"
-                      startIcon={<Save />}>
-                      Save
-                    </Button>
-                  </>
-                )}
-                {!edit && (
-                  <Button
-                    className={classes.buttonSpacing}
-                    onClick={() => handleEditClick()}
-                    color="primary"
-                    startIcon={<Edit />}>
-                    Edit
-                  </Button>
-                )}
+                <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
               </Grid>
             </Grid>
           </form>
