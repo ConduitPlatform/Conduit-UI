@@ -3,10 +3,10 @@ import { Toc } from '@material-ui/icons';
 import SharedLayout from './sharedLayout';
 
 const ChatLayout: React.FC = ({ children }) => {
-  const pathNames = ['/chat/rooms', '/chat/settings'];
+  const pathNames = ['/chat/rooms', '/chat/config'];
   const labels = [
     { name: 'Rooms', id: 'rooms' },
-    { name: 'settings', id: 'settings' },
+    { name: 'config', id: 'config' },
   ];
 
   return (
