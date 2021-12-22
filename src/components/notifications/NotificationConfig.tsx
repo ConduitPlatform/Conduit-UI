@@ -6,7 +6,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import { INotificationSettings } from '../../models/notifications/NotificationModels';
+import { INotificationConfig } from '../../models/notifications/NotificationModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
@@ -52,7 +52,7 @@ const NotificationConfig: FC = () => {
   const dispatch = useAppDispatch();
   const { config } = useAppSelector((state) => state.notificationsSlice.data);
   const [edit, setEdit] = useState<boolean>(false);
-  const methods = useForm<INotificationSettings>({
+  const methods = useForm<INotificationConfig>({
     defaultValues: useMemo(() => {
       return {
         active: config.active,
@@ -90,7 +90,7 @@ const NotificationConfig: FC = () => {
     setEdit(true);
   };
 
-  const onSubmit = (data: INotificationSettings) => {
+  const onSubmit = (data: INotificationConfig) => {
     setEdit(false);
     const config = {
       active: data.active,
