@@ -10,6 +10,8 @@ import { INotificationSettings } from '../../models/notifications/NotificationMo
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,14 +47,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type NotificationSettingsProps = {
-  handleSave: (values: INotificationSettings) => void;
-  config: INotificationSettings;
-};
-
-const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSave }) => {
+const NotificationConfig: FC = () => {
   const classes = useStyles();
-
+  const dispatch = useAppDispatch();
+  const { config } = useAppSelector((state) => state.notificationsSlice.data);
   const [edit, setEdit] = useState<boolean>(false);
   const methods = useForm<INotificationSettings>({
     defaultValues: useMemo(() => {
@@ -94,7 +92,7 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
 
   const onSubmit = (data: INotificationSettings) => {
     setEdit(false);
-    const dataToSave = {
+    const config = {
       active: data.active,
       providerName: data.providerName,
       firebase: {
@@ -104,7 +102,7 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
       },
     };
 
-    handleSave(dataToSave);
+    dispatch(asyncSaveNotificationConfig(config));
   };
 
   const handleFileChange = (file: File) => {
@@ -248,4 +246,4 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
   );
 };
 
-export default NotificationSettings;
+export default NotificationConfig;
