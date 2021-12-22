@@ -5,7 +5,7 @@ import { clearNotificationPageStore } from './notificationsSlice';
 import { clearStoragePageStore } from './storageSlice';
 import { getAdminModulesRequest } from '../../http/SettingsRequests';
 import { loginRequest } from '../../http/AppAuthRequests';
-import { clearAppNotifications, setAppDefaults, setAppLoading } from './appSlice';
+import { clearAppNotifications, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { clearEmailPageStore } from './emailsSlice';
 import { clearAuthenticationPageStore } from './authenticationSlice';
@@ -37,7 +37,7 @@ export const asyncLogin = createAsyncThunk(
       const password = values.password;
       const { data } = await loginRequest(username, password);
       thunkAPI.dispatch(enqueueInfoNotification(`Welcome ${username}!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return { data, cookie: values.remember };
     } catch (error) {
       thunkAPI.dispatch(
@@ -63,7 +63,7 @@ export const asyncGetAdminModules = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdminModulesRequest();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

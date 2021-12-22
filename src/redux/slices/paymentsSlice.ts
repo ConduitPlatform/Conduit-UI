@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import {
   deleteCustomerRequest,
@@ -97,7 +97,7 @@ export const asyncCreateCustomer = createAsyncThunk(
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully created customer ${customerData.buyerName}!`)
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -120,7 +120,7 @@ export const asyncSaveCustomerChanges = createAsyncThunk(
           `Successfully saved changes for the customer ${dataForThunk.data.name}!`
         )
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return updatedCustomer;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -138,7 +138,7 @@ export const asyncDeleteCustomers = createAsyncThunk(
       await deleteCustomerRequest(params.ids);
       params.getCustomers();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully delete customers!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`Deletion of customers is currently unavailable`));
@@ -170,7 +170,7 @@ export const asyncCreateProduct = createAsyncThunk(
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully created product ${productData.name}!`)
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -193,7 +193,7 @@ export const asyncSaveProductChanges = createAsyncThunk(
           `Successfully saved changes for the product ${dataForThunk.data.name}!`
         )
       );
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return updatedProduct;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -211,7 +211,7 @@ export const asyncDeleteProducts = createAsyncThunk(
       await deleteProductRequest(params.ids);
       params.getProducts();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted products!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`Deletion of products is currently unavailable`));
@@ -242,7 +242,7 @@ export const asyncDeleteTransactions = createAsyncThunk(
       await deleteTransactionRequest(params.ids);
       params.getTransactions();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted transactions!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(
@@ -275,7 +275,7 @@ export const asyncGetPaymentSettings = createAsyncThunk(
       const {
         data: { config },
       } = await getPaymentSettingsRequest();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -293,7 +293,7 @@ export const asyncUpdatePaymentSettings = createAsyncThunk(
       const {
         data: { config },
       } = await putPaymentSettingsRequest(body);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

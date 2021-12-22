@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import {
@@ -38,7 +38,7 @@ export const asyncGetForms = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getForms(params);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(
@@ -56,7 +56,7 @@ export const asyncCreateForm = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await createForm(formData);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(asyncGetForms({ skip: 0, limit: 10 }));
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully created the form ${formData.name}!`)
@@ -77,8 +77,7 @@ export const asyncEditForm = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await updateForm(args._id, args.data);
-
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully edited the form ${args.data.name}!`)
       );
@@ -99,7 +98,7 @@ export const asyncDeleteForms = createAsyncThunk(
       await deleteFormsRequest(params.ids);
       params.getForms();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted forms!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -114,7 +113,7 @@ export const asyncGetFormReplies = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getFormReplies(args.id);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(
@@ -132,7 +131,7 @@ export const asyncGetFormsConfig = createAsyncThunk('formsConfig/get', async (ar
     const {
       data: { config },
     } = await getFormsConfig();
-    thunkAPI.dispatch(setAppDefaults());
+    thunkAPI.dispatch(setAppLoading(false));
     return config;
   } catch (error) {
     thunkAPI.dispatch(
@@ -149,7 +148,7 @@ export const asyncEditFormsConfig = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await updateFormsConfig(config);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data.config;
     } catch (error) {
       thunkAPI.dispatch(
