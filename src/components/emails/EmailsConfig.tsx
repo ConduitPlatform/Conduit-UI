@@ -12,7 +12,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-  EmailSettings,
+  EmailConfig,
   ITransportSettings,
   MailgunSettings,
   MandrillSettings,
@@ -24,7 +24,7 @@ import TransportSettings from './TransportSettings';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { isNil, isEmpty } from 'lodash';
 import ConfirmationDialog from '../common/ConfirmationDialog';
-import { asyncUpdateEmailSettings } from '../../redux/slices/emailsSlice';
+import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -64,7 +64,7 @@ const EmailConfig: React.FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const { settings } = useAppSelector((state) => state.emailsSlice.data);
+  const { config } = useAppSelector((state) => state.emailsSlice.data);
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const initialSettingsState = {
@@ -94,11 +94,11 @@ const EmailConfig: React.FC = () => {
       },
     },
   };
-  const [settingsState, setSettingsState] = useState<EmailSettings>(initialSettingsState);
+  const [settingsState, setSettingsState] = useState<EmailConfig>(initialSettingsState);
 
   const initializeSettings = useCallback(
     (prevState) => {
-      let settingsObj: EmailSettings = { ...prevState };
+      let settingsObj: EmailConfig = { ...prevState };
 
       transportProviders.forEach((provider) => {
         const providerSettings:
@@ -107,7 +107,7 @@ const EmailConfig: React.FC = () => {
           | MandrillSettings
           | SendgridSettings = {
           ...settingsObj.transportSettings[provider],
-          ...settings.transportSettings[provider],
+          ...config.transportSettings[provider],
         };
 
         settingsObj.transportSettings = {
@@ -120,22 +120,22 @@ const EmailConfig: React.FC = () => {
 
       settingsObj = {
         ...settingsObj,
-        active: settings.active,
-        sendingDomain: settings.sendingDomain,
-        transport: settings.transport,
+        active: config.active,
+        sendingDomain: config.sendingDomain,
+        transport: config.transport,
       };
 
       return settingsObj;
     },
-    [settings]
+    [config]
   );
 
   useEffect(() => {
-    if (!settings) {
+    if (!config) {
       return;
     }
     setSettingsState((prevState) => initializeSettings(prevState));
-  }, [initializeSettings, settings]);
+  }, [initializeSettings, config]);
 
   const handleCancel = () => {
     const initializedState = initializeSettings(initialSettingsState);
@@ -153,11 +153,11 @@ const EmailConfig: React.FC = () => {
         newTransportSettings = { ...newTransportSettings, [k]: null };
       }
     });
-    const newSettings: EmailSettings = {
+    const newSettings: EmailConfig = {
       ...settingsState,
       transportSettings: newTransportSettings,
     };
-    dispatch(asyncUpdateEmailSettings(newSettings));
+    dispatch(asyncUpdateEmailConfig(newSettings));
     setOpenSaveDialog(false);
   };
 

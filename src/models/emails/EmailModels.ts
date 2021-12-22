@@ -54,7 +54,7 @@ export interface ITransportSettings {
   sendgrid: SendgridSettings;
 }
 
-export interface EmailSettings {
+export interface EmailConfig {
   active: boolean;
   sendingDomain: string;
   transport: TransportProviders;
