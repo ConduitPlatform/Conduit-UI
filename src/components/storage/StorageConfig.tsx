@@ -5,17 +5,15 @@ import Typography from '@material-ui/core/Typography';
 import { Container } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
-
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import { IStorageConfig } from '../../models/storage/StorageModels';
-
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveStorageConfig } from '../../redux/slices/storageSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -85,10 +83,6 @@ const StorageConfig: React.FC = () => {
     dispatch(asyncSaveStorageConfig(data));
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
   const providers = [
     { label: 'Azure', value: 'azure' },
     { label: 'Google', value: 'google' },
@@ -155,34 +149,7 @@ const StorageConfig: React.FC = () => {
                   </>
                 )}
               </Grid>
-              {edit && (
-                <Grid
-                  item
-                  container
-                  xs={12}
-                  className={classes.actions}
-                  justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    className={classes.buttonSpacing}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button variant="contained" color="primary" type="submit">
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleEditClick()}
-                    className={classes.buttonSpacing}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>
