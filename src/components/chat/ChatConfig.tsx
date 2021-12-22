@@ -35,11 +35,9 @@ const ChatConfig: React.FC = () => {
 
   const { config } = useAppSelector((state) => state.chatSlice);
 
-  console.log(config);
-
   const methods = useForm<IChatConfig>({
     defaultValues: useMemo(() => {
-      return { config };
+      return config;
     }, [config]),
   });
 
@@ -61,14 +59,7 @@ const ChatConfig: React.FC = () => {
 
   const onSubmit = (data: IChatConfig) => {
     setEdit(false);
-    console.log(data);
-    const datafor = {
-      active: false,
-      allowMessageEdit: false,
-      allowMessageDelete: false,
-    };
-
-    dispatch(asyncPutChatConfig(datafor));
+    dispatch(asyncPutChatConfig(data));
   };
 
   return (
@@ -89,9 +80,9 @@ const ChatConfig: React.FC = () => {
               <Grid container spacing={2} className={classes.innerGrid}>
                 {isActive && (
                   <>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <Box
-                        width={'100%'}
+                        width={'50%'}
                         display={'inline-flex'}
                         justifyContent={'space-between'}
                         alignItems={'center'}>
@@ -99,9 +90,9 @@ const ChatConfig: React.FC = () => {
                         <FormInputSwitch name={'allowMessageEdit'} disabled={!edit} />
                       </Box>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <Box
-                        width={'100%'}
+                        width={'50%'}
                         display={'inline-flex'}
                         justifyContent={'space-between'}
                         alignItems={'center'}>
