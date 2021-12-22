@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { sendSmsRequest } from '../../http/SmsRequests';
@@ -33,7 +33,7 @@ export const asyncSendSms = createAsyncThunk('sms/sendSms', async (arg, thunkAPI
   thunkAPI.dispatch(setAppLoading(true));
   try {
     const { data } = await sendSmsRequest();
-    thunkAPI.dispatch(setAppDefaults());
+    thunkAPI.dispatch(setAppLoading(false));
     return data;
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));

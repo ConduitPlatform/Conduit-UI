@@ -4,10 +4,9 @@ import {
   getAvailableClientsRequest,
   generateNewClientRequest,
   deleteClientRequest,
-  putCoreRequest,
   postNewAdminUser,
 } from '../../http/SettingsRequests';
-import { setAppDefaults, setAppLoading } from './appSlice';
+import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 
@@ -29,7 +28,7 @@ export const asyncGetAvailableClients = createAsyncThunk(
       const {
         data: { clients },
       } = await getAvailableClientsRequest();
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return clients;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -45,7 +44,7 @@ export const asyncGenerateNewClient = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await generateNewClientRequest(platform);
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -61,23 +60,8 @@ export const asyncDeleteClient = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await deleteClientRequest(_id);
-      thunkAPI.dispatch(setAppDefaults());
-      return _id;
-    } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncPutCoreSettings = createAsyncThunk(
-  'settings/saveConfig',
-  async (data, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      thunkAPI.dispatch(setAppDefaults());
-      return await putCoreRequest(data);
+      return _id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -97,7 +81,7 @@ export const asyncCreateAdminUser = createAsyncThunk(
       };
       await postNewAdminUser(body);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created user ${body.username}!`));
-      thunkAPI.dispatch(setAppDefaults());
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
