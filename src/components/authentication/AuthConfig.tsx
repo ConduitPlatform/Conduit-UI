@@ -11,6 +11,8 @@ import { SettingsStateTypes, SignInMethods } from '../../models/authentication/A
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -27,25 +29,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  handleSave: (data: SettingsStateTypes) => void;
-  settingsData: SignInMethods;
-}
-
-const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
+const AuthConfig: React.FC = () => {
+  const dispatch = useAppDispatch();
   const classes = useStyles();
   const [edit, setEdit] = useState<boolean>(false);
+  const { signInMethods: config } = useAppSelector((state) => state.authenticationSlice.data);
   const methods = useForm<SignInMethods>({
     defaultValues: useMemo(() => {
-      return settingsData;
-    }, [settingsData]),
+      return config;
+    }, [config]),
   });
 
   const { control } = methods;
 
   useEffect(() => {
-    methods.reset(settingsData);
-  }, [methods, settingsData]);
+    methods.reset(config);
+  }, [methods, config]);
 
   const isActive = useWatch({
     control,
@@ -63,7 +62,11 @@ const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
 
   const onSubmit = (data: SignInMethods) => {
     setEdit(false);
-    handleSave(data);
+    const body = {
+      ...config,
+      ...data,
+    };
+    dispatch(asyncUpdateAuthenticationConfig(body));
   };
 
   const inputFields = [
@@ -150,4 +153,4 @@ const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
   );
 };
 
-export default AuthSettings;
+export default AuthConfig;
