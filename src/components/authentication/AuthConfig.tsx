@@ -56,10 +56,6 @@ const AuthConfig: React.FC = () => {
     methods.reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
   const onSubmit = (data: AuthenticationConfig) => {
     setEdit(false);
     const body = {
