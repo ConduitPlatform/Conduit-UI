@@ -10,6 +10,8 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import { FormSettingsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,26 +34,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  handleSave: (data: FormSettingsConfig) => void;
-  settingsData: FormSettingsConfig;
-}
-
-const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
+const FormsConfig: React.FC = () => {
   const classes = useStyles();
-
+  const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
+  const { config: formsConfig } = useAppSelector((state) => state.formsSlice.data);
 
   const methods = useForm<FormSettingsConfig>({
     defaultValues: useMemo(() => {
-      return settingsData;
-    }, [settingsData]),
+      return formsConfig;
+    }, [formsConfig]),
   });
   const { reset, control } = methods;
 
   useEffect(() => {
-    reset(settingsData);
-  }, [settingsData, reset]);
+    reset(formsConfig);
+  }, [formsConfig, reset]);
 
   const isActive = useWatch({
     control,
@@ -69,7 +67,11 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
 
   const onSubmit = (data: FormSettingsConfig) => {
     setEdit(false);
-    handleSave(data);
+    const config = {
+      ...formsConfig,
+      ...data,
+    };
+    dispatch(asyncEditFormsConfig(config));
   };
 
   return (
@@ -138,4 +140,4 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
   );
 };
 
-export default FormsSettings;
+export default FormsConfig;
