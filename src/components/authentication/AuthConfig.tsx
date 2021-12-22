@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import { SettingsStateTypes, SignInMethods } from '../../models/authentication/AuthModels';
+import { SignInMethods } from '../../models/authentication/AuthModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';

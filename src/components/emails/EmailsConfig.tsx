@@ -21,9 +21,10 @@ import {
   TransportProviders,
 } from '../../models/emails/EmailModels';
 import TransportSettings from './TransportSettings';
-import { useAppSelector } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { isNil, isEmpty } from 'lodash';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import { asyncUpdateEmailSettings } from '../../redux/slices/emailsSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -59,12 +60,9 @@ const transportProviders: ('mailgun' | 'smtp' | 'mandrill' | 'sendgrid')[] = [
   'sendgrid',
 ];
 
-interface Props {
-  handleSave: (data: EmailSettings) => void;
-}
-
-const ProviderData: React.FC<Props> = ({ handleSave }) => {
+const EmailConfig: React.FC = () => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
   const { settings } = useAppSelector((state) => state.emailsSlice.data);
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
@@ -159,7 +157,7 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
       ...settingsState,
       transportSettings: newTransportSettings,
     };
-    handleSave(newSettings);
+    dispatch(asyncUpdateEmailSettings(newSettings));
     setOpenSaveDialog(false);
   };
 
@@ -310,4 +308,4 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
   );
 };
 
-export default ProviderData;
+export default EmailConfig;
