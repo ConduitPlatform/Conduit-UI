@@ -7,11 +7,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import { FormsConfig as IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -105,33 +105,7 @@ const FormsConfig: React.FC = () => {
                   </Grid>
                 )}
               </Grid>
-              {edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    className={classes.marginRight}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    color="primary"
-                    className={classes.alignEnd}>
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleEditClick()}
-                    className={classes.marginRight}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>
