@@ -61,10 +61,6 @@ const FormsConfig: React.FC = () => {
     reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
   const onSubmit = (data: IFormsConfig) => {
     setEdit(false);
     const config = {
