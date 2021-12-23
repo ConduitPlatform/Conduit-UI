@@ -131,7 +131,7 @@ export const asyncSaveCustomerChanges = createAsyncThunk(
 );
 
 export const asyncDeleteCustomers = createAsyncThunk(
-  'emails/deleteCustomers',
+  'payment/deleteCustomers',
   async (params: { ids: string[]; getCustomers: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -204,7 +204,7 @@ export const asyncSaveProductChanges = createAsyncThunk(
 );
 
 export const asyncDeleteProducts = createAsyncThunk(
-  'emails/deleteProducts',
+  'payment/deleteProducts',
   async (params: { ids: string[]; getProducts: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -235,7 +235,7 @@ export const asyncGetTransactions = createAsyncThunk(
 );
 
 export const asyncDeleteTransactions = createAsyncThunk(
-  'emails/deleteProducts',
+  'payment/deleteProducts',
   async (params: { ids: string[]; getTransactions: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
