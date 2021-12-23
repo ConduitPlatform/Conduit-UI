@@ -38,18 +38,18 @@ const FormsConfig: React.FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
-  const { config: formsConfig } = useAppSelector((state) => state.formsSlice.data);
+  const { config } = useAppSelector((state) => state.formsSlice.data);
 
   const methods = useForm<IFormsConfig>({
     defaultValues: useMemo(() => {
-      return formsConfig;
-    }, [formsConfig]),
+      return config;
+    }, [config]),
   });
   const { reset, control } = methods;
 
   useEffect(() => {
-    reset(formsConfig);
-  }, [formsConfig, reset]);
+    reset(config);
+  }, [config, reset]);
 
   const isActive = useWatch({
     control,
@@ -63,11 +63,11 @@ const FormsConfig: React.FC = () => {
 
   const onSubmit = (data: IFormsConfig) => {
     setEdit(false);
-    const config = {
-      ...formsConfig,
+    const updatedConfig = {
+      ...config,
       ...data,
     };
-    dispatch(asyncEditFormsConfig(config));
+    dispatch(asyncEditFormsConfig(updatedConfig));
   };
 
   return (

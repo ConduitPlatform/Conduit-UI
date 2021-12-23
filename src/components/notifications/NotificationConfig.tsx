@@ -45,6 +45,16 @@ const useStyles = makeStyles((theme) => ({
   typography: {
     margin: '0px 10px 10px',
   },
+  box: {
+    width: '100%',
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  jsonBtn: {
+    marginTop: '30px',
+    marginLeft: '-25px',
+  },
 }));
 
 const NotificationConfig: FC = () => {
@@ -134,11 +144,7 @@ const NotificationConfig: FC = () => {
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
+              <Box className={classes.box}>
                 <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
@@ -182,7 +188,7 @@ const NotificationConfig: FC = () => {
                         </Grid>
                         <Typography className={classes.typography}> OR </Typography>
                         <Button
-                          style={{ marginTop: '30px', marginLeft: '-25px' }}
+                          className={classes.jsonBtn}
                           disabled={!edit}
                           variant="contained"
                           component="label">

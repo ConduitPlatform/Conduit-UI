@@ -80,6 +80,7 @@ const StorageConfig: React.FC = () => {
   });
 
   const onSubmit = (data: IStorageConfig) => {
+    setEdit(false);
     dispatch(asyncSaveStorageConfig(data));
   };
 

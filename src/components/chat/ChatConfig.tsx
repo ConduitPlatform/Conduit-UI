@@ -26,6 +26,18 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     width: '100%',
   },
+  box: {
+    width: '100%',
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  subBox: {
+    width: '50%',
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 }));
 
 const ChatConfig: React.FC = () => {
@@ -66,13 +78,9 @@ const ChatConfig: React.FC = () => {
     <Container>
       <Paper className={classes.paper}>
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
+          <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
+              <Box className={classes.box}>
                 <Typography variant={'h6'}>Activate Chat Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
@@ -81,21 +89,13 @@ const ChatConfig: React.FC = () => {
                 {isActive && (
                   <>
                     <Grid item xs={12}>
-                      <Box
-                        width={'50%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
+                      <Box className={classes.subBox}>
                         <Typography variant={'subtitle1'}>Allow Message Edit</Typography>
                         <FormInputSwitch name={'allowMessageEdit'} disabled={!edit} />
                       </Box>
                     </Grid>
                     <Grid item xs={12}>
-                      <Box
-                        width={'50%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
+                      <Box className={classes.subBox}>
                         <Typography variant={'subtitle1'}>Allow Message Delete</Typography>
                         <FormInputSwitch name={'allowMessageDelete'} disabled={!edit} />
                       </Box>
