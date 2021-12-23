@@ -1,18 +1,17 @@
-import { Container } from '@material-ui/core';
+import { Button, Container } from '@material-ui/core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-  EmailSettings,
+  IEmailConfig,
   ITransportSettings,
   MailgunSettings,
   MandrillSettings,
@@ -21,9 +20,10 @@ import {
   TransportProviders,
 } from '../../models/emails/EmailModels';
 import TransportSettings from './TransportSettings';
-import { useAppSelector } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { isNil, isEmpty } from 'lodash';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -59,14 +59,11 @@ const transportProviders: ('mailgun' | 'smtp' | 'mandrill' | 'sendgrid')[] = [
   'sendgrid',
 ];
 
-interface Props {
-  handleSave: (data: EmailSettings) => void;
-}
-
-const ProviderData: React.FC<Props> = ({ handleSave }) => {
+const EmailConfig: React.FC = () => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
-  const { settings } = useAppSelector((state) => state.emailsSlice.data);
+  const { config } = useAppSelector((state) => state.emailsSlice.data);
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const initialSettingsState = {
@@ -96,11 +93,11 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
       },
     },
   };
-  const [settingsState, setSettingsState] = useState<EmailSettings>(initialSettingsState);
+  const [settingsState, setSettingsState] = useState<IEmailConfig>(initialSettingsState);
 
   const initializeSettings = useCallback(
     (prevState) => {
-      let settingsObj: EmailSettings = { ...prevState };
+      let settingsObj: IEmailConfig = { ...prevState };
 
       transportProviders.forEach((provider) => {
         const providerSettings:
@@ -109,7 +106,7 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
           | MandrillSettings
           | SendgridSettings = {
           ...settingsObj.transportSettings[provider],
-          ...settings.transportSettings[provider],
+          ...config.transportSettings[provider],
         };
 
         settingsObj.transportSettings = {
@@ -122,22 +119,22 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
 
       settingsObj = {
         ...settingsObj,
-        active: settings.active,
-        sendingDomain: settings.sendingDomain,
-        transport: settings.transport,
+        active: config.active,
+        sendingDomain: config.sendingDomain,
+        transport: config.transport,
       };
 
       return settingsObj;
     },
-    [settings]
+    [config]
   );
 
   useEffect(() => {
-    if (!settings) {
+    if (!config) {
       return;
     }
     setSettingsState((prevState) => initializeSettings(prevState));
-  }, [initializeSettings, settings]);
+  }, [initializeSettings, config]);
 
   const handleCancel = () => {
     const initializedState = initializeSettings(initialSettingsState);
@@ -155,11 +152,11 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
         newTransportSettings = { ...newTransportSettings, [k]: null };
       }
     });
-    const newSettings: EmailSettings = {
+    const emailConfig: IEmailConfig = {
       ...settingsState,
       transportSettings: newTransportSettings,
     };
-    handleSave(newSettings);
+    dispatch(asyncUpdateEmailConfig(emailConfig));
     setOpenSaveDialog(false);
   };
 
@@ -260,7 +257,7 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
             display={'inline-flex'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <Typography variant={'h6'}>Email Settings Module</Typography>
+            <Typography variant={'h6'}>Activate Email Module</Typography>
             <FormControlLabel
               control={
                 <Switch
@@ -278,9 +275,7 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
               label={''}
             />
           </Box>
-
           <Divider className={classes.divider} />
-
           <Grid container spacing={2} className={classes.innerGrid}>
             {settingsState.active && renderSettingsFields()}
           </Grid>
@@ -310,4 +305,4 @@ const ProviderData: React.FC<Props> = ({ handleSave }) => {
   );
 };
 
-export default ProviderData;
+export default EmailConfig;

@@ -14,7 +14,7 @@ export interface FormReplies {
   possibleSpam: boolean;
 }
 
-export interface FormSettingsConfig {
+export interface IFormsConfig {
   active: boolean;
   useAttachments: boolean;
 }

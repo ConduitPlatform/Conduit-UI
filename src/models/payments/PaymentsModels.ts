@@ -62,7 +62,7 @@ export interface Subscription {
   updatedAt?: string;
 }
 
-export interface PaymentSettings {
+export interface PaymentsConfig {
   active: boolean;
   stripe: {
     enabled: boolean;

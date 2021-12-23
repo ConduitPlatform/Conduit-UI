@@ -54,7 +54,9 @@ export const asyncGetChatConfig = createAsyncThunk(
   'chat/getChatConfig',
   async (params, thunkAPI) => {
     try {
-      const { data: config } = await getChatConfig();
+      const {
+        data: { config },
+      } = await getChatConfig();
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -65,14 +67,14 @@ export const asyncGetChatConfig = createAsyncThunk(
 );
 
 export const asyncPutChatConfig = createAsyncThunk(
-  'chat/getChatConfig',
+  'chat/putChatConfig',
   async (params: IChatConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
       } = await putChatConfig(params);
-      thunkAPI.dispatch(enqueueSuccessNotification('Chat config was updated successfully!'));
+      thunkAPI.dispatch(enqueueSuccessNotification('Chat config successfully updated!'));
       thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {

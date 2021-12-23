@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
-  INotificationSettings,
+  INotificationConfig,
   NotificationData,
 } from '../../models/notifications/NotificationModels';
 import {
@@ -10,11 +10,11 @@ import {
 } from '../../http/NotificationsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification } from '../../utils/useNotifier';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 
 interface INotificationSlice {
   data: {
-    config: INotificationSettings;
+    config: INotificationConfig;
     notifications: NotificationData[];
   };
 }
@@ -70,13 +70,14 @@ export const asyncGetNotificationConfig = createAsyncThunk(
 
 export const asyncSaveNotificationConfig = createAsyncThunk(
   'notifications/saveConfig',
-  async (settings: INotificationSettings, thunkAPI) => {
+  async (settings: INotificationConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
       } = await putNotificationConfig(settings);
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Notiufication config successfully updated`));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

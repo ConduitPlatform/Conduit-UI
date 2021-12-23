@@ -1,15 +1,17 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Container, Grid, Paper, Typography } from '@material-ui/core';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import { Edit, Save, SettingsOutlined } from '@material-ui/icons';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import { INotificationSettings } from '../../models/notifications/NotificationModels';
+import { INotificationConfig } from '../../models/notifications/NotificationModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,18 +45,24 @@ const useStyles = makeStyles((theme) => ({
   typography: {
     margin: '0px 10px 10px',
   },
+  box: {
+    width: '100%',
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  jsonBtn: {
+    marginTop: '30px',
+    marginLeft: '-25px',
+  },
 }));
 
-type NotificationSettingsProps = {
-  handleSave: (values: INotificationSettings) => void;
-  config: INotificationSettings;
-};
-
-const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSave }) => {
+const NotificationConfig: FC = () => {
   const classes = useStyles();
-
+  const dispatch = useAppDispatch();
+  const { config } = useAppSelector((state) => state.notificationsSlice.data);
   const [edit, setEdit] = useState<boolean>(false);
-  const methods = useForm<INotificationSettings>({
+  const methods = useForm<INotificationConfig>({
     defaultValues: useMemo(() => {
       return {
         active: config.active,
@@ -88,13 +96,9 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
     reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
-  const onSubmit = (data: INotificationSettings) => {
+  const onSubmit = (data: INotificationConfig) => {
     setEdit(false);
-    const dataToSave = {
+    const configToSave = {
       active: data.active,
       providerName: data.providerName,
       firebase: {
@@ -104,7 +108,7 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
       },
     };
 
-    handleSave(dataToSave);
+    dispatch(asyncSaveNotificationConfig(configToSave));
   };
 
   const handleFileChange = (file: File) => {
@@ -140,15 +144,8 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
-                <Typography variant={'h6'}>
-                  <SettingsOutlined fontSize={'small'} style={{ marginBottom: '-2px' }} />
-                  Notification settings
-                </Typography>
+              <Box className={classes.box}>
+                <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
               <Divider className={classes.divider} />
@@ -166,7 +163,6 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
                         }))}
                       />
                     </Grid>
-
                     {hasProvider && (
                       <>
                         <Grid item xs={12}>
@@ -192,7 +188,7 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
                         </Grid>
                         <Typography className={classes.typography}> OR </Typography>
                         <Button
-                          style={{ marginTop: '30px', marginLeft: '-25px' }}
+                          className={classes.jsonBtn}
                           disabled={!edit}
                           variant="contained"
                           component="label">
@@ -211,34 +207,7 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
                 )}
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
-                {edit && (
-                  <>
-                    <Button
-                      variant="outlined"
-                      className={classes.buttonSpacing}
-                      onClick={() => handleCancel()}
-                      color="primary">
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      className={classes.buttonSpacing}
-                      color="primary"
-                      startIcon={<Save />}>
-                      Save
-                    </Button>
-                  </>
-                )}
-                {!edit && (
-                  <Button
-                    className={classes.buttonSpacing}
-                    onClick={() => handleEditClick()}
-                    color="primary"
-                    startIcon={<Edit />}>
-                    Edit
-                  </Button>
-                )}
+                <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
               </Grid>
             </Grid>
           </form>
@@ -248,4 +217,4 @@ const NotificationSettings: FC<NotificationSettingsProps> = ({ config, handleSav
   );
 };
 
-export default NotificationSettings;
+export default NotificationConfig;

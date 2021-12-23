@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Button, InputLabel, MenuItem, Select } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import {
-  SignInMethods,
+  IAuthenticationConfig,
   SignInTypes,
   SocialNameTypes,
 } from '../../models/authentication/AuthModels';
@@ -52,7 +52,7 @@ interface Props {
   name: SocialNameTypes;
   setAccProps: any;
   handleData: (type: SocialNameTypes, data: SignInTypes) => void;
-  configData: SignInMethods;
+  configData: IAuthenticationConfig;
   accProps: SignInTypes;
 }
 

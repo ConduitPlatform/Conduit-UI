@@ -13,10 +13,10 @@ import {
 } from '../../http/EmailRequests';
 import {
   EmailTemplateType,
-  EmailSettings,
   EmailData,
   SendEmailData,
   TransportProviders,
+  IEmailConfig,
 } from '../../models/emails/EmailModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -27,7 +27,7 @@ interface IEmailSlice {
   data: {
     templateDocuments: EmailTemplateType[];
     totalCount: number;
-    settings: EmailSettings;
+    config: IEmailConfig;
     externalTemplates: EmailTemplateType[];
   };
 }
@@ -36,7 +36,7 @@ const initialState: IEmailSlice = {
   data: {
     templateDocuments: [],
     totalCount: 0,
-    settings: {
+    config: {
       active: false,
       sendingDomain: '',
       transport: TransportProviders['smtp'],
@@ -182,33 +182,31 @@ export const asyncDeleteTemplates = createAsyncThunk(
     }
   }
 );
-export const asyncGetEmailSettings = createAsyncThunk(
-  'emails/getEmailSettings',
-  async (arg, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const {
-        data: { config },
-      } = await getEmailSettingsRequest();
-      thunkAPI.dispatch(setAppLoading(false));
-      return config;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
+export const asyncGetEmailConfig = createAsyncThunk('emails/getConfig', async (arg, thunkAPI) => {
+  thunkAPI.dispatch(setAppLoading(true));
+  try {
+    const {
+      data: { config },
+    } = await getEmailSettingsRequest();
+    thunkAPI.dispatch(setAppLoading(false));
+    return config;
+  } catch (error) {
+    thunkAPI.dispatch(setAppLoading(false));
+    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+    throw error;
   }
-);
+});
 
-export const asyncUpdateEmailSettings = createAsyncThunk(
-  'emails/updateSettings',
-  async (updatedSettings: EmailSettings, thunkAPI) => {
+export const asyncUpdateEmailConfig = createAsyncThunk(
+  'emails/updateConfig',
+  async (updatedSettings: IEmailConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
       } = await putEmailSettingsRequest(updatedSettings);
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Emails config successfully updated`));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -273,11 +271,11 @@ const emailsSlice = createSlice({
       state.data.templateDocuments.push(action.payload.template);
       state.data.totalCount = state.data.totalCount++;
     });
-    builder.addCase(asyncGetEmailSettings.fulfilled, (state, action) => {
-      state.data.settings = action.payload;
+    builder.addCase(asyncGetEmailConfig.fulfilled, (state, action) => {
+      state.data.config = action.payload;
     });
-    builder.addCase(asyncUpdateEmailSettings.fulfilled, (state, action) => {
-      state.data.settings = action.payload;
+    builder.addCase(asyncUpdateEmailConfig.fulfilled, (state, action) => {
+      state.data.config = action.payload;
     });
     builder.addCase(asyncSendEmail.fulfilled, () => {
       //handle success

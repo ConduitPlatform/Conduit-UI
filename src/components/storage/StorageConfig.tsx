@@ -5,15 +5,15 @@ import Typography from '@material-ui/core/Typography';
 import { Container } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
-
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import { IStorageConfig } from '../../models/storage/StorageModels';
-
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncSaveStorageConfig } from '../../redux/slices/storageSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,14 +45,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  config: IStorageConfig;
-  handleSave: (data: IStorageConfig) => void;
-}
-
-const StorageSettings: React.FC<Props> = ({ config, handleSave }) => {
-  const [edit, setEdit] = useState<boolean>(false);
+const StorageConfig: React.FC = () => {
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+  const [edit, setEdit] = useState<boolean>(false);
+
+  const { config } = useAppSelector((state) => state.storageSlice.data);
 
   const methods = useForm<IStorageConfig>({
     defaultValues: useMemo(() => {
@@ -82,11 +80,8 @@ const StorageSettings: React.FC<Props> = ({ config, handleSave }) => {
   });
 
   const onSubmit = (data: IStorageConfig) => {
-    handleSave(data);
-  };
-
-  const handleEditClick = () => {
-    setEdit(true);
+    setEdit(false);
+    dispatch(asyncSaveStorageConfig(data));
   };
 
   const providers = [
@@ -155,34 +150,7 @@ const StorageSettings: React.FC<Props> = ({ config, handleSave }) => {
                   </>
                 )}
               </Grid>
-              {edit && (
-                <Grid
-                  item
-                  container
-                  xs={12}
-                  className={classes.actions}
-                  justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    className={classes.buttonSpacing}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button variant="contained" color="primary" type="submit">
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleEditClick()}
-                    className={classes.buttonSpacing}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>
@@ -191,4 +159,4 @@ const StorageSettings: React.FC<Props> = ({ config, handleSave }) => {
   );
 };
 
-export default StorageSettings;
+export default StorageConfig;

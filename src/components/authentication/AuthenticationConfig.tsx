@@ -6,11 +6,13 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import { SettingsStateTypes, SignInMethods } from '../../models/authentication/AuthModels';
+import { IAuthenticationConfig } from '../../models/authentication/AuthModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -27,25 +29,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  handleSave: (data: SettingsStateTypes) => void;
-  settingsData: SignInMethods;
-}
-
-const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
+const AuthenticationConfig: React.FC = () => {
+  const dispatch = useAppDispatch();
   const classes = useStyles();
   const [edit, setEdit] = useState<boolean>(false);
-  const methods = useForm<SignInMethods>({
+  const { config } = useAppSelector((state) => state.authenticationSlice.data);
+  const methods = useForm<IAuthenticationConfig>({
     defaultValues: useMemo(() => {
-      return settingsData;
-    }, [settingsData]),
+      return config;
+    }, [config]),
   });
 
   const { control } = methods;
 
   useEffect(() => {
-    methods.reset(settingsData);
-  }, [methods, settingsData]);
+    methods.reset(config);
+  }, [methods, config]);
 
   const isActive = useWatch({
     control,
@@ -57,13 +56,13 @@ const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
     methods.reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
-  const onSubmit = (data: SignInMethods) => {
+  const onSubmit = (data: IAuthenticationConfig) => {
     setEdit(false);
-    handleSave(data);
+    const body = {
+      ...config,
+      ...data,
+    };
+    dispatch(asyncUpdateAuthenticationConfig(body));
   };
 
   const inputFields = [
@@ -115,33 +114,7 @@ const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
                   </>
                 )}
               </Grid>
-              {edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    style={{ marginRight: 16 }}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ alignSelf: 'flex-end' }}
-                    type="submit">
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleEditClick()}
-                    style={{ marginRight: 16 }}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>
@@ -150,4 +123,4 @@ const AuthSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
   );
 };
 
-export default AuthSettings;
+export default AuthenticationConfig;

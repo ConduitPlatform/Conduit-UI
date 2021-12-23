@@ -51,7 +51,7 @@ export interface SettingsStateTypes {
   showSecret?: boolean;
 }
 
-export interface SignInMethods {
+export interface IAuthenticationConfig {
   active: boolean;
   generateRefreshToken: boolean;
   jwtSecret: string;

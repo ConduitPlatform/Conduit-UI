@@ -7,9 +7,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import { FormSettingsConfig } from '../../models/forms/FormsModels';
+import { IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
+import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,26 +34,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  handleSave: (data: FormSettingsConfig) => void;
-  settingsData: FormSettingsConfig;
-}
-
-const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
+const FormsConfig: React.FC = () => {
   const classes = useStyles();
-
+  const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
+  const { config } = useAppSelector((state) => state.formsSlice.data);
 
-  const methods = useForm<FormSettingsConfig>({
+  const methods = useForm<IFormsConfig>({
     defaultValues: useMemo(() => {
-      return settingsData;
-    }, [settingsData]),
+      return config;
+    }, [config]),
   });
   const { reset, control } = methods;
 
   useEffect(() => {
-    reset(settingsData);
-  }, [settingsData, reset]);
+    reset(config);
+  }, [config, reset]);
 
   const isActive = useWatch({
     control,
@@ -63,13 +61,13 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
     reset();
   };
 
-  const handleEditClick = () => {
-    setEdit(true);
-  };
-
-  const onSubmit = (data: FormSettingsConfig) => {
+  const onSubmit = (data: IFormsConfig) => {
     setEdit(false);
-    handleSave(data);
+    const updatedConfig = {
+      ...config,
+      ...data,
+    };
+    dispatch(asyncEditFormsConfig(updatedConfig));
   };
 
   return (
@@ -103,33 +101,7 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
                   </Grid>
                 )}
               </Grid>
-              {edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleCancel()}
-                    className={classes.marginRight}
-                    color={'primary'}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    color="primary"
-                    className={classes.alignEnd}>
-                    Save
-                  </Button>
-                </Grid>
-              )}
-              {!edit && (
-                <Grid item container xs={12} justifyContent={'flex-end'}>
-                  <Button
-                    onClick={() => handleEditClick()}
-                    className={classes.marginRight}
-                    color={'primary'}>
-                    Edit
-                  </Button>
-                </Grid>
-              )}
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>
           </form>
         </FormProvider>
@@ -138,4 +110,4 @@ const FormsSettings: React.FC<Props> = ({ handleSave, settingsData }) => {
   );
 };
 
-export default FormsSettings;
+export default FormsConfig;

@@ -3,11 +3,11 @@ import SharedLayout from './sharedLayout';
 import { FormatAlignLeft } from '@material-ui/icons';
 
 const FormsLayout: React.FC = ({ children }) => {
-  const pathNames = ['/forms/view', '/forms/settings'];
+  const pathNames = ['/forms/view', '/forms/config'];
 
   const labels = [
     { name: 'view', id: 'view' },
-    { name: 'settings', id: 'settings' },
+    { name: 'config', id: 'config' },
   ];
 
   return (
