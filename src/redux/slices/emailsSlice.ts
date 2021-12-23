@@ -68,7 +68,7 @@ const initialState: IEmailSlice = {
 };
 
 export const asyncGetEmailTemplates = createAsyncThunk(
-  'emails/getTemplates',
+  'email/getTemplates',
   async (params: Pagination & Search, thunkAPI) => {
     try {
       const { data } = await getEmailTemplateRequest(params);
@@ -82,7 +82,7 @@ export const asyncGetEmailTemplates = createAsyncThunk(
 );
 
 export const asyncGetExternalTemplates = createAsyncThunk(
-  'emails/getExternalTemplates',
+  'email/getExternalTemplates',
   async (params, thunkAPI) => {
     try {
       const { data } = await getExternalTemplatesRequest();
@@ -95,7 +95,7 @@ export const asyncGetExternalTemplates = createAsyncThunk(
 );
 
 export const asyncUploadTemplate = createAsyncThunk(
-  'emails/uploadTemplate',
+  'email/uploadTemplate',
   async (_id: string, thunkAPI) => {
     try {
       await uploadTemplateRequest(_id);
@@ -109,7 +109,7 @@ export const asyncUploadTemplate = createAsyncThunk(
 );
 
 export const asyncSaveEmailTemplateChanges = createAsyncThunk(
-  'emails/saveTemplateChanges',
+  'email/saveTemplateChanges',
   async (dataForThunk: { _id: string; data: EmailData }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -132,7 +132,7 @@ export const asyncSaveEmailTemplateChanges = createAsyncThunk(
 );
 
 export const asyncCreateNewEmailTemplate = createAsyncThunk(
-  'emails/createNewTemplate',
+  'email/createNewTemplate',
   async (newEmailData: EmailData, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -151,7 +151,7 @@ export const asyncCreateNewEmailTemplate = createAsyncThunk(
 );
 
 export const asyncSyncTemplates = createAsyncThunk(
-  'emails/deleteTemplate',
+  'email/deleteTemplate',
   async (params, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -167,7 +167,7 @@ export const asyncSyncTemplates = createAsyncThunk(
 );
 
 export const asyncDeleteTemplates = createAsyncThunk(
-  'emails/deleteMultipleTemplates',
+  'email/deleteMultipleTemplates',
   async (params: { ids: string[]; getTemplates: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -182,7 +182,7 @@ export const asyncDeleteTemplates = createAsyncThunk(
     }
   }
 );
-export const asyncGetEmailConfig = createAsyncThunk('emails/getConfig', async (arg, thunkAPI) => {
+export const asyncGetEmailConfig = createAsyncThunk('email/getConfig', async (arg, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
     const {
@@ -198,7 +198,7 @@ export const asyncGetEmailConfig = createAsyncThunk('emails/getConfig', async (a
 });
 
 export const asyncUpdateEmailConfig = createAsyncThunk(
-  'emails/updateConfig',
+  'email/updateConfig',
   async (updatedSettings: IEmailConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -217,7 +217,7 @@ export const asyncUpdateEmailConfig = createAsyncThunk(
 );
 
 export const asyncSendEmail = createAsyncThunk(
-  'emails/send',
+  'email/send',
   async (dataToSend: SendEmailData, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
