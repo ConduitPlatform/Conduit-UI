@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { EmailConfig, TransportProviders, whatever } from '../../models/emails/EmailModels';
+import { IEmailConfig, TransportProviders, whatever } from '../../models/emails/EmailModels';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   edit: boolean;
-  data: EmailConfig;
+  data: IEmailConfig;
   onChange: (value: string, key: string, provider: TransportProviders, authItem?: string) => void;
 }
 

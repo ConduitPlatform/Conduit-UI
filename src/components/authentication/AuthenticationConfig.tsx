@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import { AuthenticationConfig } from '../../models/authentication/AuthModels';
+import { IAuthenticationConfig } from '../../models/authentication/AuthModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';
@@ -29,12 +29,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AuthConfig: React.FC = () => {
+const AuthenticationConfig: React.FC = () => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
   const [edit, setEdit] = useState<boolean>(false);
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
-  const methods = useForm<AuthenticationConfig>({
+  const methods = useForm<IAuthenticationConfig>({
     defaultValues: useMemo(() => {
       return config;
     }, [config]),
@@ -56,7 +56,7 @@ const AuthConfig: React.FC = () => {
     methods.reset();
   };
 
-  const onSubmit = (data: AuthenticationConfig) => {
+  const onSubmit = (data: IAuthenticationConfig) => {
     setEdit(false);
     const body = {
       ...config,
@@ -123,4 +123,4 @@ const AuthConfig: React.FC = () => {
   );
 };
 
-export default AuthConfig;
+export default AuthenticationConfig;

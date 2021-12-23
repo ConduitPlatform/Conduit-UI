@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AuthUser, AuthenticationConfig } from '../../models/authentication/AuthModels';
+import { AuthUser, IAuthenticationConfig } from '../../models/authentication/AuthModels';
 import {
   blockUnblockUsers,
   blockUser,
@@ -22,7 +22,7 @@ interface IAuthenticationSlice {
       users: AuthUser[];
       count: number;
     };
-    config: AuthenticationConfig;
+    config: IAuthenticationConfig;
   };
 }
 

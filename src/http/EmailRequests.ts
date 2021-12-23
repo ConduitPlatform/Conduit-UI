@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CONDUIT_API } from './requestsConfig';
-import { EmailData, EmailConfig, SendEmailData } from '../models/emails/EmailModels';
+import { EmailData, IEmailConfig, SendEmailData } from '../models/emails/EmailModels';
 import { Pagination, Search } from '../models/http/HttpModels';
 
 export const getExternalTemplatesRequest = () =>
@@ -30,7 +30,7 @@ export const syncExternalTemplates = () =>
 
 export const getEmailSettingsRequest = () => axios.get(`${CONDUIT_API}/admin/config/email`);
 
-export const putEmailSettingsRequest = (data: EmailConfig) =>
+export const putEmailSettingsRequest = (data: IEmailConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/email`, { config: { ...data } });
 
 export const sendEmailRequest = (data: SendEmailData) =>

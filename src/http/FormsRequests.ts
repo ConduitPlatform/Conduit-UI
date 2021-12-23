@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FormsConfig, FormsModel } from '../models/forms/FormsModels';
+import { IFormsConfig, FormsModel } from '../models/forms/FormsModels';
 import { CONDUIT_API } from './requestsConfig';
 import { Pagination, Search } from '../models/http/HttpModels';
 
@@ -21,7 +21,7 @@ export const updateForm = (id: string, data: FormsModel) =>
 
 export const getFormsConfig = () => axios.get(`${CONDUIT_API}/admin/config/forms`);
 
-export const updateFormsConfig = (body: FormsConfig) =>
+export const updateFormsConfig = (body: IFormsConfig) =>
   axios.put(`${CONDUIT_API}/admin/config/forms`, {
     config: { ...body },
   });

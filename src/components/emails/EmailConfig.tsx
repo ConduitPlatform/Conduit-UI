@@ -11,7 +11,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-  EmailConfig as IEmailConfig,
+  IEmailConfig,
   ITransportSettings,
   MailgunSettings,
   MandrillSettings,

@@ -16,7 +16,7 @@ import {
   EmailData,
   SendEmailData,
   TransportProviders,
-  EmailConfig,
+  IEmailConfig,
 } from '../../models/emails/EmailModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -27,7 +27,7 @@ interface IEmailSlice {
   data: {
     templateDocuments: EmailTemplateType[];
     totalCount: number;
-    config: EmailConfig;
+    config: IEmailConfig;
     externalTemplates: EmailTemplateType[];
   };
 }
@@ -199,7 +199,7 @@ export const asyncGetEmailConfig = createAsyncThunk('emails/getConfig', async (a
 
 export const asyncUpdateEmailConfig = createAsyncThunk(
   'emails/updateConfig',
-  async (updatedSettings: EmailConfig, thunkAPI) => {
+  async (updatedSettings: IEmailConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {

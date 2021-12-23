@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import {
   SocialNameTypes,
-  AuthenticationConfig,
+  IAuthenticationConfig,
   SignInTypes,
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './ReusableAccordion';
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  configData: AuthenticationConfig;
+  configData: IAuthenticationConfig;
   handleData: (type: SocialNameTypes, data: SignInTypes) => void;
 }
 

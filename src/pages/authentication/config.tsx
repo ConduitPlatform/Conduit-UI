@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect } from 'react';
 import { asyncGetAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
-import AuthConfig from '../../components/authentication/AuthConfig';
+import AuthenticationConfig from '../../components/authentication/AuthenticationConfig';
 
 const Config = () => {
   const dispatch = useAppDispatch();
@@ -11,7 +11,7 @@ const Config = () => {
     dispatch(asyncGetAuthenticationConfig());
   }, [dispatch]);
 
-  return <AuthConfig />;
+  return <AuthenticationConfig />;
 };
 
 Config.getLayout = function getLayout(page: ReactElement) {
