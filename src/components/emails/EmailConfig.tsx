@@ -1,4 +1,4 @@
-import { Container } from '@material-ui/core';
+import { Button, Container } from '@material-ui/core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -24,7 +24,6 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { isNil, isEmpty } from 'lodash';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
-import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -63,7 +62,6 @@ const transportProviders: ('mailgun' | 'smtp' | 'mandrill' | 'sendgrid')[] = [
 const EmailConfig: React.FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-  const [edit, setEdit] = useState<boolean>(false);
 
   const { config } = useAppSelector((state) => state.emailsSlice.data);
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
@@ -139,13 +137,11 @@ const EmailConfig: React.FC = () => {
   }, [initializeSettings, config]);
 
   const handleCancel = () => {
-    setEdit(false);
     const initializedState = initializeSettings(initialSettingsState);
     setSettingsState(initializedState);
   };
 
   const onSaveClick = () => {
-    setEdit(false);
     const transportSettings = settingsState.transportSettings;
     const keys: TransportProviders[] = Object.keys(transportSettings) as TransportProviders[];
     let newTransportSettings: any = {};
@@ -216,7 +212,6 @@ const EmailConfig: React.FC = () => {
           <TextField
             select
             label=""
-            disabled={!edit}
             value={settingsState.transport}
             onChange={(event) => {
               setSettingsState({
@@ -228,7 +223,7 @@ const EmailConfig: React.FC = () => {
             helperText="Select your transport provider"
             variant="outlined">
             {transportProviders.map((provider, index) => (
-              <MenuItem disabled={!edit} value={provider} key={index} className={classes.menuItem}>
+              <MenuItem value={provider} key={index} className={classes.menuItem}>
                 {provider}
               </MenuItem>
             ))}
@@ -237,7 +232,6 @@ const EmailConfig: React.FC = () => {
         <Grid item xs={12}>
           <TextField
             label="Sending Domain"
-            disabled={!edit}
             value={settingsState.sendingDomain}
             onChange={(event) => {
               setSettingsState({
@@ -249,7 +243,7 @@ const EmailConfig: React.FC = () => {
           />
         </Grid>
         <Divider className={classes.divider} />
-        <TransportSettings edit={edit} data={settingsState} onChange={onChange} />
+        <TransportSettings data={settingsState} onChange={onChange} />
       </>
     );
   };
@@ -276,19 +270,27 @@ const EmailConfig: React.FC = () => {
                   }
                   value={'active'}
                   color="primary"
-                  disabled={!edit}
                 />
               }
               label={''}
             />
           </Box>
-
           <Divider className={classes.divider} />
-
           <Grid container spacing={2} className={classes.innerGrid}>
             {settingsState.active && renderSettingsFields()}
           </Grid>
-          <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+          <Grid item container xs={12} justifyContent={'flex-end'}>
+            <Button onClick={() => handleCancel()} style={{ marginRight: 16 }} color={'primary'}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ alignSelf: 'flex-end' }}
+              onClick={() => setOpenSaveDialog(true)}>
+              Save
+            </Button>
+          </Grid>
         </Grid>
       </Paper>
       <ConfirmationDialog

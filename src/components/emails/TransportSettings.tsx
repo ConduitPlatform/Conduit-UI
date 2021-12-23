@@ -13,12 +13,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  edit: boolean;
   data: IEmailConfig;
   onChange: (value: string, key: string, provider: TransportProviders, authItem?: string) => void;
 }
 
-const TransportSettings: React.FC<Props> = ({ edit, data, onChange }) => {
+const TransportSettings: React.FC<Props> = ({ data, onChange }) => {
   const classes = useStyles();
 
   const handleChange = (
@@ -66,7 +65,6 @@ const TransportSettings: React.FC<Props> = ({ edit, data, onChange }) => {
           return (
             <Box key={index}>
               <TextField
-                disabled={!edit}
                 required
                 id={key}
                 label={key}
