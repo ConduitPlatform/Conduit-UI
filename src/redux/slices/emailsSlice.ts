@@ -206,6 +206,7 @@ export const asyncUpdateEmailConfig = createAsyncThunk(
         data: { config },
       } = await putEmailSettingsRequest(updatedSettings);
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Emails config successfully updated`));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Container, Grid, Paper, Typography } from '@material-ui/core';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import { SettingsOutlined } from '@material-ui/icons';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -140,10 +139,7 @@ const NotificationConfig: FC = () => {
                 display={'inline-flex'}
                 justifyContent={'space-between'}
                 alignItems={'center'}>
-                <Typography variant={'h6'}>
-                  <SettingsOutlined fontSize={'small'} style={{ marginBottom: '-2px' }} />
-                  Notification settings
-                </Typography>
+                <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
               <Divider className={classes.divider} />

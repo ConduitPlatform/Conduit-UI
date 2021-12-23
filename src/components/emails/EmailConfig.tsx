@@ -145,6 +145,7 @@ const EmailConfig: React.FC = () => {
   };
 
   const onSaveClick = () => {
+    setEdit(false);
     const transportSettings = settingsState.transportSettings;
     const keys: TransportProviders[] = Object.keys(transportSettings) as TransportProviders[];
     let newTransportSettings: any = {};
@@ -262,7 +263,7 @@ const EmailConfig: React.FC = () => {
             display={'inline-flex'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <Typography variant={'h6'}>Email Settings Module</Typography>
+            <Typography variant={'h6'}>Activate Email Module</Typography>
             <FormControlLabel
               control={
                 <Switch

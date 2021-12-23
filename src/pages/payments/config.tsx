@@ -2,13 +2,13 @@ import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import PaymentsConfig from '../../components/payments/PaymentsConfig';
-import { asyncGetPaymentSettings } from '../../redux/slices/paymentsSlice';
+import { asyncGetPaymentConfig } from '../../redux/slices/paymentsSlice';
 
 const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetPaymentSettings());
+    dispatch(asyncGetPaymentConfig());
   }, [dispatch]);
 
   return <PaymentsConfig />;

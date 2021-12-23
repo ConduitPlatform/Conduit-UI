@@ -72,7 +72,7 @@ export const asyncPutChatConfig = createAsyncThunk(
       const {
         data: { config },
       } = await putChatConfig(params);
-      thunkAPI.dispatch(enqueueSuccessNotification('Chat config was updated successfully!'));
+      thunkAPI.dispatch(enqueueSuccessNotification('Chat config successfully updated!'));
       thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {

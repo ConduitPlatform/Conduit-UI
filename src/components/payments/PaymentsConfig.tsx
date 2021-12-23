@@ -10,7 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { asyncUpdatePaymentSettings } from '../../redux/slices/paymentsSlice';
+import { asyncUpdatePaymentConfig } from '../../redux/slices/paymentsSlice';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 
 const useStyles = makeStyles((theme) => ({
@@ -84,7 +84,7 @@ const PaymentsConfig: React.FC = () => {
       ...data,
     };
 
-    dispatch(asyncUpdatePaymentSettings(body));
+    dispatch(asyncUpdatePaymentConfig(body));
   };
 
   return (

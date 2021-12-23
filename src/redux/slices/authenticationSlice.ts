@@ -212,6 +212,7 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
         data: { config },
       } = await putAuthenticationConfig(body);
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Authentication config successfully updated`));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

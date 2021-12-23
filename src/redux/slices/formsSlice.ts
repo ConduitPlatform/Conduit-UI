@@ -149,6 +149,7 @@ export const asyncEditFormsConfig = createAsyncThunk(
     try {
       const { data } = await updateFormsConfig(config);
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Forms config successfully updated`));
       return data.config;
     } catch (error) {
       thunkAPI.dispatch(

@@ -104,6 +104,7 @@ export const asyncSaveStorageConfig = createAsyncThunk(
         data: { config },
       } = await putStorageSettings(dataForConfig);
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Storage config successfully updated`));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

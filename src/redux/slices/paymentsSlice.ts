@@ -267,7 +267,7 @@ export const asyncGetSubscriptions = createAsyncThunk(
   }
 );
 
-export const asyncGetPaymentSettings = createAsyncThunk(
+export const asyncGetPaymentConfig = createAsyncThunk(
   'authentication/getConfig',
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
@@ -285,7 +285,7 @@ export const asyncGetPaymentSettings = createAsyncThunk(
   }
 );
 
-export const asyncUpdatePaymentSettings = createAsyncThunk(
+export const asyncUpdatePaymentConfig = createAsyncThunk(
   'authentication/updateConfig',
   async (body: any, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
@@ -350,10 +350,10 @@ const paymentsSlice = createSlice({
       state.data.subscriptionData.subscriptions = action.payload.subscriptionDocuments;
       state.data.subscriptionData.count = action.payload.totalCount;
     });
-    builder.addCase(asyncGetPaymentSettings.fulfilled, (state, action) => {
+    builder.addCase(asyncGetPaymentConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
     });
-    builder.addCase(asyncUpdatePaymentSettings.fulfilled, (state, action) => {
+    builder.addCase(asyncUpdatePaymentConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
     });
   },
