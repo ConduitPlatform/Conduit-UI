@@ -12,7 +12,7 @@ import AuthAccordion from '../../components/authentication/AuthAccordion';
 const SignIn = () => {
   const dispatch = useAppDispatch();
 
-  const { signInMethods: configData } = useAppSelector((state) => state.authenticationSlice.data);
+  const { config } = useAppSelector((state) => state.authenticationSlice.data);
 
   useEffect(() => {
     dispatch(asyncGetAuthenticationConfig());
@@ -20,7 +20,7 @@ const SignIn = () => {
 
   const handleConfigChange = (type: SocialNameTypes, newValue: SignInTypes) => {
     const data = {
-      ...configData,
+      ...config,
       [type]: {
         ...newValue,
       },
@@ -31,8 +31,8 @@ const SignIn = () => {
 
   return (
     <div>
-      {configData ? (
-        <AuthAccordion configData={configData} handleData={handleConfigChange} />
+      {config ? (
+        <AuthAccordion configData={config} handleData={handleConfigChange} />
       ) : (
         <Typography>No config available</Typography>
       )}

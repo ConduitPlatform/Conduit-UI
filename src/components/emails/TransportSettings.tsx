@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { EmailSettings, TransportProviders, whatever } from '../../models/emails/EmailModels';
+import { EmailConfig, TransportProviders, whatever } from '../../models/emails/EmailModels';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -13,11 +13,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  data: EmailSettings;
+  edit: boolean;
+  data: EmailConfig;
   onChange: (value: string, key: string, provider: TransportProviders, authItem?: string) => void;
 }
 
-const TransportSettings: React.FC<Props> = ({ data, onChange }) => {
+const TransportSettings: React.FC<Props> = ({ edit, data, onChange }) => {
   const classes = useStyles();
 
   const handleChange = (
@@ -65,6 +66,7 @@ const TransportSettings: React.FC<Props> = ({ data, onChange }) => {
           return (
             <Box key={index}>
               <TextField
+                disabled={!edit}
                 required
                 id={key}
                 label={key}
