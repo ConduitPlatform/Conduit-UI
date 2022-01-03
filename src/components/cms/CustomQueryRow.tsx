@@ -427,7 +427,7 @@ const CustomQueryRow: FC<Props> = ({
             <Checkbox
               color={'primary'}
               checked={query.comparisonField.like}
-              onChange={(event) => handleLikeValueChange(event, index)}
+              onClick={(event) => handleLikeValueChange(event, index)}
               name="Like"
               size={'small'}
               disabled={!editMode}

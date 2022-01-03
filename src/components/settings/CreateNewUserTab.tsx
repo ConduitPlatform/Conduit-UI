@@ -55,6 +55,7 @@ const CreateNewUserTab: React.FC = () => {
             />
             <div style={{ marginTop: '10px' }}> </div>
             <FormInputText
+              typeOfInput="password"
               name="password"
               rules={{
                 required: 'Password is required',

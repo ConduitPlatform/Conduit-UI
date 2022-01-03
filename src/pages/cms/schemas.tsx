@@ -119,6 +119,7 @@ const Schemas = () => {
         limit,
         search: debouncedSearch,
         sort: prepareSort(sort),
+        enabled,
       })
     );
   }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
