@@ -40,8 +40,8 @@ module.exports = (phase) => {
         permanent: true,
       },
       {
-        source: '/emails',
-        destination: '/emails/templates',
+        source: '/email',
+        destination: '/email/templates',
         permanent: true,
       },
       {
