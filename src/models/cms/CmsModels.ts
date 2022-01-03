@@ -32,6 +32,13 @@ export interface EditableSchemaFields {
   fields: SchemaFields[];
 }
 
+export interface Permissions {
+  extendable: boolean;
+  canCreate: boolean;
+  canModify: string;
+  canDelete: boolean;
+}
+
 export interface ToggleSchma {
   enabled: boolean;
   name: string;

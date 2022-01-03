@@ -1,5 +1,14 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input, Checkbox } from '@material-ui/core';
+import {
+  Box,
+  Typography,
+  Button,
+  Input,
+  Checkbox,
+  MenuItem,
+  TextField,
+  Paper,
+} from '@material-ui/core';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -8,12 +17,14 @@ import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/cmsSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { Permissions } from '../../models/cms/CmsModels';
+import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;
 
 const useStyles = makeStyles((theme) => ({
   header: {
-    zIndex: 9999,
+    zIndex: 9998,
     height: headerHeight,
     backgroundColor: theme.palette.primary.main,
     display: 'flex',
@@ -67,20 +78,25 @@ const useStyles = makeStyles((theme) => ({
   colorWhite: {
     color: theme.palette.common.white,
   },
+  canModify: {
+    zIndex: 9999,
+  },
 }));
 
 interface Props {
   name: string;
   authentication: boolean;
   crudOperations: boolean;
+  permissions: any;
   readOnly: boolean;
-  handleSave: (name: string, readOnly: boolean, crud: boolean) => void;
+  handleSave: (name: string, readOnly: boolean, crud: boolean, permissions: Permissions) => void;
 }
 
 const Header: FC<Props> = ({
   name,
   authentication,
   crudOperations,
+  permissions,
   readOnly,
   handleSave,
   ...rest
@@ -91,6 +107,13 @@ const Header: FC<Props> = ({
   const [schemaName, setSchemaName] = useState(name);
   const [schemaAuthentication, setSchemaAuthentication] = useState(false);
   const [schemaCrudOperations, setSchemaCrudOperations] = useState(false);
+  const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
+    extendable: false,
+    canCreate: false,
+    canModify: 'everything',
+    canDelete: false,
+  });
+  const [dialog, setDialog] = useState(false);
 
   useEffect(() => {
     setSchemaName(name);
@@ -100,7 +123,10 @@ const Header: FC<Props> = ({
     if (crudOperations !== null && crudOperations !== undefined) {
       setSchemaCrudOperations(crudOperations);
     }
-  }, [authentication, crudOperations, name]);
+    if (permissions) {
+      setSchemaPermissions({ ...permissions });
+    }
+  }, [authentication, crudOperations, name, permissions]);
 
   const handleDataName = (value: string) => {
     const regex = /[^a-z0-9_]/gi;
@@ -112,7 +138,7 @@ const Header: FC<Props> = ({
   };
 
   const handleData = () => {
-    handleSave(schemaName, schemaAuthentication, schemaCrudOperations);
+    handleSave(schemaName, schemaAuthentication, schemaCrudOperations, schemaPermissions);
   };
 
   const handleBackButtonClick = () => {
@@ -145,6 +171,7 @@ const Header: FC<Props> = ({
         <FormControlLabel
           control={
             <Checkbox
+              size="small"
               className={classes.checkbox}
               checked={schemaAuthentication}
               onChange={(event) => {
@@ -153,11 +180,12 @@ const Header: FC<Props> = ({
               name="authentication"
             />
           }
-          label="Authentication required"
+          label={<Typography variant="caption">Authentication required</Typography>}
         />
         <FormControlLabel
           control={
             <Checkbox
+              size="small"
               className={classes.checkbox}
               checked={schemaCrudOperations}
               onChange={(event) => {
@@ -166,8 +194,9 @@ const Header: FC<Props> = ({
               name="crudOperations"
             />
           }
-          label="Allow Crud Operations"
+          label={<Typography variant="caption">Allow Crud Operations</Typography>}
         />
+        <Button onClick={() => setDialog(true)}>Edit permissions</Button>
       </Box>
       <Box display={'flex'} alignItems={'center'}>
         <Button
@@ -177,6 +206,12 @@ const Header: FC<Props> = ({
           <Typography>Save</Typography>
         </Button>
       </Box>
+      <PermissionsDialog
+        open={dialog}
+        permissions={schemaPermissions}
+        setPermissions={setSchemaPermissions}
+        handleClose={() => setDialog(false)}
+      />
     </Box>
   );
 };

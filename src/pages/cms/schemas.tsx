@@ -35,6 +35,7 @@ import {
   Extension,
   CreateNewFolder,
   DeleteForever,
+  SettingsSharp,
   Search,
 } from '@material-ui/icons';
 import Paginator from '../../components/common/Paginator';
@@ -311,6 +312,11 @@ const Schemas = () => {
         <Tooltip title="Can delete">
           <Icon hidden={!permissions.canDelete}>
             <DeleteForever color="primary" />
+          </Icon>
+        </Tooltip>
+        <Tooltip title={`Modify: ${permissions.canModify}`}>
+          <Icon hidden={!permissions.canModify}>
+            <SettingsSharp color="primary" />
           </Icon>
         </Tooltip>
       </div>
