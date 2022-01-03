@@ -1,12 +1,16 @@
 import React, { useEffect, useMemo } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogContent';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Button,
+  Container,
+  Grid,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
 import { Permissions } from '../../models/cms/CmsModels';
-import { Button, Container, Grid } from '@material-ui/core';
 import { DoneOutline } from '@material-ui/icons';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
