@@ -1,5 +1,5 @@
-import { Button, Container } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -60,7 +60,6 @@ const EmailConfig: React.FC = () => {
   };
 
   const onSubmit = (data: IEmailConfig) => {
-    console.log('data', data);
     setEdit(false);
     dispatch(asyncUpdateEmailConfig(data));
   };
