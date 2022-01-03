@@ -11,6 +11,12 @@ export interface Schema {
         authentication: boolean;
         crudOperations: boolean;
       };
+      permissions: {
+        extendable: boolean;
+        canCreate: boolean;
+        canModify: string;
+        canDelete: boolean;
+      };
     };
   };
   name: string;
