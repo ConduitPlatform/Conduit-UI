@@ -22,15 +22,13 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import TabPanel from '../../components/emails/TabPanel';
-import { CallMissedOutgoing } from '@material-ui/icons';
+import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@material-ui/icons';
 import Sync from '@material-ui/icons/Sync';
 import SearchIcon from '@material-ui/icons/Search';
 import Paginator from '../../components/common/Paginator';
 import ExternalTemplates from '../../components/emails/ExternalTemplates';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
-import { DeleteTwoTone } from '@material-ui/icons';
 import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 

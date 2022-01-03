@@ -10,16 +10,11 @@ export interface EmailTemplateType {
   createdAt?: string;
 }
 
-export type whatever =
-  | keyof MailgunSettings
-  | keyof SmtpSettings
-  | keyof MandrillSettings
-  | keyof SendgridSettings;
-
 export interface MailgunSettings {
   apiKey: string;
   domain: string;
   host: string;
+  proxy: string;
 }
 
 export interface SmtpSettings {
@@ -38,14 +33,10 @@ export interface MandrillSettings {
 
 export interface SendgridSettings {
   apiUser: string;
+  apiKey: string;
 }
 
-export enum TransportProviders {
-  mailgun = 'mailgun',
-  smtp = 'smtp',
-  mandrill = 'mandrill',
-  sendgrid = 'sendgrid',
-}
+export type TransportProviders = 'mailgun' | 'smtp' | 'mandrill' | 'sendgrid';
 
 export interface ITransportSettings {
   mailgun: MailgunSettings;

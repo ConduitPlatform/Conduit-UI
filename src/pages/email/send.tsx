@@ -2,10 +2,9 @@ import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import EmailsLayout from '../../components/navigation/InnerLayouts/emailsLayout';
 import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
-
 import SendEmailForm from '../../components/emails/SendEmailForm';
 
-const SendEmail = () => {
+const Send = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -17,8 +16,8 @@ const SendEmail = () => {
   return <SendEmailForm templates={templateDocuments} />;
 };
 
-SendEmail.getLayout = function getLayout(page: ReactElement) {
+Send.getLayout = function getLayout(page: ReactElement) {
   return <EmailsLayout>{page}</EmailsLayout>;
 };
 
-export default SendEmail;
+export default Send;

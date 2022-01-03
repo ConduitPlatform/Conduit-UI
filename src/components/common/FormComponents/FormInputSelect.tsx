@@ -2,6 +2,7 @@ import React from 'react';
 import { MenuItem } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
+import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 
 interface FormSelectProps {
   name: string;
@@ -9,6 +10,7 @@ interface FormSelectProps {
   options: { label: string; value: string }[];
   disabled?: boolean;
   rules?: ControllerProps['rules'];
+  textFieldProps?: TextFieldProps;
 }
 
 export const FormInputSelect: React.FC<FormSelectProps> = ({
@@ -17,6 +19,7 @@ export const FormInputSelect: React.FC<FormSelectProps> = ({
   options,
   disabled,
   rules,
+  textFieldProps,
 }) => {
   const generateSingleOptions = () => {
     return options.map((option: { label: string; value: string }) => {
@@ -47,7 +50,8 @@ export const FormInputSelect: React.FC<FormSelectProps> = ({
           helperText={errors[name] ? errors[name].message : null}
           error={!!errors[name]}
           label={label}
-          variant="outlined">
+          variant="outlined"
+          {...textFieldProps}>
           {generateSingleOptions()}
         </TextField>
       )}
