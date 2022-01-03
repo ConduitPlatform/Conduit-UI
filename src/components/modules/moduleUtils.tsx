@@ -53,7 +53,7 @@ export const handleModuleNavigation = (moduleName: string) => {
     case 'authentication':
       return '/authentication/users';
     case 'email':
-      return '/emails/templates';
+      return '/email/templates';
     case 'cms':
       return '/cms/schemas';
     case 'storage':

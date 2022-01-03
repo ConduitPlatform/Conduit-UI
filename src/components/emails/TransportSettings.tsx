@@ -1,79 +1,64 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { IEmailConfig, TransportProviders, whatever } from '../../models/emails/EmailModels';
+import { IEmailConfig } from '../../models/emails/EmailModels';
+import { useWatch } from 'react-hook-form';
+import { Control } from 'react-hook-form/dist/types';
+import { FormInputText } from '../common/FormComponents/FormInputText';
 
 const useStyles = makeStyles((theme) => ({
   input: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
 }));
 
 interface Props {
   data: IEmailConfig;
-  onChange: (value: string, key: string, provider: TransportProviders, authItem?: string) => void;
+  control: Control<IEmailConfig>;
+  disabled: boolean;
 }
 
-const TransportSettings: React.FC<Props> = ({ data, onChange }) => {
+const TransportSettings: React.FC<Props> = ({ data, control, disabled }) => {
   const classes = useStyles();
 
-  const handleChange = (
-    value: string,
-    key: string,
-    provider: TransportProviders,
-    authItem?: string
-  ) => {
-    if (onChange) {
-      onChange(value, key, provider, authItem);
-    }
-  };
+  const transportProvider = useWatch({
+    control,
+    name: 'transport',
+  });
 
   const handleFields = () => {
-    if (!data.transport) {
-      return <>N/A</>;
-    }
-    const settings: any = data.transportSettings[data.transport];
-    const settingKeys = settings ? (Object.keys(settings) as whatever[]) : [];
-
+    const fields: any = data.transportSettings[transportProvider];
     return (
-      <Grid item container xs={12} direction="column">
-        {settingKeys.map((key, index: number) => {
-          if (data.transport === 'smtp' && key === 'auth') {
-            return Object.keys(settings['auth']).map((authItem: any, index: number) => {
-              const settingsKey = settings['auth'];
+      <Grid item container xs={4} direction="column">
+        {Object.keys(fields).map((field) => {
+          if (transportProvider === 'smtp' && field === 'auth') {
+            return Object.keys(fields[field]).map((childField) => {
               return (
-                <Box key={`${authItem}${index}`}>
-                  <TextField
-                    required
-                    id={authItem}
-                    label={authItem}
-                    variant="outlined"
-                    className={classes.input}
-                    value={settingsKey[authItem]}
-                    onChange={(event) =>
-                      handleChange(event.target.value, key, data.transport, authItem)
-                    }
-                  />
-                </Box>
+                <FormInputText
+                  name={`transportSettings.smtp.auth.${childField}`}
+                  label={childField}
+                  textFieldProps={{
+                    fullWidth: false,
+                    className: classes.input,
+                  }}
+                  disabled={disabled}
+                  key={childField}
+                />
               );
             });
           }
-
           return (
-            <Box key={index}>
-              <TextField
-                required
-                id={key}
-                label={key}
-                variant="outlined"
-                className={classes.input}
-                value={settings[key] ? settings[key] : ''}
-                onChange={(event) => handleChange(event.target.value, key, data.transport)}
-              />
-            </Box>
+            <FormInputText
+              name={`transportSettings.${transportProvider}.${field}`}
+              label={field}
+              textFieldProps={{
+                fullWidth: false,
+                className: classes.input,
+              }}
+              disabled={disabled}
+              key={field}
+            />
           );
         })}
       </Grid>
