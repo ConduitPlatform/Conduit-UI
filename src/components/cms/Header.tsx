@@ -103,8 +103,6 @@ const Header: FC<Props> = ({
   });
   const [dialog, setDialog] = useState(false);
 
-  console.log(schemaPermissions);
-
   useEffect(() => {
     setSchemaName(name);
     if (authentication !== null && authentication !== undefined) {
