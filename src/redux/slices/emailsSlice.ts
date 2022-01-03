@@ -15,7 +15,6 @@ import {
   EmailTemplateType,
   EmailData,
   SendEmailData,
-  TransportProviders,
   IEmailConfig,
 } from '../../models/emails/EmailModels';
 import { setAppLoading } from './appSlice';
@@ -39,12 +38,13 @@ const initialState: IEmailSlice = {
     config: {
       active: false,
       sendingDomain: '',
-      transport: TransportProviders['smtp'],
+      transport: 'smtp',
       transportSettings: {
         mailgun: {
           apiKey: '',
           domain: '',
           host: '',
+          proxy: '',
         },
         smtp: {
           port: '',
@@ -60,6 +60,7 @@ const initialState: IEmailSlice = {
         },
         sendgrid: {
           apiUser: '',
+          apiKey: '',
         },
       },
     },

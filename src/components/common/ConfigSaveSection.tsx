@@ -4,14 +4,14 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
-    marginRight: 16,
+    marginRight: theme.spacing(2),
   },
   saveBtn: {
     alignSelf: 'flex-end',
   },
   gridItem: {
     justifyContent: 'flex-end',
-    padding: '5px',
+    padding: theme.spacing(1),
   },
 }));
 
