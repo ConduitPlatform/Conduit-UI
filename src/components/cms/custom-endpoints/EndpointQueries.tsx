@@ -127,8 +127,6 @@ const EndpointQueries: FC<Props> = ({
 
     const foundQuery = findModifiedQuery(currentQueries, queryId);
 
-    const value = !event.target.checked;
-
     if (foundQuery) {
       foundQuery.comparisonField.like = !foundQuery.comparisonField.like;
       setSelectedQueries(currentQueries);
@@ -214,7 +212,7 @@ const EndpointQueries: FC<Props> = ({
       return (
         <StyledTreeItem
           key={node._id ? node._id : uuidV4()}
-          nodeId={node._id && node._id}
+          nodeId={node._id}
           onLabelClick={(e: any) => e.preventDefault()}
           label={
             <Grid
