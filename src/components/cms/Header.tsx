@@ -1,14 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Input,
-  Checkbox,
-  MenuItem,
-  TextField,
-  Paper,
-} from '@material-ui/core';
+import { Box, Typography, Button, Input, Checkbox } from '@material-ui/core';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -78,9 +69,6 @@ const useStyles = makeStyles((theme) => ({
   colorWhite: {
     color: theme.palette.common.white,
   },
-  canModify: {
-    zIndex: 9999,
-  },
 }));
 
 interface Props {
@@ -114,6 +102,8 @@ const Header: FC<Props> = ({
     canDelete: false,
   });
   const [dialog, setDialog] = useState(false);
+
+  console.log(schemaPermissions);
 
   useEffect(() => {
     setSchemaName(name);
@@ -196,7 +186,9 @@ const Header: FC<Props> = ({
           }
           label={<Typography variant="caption">Allow Crud Operations</Typography>}
         />
-        <Button onClick={() => setDialog(true)}>Edit permissions</Button>
+        <Button variant="outlined" onClick={() => setDialog(true)}>
+          Edit permissions
+        </Button>
       </Box>
       <Box display={'flex'} alignItems={'center'}>
         <Button

@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import { Permissions } from '../../models/cms/CmsModels';
-import { Container, Grid, MenuItem, Typography } from '@material-ui/core';
+import { Button, Container, Grid } from '@material-ui/core';
+import { DoneOutline } from '@material-ui/icons';
+import { useForm, FormProvider } from 'react-hook-form';
+import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
+import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -40,6 +41,24 @@ interface Props {
 const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, setPermissions }) => {
   const classes = useStyles();
 
+  const methods = useForm<Permissions>({
+    defaultValues: useMemo(() => {
+      return permissions;
+    }, [permissions]),
+  });
+
+  useEffect(() => {
+    methods.reset(permissions);
+  }, [methods, permissions]);
+  const { handleSubmit } = methods;
+
+  const options = ['Everything', 'Nothing', 'ExtensionOnly'];
+
+  const onSubmit = (data: any) => {
+    setPermissions({ ...data });
+    handleClose();
+  };
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="simple-dialog-title">
@@ -50,64 +69,42 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
       </DialogTitle>
       <DialogContent>
         <Container className={classes.root} maxWidth="sm">
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item sm={6}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={permissions?.extendable}
-                    onChange={(event) => {
-                      setPermissions({ ...permissions, extendable: event.target.checked });
-                    }}
-                    name="authentication"
+          <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Grid container alignItems="center" spacing={2}>
+                <Grid item sm={6}>
+                  <FormInputCheckBox name="extendable" label="Is extendable" />
+                </Grid>
+                <Grid item sm={6}>
+                  <FormInputCheckBox name="canCreate" label="Can create" />
+                </Grid>
+                <Grid item sm={6}>
+                  <FormInputCheckBox name="canDelete" label="Can delete" />
+                </Grid>
+                <Grid item sm={6}>
+                  <FormInputSelect
+                    label={'Template name'}
+                    name="canModify"
+                    options={options?.map((option) => ({
+                      label: option,
+                      value: option,
+                    }))}
                   />
-                }
-                label={<Typography variant="caption">Is extendable</Typography>}
-              />
-            </Grid>
-            <Grid item sm={6}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={permissions?.canCreate}
-                    onChange={(event) => {
-                      setPermissions({ ...permissions, canCreate: event.target.checked });
-                    }}
-                    name="authentication"
-                  />
-                }
-                label={<Typography variant="caption">Can create</Typography>}
-              />
-            </Grid>
-            <Grid item sm={6}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={permissions?.canDelete}
-                    onChange={(event) => {
-                      setPermissions({ ...permissions, canDelete: event.target.checked });
-                    }}
-                    name="authentication"
-                  />
-                }
-                label={<Typography variant="caption">Can delete</Typography>}
-              />
-            </Grid>
-            <Grid item sm={6}>
-              <TextField
-                select
-                label={'Modify'}
-                variant="outlined"
-                value={permissions.canModify}
-                onChange={(event) => {
-                  setPermissions({ ...permissions, canModify: event.target.value });
-                }}>
-                <MenuItem value={'Everything'}>Everything</MenuItem>
-                <MenuItem value={'Nothing'}>Nothing</MenuItem>
-                <MenuItem value={'ExtensionOnly'}>Extension Only</MenuItem>
-              </TextField>
-            </Grid>
-          </Grid>
+                </Grid>
+                <Grid item sm={12}>
+                  <Button
+                    fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    startIcon={<DoneOutline />}>
+                    Save
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </FormProvider>
         </Container>
       </DialogContent>
     </Dialog>
