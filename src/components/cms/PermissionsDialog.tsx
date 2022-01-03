@@ -50,6 +50,7 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
   useEffect(() => {
     methods.reset(permissions);
   }, [methods, permissions]);
+
   const { handleSubmit } = methods;
 
   const options = ['Everything', 'Nothing', 'ExtensionOnly'];
@@ -83,7 +84,7 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
                 </Grid>
                 <Grid item sm={6}>
                   <FormInputSelect
-                    label={'Template name'}
+                    label={'Can modify'}
                     name="canModify"
                     options={options?.map((option) => ({
                       label: option,
