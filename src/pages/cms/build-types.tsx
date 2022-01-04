@@ -79,7 +79,7 @@ const BuildTypes: React.FC = () => {
   const { data } = useAppSelector((state) => state.cmsSlice);
 
   const [schemaFields, setSchemaFields] = useState<any>({ newTypeFields: [] });
-  const [schemaName, setSchemaName] = useState<any>('');
+  const [schemaName, setSchemaName] = useState<string>('');
   const [authentication, setAuthentication] = useState(false);
   const [crudOperations, setCrudOperations] = useState(false);
   const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
@@ -176,7 +176,7 @@ const BuildTypes: React.FC = () => {
 
   useEffect(() => {
     if (router.query.name) {
-      setSchemaName(router.query.name);
+      setSchemaName(router.query.name.toString());
     }
   }, [router.query.name, router.query.schema, router.query.schemaId]);
 

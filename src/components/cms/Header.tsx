@@ -69,13 +69,17 @@ const useStyles = makeStyles((theme) => ({
   colorWhite: {
     color: theme.palette.common.white,
   },
+  saveBox: {
+    display: 'flex',
+    alignItems: 'center',
+  },
 }));
 
 interface Props {
   name: string;
   authentication: boolean;
   crudOperations: boolean;
-  permissions: any;
+  permissions: Permissions;
   readOnly: boolean;
   handleSave: (name: string, readOnly: boolean, crud: boolean, permissions: Permissions) => void;
 }
@@ -188,7 +192,7 @@ const Header: FC<Props> = ({
           Edit permissions
         </Button>
       </Box>
-      <Box display={'flex'} alignItems={'center'}>
+      <Box className={classes.saveBox}>
         <Button
           className={clsx(classes.saveButton, classes.colorWhite)}
           onClick={() => handleData()}>

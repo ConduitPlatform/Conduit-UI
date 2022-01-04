@@ -42,6 +42,8 @@ interface Props {
   handleClose: () => void;
 }
 
+const options = ['Everything', 'Nothing', 'ExtensionOnly'];
+
 const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, setPermissions }) => {
   const classes = useStyles();
 
@@ -56,8 +58,6 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
   }, [methods, permissions]);
 
   const { handleSubmit, reset } = methods;
-
-  const options = ['Everything', 'Nothing', 'ExtensionOnly'];
 
   const onSubmit = (data: any) => {
     setPermissions({ ...data });
@@ -95,7 +95,7 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
                   <FormInputSelect
                     label={'Can modify'}
                     name="canModify"
-                    options={options?.map((option) => ({
+                    options={options.map((option) => ({
                       label: option,
                       value: option,
                     }))}

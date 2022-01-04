@@ -8,7 +8,7 @@ import {
   asyncToggleSchema,
   setSelectedSchema,
 } from '../../redux/slices/cmsSlice';
-import { Schema } from '../../models/cms/CmsModels';
+import { Permissions, Schema } from '../../models/cms/CmsModels';
 import { useRouter } from 'next/router';
 import NewSchemaDialog from '../../components/cms/NewSchemaDialog';
 import SchemaActionsDialog, { actions } from '../../components/cms/SchemaActionsDialog';
@@ -93,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
   noSchemas: {
     textAlign: 'center',
     marginTop: '200px',
+  },
+  permissions: {
+    marginTop: '5px',
   },
 }));
 
@@ -296,9 +299,9 @@ const Schemas = () => {
     { title: 'Updated at', sort: 'updatedAt' },
   ];
 
-  const extractPermissions = (permissions: any) => {
+  const extractPermissions = (permissions: Permissions) => {
     return (
-      <div style={{ marginTop: '5px' }}>
+      <div className={classes.permissions}>
         <Tooltip title="Schema is extendable">
           <Icon hidden={!permissions.extendable}>
             <Extension color="primary" />
