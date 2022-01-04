@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, resetServerContext } from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import BuildTypesList from '../../components/cms/BuildTypesList';
-import BuildTypesContent from '../../components/cms/BuildTypesContent';
-import BuildTypesDrawer from '../../components/cms/BuildTypesDrawer';
-import Header, { headerHeight } from '../../components/cms/Header';
+import BuildTypesList from '../../../components/cms/BuildTypesList';
+import BuildTypesContent from '../../../components/cms/BuildTypesContent';
+import BuildTypesDrawer from '../../../components/cms/BuildTypesDrawer';
+import Header, { headerHeight } from '../../../components/cms/Header';
 import {
   addToChildGroup,
   addToGroup,
@@ -17,7 +17,7 @@ import {
   updateGroupChildItem,
   updateGroupItem,
   updateItem,
-} from '../../utils/type-functions';
+} from '../../../utils/type-functions';
 import { useRouter } from 'next/router';
 import {
   asyncCreateNewSchema,
@@ -25,8 +25,8 @@ import {
   asyncFetchSchemasFromOtherModules,
   asyncGetCmsSchemas,
   clearSelectedSchema,
-} from '../../redux/slices/cmsSlice';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+} from '../../../redux/slices/cmsSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 
 resetServerContext();
 
@@ -86,6 +86,7 @@ const BuildTypes: React.FC = () => {
     type: '',
     destination: null,
   });
+  const;
 
   const [duplicateId, setDuplicateId] = useState(false);
   const [invalidName, setInvalidName] = useState(false);
@@ -163,8 +164,11 @@ const BuildTypes: React.FC = () => {
   }, [data.selectedSchema]);
 
   useEffect(() => {
+    const { id } = router.query;
+    console.log(id);
     if (router.query.name) {
       setSchemaName(router.query.name);
+      console.log(router.query.name);
     }
   }, [router.query.name, router.query.schema, router.query.schemaId]);
 

@@ -1,17 +1,17 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import CmsLayout from '../../../components/navigation/InnerLayouts/cmsLayout';
 import {
   asyncDeleteSelectedSchemas,
   asyncGetCmsSchemas,
   asyncToggleMultipleSchemas,
   asyncToggleSchema,
   setSelectedSchema,
-} from '../../redux/slices/cmsSlice';
-import { Schema } from '../../models/cms/CmsModels';
+} from '../../../redux/slices/cmsSlice';
+import { Schema } from '../../../models/cms/CmsModels';
 import { useRouter } from 'next/router';
-import NewSchemaDialog from '../../components/cms/NewSchemaDialog';
-import SchemaActionsDialog, { actions } from '../../components/cms/SchemaActionsDialog';
+import NewSchemaDialog from '../../../components/cms/NewSchemaDialog';
+import SchemaActionsDialog, { actions } from '../../../components/cms/SchemaActionsDialog';
 import {
   Grid,
   makeStyles,
@@ -24,13 +24,13 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import useDebounce from '../../hooks/useDebounce';
-import DataTable from '../../components/common/DataTable';
+import useDebounce from '../../../hooks/useDebounce';
+import DataTable from '../../../components/common/DataTable';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 import { Archive, CheckCircle, Delete, Search } from '@material-ui/icons';
-import Paginator from '../../components/common/Paginator';
-import { SchemaUI } from '../../components/cms/CmsModels';
-import { prepareSort } from '../../utils/prepareSort';
+import Paginator from '../../../components/common/Paginator';
+import { SchemaUI } from '../../../components/cms/CmsModels';
+import { prepareSort } from '../../../utils/prepareSort';
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -209,10 +209,9 @@ const Schemas = () => {
     switch (action.type) {
       case 'edit':
         dispatch(setSelectedSchema(data._id));
-        router.push(
-          { pathname: '/cms/build-types', query: { schemaId: data.id ? data.id : null } },
-          '/cms/build-types'
-        );
+        router.push({
+          pathname: `schemas/${data._id}`,
+        });
         break;
       case 'archive':
         setSelectedSchemaForAction({ data, action: 'archive' });
