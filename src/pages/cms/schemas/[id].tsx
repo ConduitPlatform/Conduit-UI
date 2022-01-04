@@ -79,6 +79,7 @@ const BuildTypes: React.FC = () => {
   const { data } = useAppSelector((state) => state.cmsSlice);
   const [schemaFields, setSchemaFields] = useState<any>({ newTypeFields: [] });
   const [selectedSchema, setSelectedSchema] = useState<Schema>();
+  const [schemaName, setSchemaName] = useState<string>('');
   const [authentication, setAuthentication] = useState(false);
   const [crudOperations, setCrudOperations] = useState(false);
   const [drawerData, setDrawerData] = useState<any>({
@@ -115,6 +116,7 @@ const BuildTypes: React.FC = () => {
       setCrudOperations(true);
     }
     if (data && selectedSchema) {
+      setSchemaName(selectedSchema.name);
       if (
         selectedSchema.modelOptions.conduit.cms.authentication !== null &&
         selectedSchema.modelOptions.conduit.cms.authentication !== undefined
@@ -129,6 +131,8 @@ const BuildTypes: React.FC = () => {
       }
       const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
       setSchemaFields({ newTypeFields: formattedFields });
+    } else if (router.query.id) {
+      setSchemaName(router.query.id.toString());
     }
   }, [data]);
 
@@ -433,7 +437,7 @@ const BuildTypes: React.FC = () => {
   return (
     <Box className={classes.root}>
       <Header
-        name={selectedSchema?.name}
+        name={schemaName}
         authentication={authentication}
         crudOperations={crudOperations}
         readOnly={readOnly}
