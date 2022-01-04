@@ -55,7 +55,7 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
     methods.reset(permissions);
   }, [methods, permissions]);
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, reset } = methods;
 
   const options = ['Everything', 'Nothing', 'ExtensionOnly'];
 
@@ -64,11 +64,16 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
     handleClose();
   };
 
+  const handleCloseDialog = () => {
+    reset();
+    handleClose();
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
         Permissions
-        <IconButton onClick={handleClose} className={classes.customizedButton}>
+        <IconButton onClick={handleCloseDialog} className={classes.customizedButton}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
