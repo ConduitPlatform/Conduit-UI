@@ -74,7 +74,6 @@ const BuildTypes: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   resetServerContext();
-  // renderToString(BuildTypes);
 
   const { data } = useAppSelector((state) => state.cmsSlice);
   const [schemaFields, setSchemaFields] = useState<any>({ newTypeFields: [] });
