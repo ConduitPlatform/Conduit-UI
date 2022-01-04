@@ -25,8 +25,8 @@ interface PasswordStrengthProps {
 const PasswordStrengthMeter: FC<PasswordStrengthProps> = ({ password }) => {
   const passwordState = useMemo(() => {
     const strength = getPasswordStrength(password);
-    if (strength == 1) return { color: 'orangered', percentage: 25, message: 'password is weak' };
-    if (strength == 2) return { color: 'orange', percentage: 70, message: 'password is moderate' };
+    if (strength == 1) return { color: 'orangered', percentage: 30, message: 'password is weak' };
+    if (strength == 2) return { color: '#8FCA11', percentage: 70, message: 'password is moderate' };
     if (strength == 3) return { color: 'green', percentage: 100, message: 'password is strong' };
     return { color: 'red', percentage: 0, message: 'password is very weak' };
   }, [password]);
