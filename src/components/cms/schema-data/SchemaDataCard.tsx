@@ -138,7 +138,8 @@ const SchemaDataCard: FC<Props> = ({
       documentData: documentState,
       getSchemaDocuments: getSchemaDocuments,
     };
-    dispatch(asyncEditSchemaDocument(params));
+    console.log(params);
+    // dispatch(asyncEditSchemaDocument(params));
   };
 
   const handleCancel = () => {

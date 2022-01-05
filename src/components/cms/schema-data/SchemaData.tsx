@@ -153,9 +153,10 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     if (objectView) {
       return documentsState.data.map((docs: any, index: number) => (
         <JSONEditor
-          value={schemas[selectedSchema]}
           documents={docs}
           getSchemaDocuments={getSchemaDocuments}
+          schema={schemas[selectedSchema]}
+          onDelete={() => onDelete(index)}
           key={index}
         />
       ));
