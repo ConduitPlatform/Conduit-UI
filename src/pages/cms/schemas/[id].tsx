@@ -260,7 +260,7 @@ const BuildTypes: React.FC = () => {
       const allGroups = array.filter((s) => s.type === 'Group');
       const parentGroup = allGroups.find((object) => {
         if (object.content) {
-          return object.content.find((content: any) => content.name === groupId);
+          return object.content.find((contentItem: any) => contentItem.name === groupId);
         }
         return false;
       });
