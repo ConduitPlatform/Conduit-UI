@@ -260,22 +260,6 @@ export const asyncGetSchemaDocument = createAsyncThunk(
   }
 );
 
-const prepareDocumentField = (doc: any) => {
-  if (doc.fields) {
-    const fields: any = {};
-    doc.fields.forEach((field: any) => {
-      if (field.fields) {
-        const childFields = prepareDocumentField(field);
-        fields[field.name] = childFields[field.name];
-      } else {
-        fields[field.name] = field.value;
-      }
-    });
-    return { [doc.name]: fields };
-  }
-  return { [doc.name]: doc.value };
-};
-
 export const asyncCreateSchemaDocument = createAsyncThunk<
   any,
   { schemaName: string; document: any; getSchemaDocuments: () => void }

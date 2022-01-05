@@ -11,7 +11,6 @@ import { useAppDispatch } from '../../../redux/store';
 
 interface Props {
   editMode: boolean;
-  operationType: number;
   selectedInputs: Input[];
   selectedAssignments: any;
   setSelectedAssignments: (assignments: Assignment[]) => void;
@@ -60,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
 const EndpointAssignments: FC<Props> = ({
   editMode,
   selectedInputs,
-  operationType,
   selectedAssignments,
   setSelectedAssignments,
   availableFieldsOfSchema,

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Button, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 interface Props {
   editMode: boolean;
@@ -13,7 +13,7 @@ interface Props {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    paddingTop: '30px',
+    paddingTop: theme.spacing(4),
   },
 }));
 
