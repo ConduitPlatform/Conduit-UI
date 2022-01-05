@@ -2,13 +2,16 @@ import React, { FC } from 'react';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import RefreshIcon from '@material-ui/icons/Refresh';
 import Paginator from '../../common/Paginator';
 import { BoxProps } from '@material-ui/core/Box/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
+import { Search, Refresh, AccountTree } from '@material-ui/icons';
 import useParseQuery from './useParseQuery';
+import { Typography } from '@material-ui/core';
+import clsx from 'clsx';
+
+const ObjText = '{ }';
 
 const useStyles = makeStyles((theme) => ({
   topContainer: {
@@ -25,7 +28,28 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(1),
   },
   paginator: {
+    display: 'flex',
+    alignItems: 'center',
     borderBottom: '1px solid rgb(255 255 255 / 12%)',
+  },
+  buttonContainer: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+    background: theme.palette.grey[600],
+    borderRadius: theme.spacing(0.5),
+    cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing(2),
+    marginLeft: theme.spacing(1),
+  },
+  objText: {
+    whiteSpace: 'nowrap',
+    fontSize: 14,
+  },
+  selected: {
+    color: theme.palette.primary.main,
   },
 }));
 
@@ -43,6 +67,8 @@ interface Props extends BoxProps {
   search: string;
   setSearch: (value: string) => void;
   count: number;
+  objectView: boolean;
+  setObjectView: (value: boolean) => void;
 }
 
 const SchemaDataHeader: FC<Props> = ({
@@ -53,6 +79,8 @@ const SchemaDataHeader: FC<Props> = ({
   search,
   setSearch,
   count,
+  objectView,
+  setObjectView,
   ...rest
 }) => {
   const classes = useStyles();
@@ -102,7 +130,7 @@ const SchemaDataHeader: FC<Props> = ({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <Search />
               </InputAdornment>
             ),
           }}
@@ -110,7 +138,7 @@ const SchemaDataHeader: FC<Props> = ({
         />
         <Box className={classes.divider} />
         <Button variant="contained" color="secondary" onClick={() => onRefresh()}>
-          <RefreshIcon />
+          <Refresh />
           Refresh
         </Button>
         <Box className={classes.divider} />
@@ -118,14 +146,24 @@ const SchemaDataHeader: FC<Props> = ({
           Add Document
         </Button>
       </Box>
-      <Paginator
-        handlePageChange={(event, value) => handlePageChange(value)}
-        limit={filters.limit}
-        handleLimitChange={handleLimitChange}
-        page={filters.page}
-        count={count}
-        className={classes.paginator}
-      />
+      <Box className={classes.paginator}>
+        <Box className={classes.buttonContainer} onClick={() => setObjectView(false)}>
+          <AccountTree color={objectView ? 'inherit' : 'primary'} />
+        </Box>
+        <Box className={classes.buttonContainer} onClick={() => setObjectView(true)}>
+          <Typography
+            className={objectView ? clsx(classes.objText, classes.selected) : classes.objText}>
+            {ObjText}
+          </Typography>
+        </Box>
+        <Paginator
+          handlePageChange={(event, value) => handlePageChange(value)}
+          limit={filters.limit}
+          handleLimitChange={handleLimitChange}
+          page={filters.page}
+          count={count}
+        />
+      </Box>
     </Box>
   );
 };

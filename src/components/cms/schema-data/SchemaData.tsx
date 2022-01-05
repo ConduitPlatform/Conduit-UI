@@ -17,6 +17,7 @@ import SchemaDataHeader from './SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
+import BSONEditor from './BSONEditor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
     minWidth: '300px',
+  },
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
   },
   card: {
     margin: theme.spacing(1),
@@ -74,6 +80,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     limit: 10,
   });
   const [search, setSearch] = useState<string>('');
+  const [objectView, setObjectView] = useState<boolean>(false);
 
   const debouncedSearch: string = useParseQuery(search, 500);
 
@@ -156,7 +163,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
             return <Tab key={`tabs${index}`} label={d.name} />;
           })}
         </Tabs>
-        <Box style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <Box className={classes.headerContainer}>
           <SchemaDataHeader
             onCreateDocument={onCreateDocument}
             onRefresh={getSchemaDocuments}
@@ -165,20 +172,22 @@ const SchemaData: FC<Props> = ({ schemas }) => {
             search={search}
             setSearch={setSearch}
             count={documentsState.count}
+            objectView={objectView}
+            setObjectView={setObjectView}
           />
           {documentsState.data.length > 0 ? (
             <TabPanel>
               {documentsState.data.map((docs: any, index: number) => {
                 return (
-                  <SchemaDataCard
-                    schema={schemas[selectedSchema]}
-                    documents={docs}
-                    className={classes.card}
-                    // handleEdit={() => onEdit(index)}
-                    onDelete={() => onDelete(index)}
-                    getSchemaDocuments={getSchemaDocuments}
-                    key={`card${index}`}
-                  />
+                  <BSONEditor value={schemas[selectedSchema]} key={index} />
+                  // <SchemaDataCard
+                  //   schema={schemas[selectedSchema]}
+                  //   documents={docs}
+                  //   className={classes.card}
+                  //   onDelete={() => onDelete(index)}
+                  //   getSchemaDocuments={getSchemaDocuments}
+                  //   key={`card${index}`}
+                  // />
                 );
               })}
             </TabPanel>
