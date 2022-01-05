@@ -68,9 +68,9 @@ const Dropzone: FC<Props> = ({
     reader.readAsDataURL(readerFile);
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        const mimeType = reader.result.split(';')[0].split(':')[1];
+        const tempMimeType = reader.result.split(';')[0].split(':')[1];
         const base64 = reader.result.split(',')[1];
-        setFile(base64, mimeType, readerFile.name);
+        setFile(base64, tempMimeType, readerFile.name);
       }
     };
     reader.onerror = (error) => {
@@ -98,25 +98,19 @@ const Dropzone: FC<Props> = ({
     );
   };
 
+  const prepareDropzonePreview = () => {
+    if (mimeType.includes('image'))
+      return (
+        <img src={`data:${mimeType};base64,` + file} alt={fileName} className={classes.image} />
+      );
+    return <Box className={classes.fileName}>{fileName}</Box>;
+  };
+
   return (
     <Box {...rootProps}>
       <input {...inputProps} />
       <Box className={classes.dropContainer}>
-        {file ? (
-          <>
-            {mimeType.includes('image') ? (
-              <img
-                src={`data:${mimeType};base64,` + file}
-                alt={fileName}
-                className={classes.image}
-              />
-            ) : (
-              <Box className={classes.fileName}>{fileName}</Box>
-            )}
-          </>
-        ) : (
-          <>{handleDropzoneText()}</>
-        )}
+        {file ? prepareDropzonePreview() : handleDropzoneText()}
       </Box>
     </Box>
   );
