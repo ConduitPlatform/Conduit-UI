@@ -75,7 +75,7 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant={'outlined'} color={'secondary'} href={fileUrl}>
+        <Button variant={'outlined'} color={'secondary'} href={fileUrl} target={'_blank'}>
           Download
         </Button>
       </DialogActions>
