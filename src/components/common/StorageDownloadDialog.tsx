@@ -18,6 +18,7 @@ const useStyles = makeStyles(() => ({
     objectFit: 'contain',
     maxWidth: '1500px',
     maxHeight: '1000px',
+    borderRadius: '4px',
   },
 }));
 
@@ -57,7 +58,7 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
             height={'100%'}
             src={fileUrl}
             onLoad={() => setImgLoading(false)}
-            alt={'No available preview'}
+            alt={fileName}
           />
         ) : (
           <Box mb={1}>
