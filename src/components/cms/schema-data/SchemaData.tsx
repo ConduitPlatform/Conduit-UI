@@ -17,7 +17,7 @@ import SchemaDataHeader from './SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
-import BSONEditor from './BSONEditor';
+import JSONEditor from './JSONEditor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -149,6 +149,29 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     setCreateDialog(false);
   };
 
+  const renderMainContent = () => {
+    if (objectView) {
+      return documentsState.data.map((docs: any, index: number) => (
+        <JSONEditor
+          value={schemas[selectedSchema]}
+          documents={docs}
+          getSchemaDocuments={getSchemaDocuments}
+          key={index}
+        />
+      ));
+    }
+    return documentsState.data.map((docs: any, index: number) => (
+      <SchemaDataCard
+        schema={schemas[selectedSchema]}
+        documents={docs}
+        className={classes.card}
+        onDelete={() => onDelete(index)}
+        getSchemaDocuments={getSchemaDocuments}
+        key={`card${index}`}
+      />
+    ));
+  };
+
   return (
     <Container>
       <Box className={classes.root}>
@@ -176,21 +199,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
             setObjectView={setObjectView}
           />
           {documentsState.data.length > 0 ? (
-            <TabPanel>
-              {documentsState.data.map((docs: any, index: number) => {
-                return (
-                  <BSONEditor value={schemas[selectedSchema]} key={index} />
-                  // <SchemaDataCard
-                  //   schema={schemas[selectedSchema]}
-                  //   documents={docs}
-                  //   className={classes.card}
-                  //   onDelete={() => onDelete(index)}
-                  //   getSchemaDocuments={getSchemaDocuments}
-                  //   key={`card${index}`}
-                  // />
-                );
-              })}
-            </TabPanel>
+            <TabPanel>{renderMainContent()}</TabPanel>
           ) : (
             <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
           )}
