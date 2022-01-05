@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Button, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
@@ -7,9 +7,14 @@ import FolderIcon from '@material-ui/icons/Folder';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import Paginator from '../common/Paginator';
-import { ContainerDataProps, IStorageContainerData } from '../../models/storage/StorageModels';
+import {
+  ContainerDataProps,
+  IStorageContainerData,
+  IStorageFileData,
+} from '../../models/storage/StorageModels';
 import { asyncSetSelectedStorageFile } from '../../redux/slices/storageSlice';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import StorageDownloadDialog from '../common/StorageDownloadDialog';
 
 const useStyles = makeStyles((theme) => ({
   topContainer: {
@@ -89,6 +94,10 @@ const StorageTable: FC<Props> = ({
 }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const appLoading = useAppSelector((state) => state.appSlice.loading);
+  const fileUrl = useAppSelector((state) => state.storageSlice.data.selectedFileUrl);
+
+  const [downloadModal, setDownloadModal] = useState<IStorageFileData | undefined>(undefined);
 
   const formatData = () => {
     if (path === '/')
@@ -150,6 +159,7 @@ const StorageTable: FC<Props> = ({
       return itemFile.name === item;
     });
     if (containerData.length > 0 && file && 'isFile' in file && file.isFile) {
+      setDownloadModal(file);
       dispatch(asyncSetSelectedStorageFile(file));
       return;
     }
@@ -242,6 +252,14 @@ const StorageTable: FC<Props> = ({
           </Grid>
         </Grid>
       )}
+
+      <StorageDownloadDialog
+        fileUrl={fileUrl}
+        fileName={downloadModal?.name}
+        fileMimeType={downloadModal?.mimeType}
+        open={!!downloadModal && !appLoading && !!fileUrl}
+        onClose={() => setDownloadModal(undefined)}
+      />
     </>
   );
 };

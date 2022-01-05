@@ -334,7 +334,7 @@ export const asyncDeleteStorageContainer = createAsyncThunk(
 export const asyncSetSelectedStorageFile = createAsyncThunk(
   'storage/setSelectedStorageFile',
   async (file: any, thunkAPI) => {
-    // thunkAPI.dispatch(setAppLoading(true));
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       let url;
       if (!file.url) {
@@ -410,6 +410,9 @@ const storageSlice = createSlice({
     });
     builder.addCase(asyncSetSelectedStorageFile.fulfilled, (state, action) => {
       state.data.selectedFileUrl = action.payload;
+    });
+    builder.addCase(asyncSetSelectedStorageFile.pending, (state) => {
+      state.data.selectedFileUrl = '';
     });
   },
 });
