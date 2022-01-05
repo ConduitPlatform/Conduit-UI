@@ -6,7 +6,6 @@ import { getPasswordStrength } from '../../../utils/getPasswordStrength';
 const useStyles = makeStyles(() => ({
   root: {
     pointerEvents: 'none',
-    color: (props: { colorValue: string }) => props.colorValue,
     '& .MuiSlider-thumb': {
       display: 'none',
     },
@@ -24,12 +23,13 @@ interface PasswordStrengthProps {
 }
 
 const PasswordStrengthMeter: FC<PasswordStrengthProps> = ({ password }) => {
+  const classes = useStyles();
+
   const [passwordState, setPasswordState] = useState({
     color: 'red',
     percentage: 0,
     message: 'password is very weak',
   });
-  const classes = useStyles({ colorValue: passwordState.color });
 
   useEffect(() => {
     const strength = getPasswordStrength(password);
@@ -42,7 +42,11 @@ const PasswordStrengthMeter: FC<PasswordStrengthProps> = ({ password }) => {
 
   return (
     <Box>
-      <Slider classes={{ root: classes.root }} value={passwordState.percentage} />
+      <Slider
+        classes={{ root: classes.root }}
+        style={{ color: passwordState.color }}
+        value={passwordState.percentage}
+      />
       <Typography variant={'subtitle2'} style={{ color: passwordState.color }} align={'center'}>
         {passwordState.message}
       </Typography>
