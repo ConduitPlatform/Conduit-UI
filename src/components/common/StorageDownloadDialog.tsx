@@ -27,6 +27,7 @@ interface DownloadDialogProps {
 const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
   fileName,
   fileUrl,
+  fileMimeType,
   ...props
 }) => {
   const classes = useStyles();
@@ -41,21 +42,17 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
         <Typography>{fileName ?? 'File Preview'}</Typography>
       </DialogTitle>
       <DialogContent>
-        <img
-          className={classes.image}
-          width={'100%'}
-          height={'100%'}
-          src={fileUrl}
-          alt={'No available preview'}
-        />
-        {/*<object*/}
-        {/*  className={classes.image}*/}
-        {/*  width={'100%'}*/}
-        {/*  height={'100%'}*/}
-        {/*  data={fileUrl}*/}
-        {/*  datatype={fileMimeType}>*/}
-        {/*  No available Preview*/}
-        {/*</object>*/}
+        {fileMimeType?.includes('image') ? (
+          <img
+            className={classes.image}
+            width={'100%'}
+            height={'100%'}
+            src={fileUrl}
+            alt={'No available preview'}
+          />
+        ) : (
+          <Typography>No available preview</Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
