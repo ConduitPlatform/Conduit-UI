@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     height: '100%',
+    width: '100%',
+    objectFit: 'contain',
     position: 'absolute',
     top: 0,
     right: 0,
@@ -44,16 +46,21 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   file: string;
   // url: string;
+  fileName: string;
+  mimeType: string;
+  setFileName: (val: string) => void;
   setFile: (data: string, mimeType: string, name: string) => void;
 }
 
 const Dropzone: FC<Props> = ({
+  mimeType,
   file,
+  fileName,
+  setFileName,
   // url,
   setFile,
 }) => {
   const classes = useStyles();
-  const [fileName, setFileName] = useState('');
 
   const handleSetFile = (readerFile: File) => {
     setFileName(readerFile.name);
@@ -97,13 +104,15 @@ const Dropzone: FC<Props> = ({
       <Box className={classes.dropContainer}>
         {file ? (
           <>
-            <Box className={classes.fileName}>{fileName}</Box>
-            {/*to be implemented in the future*/}
-            {/*<img*/}
-            {/*  src={url ? url : 'data:image/jpeg;base64,' + file}*/}
-            {/*  alt={''}*/}
-            {/*  className={classes.image}*/}
-            {/*/>*/}
+            {mimeType.includes('image') ? (
+              <img
+                src={`data:${mimeType};base64,` + file}
+                alt={fileName}
+                className={classes.image}
+              />
+            ) : (
+              <Box className={classes.fileName}>{fileName}</Box>
+            )}
           </>
         ) : (
           <>{handleDropzoneText()}</>
