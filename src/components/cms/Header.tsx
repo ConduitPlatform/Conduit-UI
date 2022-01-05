@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/cmsSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { Permissions } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions } from '../../models/cms/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;
@@ -102,7 +102,7 @@ const Header: FC<Props> = ({
   const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
     extendable: false,
     canCreate: false,
-    canModify: 'everything',
+    canModify: ModifyOptions.Everything,
     canDelete: false,
   });
   const [dialog, setDialog] = useState(false);

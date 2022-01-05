@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import { Permissions } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions } from '../../models/cms/CmsModels';
 import { DoneOutline } from '@material-ui/icons';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
@@ -42,7 +42,11 @@ interface Props {
   handleClose: () => void;
 }
 
-const options = ['Everything', 'Nothing', 'ExtensionOnly'];
+const options = [
+  { label: 'Everything', value: ModifyOptions.Everything },
+  { label: 'Nothing', value: ModifyOptions.Nothing },
+  { label: 'ExtensionOnly', value: ModifyOptions.ExtensionOnly },
+];
 
 const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, setPermissions }) => {
   const classes = useStyles();
@@ -96,8 +100,8 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
                     label={'Can modify'}
                     name="canModify"
                     options={options.map((option) => ({
-                      label: option,
-                      value: option,
+                      label: option.label,
+                      value: option.value,
                     }))}
                   />
                 </Grid>

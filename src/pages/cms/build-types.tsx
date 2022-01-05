@@ -27,7 +27,7 @@ import {
   clearSelectedSchema,
 } from '../../redux/slices/cmsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { Permissions } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions } from '../../models/cms/CmsModels';
 
 resetServerContext();
 
@@ -85,7 +85,7 @@ const BuildTypes: React.FC = () => {
   const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
     extendable: true,
     canCreate: true,
-    canModify: 'everything',
+    canModify: ModifyOptions.Everything,
     canDelete: true,
   });
   const [drawerData, setDrawerData] = useState<any>({

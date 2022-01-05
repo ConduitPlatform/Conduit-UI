@@ -30,8 +30,14 @@ export interface EditableSchemaFields {
 export interface Permissions {
   extendable: boolean;
   canCreate: boolean;
-  canModify: string;
+  canModify: ModifyOptions;
   canDelete: boolean;
+}
+
+export enum ModifyOptions {
+  Everything = 'Everything',
+  Nothing = 'Nothing',
+  ExtensionOnly = 'ExtensionOnly',
 }
 
 export interface ToggleSchma {
