@@ -109,12 +109,16 @@ const SchemaDataHeader: FC<Props> = ({
           error={isSearchError()}
         />
         <Box className={classes.divider} />
-        <Button variant="contained" color="secondary" onClick={() => onRefresh()}>
+        <Button variant="contained" color="secondary" size={'small'} onClick={() => onRefresh()}>
           <RefreshIcon />
           Refresh
         </Button>
         <Box className={classes.divider} />
-        <Button variant="contained" color="primary" onClick={() => onCreateDocument()}>
+        <Button
+          variant="contained"
+          color="primary"
+          size={'small'}
+          onClick={() => onCreateDocument()}>
           Add Document
         </Button>
       </Box>
