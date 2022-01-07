@@ -109,7 +109,7 @@ const SchemaDataHeader: FC<Props> = ({
           error={isSearchError()}
         />
         <Box className={classes.divider} />
-        <Button variant="contained" color="secondary" size={'small'} onClick={() => onRefresh()}>
+        <Button color="secondary" size={'small'} onClick={() => onRefresh()}>
           <RefreshIcon />
           Refresh
         </Button>

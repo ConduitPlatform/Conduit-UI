@@ -22,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: '80vh',
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0,0,0,0.05)',
     display: 'flex',
   },
   tabs: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: '300px',
   },
   card: {
+    background: 'rgba(0,0,0,0.2)',
     margin: theme.spacing(1),
     paddingLeft: theme.spacing(2),
     position: 'relative',
