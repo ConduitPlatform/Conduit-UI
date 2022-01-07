@@ -50,6 +50,10 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
 
   const handleCancel = () => {
     setEdit(false);
+    setDocumentState({});
+    setTimeout(() => {
+      setDocumentState(documents);
+    }, 1);
   };
 
   const handleSave = () => {
@@ -61,6 +65,7 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
         documentData: documentState,
         getSchemaDocuments: getSchemaDocuments,
       };
+
       dispatch(asyncEditSchemaDocument(params));
     } else {
       dispatch(enqueueErrorNotification('Please reformat your JSON in order to proceed!'));
@@ -83,11 +88,11 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
       </Paper>
       <JSONInput
         id={documents._id}
-        reset={true}
         placeholder={documentState}
         locale={locale}
         onChange={handleChange}
         viewOnly={!edit}
+        confirmGood={!edit}
         height="fit-content"
         width="100%"
       />
