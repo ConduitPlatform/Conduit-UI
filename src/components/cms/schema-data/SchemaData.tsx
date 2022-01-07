@@ -143,7 +143,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   };
 
   return (
-    <Container>
+    <Container maxWidth={'xl'}>
       <Box className={classes.root}>
         <Tabs
           value={selectedSchema}
