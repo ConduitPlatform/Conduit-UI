@@ -65,7 +65,6 @@ interface Document {
 
 interface Props extends CardProps {
   documents: any;
-  // handleEdit: () => void;
   onDelete: () => void;
   schema: Schema;
   getSchemaDocuments: () => void;
@@ -73,7 +72,6 @@ interface Props extends CardProps {
 
 const SchemaDataCard: FC<Props> = ({
   documents,
-  // handleEdit,
   onDelete,
   schema,
   getSchemaDocuments,
@@ -140,6 +138,7 @@ const SchemaDataCard: FC<Props> = ({
       documentData: documentState,
       getSchemaDocuments: getSchemaDocuments,
     };
+
     dispatch(asyncEditSchemaDocument(params));
   };
 
