@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import { Paper } from '@material-ui/core';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
@@ -20,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     marginTop: '5px',
-    height: '26px',
+    height: '20px',
     display: 'flex',
     justifyContent: 'flex-end',
   },
@@ -78,14 +77,14 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
 
   return (
     <div className={classes.container}>
-      <Paper className={classes.paper} elevation={edit ? 0 : 4}>
+      <div className={classes.paper}>
         <DocumentActions
           className={classes.actionContainer}
           onEdit={onEdit}
           onDelete={onDelete}
           edit={edit}
         />
-      </Paper>
+      </div>
       <JSONInput
         id={documents._id}
         placeholder={documentState}
