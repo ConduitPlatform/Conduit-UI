@@ -11,12 +11,12 @@ export interface IRequest {
 }
 
 export const getCustomersRequest = (params: IRequest) =>
-  axios.get(`${CONDUIT_API}/admin/payments/customer`, {
+  axios.get(`${CONDUIT_API}/admin/payments/customers`, {
     params: { ...params },
   });
 
 export const postCustomerRequest = (data: Customer) =>
-  axios.post(`${CONDUIT_API}/admin/payments/customer`, { ...data });
+  axios.post(`${CONDUIT_API}/admin/payments/customers`, { ...data });
 
 export const putCustomerRequest = (customerId: string, data: Customer) =>
   axios.put(`${CONDUIT_API}/admin/payments/customer/${customerId}`, { ...data });

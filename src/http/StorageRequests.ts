@@ -22,31 +22,31 @@ export const putStorageSettings = (storageData: IStorageConfig) =>
   });
 
 export const getStorageContainers = (params: IGetStorageContainers) =>
-  axios.get(`${CONDUIT_API}/admin/storage/container`, {
+  axios.get(`${CONDUIT_API}/admin/storage/containers`, {
     params: {
       ...params,
     },
   });
 
 export const getStorageFolders = (folderData: IGetStorageFolders) =>
-  axios.get(`${CONDUIT_API}/admin/storage/folder`, {
+  axios.get(`${CONDUIT_API}/admin/storage/folders`, {
     params: {
       ...folderData,
     },
   });
 
 export const getStorageFiles = (fileData: IGetStorageFiles) =>
-  axios.get(`${CONDUIT_API}/admin/storage/file`, {
+  axios.get(`${CONDUIT_API}/admin/storage/files`, {
     params: {
       ...fileData,
     },
   });
 
 export const getStorageFile = (id: string) =>
-  axios.get(`${CONDUIT_API}/admin/storage/file/${id}/data`);
+  axios.get(`${CONDUIT_API}/admin/storage/files/${id}/data`);
 
 export const getStorageFileUrl = (id: string, redirect: boolean) =>
-  axios.get(`${CONDUIT_API}/admin/storage/getFileUrl/${id}`, {
+  axios.get(`${CONDUIT_API}/admin/storage/files/${id}/url`, {
     params: {
       redirect: false,
     },
@@ -55,26 +55,26 @@ export const getStorageFileUrl = (id: string, redirect: boolean) =>
 // export const updateStorageFile = (fileData: IStorageFile) =>
 export const updateStorageFile = (
   fileData: any //not working
-) => axios.patch(`${CONDUIT_API}/admin/storage/file/${fileData.id}`, { ...fileData });
+) => axios.patch(`${CONDUIT_API}/admin/storage/files/${fileData.id}`, { ...fileData });
 
 export const createStorageFile = (fileData: ICreateStorageFile) =>
-  axios.post(`${CONDUIT_API}/admin/storage/file`, { ...fileData });
+  axios.post(`${CONDUIT_API}/admin/storage/files`, { ...fileData });
 
 export const createStorageFolder = (folderData: ICreateStorageFolder) =>
-  axios.post(`${CONDUIT_API}/admin/storage/folder`, { ...folderData });
+  axios.post(`${CONDUIT_API}/admin/storage/folders`, { ...folderData });
 
 export const createStorageContainer = (containerData: ICreateStorageContainer) =>
-  axios.post(`${CONDUIT_API}/admin/storage/container`, { ...containerData });
+  axios.post(`${CONDUIT_API}/admin/storage/containers`, { ...containerData });
 
 export const deleteStorageFile = (id: string) =>
-  axios.delete(`${CONDUIT_API}/admin/storage/file/${id}`);
+  axios.delete(`${CONDUIT_API}/admin/storage/files/${id}`);
 
 export const deleteStorageFolder = (params: IDeleteStorageFolder) =>
-  axios.delete(`${CONDUIT_API}/admin/storage/folder/${params.id}`, {
+  axios.delete(`${CONDUIT_API}/admin/storage/folders/${params.id}`, {
     data: { ...params },
   });
 
 export const deleteStorageContainer = (params: IDeleteStorageContainer) =>
-  axios.delete(`${CONDUIT_API}/admin/storage/container/${params.id}`, {
+  axios.delete(`${CONDUIT_API}/admin/storage/containers/${params.id}`, {
     data: { ...params },
   });
