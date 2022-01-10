@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
   buttonContainer: {
     height: theme.spacing(3),
     width: theme.spacing(3),
-    background: theme.palette.grey[600],
     borderRadius: theme.spacing(0.5),
     cursor: 'pointer',
     display: 'flex',
