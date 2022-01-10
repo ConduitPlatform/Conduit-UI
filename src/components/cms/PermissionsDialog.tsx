@@ -63,7 +63,7 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
 
   const { handleSubmit, reset } = methods;
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: Permissions) => {
     setPermissions({ ...data });
     handleClose();
   };
