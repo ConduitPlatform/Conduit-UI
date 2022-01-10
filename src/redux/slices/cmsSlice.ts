@@ -95,7 +95,7 @@ export const asyncGetCmsSchemas = createAsyncThunk(
       thunkAPI.dispatch(setAppLoading(false));
       return {
         results: data.schemas as Schema[],
-        documentsCount: data.documentsCount as number,
+        documentsCount: data.count as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -114,7 +114,7 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
       thunkAPI.dispatch(setAppLoading(false));
       return {
         dialogResults: data.schemas as Schema[],
-        dialogDocumentsCount: data.documentsCount as number,
+        dialogDocumentsCount: data.count as number,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -533,7 +533,7 @@ const cmsSlice = createSlice({
     });
 
     builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
-      state.data.schemasFromOtherModules = action.payload.results;
+      state.data.schemasFromOtherModules = action.payload.externalSchemas;
     });
   },
 });
