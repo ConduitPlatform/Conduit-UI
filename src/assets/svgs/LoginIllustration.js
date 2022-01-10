@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 // viewBox="0 0 1600 1200" original
-
+/* eslint-disable */
 function LoginIllustration(props) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 120 1400 1000" {...props}>

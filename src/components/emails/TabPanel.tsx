@@ -74,16 +74,16 @@ const TabPanel: React.FC<Props> = ({
           </Grid>
         </Paper>
         {!edit && (
-          <>
-            <Grid container spacing={2} justifyContent="center">
-              <Grid item>
-                <Button onClick={() => setEdit(!edit)}>Edit</Button>
-              </Grid>
+          <Grid container alignItems={'center'} direction={'column'}>
+            <Grid item>
+              <Button size={'large'} variant={'outlined'} onClick={() => setEdit(!edit)}>
+                Edit
+              </Button>
             </Grid>
-            <div className={classes.centeredImg}>
+            <Grid item>
               <Image src={EmailImage} width="200px" alt="mail" />
-            </div>
-          </>
+            </Grid>
+          </Grid>
         )}
       </Box>
     </Container>

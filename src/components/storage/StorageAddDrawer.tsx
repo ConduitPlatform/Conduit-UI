@@ -27,11 +27,12 @@ interface FormData {
 
 const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddFile, path }) => {
   const classes = sharedClasses();
-
+  const [fileName, setFileName] = useState('');
   const [fileData, setFileData] = useState<{ data: string; mimeType: string }>({
     data: '',
     mimeType: '',
   });
+
   const methods = useForm<FormData>({
     defaultValues: useMemo(() => {
       return { name: '', folder: '', container: '', isPublic: false };
@@ -89,7 +90,13 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
         <form onSubmit={methods.handleSubmit(handleAdd)}>
           <Grid container spacing={2}>
             <Grid item sm={12}>
-              <Dropzone file={fileData.data} setFile={handleSetFile} />
+              <Dropzone
+                mimeType={fileData.mimeType}
+                fileName={fileName}
+                setFileName={setFileName}
+                file={fileData.data}
+                setFile={handleSetFile}
+              />
             </Grid>
             <Grid item sm={12}>
               <FormInputText name="name" label="File name" />

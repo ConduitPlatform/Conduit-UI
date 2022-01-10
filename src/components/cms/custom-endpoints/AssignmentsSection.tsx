@@ -73,7 +73,6 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
       <EndpointAssignments
         editMode={editMode}
         selectedInputs={endpoint.inputs}
-        operationType={endpoint.operation}
         selectedAssignments={endpoint.assignments}
         setSelectedAssignments={handleAssignmentChanges}
         availableFieldsOfSchema={schemaFields}
