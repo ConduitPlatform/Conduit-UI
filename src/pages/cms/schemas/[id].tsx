@@ -27,7 +27,7 @@ import {
   clearSelectedSchema,
 } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { Schema } from '../../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
 
 resetServerContext();
 
@@ -81,12 +81,17 @@ const BuildTypes: React.FC = () => {
   const [schemaName, setSchemaName] = useState<string>('');
   const [authentication, setAuthentication] = useState(false);
   const [crudOperations, setCrudOperations] = useState(false);
+  const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
+    extendable: true,
+    canCreate: true,
+    canModify: ModifyOptions.Everything,
+    canDelete: true,
+  });
   const [drawerData, setDrawerData] = useState<any>({
     open: false,
     type: '',
     destination: null,
   });
-
   const [duplicateId, setDuplicateId] = useState(false);
   const [invalidName, setInvalidName] = useState(false);
   const [selectedProps, setSelectedProps] = useState<any>({
@@ -127,6 +132,12 @@ const BuildTypes: React.FC = () => {
         selectedSchema.modelOptions.conduit.cms.crudOperations !== undefined
       ) {
         setCrudOperations(selectedSchema.modelOptions.conduit.cms.crudOperations);
+      }
+      if (
+        selectedSchema.modelOptions.conduit.permissions !== null &&
+        selectedSchema.modelOptions.conduit.permissions !== undefined
+      ) {
+        setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
       }
       const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
       setSchemaFields({ newTypeFields: formattedFields });
@@ -407,13 +418,19 @@ const BuildTypes: React.FC = () => {
     });
   };
 
-  const handleSave = (name: string, authenticate: boolean, allowCrud: boolean) => {
+  const handleSave = (
+    name: string,
+    authenticate: boolean,
+    allowCrud: boolean,
+    permissions: Permissions
+  ) => {
     if (data && selectedSchema) {
       const { _id } = selectedSchema;
       const editableSchemaFields = prepareFields(schemaFields.newTypeFields);
       const editableSchema = {
         authentication: authenticate,
         crudOperations: allowCrud,
+        permissions,
         fields: { ...editableSchemaFields },
       };
 
@@ -424,6 +441,7 @@ const BuildTypes: React.FC = () => {
         name: name,
         authentication: authenticate,
         crudOperations: allowCrud,
+        permissions,
         fields: newSchemaFields,
       };
 
@@ -439,6 +457,7 @@ const BuildTypes: React.FC = () => {
         name={schemaName}
         authentication={authentication}
         crudOperations={crudOperations}
+        permissions={schemaPermissions}
         readOnly={readOnly}
         handleSave={handleSave}
       />
