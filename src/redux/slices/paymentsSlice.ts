@@ -322,7 +322,7 @@ const paymentsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(asyncGetCustomers.fulfilled, (state, action) => {
       state.data.customerData.customers = action.payload.customerDocuments;
-      state.data.customerData.count = action.payload.totalCount;
+      state.data.customerData.count = action.payload.count;
     });
     builder.addCase(asyncCreateCustomer.fulfilled, (state, action) => {
       state.data.customerData.customers.push(action.payload);
@@ -330,7 +330,7 @@ const paymentsSlice = createSlice({
     });
     builder.addCase(asyncGetProducts.fulfilled, (state, action) => {
       state.data.productData.products = action.payload.productDocuments;
-      state.data.productData.count = action.payload.totalCount;
+      state.data.productData.count = action.payload.count;
     });
     builder.addCase(asyncCreateProduct.fulfilled, (state, action) => {
       state.data.productData.products.push(action.payload);
@@ -344,11 +344,11 @@ const paymentsSlice = createSlice({
     });
     builder.addCase(asyncGetTransactions.fulfilled, (state, action) => {
       state.data.transactionData.transactions = action.payload.transactionDocuments;
-      state.data.transactionData.count = action.payload.totalCount;
+      state.data.transactionData.count = action.payload.count;
     });
     builder.addCase(asyncGetSubscriptions.fulfilled, (state, action) => {
       state.data.subscriptionData.subscriptions = action.payload.subscriptionDocuments;
-      state.data.subscriptionData.count = action.payload.totalCount;
+      state.data.subscriptionData.count = action.payload.count;
     });
     builder.addCase(asyncGetPaymentConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
