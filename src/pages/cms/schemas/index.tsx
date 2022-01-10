@@ -125,8 +125,6 @@ const Schemas = () => {
   const debouncedSearch: string = useDebounce(search, 500);
   const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
 
-  console.log(schemaDocuments);
-
   useEffect(() => {
     dispatch(
       asyncGetCmsSchemas({
