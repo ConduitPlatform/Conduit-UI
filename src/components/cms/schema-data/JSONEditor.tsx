@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
+import { localeEn } from 'react-json-editor-ajrm';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
 import { makeStyles } from '@material-ui/styles';
 import { useAppDispatch } from '../../../redux/store';
@@ -92,7 +92,7 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
       <JSONInput
         id={documents._id}
         placeholder={documentState}
-        locale={locale}
+        locale={localeEn}
         onChange={handleChange}
         viewOnly={!edit}
         confirmGood={!edit}
