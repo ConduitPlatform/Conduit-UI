@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
@@ -46,6 +46,10 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
   const onEdit = () => {
     setEdit(!edit);
   };
+
+  useEffect(() => {
+    setDocumentState(documents);
+  }, [documents]);
 
   const handleCancel = () => {
     setEdit(false);
