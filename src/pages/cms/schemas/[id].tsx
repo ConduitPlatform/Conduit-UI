@@ -27,8 +27,7 @@ import {
   clearSelectedSchema,
 } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { Schema } from '../../../models/cms/CmsModels';
-import { ModifyOptions, Permissions } from '../../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
 
 resetServerContext();
 
