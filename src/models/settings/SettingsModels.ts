@@ -12,4 +12,5 @@ export type IPlatformTypes = 'WEB' | 'ANDROID' | 'IOS' | 'IPADOS' | 'WINDOWS' | 
 export interface INewAdminUser {
   username: string;
   password: string;
+  confirmPassword: string;
 }

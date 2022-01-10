@@ -11,6 +11,7 @@ export interface Schema {
         authentication: boolean;
         crudOperations: boolean;
       };
+      permissions: Permissions;
     };
   };
   name: string;
@@ -24,6 +25,19 @@ export interface EditableSchemaFields {
   authentication: boolean;
   crudOperations: boolean;
   fields: SchemaFields[];
+}
+
+export interface Permissions {
+  extendable: boolean;
+  canCreate: boolean;
+  canModify: ModifyOptions;
+  canDelete: boolean;
+}
+
+export enum ModifyOptions {
+  Everything = 'Everything',
+  Nothing = 'Nothing',
+  ExtensionOnly = 'ExtensionOnly',
 }
 
 export interface ToggleSchma {

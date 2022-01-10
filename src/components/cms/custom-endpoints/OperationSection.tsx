@@ -18,9 +18,9 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     '&.MuiDivider-root': {
-      height: '2px',
+      height: theme.spacing(0.25),
       background: '#000000',
-      borderRadius: '4px',
+      borderRadius: theme.spacing(0.5),
     },
   },
   operationContainer: {

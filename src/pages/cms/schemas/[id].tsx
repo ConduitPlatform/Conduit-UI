@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, resetServerContext } from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import BuildTypesList from '../../components/cms/BuildTypesList';
-import BuildTypesContent from '../../components/cms/BuildTypesContent';
-import BuildTypesDrawer from '../../components/cms/BuildTypesDrawer';
-import Header, { headerHeight } from '../../components/cms/Header';
+import BuildTypesList from '../../../components/cms/BuildTypesList';
+import BuildTypesContent from '../../../components/cms/BuildTypesContent';
+import BuildTypesDrawer from '../../../components/cms/BuildTypesDrawer';
+import Header, { headerHeight } from '../../../components/cms/Header';
 import {
   addToChildGroup,
   addToGroup,
@@ -17,7 +17,7 @@ import {
   updateGroupChildItem,
   updateGroupItem,
   updateItem,
-} from '../../utils/type-functions';
+} from '../../../utils/type-functions';
 import { useRouter } from 'next/router';
 import {
   asyncCreateNewSchema,
@@ -25,8 +25,9 @@ import {
   asyncFetchSchemasFromOtherModules,
   asyncGetCmsSchemas,
   clearSelectedSchema,
-} from '../../redux/slices/cmsSlice';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+} from '../../../redux/slices/cmsSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
 
 resetServerContext();
 
@@ -73,20 +74,24 @@ const BuildTypes: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   resetServerContext();
-  // renderToString(BuildTypes);
 
   const { data } = useAppSelector((state) => state.cmsSlice);
-
   const [schemaFields, setSchemaFields] = useState<any>({ newTypeFields: [] });
-  const [schemaName, setSchemaName] = useState<any>('');
+  const [selectedSchema, setSelectedSchema] = useState<Schema>();
+  const [schemaName, setSchemaName] = useState<string>('');
   const [authentication, setAuthentication] = useState(false);
   const [crudOperations, setCrudOperations] = useState(false);
+  const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
+    extendable: true,
+    canCreate: true,
+    canModify: ModifyOptions.Everything,
+    canDelete: true,
+  });
   const [drawerData, setDrawerData] = useState<any>({
     open: false,
     type: '',
     destination: null,
   });
-
   const [duplicateId, setDuplicateId] = useState(false);
   const [invalidName, setInvalidName] = useState(false);
   const [selectedProps, setSelectedProps] = useState<any>({
@@ -102,33 +107,47 @@ const BuildTypes: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (data.selectedSchema) {
+    const { id } = router.query;
+    const foundSchema = data.schemas.schemaDocuments.find((schema) => schema._id === id);
+    setSelectedSchema(foundSchema);
+  }, [data.schemas.schemaDocuments, router.query]);
+
+  useEffect(() => {
+    if (selectedSchema) {
       setReadOnly(true);
     }
-    if (!data.selectedSchema) {
+    if (!selectedSchema) {
       setCrudOperations(true);
     }
-    if (data && data.selectedSchema) {
-      setSchemaName(data.selectedSchema.name);
+    if (data && selectedSchema) {
+      setSchemaName(selectedSchema.name);
       if (
-        data.selectedSchema.modelOptions.conduit.cms.authentication !== null &&
-        data.selectedSchema.modelOptions.conduit.cms.authentication !== undefined
+        selectedSchema.modelOptions.conduit.cms.authentication !== null &&
+        selectedSchema.modelOptions.conduit.cms.authentication !== undefined
       ) {
-        setAuthentication(data.selectedSchema.modelOptions.conduit.cms.authentication);
+        setAuthentication(selectedSchema.modelOptions.conduit.cms.authentication);
       }
       if (
-        data.selectedSchema.modelOptions.conduit.cms.crudOperations !== null &&
-        data.selectedSchema.modelOptions.conduit.cms.crudOperations !== undefined
+        selectedSchema.modelOptions.conduit.cms.crudOperations !== null &&
+        selectedSchema.modelOptions.conduit.cms.crudOperations !== undefined
       ) {
-        setCrudOperations(data.selectedSchema.modelOptions.conduit.cms.crudOperations);
+        setCrudOperations(selectedSchema.modelOptions.conduit.cms.crudOperations);
       }
-      const formattedFields = getSchemaFieldsWithExtra(data.selectedSchema.fields);
+      if (
+        selectedSchema.modelOptions.conduit.permissions !== null &&
+        selectedSchema.modelOptions.conduit.permissions !== undefined
+      ) {
+        setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
+      }
+      const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
       setSchemaFields({ newTypeFields: formattedFields });
+    } else if (router.query.id) {
+      setSchemaName(router.query.id.toString());
     }
   }, [data]);
 
   useEffect(() => {
-    if (!data.selectedSchema) {
+    if (!selectedSchema) {
       const initialFields = [
         {
           default: '',
@@ -160,13 +179,7 @@ const BuildTypes: React.FC = () => {
       ];
       setSchemaFields({ newTypeFields: initialFields });
     }
-  }, [data.selectedSchema]);
-
-  useEffect(() => {
-    if (router.query.name) {
-      setSchemaName(router.query.name);
-    }
-  }, [router.query.name, router.query.schema, router.query.schemaId]);
+  }, [selectedSchema]);
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
@@ -258,7 +271,7 @@ const BuildTypes: React.FC = () => {
       const allGroups = array.filter((s) => s.type === 'Group');
       const parentGroup = allGroups.find((object) => {
         if (object.content) {
-          return object.content.find((content: any) => content.name === groupId);
+          return object.content.find((contentItem: any) => contentItem.name === groupId);
         }
         return false;
       });
@@ -405,13 +418,19 @@ const BuildTypes: React.FC = () => {
     });
   };
 
-  const handleSave = (name: string, authenticate: boolean, allowCrud: boolean) => {
-    if (data && data.selectedSchema) {
-      const { _id } = data.selectedSchema;
+  const handleSave = (
+    name: string,
+    authenticate: boolean,
+    allowCrud: boolean,
+    permissions: Permissions
+  ) => {
+    if (data && selectedSchema) {
+      const { _id } = selectedSchema;
       const editableSchemaFields = prepareFields(schemaFields.newTypeFields);
       const editableSchema = {
         authentication: authenticate,
         crudOperations: allowCrud,
+        permissions,
         fields: { ...editableSchemaFields },
       };
 
@@ -422,6 +441,7 @@ const BuildTypes: React.FC = () => {
         name: name,
         authentication: authenticate,
         crudOperations: allowCrud,
+        permissions,
         fields: newSchemaFields,
       };
 
@@ -437,6 +457,7 @@ const BuildTypes: React.FC = () => {
         name={schemaName}
         authentication={authentication}
         crudOperations={crudOperations}
+        permissions={schemaPermissions}
         readOnly={readOnly}
         handleSave={handleSave}
       />

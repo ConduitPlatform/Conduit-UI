@@ -111,15 +111,13 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
             onChange={(event) => handleTypeName(event.target.value)}
             onKeyPress={(event) => {
               if (event.key === 'Enter' && typeName !== '') {
-                router.push({ pathname: '/cms/build-types', query: { name: typeName } });
+                router.push(`schemas/${typeName}`);
               }
             }}
           />
         </DialogContent>
         <DialogActions className={classes.actions}>
-          <Link
-            href={{ pathname: '/cms/build-types', query: { name: typeName } }}
-            as={'/cms/build-types'}>
+          <Link href={`schemas/${typeName}`}>
             <a className={classes.anchor}>
               <Button
                 onClick={handleAddType}

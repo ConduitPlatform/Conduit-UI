@@ -1,17 +1,17 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import CmsLayout from '../../../components/navigation/InnerLayouts/cmsLayout';
 import {
   asyncDeleteSelectedSchemas,
   asyncGetCmsSchemas,
   asyncToggleMultipleSchemas,
   asyncToggleSchema,
   setSelectedSchema,
-} from '../../redux/slices/cmsSlice';
-import { Schema } from '../../models/cms/CmsModels';
+} from '../../../redux/slices/cmsSlice';
+import { Permissions, Schema } from '../../../models/cms/CmsModels';
 import { useRouter } from 'next/router';
-import NewSchemaDialog from '../../components/cms/NewSchemaDialog';
-import SchemaActionsDialog, { actions } from '../../components/cms/SchemaActionsDialog';
+import NewSchemaDialog from '../../../components/cms/NewSchemaDialog';
+import SchemaActionsDialog, { actions } from '../../../components/cms/SchemaActionsDialog';
 import {
   Grid,
   makeStyles,
@@ -23,14 +23,24 @@ import {
   InputAdornment,
   TextField,
   Typography,
+  Icon,
 } from '@material-ui/core';
-import useDebounce from '../../hooks/useDebounce';
-import DataTable from '../../components/common/DataTable';
+import useDebounce from '../../../hooks/useDebounce';
+import DataTable from '../../../components/common/DataTable';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
-import { Archive, CheckCircle, Delete, Search } from '@material-ui/icons';
-import Paginator from '../../components/common/Paginator';
-import { SchemaUI } from '../../components/cms/CmsModels';
-import { prepareSort } from '../../utils/prepareSort';
+import {
+  Archive,
+  CheckCircle,
+  Delete,
+  Search,
+  Extension,
+  CreateNewFolder,
+  DeleteForever,
+  SettingsSharp,
+} from '@material-ui/icons';
+import Paginator from '../../../components/common/Paginator';
+import { SchemaUI } from '../../../components/cms/CmsModels';
+import { prepareSort } from '../../../utils/prepareSort';
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -83,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
   noSchemas: {
     textAlign: 'center',
     marginTop: '200px',
+  },
+  permissions: {
+    marginTop: '5px',
   },
 }));
 
@@ -209,10 +222,9 @@ const Schemas = () => {
     switch (action.type) {
       case 'edit':
         dispatch(setSelectedSchema(data._id));
-        router.push(
-          { pathname: '/cms/build-types', query: { schemaId: data.id ? data.id : null } },
-          '/cms/build-types'
-        );
+        router.push({
+          pathname: `schemas/${data._id}`,
+        });
         break;
       case 'archive':
         setSelectedSchemaForAction({ data, action: 'archive' });
@@ -281,9 +293,37 @@ const Schemas = () => {
     { title: 'Name', sort: 'name' },
     { title: 'Authenticated' },
     { title: 'CRUD' },
+    { title: 'Permissions' },
     { title: 'Created at', sort: 'createdAt' },
     { title: 'Updated at', sort: 'updatedAt' },
   ];
+
+  const extractPermissions = (permissions: Permissions) => {
+    return (
+      <div className={classes.permissions}>
+        <Tooltip title="Schema is extendable">
+          <Icon hidden={!permissions.extendable}>
+            <Extension color="primary" />
+          </Icon>
+        </Tooltip>
+        <Tooltip title="Can create">
+          <Icon hidden={!permissions.canCreate}>
+            <CreateNewFolder color="primary" />
+          </Icon>
+        </Tooltip>
+        <Tooltip title="Can delete">
+          <Icon hidden={!permissions.canDelete}>
+            <DeleteForever color="primary" />
+          </Icon>
+        </Tooltip>
+        <Tooltip title={`Modify: ${permissions.canModify}`}>
+          <Icon hidden={!permissions.canModify}>
+            <SettingsSharp color="primary" />
+          </Icon>
+        </Tooltip>
+      </div>
+    );
+  };
 
   const formatSchemas = (schemasToFormat: Schema[]) => {
     if (schemasToFormat !== undefined) {
@@ -292,6 +332,7 @@ const Schemas = () => {
         name: d.name,
         authentication: d.modelOptions.conduit.cms.authentication,
         crudOperations: d.modelOptions.conduit.cms.crudOperations,
+        permissions: extractPermissions(d.modelOptions.conduit.permissions),
         createdAt: d.createdAt,
         updatedAt: d.updatedAt,
       }));

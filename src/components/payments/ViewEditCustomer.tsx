@@ -7,7 +7,6 @@ import { Button, Paper } from '@material-ui/core';
 import { useAppDispatch } from '../../redux/store';
 import { Customer } from '../../models/payments/PaymentsModels';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-
 import sharedClasses from '../common/sharedClasses';
 import ExtractView from './ExtractView';
 import CustomerForm from './Forms/CustomerForm';

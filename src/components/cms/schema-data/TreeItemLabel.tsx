@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0.25, 0),
-    minHeight: 42,
+    minHeight: 28,
   },
   bold: {
     fontWeight: 'bold',
