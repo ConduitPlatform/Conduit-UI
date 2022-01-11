@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import JSONInput, { localeEn } from 'react-json-editor-ajrm';
+import JSONInput from 'react-json-editor-ajrm';
+import { localeEn } from '../../../models/JSONEditorAjrmLocale';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
 import { makeStyles } from '@material-ui/styles';
 import { useAppDispatch } from '../../../redux/store';
