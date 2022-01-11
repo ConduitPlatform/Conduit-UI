@@ -20,6 +20,7 @@ import { asyncGetEmailTemplates, asyncSendEmail } from '../../redux/slices/email
 import { Pagination, Search } from '../../models/http/HttpModels';
 import TableDialog from '../common/TableDialog';
 import SelectedElements from '../common/SelectedElements';
+import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -72,24 +73,6 @@ const SendEmailForm: React.FC = () => {
     },
     [dispatch]
   );
-
-  const formatData = (data: EmailTemplateType[]) => {
-    return data.map((u) => {
-      return {
-        _id: u._id,
-        Name: u.name,
-        External: u.externalManaged,
-        'Updated At': u.updatedAt,
-      };
-    });
-  };
-
-  const headers = [
-    { title: '_id', sort: '_id' },
-    { title: 'Name', sort: 'name' },
-    { title: 'External', sort: 'externalManaged' },
-    { title: 'Updated At', sort: 'updatedAt' },
-  ];
 
   const removeSelectedTemplate = (i: number) => {
     const filteredArray = selectedTemplate.filter((template, index) => index !== i);
