@@ -89,7 +89,6 @@ const Login: React.FC = () => {
                   name="username"
                   rules={{
                     required: 'Username is required',
-                    minLength: { value: 5, message: 'Username should be 5 characters or longer' },
                   }}
                   label="Username"
                 />
@@ -100,7 +99,6 @@ const Login: React.FC = () => {
                   name="password"
                   rules={{
                     required: 'Password is required',
-                    minLength: { value: 5, message: 'Password should be 5 characters or longer' },
                   }}
                   label="Password"
                 />
