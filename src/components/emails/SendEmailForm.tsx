@@ -11,7 +11,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { Clear, MailOutline, Send } from '@material-ui/icons';
 import { useForm, useWatch, Controller, FormProvider } from 'react-hook-form';
-import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
+import { EmailUI } from '../../models/emails/EmailModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
