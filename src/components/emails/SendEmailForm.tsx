@@ -54,6 +54,18 @@ const SendEmailForm: React.FC = () => {
   const [drawer, setDrawer] = useState<boolean>(false);
   const [selectedTemplate, setSelectedTemplate] = useState<EmailUI[]>([]);
 
+  const methods = useForm<FormProps>({
+    defaultValues: {
+      email: '',
+      sender: '',
+      subject: '',
+      templateName: '',
+      body: '',
+      withTemplate: false,
+    },
+  });
+  const { handleSubmit, reset, control, setValue, getValues } = methods;
+
   const getData = useCallback(
     (params: Pagination & Search & { provider: string }) => {
       dispatch(asyncGetEmailTemplates(params));
@@ -82,19 +94,10 @@ const SendEmailForm: React.FC = () => {
   const removeSelectedTemplate = (i: number) => {
     const filteredArray = selectedTemplate.filter((template, index) => index !== i);
     setSelectedTemplate(filteredArray);
+    setVariables({});
+    setValue('body', '');
+    setValue('subject', '');
   };
-
-  const methods = useForm<FormProps>({
-    defaultValues: {
-      email: '',
-      sender: '',
-      subject: '',
-      templateName: '',
-      body: '',
-      withTemplate: false,
-    },
-  });
-  const { handleSubmit, reset, control, setValue, getValues } = methods;
 
   const handleCancel = () => {
     setVariables({});
@@ -179,7 +182,7 @@ const SendEmailForm: React.FC = () => {
               <Grid item xs={4} className={classes.checkBox}>
                 <FormInputCheckBox name="withTemplate" label="With Template" />
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={12}>
                 <SelectedElements
                   disabled={!withTemplate}
                   selectedElements={selectedTemplate.map((template) => template.Name)}

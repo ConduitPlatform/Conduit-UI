@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props extends BoxProps {
-  disabled: boolean;
+  disabled?: boolean;
   selectedElements: string[];
   removeSelectedElement: (value: number) => void;
   handleButtonAction: () => void;
