@@ -105,7 +105,7 @@ const Login: React.FC = () => {
                   label="Password"
                 />
               </Box>
-              <FormInputCheckBox name="remember" label="Remember password?" />
+              <FormInputCheckBox name="remember" label="Remember me" />
               <Button
                 type="submit"
                 fullWidth
