@@ -13,9 +13,7 @@ import { Clear, MailOutline, Send } from '@material-ui/icons';
 import { useForm, useWatch, Controller, FormProvider } from 'react-hook-form';
 import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { isString } from 'lodash';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 import TemplateEditor from './TemplateEditor';
 import { asyncGetEmailTemplates, asyncSendEmail } from '../../redux/slices/emailsSlice';
@@ -109,8 +107,6 @@ const SendEmailForm: React.FC = () => {
     name: 'withTemplate',
   });
 
-  const selectedFormTemplate = getValues('templateName');
-
   const withTemplate = getValues('withTemplate');
 
   const onSubmit = (data: FormProps) => {
@@ -133,9 +129,7 @@ const SendEmailForm: React.FC = () => {
       };
     }
 
-    console.log(email);
-
-    // dispatch(asyncSendEmail(email));
+    dispatch(asyncSendEmail(email));
   };
 
   useEffect(() => {
