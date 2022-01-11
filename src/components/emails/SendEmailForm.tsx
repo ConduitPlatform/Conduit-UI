@@ -8,17 +8,20 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Clear, MailOutline, Send } from '@material-ui/icons';
 import { useForm, useWatch, Controller, FormProvider } from 'react-hook-form';
-import { EmailTemplateType } from '../../models/emails/EmailModels';
-import { useAppDispatch } from '../../redux/store';
+import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { isString } from 'lodash';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 import TemplateEditor from './TemplateEditor';
-import { asyncSendEmail } from '../../redux/slices/emailsSlice';
+import { asyncGetEmailTemplates, asyncSendEmail } from '../../redux/slices/emailsSlice';
+import { Pagination, Search } from '../../models/http/HttpModels';
+import TableDialog from '../common/TableDialog';
+import SelectedElements from '../common/SelectedElements';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,10 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface Props {
-  templates: EmailTemplateType[];
-}
-
 interface FormProps {
   email: string;
   sender: string;
@@ -48,11 +47,44 @@ interface FormProps {
   templateName: string;
   withTemplate: boolean;
 }
-const SendEmailForm: React.FC<Props> = ({ templates }) => {
+const SendEmailForm: React.FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const [variables, setVariables] = useState<{ [key: string]: string }>({});
+  const { templateDocuments, totalCount } = useAppSelector((state) => state.emailsSlice.data);
+  const [drawer, setDrawer] = useState<boolean>(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailUI[]>([]);
+
+  const getData = useCallback(
+    (params: Pagination & Search & { provider: string }) => {
+      dispatch(asyncGetEmailTemplates(params));
+    },
+    [dispatch]
+  );
+
+  const formatData = (data: EmailTemplateType[]) => {
+    return data.map((u) => {
+      return {
+        _id: u._id,
+        Name: u.name,
+        External: u.externalManaged,
+        'Updated At': u.updatedAt,
+      };
+    });
+  };
+
+  const headers = [
+    { title: '_id', sort: '_id' },
+    { title: 'Name', sort: 'name' },
+    { title: 'External', sort: 'externalManaged' },
+    { title: 'Updated At', sort: 'updatedAt' },
+  ];
+
+  const removeSelectedTemplate = (i: number) => {
+    const filteredArray = selectedTemplate.filter((template, index) => index !== i);
+    setSelectedTemplate(filteredArray);
+  };
 
   const methods = useForm<FormProps>({
     defaultValues: {
@@ -68,14 +100,10 @@ const SendEmailForm: React.FC<Props> = ({ templates }) => {
 
   const handleCancel = () => {
     setVariables({});
-
+    setSelectedTemplate([]);
     reset();
   };
 
-  const templateChanged = useWatch({
-    control,
-    name: 'templateName',
-  });
   const watchWithTemplate = useWatch({
     control,
     name: 'withTemplate',
@@ -87,13 +115,13 @@ const SendEmailForm: React.FC<Props> = ({ templates }) => {
 
   const onSubmit = (data: FormProps) => {
     let email;
-    if (selectedFormTemplate !== '') {
+    if (selectedTemplate.length) {
       email = {
         subject: data.subject,
         sender: data.sender,
         email: data.email,
         body: data.body,
-        templateName: data.templateName,
+        templateName: selectedTemplate[0].Name,
         variables: variables,
       };
     } else {
@@ -105,36 +133,42 @@ const SendEmailForm: React.FC<Props> = ({ templates }) => {
       };
     }
 
-    dispatch(asyncSendEmail(email));
+    console.log(email);
+
+    // dispatch(asyncSendEmail(email));
   };
 
   useEffect(() => {
     if (withTemplate) {
-      if (!isString(selectedFormTemplate)) return;
-      const selectedTemplate = templates.find((template) => template.name === selectedFormTemplate);
+      if (!selectedTemplate.length) return;
+      const foundTemplate = templateDocuments.find(
+        (template) => template.name === selectedTemplate[0].Name
+      );
 
-      if (!selectedTemplate) return;
+      if (!foundTemplate) return;
       let variableValues = {};
-      selectedTemplate.variables.forEach((variable: string) => {
+      foundTemplate.variables.forEach((variable: string) => {
         variableValues = { ...variableValues, [variable]: '' };
       });
-      setValue('subject', selectedTemplate.subject);
-      setValue('body', selectedTemplate.body);
+      setValue('subject', foundTemplate.subject);
+      setValue('body', foundTemplate.body);
       setVariables(variableValues);
     }
     if (!withTemplate) {
+      if (!selectedTemplate.length) return;
       setValue('subject', '');
       setValue('body', '');
       setValue('templateName', '');
+      setSelectedTemplate([]);
       setVariables({});
     }
-  }, [templateChanged, watchWithTemplate, templates]);
+  }, [selectedTemplate, watchWithTemplate, templateDocuments]);
 
   return (
     <Container maxWidth="md">
       <Paper className={classes.paper} elevation={1}>
         <Typography variant={'h6'} className={classes.typography}>
-          <MailOutline fontSize={'small'} />. Compose your email
+          <MailOutline fontSize={'small'} /> Compose your email
         </Typography>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -152,14 +186,13 @@ const SendEmailForm: React.FC<Props> = ({ templates }) => {
                 <FormInputCheckBox name="withTemplate" label="With Template" />
               </Grid>
               <Grid item xs={8}>
-                <FormInputSelect
+                <SelectedElements
                   disabled={!withTemplate}
-                  label={'Template name'}
-                  name="templateName"
-                  options={templates?.map((template) => ({
-                    label: template.name,
-                    value: template.name,
-                  }))}
+                  selectedElements={selectedTemplate.map((template) => template.Name)}
+                  handleButtonAction={() => setDrawer(true)}
+                  removeSelectedElement={removeSelectedTemplate}
+                  buttonText={'Add template'}
+                  header={'Selected template'}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -209,6 +242,18 @@ const SendEmailForm: React.FC<Props> = ({ templates }) => {
                 </Box>
               </Grid>
             </Grid>
+            <TableDialog
+              open={drawer}
+              singleSelect
+              title={'Select templates'}
+              headers={headers}
+              getData={getData}
+              data={{ tableData: formatData(templateDocuments), count: totalCount }}
+              handleClose={() => setDrawer(false)}
+              buttonText={'Select template'}
+              setExternalElements={setSelectedTemplate}
+              externalElements={selectedTemplate}
+            />
           </form>
         </FormProvider>
       </Paper>
