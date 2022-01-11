@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import { Formik } from 'formik';
 import { asyncLogin } from '../redux/slices/appAuthSlice';
-import { Theme } from '@material-ui/core';
+import { Box, Theme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { useRouter } from 'next/router';
 import Grid from '@material-ui/core/Grid';
 import LoginIllustration from '../assets/svgs/LoginIllustration';
+import { FormProvider, useForm } from 'react-hook-form';
+import { FormInputText } from '../components/common/FormComponents/FormInputText';
+import { FormInputCheckBox } from '../components/common/FormComponents/FormInputCheckbox';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -44,11 +43,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+interface ILoginValues {
+  username: string;
+  password: string;
+  remember: boolean;
+}
+
 const Login: React.FC = () => {
   const { token } = useAppSelector((state) => state.appAuthSlice.data);
   const { loading } = useAppSelector((state) => state.appSlice);
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const methods = useForm<ILoginValues>({
+    defaultValues: { username: '', password: '' },
+  });
 
   useEffect(() => {
     if (token) {
@@ -73,68 +82,39 @@ const Login: React.FC = () => {
         </Typography>
         <Typography variant="h5">Sign in</Typography>
         <Container maxWidth="xs">
-          <Formik
-            initialValues={{ username: '', password: '', remember: false }}
-            onSubmit={(values, { setSubmitting, resetForm }) => {
-              handleLogin(values);
-              resetForm({
-                values: { username: '', password: '', remember: false },
-              });
-              setSubmitting(false);
-            }}>
-            {({ handleSubmit, handleChange, values }) => {
-              return (
-                <form onSubmit={handleSubmit} className={classes.form}>
-                  <TextField
-                    onChange={handleChange}
-                    value={values.username}
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Username"
-                    type="text"
-                    name="username"
-                    autoComplete="username"
-                    autoFocus
-                    InputLabelProps={{ required: false }}
-                  />
-                  <TextField
-                    onChange={handleChange}
-                    value={values.password}
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    InputLabelProps={{ required: false }}
-                  />
-                  <FormControlLabel
-                    value={values.remember}
-                    onChange={handleChange}
-                    name={'remember'}
-                    id={'remember'}
-                    control={<Checkbox value="remember" color="primary" />}
-                    label="Remember me"
-                  />
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    disabled={loading}>
-                    Sign In
-                  </Button>
-                </form>
-              );
-            }}
-          </Formik>
+          <FormProvider {...methods}>
+            <form onSubmit={methods.handleSubmit(handleLogin)} className={classes.form}>
+              <Box mt={2}>
+                <FormInputText
+                  name="username"
+                  rules={{
+                    required: 'Username is required',
+                  }}
+                  label="Username"
+                />
+              </Box>
+              <Box mt={2}>
+                <FormInputText
+                  typeOfInput="password"
+                  name="password"
+                  rules={{
+                    required: 'Password is required',
+                  }}
+                  label="Password"
+                />
+              </Box>
+              <FormInputCheckBox name="remember" label="Remember me" />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                disabled={loading}>
+                Sign In
+              </Button>
+            </form>
+          </FormProvider>
         </Container>
       </Grid>
     </Grid>
