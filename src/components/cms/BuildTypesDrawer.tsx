@@ -14,14 +14,16 @@ import { IDrawerData } from '../../models/cms/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
+    minWidth: 350,
     width: '25%',
-    alignItems: 'center',
+    maxWidth: 750,
   },
   duplicateId: {
     color: 'red',
     marginBottom: theme.spacing(2),
   },
   title: {
+    marginTop: theme.spacing(8),
     width: '100%',
     padding: theme.spacing(2),
     fontWeight: 'bold',
@@ -54,97 +56,75 @@ const BuildTypesDrawer: FC<Props> = ({
   const classes = useStyles();
 
   const handleForm = (data: IDrawerData) => {
-    switch (data.type) {
-      case 'Text':
-        return (
-          <SimpleForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'Number':
-        return (
-          <SimpleForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'Date':
-        return (
-          <SimpleForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'Enum':
-        return (
-          <EnumForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'Boolean':
-        return (
-          <BooleanForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'ObjectId':
-        return (
-          <ObjectIdForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'Group':
-        return (
-          <GroupForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      case 'Relation':
-        return (
-          <RelationForm
-            readOnly={readOnly}
-            onSubmit={onSubmit}
-            drawerData={drawerData}
-            onClose={onClose}
-            selectedItem={selectedItem}
-          />
-        );
-      default:
-        return (
-          <Box>
-            <Typography>Something went wrong</Typography>
-            <Button onClick={onClose} color="primary">
-              Go Back
-            </Button>
-          </Box>
-        );
-    }
+    if (data.type == 'Text' || data.type == 'Number' || data.type == 'Date')
+      return (
+        <SimpleForm
+          readOnly={readOnly}
+          onSubmit={onSubmit}
+          drawerData={drawerData}
+          onClose={onClose}
+          selectedItem={selectedItem}
+        />
+      );
+    if (data.type == 'Boolean')
+      return (
+        <BooleanForm
+          readOnly={readOnly}
+          onSubmit={onSubmit}
+          drawerData={drawerData}
+          onClose={onClose}
+          selectedItem={selectedItem}
+        />
+      );
+    if (data.type == 'Enum')
+      return (
+        <EnumForm
+          readOnly={readOnly}
+          onSubmit={onSubmit}
+          drawerData={drawerData}
+          onClose={onClose}
+          selectedItem={selectedItem}
+        />
+      );
+    if (data.type == 'ObjectId')
+      return (
+        <ObjectIdForm
+          readOnly={readOnly}
+          onSubmit={onSubmit}
+          drawerData={drawerData}
+          onClose={onClose}
+          selectedItem={selectedItem}
+        />
+      );
+    if (data.type == 'Group')
+      return (
+        <GroupForm
+          readOnly={readOnly}
+          onSubmit={onSubmit}
+          drawerData={drawerData}
+          onClose={onClose}
+          selectedItem={selectedItem}
+        />
+      );
+    if (data.type == 'Relation')
+      return (
+        <RelationForm
+          readOnly={readOnly}
+          onSubmit={onSubmit}
+          drawerData={drawerData}
+          onClose={onClose}
+          selectedItem={selectedItem}
+        />
+      );
+
+    return (
+      <Box>
+        <Typography>Something went wrong</Typography>
+        <Button onClick={onClose} color="primary">
+          Go Back
+        </Button>
+      </Box>
+    );
   };
 
   return (
