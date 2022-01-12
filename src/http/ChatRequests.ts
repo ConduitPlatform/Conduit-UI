@@ -36,15 +36,7 @@ export const getChatMessages = (params: {
   });
 
 export const deleteChatRooms = (params: { ids: string[] }) =>
-  axios.delete(`${CONDUIT_API}/admin/chat/rooms/many`, {
-    data: {
-      ...params,
-    },
-  });
+  axios.delete(`${CONDUIT_API}/admin/chat/rooms`, { params: { ...params.ids } });
 
 export const deleteChatMessages = (params: { ids: string[] }) =>
-  axios.delete(`${CONDUIT_API}/admin/chat/messages/many`, {
-    data: {
-      ...params,
-    },
-  });
+  axios.delete(`${CONDUIT_API}/admin/chat/messages`, { params: { ...params.ids } });

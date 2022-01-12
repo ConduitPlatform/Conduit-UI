@@ -11,11 +11,11 @@ export const getForms = (params: Pagination & Search) =>
 export const createForm = (data: any) => axios.post(`${CONDUIT_API}/admin/forms/forms`, data);
 
 export const deleteFormsRequest = (ids: string[]) => {
-  return axios.delete(`${CONDUIT_API}/admin/forms/forms`, { data: { ids: ids } });
+  return axios.delete(`${CONDUIT_API}/admin/forms/forms`, { params: { ids } });
 };
 
 export const getFormReplies = (id: string) =>
-  axios.get(`${CONDUIT_API}/admin/forms/forms/${id}/replies`);
+  axios.get(`${CONDUIT_API}/admin/forms/replies`, { params: { id } });
 
 export const updateForm = (id: string, data: FormsModel) =>
   axios.put(`${CONDUIT_API}/admin/forms/forms/${id}`, data);

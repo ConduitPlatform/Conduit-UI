@@ -15,13 +15,13 @@ export const patchCmsSchemaRequest = (_id: string, data: any) =>
   axios.patch(`${CONDUIT_API}/admin/cms/schemas/${_id}`, { ...data });
 
 export const deleteCmsSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
-  return axios.delete(`${CONDUIT_API}/admin/cms/schemas/many`, { params });
+  return axios.delete(`${CONDUIT_API}/admin/cms/schemas`, { params });
 };
 export const toggleSchemaByIdRequest = (_id: string) =>
-  axios.put(`${CONDUIT_API}/admin/cms/schemas/${_id}/toggle`);
+  axios.post(`${CONDUIT_API}/admin/cms/schemas/${_id}/toggle`);
 
 export const toggleMultipleSchemasRequest = (params: { ids: string[]; enabled: boolean }) =>
-  axios.put(`${CONDUIT_API}/admin/cms/schemas/many/toggle`, { ...params });
+  axios.post(`${CONDUIT_API}/admin/cms/schemas/toggle`, { ...params });
 
 export const getCmsDocumentsByNameRequest = (params: {
   name: string;
