@@ -31,6 +31,7 @@ import ExternalTemplates from '../../components/emails/ExternalTemplates';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
 
 const useStyles = makeStyles((theme) => ({
   btnAlignment: {
@@ -256,24 +257,6 @@ const Templates = () => {
   };
 
   const actions = [toDelete, toUpload, toView];
-
-  const formatData = (data: EmailTemplateType[]) => {
-    return data.map((u) => {
-      return {
-        _id: u._id,
-        Name: u.name,
-        External: u.externalManaged,
-        'Updated At': u.updatedAt,
-      };
-    });
-  };
-
-  const headers = [
-    { title: '_id', sort: '_id' },
-    { title: 'Name', sort: 'name' },
-    { title: 'External', sort: 'externalManaged' },
-    { title: 'Updated At', sort: 'updatedAt' },
-  ];
 
   const extractTitle = () => {
     if (!importTemplate && !create) {
