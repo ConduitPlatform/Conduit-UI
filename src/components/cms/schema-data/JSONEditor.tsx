@@ -1,11 +1,12 @@
 import React, { FC, useEffect, useState } from 'react';
-import JSONInput, { localeEn } from 'react-json-editor-ajrm';
+import JSONInput from 'react-json-editor-ajrm';
+import { localeEn } from '../../../models/JSONEditorAjrmLocale';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
-import { makeStyles } from '@material-ui/styles';
 import { useAppDispatch } from '../../../redux/store';
 import { Schema } from '../../../models/cms/CmsModels';
 import { asyncEditSchemaDocument } from '../../../redux/slices/cmsSlice';
 import { enqueueErrorNotification } from '../../../utils/useNotifier';
+import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    marginTop: '5px',
+    marginTop: theme.spacing(1),
     height: '20px',
     display: 'flex',
     justifyContent: 'flex-end',

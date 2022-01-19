@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props extends BoxProps {
+  disabled?: boolean;
   selectedElements: string[];
   removeSelectedElement: (value: number) => void;
   handleButtonAction: () => void;
@@ -36,6 +37,7 @@ interface Props extends BoxProps {
 }
 
 const SelectedElements: FC<Props> = ({
+  disabled,
   selectedElements,
   removeSelectedElement,
   handleButtonAction,
@@ -49,6 +51,7 @@ const SelectedElements: FC<Props> = ({
     <Box {...rest}>
       <Grid item xs={12}>
         <Button
+          disabled={disabled}
           className={classes.button}
           variant="contained"
           color="secondary"
