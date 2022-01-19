@@ -18,7 +18,7 @@ export const patchEmailTemplateRequest = (templateId: string, data: EmailData) =
   axios.patch(`${CONDUIT_API}/admin/email/templates/${templateId}`, { ...data });
 
 export const deleteEmailTemplateRequest = (ids: string[]) => {
-  return axios.delete(`${CONDUIT_API}/admin/email/templates`, { data: { ids: ids } });
+  return axios.delete(`${CONDUIT_API}/admin/email/templates/${ids}`);
 };
 export const uploadTemplateRequest = (_id: string) =>
   axios.post(`${CONDUIT_API}/admin/email/templates/upload`, {

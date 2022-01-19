@@ -90,11 +90,11 @@ export const asyncGetChatRooms = createAsyncThunk(
   async (params: { skip: number; limit: number; search?: string }, thunkAPI) => {
     try {
       const {
-        data: { chatRoomDocuments, totalCount },
+        data: { chatRoomDocuments, count },
       } = await getChatRooms(params);
       return {
         chatRooms: chatRoomDocuments,
-        count: totalCount,
+        count,
         search: params.search,
       };
     } catch (error) {
