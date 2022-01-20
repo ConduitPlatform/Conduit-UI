@@ -29,7 +29,7 @@ export const getCmsDocumentsByNameRequest = (params: {
   limit: number;
   query?: string;
 }) =>
-  axios.post(`${CONDUIT_API}/admin/cms/schemas/${params.name}/docs`, {
+  axios.post(`${CONDUIT_API}/admin/cms/schemas/${params.name}/query`, {
     ...params,
   });
 
