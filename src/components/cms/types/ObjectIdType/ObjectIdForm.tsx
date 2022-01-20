@@ -174,7 +174,7 @@ const ObjectIdForm: FC<IProps> = ({
           </Grid>
           <Grid item xs={12}>
             <Typography variant={'body2'} className={classes.info}>
-              This option defines if the field you be returned from the database
+              This option defines if the field should be returned from the database
             </Typography>
           </Grid>
         </Grid>
