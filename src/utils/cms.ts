@@ -119,6 +119,7 @@ const hasInvalidQueries = (queriesGroup: any) => {
     (query: any) =>
       query.schemaField === '' ||
       query.operation === -1 ||
+      !query.comparisonField ||
       query.comparisonField.type === '' ||
       query.comparisonField.value === ''
   );

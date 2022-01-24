@@ -132,6 +132,9 @@ const SendEmailForm: React.FC = () => {
       });
       setValue('subject', foundTemplate.subject);
       setValue('body', foundTemplate.body);
+      if (foundTemplate.sender) {
+        setValue('sender', foundTemplate.sender);
+      }
       setVariables(variableValues);
     }
     if (!withTemplate) {
@@ -139,6 +142,7 @@ const SendEmailForm: React.FC = () => {
       setValue('subject', '');
       setValue('body', '');
       setValue('templateName', '');
+      setValue('sender', '');
       setSelectedTemplate([]);
       setVariables({});
     }

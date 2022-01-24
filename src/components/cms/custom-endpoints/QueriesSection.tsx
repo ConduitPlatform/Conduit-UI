@@ -74,6 +74,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
     if (!nodeId) return;
 
     const queries = deepClone(endpoint.queries);
+
     const query = {
       _id: uuidv4(),
       schemaField: '',
@@ -98,7 +99,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
   };
 
   const handleRemoveNode = (nodeId: any) => {
-    const queries = endpoint.queries.slice();
+    const queries = deepClone(endpoint.queries);
     let foundIndex = -1;
 
     queries.forEach((q: any, index: number) => {
