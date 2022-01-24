@@ -41,7 +41,7 @@ export interface ICmsSlice {
     schemasFromOtherModules: Schema[];
     documents: {
       documents: any;
-      documentsCount: number;
+      count: number;
     };
     customEndpoints: {
       endpoints: EndpointTypes[];
@@ -70,7 +70,7 @@ const initialState: ICmsSlice = {
     schemasFromOtherModules: [],
     documents: {
       documents: [],
-      documentsCount: 0,
+      count: 0,
     },
     customEndpoints: {
       endpoints: [],

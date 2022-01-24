@@ -67,7 +67,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const { documents, documentsCount } = useAppSelector((state) => state.cmsSlice.data.documents);
+  const { documents, count } = useAppSelector((state) => state.cmsSlice.data.documents);
   const [documentsState, setDocumentsState] = useState({
     data: [],
     count: 0,
@@ -105,9 +105,9 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   useEffect(() => {
     setDocumentsState({
       data: documents,
-      count: documentsCount,
+      count: count,
     });
-  }, [documents, documentsCount]);
+  }, [documents, count]);
 
   const handleChange = (value: number) => {
     setSelectedSchema(value);

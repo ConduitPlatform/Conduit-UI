@@ -1,15 +1,15 @@
+import React from 'react';
 import MomentUtils from '@date-io/moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { Today } from '@material-ui/icons';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import React from 'react';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { ParsableDate } from '@material-ui/pickers/constants/prop-types';
 
 const useStyles = makeStyles((theme) => ({
   dateInput: {
-    borderRadius: 4,
-    height: 32,
+    borderRadius: theme.spacing(0.5),
+    height: theme.spacing(4),
     padding: theme.spacing(0, 1),
     backgroundColor: '#C8C6C6',
     fontSize: 14,
@@ -49,10 +49,9 @@ const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...re
         {...rest}
         className={classes.datepicker}
         autoOk
-        disableToolbar
         variant="inline"
         format="DD/MM/YYYY"
-        value={value}
+        value={value ? value : null}
         onChange={handleDateChange}
         placeholder={placeholder}
         invalidDateMessage={''}
