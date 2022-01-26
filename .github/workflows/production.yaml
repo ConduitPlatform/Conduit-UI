@@ -38,5 +38,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          tags: ghcr.io/conduitplatform/conduit-ui:${{ env.RELEASE_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
