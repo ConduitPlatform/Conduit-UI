@@ -3,7 +3,7 @@ import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { getSmsConfig, putSmsConfig, sendSmsRequest } from '../../http/SmsRequests';
-import { ISmsConfig, ISmsProviders } from '../../models/sms/SmsModels';
+import { ISendSms, ISmsConfig, ISmsProviders } from '../../models/sms/SmsModels';
 
 interface ISmsSlice {
   data: {
@@ -29,10 +29,10 @@ const initialState: ISmsSlice = {
   },
 };
 
-export const asyncSendSms = createAsyncThunk('sms/sendSms', async (arg, thunkAPI) => {
+export const asyncSendSms = createAsyncThunk('sms/sendSms', async (params: ISendSms, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
-    const { data } = await sendSmsRequest();
+    const { data } = await sendSmsRequest(params);
     thunkAPI.dispatch(setAppLoading(false));
     return data;
   } catch (error) {
