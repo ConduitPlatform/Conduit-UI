@@ -3,7 +3,7 @@ import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { Clear, Send } from '@material-ui/icons';
+import { Clear, Send, Sms } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
 import { FormProvider, useForm } from 'react-hook-form';
 import sharedClasses from '../common/sharedClasses';
@@ -33,8 +33,12 @@ const SendSms: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper} style={{ marginTop: 32 }}>
-        <Typography variant="h6">Compose your SMS</Typography>
+      <Paper className={classes.paper}>
+        <Box>
+          <Typography variant={'h6'} className={classes.marginBottom}>
+            <Sms fontSize={'small'} /> Compose your SMS
+          </Typography>
+        </Box>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(handleSend)}>
             <Grid container spacing={2}>

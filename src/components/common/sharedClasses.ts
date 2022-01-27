@@ -76,5 +76,13 @@ export default makeStyles((theme) =>
     selectedElements: {
       margin: theme.spacing(2, 0),
     },
+    marginBottom: {
+      marginBottom: theme.spacing(4),
+    },
+    paper1: {
+      padding: theme.spacing(2),
+      color: theme.palette.text.secondary,
+      marginTop: '32px',
+    },
   })
 );
