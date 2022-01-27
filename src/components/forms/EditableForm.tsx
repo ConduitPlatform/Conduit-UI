@@ -108,7 +108,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   };
 
   const validOptions = () => {
-    const arr: { value: string; label: string }[] = [];
+    const arr: { value: string; label: string }[] = [{ value: '', label: 'No item selected' }];
     inputFields.forEach((field) => {
       if (field.type === 'String' && field.key !== '') {
         arr.push({ value: field.key, label: field.key });
