@@ -87,6 +87,7 @@ const StorageConfig: React.FC = () => {
   const providers = [
     { label: 'Azure', value: 'azure' },
     { label: 'Google', value: 'google' },
+    { label: 'Local', value: 'local' },
   ];
 
   return (
@@ -141,6 +142,17 @@ const StorageConfig: React.FC = () => {
                             <FormInputText
                               name="google.bucketName"
                               label="Bucket Name"
+                              disabled={!edit}
+                            />
+                          </Grid>
+                        </>
+                      )}
+                      {watchProvider === 'local' && (
+                        <>
+                          <Grid item xs={6}>
+                            <FormInputText
+                              name="local.storagePath"
+                              label="Storage Path"
                               disabled={!edit}
                             />
                           </Grid>
