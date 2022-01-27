@@ -39,10 +39,10 @@ const SendSms: React.FC = () => {
           <form onSubmit={methods.handleSubmit(handleSend)}>
             <Grid container spacing={2}>
               <Grid item sm={12}>
-                <FormInputText name="message" rows={4} label="Message" />
+                <FormInputText name="to" label="Send to" />
               </Grid>
               <Grid item sm={12}>
-                <FormInputText name="to" label="Send to" />
+                <FormInputText name="message" rows={4} label="Message" />
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
                 <Box marginTop={3}>
