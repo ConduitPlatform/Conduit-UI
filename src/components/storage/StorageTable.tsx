@@ -135,13 +135,17 @@ const StorageTable: FC<Props> = ({
       handleDelete('container', container._id, container.name);
       return;
     }
+    const foundFolder = containerData.find(
+      (item: ContainerDataProps) => item.name === `${data.Name}/`
+    );
     const foundItem = containerData.find((item: ContainerDataProps) => item.name === data.Name);
-    if (!foundItem) return;
-    if ('isFile' in foundItem && foundItem.isFile) {
+
+    if (foundItem && 'isFile' in foundItem && foundItem.isFile) {
       handleDelete('file', foundItem._id, foundItem.name);
       return;
+    } else if (foundFolder) {
+      handleDelete('folder', foundFolder._id, foundFolder.name, foundFolder.container);
     }
-    handleDelete('folder', foundItem._id, foundItem.name, foundItem.container);
   };
 
   const deleteAction = {
