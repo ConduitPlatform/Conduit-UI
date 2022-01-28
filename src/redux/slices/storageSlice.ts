@@ -62,6 +62,9 @@ const initialState: IStorageSlice = {
         serviceAccountKeyPath: '',
         bucketName: '',
       },
+      local: {
+        storagePath: '',
+      },
     },
     containers: {
       containers: [],

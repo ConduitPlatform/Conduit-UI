@@ -11,6 +11,9 @@ export interface IStorageConfig {
     serviceAccountKeyPath: string;
     bucketName: string;
   };
+  local: {
+    storagePath: string;
+  };
 }
 
 export interface IStorageFileData {

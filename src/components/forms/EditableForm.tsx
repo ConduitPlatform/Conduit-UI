@@ -18,6 +18,7 @@ import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormsModel } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 
 interface PropsForInputFields {
   id: string;
@@ -46,7 +47,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   const methods = useForm<IForm>({ defaultValues: preloadedValues });
 
-  const { reset } = methods;
+  const { reset, getValues, setValue } = methods;
 
   const handleAddField = () => {
     setInputFields([...inputFields, { id: uuidV4(), key: '', type: '' }]);
@@ -104,6 +105,22 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   const handleRemoveField = (id: string) => {
     setInputFields((list) => list.filter((el) => el.id !== id));
+  };
+
+  const validOptions = () => {
+    const arr: { value: string; label: string }[] = [{ value: '', label: 'No item selected' }];
+    inputFields.forEach((field) => {
+      if (field.type === 'String' && field.key !== '') {
+        arr.push({ value: field.key, label: field.key });
+      }
+    });
+
+    const emailFieldValue = getValues('emailField');
+
+    if (!arr.find((item) => item.value === emailFieldValue)) {
+      setValue('emailField', '');
+    }
+    return arr;
   };
 
   return (
@@ -171,10 +188,19 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             })}
           </Grid>
           <Grid item sm={12}>
-            <FormInputText name="forwardTo" label="Forward to" />
+            <FormInputText
+              name="forwardTo"
+              rules={{ required: 'Forward to is required' }}
+              label="Forward to"
+            />
           </Grid>
           <Grid item sm={12}>
-            <FormInputText name="emailField" label="Email field" typeOfInput={'email'} />
+            <FormInputSelect
+              name="emailField"
+              label="Email Field"
+              options={validOptions()}
+              rules={{ required: 'Email field is required ' }}
+            />
           </Grid>
           <Grid item container xs={12}>
             <Grid item xs={11}>
