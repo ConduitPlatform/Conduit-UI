@@ -53,22 +53,31 @@ Commit messages should follow the [commit message convention](https://github.com
 
 ### Commonly used scripts
 
-TODO:
+``` bash
+# watch and auto re-build the application
+$ yarn dev
+
+# build all dist files, including npm packages
+$ yarn build
+
+# recursively remove everything within the directory you choose
+$ yarn clean
+```
 
 There are some other scripts available in the `scripts` section of the `package.json` file.
 
 ## Project Structure
 
 - **`src`**:
-    - `src/assets`:
-    - `src/components`:
-    - `src/hooks`:
-    - `src/http`:
-    - `src/models`:
-    - `src/pages`:
-    - `src/redux`:
-    - `src/theme`:
-    - `src/utils`:
+    - `src/assets`: contains images and svgs used
+    - `src/components`: contains most of the logic for the components, structured by subfolders where needed
+    - `src/hooks`: contains a couple of much used custom react hooks
+    - `src/http`: contains code related to the http requests, structured with folders of each module
+    - `src/models`: contains everything TypeScript related that is used in more than one place
+    - `src/pages`: contains all the routes of the app based on the NextJS convention
+    - `src/redux`: contains Redux slices and asyncThunks needed for each module
+    - `src/theme`: contains theming of the application based on Material UI v4
+    - `src/utils`: contains everything that could not fit elsewhere such as helper function etc
 
 - **`typings`**:
     
