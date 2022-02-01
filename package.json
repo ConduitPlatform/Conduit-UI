@@ -24,7 +24,7 @@
     "@material-ui/styles": "latest",
     "@reduxjs/toolkit": "^1.6.1",
     "@types/react-json-editor-ajrm": "^2.5.2",
-    "axios": "^0.21.2",
+    "axios": "^0.24.0",
     "clsx": "^1.1.0",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
