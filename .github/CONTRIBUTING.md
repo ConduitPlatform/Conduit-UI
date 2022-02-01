@@ -80,6 +80,7 @@ There are some other scripts available in the `scripts` section of the `package.
     - `src/utils`: contains everything that could not fit elsewhere such as helper function etc
 
 - **`typings`**:
+    - `index`: contains declared modules for mongo-db
     
 ## Credits
 
