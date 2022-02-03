@@ -12,6 +12,8 @@ import LoginIllustration from '../assets/svgs/LoginIllustration';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../components/common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../components/common/FormComponents/FormInputCheckbox';
+import ConduitLogo from '../assets/svgs/conduitLogo.svg';
+import Image from 'next/image';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -77,9 +79,9 @@ const Login: React.FC = () => {
         <LoginIllustration />
       </Grid>
       <Grid container item xs={4} className={classes.paper}>
-        <Typography variant="h3" className={classes.title}>
-          Conduit
-        </Typography>
+        <Box marginBottom="20px">
+          <Image src={ConduitLogo} alt="conduit-logo" />
+        </Box>
         <Typography variant="h5">Sign in</Typography>
         <Container maxWidth="xs">
           <FormProvider {...methods}>
