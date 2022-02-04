@@ -54,14 +54,20 @@ const ViewEditForm: React.FC<Props> = ({
         </Paper>
         {!edit && (
           <>
-            <Grid container spacing={2} justifyContent="center">
+            <Grid container justifyContent="center">
               <Grid item>
                 <Button onClick={() => setEdit(!edit)}>Edit</Button>
               </Grid>
             </Grid>
-            <div className={classes.centeredImg}>
-              <Image src={FormsImage} width="200px" alt="mail" />
-            </div>
+            <Grid item container justifyContent={'center'}>
+              <Image
+                src={FormsImage}
+                width="200px"
+                height="200px"
+                objectFit={'contain'}
+                alt="mail"
+              />
+            </Grid>
           </>
         )}
       </Box>
