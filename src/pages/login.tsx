@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: 'auto',
   },
   illustrationContainer: {
-    background: '#1F4068',
+    background: '#262840',
     padding: theme.spacing(4),
   },
 }));
@@ -82,7 +82,7 @@ const Login: React.FC = () => {
         <Box marginBottom="20px">
           <Image src={ConduitLogo} alt="conduit-logo" />
         </Box>
-        <Typography variant="h5">Sign in</Typography>
+        <Typography variant="h6">Sign in</Typography>
         <Container maxWidth="xs">
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(handleLogin)} className={classes.form}>
