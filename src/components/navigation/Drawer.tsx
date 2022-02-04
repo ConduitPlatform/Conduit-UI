@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Theme, Typography } from '@material-ui/core';
+import { Box, Paper, Theme } from '@material-ui/core';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
@@ -11,6 +11,8 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import CustomListItem from './CustomListItem';
 import Link from 'next/link';
+import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
+import Image from 'next/image';
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
@@ -18,12 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
   },
-  title: {
-    color: theme.palette.secondary.main,
-    paddingTop: theme.spacing(2),
-  },
   listContainer: {
-    padding: theme.spacing(1),
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
@@ -53,8 +50,8 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
 
   return (
     <Paper className={classes.drawer} elevation={2} {...rest}>
-      <ListItem className={classes.title}>
-        <Typography variant="h5">Conduit</Typography>
+      <ListItem style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Image src={ConduitLogo} alt="conduit-logo" />
       </ListItem>
       <div className={classes.listContainer}>
         <List component="nav">
