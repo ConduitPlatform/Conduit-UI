@@ -110,7 +110,7 @@ const Templates = () => {
       variables: data.variables,
       externalManaged: data.externalManaged,
     };
-    if (_id !== undefined && updatedData.variables !== undefined) {
+    if (_id !== undefined) {
       dispatch(asyncSaveEmailTemplateChanges({ _id, data: updatedData }));
     }
     setSelectedTemplate(updatedData);
