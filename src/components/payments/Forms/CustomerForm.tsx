@@ -17,19 +17,11 @@ interface Props {
   handleSubmitData: (data: Customer) => void;
 }
 
-interface ICustomerForm {
-  email: string;
-  buyerName: string;
-  phoneNumber: string;
-  address: string;
-  postCode: string;
-}
-
 const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
-  const methods = useForm<ICustomerForm>({ defaultValues: preloadedValues });
+  const methods = useForm<Customer>({ defaultValues: preloadedValues });
   const { reset } = methods;
 
   const [drawer, setDrawer] = useState<boolean>(false);
