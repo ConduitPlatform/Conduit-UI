@@ -1,5 +1,4 @@
 name: Create and publish production Docker image
-
 on:
   release:
     types:
