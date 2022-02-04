@@ -125,7 +125,7 @@ const SendEmailForm: React.FC = () => {
         (template) => template.name === selectedTemplate[0].Name
       );
 
-      if (!foundTemplate) return;
+      if (!foundTemplate?.variables) return;
       let variableValues = {};
       foundTemplate.variables.forEach((variable: string) => {
         variableValues = { ...variableValues, [variable]: '' };

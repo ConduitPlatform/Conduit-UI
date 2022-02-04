@@ -6,13 +6,6 @@ import sharedClasses from '../common/sharedClasses';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { EmailTemplateType } from '../../models/emails/EmailModels';
 
-interface ITemplateForm {
-  name: string;
-  sender: string;
-  subject: string;
-  body: string;
-}
-
 interface Props {
   preloadedValues: EmailTemplateType;
   handleSubmitData: (data: EmailTemplateType) => void;
@@ -21,7 +14,7 @@ interface Props {
 const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   const classes = sharedClasses();
 
-  const methods = useForm<ITemplateForm>({ defaultValues: preloadedValues });
+  const methods = useForm<EmailTemplateType>({ defaultValues: preloadedValues });
 
   const { handleSubmit, reset } = methods;
 
