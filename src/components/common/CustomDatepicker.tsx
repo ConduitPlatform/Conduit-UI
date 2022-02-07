@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
+  required?: boolean;
   value: ParsableDate;
   setValue: (date: MaterialUiPickersDate) => void;
   placeholder?: string;
@@ -35,6 +36,7 @@ interface Props {
 }
 
 const CustomDatepicker: React.FC<Props> = ({
+  required = false,
   disabled = false,
   value,
   setValue,
@@ -51,6 +53,7 @@ const CustomDatepicker: React.FC<Props> = ({
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <DatePicker
         {...rest}
+        required={required}
         disabled={disabled}
         className={classes.datepicker}
         autoOk

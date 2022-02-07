@@ -115,6 +115,7 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, isRelation, ed
         case 'Date':
           return (
             <CustomDatepicker
+              required={field?.required}
               disabled={isInputDisabled}
               value={document.data}
               setValue={(event) => {
@@ -217,6 +218,7 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
       case 'Date':
         return (
           <CustomDatepicker
+            required={required}
             value={value}
             setValue={(event) => {
               if (event) onChange(event.toISOString());
