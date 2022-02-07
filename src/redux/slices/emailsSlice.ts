@@ -59,7 +59,6 @@ const initialState: IEmailSlice = {
           apiKey: '',
         },
         sendgrid: {
-          apiUser: '',
           apiKey: '',
         },
       },
