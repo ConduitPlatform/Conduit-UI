@@ -55,6 +55,9 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, isRelation, ed
     const isArray = Array.isArray(document.data);
     const isObject =
       typeof document.data !== 'string' && document.data && Object.keys(document.data).length > 0;
+
+    const isInputDisabled =
+      document.id === 'createdAt' || document.id === 'updatedAt' || document.id === '_id';
     if (isArray) {
       if (document.data.length > 0) {
         return '[...]';
@@ -112,6 +115,7 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, isRelation, ed
         case 'Date':
           return (
             <CustomDatepicker
+              disabled={isInputDisabled}
               value={document.data}
               setValue={(event) => {
                 if (event) onChange(event.toISOString());
@@ -121,6 +125,7 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, isRelation, ed
         default:
           return (
             <Input
+              disabled={isInputDisabled}
               className={classes.textInput}
               autoComplete="new-password"
               value={document.data}
@@ -229,6 +234,7 @@ export const CreateTreeItemLabel: FC<CreateTreeItemLabelProps> = ({
             classes={{
               input: classes.textInputProps,
             }}
+            type={field?.data?.type === 'Number' ? 'number' : 'text'}
             required={required}
           />
         );

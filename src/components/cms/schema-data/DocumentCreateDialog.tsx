@@ -68,6 +68,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     switch (field.name) {
       case 'createdAt':
       case 'updatedAt':
+      case '_id':
         return <></>;
     }
     const parentsArray = parents ? [...parents, field.name] : [field.name];
@@ -107,33 +108,35 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
       open={open}
       onClose={handleClose}>
       <DialogTitle>Create Document</DialogTitle>
-      <DialogContent className={classes.dialogContent}>
-        {fieldsArray.map((field: any, index: number) => {
-          return (
-            <TreeView
-              key={`treeView${index}`}
-              disableSelection
-              expanded={expanded}
-              defaultCollapseIcon={<ExpandMore />}
-              defaultExpanded={['root']}
-              defaultExpandIcon={<ChevronRight />}>
-              {renderTree(field)}
-            </TreeView>
-          );
-        })}
-      </DialogContent>
-      <DialogActions>
-        <Button variant="contained" onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => handleCreate(fieldValues)}
-          color="primary"
-          autoFocus>
-          Create
-        </Button>
-      </DialogActions>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreate(fieldValues);
+        }}>
+        <DialogContent className={classes.dialogContent}>
+          {fieldsArray.map((field: any, index: number) => {
+            return (
+              <TreeView
+                key={`treeView${index}`}
+                disableSelection
+                expanded={expanded}
+                defaultCollapseIcon={<ExpandMore />}
+                defaultExpanded={['root']}
+                defaultExpandIcon={<ChevronRight />}>
+                {renderTree(field)}
+              </TreeView>
+            );
+          })}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button type={'submit'} variant="contained" color="primary" autoFocus>
+            Create
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

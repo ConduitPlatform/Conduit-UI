@@ -11,9 +11,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(0.5),
     height: theme.spacing(4),
     padding: theme.spacing(0, 1),
-    backgroundColor: '#C8C6C6',
     fontSize: 14,
-    color: '#2C2E43',
     fontWeight: 500,
     '& .MuiInputBase-input': {
       cursor: 'pointer',
@@ -21,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconButton: {
     padding: 0,
-    color: '#2C2E43',
     marginRight: 8,
     cursor: 'pointer',
   },
@@ -34,9 +31,16 @@ interface Props {
   value: ParsableDate;
   setValue: (date: MaterialUiPickersDate) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
-const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...rest }) => {
+const CustomDatepicker: React.FC<Props> = ({
+  disabled = false,
+  value,
+  setValue,
+  placeholder,
+  ...rest
+}) => {
   const classes = useStyles();
 
   const handleDateChange = (date: MaterialUiPickersDate) => {
@@ -47,6 +51,7 @@ const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...re
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <DatePicker
         {...rest}
+        disabled={disabled}
         className={classes.datepicker}
         autoOk
         variant="inline"
@@ -59,7 +64,7 @@ const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...re
         InputProps={{
           disableUnderline: true,
           className: classes.dateInput,
-          startAdornment: <Today className={classes.iconButton} />,
+          startAdornment: <Today color={'inherit'} className={classes.iconButton} />,
         }}
       />
     </MuiPickersUtilsProvider>
