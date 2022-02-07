@@ -167,7 +167,8 @@ const SchemaDataCard: FC<Props> = ({
     if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
       setExpandable((prevState) => [...prevState, document.id]);
     }
-
+    const docField: any = document.id;
+    const itemType = schema.fields[docField] ?? '';
     return (
       <TreeItem
         key={document.id}
@@ -178,6 +179,7 @@ const SchemaDataCard: FC<Props> = ({
         }}
         label={
           <TreeItemLabel
+            field={itemType}
             document={document}
             isRelation={isRelation}
             edit={edit}

@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 28,
   },
   bold: {
+    marginRight: theme.spacing(1),
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
   },
@@ -40,13 +41,14 @@ interface Document {
 }
 
 interface TreeItemLabelProps {
+  field: any;
   document: Document;
   isRelation: boolean;
   edit: boolean;
   onChange: (value: string) => void;
 }
 
-const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit, onChange }) => {
+const TreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, isRelation, edit, onChange }) => {
   const classes = useStyles();
 
   const handleLabelContent = () => {
@@ -66,18 +68,72 @@ const TreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation, edit, onC
       return <AccountTree color="primary" />;
     }
     if (edit) {
-      return (
-        <Input
-          className={classes.textInput}
-          autoComplete="new-password"
-          value={document.data}
-          onChange={(event) => onChange(event.target.value)}
-          fullWidth
-          classes={{
-            input: classes.textInputProps,
-          }}
-        />
-      );
+      if (field?.enum) {
+        return (
+          <TextField
+            select
+            label=""
+            value={document.data}
+            onChange={(event) => {
+              onChange(event.target.value);
+            }}
+            classes={{
+              root: classes.muiSelect,
+            }}
+            variant="outlined">
+            <MenuItem value={''}>None</MenuItem>
+            {field.enum.map((option: string, index: number) => (
+              <MenuItem value={option} key={index}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        );
+      }
+      switch (field?.type) {
+        case 'Boolean':
+          return (
+            <TextField
+              select
+              label=""
+              value={document.data}
+              onChange={(event) => {
+                onChange(event.target.value);
+              }}
+              classes={{
+                root: classes.muiSelect,
+              }}
+              variant="outlined">
+              <MenuItem value={''}>None</MenuItem>
+              <MenuItem value={'true'}>True</MenuItem>
+              <MenuItem value={'false'}>False</MenuItem>
+            </TextField>
+          );
+        case 'Date':
+          return (
+            <CustomDatepicker
+              value={document.data}
+              setValue={(event) => {
+                if (event) onChange(event.toISOString());
+              }}
+            />
+          );
+        default:
+          return (
+            <Input
+              className={classes.textInput}
+              autoComplete="new-password"
+              value={document.data}
+              onChange={(event) => onChange(event.target.value)}
+              fullWidth
+              classes={{
+                input: classes.textInputProps,
+              }}
+              type={field?.type === 'Number' ? 'number' : 'text'}
+              required={field?.required}
+            />
+          );
+      }
     }
     return `${document.data}`;
   };
