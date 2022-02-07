@@ -137,6 +137,7 @@ const SchemaDataCard: FC<Props> = ({
       documentId: documentState._id,
       documentData: documentState,
       getSchemaDocuments: getSchemaDocuments,
+      onEditError: () => setDocumentState(documents),
     };
 
     dispatch(asyncEditSchemaDocument(params));

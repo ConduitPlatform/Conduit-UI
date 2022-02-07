@@ -300,6 +300,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
       schemaName: string;
       documentData: any;
       getSchemaDocuments: () => void;
+      onEditError: () => void;
     },
     thunkAPI
   ) => {
@@ -315,6 +316,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      params.onEditError();
       throw error;
     }
   }
