@@ -93,9 +93,14 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
           />
         }>
         {isObject &&
-          Object.keys(field.data.type).map((node) =>
-            renderTree({ name: node, data: field.data.type[node] }, parentsArray)
-          )}
+          Object.keys(field.data.type).map((node) => {
+            let tempField = { name: node, data: field.data.type[node] };
+            const dataFieldType = tempField.data;
+            if (typeof dataFieldType === 'string') {
+              tempField = { ...tempField, data: { ...field.data, type: dataFieldType } };
+            }
+            return renderTree(tempField, parentsArray);
+          })}
       </TreeItem>
     );
   };
