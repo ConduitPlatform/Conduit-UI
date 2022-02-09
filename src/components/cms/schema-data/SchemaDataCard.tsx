@@ -19,6 +19,7 @@ import {
 } from './SchemaDataUtils';
 import { DocumentActions, EditDocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 import { cloneDeep, set } from 'lodash';
+import ViewOnlyTree from '../tree-components/ViewOnlyTree';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -162,7 +163,6 @@ const SchemaDataCard: FC<Props> = ({
     const isArray = isFieldArray(document.data);
     const isObject = isFieldObject(document.data);
     const isRelation = isFieldRelation(value);
-
     if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
       setExpandable((prevState) => [...prevState, document.id]);
     }
@@ -208,6 +208,7 @@ const SchemaDataCard: FC<Props> = ({
         edit={edit}
       />
       <CardContent>
+        <ViewOnlyTree document={documentState} schema={schema} expandAll={false} />
         {documentState &&
           createDocumentArray(documentState).map((document, index) => (
             <TreeView
