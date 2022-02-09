@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { createDocumentArray } from '../schema-data/SchemaDataUtils';
 import TreeElement from './TreeElement';
 import { Schema } from '../../../models/cms/CmsModels';
@@ -8,17 +8,34 @@ import { ChevronRight, ExpandMore } from '@material-ui/icons';
 
 type ViewOnlyTreeProps = {
   document: any;
-  expandAll?: boolean;
   schema: Schema;
+  editable: boolean;
+  onHandleChange: (value: any, parents: any[]) => void;
+  treeViewProps?: any;
+  handleRelationClick: (schemaName: string, id: string, path: string[]) => void;
 };
 
-const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({ schema, document, expandAll }) => {
-  const renderedElements = useMemo(() => {
+const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({
+  onHandleChange,
+  editable,
+  schema,
+  document,
+  treeViewProps,
+  handleRelationClick,
+}) => {
+  const renderedElements = () => {
     if (document)
       return createDocumentArray(document).map((elem) => (
-        <TreeElement key={elem.id} schema={schema} document={elem} expandAll={false} />
+        <TreeElement
+          handleRelationClick={handleRelationClick}
+          onHandleChange={onHandleChange}
+          editable={editable}
+          key={elem.id}
+          schema={schema}
+          document={elem}
+        />
       ));
-  }, [document]);
+  };
 
   return (
     <Box style={{ background: 'rgba(0,0,0,0.2)' }}>
@@ -26,8 +43,9 @@ const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({ schema, document, expandAll }) =>
         <TreeView
           defaultCollapseIcon={<ExpandMore />}
           defaultExpanded={['root']}
-          defaultExpandIcon={<ChevronRight />}>
-          {renderedElements}
+          defaultExpandIcon={<ChevronRight />}
+          {...treeViewProps}>
+          {renderedElements()}
         </TreeView>
       </Box>
     </Box>

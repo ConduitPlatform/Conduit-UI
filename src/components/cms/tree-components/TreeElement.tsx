@@ -1,45 +1,100 @@
 import React, { FC, memo } from 'react';
-import { createDocumentArray, isFieldArray, isFieldObject } from '../schema-data/SchemaDataUtils';
+import {
+  createDocumentArray,
+  isFieldArray,
+  isFieldObject,
+  isFieldRelation,
+} from '../schema-data/SchemaDataUtils';
 import { Schema } from '../../../models/cms/CmsModels';
 import { TreeItem } from '@material-ui/lab';
+import getDeepValue from '../../../utils/getDeepValue';
+import ViewableTreeItemLabel from './ViewableTreeItemLabel';
+import EditableTreeItemLabel from './EditableTreeItemLabel';
 
 type TreeElementProps = {
   document: any;
   schema: Schema;
-  expandAll?: boolean;
+  editable: boolean;
+  parents?: any[];
+  onHandleChange: (value: any, parents: any[]) => void;
+  handleRelationClick: (schemaName: string, id: string, path: string[]) => void;
 };
 
-const TreeElement: FC<TreeElementProps> = ({ schema, document, expandAll }) => {
+const TreeElement: FC<TreeElementProps> = ({
+  handleRelationClick,
+  onHandleChange,
+  editable,
+  schema,
+  document,
+  parents,
+}) => {
+  const parentsArray = parents ? [...parents, document] : [document];
+  const parentArray = parentsArray.map((parent: any) => parent.id);
+  const typeValue = schema && getDeepValue(schema.fields, parentArray);
+
   const isArray = isFieldArray(document.data);
   const isObject = isFieldObject(document.data);
+  const isRelation = isFieldRelation(typeValue);
+
+  const docField: any = document.id;
+  const itemType = schema.fields[docField] ?? '';
 
   const renderWrappedElements = () => {
-    const itemDescription = isArray ? '[...]' : isObject ? '{...}' : 'objectID';
     let preparedDocs = null;
     if (isArray) {
       preparedDocs = document.data.map((node: Document, index: number) => ({
         id: index.toString(),
         data: node,
       }));
-    } else {
-      if (isObject) {
-        preparedDocs = createDocumentArray(document.data);
-      }
     }
+    if (isObject) {
+      preparedDocs = createDocumentArray(document.data);
+    }
+
     return (
-      <TreeItem key={document.id} nodeId={document.id} label={`${document.id} ${itemDescription}`}>
-        {preparedDocs?.map((elem: any) => (
-          <TreeElement schema={schema} document={elem} expandAll={false} />
+      <TreeItem
+        key={document.id}
+        nodeId={document.id}
+        label={<ViewableTreeItemLabel document={document} isRelation={isRelation} />}>
+        {preparedDocs?.map((elem: any, i: number) => (
+          <TreeElement
+            handleRelationClick={handleRelationClick}
+            onHandleChange={onHandleChange}
+            key={document.id + i}
+            editable={editable}
+            schema={schema}
+            document={elem}
+            parents={parentsArray}
+          />
         ))}
       </TreeItem>
     );
   };
 
-  return !isObject && !isArray ? (
-    <TreeItem key={document.id} nodeId={document.id} label={`${document.id}:${document.data}`} />
-  ) : (
-    renderWrappedElements()
-  );
+  const renderTreeValue = () => {
+    const label = editable ? (
+      <EditableTreeItemLabel
+        document={document}
+        field={itemType}
+        onChange={(e) => onHandleChange(e, parentArray)}
+      />
+    ) : (
+      <ViewableTreeItemLabel document={document} isRelation={isRelation} />
+    );
+    return (
+      <TreeItem
+        onClick={() => {
+          if (!isRelation || typeof document.data !== 'string') return;
+          handleRelationClick(typeValue.model, document.data, parentArray);
+        }}
+        key={document.id}
+        nodeId={document.id}
+        label={label}
+      />
+    );
+  };
+
+  return !isObject && !isArray ? renderTreeValue() : renderWrappedElements();
 };
 
 export default memo(TreeElement);

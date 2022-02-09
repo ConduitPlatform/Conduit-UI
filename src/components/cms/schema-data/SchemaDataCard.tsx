@@ -211,7 +211,13 @@ const SchemaDataCard: FC<Props> = ({
         edit={edit}
       />
       <CardContent>
-        <ViewOnlyTree document={documentState} schema={schema} expandAll={false} />
+        <ViewOnlyTree
+          onHandleChange={handleEditField}
+          editable={edit}
+          document={documentState}
+          schema={schema}
+          handleRelationClick={handleRelationClick}
+        />
         {documentState &&
           createDocumentArray(documentState).map((document, index) => (
             <TreeView
