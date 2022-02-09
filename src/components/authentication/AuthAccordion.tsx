@@ -61,12 +61,16 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     enabled: false,
     accountLinking: false,
     clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
   });
 
   const [facebook, setFacebook] = useState<SignInTypes>({
     enabled: false,
     accountLinking: false,
     clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
   });
 
   const [twitch, setTwitch] = useState<SignInTypes>({
@@ -99,6 +103,8 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           enabled: googleData.enabled,
           accountLinking: googleData.accountLinking,
           clientId: googleData.clientId || '',
+          redirect_uri: googleData.redirect_uri || '',
+          clientSecret: googleData.clientSecret || '',
         });
       }
       if (configData.facebook) {
@@ -108,6 +114,8 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           enabled: facebookData.enabled,
           accountLinking: facebookData.accountLinking,
           clientId: facebookData.clientId || '',
+          redirect_uri: facebookData.redirect_uri || '',
+          clientSecret: facebookData.clientSecret || '',
         });
       }
       if (configData.twitch) {
