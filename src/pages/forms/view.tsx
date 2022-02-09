@@ -244,7 +244,7 @@ const Create = () => {
       return {
         _id: u._id,
         Name: u.name,
-        Email: u.emailField,
+        forwardTo: u.forwardTo,
         Enabled: u.enabled,
       };
     });
@@ -253,7 +253,7 @@ const Create = () => {
   const headers = [
     { title: '_id', sort: '_id' },
     { title: 'Name', sort: 'name' },
-    { title: 'Email', sort: 'emailField' },
+    { title: 'Forward to', sort: 'forwardTo' },
     { title: 'Enabled', sort: 'enabled' },
   ];
 
@@ -313,7 +313,7 @@ const Create = () => {
           />
 
           <Grid container style={{ marginTop: '-8px' }}>
-            <Grid item xs={7}></Grid>
+            <Grid item xs={7} />
             <Grid item xs={5}>
               <Paginator
                 handlePageChange={handlePageChange}

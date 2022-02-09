@@ -50,6 +50,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
 
   const setInitialFileData = () => {
     reset();
+    setFileData({ data: '', mimeType: '' });
   };
 
   const handleCancel = () => {

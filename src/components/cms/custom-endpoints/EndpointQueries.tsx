@@ -6,7 +6,7 @@ import { Grid, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { TreeView } from '@material-ui/lab';
 import { deepClone } from '../../../utils/deepClone';
-import { Add, Remove, Close } from '@material-ui/icons';
+import { Add, Remove } from '@material-ui/icons';
 import { v4 as uuidV4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
@@ -248,7 +248,6 @@ const EndpointQueries: FC<Props> = ({
         className={classes.root}
         defaultCollapseIcon={<Remove />}
         defaultExpandIcon={<Add />}
-        defaultEndIcon={<Close />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}
         onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
         {selectedQueries.map((q: any) => renderItem(q))}

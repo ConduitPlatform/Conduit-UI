@@ -1,4 +1,4 @@
-FROM node:fermium
+FROM node:fermium-bullseye-slim
 
 COPY . /app
 

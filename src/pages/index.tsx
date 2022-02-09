@@ -89,7 +89,7 @@ const Home = () => {
           flex={1}
           style={{ marginBottom: '20px' }}>
           <a
-            href="https://quintessential-sft.github.io/conduit/"
+            href="https://getconduit.dev/docs/"
             target="_blank"
             rel="noreferrer"
             style={{ textDecoration: 'none' }}>

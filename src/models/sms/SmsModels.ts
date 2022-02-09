@@ -17,3 +17,8 @@ export interface ISmsConfig {
   providerName: ISmsProviders;
   twilio: TwilioConfig;
 }
+
+export interface ISendSms {
+  message: string;
+  to: string;
+}
