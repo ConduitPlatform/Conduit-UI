@@ -9,13 +9,17 @@ import { ChevronRight, ExpandMore } from '@material-ui/icons';
 type ViewOnlyTreeProps = {
   document: any;
   schema: Schema;
+  expandable: string[];
+  setExpandable: React.Dispatch<React.SetStateAction<string[]>>;
   editable: boolean;
   onHandleChange: (value: any, parents: any[]) => void;
   treeViewProps?: any;
   handleRelationClick: (schemaName: string, id: string, path: string[]) => void;
 };
 
-const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({
+const EditDocumentTree: FC<ViewOnlyTreeProps> = ({
+  setExpandable,
+  expandable,
   onHandleChange,
   editable,
   schema,
@@ -27,6 +31,8 @@ const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({
     if (document)
       return createDocumentArray(document).map((elem) => (
         <TreeElement
+          expandable={expandable}
+          setExpandable={setExpandable}
           handleRelationClick={handleRelationClick}
           onHandleChange={onHandleChange}
           editable={editable}
@@ -38,7 +44,7 @@ const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({
   };
 
   return (
-    <Box style={{ background: 'rgba(0,0,0,0.2)' }}>
+    <Box>
       <Box>
         <TreeView
           defaultCollapseIcon={<ExpandMore />}
@@ -52,4 +58,4 @@ const ViewOnlyTree: FC<ViewOnlyTreeProps> = ({
   );
 };
 
-export default ViewOnlyTree;
+export default EditDocumentTree;

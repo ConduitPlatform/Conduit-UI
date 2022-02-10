@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useEffect } from 'react';
 import {
   createDocumentArray,
   isFieldArray,
@@ -18,9 +18,13 @@ type TreeElementProps = {
   parents?: any[];
   onHandleChange: (value: any, parents: any[]) => void;
   handleRelationClick: (schemaName: string, id: string, path: string[]) => void;
+  expandable: string[];
+  setExpandable: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const TreeElement: FC<TreeElementProps> = ({
+  expandable,
+  setExpandable,
   handleRelationClick,
   onHandleChange,
   editable,
@@ -38,6 +42,12 @@ const TreeElement: FC<TreeElementProps> = ({
 
   const docField: any = document.id;
   const itemType = schema.fields[docField] ?? '';
+
+  useEffect(() => {
+    if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
+      setExpandable((prevState) => [...prevState, document.id]);
+    }
+  }, [document]);
 
   const renderWrappedElements = () => {
     let preparedDocs = null;
@@ -58,6 +68,8 @@ const TreeElement: FC<TreeElementProps> = ({
         label={<ViewableTreeItemLabel document={document} isRelation={isRelation} />}>
         {preparedDocs?.map((elem: any, i: number) => (
           <TreeElement
+            expandable={expandable}
+            setExpandable={setExpandable}
             handleRelationClick={handleRelationClick}
             onHandleChange={onHandleChange}
             key={document.id + i}

@@ -1,25 +1,14 @@
 import React, { FC, useEffect, useState } from 'react';
-import { ChevronRight, ExpandMore } from '@material-ui/icons';
-import TreeView from '@material-ui/lab/TreeView';
 import Card, { CardProps } from '@material-ui/core/Card';
-import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { CardContent } from '@material-ui/core';
 import { Schema } from '../../../models/cms/CmsModels';
-import getDeepValue from '../../../utils/getDeepValue';
 import { asyncEditSchemaDocument, asyncGetSchemaDocument } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch } from '../../../redux/store';
-import TreeItemLabel from './TreeItemLabel';
-import {
-  createDocumentArray,
-  isFieldArray,
-  isFieldObject,
-  isFieldRelation,
-} from './SchemaDataUtils';
 import { DocumentActions, EditDocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 import { cloneDeep, set } from 'lodash';
-import ViewOnlyTree from '../tree-components/ViewOnlyTree';
+import EditDocumentTree from '../tree-components/EditDocumentTree';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,9 +24,6 @@ const useStyles = makeStyles((theme) => ({
     '&:hover $actionContainer': {
       display: 'flex',
     },
-  },
-  tree: {
-    flexGrow: 1,
   },
   arrow: {
     position: 'absolute',
@@ -58,11 +44,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
   },
 }));
-
-interface Document {
-  id: string;
-  data: any;
-}
 
 interface Props extends CardProps {
   documents: any;
@@ -155,48 +136,6 @@ const SchemaDataCard: FC<Props> = ({
     setDocumentState(documentClone);
   };
 
-  const renderTree = (document: Document, parents?: any) => {
-    const parentsArray = parents ? [...parents, document] : [document];
-    const parentArray = parentsArray.map((parent: any) => parent.id);
-
-    const value = schema && getDeepValue(schema.fields, parentArray);
-
-    const isArray = isFieldArray(document.data);
-    const isObject = isFieldObject(document.data);
-    const isRelation = isFieldRelation(value);
-    if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
-      setExpandable((prevState) => [...prevState, document.id]);
-    }
-    const docField: any = document.id;
-    const itemType = schema.fields[docField] ?? '';
-    return (
-      <TreeItem
-        key={document.id}
-        nodeId={document.id}
-        onClick={() => {
-          if (!isRelation || typeof document.data !== 'string') return;
-          handleRelationClick(value.model, document.data, parentArray);
-        }}
-        label={
-          <TreeItemLabel
-            field={itemType}
-            document={document}
-            isRelation={isRelation}
-            edit={edit}
-            onChange={(labelValue) => handleEditField(labelValue, parentArray)}
-          />
-        }>
-        {isArray
-          ? document.data.map((node: Document, index: number) =>
-              renderTree({ id: index.toString(), data: node }, parentsArray)
-            )
-          : isObject
-          ? createDocumentArray(document.data).map((node) => renderTree(node, parentsArray))
-          : null}
-      </TreeItem>
-    );
-  };
-
   return (
     <Card className={handleCardClasses()} variant={'outlined'} {...rest}>
       <ExpandableArrow
@@ -211,27 +150,19 @@ const SchemaDataCard: FC<Props> = ({
         edit={edit}
       />
       <CardContent>
-        <ViewOnlyTree
+        <EditDocumentTree
+          treeViewProps={{
+            expanded: expanded,
+            onNodeToggle: (event: any, nodeIds: any[]) => handleToggle(nodeIds),
+          }}
+          expandable={expandable}
+          setExpandable={setExpandable}
           onHandleChange={handleEditField}
           editable={edit}
           document={documentState}
           schema={schema}
           handleRelationClick={handleRelationClick}
         />
-        {documentState &&
-          createDocumentArray(documentState).map((document, index) => (
-            <TreeView
-              key={`treeView${index}`}
-              className={classes.tree}
-              disableSelection
-              expanded={expanded}
-              defaultCollapseIcon={<ExpandMore />}
-              defaultExpanded={['root']}
-              defaultExpandIcon={<ChevronRight />}
-              onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
-              {renderTree(document)}
-            </TreeView>
-          ))}
       </CardContent>
       <EditDocumentActions edit={edit} handleCancel={handleCancel} handleSave={handleSave} />
     </Card>
