@@ -13,6 +13,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { CreateTreeItemLabel } from './TreeItemLabel';
 import { set, cloneDeep } from 'lodash';
 import getDeepValue from '../../../utils/getDeepValue';
+import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
 
 const useStyles = makeStyles((theme) => ({
   paperRoot: {
@@ -119,6 +120,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
           handleCreate(fieldValues);
         }}>
         <DialogContent className={classes.dialogContent}>
+          <TreeFieldGenerator schema={schema} />
           {fieldsArray.map((field: any, index: number) => {
             return (
               <TreeView
