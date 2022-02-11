@@ -28,7 +28,11 @@ import {
 } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
-import { Typography } from '@material-ui/core';
+import { Chip, Typography } from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 resetServerContext();
 
@@ -38,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: '100vh',
     backgroundColor: theme.palette.background.default,
+    width: '75%',
   },
   cmsContainer: {
     minHeight: '100vh',
@@ -69,6 +74,19 @@ const useStyles = makeStyles((theme) => ({
     border: '1px',
     background: '#262840',
     borderRadius: 4,
+  },
+  accordionDetails: {
+    '&.MuiAccordionDetails-root': {
+      alignItems: 'center',
+      justifyContent: 'center',
+      display: 'flex',
+    },
+  },
+  accordionSummary: {
+    '&.MuiAccordionSummary-content': {
+      justifyContent: 'space-between',
+      display: 'flex',
+    },
   },
 }));
 
@@ -211,40 +229,7 @@ const BuildTypes: React.FC = () => {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   if (!selectedSchema) {
-  //     const initialFields = [
-  //       {
-  //         default: '',
-  //         isArray: false,
-  //         name: '_id',
-  //         required: false,
-  //         select: true,
-  //         type: 'ObjectId',
-  //         unique: true,
-  //       },
-  //       {
-  //         default: '',
-  //         isArray: false,
-  //         name: 'createdAt',
-  //         required: false,
-  //         select: true,
-  //         type: 'Date',
-  //         unique: false,
-  //       },
-  //       {
-  //         default: '',
-  //         isArray: false,
-  //         name: 'updatedAt',
-  //         required: false,
-  //         select: true,
-  //         type: 'Date',
-  //         unique: false,
-  //       },
-  //     ];
-  //     setEditableFields({ newTypeFields: initialFields });
-  //   }
-  // }, [selectedSchema]);
+  console.log(selectedSchema);
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
@@ -524,9 +509,6 @@ const BuildTypes: React.FC = () => {
     }
   };
 
-  console.log(editableFields);
-  console.log(nonEditableFields);
-
   return (
     <Box className={classes.root}>
       {selectedSchema && (
@@ -540,56 +522,75 @@ const BuildTypes: React.FC = () => {
           selectedSchema={selectedSchema}
         />
       )}
-      <Box className={classes.cmsContainer}>
+      <Box style={{ marginTop: '60px', padding: '20px' }}>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Box className={classes.contentContainer}>
-            <Typography style={{ textAlign: 'center' }} variant="h6">
-              {extractEditableTitle()}
-            </Typography>
-            {editableFields &&
-              Object.keys(editableFields).map((dataKey) => (
-                <BuildTypesContent
-                  dataKey={dataKey}
-                  data={editableFields}
-                  handleDelete={handleDelete}
-                  handleDrawer={handleDrawer}
-                  handleGroupDelete={handleGroupDelete}
-                  handleGroupDrawer={handleGroupDrawer}
-                  handleGroupInGroupDelete={handleGroupInGroupDelete}
-                  handleGroupInGroupDrawer={handleGroupInGroupDrawer}
-                  key={dataKey}
-                  style={{ width: '100%' }}
-                />
-              ))}
-          </Box>
           {nonEditableFields.length &&
             nonEditableFields.map((ext, i) => {
               return (
-                <Box key={i} className={classes.contentContainer}>
-                  <Typography style={{ textAlign: 'center' }} variant="h6">
-                    {Object.keys(ext).toString() !== 'cms'
-                      ? `${Object.keys(ext).toString().toUpperCase()} (read only)`
-                      : Object.keys(ext).toString().toUpperCase()}
-                  </Typography>
-                  {nonEditableFields.length &&
-                    Object.keys(ext).map((dataKey, i) => (
-                      <BuildTypesContent
-                        dataKey={dataKey}
-                        data={ext}
-                        handleDelete={handleDelete}
-                        handleDrawer={handleDrawer}
-                        handleGroupDelete={handleGroupDelete}
-                        handleGroupDrawer={handleGroupDrawer}
-                        handleGroupInGroupDelete={handleGroupInGroupDelete}
-                        handleGroupInGroupDrawer={handleGroupInGroupDrawer}
-                        key={dataKey}
-                        style={{ width: '100%' }}
-                        disabled
-                      />
-                    ))}
-                </Box>
+                <Accordion key={ext}>
+                  <AccordionSummary
+                    className={classes.accordionSummary}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header">
+                    <Typography style={{ justifyContent: 'center' }} variant="h6">
+                      {Object.keys(ext).toString().toUpperCase()}
+                    </Typography>
+                    <Chip
+                      color="secondary"
+                      variant="outlined"
+                      style={{ marginLeft: '30px', cursor: 'pointer' }}
+                      label="READ ONLY"
+                    />
+                  </AccordionSummary>
+                  <AccordionDetails className={classes.accordionDetails}>
+                    {nonEditableFields.length &&
+                      Object.keys(ext).map((dataKey, i) => (
+                        <BuildTypesContent
+                          dataKey={dataKey}
+                          data={ext}
+                          handleDelete={handleDelete}
+                          handleDrawer={handleDrawer}
+                          handleGroupDelete={handleGroupDelete}
+                          handleGroupDrawer={handleGroupDrawer}
+                          handleGroupInGroupDelete={handleGroupInGroupDelete}
+                          handleGroupInGroupDrawer={handleGroupInGroupDrawer}
+                          key={dataKey}
+                          style={{ width: '100%', maxWidth: '1000px' }}
+                          disabled
+                        />
+                      ))}
+                  </AccordionDetails>
+                </Accordion>
               );
             })}
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header">
+              <Typography style={{ textAlign: 'center' }} variant="h6">
+                {extractEditableTitle()}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.accordionDetails}>
+              {editableFields &&
+                Object.keys(editableFields).map((dataKey) => (
+                  <BuildTypesContent
+                    dataKey={dataKey}
+                    data={editableFields}
+                    handleDelete={handleDelete}
+                    handleDrawer={handleDrawer}
+                    handleGroupDelete={handleGroupDelete}
+                    handleGroupDrawer={handleGroupDrawer}
+                    handleGroupInGroupDelete={handleGroupInGroupDelete}
+                    handleGroupInGroupDrawer={handleGroupInGroupDrawer}
+                    key={dataKey}
+                    style={{ width: '100%', maxWidth: '1000px' }}
+                  />
+                ))}
+            </AccordionDetails>
+          </Accordion>
           <Box className={classes.listContainer}>
             <Droppable droppableId="ITEMS" isDropDisabled={true}>
               {(provided) => (
