@@ -6,8 +6,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import { Schema } from '../../../models/cms/CmsModels';
-import { ChevronRight, ExpandMore } from '@material-ui/icons';
-import TreeView from '@material-ui/lab/TreeView';
 import { getExpandableFields, getFieldsArray } from './SchemaDataUtils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { CreateTreeItemLabel } from './TreeItemLabel';
@@ -120,20 +118,21 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
           handleCreate(fieldValues);
         }}>
         <DialogContent className={classes.dialogContent}>
-          <TreeFieldGenerator schema={schema} />
-          {fieldsArray.map((field: any, index: number) => {
-            return (
-              <TreeView
-                key={`treeView${index}`}
-                disableSelection
-                expanded={expanded}
-                defaultCollapseIcon={<ExpandMore />}
-                defaultExpanded={['root']}
-                defaultExpandIcon={<ChevronRight />}>
-                {renderTree(field)}
-              </TreeView>
-            );
-          })}
+          <TreeFieldGenerator schema={schema} onChange={onChange} fieldValues={fieldValues} />
+
+          {/*{fieldsArray.map((field: any, index: number) => {*/}
+          {/*  return (*/}
+          {/*    <TreeView*/}
+          {/*      key={`treeView${index}`}*/}
+          {/*      disableSelection*/}
+          {/*      expanded={expanded}*/}
+          {/*      defaultCollapseIcon={<ExpandMore />}*/}
+          {/*      defaultExpanded={['root']}*/}
+          {/*      defaultExpandIcon={<ChevronRight />}>*/}
+          {/*      {renderTree(field)}*/}
+          {/*    </TreeView>*/}
+          {/*  );*/}
+          {/*})}*/}
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleClose}>

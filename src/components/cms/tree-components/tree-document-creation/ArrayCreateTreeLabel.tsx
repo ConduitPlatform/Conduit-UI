@@ -44,20 +44,18 @@ const ArrayCreateTreeLabel: FC<ArrayCreateTreeLabel> = ({ onChange, schemaDoc })
   const required = schemaDoc.data.required;
 
   const generateEmptyArrayOfType = (itemType: any[]): any => {
-    console.log('i run');
     const selectedItemType = itemType[0];
     const typeOfItem = typeof selectedItemType;
-    if (typeOfItem === 'string') return 'test';
+    if (typeOfItem === 'string') return '';
     let generatedObject = {};
     Object.keys(selectedItemType).forEach((key) => {
       const itemArrayType = selectedItemType[key].type;
       if (Array.isArray(itemArrayType)) {
-        // generatedObject = { ...generatedObject, [key]: [generateEmptyArrayOfType(itemArrayType)] };
         generatedObject = { ...generatedObject, [key]: [] };
         return;
       }
-      generatedObject = { ...generatedObject, [key]: 'arrayTest' };
-      return { [key]: 'arrayTest' };
+      generatedObject = { ...generatedObject, [key]: '' };
+      return { [key]: '' };
     });
     return generatedObject;
   };

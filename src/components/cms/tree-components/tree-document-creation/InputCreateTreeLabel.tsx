@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import CustomDatepicker from '../../../common/CustomDatepicker';
-import { Input, Typography } from '@material-ui/core';
+import { Box, Input, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -112,7 +112,7 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({ value, schemaDoc,
     }
   };
   return (
-    <Typography variant={'subtitle2'} className={classes.root}>
+    <Box className={classes.root}>
       {required && (
         <Typography component="span" variant="body2" className={classes.asterisk}>
           {'*'}
@@ -123,7 +123,7 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({ value, schemaDoc,
         {schemaDoc.data.type === 'Relation' ? `( ${schemaDoc.data.model} )` : ''}:
       </Typography>
       {handleLabelContent()}
-    </Typography>
+    </Box>
   );
 };
 export default InputCreateTreeLabel;

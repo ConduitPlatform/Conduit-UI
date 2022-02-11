@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { TreeItem } from '@material-ui/lab';
 import InputCreateTreeLabel from './InputCreateTreeLabel';
 import getDeepValue from '../../../../utils/getDeepValue';
@@ -19,8 +19,6 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
   const parentsArray = parents ? [...parents, schemaDoc.name] : [schemaDoc.name];
   const isArray = schemaDoc?.data?.type && Array.isArray(schemaDoc.data.type);
   const isObject = schemaDoc?.data?.type && typeof schemaDoc.data.type !== 'string' && !isArray;
-  // console.log(fieldValues);
-  console.log(fieldValues);
 
   const onAddArrayElement = (newArray: string) => {
     const selectedValue = getDeepValue(fieldValues, parents ? parents : []);
@@ -29,41 +27,53 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
     onChange(mergedArray, parentsArray);
   };
 
+  const generateArrayTreeElements = () => {
+    const value = getDeepValue(fieldValues, parents ? parents : []);
+    const inputValue = value && value[schemaDoc.name] ? value[schemaDoc.name] : '';
+    const hasItems = inputValue?.length > 0;
+    let subArrayItems: any = undefined;
+    if (hasItems) {
+      subArrayItems = inputValue?.map((itemValues: any, index: number) => {
+        if (typeof schemaDoc.data.type[0] === 'string') {
+          const newSchemaDoc = { name: index.toString(), data: { type: schemaDoc.data.type[0] } };
+          return (
+            <TreeElementByType
+              fieldValues={fieldValues}
+              onChange={onChange}
+              key={schemaDoc.name}
+              schemaDoc={newSchemaDoc}
+              parents={parentsArray}
+            />
+          );
+        }
+
+        return Object.keys(schemaDoc.data.type).map(() => {
+          const newSchemaDoc = { name: index.toString(), data: { type: schemaDoc.data.type[0] } };
+          return (
+            <TreeElementByType
+              fieldValues={fieldValues}
+              onChange={onChange}
+              key={schemaDoc.name}
+              schemaDoc={newSchemaDoc}
+              parents={parentsArray}
+            />
+          );
+        });
+      });
+    }
+    return (
+      <TreeItem
+        nodeId={schemaDoc.name}
+        label={<ArrayCreateTreeLabel onChange={onAddArrayElement} schemaDoc={schemaDoc} />}>
+        {subArrayItems}
+      </TreeItem>
+    );
+  };
+
   const generateNewTreeElements = () => {
     if (isArray) {
-      const value = getDeepValue(fieldValues, parents ? parents : []);
-      const inputValue = value && value[schemaDoc.name] ? value[schemaDoc.name] : '';
-      const hasItems = inputValue?.length > 0;
-      return (
-        <TreeItem
-          nodeId={schemaDoc.name}
-          label={<ArrayCreateTreeLabel onChange={onAddArrayElement} schemaDoc={schemaDoc} />}>
-          {/*{hasItems &&*/}
-          {/*  inputValue?.map((items: any, index: number) => {*/}
-          {/*    return (*/}
-          {/*      <TreeItem*/}
-          {/*        nodeId={schemaDoc.name + index.toString()}*/}
-          {/*        key={index}*/}
-          {/*        label={`${index}:`}>*/}
-          {/*        {Object.keys(schemaDoc.data.type[0]).map((node) => {*/}
-          {/*          const newSchemaDoc = { name: node, data: schemaDoc.data.type[0][node] };*/}
-          {/*          return (*/}
-          {/*            <TreeElementByType*/}
-          {/*              fieldValues={fieldValues}*/}
-          {/*              onChange={onChange}*/}
-          {/*              key={schemaDoc.name}*/}
-          {/*              schemaDoc={newSchemaDoc}*/}
-          {/*              parents={parentsArray}*/}
-          {/*            />*/}
-          {/*          );*/}
-          {/*        })}*/}
-          {/*      </TreeItem>*/}
-          {/*    );*/}
-          {/*  })}*/}
-        </TreeItem>
-      );
+      return generateArrayTreeElements();
     }
-
     return (
       <TreeItem nodeId={schemaDoc.name} label={`${schemaDoc.name}:`}>
         {Object.keys(schemaDoc.data.type).map((node) => {
@@ -85,7 +95,6 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
   const createInputTree = () => {
     const value = getDeepValue(fieldValues, parents ? parents : []);
     const inputValue = value && value[schemaDoc.name] ? value[schemaDoc.name] : '';
-
     return (
       <TreeItem
         nodeId={'eye'}
@@ -103,4 +112,4 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
   return <>{!isArray && !isObject ? createInputTree() : generateNewTreeElements()}</>;
 };
 
-export default TreeElementByType;
+export default memo(TreeElementByType);

@@ -41,7 +41,7 @@ const TreeElement: FC<TreeElementProps> = ({
   const isRelation = isFieldRelation(typeValue);
 
   const docField: any = document.id;
-  const itemType = schema.fields[docField] ?? '';
+  const itemType = schema?.fields?.[docField] ?? '';
 
   useEffect(() => {
     if ((isArray || isObject || isRelation) && !expandable.includes(document.id)) {
