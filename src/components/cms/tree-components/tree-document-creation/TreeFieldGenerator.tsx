@@ -14,14 +14,20 @@ type TreeFieldGeneratorProps = {
 const TreeFieldGenerator: FC<TreeFieldGeneratorProps> = ({ fieldValues, onChange, schema }) => {
   const prepareTreeItems = () => {
     const preparedFieldArray = getFieldsArray(schema.fields);
-    return preparedFieldArray.map((schemaDoc: any) => (
-      <TreeElementByType
-        fieldValues={fieldValues}
-        onChange={onChange}
-        key={schemaDoc.name}
-        schemaDoc={schemaDoc}
-      />
-    ));
+    const treeElements: JSX.Element[] = [];
+    preparedFieldArray.forEach((schemaDoc: any) => {
+      if (schemaDoc.name == 'createdAt' || schemaDoc.name == 'updatedAt' || schemaDoc.name == '_id')
+        return;
+      treeElements.push(
+        <TreeElementByType
+          fieldValues={fieldValues}
+          onChange={onChange}
+          key={schemaDoc.name}
+          schemaDoc={schemaDoc}
+        />
+      );
+    });
+    return treeElements;
   };
 
   return (
