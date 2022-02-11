@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/cmsSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { ModifyOptions, Permissions } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../models/cms/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;
@@ -79,6 +79,7 @@ interface Props {
   name: string;
   authentication: boolean;
   crudOperations: boolean;
+  selectedSchema: Schema;
   permissions: Permissions;
   readOnly: boolean;
   handleSave: (name: string, readOnly: boolean, crud: boolean, permissions: Permissions) => void;
@@ -87,6 +88,7 @@ interface Props {
 const Header: FC<Props> = ({
   name,
   authentication,
+  selectedSchema,
   crudOperations,
   permissions,
   readOnly,
@@ -166,6 +168,7 @@ const Header: FC<Props> = ({
               size="small"
               className={classes.checkbox}
               checked={schemaAuthentication}
+              disabled={selectedSchema.ownerModule !== 'cms'}
               onChange={(event) => {
                 setSchemaAuthentication(event.target.checked);
               }}
@@ -180,6 +183,7 @@ const Header: FC<Props> = ({
               size="small"
               className={classes.checkbox}
               checked={schemaCrudOperations}
+              disabled={selectedSchema.ownerModule !== 'cms'}
               onChange={(event) => {
                 setSchemaCrudOperations(event.target.checked);
               }}
@@ -205,6 +209,7 @@ const Header: FC<Props> = ({
         permissions={schemaPermissions}
         setPermissions={setSchemaPermissions}
         handleClose={() => setDialog(false)}
+        selectedSchema={selectedSchema}
       />
     </Box>
   );

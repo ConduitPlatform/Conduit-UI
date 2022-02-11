@@ -1,5 +1,9 @@
 import { isNil } from 'lodash';
 
+export const cmsExtension = (extensions) => {
+  return extensions.find((ext) => ext.ownerModule === 'cms').fields;
+};
+
 export const cloneItem = (destination, item, droppableDestination) => {
   const clone = Array.from(destination);
 

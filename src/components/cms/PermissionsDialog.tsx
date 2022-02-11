@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import { ModifyOptions, Permissions } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../models/cms/CmsModels';
 import { DoneOutline } from '@material-ui/icons';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
@@ -39,6 +39,7 @@ interface Props {
   permissions: Permissions;
   setPermissions: (permissions: Permissions) => void;
   open: boolean;
+  selectedSchema: Schema;
   handleClose: () => void;
 }
 
@@ -48,7 +49,13 @@ const options = [
   { label: 'ExtensionOnly', value: ModifyOptions.ExtensionOnly },
 ];
 
-const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, setPermissions }) => {
+const PermissionsDialog: React.FC<Props> = ({
+  open,
+  handleClose,
+  permissions,
+  selectedSchema,
+  setPermissions,
+}) => {
   const classes = useStyles();
 
   const methods = useForm<Permissions>({
@@ -73,6 +80,8 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
     handleClose();
   };
 
+  console.log(selectedSchema);
+
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
@@ -87,16 +96,29 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container alignItems="center" spacing={2}>
                 <Grid item sm={6}>
-                  <FormInputCheckBox name="extendable" label="Is extendable" />
+                  <FormInputCheckBox
+                    name="extendable"
+                    label="Is extendable"
+                    disabled={selectedSchema.ownerModule !== 'cms'}
+                  />
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputCheckBox name="canCreate" label="Can create" />
+                  <FormInputCheckBox
+                    name="canCreate"
+                    label="Can create"
+                    disabled={selectedSchema.ownerModule !== 'cms'}
+                  />
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputCheckBox name="canDelete" label="Can delete" />
+                  <FormInputCheckBox
+                    name="canDelete"
+                    label="Can delete"
+                    disabled={selectedSchema.ownerModule !== 'cms'}
+                  />
                 </Grid>
                 <Grid item sm={6}>
                   <FormInputSelect
+                    disabled={selectedSchema.ownerModule !== 'cms'}
                     label={'Can modify'}
                     name="canModify"
                     options={options.map((option) => ({
@@ -107,6 +129,7 @@ const PermissionsDialog: React.FC<Props> = ({ open, handleClose, permissions, se
                 </Grid>
                 <Grid item sm={12}>
                   <Button
+                    disabled={selectedSchema.ownerModule !== 'cms'}
                     fullWidth
                     type="submit"
                     variant="contained"

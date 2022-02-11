@@ -6,7 +6,6 @@ import {
   getCmsSchemasRequest,
   postCmsSchemaRequest,
   patchCmsSchemaRequest,
-  schemasFromOtherModules,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
 } from '../../http/CmsRequests';
@@ -38,7 +37,6 @@ export interface ICmsSlice {
       schemas: Schema[];
       schemasCount: number;
     };
-    schemasFromOtherModules: Schema[];
     documents: {
       documents: any;
       documentsCount: number;
@@ -67,7 +65,6 @@ const initialState: ICmsSlice = {
       schemas: [],
       schemasCount: 0,
     },
-    schemasFromOtherModules: [],
     documents: {
       documents: [],
       documentsCount: 0,
@@ -433,22 +430,6 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
   }
 );
 
-export const asyncFetchSchemasFromOtherModules = createAsyncThunk<any, any>(
-  'cms/schemasFromOtherModules',
-  async (arg, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const { data } = await schemasFromOtherModules();
-      thunkAPI.dispatch(setAppLoading(false));
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
 const findSchemaById = (_id: string, schemaDocuments: Schema[]) => {
   const found = schemaDocuments.find((s) => s._id === _id);
   return found ? found : null;
@@ -530,10 +511,6 @@ const cmsSlice = createSlice({
         (endpoint) => endpoint._id !== action.payload
       );
       state.data.customEndpoints.count = state.data.customEndpoints.count - 1;
-    });
-
-    builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
-      state.data.schemasFromOtherModules = action.payload.externalSchemas;
     });
   },
 });

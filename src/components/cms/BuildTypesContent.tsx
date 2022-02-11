@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 interface Props extends BoxProps {
   dataKey: any;
   data: any;
+  disabled?: boolean;
   handleDrawer: (item: any, index: number) => void;
   handleDelete: (index: number) => void;
   handleGroupDrawer: (groupItem: any, index: number, groupIndex: number) => void;
@@ -76,6 +77,7 @@ interface Props extends BoxProps {
 const BuildTypesContent: FC<Props> = ({
   dataKey,
   data,
+  disabled,
   handleDrawer,
   handleDelete,
   handleGroupDelete,
@@ -145,13 +147,13 @@ const BuildTypesContent: FC<Props> = ({
                             <Button
                               onClick={() => handleDelete(index)}
                               className={classes.button}
-                              disabled={checkIfDisabled(item.name)}>
+                              disabled={disabled ? true : checkIfDisabled(item.name)}>
                               <DeleteIcon className={classes.icon} />
                             </Button>
                             <Button
                               onClick={() => handleDrawer(item, index)}
                               className={classes.button}
-                              disabled={checkIfDisabled(item.name)}>
+                              disabled={disabled ? true : checkIfDisabled(item.name)}>
                               <SettingsIcon className={classes.icon} />
                             </Button>
                             <Box {...provided.dragHandleProps} className={classes.icon}>

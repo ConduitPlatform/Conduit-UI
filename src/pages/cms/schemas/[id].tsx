@@ -10,6 +10,7 @@ import {
   addToChildGroup,
   addToGroup,
   cloneItem,
+  cmsExtension,
   deleteItem,
   getSchemaFieldsWithExtra,
   prepareFields,
@@ -22,12 +23,12 @@ import { useRouter } from 'next/router';
 import {
   asyncCreateNewSchema,
   asyncEditSchema,
-  asyncFetchSchemasFromOtherModules,
   asyncGetCmsSchemas,
   clearSelectedSchema,
 } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
+import { Typography } from '@material-ui/core';
 
 resetServerContext();
 
@@ -40,12 +41,14 @@ const useStyles = makeStyles((theme) => ({
   },
   cmsContainer: {
     minHeight: '100vh',
+    flexDirection: 'column',
     display: 'flex',
     justifyContent: 'space-between',
   },
   contentContainer: {
     width: '75%',
     display: 'flex',
+    flexDirection: 'column',
     padding: theme.spacing(2, 14),
     justifyContent: 'center',
     paddingTop: headerHeight,
@@ -76,7 +79,8 @@ const BuildTypes: React.FC = () => {
   resetServerContext();
 
   const { data } = useAppSelector((state) => state.cmsSlice);
-  const [schemaFields, setSchemaFields] = useState<any>({ newTypeFields: [] });
+  const [editableFields, setEditableFields] = useState<any>({ newTypeFields: [] });
+  const [nonEditableFields, setNonEditableFields] = useState<any[]>([]);
   const [selectedSchema, setSelectedSchema] = useState<Schema>();
   const [schemaName, setSchemaName] = useState<string>('');
   const [authentication, setAuthentication] = useState(false);
@@ -103,7 +107,6 @@ const BuildTypes: React.FC = () => {
 
   useEffect(() => {
     dispatch(asyncGetCmsSchemas({ skip: 0, limit: 100 }));
-    dispatch(asyncFetchSchemasFromOtherModules(''));
   }, [dispatch]);
 
   useEffect(() => {
@@ -119,7 +122,13 @@ const BuildTypes: React.FC = () => {
     if (!selectedSchema) {
       setCrudOperations(true);
     }
-    if (data && selectedSchema) {
+    console.log(selectedSchema);
+    if (
+      data &&
+      selectedSchema &&
+      selectedSchema.ownerModule === 'cms' &&
+      !selectedSchema.extensions.length
+    ) {
       setSchemaName(selectedSchema.name);
       if (
         selectedSchema.modelOptions.conduit.cms.authentication !== null &&
@@ -140,46 +149,102 @@ const BuildTypes: React.FC = () => {
         setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
       }
       const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
-      setSchemaFields({ newTypeFields: formattedFields });
+      setEditableFields({ newTypeFields: formattedFields });
+    } else if (
+      data &&
+      selectedSchema &&
+      selectedSchema.ownerModule === 'cms' &&
+      selectedSchema.extensions
+    ) {
+      setSchemaName(selectedSchema.name);
+      setAuthentication(false);
+      setCrudOperations(false);
+      setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
+      const extensionSchemas = selectedSchema.extensions.map((ext) => ({
+        [ext.ownerModule]: getSchemaFieldsWithExtra(ext.fields),
+      }));
+      setNonEditableFields(extensionSchemas);
+      const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
+      setEditableFields({ newTypeFields: formattedFields });
+    } else if (data && selectedSchema && selectedSchema.ownerModule !== 'cms') {
+      setSchemaName(selectedSchema.name);
+      setAuthentication(false);
+      setCrudOperations(false);
+      setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
+      if (
+        selectedSchema.extensions &&
+        selectedSchema.extensions.length &&
+        selectedSchema.modelOptions.conduit.permissions.extendable
+      ) {
+        if (cmsExtension(selectedSchema.extensions)) {
+          const foundCmsSchemaFields = cmsExtension(selectedSchema.extensions);
+          const formattedFields = getSchemaFieldsWithExtra(foundCmsSchemaFields);
+          setEditableFields({ newTypeFields: formattedFields });
+
+          const extensionSchemas = selectedSchema.extensions.map((ext) => ({
+            [ext.ownerModule]: getSchemaFieldsWithExtra(ext.fields),
+          }));
+          const mainField = {
+            [selectedSchema.name]: getSchemaFieldsWithExtra(selectedSchema.fields),
+          };
+          const finalizedArray = [mainField, ...extensionSchemas].filter((obj) => !obj.cms);
+          setNonEditableFields(finalizedArray);
+        } else {
+          const extensionSchemas = selectedSchema.extensions.map((ext) => ({
+            [ext.ownerModule]: getSchemaFieldsWithExtra(ext.fields),
+          }));
+          const mainField = {
+            [selectedSchema.name]: getSchemaFieldsWithExtra(selectedSchema.fields),
+          };
+          const finalizedArray = [mainField, ...extensionSchemas];
+          setNonEditableFields(finalizedArray);
+        }
+      } else {
+        const mainField = {
+          [selectedSchema.name]: getSchemaFieldsWithExtra(selectedSchema.fields),
+        };
+        const finalizedArray = [mainField];
+        setNonEditableFields(finalizedArray);
+      }
     } else if (router.query.id) {
       setSchemaName(router.query.id.toString());
     }
   }, [data]);
 
-  useEffect(() => {
-    if (!selectedSchema) {
-      const initialFields = [
-        {
-          default: '',
-          isArray: false,
-          name: '_id',
-          required: false,
-          select: true,
-          type: 'ObjectId',
-          unique: true,
-        },
-        {
-          default: '',
-          isArray: false,
-          name: 'createdAt',
-          required: false,
-          select: true,
-          type: 'Date',
-          unique: false,
-        },
-        {
-          default: '',
-          isArray: false,
-          name: 'updatedAt',
-          required: false,
-          select: true,
-          type: 'Date',
-          unique: false,
-        },
-      ];
-      setSchemaFields({ newTypeFields: initialFields });
-    }
-  }, [selectedSchema]);
+  // useEffect(() => {
+  //   if (!selectedSchema) {
+  //     const initialFields = [
+  //       {
+  //         default: '',
+  //         isArray: false,
+  //         name: '_id',
+  //         required: false,
+  //         select: true,
+  //         type: 'ObjectId',
+  //         unique: true,
+  //       },
+  //       {
+  //         default: '',
+  //         isArray: false,
+  //         name: 'createdAt',
+  //         required: false,
+  //         select: true,
+  //         type: 'Date',
+  //         unique: false,
+  //       },
+  //       {
+  //         default: '',
+  //         isArray: false,
+  //         name: 'updatedAt',
+  //         required: false,
+  //         select: true,
+  //         type: 'Date',
+  //         unique: false,
+  //       },
+  //     ];
+  //     setEditableFields({ newTypeFields: initialFields });
+  //   }
+  // }, [selectedSchema]);
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
@@ -189,9 +254,9 @@ const BuildTypes: React.FC = () => {
     }
 
     if (source.droppableId === destination.droppableId) {
-      setSchemaFields({
+      setEditableFields({
         newTypeFields: reorderItems(
-          schemaFields[source.droppableId],
+          editableFields[source.droppableId],
           source.index,
           destination.index
         ),
@@ -222,7 +287,7 @@ const BuildTypes: React.FC = () => {
   };
 
   const handleSubmit = (typeData: any) => {
-    const array = schemaFields.newTypeFields;
+    const array = editableFields.newTypeFields;
     if (!Array.isArray(array)) {
       return;
     }
@@ -297,15 +362,15 @@ const BuildTypes: React.FC = () => {
 
     if (selectedProps.item) {
       if (selectedProps.type === 'standard') {
-        setSchemaFields({
-          newTypeFields: updateItem(schemaFields.newTypeFields, typeData, selectedProps.index),
+        setEditableFields({
+          newTypeFields: updateItem(editableFields.newTypeFields, typeData, selectedProps.index),
         });
       }
 
       if (selectedProps.type === 'group') {
-        setSchemaFields({
+        setEditableFields({
           newTypeFields: updateGroupItem(
-            schemaFields.newTypeFields,
+            editableFields.newTypeFields,
             groupId,
             typeData,
             selectedProps.index
@@ -314,9 +379,9 @@ const BuildTypes: React.FC = () => {
       }
 
       if (selectedProps.type === 'group-child') {
-        setSchemaFields({
+        setEditableFields({
           newTypeFields: updateGroupChildItem(
-            schemaFields.newTypeFields,
+            editableFields.newTypeFields,
             groupId,
             typeData,
             selectedProps.index
@@ -324,26 +389,26 @@ const BuildTypes: React.FC = () => {
         });
       }
     } else if (isGroup === 'group') {
-      setSchemaFields({
+      setEditableFields({
         newTypeFields: addToGroup(
-          schemaFields.newTypeFields,
+          editableFields.newTypeFields,
           groupId,
           typeData,
           drawerData.destination
         ),
       });
     } else if (isGroup === 'child') {
-      setSchemaFields({
+      setEditableFields({
         newTypeFields: addToChildGroup(
-          schemaFields.newTypeFields,
+          editableFields.newTypeFields,
           groupId,
           typeData,
           drawerData.destination
         ),
       });
     } else {
-      setSchemaFields({
-        newTypeFields: cloneItem(schemaFields.newTypeFields, typeData, drawerData.destination),
+      setEditableFields({
+        newTypeFields: cloneItem(editableFields.newTypeFields, typeData, drawerData.destination),
       });
     }
 
@@ -355,15 +420,15 @@ const BuildTypes: React.FC = () => {
     setDrawerData({
       ...drawerData,
       open: true,
-      type: schemaFields.newTypeFields[index].isEnum
+      type: editableFields.newTypeFields[index].isEnum
         ? 'Enum'
-        : schemaFields.newTypeFields[index].type,
+        : editableFields.newTypeFields[index].type,
     });
   };
 
   const handleDelete = (index: number) => {
-    setSchemaFields({
-      newTypeFields: deleteItem(schemaFields.newTypeFields, index),
+    setEditableFields({
+      newTypeFields: deleteItem(editableFields.newTypeFields, index),
     });
   };
 
@@ -372,20 +437,20 @@ const BuildTypes: React.FC = () => {
     setDrawerData({
       ...drawerData,
       open: true,
-      type: schemaFields.newTypeFields[groupIndex].content[index].isEnum
+      type: editableFields.newTypeFields[groupIndex].content[index].isEnum
         ? 'Enum'
-        : schemaFields.newTypeFields[groupIndex].content[index].type,
+        : editableFields.newTypeFields[groupIndex].content[index].type,
       destination: {
         ...drawerData.destination,
-        droppableId: `group-${schemaFields.newTypeFields[groupIndex].name}`,
+        droppableId: `group-${editableFields.newTypeFields[groupIndex].name}`,
       },
     });
   };
 
   const handleGroupDelete = (index: number, groupIndex: number) => {
-    const deleted: any = Array.from(schemaFields.newTypeFields);
+    const deleted: any = Array.from(editableFields.newTypeFields);
     deleted[groupIndex].content.splice(index, 1);
-    setSchemaFields({
+    setEditableFields({
       newTypeFields: deleted,
     });
   };
@@ -400,20 +465,20 @@ const BuildTypes: React.FC = () => {
     setDrawerData({
       ...drawerData,
       open: true,
-      type: schemaFields.newTypeFields[groupIndex].content[itemIndex].content[index].isEnum
+      type: editableFields.newTypeFields[groupIndex].content[itemIndex].content[index].isEnum
         ? 'Enum'
-        : schemaFields.newTypeFields[groupIndex].content[itemIndex].content[index].type,
+        : editableFields.newTypeFields[groupIndex].content[itemIndex].content[index].type,
       destination: {
         ...drawerData.destination,
-        droppableId: `group-${schemaFields.newTypeFields[groupIndex].content[itemIndex].name}`,
+        droppableId: `group-${editableFields.newTypeFields[groupIndex].content[itemIndex].name}`,
       },
     });
   };
 
   const handleGroupInGroupDelete = (index: number, groupIndex: number, itemIndex: number) => {
-    const deleted: any = Array.from(schemaFields.newTypeFields);
+    const deleted: any = Array.from(editableFields.newTypeFields);
     deleted[groupIndex].content[itemIndex].content.splice(index, 1);
-    setSchemaFields({
+    setEditableFields({
       newTypeFields: deleted,
     });
   };
@@ -426,7 +491,7 @@ const BuildTypes: React.FC = () => {
   ) => {
     if (data && selectedSchema) {
       const { _id } = selectedSchema;
-      const editableSchemaFields = prepareFields(schemaFields.newTypeFields);
+      const editableSchemaFields = prepareFields(editableFields.newTypeFields);
       const editableSchema = {
         authentication: authenticate,
         crudOperations: allowCrud,
@@ -436,7 +501,7 @@ const BuildTypes: React.FC = () => {
 
       dispatch(asyncEditSchema({ _id, data: editableSchema }));
     } else {
-      const newSchemaFields = prepareFields(schemaFields.newTypeFields);
+      const newSchemaFields = prepareFields(editableFields.newTypeFields);
       const newSchema = {
         name: name,
         authentication: authenticate,
@@ -451,24 +516,41 @@ const BuildTypes: React.FC = () => {
     router.push({ pathname: '/cms/schemas' });
   };
 
+  const extractEditableTitle = () => {
+    if (editableFields.newTypeFields.length <= 0 && nonEditableFields.length) {
+      return 'Would you like to extend this Schema?';
+    } else {
+      return 'Editable fields (CMS)';
+    }
+  };
+
+  console.log(editableFields);
+  console.log(nonEditableFields);
+
   return (
     <Box className={classes.root}>
-      <Header
-        name={schemaName}
-        authentication={authentication}
-        crudOperations={crudOperations}
-        permissions={schemaPermissions}
-        readOnly={readOnly}
-        handleSave={handleSave}
-      />
+      {selectedSchema && (
+        <Header
+          name={schemaName}
+          authentication={authentication}
+          crudOperations={crudOperations}
+          permissions={schemaPermissions}
+          readOnly={readOnly}
+          handleSave={handleSave}
+          selectedSchema={selectedSchema}
+        />
+      )}
       <Box className={classes.cmsContainer}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Box className={classes.contentContainer}>
-            {schemaFields &&
-              Object.keys(schemaFields).map((dataKey) => (
+            <Typography style={{ textAlign: 'center' }} variant="h6">
+              {extractEditableTitle()}
+            </Typography>
+            {editableFields &&
+              Object.keys(editableFields).map((dataKey) => (
                 <BuildTypesContent
                   dataKey={dataKey}
-                  data={schemaFields}
+                  data={editableFields}
                   handleDelete={handleDelete}
                   handleDrawer={handleDrawer}
                   handleGroupDelete={handleGroupDelete}
@@ -480,6 +562,34 @@ const BuildTypes: React.FC = () => {
                 />
               ))}
           </Box>
+          {nonEditableFields.length &&
+            nonEditableFields.map((ext, i) => {
+              return (
+                <Box key={i} className={classes.contentContainer}>
+                  <Typography style={{ textAlign: 'center' }} variant="h6">
+                    {Object.keys(ext).toString() !== 'cms'
+                      ? `${Object.keys(ext).toString().toUpperCase()} (read only)`
+                      : Object.keys(ext).toString().toUpperCase()}
+                  </Typography>
+                  {nonEditableFields.length &&
+                    Object.keys(ext).map((dataKey, i) => (
+                      <BuildTypesContent
+                        dataKey={dataKey}
+                        data={ext}
+                        handleDelete={handleDelete}
+                        handleDrawer={handleDrawer}
+                        handleGroupDelete={handleGroupDelete}
+                        handleGroupDrawer={handleGroupDrawer}
+                        handleGroupInGroupDelete={handleGroupInGroupDelete}
+                        handleGroupInGroupDrawer={handleGroupInGroupDrawer}
+                        key={dataKey}
+                        style={{ width: '100%' }}
+                        disabled
+                      />
+                    ))}
+                </Box>
+              );
+            })}
           <Box className={classes.listContainer}>
             <Droppable droppableId="ITEMS" isDropDisabled={true}>
               {(provided) => (

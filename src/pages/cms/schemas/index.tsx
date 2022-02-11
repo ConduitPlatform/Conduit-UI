@@ -132,7 +132,6 @@ const Schemas = () => {
         limit,
         search: debouncedSearch,
         sort: prepareSort(sort),
-        enabled,
       })
     );
   }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
@@ -226,6 +225,12 @@ const Schemas = () => {
           pathname: `schemas/${data._id}`,
         });
         break;
+      case 'extend':
+        dispatch(setSelectedSchema(data._id));
+        router.push({
+          pathname: `schemas/${data._id}`,
+        });
+        break;
       case 'archive':
         setSelectedSchemaForAction({ data, action: 'archive' });
         setOpenDialog(true);
@@ -293,6 +298,7 @@ const Schemas = () => {
     { title: 'Name', sort: 'name' },
     { title: 'Authenticated' },
     { title: 'CRUD' },
+    { title: 'Owner' },
     { title: 'Permissions' },
     { title: 'Created at', sort: 'createdAt' },
     { title: 'Updated at', sort: 'updatedAt' },
@@ -330,8 +336,11 @@ const Schemas = () => {
       return schemasToFormat.map((d) => ({
         _id: d._id,
         name: d.name,
-        authentication: d.modelOptions.conduit.cms.authentication,
-        crudOperations: d.modelOptions.conduit.cms.crudOperations,
+        authentication: d.modelOptions.conduit.cms?.authentication,
+        crudOperations: d.modelOptions.conduit.cms?.crudOperations
+          ? d.modelOptions.conduit.cms?.crudOperations
+          : '-',
+        owner: d.ownerModule,
         permissions: extractPermissions(d.modelOptions.conduit.permissions),
         createdAt: d.createdAt,
         updatedAt: d.updatedAt,
