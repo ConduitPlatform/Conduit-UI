@@ -8,9 +8,11 @@ type TreeElementByTypeProps = {
   schemaDoc: any;
   parents?: any[];
   fieldValues: any;
+  isArrayElement?: boolean;
   onChange: (value: string, parents: string[]) => void;
 };
 const TreeElementByType: FC<TreeElementByTypeProps> = ({
+  isArrayElement = false,
   fieldValues,
   schemaDoc,
   onChange,
@@ -27,6 +29,13 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
     onChange(mergedArray, parentsArray);
   };
 
+  const onDeleteArrayElement = () => {
+    const selectedValue = getDeepValue(fieldValues, parents ? parents : []);
+    const removalIndex = parentsArray[parentsArray.length - 1];
+    selectedValue.splice(removalIndex, 1);
+    onChange(selectedValue, parents ? parents : []);
+  };
+
   const generateArrayTreeElements = () => {
     const value = getDeepValue(fieldValues, parents ? parents : []);
     const inputValue = value && value[schemaDoc.name] ? value[schemaDoc.name] : '';
@@ -38,6 +47,7 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
           const newSchemaDoc = { name: index.toString(), data: { type: schemaDoc.data.type[0] } };
           return (
             <TreeElementByType
+              isArrayElement={true}
               fieldValues={fieldValues}
               onChange={onChange}
               key={schemaDoc.name}
@@ -51,6 +61,7 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
           const newSchemaDoc = { name: index.toString(), data: { type: schemaDoc.data.type[0] } };
           return (
             <TreeElementByType
+              isArrayElement={true}
               fieldValues={fieldValues}
               onChange={onChange}
               key={schemaDoc.name}
@@ -75,7 +86,17 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
       return generateArrayTreeElements();
     }
     return (
-      <TreeItem nodeId={schemaDoc.name} label={`${schemaDoc.name}:`}>
+      <TreeItem
+        nodeId={schemaDoc.name}
+        label={
+          <InputCreateTreeLabel
+            isObject
+            onDeleteElement={onDeleteArrayElement}
+            isArrayElement={isArrayElement}
+            schemaDoc={schemaDoc}
+            onChange={(val) => onChange(val, parentsArray)}
+          />
+        }>
         {Object.keys(schemaDoc.data.type).map((node) => {
           const newSchemaDoc = { name: node, data: schemaDoc.data.type[node] };
           return (
@@ -97,10 +118,12 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
     const inputValue = value && value[schemaDoc.name] ? value[schemaDoc.name] : '';
     return (
       <TreeItem
-        nodeId={'eye'}
+        nodeId={schemaDoc?.name}
         label={
           <InputCreateTreeLabel
             value={inputValue}
+            onDeleteElement={onDeleteArrayElement}
+            isArrayElement={isArrayElement}
             schemaDoc={schemaDoc}
             onChange={(val) => onChange(val, parentsArray)}
           />

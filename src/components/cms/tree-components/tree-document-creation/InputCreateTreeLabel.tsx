@@ -2,8 +2,9 @@ import React, { FC } from 'react';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import CustomDatepicker from '../../../common/CustomDatepicker';
-import { Box, Input, Typography } from '@material-ui/core';
+import { Box, IconButton, Input, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { DeleteForeverRounded } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,9 +38,19 @@ const useStyles = makeStyles((theme) => ({
 type InputCreateTreeLabelProps = {
   schemaDoc: any;
   onChange: (val: any) => void;
-  value: string;
+  value?: string;
+  isArrayElement?: boolean;
+  onDeleteElement?: () => void;
+  isObject?: boolean;
 };
-const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({ value, schemaDoc, onChange }) => {
+const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({
+  isArrayElement = false,
+  isObject = false,
+  onDeleteElement,
+  value,
+  schemaDoc,
+  onChange,
+}) => {
   const classes = useStyles();
   const required = schemaDoc.data.required;
   const handleLabelContent = () => {
@@ -111,6 +122,21 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({ value, schemaDoc,
         );
     }
   };
+
+  const handleArrayFunctions = () => {
+    if (onDeleteElement)
+      return (
+        <IconButton
+          size={'small'}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteElement();
+          }}>
+          <DeleteForeverRounded />
+        </IconButton>
+      );
+  };
+
   return (
     <Box className={classes.root}>
       {required && (
@@ -118,11 +144,12 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({ value, schemaDoc,
           {'*'}
         </Typography>
       )}
+      {isArrayElement && handleArrayFunctions()}
       <Typography component="span" className={classes.bold}>
         {schemaDoc.name}
-        {schemaDoc.data.type === 'Relation' ? `( ${schemaDoc.data.model} )` : ''}:
+        {schemaDoc.data.type === 'Relation' && `( ${schemaDoc.data.model} )`}:
       </Typography>
-      {handleLabelContent()}
+      {!isObject && handleLabelContent()}
     </Box>
   );
 };
