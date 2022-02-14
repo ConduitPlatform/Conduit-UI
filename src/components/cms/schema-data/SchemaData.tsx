@@ -55,8 +55,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
   },
   cardContainer: {
-    overflowY: 'scroll',
-    width: '100%',
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: 12,
   },
 }));
 
@@ -241,7 +242,9 @@ const SchemaData: FC = () => {
             setObjectView={setObjectView}
           />
           {documentsState.data.length > 0 ? (
-            <TabPanel>{renderMainContent()}</TabPanel>
+            <Box overflow={'auto'}>
+              <TabPanel>{renderMainContent()}</TabPanel>
+            </Box>
           ) : (
             <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
           )}
