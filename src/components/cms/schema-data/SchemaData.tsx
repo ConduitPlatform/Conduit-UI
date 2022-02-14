@@ -7,9 +7,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
+  asyncGetCmsSchemas,
   asyncGetSchemaDocuments,
 } from '../../../redux/slices/cmsSlice';
-import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
@@ -18,6 +18,9 @@ import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 import JSONEditor from './JSONEditor';
+import { InputAdornment, TextField, Typography } from '@material-ui/core';
+import { Search } from '@material-ui/icons';
+import useDebounce from '../../../hooks/useDebounce';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +29,15 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     backgroundColor: 'rgba(0,0,0,0.05)',
     display: 'flex',
+  },
+  sideBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(1),
+  },
+  noContent: {
+    textAlign: 'center',
+    marginTop: '100px',
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
@@ -59,19 +71,16 @@ interface Filters {
   limit: number;
 }
 
-interface Props {
-  schemas: Schema[];
-}
-
-const SchemaData: FC<Props> = ({ schemas }) => {
+const SchemaData: FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const { documents, count } = useAppSelector((state) => state.cmsSlice.data.documents);
+  const { documents, documentsCount } = useAppSelector((state) => state.cmsSlice.data.documents);
   const [documentsState, setDocumentsState] = useState({
     data: [],
     count: 0,
   });
+  const { schemaDocuments: schemas } = useAppSelector((state) => state.cmsSlice.data.schemas);
   const [createDialog, setCreateDialog] = useState<boolean>(false);
   const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
@@ -83,8 +92,14 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   });
   const [search, setSearch] = useState<string>('');
   const [objectView, setObjectView] = useState<boolean>(false);
+  const [schemaSearch, setSchemaSearch] = useState<string>('');
 
   const debouncedSearch: string = useParseQuery(search, 500);
+  const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
+
+  useEffect(() => {
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 200, search: debouncedSchemaSearch }));
+  }, [dispatch, debouncedSchemaSearch]);
 
   const getSchemaDocuments = useCallback(() => {
     if (schemas.length < 1) return;
@@ -105,9 +120,9 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   useEffect(() => {
     setDocumentsState({
       data: documents,
-      count: count,
+      count: documentsCount,
     });
-  }, [documents, count]);
+  }, [documents, documentsCount]);
 
   const handleChange = (value: number) => {
     setSelectedSchema(value);
@@ -178,17 +193,41 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   return (
     <Container maxWidth={'xl'}>
       <Box className={classes.root}>
-        <Tabs
-          value={selectedSchema}
-          onChange={(event, value) => handleChange(value)}
-          orientation="vertical"
-          variant="scrollable"
-          aria-label="Vertical tabs"
-          className={classes.tabs}>
-          {schemas.map((d, index) => {
-            return <Tab key={`tabs${index}`} label={d.name} />;
-          })}
-        </Tabs>
+        <Box className={classes.sideBox}>
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={schemaSearch}
+            onChange={(e) => setSchemaSearch(e.target.value)}
+            label="Find schema"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+          />
+          {schemas.length > 0 && (
+            <Tabs
+              value={selectedSchema}
+              onChange={(event, value) => handleChange(value)}
+              orientation="vertical"
+              variant="scrollable"
+              aria-label="Vertical tabs"
+              className={classes.tabs}>
+              {schemas.map((d, index) => {
+                return <Tab key={`tabs${index}`} label={d.name} />;
+              })}
+            </Tabs>
+          )}
+          {!schemas.length && (
+            <Box className={classes.tabs}>
+              <Typography className={classes.noContent}>No available schemas</Typography>
+            </Box>
+          )}
+        </Box>
         <Box className={classes.headerContainer}>
           <SchemaDataHeader
             onCreateDocument={onCreateDocument}
@@ -197,7 +236,7 @@ const SchemaData: FC<Props> = ({ schemas }) => {
             setFilters={setFilters}
             search={search}
             setSearch={setSearch}
-            count={documentsState.count}
+            count={documentsCount}
             objectView={objectView}
             setObjectView={setObjectView}
           />

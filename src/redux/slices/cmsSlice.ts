@@ -6,7 +6,6 @@ import {
   getCmsSchemasRequest,
   postCmsSchemaRequest,
   patchCmsSchemaRequest,
-  schemasFromOtherModules,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
 } from '../../http/CmsRequests';
@@ -41,7 +40,7 @@ export interface ICmsSlice {
     schemasFromOtherModules: Schema[];
     documents: {
       documents: any;
-      count: number;
+      documentsCount: number;
     };
     customEndpoints: {
       endpoints: EndpointTypes[];
@@ -70,7 +69,7 @@ const initialState: ICmsSlice = {
     schemasFromOtherModules: [],
     documents: {
       documents: [],
-      count: 0,
+      documentsCount: 0,
     },
     customEndpoints: {
       endpoints: [],
@@ -226,6 +225,7 @@ export const asyncGetSchemaDocuments = createAsyncThunk(
     try {
       const { data } = await getCmsDocumentsByNameRequest(params);
       thunkAPI.dispatch(setAppLoading(false));
+      console.log(data);
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -508,7 +508,8 @@ const cmsSlice = createSlice({
       );
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
-      state.data.documents = action.payload;
+      state.data.documents.documents = action.payload.documents;
+      state.data.documents.documentsCount = action.payload.count;
     });
     builder.addCase(asyncGetSchemaDocument.fulfilled, (state, action) => {
       const documentIndex = state.data.documents.documents.findIndex(
