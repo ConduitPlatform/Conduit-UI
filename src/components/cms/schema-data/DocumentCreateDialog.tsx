@@ -6,11 +6,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import { Schema } from '../../../models/cms/CmsModels';
-import { getExpandableFields, getFieldsArray } from './SchemaDataUtils';
-import TreeItem from '@material-ui/lab/TreeItem';
-import { CreateTreeItemLabel } from './TreeItemLabel';
 import { set, cloneDeep } from 'lodash';
-import getDeepValue from '../../../utils/getDeepValue';
+
 import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
 
 const useStyles = makeStyles((theme) => ({
@@ -36,16 +33,7 @@ interface Props {
 
 const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, schema }) => {
   const classes = useStyles();
-
-  const [expanded, setExpanded] = useState<string[]>([]);
-  const [fieldsArray, setFieldsArray] = useState<any[]>([]);
   const [fieldValues, setFieldValues] = useState<any>({});
-
-  useEffect(() => {
-    if (schema && schema.fields) {
-      setFieldsArray(getFieldsArray(schema.fields));
-    }
-  }, [schema]);
 
   useEffect(() => {
     if (!open) setFieldValues({});
@@ -55,53 +43,6 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     const fieldValuesClone = cloneDeep(fieldValues);
     const fieldValuesCloneSet = set(fieldValuesClone, parents, value);
     setFieldValues(fieldValuesCloneSet);
-  };
-
-  useEffect(() => {
-    if (schema && schema.fields) {
-      setExpanded(getExpandableFields(schema.fields));
-    }
-  }, [schema]);
-
-  const renderTree = (field: any, parents?: any) => {
-    switch (field.name) {
-      case 'createdAt':
-      case 'updatedAt':
-      case '_id':
-        return <></>;
-    }
-    const parentsArray = parents ? [...parents, field.name] : [field.name];
-
-    const isObject = field.data.type && typeof field.data.type !== 'string';
-
-    const value = !isObject && getDeepValue(fieldValues, parents ? parents : []);
-    const inputValue = value && value[field.name] ? value[field.name] : '';
-    const isRequired = field.data.required;
-
-    return (
-      <TreeItem
-        key={field.name}
-        nodeId={field.name}
-        label={
-          <CreateTreeItemLabel
-            field={field}
-            value={inputValue}
-            onChange={(event) => onChange(event, parentsArray)}
-            edit={!isObject}
-            required={isRequired}
-          />
-        }>
-        {isObject &&
-          Object.keys(field.data.type).map((node) => {
-            let tempField = { name: node, data: field.data.type[node] };
-            const dataFieldType = tempField.data;
-            if (typeof dataFieldType === 'string') {
-              tempField = { ...tempField, data: { ...field.data, type: dataFieldType } };
-            }
-            return renderTree(tempField, parentsArray);
-          })}
-      </TreeItem>
-    );
   };
 
   return (
@@ -119,20 +60,6 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
         }}>
         <DialogContent className={classes.dialogContent}>
           <TreeFieldGenerator schema={schema} onChange={onChange} fieldValues={fieldValues} />
-
-          {/*{fieldsArray.map((field: any, index: number) => {*/}
-          {/*  return (*/}
-          {/*    <TreeView*/}
-          {/*      key={`treeView${index}`}*/}
-          {/*      disableSelection*/}
-          {/*      expanded={expanded}*/}
-          {/*      defaultCollapseIcon={<ExpandMore />}*/}
-          {/*      defaultExpanded={['root']}*/}
-          {/*      defaultExpandIcon={<ChevronRight />}>*/}
-          {/*      {renderTree(field)}*/}
-          {/*    </TreeView>*/}
-          {/*  );*/}
-          {/*})}*/}
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleClose}>
