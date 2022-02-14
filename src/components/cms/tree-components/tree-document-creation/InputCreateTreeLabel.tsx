@@ -5,6 +5,7 @@ import CustomDatepicker from '../../../common/CustomDatepicker';
 import { Box, IconButton, Input, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DeleteForeverRounded } from '@material-ui/icons';
+import RelationSelectInput from './RelationSelectInput';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +44,7 @@ type InputCreateTreeLabelProps = {
   onDeleteElement?: () => void;
   isObject?: boolean;
 };
+
 const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({
   isArrayElement = false,
   isObject = false,
@@ -58,6 +60,7 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({
       return (
         <TextField
           select
+          required={required}
           label=""
           value={value}
           onChange={(event) => {
@@ -77,6 +80,18 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({
       );
     }
     switch (schemaDoc.data.type) {
+      case 'Relation': {
+        return (
+          <RelationSelectInput
+            required={required}
+            schemaModel={schemaDoc.data.model}
+            value={value}
+            onChange={(val) => {
+              onChange(val);
+            }}
+          />
+        );
+      }
       case 'Boolean':
         return (
           <TextField
