@@ -47,6 +47,7 @@ interface Props {
   handleSelectAll?: (data: any) => void;
   selectable: boolean;
   tableRowProps?: TableRowProps;
+  extraProps?: any;
 }
 
 const DataTableRows: React.FC<Props> = ({
@@ -60,6 +61,7 @@ const DataTableRows: React.FC<Props> = ({
   actions,
   selectable,
   tableRowProps,
+  extraProps,
 }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -110,6 +112,12 @@ const DataTableRows: React.FC<Props> = ({
       );
   };
 
+  const extractSchemasActions = () => {
+    if (extraProps && row.owner && row.owner !== 'cms') {
+      return [{ title: 'Extend', type: 'extend' }];
+    } else return actions;
+  };
+
   return (
     <>
       <TableRow onClick={() => onRowClick(row)} key={index} {...tableRowProps}>
@@ -123,7 +131,7 @@ const DataTableRows: React.FC<Props> = ({
         ))}
         <TableCell key={`action-${row}`} align={'right'}>
           <DataTableActions
-            actions={actions}
+            actions={extractSchemasActions()}
             onActionClick={(action) => onMenuItemClick(action, row)}
             isBlocked={!row.Active}
             editDisabled={selectedItems.length > 1}

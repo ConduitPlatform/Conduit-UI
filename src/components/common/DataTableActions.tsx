@@ -9,6 +9,7 @@ import Upload from '@material-ui/icons/CloudUpload';
 import Sync from '@material-ui/icons/Sync';
 import ReplyAll from '@material-ui/icons/ReplyAll';
 import ArchiveIcon from '@material-ui/icons/Archive';
+import { Add } from '@material-ui/icons';
 
 interface Action {
   title: string;
@@ -43,6 +44,8 @@ const DataTableActions: React.FC<Props> = ({ actions, onActionClick, isBlocked, 
         return <Sync color="primary" />;
       case 'replies':
         return <ReplyAll color="primary" />;
+      case 'extend':
+        return <Add color="primary" />;
       default:
         return <></>;
     }

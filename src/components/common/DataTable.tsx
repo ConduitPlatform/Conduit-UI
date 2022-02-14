@@ -73,6 +73,7 @@ interface Props extends PaperProps {
   handleRowClick?: (data: any) => void;
   tableRowProps?: TableRowProps;
   placeholder?: string;
+  extraProps?: any;
 }
 
 const DataTable: React.FC<Props> = ({
@@ -91,6 +92,7 @@ const DataTable: React.FC<Props> = ({
   handleRowClick,
   tableRowProps,
   placeholder,
+  extraProps,
   ...rest
 }) => {
   const classes = useStyles();
@@ -190,6 +192,7 @@ const DataTable: React.FC<Props> = ({
                 onRowClick={onRowClick}
                 selectable={selectable}
                 tableRowProps={tableRowProps}
+                extraProps={extraProps !== undefined ? extraProps[i] : undefined}
               />
             ))}
           </TableBody>

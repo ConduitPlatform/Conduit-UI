@@ -24,6 +24,7 @@ import {
   TextField,
   Typography,
   Icon,
+  MenuItem,
 } from '@material-ui/core';
 import useDebounce from '../../../hooks/useDebounce';
 import DataTable from '../../../components/common/DataTable';
@@ -97,6 +98,10 @@ const useStyles = makeStyles((theme) => ({
   permissions: {
     marginTop: '5px',
   },
+  filtering: {
+    marginLeft: '20px',
+    width: '100px',
+  },
 }));
 
 const Schemas = () => {
@@ -116,6 +121,7 @@ const Schemas = () => {
     data: {},
     action: '',
   });
+  const [filter, setFilter] = useState<string>('');
   const [selectedSchemas, setSelectedSchemas] = useState<SchemaUI[]>([]);
   const [enabled, setEnabled] = useState<boolean>(true);
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -132,6 +138,7 @@ const Schemas = () => {
         limit,
         search: debouncedSearch,
         sort: prepareSort(sort),
+        enabled,
       })
     );
   }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
@@ -348,6 +355,10 @@ const Schemas = () => {
     }
   };
 
+  const handleFilterChange = (e: React.ChangeEvent<{ value: string }>) => {
+    setFilter(e.target.value);
+  };
+
   return (
     <>
       <Container maxWidth={'xl'}>
@@ -368,6 +379,23 @@ const Schemas = () => {
                 ),
               }}
             />
+            {enabled && (
+              <TextField
+                select
+                size="small"
+                label="Filter"
+                className={classes.filtering}
+                variant="outlined"
+                id="simple-select-outlined"
+                value={filter}
+                onChange={handleFilterChange}>
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={'cms'}>CMS</MenuItem>
+                <MenuItem value={'other'}>Other Modules</MenuItem>
+              </TextField>
+            )}
           </Grid>
           <Grid item xs={4}>
             <Box className={classes.toggle}>
@@ -435,6 +463,7 @@ const Schemas = () => {
               handleSelect={handleSelect}
               handleSelectAll={handleSelectAll}
               handleAction={handleActions}
+              extraProps={schemaDocuments}
             />
             <Grid container className={classes.paginator}>
               <Grid item xs={7} />

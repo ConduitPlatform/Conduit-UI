@@ -80,8 +80,6 @@ const PermissionsDialog: React.FC<Props> = ({
     handleClose();
   };
 
-  console.log(selectedSchema);
-
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
