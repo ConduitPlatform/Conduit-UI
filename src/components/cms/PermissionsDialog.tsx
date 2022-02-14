@@ -39,7 +39,7 @@ interface Props {
   permissions: Permissions;
   setPermissions: (permissions: Permissions) => void;
   open: boolean;
-  selectedSchema: Schema;
+  selectedSchema?: Schema;
   handleClose: () => void;
 }
 
@@ -80,6 +80,12 @@ const PermissionsDialog: React.FC<Props> = ({
     handleClose();
   };
 
+  const isDisabled = () => {
+    if (selectedSchema && selectedSchema.ownerModule !== 'cms') {
+      return true;
+    } else return false;
+  };
+
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
@@ -97,26 +103,18 @@ const PermissionsDialog: React.FC<Props> = ({
                   <FormInputCheckBox
                     name="extendable"
                     label="Is extendable"
-                    disabled={selectedSchema.ownerModule !== 'cms'}
+                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputCheckBox
-                    name="canCreate"
-                    label="Can create"
-                    disabled={selectedSchema.ownerModule !== 'cms'}
-                  />
+                  <FormInputCheckBox name="canCreate" label="Can create" disabled={isDisabled()} />
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputCheckBox
-                    name="canDelete"
-                    label="Can delete"
-                    disabled={selectedSchema.ownerModule !== 'cms'}
-                  />
+                  <FormInputCheckBox name="canDelete" label="Can delete" disabled={isDisabled()} />
                 </Grid>
                 <Grid item sm={6}>
                   <FormInputSelect
-                    disabled={selectedSchema.ownerModule !== 'cms'}
+                    disabled={isDisabled()}
                     label={'Can modify'}
                     name="canModify"
                     options={options.map((option) => ({
@@ -127,7 +125,7 @@ const PermissionsDialog: React.FC<Props> = ({
                 </Grid>
                 <Grid item sm={12}>
                   <Button
-                    disabled={selectedSchema.ownerModule !== 'cms'}
+                    disabled={isDisabled()}
                     fullWidth
                     type="submit"
                     variant="contained"

@@ -187,7 +187,6 @@ const StorageFiles = () => {
 
   const handleDeleteAction = () => {
     setDialog(dialogInitialState);
-    console.log('name', dialog.title);
     switch (dialog.type) {
       case 'container':
         dispatch(

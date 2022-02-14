@@ -79,7 +79,7 @@ interface Props {
   name: string;
   authentication: boolean;
   crudOperations: boolean;
-  selectedSchema: Schema;
+  selectedSchema?: Schema;
   permissions: Permissions;
   readOnly: boolean;
   handleSave: (name: string, readOnly: boolean, crud: boolean, permissions: Permissions) => void;
@@ -139,6 +139,12 @@ const Header: FC<Props> = ({
     dispatch(clearSelectedSchema());
   };
 
+  const isDisabled = () => {
+    if (selectedSchema && selectedSchema.ownerModule !== 'cms') {
+      return true;
+    } else return false;
+  };
+
   return (
     <Box className={clsx(classes.header, classes.colorWhite)} {...rest}>
       <Box display={'flex'} alignItems={'center'}>
@@ -168,7 +174,7 @@ const Header: FC<Props> = ({
               size="small"
               className={classes.checkbox}
               checked={schemaAuthentication}
-              disabled={selectedSchema.ownerModule !== 'cms'}
+              disabled={isDisabled()}
               onChange={(event) => {
                 setSchemaAuthentication(event.target.checked);
               }}
@@ -183,7 +189,7 @@ const Header: FC<Props> = ({
               size="small"
               className={classes.checkbox}
               checked={schemaCrudOperations}
-              disabled={selectedSchema.ownerModule !== 'cms'}
+              disabled={isDisabled()}
               onChange={(event) => {
                 setSchemaCrudOperations(event.target.checked);
               }}

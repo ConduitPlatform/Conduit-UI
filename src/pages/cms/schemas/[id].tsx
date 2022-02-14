@@ -508,17 +508,16 @@ const BuildTypes: React.FC = () => {
 
   return (
     <Box className={classes.root}>
-      {selectedSchema && (
-        <Header
-          name={schemaName}
-          authentication={authentication}
-          crudOperations={crudOperations}
-          permissions={schemaPermissions}
-          readOnly={readOnly}
-          handleSave={handleSave}
-          selectedSchema={selectedSchema}
-        />
-      )}
+      <Header
+        name={schemaName}
+        authentication={authentication}
+        crudOperations={crudOperations}
+        permissions={schemaPermissions}
+        readOnly={readOnly}
+        handleSave={handleSave}
+        selectedSchema={selectedSchema}
+      />
+
       <Box style={{ marginTop: '60px', padding: '20px' }}>
         <DragDropContext onDragEnd={onDragEnd}>
           {nonEditableFields.length
