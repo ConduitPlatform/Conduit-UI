@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { getCmsDocumentsByNameRequest } from '../../../../http/CmsRequests';
-import { Select } from '@material-ui/core';
+import { Select, Typography } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -69,6 +69,13 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
       }}
       onChange={(event) => {
         onChange(event.target.value as string);
+      }}
+      renderValue={(value: any) => {
+        return typeof value == 'string' ? (
+          <Typography color={'primary'}>{value}</Typography>
+        ) : (
+          'Value not defined'
+        );
       }}
       variant="outlined"
       required={required}>
