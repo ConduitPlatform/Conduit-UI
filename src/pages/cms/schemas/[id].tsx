@@ -82,10 +82,10 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
     },
   },
+
   accordionSummary: {
-    '&.MuiAccordionSummary-content': {
-      justifyContent: 'space-between',
-      display: 'flex',
+    '&.MuiAccordionSummary-root': {
+      backgroundColor: theme.palette.primary.main,
     },
   },
 }));
@@ -140,7 +140,6 @@ const BuildTypes: React.FC = () => {
     if (!selectedSchema) {
       setCrudOperations(true);
     }
-    console.log(selectedSchema);
     if (
       data &&
       selectedSchema &&
@@ -228,8 +227,6 @@ const BuildTypes: React.FC = () => {
       setSchemaName(router.query.id.toString());
     }
   }, [data]);
-
-  console.log(selectedSchema);
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
@@ -524,58 +521,65 @@ const BuildTypes: React.FC = () => {
       )}
       <Box style={{ marginTop: '60px', padding: '20px' }}>
         <DragDropContext onDragEnd={onDragEnd}>
-          {nonEditableFields.length &&
-            nonEditableFields.map((ext, i) => {
-              return (
-                <Accordion key={ext}>
-                  <AccordionSummary
-                    className={classes.accordionSummary}
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header">
-                    <Typography style={{ justifyContent: 'center' }} variant="h6">
-                      {Object.keys(ext).toString().toUpperCase()}
-                    </Typography>
-                    <Chip
-                      color="secondary"
-                      variant="outlined"
-                      style={{ marginLeft: '30px', cursor: 'pointer' }}
-                      label="READ ONLY"
-                    />
-                  </AccordionSummary>
-                  <AccordionDetails className={classes.accordionDetails}>
-                    {nonEditableFields.length &&
-                      Object.keys(ext).map((dataKey, i) => (
-                        <BuildTypesContent
-                          dataKey={dataKey}
-                          data={ext}
-                          handleDelete={handleDelete}
-                          handleDrawer={handleDrawer}
-                          handleGroupDelete={handleGroupDelete}
-                          handleGroupDrawer={handleGroupDrawer}
-                          handleGroupInGroupDelete={handleGroupInGroupDelete}
-                          handleGroupInGroupDrawer={handleGroupInGroupDrawer}
-                          key={dataKey}
-                          style={{ width: '100%', maxWidth: '1000px' }}
-                          disabled
-                        />
-                      ))}
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })}
+          {nonEditableFields.length
+            ? nonEditableFields.map((ext, i) => {
+                return (
+                  <Accordion key={i}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header">
+                      <Typography style={{ justifyContent: 'center' }} variant="h6">
+                        {Object.keys(ext).toString().toUpperCase()}
+                      </Typography>
+                      <Chip
+                        color="secondary"
+                        variant="outlined"
+                        style={{ marginLeft: '30px', cursor: 'pointer' }}
+                        label="READ ONLY"
+                      />
+                    </AccordionSummary>
+                    <AccordionDetails className={classes.accordionDetails}>
+                      {nonEditableFields.length &&
+                        Object.keys(ext).map((dataKey, i) => (
+                          <BuildTypesContent
+                            dataKey={dataKey}
+                            data={ext}
+                            handleDelete={handleDelete}
+                            handleDrawer={handleDrawer}
+                            handleGroupDelete={handleGroupDelete}
+                            handleGroupDrawer={handleGroupDrawer}
+                            handleGroupInGroupDelete={handleGroupInGroupDelete}
+                            handleGroupInGroupDrawer={handleGroupInGroupDrawer}
+                            key={i}
+                            style={{ width: '100%', maxWidth: '1000px' }}
+                            disabled
+                          />
+                        ))}
+                    </AccordionDetails>
+                  </Accordion>
+                );
+              })
+            : ''}
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
+              className={classes.accordionSummary}
               id="panel1a-header">
-              <Typography style={{ textAlign: 'center' }} variant="h6">
+              <Typography style={{ justifyContent: 'center' }} variant="h6">
                 {extractEditableTitle()}
+                <Chip
+                  color="primary"
+                  variant="outlined"
+                  style={{ marginLeft: '30px', cursor: 'pointer' }}
+                  label="READ / WRITE"
+                />
               </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.accordionDetails}>
               {editableFields &&
-                Object.keys(editableFields).map((dataKey) => (
+                Object.keys(editableFields).map((dataKey, i) => (
                   <BuildTypesContent
                     dataKey={dataKey}
                     data={editableFields}
@@ -585,7 +589,7 @@ const BuildTypes: React.FC = () => {
                     handleGroupDrawer={handleGroupDrawer}
                     handleGroupInGroupDelete={handleGroupInGroupDelete}
                     handleGroupInGroupDrawer={handleGroupInGroupDrawer}
-                    key={dataKey}
+                    key={i}
                     style={{ width: '100%', maxWidth: '1000px' }}
                   />
                 ))}
