@@ -70,11 +70,11 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
       onChange={(event) => {
         onChange(event.target.value as string);
       }}
-      renderValue={(value: any) => {
+      renderValue={(renderedVal: any) => {
         return typeof value == 'string' ? (
-          <Typography color={'primary'}>{value}</Typography>
+          <Typography color={'primary'}>{renderedVal}</Typography>
         ) : (
-          'Value not defined'
+          renderedVal?._id ?? 'Value not a string'
         );
       }}
       variant="outlined"

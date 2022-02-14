@@ -8,6 +8,7 @@ import {
   patchCmsSchemaRequest,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
+  schemasFromOtherModules,
 } from '../../http/CmsRequests';
 import {
   createSchemaDocumentRequest,
@@ -225,7 +226,6 @@ export const asyncGetSchemaDocuments = createAsyncThunk(
     try {
       const { data } = await getCmsDocumentsByNameRequest(params);
       thunkAPI.dispatch(setAppLoading(false));
-      console.log(data);
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -516,7 +516,7 @@ const cmsSlice = createSlice({
         (document: any) => document._id === action.payload.documentId
       );
       const selectedDocument = state.data.documents.documents[documentIndex];
-      set(selectedDocument, action.payload.path, action.payload.document);
+      set(selectedDocument, action.payload.path, action.payload.document.result);
     });
     builder.addCase(asyncSetCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints.endpoints = action.payload.endpoints;
