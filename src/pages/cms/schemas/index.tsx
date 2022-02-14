@@ -343,7 +343,9 @@ const Schemas = () => {
       return schemasToFormat.map((d) => ({
         _id: d._id,
         name: d.name,
-        authentication: d.modelOptions.conduit.cms?.authentication,
+        authentication: d.modelOptions.conduit.cms?.authentication
+          ? d.modelOptions.conduit.cms?.authentication
+          : '-',
         crudOperations: d.modelOptions.conduit.cms?.crudOperations
           ? d.modelOptions.conduit.cms?.crudOperations
           : '-',
