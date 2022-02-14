@@ -47,6 +47,7 @@ const ArrayCreateTreeLabel: FC<ArrayCreateTreeLabel> = ({ onChange, schemaDoc })
     const selectedItemType = itemType[0];
     const typeOfItem = typeof selectedItemType;
     if (typeOfItem === 'string') return '';
+    if (selectedItemType?.type == 'Relation') return '';
     let generatedObject = {};
     Object.keys(selectedItemType).forEach((key) => {
       const itemArrayType = selectedItemType[key].type;

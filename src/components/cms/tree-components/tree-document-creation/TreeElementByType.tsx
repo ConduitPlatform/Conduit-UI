@@ -56,6 +56,22 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
             />
           );
         }
+        if (schemaDoc.data.type?.[0]?.type === 'Relation') {
+          const newSchemaDoc = {
+            name: index.toString(),
+            data: schemaDoc.data.type[0],
+          };
+          return (
+            <TreeElementByType
+              isArrayElement={true}
+              fieldValues={fieldValues}
+              onChange={onChange}
+              key={schemaDoc.name}
+              schemaDoc={newSchemaDoc}
+              parents={parentsArray}
+            />
+          );
+        }
 
         return Object.keys(schemaDoc.data.type).map(() => {
           const newSchemaDoc = { name: index.toString(), data: { type: schemaDoc.data.type[0] } };
