@@ -75,7 +75,6 @@ const RelationForm: FC<IProps> = ({
   const {
     schemas: { schemaDocuments },
     selectedSchema,
-    schemasFromOtherModules,
   } = useAppSelector((state) => state.cmsSlice.data);
 
   const [simpleData, setSimpleData] = useState({
@@ -93,14 +92,15 @@ const RelationForm: FC<IProps> = ({
   }, [dispatch]);
 
   useEffect(() => {
-    const systemModules = schemasFromOtherModules.map((s) => ({ ...s, enabled: true }));
-    let activeModules = schemaDocuments.filter((s) => s.modelOptions.conduit.cms.enabled);
+    let activeModules = schemaDocuments.filter(
+      (s) => !s.modelOptions.conduit.cms || s.modelOptions.conduit.cms.enabled
+    );
     if (selectedSchema) {
       activeModules = schemaDocuments.filter((s) => s.name !== selectedSchema.name);
     }
 
-    setAvailableSchemas([...activeModules, ...systemModules]);
-  }, [schemaDocuments, schemasFromOtherModules, selectedSchema]);
+    setAvailableSchemas([...activeModules]);
+  }, [schemaDocuments, selectedSchema]);
 
   const handleFieldName = (event: { target: { value: string } }) => {
     setSimpleData({ ...simpleData, name: event.target.value.split(' ').join('') });

@@ -75,7 +75,6 @@ export interface EndpointInputs {
 
 export interface CMSData {
   schemas: Schema[];
-  schemasFromOtherModules: any;
   documents: {
     documents: CMSDocuments[];
     documentsCount: number;

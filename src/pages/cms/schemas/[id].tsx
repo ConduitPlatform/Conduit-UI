@@ -85,8 +85,23 @@ const useStyles = makeStyles((theme) => ({
 
   accordionSummary: {
     '&.MuiAccordionSummary-root': {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.secondary.main,
     },
+  },
+  accordionSummaryEditable: {
+    '&.MuiAccordionSummary-root': {
+      backgroundColor: theme.palette.secondary.main,
+      color: 'black',
+    },
+  },
+  accordionHeading: {
+    flexBasis: '85%',
+    flexShrink: 0,
+  },
+  accordionHeadingEditable: {
+    flexBasis: '85%',
+    flexShrink: 0,
+    color: 'black',
   },
 }));
 
@@ -94,6 +109,7 @@ const BuildTypes: React.FC = () => {
   const classes = useStyles();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { id } = router.query;
   resetServerContext();
 
   const { data } = useAppSelector((state) => state.cmsSlice);
@@ -128,10 +144,12 @@ const BuildTypes: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const { id } = router.query;
-    const foundSchema = data.schemas.schemaDocuments.find((schema) => schema._id === id);
-    setSelectedSchema(foundSchema);
-  }, [data.schemas.schemaDocuments, router.query]);
+    if (data.schemas.schemaDocuments.length) {
+      const foundSchema = data.schemas.schemaDocuments.find((schema) => schema._id === id);
+
+      setSelectedSchema(foundSchema);
+    }
+  }, [data.schemas.schemaDocuments, id]);
 
   useEffect(() => {
     if (selectedSchema) {
@@ -226,7 +244,7 @@ const BuildTypes: React.FC = () => {
     } else if (router.query.id) {
       setSchemaName(router.query.id.toString());
     }
-  }, [data]);
+  }, [selectedSchema]);
 
   const onDragEnd = (result: any) => {
     const { source, destination, draggableId } = result;
@@ -528,7 +546,7 @@ const BuildTypes: React.FC = () => {
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
                       id="panel1a-header">
-                      <Typography style={{ justifyContent: 'center' }} variant="h6">
+                      <Typography className={classes.accordionHeading} variant="h6">
                         {Object.keys(ext).toString().toUpperCase()}
                       </Typography>
                       <Chip
@@ -562,18 +580,12 @@ const BuildTypes: React.FC = () => {
             : ''}
           <Accordion>
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+              expandIcon={<ExpandMoreIcon color="action" />}
               aria-controls="panel1a-content"
-              className={classes.accordionSummary}
+              className={classes.accordionSummaryEditable}
               id="panel1a-header">
-              <Typography style={{ justifyContent: 'center' }} variant="h6">
+              <Typography className={classes.accordionHeadingEditable} variant="h6">
                 {extractEditableTitle()}
-                <Chip
-                  color="primary"
-                  variant="outlined"
-                  style={{ marginLeft: '30px', cursor: 'pointer' }}
-                  label="READ / WRITE"
-                />
               </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.accordionDetails}>
