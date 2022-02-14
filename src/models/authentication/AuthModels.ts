@@ -30,7 +30,15 @@ export interface SignInTypes {
   clientSecret?: string;
 }
 
-export type SocialNameTypes = 'local' | 'google' | 'facebook' | 'twitch';
+export type SocialNameTypes =
+  | 'local'
+  | 'google'
+  | 'facebook'
+  | 'twitch'
+  | 'microsoft'
+  | 'slack'
+  | 'github'
+  | 'figma';
 
 export interface ServiceAccount {
   active: boolean;
@@ -64,4 +72,8 @@ export interface IAuthenticationConfig {
   google: SignInTypes;
   local: SignInTypes;
   twitch: SignInTypes;
+  github: SignInTypes;
+  figma: SignInTypes;
+  slack: SignInTypes;
+  microsoft: SignInTypes;
 }
