@@ -8,6 +8,8 @@ const useParseQuery = (value: string, delay: number) => {
     const handler = setTimeout(() => {
       if (accepts(value)) {
         setDebouncedSearch(parse.parseFilter(value));
+      } else {
+        setDebouncedSearch(parse.parseFilter('{}'));
       }
     }, delay);
 
