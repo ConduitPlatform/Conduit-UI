@@ -8,6 +8,7 @@ import {
   patchCmsSchemaRequest,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
+  setSchemaExtension,
 } from '../../http/CmsRequests';
 import {
   createSchemaDocumentRequest,
@@ -208,6 +209,25 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
       }
       thunkAPI.dispatch(setAppLoading(false));
       return args.ids;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncModifyExtension = createAsyncThunk<any, { _id: string; data: any }>(
+  'cms/modifyExtension',
+  async (params, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      console.log(params);
+      await setSchemaExtension(params._id, params.data);
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

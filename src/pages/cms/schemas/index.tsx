@@ -25,6 +25,12 @@ import {
   Typography,
   Icon,
   MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Checkbox,
+  ListItemText,
+  Input,
 } from '@material-ui/core';
 import useDebounce from '../../../hooks/useDebounce';
 import DataTable from '../../../components/common/DataTable';
@@ -102,7 +108,25 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '20px',
     width: '100px',
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+    marginTop: '-10px',
+    marginLeft: '25px',
+  },
 }));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 const Schemas = () => {
   const classes = useStyles();
@@ -121,7 +145,7 @@ const Schemas = () => {
     data: {},
     action: '',
   });
-  const [filter, setFilter] = useState<string>('');
+  const [filters, setFilters] = useState<string[]>([]);
   const [selectedSchemas, setSelectedSchemas] = useState<SchemaUI[]>([]);
   const [enabled, setEnabled] = useState<boolean>(true);
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -130,6 +154,7 @@ const Schemas = () => {
   });
   const debouncedSearch: string = useDebounce(search, 500);
   const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
+  const availableModules = useAppSelector((state) => state.appAuthSlice.data.enabledModules);
 
   useEffect(() => {
     dispatch(
@@ -357,8 +382,8 @@ const Schemas = () => {
     }
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<{ value: string }>) => {
-    setFilter(e.target.value);
+  const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
+    setFilters(event.target.value);
   };
 
   return (
@@ -382,21 +407,27 @@ const Schemas = () => {
               }}
             />
             {enabled && (
-              <TextField
-                select
-                size="small"
-                label="Filter"
-                className={classes.filtering}
-                variant="outlined"
-                id="simple-select-outlined"
-                value={filter}
-                onChange={handleFilterChange}>
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={'cms'}>CMS</MenuItem>
-                <MenuItem value={'other'}>Other Modules</MenuItem>
-              </TextField>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="multiple-select-label">Filters</InputLabel>
+                <Select
+                  labelId="multiple-select-label"
+                  id="filters"
+                  multiple
+                  value={filters}
+                  onChange={handleFilterChange}
+                  input={<Input />}
+                  renderValue={(selected) => (selected.length === 1 ? selected : 'multiple')}
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                  }}>
+                  {availableModules.map((module: any) => (
+                    <MenuItem key={module.moduleName} value={module.moduleName}>
+                      <Checkbox checked={filters.indexOf(module.moduleName) > -1} />
+                      <ListItemText primary={module.moduleName} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           </Grid>
           <Grid item xs={4}>

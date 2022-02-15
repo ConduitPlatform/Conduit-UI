@@ -24,6 +24,7 @@ import {
   asyncCreateNewSchema,
   asyncEditSchema,
   asyncGetCmsSchemas,
+  asyncModifyExtension,
   clearSelectedSchema,
 } from '../../../redux/slices/cmsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
@@ -489,28 +490,39 @@ const BuildTypes: React.FC = () => {
     allowCrud: boolean,
     permissions: Permissions
   ) => {
-    if (data && selectedSchema) {
+    if (
+      selectedSchema &&
+      selectedSchema?.ownerModule !== 'cms' &&
+      selectedSchema.modelOptions.conduit.permissions.extendable
+    ) {
       const { _id } = selectedSchema;
-      const editableSchemaFields = prepareFields(editableFields.newTypeFields);
-      const editableSchema = {
-        authentication: authenticate,
-        crudOperations: allowCrud,
-        permissions,
-        fields: { ...editableSchemaFields },
-      };
+      const schemaFields = prepareFields(editableFields.newTypeFields);
 
-      dispatch(asyncEditSchema({ _id, data: editableSchema }));
+      dispatch(asyncModifyExtension({ _id, data: schemaFields }));
     } else {
-      const newSchemaFields = prepareFields(editableFields.newTypeFields);
-      const newSchema = {
-        name: name,
-        authentication: authenticate,
-        crudOperations: allowCrud,
-        permissions,
-        fields: newSchemaFields,
-      };
+      if (data && selectedSchema) {
+        const { _id } = selectedSchema;
+        const editableSchemaFields = prepareFields(editableFields.newTypeFields);
+        const editableSchema = {
+          authentication: authenticate,
+          crudOperations: allowCrud,
+          permissions,
+          fields: { ...editableSchemaFields },
+        };
 
-      dispatch(asyncCreateNewSchema(newSchema));
+        dispatch(asyncEditSchema({ _id, data: editableSchema }));
+      } else {
+        const newSchemaFields = prepareFields(editableFields.newTypeFields);
+        const newSchema = {
+          name: name,
+          authentication: authenticate,
+          crudOperations: allowCrud,
+          permissions,
+          fields: newSchemaFields,
+        };
+
+        dispatch(asyncCreateNewSchema(newSchema));
+      }
     }
     dispatch(clearSelectedSchema());
     router.push({ pathname: '/cms/schemas' });
