@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { getCmsDocumentsByNameRequest } from '../../../../http/CmsRequests';
-import { IconButton, Select, Typography } from '@material-ui/core';
+import { Box, CircularProgress, IconButton, Select, Typography } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { RemoveRedEye } from '@material-ui/icons';
@@ -33,9 +33,11 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
   const classes = useStyles();
   const [relations, setRelations] = useState<any[]>([]);
   const [docCount, setDocCount] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [limit, setLimit] = useState(10);
 
   const requestRelationItems = async () => {
+    setLoading(true);
     try {
       const params = {
         name: schemaModel,
@@ -47,6 +49,7 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
       setRelations(results.data.documents);
       setDocCount(results.data.count);
     } catch (e) {}
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -59,11 +62,21 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
     }
   };
 
+  const selectIcon: FC = () => {
+    return (
+      <Box m={1}>
+        <CircularProgress size={'20px'} color={'inherit'} />
+      </Box>
+    );
+  };
+
   return (
     <Select
+      disabled={loading}
       className={classes.muiSelect}
       placeholder={'Relation Id'}
       value={value}
+      IconComponent={loading ? selectIcon : undefined}
       MenuProps={{
         PaperProps: {
           style: { maxHeight: menuHeight, overflowY: 'auto' },
