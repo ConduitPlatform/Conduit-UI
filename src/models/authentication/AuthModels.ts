@@ -19,6 +19,7 @@ export interface AuthUserUI {
 
 export interface SignInTypes {
   enabled: boolean;
+  nativeFlow?: boolean;
   accountLinking: boolean;
   sendVerificationEmail?: boolean;
   verificationRequired?: boolean;
@@ -68,6 +69,7 @@ export interface IAuthenticationConfig {
   tokenInvalidationPeriod: number;
   twofa: { enabled: boolean };
   service: { enabled: boolean };
+
   facebook: SignInTypes;
   google: SignInTypes;
   local: SignInTypes;

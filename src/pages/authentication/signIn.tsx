@@ -19,6 +19,13 @@ const SignIn = () => {
   }, [dispatch]);
 
   const handleConfigChange = (type: SocialNameTypes, newValue: SignInTypes) => {
+    if (newValue.nativeFlow === true) {
+      delete newValue.nativeFlow;
+    } else if (newValue.nativeFlow === false) {
+      delete newValue.nativeFlow;
+      delete newValue.redirect_uri;
+      delete newValue.clientSecret;
+    }
     const data = {
       ...config,
       [type]: {

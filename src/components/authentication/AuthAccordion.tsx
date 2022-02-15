@@ -61,6 +61,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     enabled: false,
     accountLinking: false,
     clientId: '',
+    nativeFlow: false,
     redirect_uri: '',
     clientSecret: '',
   });
@@ -69,6 +70,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     enabled: false,
     accountLinking: false,
     clientId: '',
+    nativeFlow: false,
     redirect_uri: '',
     clientSecret: '',
   });
@@ -135,6 +137,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           enabled: googleData.enabled,
           accountLinking: googleData.accountLinking,
           clientId: googleData.clientId || '',
+          nativeFlow: googleData.redirect_uri && googleData.clientSecret ? true : false,
           redirect_uri: googleData.redirect_uri || '',
           clientSecret: googleData.clientSecret || '',
         });
@@ -145,6 +148,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         setFacebook({
           enabled: facebookData.enabled,
           accountLinking: facebookData.accountLinking,
+          nativeFlow: facebookData.redirect_uri && facebookData.clientSecret ? true : false,
           clientId: facebookData.clientId || '',
           redirect_uri: facebookData.redirect_uri || '',
           clientSecret: facebookData.clientSecret || '',
@@ -314,7 +318,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
           Provider
         </Typography>
-        <Typography variant={'subtitle2'} style={{ width: '50%' }}>
+        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
           Status
         </Typography>
       </Box>

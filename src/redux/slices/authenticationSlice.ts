@@ -38,12 +38,18 @@ const initialState: IAuthenticationSlice = {
         enabled: false,
         accountLinking: true,
         clientId: '',
+        nativeFlow: false,
+        redirect_uri: '',
+        clientSecret: '',
       },
       generateRefreshToken: false,
       google: {
         enabled: false,
         accountLinking: true,
+        nativeFlow: false,
         clientId: '',
+        redirect_uri: '',
+        clientSecret: '',
       },
       jwtSecret: '',
       local: {
