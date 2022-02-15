@@ -9,6 +9,7 @@ import { useAppDispatch } from '../../../redux/store';
 import { DocumentActions, EditDocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 import { cloneDeep, set } from 'lodash';
 import EditDocumentTree from '../tree-components/EditDocumentTree';
+import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -150,19 +151,27 @@ const SchemaDataCard: FC<Props> = ({
         edit={edit}
       />
       <CardContent>
-        <EditDocumentTree
-          treeViewProps={{
-            expanded: expanded,
-            onNodeToggle: (event: any, nodeIds: any[]) => handleToggle(nodeIds),
-          }}
-          expandable={expandable}
-          setExpandable={setExpandable}
-          onHandleChange={handleEditField}
-          editable={edit}
-          document={documentState}
-          schema={schema}
-          handleRelationClick={handleRelationClick}
-        />
+        {edit ? (
+          <TreeFieldGenerator
+            schema={schema}
+            onChange={handleEditField}
+            fieldValues={documentState}
+          />
+        ) : (
+          <EditDocumentTree
+            treeViewProps={{
+              expanded: expanded,
+              onNodeToggle: (event: any, nodeIds: any[]) => handleToggle(nodeIds),
+            }}
+            expandable={expandable}
+            setExpandable={setExpandable}
+            onHandleChange={handleEditField}
+            editable={edit}
+            document={documentState}
+            schema={schema}
+            handleRelationClick={handleRelationClick}
+          />
+        )}
       </CardContent>
       <EditDocumentActions edit={edit} handleCancel={handleCancel} handleSave={handleSave} />
     </Card>
