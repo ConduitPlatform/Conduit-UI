@@ -222,7 +222,7 @@ const Schemas = () => {
     setSelectedSchemas([]);
     setEnabled(newValue);
     setOwners([]);
-    handleLimitChange(10);
+    handleLimitChange(25);
   };
 
   const enabledActions = [
@@ -337,22 +337,22 @@ const Schemas = () => {
       <div className={classes.permissions}>
         <Tooltip title="Schema is extendable">
           <Icon hidden={!permissions.extendable}>
-            <Extension color="primary" />
+            <Extension color="secondary" />
           </Icon>
         </Tooltip>
         <Tooltip title="Can create">
           <Icon hidden={!permissions.canCreate}>
-            <CreateNewFolder color="primary" />
+            <CreateNewFolder color="secondary" />
           </Icon>
         </Tooltip>
         <Tooltip title="Can delete">
           <Icon hidden={!permissions.canDelete}>
-            <DeleteForever color="primary" />
+            <DeleteForever color="secondary" />
           </Icon>
         </Tooltip>
         <Tooltip title={`Modify: ${permissions.canModify}`}>
           <Icon hidden={!permissions.canModify}>
-            <SettingsSharp color="primary" />
+            <SettingsSharp color="secondary" />
           </Icon>
         </Tooltip>
       </div>

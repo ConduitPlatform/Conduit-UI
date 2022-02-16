@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   header: {
     zIndex: 9998,
     height: headerHeight,
-    backgroundColor: '#303030',
+    backgroundColor: theme.palette.background.paper,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
