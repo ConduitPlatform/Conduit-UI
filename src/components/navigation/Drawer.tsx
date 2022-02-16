@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box, Paper, Theme } from '@material-ui/core';
+import { Paper, Theme } from '@material-ui/core';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import { ExitToApp, Settings } from '@material-ui/icons';
 import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';

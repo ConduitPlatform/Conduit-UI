@@ -59,7 +59,7 @@ const Templates = () => {
     externalManaged: false,
   };
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [page, setPage] = useState<number>(0);
   const [search, setSearch] = useState<string>('');
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -84,7 +84,7 @@ const Templates = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(10);
+    setLimit(25);
   }, [debouncedSearch]);
 
   const { templateDocuments, totalCount } = useAppSelector((state) => state.emailsSlice.data);

@@ -64,7 +64,7 @@ const Create = () => {
     asc: false,
     index: null,
   });
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [page, setPage] = useState<number>(0);
   const [drawer, setDrawer] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
@@ -88,7 +88,7 @@ const Create = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(10);
+    setLimit(25);
   }, [debouncedSearch]);
 
   const newForm = () => {
