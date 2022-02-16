@@ -62,7 +62,7 @@ const TableDialog: React.FC<Props> = ({
 
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [search, setSearch] = useState<string>('');
   const [selectedElements, setSelectedElements] = useState<any[]>([]);
   const debouncedSearch: string = useDebounce(search, 500);
