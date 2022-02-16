@@ -9,7 +9,7 @@ type TreeElementByTypeProps = {
   parents?: any[];
   fieldValues: any;
   isArrayElement?: boolean;
-  onChange: (value: string, parents: string[]) => void;
+  onChange: (value: any, parents: string[]) => void;
 };
 const TreeElementByType: FC<TreeElementByTypeProps> = ({
   isArrayElement = false,
@@ -32,8 +32,9 @@ const TreeElementByType: FC<TreeElementByTypeProps> = ({
   const onDeleteArrayElement = () => {
     const selectedValue = getDeepValue(fieldValues, parents ? parents : []);
     const removalIndex = parentsArray[parentsArray.length - 1];
-    selectedValue.splice(removalIndex, 1);
-    onChange(selectedValue, parents ? parents : []);
+    const tempArray = [...selectedValue];
+    tempArray.splice(removalIndex, 1);
+    onChange(tempArray, parents ? parents : []);
   };
 
   const generateArrayTreeElements = () => {

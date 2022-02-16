@@ -39,7 +39,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
     if (!open) setFieldValues({});
   }, [open]);
 
-  const onChange = (value: string, parents: string[]) => {
+  const onChange = (value: any, parents: string[]) => {
     const fieldValuesClone = cloneDeep(fieldValues);
     const fieldValuesCloneSet = set(fieldValuesClone, parents, value);
     setFieldValues(fieldValuesCloneSet);

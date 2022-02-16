@@ -8,7 +8,7 @@ import { ChevronRight, ExpandMore } from '@material-ui/icons';
 type TreeFieldGeneratorProps = {
   schema: any;
   fieldValues: any;
-  onChange: (value: string, parents: string[]) => void;
+  onChange: (value: any, parents: string[]) => void;
 };
 
 const TreeFieldGenerator: FC<TreeFieldGeneratorProps> = ({ fieldValues, onChange, schema }) => {
