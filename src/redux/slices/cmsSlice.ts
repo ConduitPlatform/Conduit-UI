@@ -9,6 +9,7 @@ import {
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
   setSchemaExtension,
+  getSchemaOwners,
 } from '../../http/CmsRequests';
 import {
   createSchemaDocumentRequest,
@@ -50,6 +51,7 @@ export interface ICmsSlice {
         operation: number;
       };
     };
+    schemaOwners: [];
     count: number;
     config: any;
     selectedSchema: Schema | null;
@@ -78,6 +80,7 @@ const initialState: ICmsSlice = {
         operation: -2,
       },
     },
+    schemaOwners: [],
     count: 0,
     config: null,
     selectedSchema: null,
@@ -86,7 +89,10 @@ const initialState: ICmsSlice = {
 
 export const asyncGetCmsSchemas = createAsyncThunk(
   'cms/getSchemas',
-  async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
+  async (
+    params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] },
+    thunkAPI
+  ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCmsSchemasRequest(params);
@@ -94,6 +100,24 @@ export const asyncGetCmsSchemas = createAsyncThunk(
       return {
         results: data.schemas as Schema[],
         documentsCount: data.count as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetSchemaOwners = createAsyncThunk(
+  'cms/getSchemaOwners',
+  async (param, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getSchemaOwners();
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        owners: data.modules,
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -531,6 +555,9 @@ const cmsSlice = createSlice({
         (endpoint) => endpoint._id !== action.payload
       );
       state.data.customEndpoints.count = state.data.customEndpoints.count - 1;
+    });
+    builder.addCase(asyncGetSchemaOwners.fulfilled, (state, action) => {
+      state.data.schemaOwners = action.payload.owners;
     });
   },
 });

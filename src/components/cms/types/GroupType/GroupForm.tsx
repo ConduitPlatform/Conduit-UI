@@ -35,6 +35,7 @@ interface IProps {
   onSubmit: (data: any) => void;
   onClose: () => void;
   selectedItem: IGroupData;
+  disabledProps: boolean;
 }
 
 const GroupForm: FC<IProps> = ({
@@ -43,6 +44,7 @@ const GroupForm: FC<IProps> = ({
   onSubmit,
   onClose,
   selectedItem,
+  disabledProps,
   ...rest
 }) => {
   const classes = useStyles();
@@ -113,6 +115,7 @@ const GroupForm: FC<IProps> = ({
             <FormControlLabel
               control={
                 <Switch
+                  disabled={disabledProps}
                   checked={groupData.required}
                   onChange={handleFieldRequired}
                   color="primary"

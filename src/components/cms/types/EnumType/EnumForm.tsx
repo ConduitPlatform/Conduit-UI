@@ -43,6 +43,7 @@ interface IProps {
   onSubmit: (data: any) => void;
   onClose: () => void;
   selectedItem: IEnumData;
+  disabledProps: boolean;
 }
 
 const EnumForm: FC<IProps> = ({
@@ -51,6 +52,7 @@ const EnumForm: FC<IProps> = ({
   onSubmit,
   onClose,
   selectedItem,
+  disabledProps,
   ...rest
 }) => {
   const classes = useStyles();
@@ -148,6 +150,7 @@ const EnumForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Switch
+                    disabled={disabledProps}
                     checked={simpleData.required}
                     onChange={handleFieldRequired}
                     color="primary"

@@ -4,6 +4,7 @@ import CmsLayout from '../../../components/navigation/InnerLayouts/cmsLayout';
 import {
   asyncDeleteSelectedSchemas,
   asyncGetCmsSchemas,
+  asyncGetSchemaOwners,
   asyncToggleMultipleSchemas,
   asyncToggleSchema,
   setSelectedSchema,
@@ -117,17 +118,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
 const Schemas = () => {
   const classes = useStyles();
   const router = useRouter();
@@ -145,7 +135,7 @@ const Schemas = () => {
     data: {},
     action: '',
   });
-  const [filters, setFilters] = useState<string[]>([]);
+  const [owners, setOwners] = useState<string[]>([]);
   const [selectedSchemas, setSelectedSchemas] = useState<SchemaUI[]>([]);
   const [enabled, setEnabled] = useState<boolean>(true);
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -154,7 +144,11 @@ const Schemas = () => {
   });
   const debouncedSearch: string = useDebounce(search, 500);
   const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
-  const availableModules = useAppSelector((state) => state.appAuthSlice.data.enabledModules);
+  const { schemaOwners } = useAppSelector((state) => state.cmsSlice.data);
+
+  useEffect(() => {
+    dispatch(asyncGetSchemaOwners());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -164,9 +158,10 @@ const Schemas = () => {
         search: debouncedSearch,
         sort: prepareSort(sort),
         enabled,
+        owner: owners,
       })
     );
-  }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
+  }, [dispatch, skip, limit, debouncedSearch, enabled, sort, owners]);
 
   useEffect(() => {
     setSkip(0);
@@ -226,6 +221,7 @@ const Schemas = () => {
   const handleChange = (event: any, newValue: any) => {
     setSelectedSchemas([]);
     setEnabled(newValue);
+    setOwners([]);
     handleLimitChange(10);
   };
 
@@ -383,14 +379,14 @@ const Schemas = () => {
   };
 
   const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
-    setFilters(event.target.value);
+    setOwners(event.target.value);
   };
 
   return (
     <>
       <Container maxWidth={'xl'}>
         <Grid container>
-          <Grid item xs={4}>
+          <Grid item xs={5}>
             <TextField
               size="small"
               variant="outlined"
@@ -413,19 +409,20 @@ const Schemas = () => {
                   labelId="multiple-select-label"
                   id="filters"
                   multiple
-                  value={filters}
+                  value={owners}
                   onChange={handleFilterChange}
                   input={<Input />}
-                  renderValue={(selected) => (selected.length === 1 ? selected : 'multiple')}
+                  renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}
                   MenuProps={{
                     getContentAnchorEl: null,
                   }}>
-                  {availableModules.map((module: any) => (
-                    <MenuItem key={module.moduleName} value={module.moduleName}>
-                      <Checkbox checked={filters.indexOf(module.moduleName) > -1} />
-                      <ListItemText primary={module.moduleName} />
-                    </MenuItem>
-                  ))}
+                  {schemaOwners &&
+                    schemaOwners.map((module: any) => (
+                      <MenuItem key={module} value={module}>
+                        <Checkbox checked={owners.indexOf(module) > -1} />
+                        <ListItemText primary={module} />
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
             )}
@@ -442,7 +439,7 @@ const Schemas = () => {
               </ToggleButtonGroup>
             </Box>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Box className={classes.create}>
               {selectedSchemas.length > 0 && enabled && (
                 <IconButton

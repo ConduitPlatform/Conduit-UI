@@ -223,7 +223,7 @@ const BuildTypes: React.FC = () => {
           const mainField = {
             [selectedSchema.name]: getSchemaFieldsWithExtra(selectedSchema.fields),
           };
-          const finalizedArray = [mainField, ...extensionSchemas].filter((obj) => !obj.cms);
+          const finalizedArray = [mainField, ...extensionSchemas].filter((obj: any) => !obj.cms);
           setNonEditableFields(finalizedArray);
         } else {
           const extensionSchemas = selectedSchema.extensions.map((ext) => ({
@@ -536,6 +536,17 @@ const BuildTypes: React.FC = () => {
     }
   };
 
+  const showEditableFields = () => {
+    if (
+      selectedSchema?.ownerModule === 'cms' ||
+      selectedSchema?.modelOptions.conduit.permissions.extendable
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <Box className={classes.root}>
       <Header
@@ -590,34 +601,40 @@ const BuildTypes: React.FC = () => {
                 );
               })
             : ''}
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon color="action" />}
-              aria-controls="panel1a-content"
-              className={classes.accordionSummaryEditable}
-              id="panel1a-header">
-              <Typography className={classes.accordionHeadingEditable} variant="h6">
-                {extractEditableTitle()}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.accordionDetails}>
-              {editableFields &&
-                Object.keys(editableFields).map((dataKey, i) => (
-                  <BuildTypesContent
-                    dataKey={dataKey}
-                    data={editableFields}
-                    handleDelete={handleDelete}
-                    handleDrawer={handleDrawer}
-                    handleGroupDelete={handleGroupDelete}
-                    handleGroupDrawer={handleGroupDrawer}
-                    handleGroupInGroupDelete={handleGroupInGroupDelete}
-                    handleGroupInGroupDrawer={handleGroupInGroupDrawer}
-                    key={i}
-                    style={{ width: '100%', maxWidth: '1000px' }}
-                  />
-                ))}
-            </AccordionDetails>
-          </Accordion>
+          {showEditableFields() ? (
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon color="action" />}
+                aria-controls="panel1a-content"
+                className={classes.accordionSummaryEditable}
+                id="panel1a-header">
+                <Typography className={classes.accordionHeadingEditable} variant="h6">
+                  {extractEditableTitle()}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails className={classes.accordionDetails}>
+                {editableFields &&
+                  Object.keys(editableFields).map((dataKey, i) => (
+                    <BuildTypesContent
+                      dataKey={dataKey}
+                      data={editableFields}
+                      handleDelete={handleDelete}
+                      handleDrawer={handleDrawer}
+                      handleGroupDelete={handleGroupDelete}
+                      handleGroupDrawer={handleGroupDrawer}
+                      handleGroupInGroupDelete={handleGroupInGroupDelete}
+                      handleGroupInGroupDrawer={handleGroupInGroupDrawer}
+                      key={i}
+                      style={{ width: '100%', maxWidth: '1000px' }}
+                    />
+                  ))}
+              </AccordionDetails>
+            </Accordion>
+          ) : (
+            <Typography style={{ textAlign: 'center', marginTop: '60px' }}>
+              Schema cannot be extended
+            </Typography>
+          )}
           <Box className={classes.listContainer}>
             <Droppable droppableId="ITEMS" isDropDisabled={true}>
               {(provided) => (
@@ -633,6 +650,7 @@ const BuildTypes: React.FC = () => {
         </DragDropContext>
       </Box>
       <BuildTypesDrawer
+        disabledProps={selectedSchema?.ownerModule !== 'cms'}
         readOnly={readOnly}
         drawerData={drawerData}
         duplicateId={duplicateId}

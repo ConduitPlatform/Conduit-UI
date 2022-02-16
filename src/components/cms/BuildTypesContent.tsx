@@ -38,6 +38,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     cursor: 'pointer',
   },
+  iconDisabled: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+    color: 'grey',
+  },
   listPlaceholder: {
     display: 'flex',
     flexDirection: 'column',
@@ -84,6 +90,7 @@ const BuildTypesContent: FC<Props> = ({
   handleGroupDrawer,
   handleGroupInGroupDelete,
   handleGroupInGroupDrawer,
+
   ...rest
 }) => {
   const classes = useStyles();
@@ -124,12 +131,16 @@ const BuildTypesContent: FC<Props> = ({
 
   return (
     <Box {...rest}>
-      <Droppable droppableId={dataKey}>
+      <Droppable isDropDisabled={disabled} droppableId={dataKey}>
         {(provided, snapshot) => (
           <div className={classes.list} ref={provided.innerRef}>
             {data && Array.isArray(data[dataKey]) && data[dataKey].length > 0 ? (
               data[dataKey].map((item: any, index: number) => (
-                <Draggable key={item.name} draggableId={item.name} index={index}>
+                <Draggable
+                  key={item.name}
+                  isDragDisabled={disabled}
+                  draggableId={item.name}
+                  index={index}>
                   {(provided) => (
                     <div
                       className={classes.item}
@@ -156,7 +167,9 @@ const BuildTypesContent: FC<Props> = ({
                               disabled={disabled ? true : checkIfDisabled(item.name)}>
                               <SettingsIcon className={classes.icon} />
                             </Button>
-                            <Box {...provided.dragHandleProps} className={classes.icon}>
+                            <Box
+                              {...provided.dragHandleProps}
+                              className={!disabled ? classes.icon : classes.iconDisabled}>
                               <DragHandleIcon />
                             </Box>
                           </Box>

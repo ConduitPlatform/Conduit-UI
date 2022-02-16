@@ -2,8 +2,9 @@ import axios from 'axios';
 import { Pagination, Search, Sort } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 
-export const getCmsSchemasRequest = (params: Pagination & Search & Sort & { enabled?: boolean }) =>
-  axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
+export const getCmsSchemasRequest = (
+  params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] }
+) => axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
 
 export const getCmsSchemaByIdRequest = (_id: string) =>
   axios.get(`${CONDUIT_API}/admin/cms/schemas${_id}`);
@@ -16,6 +17,8 @@ export const patchCmsSchemaRequest = (_id: string, data: any) =>
 
 export const setSchemaExtension = (_id: string, data: any) =>
   axios.post(`${CONDUIT_API}/admin/cms/schemas/${_id}/extensions/`, { fields: data });
+
+export const getSchemaOwners = () => axios.get(`${CONDUIT_API}/admin/cms/schemas/owners`);
 
 export const deleteCmsSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
   return axios.delete(`${CONDUIT_API}/admin/cms/schemas`, { params });

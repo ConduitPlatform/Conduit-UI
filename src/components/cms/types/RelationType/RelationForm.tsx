@@ -59,6 +59,7 @@ interface IProps {
   onSubmit: (data: any) => void;
   onClose: () => void;
   selectedItem: IRelationData;
+  disabledProps: boolean;
 }
 
 const RelationForm: FC<IProps> = ({
@@ -67,6 +68,7 @@ const RelationForm: FC<IProps> = ({
   onSubmit,
   onClose,
   selectedItem,
+  disabledProps,
   ...rest
 }) => {
   const classes = useStyles();
@@ -157,6 +159,7 @@ const RelationForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Switch
+                    disabled={disabledProps}
                     checked={simpleData.required}
                     onChange={handleFieldRequired}
                     color="primary"
