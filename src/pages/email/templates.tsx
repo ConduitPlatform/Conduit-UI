@@ -40,7 +40,9 @@ const useStyles = makeStyles((theme) => ({
   btnAlignment2: {
     marginRight: theme.spacing(1.5),
   },
-  actions: {},
+  actions: {
+    margin: theme.spacing(1),
+  },
 }));
 
 const Templates = () => {
@@ -256,7 +258,7 @@ const Templates = () => {
     type: 'view',
   };
 
-  const actions = [toDelete, toUpload, toView];
+  const actions = [toUpload, toView, toDelete];
 
   const extractTitle = () => {
     if (!importTemplate && !create) {

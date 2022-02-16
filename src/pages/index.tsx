@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: '20px',
       borderWidth: '1px',
       borderStyle: 'solid',
+      borderRadius: '8px',
       borderColor: theme.palette.primary.main,
       flexDirection: 'column',
       backgroundColor: theme.palette.background.default,

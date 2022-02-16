@@ -25,10 +25,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    marginTop: theme.spacing(3),
   },
   logoutContainer: {
     margin: 0,
     paddingLeft: theme.spacing(1),
+  },
+  logo: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: theme.spacing(4),
   },
 }));
 
@@ -50,12 +56,11 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
 
   return (
     <Paper className={classes.drawer} elevation={2} {...rest}>
-      <ListItem style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <ListItem className={classes.logo}>
         <Image src={ConduitLogo} alt="conduit-logo" />
       </ListItem>
       <div className={classes.listContainer}>
         <List component="nav">
-          <Divider />
           <Modules modules={enabledModules} homeEnabled itemSelected={itemSelected} />
           <Link href="/settings/clientsdk" passHref>
             <CustomListItem
@@ -68,7 +73,6 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           {disabledModules.length > 0 ? (
             <>
               <Modules modules={disabledModules} itemSelected={itemSelected} disabled />
-              <Divider />
             </>
           ) : (
             <></>

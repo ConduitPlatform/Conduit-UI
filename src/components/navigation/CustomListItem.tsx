@@ -10,10 +10,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: theme.spacing(3),
     borderRadius: theme.spacing(0.5),
     margin: theme.spacing(1, 0),
-    color: theme.palette.secondary.main,
+    color: theme.palette.primary.contrastText,
     borderWidth: 1,
-    paddingLeft: theme.spacing(0.5),
-    paddingRight: theme.spacing(0.5),
+    padding: theme.spacing(1.6),
     '&:hover': {
       borderWidth: 1,
     },
@@ -21,7 +20,8 @@ const useStyles = makeStyles((theme: Theme) => ({
       borderWidth: 1,
     },
     '&.Mui-selected': {
-      color: theme.palette.common.white,
+      color: 'white',
+      background: theme.palette.secondary.dark,
       borderWidth: 1,
       '&:hover': {
         background: theme.palette.secondary.dark,
@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   listItemText: {
+    color: 'inherit',
     textTransform: 'capitalize',
     fontWeight: 'bold',
     fontSize: 12,

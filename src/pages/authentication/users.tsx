@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
   btnGroup: {
     marginRight: theme.spacing(3),
   },
+  searchbar: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 const Users = () => {
@@ -250,7 +253,7 @@ const Users = () => {
 
   return (
     <div>
-      <Grid container>
+      <Grid container className={classes.searchbar}>
         <Grid item xs={8}>
           <SearchFilter
             setSearch={setSearch}

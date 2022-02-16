@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     marginTop: '50px',
   },
+  searchbar: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 const Create = () => {
@@ -223,7 +226,7 @@ const Create = () => {
     type: 'view',
   };
 
-  const actions = [toDelete, toReplies, toView];
+  const actions = [toReplies, toView, toDelete];
 
   const handleDeleteTitle = (form: FormsModel) => {
     if (selectedForm.name === '') {
@@ -259,7 +262,7 @@ const Create = () => {
 
   return (
     <div>
-      <Grid container justifyContent="space-between" style={{ marginBottom: '5px' }}>
+      <Grid container justifyContent="space-between" className={classes.searchbar}>
         <Grid item>
           <TextField
             size="small"

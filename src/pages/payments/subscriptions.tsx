@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1.5),
   },
   actions: {
-    marginBottom: '5px',
+    marginBottom: theme.spacing(1),
   },
   noSubscriptions: {
     textAlign: 'center',
