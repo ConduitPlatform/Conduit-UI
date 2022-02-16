@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
       height: 125,
-      width: 300,
+      width: 'auto',
       display: 'flex',
       padding: '20px',
       borderWidth: '1px',
@@ -116,9 +116,9 @@ const Home = () => {
           </Typography>
         </Box>
 
-        <Container>
+        <Container maxWidth="md">
           <Grid container spacing={6}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item sm={12} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
                   <SectetIcon className={classes.headerIcon} />
@@ -135,7 +135,7 @@ const Home = () => {
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
                   <SchemaIcon className={classes.headerIcon} />
@@ -152,7 +152,7 @@ const Home = () => {
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
                   <Storage className={classes.headerIcon} />
@@ -169,7 +169,7 @@ const Home = () => {
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
                   <EmailIcon className={classes.headerIcon} />
@@ -186,7 +186,7 @@ const Home = () => {
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={6} sm={6} md={3}>
+            <Grid item xs={6} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
                   <LockIcon className={classes.headerIcon} />
