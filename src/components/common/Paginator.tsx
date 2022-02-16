@@ -22,7 +22,7 @@ const Paginator: React.FC<Props> = ({
     <Grid container justifyContent="flex-end" {...rest}>
       <TablePagination
         color="primary"
-        rowsPerPageOptions={[10, 25, 50]}
+        rowsPerPageOptions={[25, 50, 100]}
         component="div"
         count={count}
         page={page}

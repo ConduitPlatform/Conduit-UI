@@ -20,7 +20,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
   const classes = sharedClasses();
   const dispatch = useAppDispatch();
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [page, setPage] = useState<number>(0);
 
   const { transactions } = useAppSelector((state) => state.paymentsSlice.data.transactionData);

@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
   btnGroup: {
     marginRight: theme.spacing(3),
   },
+  searchbar: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 const Users = () => {
@@ -66,7 +69,7 @@ const Users = () => {
 
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [search, setSearch] = useState<string>('');
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -113,7 +116,7 @@ const Users = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(10);
+    setLimit(25);
   }, [debouncedSearch, filter]);
 
   const handleLimitChange = (value: number) => {
@@ -250,7 +253,7 @@ const Users = () => {
 
   return (
     <div>
-      <Grid container>
+      <Grid container className={classes.searchbar}>
         <Grid item xs={8}>
           <SearchFilter
             setSearch={setSearch}
