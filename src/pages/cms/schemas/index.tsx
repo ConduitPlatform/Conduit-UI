@@ -493,7 +493,7 @@ const Schemas = () => {
               handleSelect={handleSelect}
               handleSelectAll={handleSelectAll}
               handleAction={handleActions}
-              extraProps={schemaDocuments}
+              disableMultiSelect
             />
             <Grid container className={classes.paginator}>
               <Grid item xs={7} />

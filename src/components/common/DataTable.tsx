@@ -73,7 +73,7 @@ interface Props extends PaperProps {
   handleRowClick?: (data: any) => void;
   tableRowProps?: TableRowProps;
   placeholder?: string;
-  extraProps?: any;
+  disableMultiSelect?: any;
 }
 
 const DataTable: React.FC<Props> = ({
@@ -92,7 +92,7 @@ const DataTable: React.FC<Props> = ({
   handleRowClick,
   tableRowProps,
   placeholder,
-  extraProps,
+  disableMultiSelect,
   ...rest
 }) => {
   const classes = useStyles();
@@ -145,6 +145,7 @@ const DataTable: React.FC<Props> = ({
               {!collapsible && selectable && (
                 <Checkbox
                   color="primary"
+                  disabled={disableMultiSelect}
                   onChange={onMenuItemSelectAll}
                   checked={selectedItems?.length === dsData.length}
                   indeterminate={selectedItems?.length > 0 && selectedItems?.length < dsData.length}
@@ -192,7 +193,6 @@ const DataTable: React.FC<Props> = ({
                 onRowClick={onRowClick}
                 selectable={selectable}
                 tableRowProps={tableRowProps}
-                extraProps={extraProps !== undefined ? extraProps[i] : undefined}
               />
             ))}
           </TableBody>

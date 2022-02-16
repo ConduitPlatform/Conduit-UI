@@ -47,7 +47,6 @@ interface Props {
   handleSelectAll?: (data: any) => void;
   selectable: boolean;
   tableRowProps?: TableRowProps;
-  extraProps?: any;
 }
 
 const DataTableRows: React.FC<Props> = ({
@@ -61,7 +60,6 @@ const DataTableRows: React.FC<Props> = ({
   actions,
   selectable,
   tableRowProps,
-  extraProps,
 }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -100,6 +98,7 @@ const DataTableRows: React.FC<Props> = ({
       return (
         <Checkbox
           color="primary"
+          disabled={row.owner && row.owner !== 'cms'}
           checked={isItemSelected()}
           onChange={() => onMenuItemSelect(row._id)}
         />
@@ -113,7 +112,7 @@ const DataTableRows: React.FC<Props> = ({
   };
 
   const extractSchemasActions = () => {
-    if (extraProps && row.owner && row.owner !== 'cms') {
+    if (row.owner && row.owner !== 'cms') {
       return [{ title: 'Extend', type: 'extend' }];
     } else return actions;
   };
