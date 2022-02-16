@@ -69,7 +69,6 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
               title="Settings"
             />
           </Link>
-          <Divider />
           {disabledModules.length > 0 ? (
             <>
               <Modules modules={disabledModules} itemSelected={itemSelected} disabled />

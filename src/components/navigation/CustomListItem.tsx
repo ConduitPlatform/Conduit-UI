@@ -60,14 +60,16 @@ interface Props {
   onClick?: () => void;
   className?: string;
   selected?: boolean;
+  disabled?: boolean;
 }
 
 const CustomListItem = forwardRef<HTMLAnchorElement, Props>(
-  ({ selected, title, icon, onClick, className, href, ...rest }, ref) => {
+  ({ selected, title, icon, onClick, className, href, disabled, ...rest }, ref) => {
     const classes = useStyles();
     return (
       <a className={classes.link} href={href} onClick={onClick} ref={ref}>
         <ListItem
+          disabled={disabled}
           button
           className={clsx(classes.listItem, className)}
           selected={selected}
