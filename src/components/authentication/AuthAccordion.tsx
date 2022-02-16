@@ -8,6 +8,7 @@ import {
   SignInTypes,
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './ReusableAccordion';
+import { Container } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -313,24 +314,26 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
   }, [microsoft, configData, handleData]);
 
   return (
-    <Box className={classes.root} {...rest}>
-      <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
-        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
-          Provider
-        </Typography>
-        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
-          Status
-        </Typography>
+    <Container maxWidth="lg">
+      <Box className={classes.root} {...rest}>
+        <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
+          <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
+            Provider
+          </Typography>
+          <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
+            Status
+          </Typography>
+        </Box>
+        {localMemo}
+        {googleMemo}
+        {facebookMemo}
+        {twitchMemo}
+        {slackMemo}
+        {figmaMemo}
+        {githubMemo}
+        {microsoftMemo}
       </Box>
-      {localMemo}
-      {googleMemo}
-      {facebookMemo}
-      {twitchMemo}
-      {slackMemo}
-      {figmaMemo}
-      {githubMemo}
-      {microsoftMemo}
-    </Box>
+    </Container>
   );
 };
 
