@@ -537,10 +537,17 @@ const BuildTypes: React.FC = () => {
   };
 
   const showEditableFields = () => {
-    if (
-      selectedSchema?.ownerModule === 'cms' ||
-      selectedSchema?.modelOptions.conduit.permissions.extendable
-    ) {
+    if (selectedSchema?.ownerModule === 'cms' || !selectedSchema) {
+      return true;
+    } else if (selectedSchema.modelOptions.conduit.permissions.extendable) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const disabledFields = () => {
+    if (selectedSchema && selectedSchema?.ownerModule !== 'cms') {
       return true;
     } else {
       return false;
@@ -650,7 +657,7 @@ const BuildTypes: React.FC = () => {
         </DragDropContext>
       </Box>
       <BuildTypesDrawer
-        disabledProps={selectedSchema?.ownerModule !== 'cms'}
+        disabledProps={disabledFields()}
         readOnly={readOnly}
         drawerData={drawerData}
         duplicateId={duplicateId}

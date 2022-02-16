@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   toggle: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginBottom: theme.spacing(1),
   },
   create: {

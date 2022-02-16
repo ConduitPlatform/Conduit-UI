@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minWidth: 224,
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: '#202030',
   },
   listContainer: {
     flex: 1,

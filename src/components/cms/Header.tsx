@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   header: {
     zIndex: 9998,
     height: headerHeight,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: '#303030',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -146,7 +146,7 @@ const Header: FC<Props> = ({
   };
 
   return (
-    <Box className={clsx(classes.header, classes.colorWhite)} {...rest}>
+    <Box boxShadow={3} className={clsx(classes.header, classes.colorWhite)} {...rest}>
       <Box display={'flex'} alignItems={'center'}>
         <Link href="/cms/schemas">
           {/* TODO call dispatch clear cms */}
