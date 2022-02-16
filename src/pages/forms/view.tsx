@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     marginTop: '50px',
   },
+  searchbar: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 const Create = () => {
@@ -61,7 +64,7 @@ const Create = () => {
     asc: false,
     index: null,
   });
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [page, setPage] = useState<number>(0);
   const [drawer, setDrawer] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
@@ -85,7 +88,7 @@ const Create = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(10);
+    setLimit(25);
   }, [debouncedSearch]);
 
   const newForm = () => {
@@ -223,7 +226,7 @@ const Create = () => {
     type: 'view',
   };
 
-  const actions = [toDelete, toReplies, toView];
+  const actions = [toReplies, toView, toDelete];
 
   const handleDeleteTitle = (form: FormsModel) => {
     if (selectedForm.name === '') {
@@ -259,7 +262,7 @@ const Create = () => {
 
   return (
     <div>
-      <Grid container justifyContent="space-between" style={{ marginBottom: '5px' }}>
+      <Grid container justifyContent="space-between" className={classes.searchbar}>
         <Grid item>
           <TextField
             size="small"

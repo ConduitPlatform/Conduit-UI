@@ -30,7 +30,7 @@ const StorageFiles = () => {
   const [filteredPath, setFilteredPath] = useState<string[]>([]);
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [drawerCreate, setDrawerCreate] = useState({
     open: false,
     type: CreateFormSelected.container,
@@ -99,7 +99,7 @@ const StorageFiles = () => {
   useEffect(() => {
     setPage(0);
     setSkip(0);
-    setLimit(10);
+    setLimit(25);
   }, [path]);
 
   // useEffect(() => {
