@@ -27,25 +27,26 @@ const DataTableActions: React.FC<Props> = ({ actions, onActionClick, isBlocked, 
   const handleActions = (action: Action) => {
     switch (action.type) {
       case 'delete':
-        return <DeleteIcon color="primary" />;
+        return <DeleteIcon color="error" />;
       case 'edit':
-        return <EditIcon color={editDisabled ? 'disabled' : 'primary'} />;
+        return <EditIcon color={editDisabled ? 'disabled' : 'secondary'} />;
       case 'block/unblock':
-        return <BlockIcon color={isBlocked ? 'error' : 'primary'} />;
+        return <BlockIcon color={isBlocked ? 'disabled' : 'error'} />;
       case 'archive':
-        return <ArchiveIcon color="primary" />;
+        return <ArchiveIcon color="secondary" />;
       case 'enable':
-        return <CheckCircleIcon color="primary" />;
+        return <CheckCircleIcon color="secondary" />;
       case 'view':
-        return <View color="primary" />;
+        return <View color="secondary" />;
       case 'upload':
-        return <Upload color="primary" />;
+        return <Upload color="secondary" />;
       case 'sync':
-        return <Sync color="primary" />;
+        return <Sync color="secondary" />;
       case 'replies':
-        return <ReplyAll color="primary" />;
+        return <ReplyAll color="secondary" />;
       case 'extend':
-        return <Add color="primary" />;
+        return <Add color="secondary" />;
+
       default:
         return <></>;
     }

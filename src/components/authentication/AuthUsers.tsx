@@ -48,7 +48,7 @@ const AuthUsers: React.FC<Props> = ({
     type: 'block/unblock',
   };
 
-  const actions = [toEdit, toDelete, toBlock];
+  const actions = [toEdit, toBlock, toDelete];
 
   const headers = [
     { title: '_id', sort: '_id' },

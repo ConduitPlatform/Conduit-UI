@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1.5),
   },
   actions: {
-    marginBottom: '5px',
+    marginBottom: theme.spacing(1),
   },
   noCustomers: {
     textAlign: 'center',
@@ -65,7 +65,7 @@ const Customers = () => {
     createdAt: '',
   };
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [page, setPage] = useState<number>(0);
   const [search, setSearch] = useState<string>('');
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -88,7 +88,7 @@ const Customers = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(10);
+    setLimit(25);
   }, [debouncedSearch]);
 
   const { customers, count } = useAppSelector((state) => state.paymentsSlice.data.customerData);
@@ -246,7 +246,7 @@ const Customers = () => {
     type: 'view',
   };
 
-  const actions = [toDelete, toView];
+  const actions = [toView, toDelete];
 
   const formatData = (data: Customer[]) => {
     return data.map((u) => {

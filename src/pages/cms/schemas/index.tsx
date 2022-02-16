@@ -125,7 +125,7 @@ const Schemas = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(25);
   const [search, setSearch] = useState<string>('');
   const [open, setOpen] = useState(false);
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
@@ -166,7 +166,7 @@ const Schemas = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(10);
+    setLimit(25);
   }, [debouncedSearch, sort]);
 
   const handleLimitChange = (value: number) => {
