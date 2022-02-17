@@ -246,7 +246,6 @@ export const asyncModifyExtension = createAsyncThunk<any, { _id: string; data: a
   async (params, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      console.log(params);
       await setSchemaExtension(params._id, params.data);
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)

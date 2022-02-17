@@ -135,7 +135,7 @@ const Schemas = () => {
     data: {},
     action: '',
   });
-  const [owners, setOwners] = useState<string[]>([]);
+  const [owners, setOwners] = useState<string[]>(['cms']);
   const [selectedSchemas, setSelectedSchemas] = useState<SchemaUI[]>([]);
   const [enabled, setEnabled] = useState<boolean>(true);
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -221,7 +221,7 @@ const Schemas = () => {
   const handleChange = (event: any, newValue: any) => {
     setSelectedSchemas([]);
     setEnabled(newValue);
-    setOwners([]);
+    setOwners(['cms']);
     handleLimitChange(25);
   };
 
@@ -404,7 +404,7 @@ const Schemas = () => {
             />
             {enabled && (
               <FormControl className={classes.formControl}>
-                <InputLabel id="multiple-select-label">Filters</InputLabel>
+                <InputLabel id="multiple-select-label">Owner</InputLabel>
                 <Select
                   labelId="multiple-select-label"
                   id="filters"

@@ -89,20 +89,14 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.secondary.main,
     },
   },
-  accordionSummaryEditable: {
-    '&.MuiAccordionSummary-root': {
-      backgroundColor: theme.palette.secondary.main,
-      color: 'black',
-    },
-  },
+
   accordionHeading: {
-    flexBasis: '85%',
+    flexBasis: '88%',
     flexShrink: 0,
   },
   accordionHeadingEditable: {
-    flexBasis: '85%',
+    flexBasis: '88%',
     flexShrink: 0,
-    color: 'black',
   },
 }));
 
@@ -529,10 +523,23 @@ const BuildTypes: React.FC = () => {
   };
 
   const extractEditableTitle = () => {
-    if (editableFields.newTypeFields.length <= 0 && nonEditableFields.length) {
-      return 'Would you like to extend this Schema?';
+    if (nonEditableFields.length) {
+      return `Extended Fields `;
     } else {
-      return 'Editable fields (CMS)';
+      return 'Schema Fields';
+    }
+  };
+
+  const editableFieldsChip = () => {
+    if (editableFields.newTypeFields.length > 0) {
+      return (
+        <Chip
+          color="secondary"
+          variant="outlined"
+          style={{ marginLeft: '30px', cursor: 'pointer' }}
+          label={`Fields: ${editableFields.newTypeFields.length}`}
+        />
+      );
     }
   };
 
@@ -581,7 +588,7 @@ const BuildTypes: React.FC = () => {
                       </Typography>
                       <Chip
                         color="secondary"
-                        variant="outlined"
+                        variant="default"
                         style={{ marginLeft: '30px', cursor: 'pointer' }}
                         label="READ ONLY"
                       />
@@ -609,15 +616,15 @@ const BuildTypes: React.FC = () => {
               })
             : ''}
           {showEditableFields() ? (
-            <Accordion>
+            <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon color="action" />}
                 aria-controls="panel1a-content"
-                className={classes.accordionSummaryEditable}
                 id="panel1a-header">
                 <Typography className={classes.accordionHeadingEditable} variant="h6">
                   {extractEditableTitle()}
                 </Typography>
+                {editableFieldsChip()}
               </AccordionSummary>
               <AccordionDetails className={classes.accordionDetails}>
                 {editableFields &&

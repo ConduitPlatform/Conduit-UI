@@ -199,7 +199,7 @@ const Header: FC<Props> = ({
           label={<Typography variant="caption">Allow Crud Operations</Typography>}
         />
         <Button variant="outlined" onClick={() => setDialog(true)}>
-          Edit permissions
+          Permissions
         </Button>
       </Box>
       <Box className={classes.saveBox}>

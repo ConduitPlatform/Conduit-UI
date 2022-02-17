@@ -35,10 +35,14 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     height: theme.spacing(3),
     width: theme.spacing(3),
+  },
+  dragHandleIcon: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
     marginLeft: theme.spacing(1),
     cursor: 'pointer',
   },
-  iconDisabled: {
+  dragIconDisabled: {
     height: theme.spacing(3),
     width: theme.spacing(3),
     marginLeft: theme.spacing(1),
@@ -59,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 0,
     minHeight: 0,
     padding: 0,
-    margin: 0,
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -159,7 +163,7 @@ const BuildTypesContent: FC<Props> = ({
                               onClick={() => handleDelete(index)}
                               className={classes.button}
                               disabled={disabled ? true : checkIfDisabled(item.name)}>
-                              <DeleteIcon className={classes.icon} />
+                              <DeleteIcon color="error" className={classes.icon} />
                             </Button>
                             <Button
                               onClick={() => handleDrawer(item, index)}
@@ -169,7 +173,9 @@ const BuildTypesContent: FC<Props> = ({
                             </Button>
                             <Box
                               {...provided.dragHandleProps}
-                              className={!disabled ? classes.icon : classes.iconDisabled}>
+                              className={
+                                !disabled ? classes.dragHandleIcon : classes.dragIconDisabled
+                              }>
                               <DragHandleIcon />
                             </Box>
                           </Box>
