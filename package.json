@@ -1,6 +1,6 @@
 {
   "name": "@conduitplatform/conduit-ui",
-  "version": "0.10.8",
+  "version": "0.11.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 8080",
