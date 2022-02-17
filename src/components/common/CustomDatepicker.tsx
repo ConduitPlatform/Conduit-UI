@@ -1,19 +1,17 @@
+import React from 'react';
 import MomentUtils from '@date-io/moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { Today } from '@material-ui/icons';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import React from 'react';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { ParsableDate } from '@material-ui/pickers/constants/prop-types';
 
 const useStyles = makeStyles((theme) => ({
   dateInput: {
-    borderRadius: 4,
-    height: 32,
+    borderRadius: theme.spacing(0.5),
+    height: theme.spacing(4),
     padding: theme.spacing(0, 1),
-    backgroundColor: '#C8C6C6',
     fontSize: 14,
-    color: '#2C2E43',
     fontWeight: 500,
     '& .MuiInputBase-input': {
       cursor: 'pointer',
@@ -21,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconButton: {
     padding: 0,
-    color: '#2C2E43',
     marginRight: 8,
     cursor: 'pointer',
   },
@@ -31,12 +28,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
+  required?: boolean;
   value: ParsableDate;
   setValue: (date: MaterialUiPickersDate) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
-const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...rest }) => {
+const CustomDatepicker: React.FC<Props> = ({
+  required = false,
+  disabled = false,
+  value,
+  setValue,
+  placeholder,
+  ...rest
+}) => {
   const classes = useStyles();
 
   const handleDateChange = (date: MaterialUiPickersDate) => {
@@ -47,12 +53,13 @@ const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...re
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <DatePicker
         {...rest}
+        required={required}
+        disabled={disabled}
         className={classes.datepicker}
         autoOk
-        disableToolbar
         variant="inline"
         format="DD/MM/YYYY"
-        value={value}
+        value={value ? value : null}
         onChange={handleDateChange}
         placeholder={placeholder}
         invalidDateMessage={''}
@@ -60,7 +67,7 @@ const CustomDatepicker: React.FC<Props> = ({ value, setValue, placeholder, ...re
         InputProps={{
           disableUnderline: true,
           className: classes.dateInput,
-          startAdornment: <Today className={classes.iconButton} />,
+          startAdornment: <Today color={'inherit'} className={classes.iconButton} />,
         }}
       />
     </MuiPickersUtilsProvider>

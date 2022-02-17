@@ -340,6 +340,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
       schemaName: string;
       documentData: any;
       getSchemaDocuments: () => void;
+      onEditError: () => void;
     },
     thunkAPI
   ) => {
@@ -355,6 +356,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      params.onEditError();
       throw error;
     }
   }
@@ -530,14 +532,15 @@ const cmsSlice = createSlice({
       );
     });
     builder.addCase(asyncGetSchemaDocuments.fulfilled, (state, action) => {
-      state.data.documents = action.payload;
+      state.data.documents.documents = action.payload.documents;
+      state.data.documents.documentsCount = action.payload.count;
     });
     builder.addCase(asyncGetSchemaDocument.fulfilled, (state, action) => {
       const documentIndex = state.data.documents.documents.findIndex(
         (document: any) => document._id === action.payload.documentId
       );
       const selectedDocument = state.data.documents.documents[documentIndex];
-      set(selectedDocument, action.payload.path, action.payload.document);
+      set(selectedDocument, action.payload.path, action.payload.document.result);
     });
     builder.addCase(asyncSetCustomEndpoints.fulfilled, (state, action) => {
       state.data.customEndpoints.endpoints = action.payload.endpoints;
