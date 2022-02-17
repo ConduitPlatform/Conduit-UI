@@ -19,6 +19,7 @@ export interface AuthUserUI {
 
 export interface SignInTypes {
   enabled: boolean;
+  OAuth2Flow?: boolean;
   accountLinking: boolean;
   sendVerificationEmail?: boolean;
   verificationRequired?: boolean;
@@ -30,7 +31,15 @@ export interface SignInTypes {
   clientSecret?: string;
 }
 
-export type SocialNameTypes = 'local' | 'google' | 'facebook' | 'twitch';
+export type SocialNameTypes =
+  | 'local'
+  | 'google'
+  | 'facebook'
+  | 'twitch'
+  | 'microsoft'
+  | 'slack'
+  | 'github'
+  | 'figma';
 
 export interface ServiceAccount {
   active: boolean;
@@ -60,8 +69,13 @@ export interface IAuthenticationConfig {
   tokenInvalidationPeriod: number;
   twofa: { enabled: boolean };
   service: { enabled: boolean };
+
   facebook: SignInTypes;
   google: SignInTypes;
   local: SignInTypes;
   twitch: SignInTypes;
+  github: SignInTypes;
+  figma: SignInTypes;
+  slack: SignInTypes;
+  microsoft: SignInTypes;
 }

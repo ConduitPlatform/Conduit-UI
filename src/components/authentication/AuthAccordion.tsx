@@ -8,6 +8,7 @@ import {
   SignInTypes,
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './ReusableAccordion';
+import { Container } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,11 +62,45 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     enabled: false,
     accountLinking: false,
     clientId: '',
+    OAuth2Flow: false,
     redirect_uri: '',
     clientSecret: '',
   });
 
   const [facebook, setFacebook] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    OAuth2Flow: false,
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [slack, setSlack] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [github, setGithub] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [figma, setFigma] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [microsoft, setMicrosoft] = useState<SignInTypes>({
     enabled: false,
     accountLinking: false,
     clientId: '',
@@ -103,6 +138,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           enabled: googleData.enabled,
           accountLinking: googleData.accountLinking,
           clientId: googleData.clientId || '',
+          OAuth2Flow: googleData.redirect_uri && googleData.clientSecret ? true : false,
           redirect_uri: googleData.redirect_uri || '',
           clientSecret: googleData.clientSecret || '',
         });
@@ -113,6 +149,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         setFacebook({
           enabled: facebookData.enabled,
           accountLinking: facebookData.accountLinking,
+          OAuth2Flow: facebookData.redirect_uri && facebookData.clientSecret ? true : false,
           clientId: facebookData.clientId || '',
           redirect_uri: facebookData.redirect_uri || '',
           clientSecret: facebookData.clientSecret || '',
@@ -127,6 +164,54 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           clientId: twitchData.clientId || '',
           redirect_uri: twitchData.redirect_uri || '',
           clientSecret: twitchData.clientSecret || '',
+        });
+      }
+
+      if (configData.slack) {
+        const slackData = configData.slack;
+
+        setSlack({
+          enabled: slackData.enabled,
+          accountLinking: slackData.accountLinking,
+          clientId: slackData.clientId || '',
+          redirect_uri: slackData.redirect_uri || '',
+          clientSecret: slackData.clientSecret || '',
+        });
+      }
+
+      if (configData.figma) {
+        const figmaData = configData.figma;
+
+        setFigma({
+          enabled: figmaData.enabled,
+          accountLinking: figmaData.accountLinking,
+          clientId: figmaData.clientId || '',
+          redirect_uri: figmaData.redirect_uri || '',
+          clientSecret: figmaData.clientSecret || '',
+        });
+      }
+
+      if (configData.github) {
+        const githubData = configData.github;
+
+        setGithub({
+          enabled: githubData.enabled,
+          accountLinking: githubData.accountLinking,
+          clientId: githubData.clientId || '',
+          redirect_uri: githubData.redirect_uri || '',
+          clientSecret: githubData.clientSecret || '',
+        });
+      }
+
+      if (configData.microsoft) {
+        const microsftData = configData.microsoft;
+
+        setMicrosoft({
+          enabled: microsftData.enabled,
+          accountLinking: microsftData.accountLinking,
+          clientId: microsftData.clientId || '',
+          redirect_uri: microsftData.redirect_uri || '',
+          clientSecret: microsftData.clientSecret || '',
         });
       }
     }
@@ -180,13 +265,61 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     );
   }, [twitch, configData, handleData]);
 
+  const slackMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'slack'}
+        accProps={slack}
+        setAccProps={setSlack}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [slack, configData, handleData]);
+
+  const figmaMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'figma'}
+        accProps={figma}
+        setAccProps={setFigma}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [figma, configData, handleData]);
+
+  const githubMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'github'}
+        accProps={github}
+        setAccProps={setGithub}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [github, configData, handleData]);
+
+  const microsoftMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'microsoft'}
+        accProps={microsoft}
+        setAccProps={setMicrosoft}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [microsoft, configData, handleData]);
+
   return (
     <Box className={classes.root} {...rest}>
       <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
         <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
           Provider
         </Typography>
-        <Typography variant={'subtitle2'} style={{ width: '50%' }}>
+        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
           Status
         </Typography>
       </Box>
@@ -194,6 +327,10 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
       {googleMemo}
       {facebookMemo}
       {twitchMemo}
+      {slackMemo}
+      {figmaMemo}
+      {githubMemo}
+      {microsoftMemo}
     </Box>
   );
 };

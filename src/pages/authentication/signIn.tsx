@@ -19,6 +19,13 @@ const SignIn = () => {
   }, [dispatch]);
 
   const handleConfigChange = (type: SocialNameTypes, newValue: SignInTypes) => {
+    if (newValue.OAuth2Flow === true) {
+      delete newValue.OAuth2Flow;
+    } else if (newValue.OAuth2Flow === false) {
+      delete newValue.OAuth2Flow;
+      delete newValue.redirect_uri;
+      delete newValue.clientSecret;
+    }
     const data = {
       ...config,
       [type]: {

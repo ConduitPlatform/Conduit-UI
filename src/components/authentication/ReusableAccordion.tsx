@@ -17,6 +17,8 @@ import {
   SignInTypes,
   SocialNameTypes,
 } from '../../models/authentication/AuthModels';
+import { extractProviderIcon, extractProviderName } from '../../utils/extractProviderUtils';
+import Image from 'next/image';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,12 +70,44 @@ const ReusableAccordion: React.FC<Props> = ({
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleCancel = () => {
-    if (configData && configData[name]) setAccProps(configData[name]);
+    if (configData && configData[name] && name !== 'google' && name !== 'facebook') {
+      setAccProps(configData[name]);
+    }
+
+    if (configData && configData[name] && (name === 'google' || name === 'facebook')) {
+      setAccProps({
+        ...configData[name],
+        OAuth2Flow: configData[name].redirect_uri && configData[name].clientSecret ? true : false,
+        redirect_uri: configData[name].redirect_uri || '',
+        clientSecret: configData[name].clientSecret || '',
+      });
+    }
+
     setExpanded(false);
   };
 
   const handleSubmit = (type: SocialNameTypes, data: SignInTypes) => {
     handleData(type, data);
+  };
+
+  const isFieldDisabled = (key?: string) => {
+    if (name !== 'google' && name !== 'facebook') {
+      if (accProps.enabled) return false;
+      else return true;
+    }
+    if (name === 'google' || name === 'facebook') {
+      if (accProps.enabled) {
+        if (
+          (key === 'redirect_uri' || key === 'clientSecret') &&
+          accProps.OAuth2Flow === false &&
+          accProps.enabled
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else return true;
+    }
   };
 
   return (
@@ -84,9 +118,13 @@ const ReusableAccordion: React.FC<Props> = ({
       classes={{ root: classes.expandedPanel }}>
       <AccordionSummary id={'local'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
+          <div style={{ marginTop: '3px', paddingRight: '8px' }}>
+            <Image src={extractProviderIcon(name)} alt={name} />
+          </div>
           <Typography variant={'subtitle2'} className={classes.typography}>
-            {name}
+            {extractProviderName(name)}
           </Typography>
+
           <Typography
             variant={'subtitle2'}
             className={
@@ -226,7 +264,7 @@ const ReusableAccordion: React.FC<Props> = ({
                           })
                         }
                         placeholder={key}
-                        disabled={!accProps.enabled}
+                        disabled={isFieldDisabled(key)}
                       />
                     </Grid>
                   </Box>
