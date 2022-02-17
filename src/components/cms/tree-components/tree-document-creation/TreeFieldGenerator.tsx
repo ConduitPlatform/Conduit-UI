@@ -31,7 +31,7 @@ const TreeFieldGenerator: FC<TreeFieldGeneratorProps> = ({ fieldValues, onChange
   };
 
   return (
-    <Box style={{ background: 'rgba(0,0,0,0.2)' }}>
+    <Box>
       {schema?.fields ? (
         <TreeView
           defaultCollapseIcon={<ExpandMore />}

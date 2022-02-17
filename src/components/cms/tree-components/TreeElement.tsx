@@ -34,7 +34,7 @@ const TreeElement: FC<TreeElementProps> = ({
 }) => {
   const parentsArray = parents ? [...parents, document] : [document];
   const parentArray = parentsArray.map((parent: any) => parent.id);
-  const typeValue = schema && getDeepValue(schema.fields, parentArray);
+  const typeValue = schema ? getDeepValue(schema.fields, parentArray) : undefined;
 
   const isArray = isFieldArray(document.data);
   const isObject = isFieldObject(document.data);

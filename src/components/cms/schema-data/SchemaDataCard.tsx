@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
     },
   },
+  rootEditable: {
+    borderColor: theme.palette.secondary.main,
+  },
   arrow: {
     position: 'absolute',
     left: theme.spacing(1),
@@ -105,8 +108,14 @@ const SchemaDataCard: FC<Props> = ({
   };
 
   const handleCardClasses = () => {
-    if (expanded.length < 1) return clsx(classes.root, className);
-    return className;
+    let cardClasses = className;
+    if (expanded.length < 1) {
+      cardClasses = clsx(classes.root, cardClasses);
+    }
+    if (edit) {
+      cardClasses = clsx(classes.rootEditable, cardClasses);
+    }
+    return cardClasses;
   };
 
   const onEdit = () => {

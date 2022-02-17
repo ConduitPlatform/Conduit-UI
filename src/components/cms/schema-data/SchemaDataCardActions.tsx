@@ -1,22 +1,11 @@
 import React, { FC } from 'react';
-import { Box, Tooltip } from '@material-ui/core';
-import clsx from 'clsx';
+import { Box, Tooltip, IconButton } from '@material-ui/core';
 import { DeleteOutline, EditOutlined, KeyboardArrowDown } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { BoxProps } from '@material-ui/core/Box/Box';
 import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
-  buttonContainer: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    background: theme.palette.grey[600],
-    borderRadius: theme.spacing(0.5),
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   marginRight: {
     marginRight: theme.spacing(1),
   },
@@ -41,15 +30,12 @@ export const ExpandableArrow: FC<ExpandableArrowProps> = ({
   handleExpandAll,
   ...rest
 }) => {
-  const classes = useStyles();
   if (expandable.length < 1) return <></>;
 
   return (
-    <Box {...rest}>
-      <Box className={classes.buttonContainer} onClick={() => handleExpandAll()}>
-        <KeyboardArrowDown />
-      </Box>
-    </Box>
+    <IconButton size={'small'} onClick={handleExpandAll} {...rest}>
+      <KeyboardArrowDown color={'secondary'} />
+    </IconButton>
   );
 };
 
@@ -65,16 +51,18 @@ export const DocumentActions: FC<DocumentActionsProps> = ({ onEdit, onDelete, ed
   return (
     <Box {...rest}>
       <Tooltip title="Edit document">
-        <Box
-          className={clsx(classes.buttonContainer, classes.marginRight)}
-          onClick={() => onEdit()}>
+        <IconButton
+          className={classes.marginRight}
+          size={'small'}
+          onClick={onEdit}
+          color={'secondary'}>
           <EditOutlined className={classes.actionButton} />
-        </Box>
+        </IconButton>
       </Tooltip>
       <Tooltip title="Delete document">
-        <Box className={classes.buttonContainer} onClick={() => onDelete()}>
-          <DeleteOutline className={classes.actionButton} />
-        </Box>
+        <IconButton size={'small'} onClick={onDelete}>
+          <DeleteOutline className={classes.actionButton} color={'error'} />
+        </IconButton>
       </Tooltip>
     </Box>
   );
