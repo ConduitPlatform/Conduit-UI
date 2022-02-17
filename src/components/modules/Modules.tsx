@@ -47,6 +47,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
                 title={getModuleName(module.moduleName)}
                 onClick={() => handleDisabledClick()}
                 key={index}
+                disabled={disabled}
               />
             );
           }
