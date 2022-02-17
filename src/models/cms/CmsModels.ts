@@ -15,6 +15,8 @@ export interface Schema {
     };
   };
   name: string;
+  ownerModule: string;
+  extensions: any[];
   fields: SchemaFields[];
   createdAt: string;
   updatedAt: string;
@@ -73,7 +75,6 @@ export interface EndpointInputs {
 
 export interface CMSData {
   schemas: Schema[];
-  schemasFromOtherModules: any;
   documents: {
     documents: CMSDocuments[];
     documentsCount: number;

@@ -46,6 +46,7 @@ interface IProps {
   }) => void;
   onClose: MouseEventHandler;
   selectedItem: IBooleanData;
+  disabledProps: boolean;
 }
 
 const BooleanForm: FC<IProps> = ({
@@ -54,6 +55,7 @@ const BooleanForm: FC<IProps> = ({
   onSubmit,
   onClose,
   selectedItem,
+  disabledProps,
   ...rest
 }) => {
   const classes = useStyles();
@@ -196,6 +198,7 @@ const BooleanForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Switch
+                    disabled={disabledProps}
                     checked={booleanData.unique}
                     onChange={handleFieldUnique}
                     color="primary"
@@ -225,6 +228,7 @@ const BooleanForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Switch
+                    disabled={disabledProps}
                     checked={booleanData.required}
                     onChange={handleFieldRequired}
                     color="primary"

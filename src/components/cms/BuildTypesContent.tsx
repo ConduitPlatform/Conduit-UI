@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   list: {
     height: '100%',
     border: '1px',
-    background: '#303030',
+    background: 'inherit',
     padding: theme.spacing(4, 10),
     minHeight: theme.spacing(65),
     borderRadius: '4px',
@@ -35,8 +35,18 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     height: theme.spacing(3),
     width: theme.spacing(3),
+  },
+  dragHandleIcon: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
     marginLeft: theme.spacing(1),
     cursor: 'pointer',
+  },
+  dragIconDisabled: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+    color: 'grey',
   },
   listPlaceholder: {
     display: 'flex',
@@ -53,13 +63,14 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 0,
     minHeight: 0,
     padding: 0,
-    margin: 0,
+    marginLeft: theme.spacing(1),
   },
 }));
 
 interface Props extends BoxProps {
   dataKey: any;
   data: any;
+  disabled?: boolean;
   handleDrawer: (item: any, index: number) => void;
   handleDelete: (index: number) => void;
   handleGroupDrawer: (groupItem: any, index: number, groupIndex: number) => void;
@@ -76,12 +87,14 @@ interface Props extends BoxProps {
 const BuildTypesContent: FC<Props> = ({
   dataKey,
   data,
+  disabled,
   handleDrawer,
   handleDelete,
   handleGroupDelete,
   handleGroupDrawer,
   handleGroupInGroupDelete,
   handleGroupInGroupDrawer,
+
   ...rest
 }) => {
   const classes = useStyles();
@@ -122,12 +135,16 @@ const BuildTypesContent: FC<Props> = ({
 
   return (
     <Box {...rest}>
-      <Droppable droppableId={dataKey}>
+      <Droppable isDropDisabled={disabled} droppableId={dataKey}>
         {(provided, snapshot) => (
           <div className={classes.list} ref={provided.innerRef}>
             {data && Array.isArray(data[dataKey]) && data[dataKey].length > 0 ? (
               data[dataKey].map((item: any, index: number) => (
-                <Draggable key={item.name} draggableId={item.name} index={index}>
+                <Draggable
+                  key={item.name}
+                  isDragDisabled={disabled}
+                  draggableId={item.name}
+                  index={index}>
                   {(provided) => (
                     <div
                       className={classes.item}
@@ -145,16 +162,20 @@ const BuildTypesContent: FC<Props> = ({
                             <Button
                               onClick={() => handleDelete(index)}
                               className={classes.button}
-                              disabled={checkIfDisabled(item.name)}>
-                              <DeleteIcon className={classes.icon} />
+                              disabled={disabled ? true : checkIfDisabled(item.name)}>
+                              <DeleteIcon color="error" className={classes.icon} />
                             </Button>
                             <Button
                               onClick={() => handleDrawer(item, index)}
                               className={classes.button}
-                              disabled={checkIfDisabled(item.name)}>
+                              disabled={disabled ? true : checkIfDisabled(item.name)}>
                               <SettingsIcon className={classes.icon} />
                             </Button>
-                            <Box {...provided.dragHandleProps} className={classes.icon}>
+                            <Box
+                              {...provided.dragHandleProps}
+                              className={
+                                !disabled ? classes.dragHandleIcon : classes.dragIconDisabled
+                              }>
                               <DragHandleIcon />
                             </Box>
                           </Box>

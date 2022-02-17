@@ -35,6 +35,7 @@ interface IProps {
   onSubmit: (data: any) => void;
   onClose: () => void;
   selectedItem: ISimpleData;
+  disabledProps: boolean;
 }
 
 const SimpleForm: FC<IProps> = ({
@@ -43,6 +44,7 @@ const SimpleForm: FC<IProps> = ({
   onSubmit,
   onClose,
   selectedItem,
+  disabledProps,
   ...rest
 }) => {
   const classes = useStyles();
@@ -126,6 +128,7 @@ const SimpleForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Switch
+                    disabled={disabledProps}
                     checked={simpleData.unique}
                     onChange={handleFieldUnique}
                     color="primary"
@@ -155,6 +158,7 @@ const SimpleForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Switch
+                    disabled={disabledProps}
                     checked={simpleData.required}
                     onChange={handleFieldRequired}
                     color="primary"

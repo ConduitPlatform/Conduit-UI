@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/cmsSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { ModifyOptions, Permissions } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../models/cms/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   header: {
     zIndex: 9998,
     height: headerHeight,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.paper,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -79,6 +79,7 @@ interface Props {
   name: string;
   authentication: boolean;
   crudOperations: boolean;
+  selectedSchema?: Schema;
   permissions: Permissions;
   readOnly: boolean;
   handleSave: (name: string, readOnly: boolean, crud: boolean, permissions: Permissions) => void;
@@ -87,6 +88,7 @@ interface Props {
 const Header: FC<Props> = ({
   name,
   authentication,
+  selectedSchema,
   crudOperations,
   permissions,
   readOnly,
@@ -137,8 +139,14 @@ const Header: FC<Props> = ({
     dispatch(clearSelectedSchema());
   };
 
+  const isDisabled = () => {
+    if (selectedSchema && selectedSchema.ownerModule !== 'cms') {
+      return true;
+    } else return false;
+  };
+
   return (
-    <Box className={clsx(classes.header, classes.colorWhite)} {...rest}>
+    <Box boxShadow={3} className={clsx(classes.header, classes.colorWhite)} {...rest}>
       <Box display={'flex'} alignItems={'center'}>
         <Link href="/cms/schemas">
           {/* TODO call dispatch clear cms */}
@@ -166,6 +174,7 @@ const Header: FC<Props> = ({
               size="small"
               className={classes.checkbox}
               checked={schemaAuthentication}
+              disabled={isDisabled()}
               onChange={(event) => {
                 setSchemaAuthentication(event.target.checked);
               }}
@@ -180,6 +189,7 @@ const Header: FC<Props> = ({
               size="small"
               className={classes.checkbox}
               checked={schemaCrudOperations}
+              disabled={isDisabled()}
               onChange={(event) => {
                 setSchemaCrudOperations(event.target.checked);
               }}
@@ -189,7 +199,7 @@ const Header: FC<Props> = ({
           label={<Typography variant="caption">Allow Crud Operations</Typography>}
         />
         <Button variant="outlined" onClick={() => setDialog(true)}>
-          Edit permissions
+          Permissions
         </Button>
       </Box>
       <Box className={classes.saveBox}>
@@ -205,6 +215,7 @@ const Header: FC<Props> = ({
         permissions={schemaPermissions}
         setPermissions={setSchemaPermissions}
         handleClose={() => setDialog(false)}
+        selectedSchema={selectedSchema}
       />
     </Box>
   );

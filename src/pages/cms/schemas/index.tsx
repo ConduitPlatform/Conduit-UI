@@ -4,6 +4,7 @@ import CmsLayout from '../../../components/navigation/InnerLayouts/cmsLayout';
 import {
   asyncDeleteSelectedSchemas,
   asyncGetCmsSchemas,
+  asyncGetSchemaOwners,
   asyncToggleMultipleSchemas,
   asyncToggleSchema,
   setSelectedSchema,
@@ -24,6 +25,13 @@ import {
   TextField,
   Typography,
   Icon,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Checkbox,
+  ListItemText,
+  Input,
 } from '@material-ui/core';
 import useDebounce from '../../../hooks/useDebounce';
 import DataTable from '../../../components/common/DataTable';
@@ -82,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   toggle: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginBottom: theme.spacing(1),
   },
   create: {
@@ -96,6 +104,17 @@ const useStyles = makeStyles((theme) => ({
   },
   permissions: {
     marginTop: '5px',
+  },
+  filtering: {
+    marginLeft: '20px',
+    width: '100px',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+    marginTop: '-10px',
+    marginLeft: '25px',
   },
 }));
 
@@ -116,6 +135,7 @@ const Schemas = () => {
     data: {},
     action: '',
   });
+  const [owners, setOwners] = useState<string[]>(['cms']);
   const [selectedSchemas, setSelectedSchemas] = useState<SchemaUI[]>([]);
   const [enabled, setEnabled] = useState<boolean>(true);
   const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
@@ -124,6 +144,11 @@ const Schemas = () => {
   });
   const debouncedSearch: string = useDebounce(search, 500);
   const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
+  const { schemaOwners } = useAppSelector((state) => state.cmsSlice.data);
+
+  useEffect(() => {
+    dispatch(asyncGetSchemaOwners());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -133,9 +158,10 @@ const Schemas = () => {
         search: debouncedSearch,
         sort: prepareSort(sort),
         enabled,
+        owner: owners,
       })
     );
-  }, [dispatch, skip, limit, debouncedSearch, enabled, sort]);
+  }, [dispatch, skip, limit, debouncedSearch, enabled, sort, owners]);
 
   useEffect(() => {
     setSkip(0);
@@ -195,7 +221,8 @@ const Schemas = () => {
   const handleChange = (event: any, newValue: any) => {
     setSelectedSchemas([]);
     setEnabled(newValue);
-    handleLimitChange(10);
+    setOwners(['cms']);
+    handleLimitChange(25);
   };
 
   const enabledActions = [
@@ -221,6 +248,12 @@ const Schemas = () => {
   const handleActions = (action: any, data: any) => {
     switch (action.type) {
       case 'edit':
+        dispatch(setSelectedSchema(data._id));
+        router.push({
+          pathname: `schemas/${data._id}`,
+        });
+        break;
+      case 'extend':
         dispatch(setSelectedSchema(data._id));
         router.push({
           pathname: `schemas/${data._id}`,
@@ -293,6 +326,7 @@ const Schemas = () => {
     { title: 'Name', sort: 'name' },
     { title: 'Authenticated' },
     { title: 'CRUD' },
+    { title: 'Owner' },
     { title: 'Permissions' },
     { title: 'Created at', sort: 'createdAt' },
     { title: 'Updated at', sort: 'updatedAt' },
@@ -303,22 +337,22 @@ const Schemas = () => {
       <div className={classes.permissions}>
         <Tooltip title="Schema is extendable">
           <Icon hidden={!permissions.extendable}>
-            <Extension color="primary" />
+            <Extension color="secondary" />
           </Icon>
         </Tooltip>
         <Tooltip title="Can create">
           <Icon hidden={!permissions.canCreate}>
-            <CreateNewFolder color="primary" />
+            <CreateNewFolder color="secondary" />
           </Icon>
         </Tooltip>
         <Tooltip title="Can delete">
           <Icon hidden={!permissions.canDelete}>
-            <DeleteForever color="primary" />
+            <DeleteForever color="secondary" />
           </Icon>
         </Tooltip>
         <Tooltip title={`Modify: ${permissions.canModify}`}>
           <Icon hidden={!permissions.canModify}>
-            <SettingsSharp color="primary" />
+            <SettingsSharp color="secondary" />
           </Icon>
         </Tooltip>
       </div>
@@ -330,8 +364,13 @@ const Schemas = () => {
       return schemasToFormat.map((d) => ({
         _id: d._id,
         name: d.name,
-        authentication: d.modelOptions.conduit.cms?.authentication,
-        crudOperations: d.modelOptions.conduit.cms?.crudOperations,
+        authentication: d.modelOptions.conduit.cms?.authentication
+          ? d.modelOptions.conduit.cms?.authentication
+          : '-',
+        crudOperations: d.modelOptions.conduit.cms?.crudOperations
+          ? d.modelOptions.conduit.cms?.crudOperations
+          : '-',
+        owner: d.ownerModule,
         permissions: extractPermissions(d.modelOptions.conduit.permissions),
         createdAt: d.createdAt,
         updatedAt: d.updatedAt,
@@ -339,11 +378,15 @@ const Schemas = () => {
     }
   };
 
+  const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
+    setOwners(event.target.value);
+  };
+
   return (
     <>
       <Container maxWidth={'xl'}>
         <Grid container>
-          <Grid item xs={4}>
+          <Grid item xs={5}>
             <TextField
               size="small"
               variant="outlined"
@@ -359,6 +402,30 @@ const Schemas = () => {
                 ),
               }}
             />
+            {enabled && (
+              <FormControl className={classes.formControl}>
+                <InputLabel id="multiple-select-label">Owner</InputLabel>
+                <Select
+                  labelId="multiple-select-label"
+                  id="filters"
+                  multiple
+                  value={owners}
+                  onChange={handleFilterChange}
+                  input={<Input />}
+                  renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}
+                  MenuProps={{
+                    getContentAnchorEl: null,
+                  }}>
+                  {schemaOwners &&
+                    schemaOwners.map((module: any) => (
+                      <MenuItem key={module} value={module}>
+                        <Checkbox checked={owners.indexOf(module) > -1} />
+                        <ListItemText primary={module} />
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            )}
           </Grid>
           <Grid item xs={4}>
             <Box className={classes.toggle}>
@@ -372,7 +439,7 @@ const Schemas = () => {
               </ToggleButtonGroup>
             </Box>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Box className={classes.create}>
               {selectedSchemas.length > 0 && enabled && (
                 <IconButton
@@ -426,6 +493,7 @@ const Schemas = () => {
               handleSelect={handleSelect}
               handleSelectAll={handleSelectAll}
               handleAction={handleActions}
+              disableMultiSelect
             />
             <Grid container className={classes.paginator}>
               <Grid item xs={7} />

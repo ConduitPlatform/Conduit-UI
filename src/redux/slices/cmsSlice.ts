@@ -8,7 +8,8 @@ import {
   patchCmsSchemaRequest,
   toggleMultipleSchemasRequest,
   toggleSchemaByIdRequest,
-  schemasFromOtherModules,
+  setSchemaExtension,
+  getSchemaOwners,
 } from '../../http/CmsRequests';
 import {
   createSchemaDocumentRequest,
@@ -38,7 +39,6 @@ export interface ICmsSlice {
       schemas: Schema[];
       schemasCount: number;
     };
-    schemasFromOtherModules: Schema[];
     documents: {
       documents: any;
       documentsCount: number;
@@ -51,6 +51,7 @@ export interface ICmsSlice {
         operation: number;
       };
     };
+    schemaOwners: [];
     count: number;
     config: any;
     selectedSchema: Schema | null;
@@ -67,7 +68,6 @@ const initialState: ICmsSlice = {
       schemas: [],
       schemasCount: 0,
     },
-    schemasFromOtherModules: [],
     documents: {
       documents: [],
       documentsCount: 0,
@@ -80,6 +80,7 @@ const initialState: ICmsSlice = {
         operation: -2,
       },
     },
+    schemaOwners: [],
     count: 0,
     config: null,
     selectedSchema: null,
@@ -88,7 +89,10 @@ const initialState: ICmsSlice = {
 
 export const asyncGetCmsSchemas = createAsyncThunk(
   'cms/getSchemas',
-  async (params: Pagination & Search & Sort & { enabled?: boolean }, thunkAPI) => {
+  async (
+    params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] },
+    thunkAPI
+  ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCmsSchemasRequest(params);
@@ -105,9 +109,27 @@ export const asyncGetCmsSchemas = createAsyncThunk(
   }
 );
 
+export const asyncGetSchemaOwners = createAsyncThunk(
+  'cms/getSchemaOwners',
+  async (param, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getSchemaOwners();
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        owners: data.modules,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncGetCmsSchemasDialog = createAsyncThunk(
   'cms/getSchemasDialog',
-  async (params: Pagination & Search & { enabled?: boolean }, thunkAPI) => {
+  async (params: Pagination & Search & { enabled?: boolean } & { owner: string[] }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCmsSchemasRequest(params);
@@ -211,6 +233,24 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
       }
       thunkAPI.dispatch(setAppLoading(false));
       return args.ids;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncModifyExtension = createAsyncThunk<any, { _id: string; data: any }>(
+  'cms/modifyExtension',
+  async (params, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await setSchemaExtension(params._id, params.data);
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -435,22 +475,6 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
   }
 );
 
-export const asyncFetchSchemasFromOtherModules = createAsyncThunk<any, any>(
-  'cms/schemasFromOtherModules',
-  async (arg, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const { data } = await schemasFromOtherModules();
-      thunkAPI.dispatch(setAppLoading(false));
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
 const findSchemaById = (_id: string, schemaDocuments: Schema[]) => {
   const found = schemaDocuments.find((s) => s._id === _id);
   return found ? found : null;
@@ -534,9 +558,8 @@ const cmsSlice = createSlice({
       );
       state.data.customEndpoints.count = state.data.customEndpoints.count - 1;
     });
-
-    builder.addCase(asyncFetchSchemasFromOtherModules.fulfilled, (state, action) => {
-      state.data.schemasFromOtherModules = action.payload.externalSchemas;
+    builder.addCase(asyncGetSchemaOwners.fulfilled, (state, action) => {
+      state.data.schemaOwners = action.payload.owners;
     });
   },
 });

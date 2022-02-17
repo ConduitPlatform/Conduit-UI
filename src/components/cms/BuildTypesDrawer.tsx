@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   // drawerData: IDrawerData;
+  disabledProps: boolean;
   drawerData: any; //todo fix this
   readOnly: boolean;
   onSubmit: (data: any) => void;
@@ -42,6 +43,7 @@ interface Props {
 }
 
 const BuildTypesDrawer: FC<Props> = ({
+  disabledProps,
   drawerData,
   readOnly,
   onSubmit,
@@ -58,6 +60,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Text':
         return (
           <SimpleForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -68,6 +71,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Number':
         return (
           <SimpleForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -78,6 +82,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Date':
         return (
           <SimpleForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -88,6 +93,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Enum':
         return (
           <EnumForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -98,6 +104,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Boolean':
         return (
           <BooleanForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -108,6 +115,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'ObjectId':
         return (
           <ObjectIdForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -118,6 +126,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Group':
         return (
           <GroupForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
@@ -128,6 +137,7 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Relation':
         return (
           <RelationForm
+            disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}
             drawerData={drawerData}
