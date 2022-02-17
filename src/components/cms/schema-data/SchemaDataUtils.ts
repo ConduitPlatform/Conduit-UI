@@ -11,9 +11,12 @@ export const isFieldRelation = (value: any) => {
 };
 
 export const createDocumentArray = (document: any) => {
-  return Object.keys(document).map((key) => {
-    return { id: key, data: document[key] };
+  const docArray: any[] = [];
+  Object.keys(document).forEach((key) => {
+    if (key !== '__v') docArray.push({ id: key, data: document[key] });
   });
+
+  return docArray;
 };
 
 export const getExpandableFields = (fields: any) => {

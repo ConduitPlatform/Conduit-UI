@@ -68,9 +68,11 @@ interface Props extends BoxProps {
   count: number;
   objectView: boolean;
   setObjectView: (value: boolean) => void;
+  disabled?: boolean;
 }
 
 const SchemaDataHeader: FC<Props> = ({
+  disabled = false,
   onCreateDocument,
   onRefresh,
   filters,
@@ -136,12 +138,13 @@ const SchemaDataHeader: FC<Props> = ({
           error={isSearchError()}
         />
         <Box className={classes.divider} />
-        <Button color="secondary" size={'small'} onClick={() => onRefresh()}>
+        <Button disabled={disabled} color="secondary" size={'small'} onClick={() => onRefresh()}>
           <Refresh />
           Refresh
         </Button>
         <Box className={classes.divider} />
         <Button
+          disabled={disabled}
           variant="contained"
           color="primary"
           size={'small'}

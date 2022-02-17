@@ -7,9 +7,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
+  asyncGetCmsSchemas,
   asyncGetSchemaDocuments,
 } from '../../../redux/slices/cmsSlice';
-import { Schema } from '../../../models/cms/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
@@ -18,6 +18,11 @@ import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 import JSONEditor from './JSONEditor';
+import { InputAdornment, TextField, Typography } from '@material-ui/core';
+import { Search } from '@material-ui/icons';
+import useDebounce from '../../../hooks/useDebounce';
+import { useRouter } from 'next/router';
+import { Schema } from '../../../models/cms/CmsModels';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +31,18 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     backgroundColor: 'rgba(0,0,0,0.05)',
     display: 'flex',
+  },
+  textMargin: {
+    marginTop: 64,
+  },
+  sideBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(1),
+  },
+  noContent: {
+    textAlign: 'center',
+    marginTop: '100px',
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
@@ -43,8 +60,9 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
   },
   cardContainer: {
-    overflowY: 'scroll',
-    width: '100%',
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: 12,
   },
 }));
 
@@ -59,21 +77,18 @@ interface Filters {
   limit: number;
 }
 
-interface Props {
-  schemas: Schema[];
-}
-
-const SchemaData: FC<Props> = ({ schemas }) => {
+const SchemaData: FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
+  const router = useRouter();
+  const { schemaModel, schemaDocumentId } = router.query;
   const { documents, documentsCount } = useAppSelector((state) => state.cmsSlice.data.documents);
   const [documentsState, setDocumentsState] = useState({
     data: [],
     count: 0,
   });
+  const { schemaDocuments: schemas } = useAppSelector((state) => state.cmsSlice.data.schemas);
   const [createDialog, setCreateDialog] = useState<boolean>(false);
-  const [selectedSchema, setSelectedSchema] = useState(0);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);
   const [filters, setFilters] = useState<Filters>({
@@ -83,34 +98,59 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   });
   const [search, setSearch] = useState<string>('');
   const [objectView, setObjectView] = useState<boolean>(false);
-
+  const [schemaSearch, setSchemaSearch] = useState<string>('');
+  const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
+  const [schemaName, setSchemaName] = useState('');
   const debouncedSearch: string = useParseQuery(search, 500);
+  const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
+
+  useEffect(() => {
+    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 200, search: debouncedSchemaSearch }));
+  }, [dispatch, debouncedSchemaSearch]);
+
+  useEffect(() => {
+    setSchemaName((schemaModel as string) ?? '');
+  }, [schemaModel]);
+
+  useEffect(() => {
+    if (schemaDocumentId) setSearch(`{"_id": "${schemaDocumentId}"}`);
+  }, [schemaDocumentId]);
+
+  useEffect(() => {
+    if (schemas.length) {
+      if (!schemaName) setActualSchema(undefined);
+      const schemaFound = schemas.find((schema) => schema.name === schemaName);
+      setActualSchema(schemaFound);
+    }
+  }, [schemas, schemaName]);
 
   const getSchemaDocuments = useCallback(() => {
     if (schemas.length < 1) return;
-    if (!schemas[selectedSchema]?.name) return;
+    if (!actualSchema?.name) return;
     const params = {
-      name: schemas[selectedSchema]?.name,
+      name: actualSchema.name,
       skip: filters.skip,
       limit: filters.limit,
       query: debouncedSearch ? debouncedSearch : {},
     };
     dispatch(asyncGetSchemaDocuments(params));
-  }, [debouncedSearch, dispatch, filters.limit, filters.skip, schemas, selectedSchema]);
+  }, [debouncedSearch, dispatch, filters.limit, filters.skip, schemas, actualSchema]);
 
   useEffect(() => {
     getSchemaDocuments();
   }, [dispatch, getSchemaDocuments]);
 
   useEffect(() => {
-    setDocumentsState({
-      data: documents,
-      count: documentsCount,
-    });
+    if (documents) {
+      setDocumentsState({
+        data: documents,
+        count: documentsCount,
+      });
+    }
   }, [documents, documentsCount]);
 
-  const handleChange = (value: number) => {
-    setSelectedSchema(value);
+  const handleChange = (value: string) => {
+    router.push(`/cms/schemadata?schemaModel=${value}`, undefined, { shallow: true });
   };
 
   const handleCloseDeleteDialog = () => {
@@ -124,8 +164,9 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   };
 
   const handleDelete = () => {
+    if (!actualSchema) return;
     const params = {
-      schemaName: schemas[selectedSchema].name,
+      schemaName: actualSchema.name,
       documentId: selectedDocument._id,
       getSchemaDocuments: getSchemaDocuments,
     };
@@ -138,8 +179,10 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   };
 
   const handleCreate = (values: any) => {
+    if (!actualSchema) return;
+
     const params = {
-      schemaName: schemas[selectedSchema].name,
+      schemaName: actualSchema.name,
       document: values,
       getSchemaDocuments: getSchemaDocuments,
     };
@@ -152,12 +195,13 @@ const SchemaData: FC<Props> = ({ schemas }) => {
   };
 
   const renderMainContent = () => {
+    if (!actualSchema) return;
     if (objectView) {
       return documentsState.data.map((docs: any, index: number) => (
         <JSONEditor
           documents={docs}
           getSchemaDocuments={getSchemaDocuments}
-          schema={schemas[selectedSchema]}
+          schema={actualSchema}
           onDelete={() => onDelete(index)}
           key={index}
         />
@@ -165,30 +209,73 @@ const SchemaData: FC<Props> = ({ schemas }) => {
     }
     return documentsState.data.map((docs: any, index: number) => (
       <SchemaDataCard
-        schema={schemas[selectedSchema]}
+        schema={actualSchema}
         documents={docs}
         className={classes.card}
         onDelete={() => onDelete(index)}
         getSchemaDocuments={getSchemaDocuments}
         key={`card${index}`}
+        id={docs?._id}
       />
     ));
+  };
+
+  const prepareCardContainer = () => {
+    if (documentsState.data.length > 0 && actualSchema) {
+      return (
+        <Box overflow={'auto'}>
+          <TabPanel>{renderMainContent()}</TabPanel>
+        </Box>
+      );
+    }
+
+    if (actualSchema) return <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />;
+
+    return (
+      <Typography className={classes.textMargin} variant={'h6'} align={'center'}>
+        No selected Schema
+      </Typography>
+    );
   };
 
   return (
     <Container maxWidth={'xl'}>
       <Box className={classes.root}>
-        <Tabs
-          value={selectedSchema}
-          onChange={(event, value) => handleChange(value)}
-          orientation="vertical"
-          variant="scrollable"
-          aria-label="Vertical tabs"
-          className={classes.tabs}>
-          {schemas.map((d, index) => {
-            return <Tab key={`tabs${index}`} label={d.name} />;
-          })}
-        </Tabs>
+        <Box className={classes.sideBox}>
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={schemaSearch}
+            onChange={(e) => setSchemaSearch(e.target.value)}
+            label="Find schema"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+          />
+          {schemas.length > 0 && (
+            <Tabs
+              value={schemaName}
+              onChange={(event, value) => handleChange(value)}
+              orientation="vertical"
+              variant="scrollable"
+              aria-label="Vertical tabs"
+              className={classes.tabs}>
+              {schemas.map((d, index) => {
+                return <Tab key={`tabs${index}`} label={d.name} value={d.name} />;
+              })}
+            </Tabs>
+          )}
+          {!schemas.length && (
+            <Box className={classes.tabs}>
+              <Typography className={classes.noContent}>No available schemas</Typography>
+            </Box>
+          )}
+        </Box>
         <Box className={classes.headerContainer}>
           <SchemaDataHeader
             onCreateDocument={onCreateDocument}
@@ -197,15 +284,12 @@ const SchemaData: FC<Props> = ({ schemas }) => {
             setFilters={setFilters}
             search={search}
             setSearch={setSearch}
-            count={documentsState.count}
+            count={documentsCount}
             objectView={objectView}
             setObjectView={setObjectView}
+            disabled={!actualSchema}
           />
-          {documentsState.data.length > 0 ? (
-            <TabPanel>{renderMainContent()}</TabPanel>
-          ) : (
-            <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />
-          )}
+          {prepareCardContainer()}
         </Box>
       </Box>
       <ConfirmationDialog
@@ -217,12 +301,14 @@ const SchemaData: FC<Props> = ({ schemas }) => {
         handleClose={handleCloseDeleteDialog}
         buttonAction={handleDelete}
       />
-      <DocumentCreateDialog
-        open={createDialog}
-        handleCreate={handleCreate}
-        handleClose={handleClose}
-        schema={schemas[selectedSchema]}
-      />
+      {actualSchema && (
+        <DocumentCreateDialog
+          open={createDialog}
+          handleCreate={handleCreate}
+          handleClose={handleClose}
+          schema={actualSchema}
+        />
+      )}
     </Container>
   );
 };

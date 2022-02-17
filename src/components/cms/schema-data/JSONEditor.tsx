@@ -67,6 +67,7 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
         documentId: documentState._id,
         documentData: documentState,
         getSchemaDocuments: getSchemaDocuments,
+        onEditError: () => setDocumentState(documents),
       };
 
       dispatch(asyncEditSchemaDocument(params));
