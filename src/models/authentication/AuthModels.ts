@@ -19,7 +19,7 @@ export interface AuthUserUI {
 
 export interface SignInTypes {
   enabled: boolean;
-  nativeFlow?: boolean;
+  OAuth2Flow?: boolean;
   accountLinking: boolean;
   sendVerificationEmail?: boolean;
   verificationRequired?: boolean;

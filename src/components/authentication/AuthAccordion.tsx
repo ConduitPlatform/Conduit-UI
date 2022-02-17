@@ -62,7 +62,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     enabled: false,
     accountLinking: false,
     clientId: '',
-    nativeFlow: false,
+    OAuth2Flow: false,
     redirect_uri: '',
     clientSecret: '',
   });
@@ -71,7 +71,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     enabled: false,
     accountLinking: false,
     clientId: '',
-    nativeFlow: false,
+    OAuth2Flow: false,
     redirect_uri: '',
     clientSecret: '',
   });
@@ -138,7 +138,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           enabled: googleData.enabled,
           accountLinking: googleData.accountLinking,
           clientId: googleData.clientId || '',
-          nativeFlow: googleData.redirect_uri && googleData.clientSecret ? true : false,
+          OAuth2Flow: googleData.redirect_uri && googleData.clientSecret ? true : false,
           redirect_uri: googleData.redirect_uri || '',
           clientSecret: googleData.clientSecret || '',
         });
@@ -149,7 +149,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         setFacebook({
           enabled: facebookData.enabled,
           accountLinking: facebookData.accountLinking,
-          nativeFlow: facebookData.redirect_uri && facebookData.clientSecret ? true : false,
+          OAuth2Flow: facebookData.redirect_uri && facebookData.clientSecret ? true : false,
           clientId: facebookData.clientId || '',
           redirect_uri: facebookData.redirect_uri || '',
           clientSecret: facebookData.clientSecret || '',
@@ -314,26 +314,24 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
   }, [microsoft, configData, handleData]);
 
   return (
-    <Container maxWidth="lg">
-      <Box className={classes.root} {...rest}>
-        <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
-          <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
-            Provider
-          </Typography>
-          <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
-            Status
-          </Typography>
-        </Box>
-        {localMemo}
-        {googleMemo}
-        {facebookMemo}
-        {twitchMemo}
-        {slackMemo}
-        {figmaMemo}
-        {githubMemo}
-        {microsoftMemo}
+    <Box className={classes.root} {...rest}>
+      <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
+        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
+          Provider
+        </Typography>
+        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
+          Status
+        </Typography>
       </Box>
-    </Container>
+      {localMemo}
+      {googleMemo}
+      {facebookMemo}
+      {twitchMemo}
+      {slackMemo}
+      {figmaMemo}
+      {githubMemo}
+      {microsoftMemo}
+    </Box>
   );
 };
 

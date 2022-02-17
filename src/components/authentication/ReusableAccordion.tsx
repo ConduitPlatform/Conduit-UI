@@ -77,7 +77,7 @@ const ReusableAccordion: React.FC<Props> = ({
     if (configData && configData[name] && (name === 'google' || name === 'facebook')) {
       setAccProps({
         ...configData[name],
-        nativeFlow: configData[name].redirect_uri && configData[name].clientSecret ? true : false,
+        OAuth2Flow: configData[name].redirect_uri && configData[name].clientSecret ? true : false,
         redirect_uri: configData[name].redirect_uri || '',
         clientSecret: configData[name].clientSecret || '',
       });
@@ -99,7 +99,7 @@ const ReusableAccordion: React.FC<Props> = ({
       if (accProps.enabled) {
         if (
           (key === 'redirect_uri' || key === 'clientSecret') &&
-          accProps.nativeFlow === false &&
+          accProps.OAuth2Flow === false &&
           accProps.enabled
         ) {
           return true;

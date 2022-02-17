@@ -38,7 +38,7 @@ const initialState: IAuthenticationSlice = {
         enabled: false,
         accountLinking: true,
         clientId: '',
-        nativeFlow: false,
+        OAuth2Flow: false,
         redirect_uri: '',
         clientSecret: '',
       },
@@ -46,7 +46,7 @@ const initialState: IAuthenticationSlice = {
       google: {
         enabled: false,
         accountLinking: true,
-        nativeFlow: false,
+        OAuth2Flow: false,
         clientId: '',
         redirect_uri: '',
         clientSecret: '',
