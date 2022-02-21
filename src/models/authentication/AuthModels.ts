@@ -40,7 +40,7 @@ export type SocialNameTypes =
   | 'slack'
   | 'github'
   | 'figma'
-  | 'phone';
+  | 'phoneAuthentication';
 
 export interface ServiceAccount {
   active: boolean;
@@ -70,7 +70,7 @@ export interface IAuthenticationConfig {
   tokenInvalidationPeriod: number;
   twofa: { enabled: boolean };
   service: { enabled: boolean };
-  phoneAuthentication: SignInTypes;
+  phoneAuthentication: { enabled: boolean };
   facebook: SignInTypes;
   google: SignInTypes;
   local: SignInTypes;

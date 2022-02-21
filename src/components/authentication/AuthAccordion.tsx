@@ -219,8 +219,9 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         });
       }
       if (configData.phoneAuthentication) {
+        const phoneData = configData.phoneAuthentication;
         setPhoneAuthentication({
-          enabled: phoneAuthentication.enabled,
+          enabled: phoneData.enabled,
         });
       }
     }
@@ -325,7 +326,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
   const phoneMemo = useMemo(() => {
     return (
       <ReusableAccordion
-        name={'phone'}
+        name={'phoneAuthentication'}
         accProps={phoneAuthentication}
         setAccProps={setPhoneAuthentication}
         configData={configData}
