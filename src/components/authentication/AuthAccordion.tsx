@@ -116,6 +116,10 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     clientSecret: '',
   });
 
+  const [phoneAuthentication, setPhoneAuthentication] = useState<{ enabled: boolean }>({
+    enabled: false,
+  });
+
   useEffect(() => {
     if (configData) {
       if (configData.local) {
@@ -212,6 +216,12 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           clientId: microsftData.clientId || '',
           redirect_uri: microsftData.redirect_uri || '',
           clientSecret: microsftData.clientSecret || '',
+        });
+      }
+      if (configData.phoneAuthentication) {
+        const phoneData = configData.phoneAuthentication;
+        setPhoneAuthentication({
+          enabled: phoneData.enabled,
         });
       }
     }
@@ -313,6 +323,18 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     );
   }, [microsoft, configData, handleData]);
 
+  const phoneMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'phoneAuthentication'}
+        accProps={phoneAuthentication}
+        setAccProps={setPhoneAuthentication}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [phoneAuthentication, configData, handleData]);
+
   return (
     <Box className={classes.root} {...rest}>
       <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
@@ -331,6 +353,7 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
       {figmaMemo}
       {githubMemo}
       {microsoftMemo}
+      {phoneMemo}
     </Box>
   );
 };

@@ -6,6 +6,7 @@ import Figma from '../assets/svgs/providers/figma.svg';
 import Github from '../assets/svgs/providers/github.svg';
 import Slack from '../assets/svgs/providers/slack.svg';
 import Microsoft from '../assets/svgs/providers/microsoft.svg';
+import Phone from '../assets/svgs/providers/phone.svg';
 
 export const extractProviderIcon = (name: string) => {
   switch (name) {
@@ -25,6 +26,8 @@ export const extractProviderIcon = (name: string) => {
       return Slack;
     case 'microsoft':
       return Microsoft;
+    case 'phoneAuthentication':
+      return Phone;
     default:
       return Github;
   }
@@ -48,6 +51,8 @@ export const extractProviderName = (name: string) => {
       return 'slack';
     case 'microsoft':
       return 'Microsoft';
+    case 'phoneAuthentication':
+      return 'Phone';
     default:
       return 'Local';
   }

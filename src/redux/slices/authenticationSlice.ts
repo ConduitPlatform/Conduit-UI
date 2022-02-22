@@ -34,6 +34,9 @@ const initialState: IAuthenticationSlice = {
     },
     config: {
       active: false,
+      phoneAuthentication: {
+        enabled: false,
+      },
       facebook: {
         enabled: false,
         accountLinking: true,
