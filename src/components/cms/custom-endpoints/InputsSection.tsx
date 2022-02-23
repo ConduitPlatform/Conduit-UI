@@ -131,17 +131,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
           <strong>Inputs</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6} style={{ textAlign: 'end', padding: '0' }}>
-        <Button
-          disabled={!editMode || maxInputs()}
-          variant="text"
-          color={'secondary'}
-          className={classes.button}
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={handleAddInput}>
-          Add input
-        </Button>
-      </Grid>
+
       <Grid item xs={12} style={{ padding: '0' }}>
         <Divider />
       </Grid>
@@ -152,6 +142,17 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}
       />
+      <Grid item xs={12} style={{ textAlign: 'center', padding: '0' }}>
+        <Button
+          disabled={!editMode || maxInputs()}
+          variant="text"
+          color={'secondary'}
+          className={classes.button}
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={handleAddInput}>
+          Add input
+        </Button>
+      </Grid>
     </>
   );
 };

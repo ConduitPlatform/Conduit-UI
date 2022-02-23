@@ -133,7 +133,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
         </Grid>
       </Grid>
       <Divider flexItem variant="middle" className={classes.divider} />
-      <Box height="60vh">
+      <Box height="72vh">
         <EndpointsList
           handleListItemSelect={handleListItemSelect}
           search={filters.search}

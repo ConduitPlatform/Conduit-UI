@@ -15,8 +15,7 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
   },
   addQueryBtn: {
-    textAlign: 'end',
-    padding: '0',
+    textAlign: 'center',
   },
   divider: {
     padding: '0',
@@ -160,17 +159,6 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
           <strong>Queries</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6} className={classes.addQueryBtn}>
-        <Button
-          disabled={!editMode}
-          variant="text"
-          color={'secondary'}
-          className={classes.button}
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={handleAddParentNode}>
-          Add query
-        </Button>
-      </Grid>
       <Grid item xs={12} className={classes.divider}>
         <Divider />
       </Grid>
@@ -186,6 +174,17 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
         availableFieldsOfSchema={schemaFields}
         handleChangeNodeOperator={handleChangeNodeOperator}
       />
+      <Grid item xs={12} className={classes.addQueryBtn}>
+        <Button
+          disabled={!editMode}
+          variant="text"
+          color={'secondary'}
+          className={classes.button}
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={handleAddParentNode}>
+          Add query
+        </Button>
+      </Grid>
     </>
   );
 };

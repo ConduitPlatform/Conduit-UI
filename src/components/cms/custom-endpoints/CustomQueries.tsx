@@ -36,12 +36,12 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
+    overflow: ' hidden ',
   },
   mainContent: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
   },
   button: {
     margin: theme.spacing(1),
@@ -57,6 +57,8 @@ const useStyles = makeStyles((theme) => ({
   },
   mainContentInfo: {
     padding: theme.spacing(1),
+    maxHeight: '72vh',
+    overflowY: 'auto',
   },
 }));
 
@@ -335,8 +337,8 @@ const CustomQueries: FC = () => {
               availableSchemas={schemaDocuments}
             />
             {renderDetails()}
-            {renderSaveSection()}
           </Grid>
+          {renderSaveSection()}
         </Box>
       );
     }

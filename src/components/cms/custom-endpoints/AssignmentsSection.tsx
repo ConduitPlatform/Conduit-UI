@@ -17,8 +17,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(1),
   },
   addAssignmentBtn: {
-    textAlign: 'end',
-    padding: '0',
+    textAlign: 'center',
   },
 }));
 
@@ -52,7 +51,18 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           <strong>Assignments</strong>
         </Typography>
       </Grid>
-      <Grid item xs={6} className={classes.addAssignmentBtn}>
+
+      <Grid item xs={12} className={classes.divider}>
+        <Divider />
+      </Grid>
+      <EndpointAssignments
+        editMode={editMode}
+        selectedInputs={endpoint.inputs}
+        selectedAssignments={endpoint.assignments}
+        setSelectedAssignments={handleAssignmentChanges}
+        availableFieldsOfSchema={schemaFields}
+      />
+      <Grid item xs={12} className={classes.addAssignmentBtn}>
         <Button
           disabled={
             !editMode ||
@@ -67,16 +77,6 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           Add assignment
         </Button>
       </Grid>
-      <Grid item xs={12} className={classes.divider}>
-        <Divider />
-      </Grid>
-      <EndpointAssignments
-        editMode={editMode}
-        selectedInputs={endpoint.inputs}
-        selectedAssignments={endpoint.assignments}
-        setSelectedAssignments={handleAssignmentChanges}
-        availableFieldsOfSchema={schemaFields}
-      />
     </>
   );
 };
