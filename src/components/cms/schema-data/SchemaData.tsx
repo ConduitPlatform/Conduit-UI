@@ -41,7 +41,6 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview';
 import NewSchemaDialog from '../NewSchemaDialog';
-import SchemaActionsDialog, { actions } from '../SchemaActionsDialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,6 +56,8 @@ const useStyles = makeStyles((theme) => ({
   sideBox: {
     display: 'flex',
     flexDirection: 'column',
+    paddingRight: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
   },
   noContent: {
     textAlign: 'center',
@@ -111,9 +112,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   formControl: {
-    margin: theme.spacing(1),
     minWidth: 120,
     width: '100%',
+    marginBottom: theme.spacing(1),
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -354,12 +355,12 @@ const SchemaData: FC = () => {
         <Box className={classes.sideBox}>
           <Box>
             <Grid
-              style={{ width: '350px' }}
+              style={{ width: '300px' }}
               container
               justifyContent="center"
               spacing={1}
               alignItems="center">
-              <Grid item xs={7}>
+              <Grid item xs={enabled ? 7 : 12}>
                 <TextField
                   size="small"
                   variant="outlined"
@@ -377,46 +378,53 @@ const SchemaData: FC = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={5}>
-                <ToggleButtonGroup size="small" value={enabled} exclusive onChange={handleEnabled}>
-                  <ToggleButton key={1} value={true} className={classes.toggleButton}>
-                    Active
-                  </ToggleButton>
-                  <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
-                    Archived
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Grid>
-              <Grid item container alignItems="flex-end" spacing={2} xs={12}>
-                <Grid item xs={7}>
-                  {enabled && (
-                    <FormControl className={classes.formControl}>
-                      <InputLabel id="multiple-select-label">Owner</InputLabel>
-                      <Select
-                        labelId="multiple-select-label"
-                        id="filters"
-                        multiple
-                        value={owners}
-                        onChange={handleFilterChange}
-                        input={<Input />}
-                        renderValue={(selected: any) =>
-                          selected.length === 1 ? selected : 'multiple'
-                        }
-                        MenuProps={{
-                          getContentAnchorEl: null,
-                        }}>
-                        {schemaOwners &&
-                          schemaOwners.map((module: any) => (
-                            <MenuItem key={module} value={module}>
-                              <Checkbox checked={owners.indexOf(module) > -1} />
-                              <ListItemText primary={module} />
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
-                  )}
+              {enabled && (
+                <Grid item xs={5}>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel id="multiple-select-label">Owner</InputLabel>
+                    <Select
+                      labelId="multiple-select-label"
+                      id="filters"
+                      multiple
+                      value={owners}
+                      onChange={handleFilterChange}
+                      input={<Input />}
+                      renderValue={(selected: any) =>
+                        selected.length === 1 ? selected : 'multiple'
+                      }
+                      MenuProps={{
+                        getContentAnchorEl: null,
+                      }}>
+                      {schemaOwners &&
+                        schemaOwners.map((module: any) => (
+                          <MenuItem key={module} value={module}>
+                            <Checkbox checked={owners.indexOf(module) > -1} />
+                            <ListItemText primary={module} />
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
-                <Grid item sm={5}></Grid>
+              )}
+              <Grid item xs={12}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  paddingBottom="10px">
+                  <ToggleButtonGroup
+                    size="small"
+                    value={enabled}
+                    exclusive
+                    onChange={handleEnabled}>
+                    <ToggleButton key={1} value={true} className={classes.toggleButton}>
+                      Active Schemas
+                    </ToggleButton>
+                    <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
+                      Archived Schemas
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
               </Grid>
             </Grid>
           </Box>
@@ -430,14 +438,11 @@ const SchemaData: FC = () => {
               actualSchema={actualSchema}
             />
           </Box>
-          <Button
-            className={classes.formControl}
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={handleAddSchema}>
-            Create schema
-          </Button>
+          <Box padding="20px">
+            <Button fullWidth variant="contained" color="secondary" onClick={handleAddSchema}>
+              Create schema
+            </Button>
+          </Box>
         </Box>
         <Box className={classes.headerContainer}>
           <SchemaTabs handleChange={handleTabChange} value={selectedTab} />

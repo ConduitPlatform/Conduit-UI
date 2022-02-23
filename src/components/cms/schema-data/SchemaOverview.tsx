@@ -26,6 +26,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
     action: '',
   });
   const [openDialog, setOpenDialog] = useState(false);
+  const [objectView, setObjectView] = useState(true);
 
   const handleEditClick = (id: string) => {
     router.push({
@@ -121,13 +122,39 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item xs={6} style={{ padding: '20px' }}>
-          <Typography style={{ textAlign: 'center' }}>Schema Fields</Typography>
-          <Box height="68vh" style={{ overflow: 'scroll', overflowX: 'hidden' }}>
-            {schema &&
+        <Grid item xs={6} style={{ padding: '20px', marginTop: '23px' }}>
+          <Box
+            height="68vh"
+            style={{
+              overflow: 'auto',
+              overflowX: 'hidden',
+              background: '#202030',
+              borderRadius: '8px',
+            }}>
+            {objectView ? (
               Object.keys({ newTypeFields: formattedFields }).map((dataKey, i) => (
                 <SchemaViewer dataKey={dataKey} data={{ newTypeFields: formattedFields }} key={i} />
-              ))}
+              ))
+            ) : (
+              <JSONInput
+                placeholder={schema?.fields}
+                locale={localeEn}
+                viewOnly
+                colors={{
+                  background: '#202030',
+                  keys: '#07D9C4',
+                  string: 'white',
+                }}
+                height="70vh"
+                width="100%"
+                confirmGood={false}
+              />
+            )}
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="center" padding="8px">
+            <Button variant="outlined" onClick={() => setObjectView(!objectView)}>
+              {objectView ? 'Switch to Json View' : 'Switch to Object View'}
+            </Button>
           </Box>
         </Grid>
         <Grid
@@ -138,18 +165,18 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           style={{ padding: '20px', marginTop: '23px' }}>
           <Grid item xs={12}>
             <Paper>
-              <Grid item xs={12}>
-                <Button fullWidth>Custom Endpoints</Button>
-                <Box display="flex" justifyContent="flex-end" padding={'10px'}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      {extractButtonsLeft()}
-                    </Grid>
-                    <Grid item xs={6}>
-                      {extractButtonsRight()}
-                    </Grid>
-                  </Grid>
-                </Box>
+              <Grid item xs={12} style={{ padding: '10px' }}>
+                <Button fullWidth variant="outlined">
+                  Custom Endpoints
+                </Button>
+              </Grid>
+              <Grid container spacing={2} style={{ padding: '10px' }}>
+                <Grid item xs={6}>
+                  {extractButtonsLeft()}
+                </Grid>
+                <Grid item xs={6}>
+                  {extractButtonsRight()}
+                </Grid>
               </Grid>
               {ExtractSchemaInfo(schema)}
             </Paper>

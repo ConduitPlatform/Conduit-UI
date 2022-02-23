@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
   list: {
     maxHeight: '70vh',
     border: '1px',
-    background: 'inherit',
     padding: theme.spacing(4, 10),
     minHeight: theme.spacing(65),
     borderRadius: '4px',

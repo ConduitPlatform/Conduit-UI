@@ -5,13 +5,11 @@ import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import CheckIcon from '@material-ui/icons/Check';
 import UpdateIcon from '@material-ui/icons/Update';
 import PeopleIcon from '@material-ui/icons/People';
 import EditAttributesIcon from '@material-ui/icons/EditAttributes';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import TocIcon from '@material-ui/icons/Toc';
-
 import PersonIcon from '@material-ui/icons/Person';
 import { Schema } from '../models/cms/CmsModels';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
@@ -19,7 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   nested: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(6),
   },
 }));
 
