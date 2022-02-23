@@ -8,6 +8,8 @@ import { useRouter } from 'next/router';
 import { useAppDispatch } from '../../../redux/store';
 import SchemaActionsDialog, { actions } from '../SchemaActionsDialog';
 import { asyncDeleteSelectedSchemas, asyncToggleSchema } from '../../../redux/slices/cmsSlice';
+import SchemaViewer from './SchemaViewer';
+import { getSchemaFieldsWithExtra } from '../../../utils/type-functions';
 
 interface Props {
   schema: Schema;
@@ -114,25 +116,18 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
     );
   };
 
+  const formattedFields = getSchemaFieldsWithExtra(schema.fields);
+
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={6} style={{ padding: '20px' }}>
           <Typography style={{ textAlign: 'center' }}>Schema Fields</Typography>
-          <Box height="content-fit" maxHeight="68vh">
-            <JSONInput
-              placeholder={schema?.fields}
-              locale={localeEn}
-              viewOnly
-              colors={{
-                background: '#202030',
-                keys: '#07D9C4',
-                string: 'white',
-              }}
-              height="72vh"
-              width="100%"
-              confirmGood={false}
-            />
+          <Box height="68vh" style={{ overflow: 'scroll', overflowX: 'hidden' }}>
+            {schema &&
+              Object.keys({ newTypeFields: formattedFields }).map((dataKey, i) => (
+                <SchemaViewer dataKey={dataKey} data={{ newTypeFields: formattedFields }} key={i} />
+              ))}
           </Box>
         </Grid>
         <Grid
@@ -142,20 +137,22 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           alignContent="space-between"
           style={{ padding: '20px', marginTop: '23px' }}>
           <Grid item xs={12}>
-            <Paper>{ExtractSchemaInfo(schema)}</Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Button fullWidth>Custom Endpoints</Button>
-            <Box display="flex" justifyContent="flex-end" padding={'10px'}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  {extractButtonsLeft()}
-                </Grid>
-                <Grid item xs={6}>
-                  {extractButtonsRight()}
-                </Grid>
+            <Paper>
+              <Grid item xs={12}>
+                <Button fullWidth>Custom Endpoints</Button>
+                <Box display="flex" justifyContent="flex-end" padding={'10px'}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      {extractButtonsLeft()}
+                    </Grid>
+                    <Grid item xs={6}>
+                      {extractButtonsRight()}
+                    </Grid>
+                  </Grid>
+                </Box>
               </Grid>
-            </Box>
+              {ExtractSchemaInfo(schema)}
+            </Paper>
           </Grid>
         </Grid>
       </Grid>

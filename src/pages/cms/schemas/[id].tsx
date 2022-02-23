@@ -153,12 +153,7 @@ const BuildTypes: React.FC = () => {
     if (!selectedSchema) {
       setCrudOperations(true);
     }
-    if (
-      data &&
-      selectedSchema &&
-      selectedSchema.ownerModule === 'cms' &&
-      !selectedSchema.extensions.length
-    ) {
+    if (data && selectedSchema && selectedSchema.ownerModule === 'cms') {
       setSchemaName(selectedSchema.name);
       if (
         selectedSchema.modelOptions.conduit.cms.authentication !== null &&

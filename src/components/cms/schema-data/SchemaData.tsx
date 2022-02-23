@@ -364,6 +364,7 @@ const SchemaData: FC = () => {
                   size="small"
                   variant="outlined"
                   name="Search"
+                  style={{ padding: '3px' }}
                   value={schemaSearch}
                   onChange={(e) => setSchemaSearch(e.target.value)}
                   label="Find schema"
@@ -415,15 +416,7 @@ const SchemaData: FC = () => {
                     </FormControl>
                   )}
                 </Grid>
-                <Grid item sm={5}>
-                  <Button
-                    className={classes.formControl}
-                    fullWidth
-                    color="secondary"
-                    onClick={handleAddSchema}>
-                    Create schema
-                  </Button>
-                </Grid>
+                <Grid item sm={5}></Grid>
               </Grid>
             </Grid>
           </Box>
@@ -437,6 +430,14 @@ const SchemaData: FC = () => {
               actualSchema={actualSchema}
             />
           </Box>
+          <Button
+            className={classes.formControl}
+            fullWidth
+            variant="contained"
+            color="secondary"
+            onClick={handleAddSchema}>
+            Create schema
+          </Button>
         </Box>
         <Box className={classes.headerContainer}>
           <SchemaTabs handleChange={handleTabChange} value={selectedTab} />
