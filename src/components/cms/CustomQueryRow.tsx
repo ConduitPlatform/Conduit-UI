@@ -193,6 +193,7 @@ const CustomQueryRow: FC<Props> = ({
     }
     return (
       <TextField
+        size="small"
         type={query.comparisonField.type === 'Custom' ? convertToLowerCase(schemaType) : 'string'}
         label={
           <Typography className={classes.customValue}>
@@ -323,6 +324,7 @@ const CustomQueryRow: FC<Props> = ({
       <Grid item xs={2}>
         <TextField
           select
+          size="small"
           label={'Schema Field'}
           variant="outlined"
           fullWidth
@@ -338,6 +340,7 @@ const CustomQueryRow: FC<Props> = ({
       <Grid item xs={3}>
         <TextField
           select
+          size="small"
           label="Operator"
           variant="outlined"
           fullWidth
@@ -372,6 +375,7 @@ const CustomQueryRow: FC<Props> = ({
       </Grid>
       <Grid item xs={2}>
         <TextField
+          size="small"
           select
           label={'Value'}
           variant="outlined"

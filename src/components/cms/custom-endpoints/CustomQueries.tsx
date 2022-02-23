@@ -310,6 +310,7 @@ const CustomQueries: FC = () => {
           <Grid container className={classes.mainContentInfo} spacing={2} alignItems="flex-end">
             <Grid item xs={5}>
               <TextField
+                size="small"
                 disabled={!editMode}
                 fullWidth
                 variant={'outlined'}

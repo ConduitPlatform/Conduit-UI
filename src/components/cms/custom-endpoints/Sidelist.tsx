@@ -10,11 +10,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
+  Checkbox,
+  ListItemText,
+  Input,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, Search } from '@material-ui/icons';
 import EndpointsList from './EndpointsList';
-import { useAppDispatch } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import useDebounce from '../../../hooks/useDebounce';
 import {
   endpointCleanSlate,
@@ -69,7 +73,11 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
+  const [schemas, setSchemas] = useState<string[]>(['']);
   const debouncedSearch = useDebounce(search, 500);
+  const { schemaDocuments } = useAppSelector((state) => state.cmsSlice.data.schemas);
+
+  const finalSchemas = schemaDocuments.map((schema) => schema.name);
 
   useEffect(() => {
     dispatch(setEndpointsSearch(debouncedSearch));
@@ -87,13 +95,19 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
     setCreateMode(true);
   };
 
+  const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
+    setSchemas(event.target.value);
+  };
+
   return (
     <Box>
-      <Grid className={classes.actions} spacing={1} container>
-        <Grid item sm={5}>
+      <Grid className={classes.actions} spacing={2} container>
+        <Grid item sm={7}>
           <TextField
+            fullWidth
             variant="outlined"
             name="Search"
+            size="small"
             label="Find endpoint"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -106,8 +120,46 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
             }}
           />
         </Grid>
-        <Grid item sm={6}>
-          <FormControl variant="outlined" className={classes.formControl}>
+        <Grid item sm={5}>
+          <Button
+            fullWidth
+            endIcon={<AddCircleOutline />}
+            color="secondary"
+            variant="contained"
+            onClick={handleAddNewEndpoint}>
+            Add Endpoint
+          </Button>
+        </Grid>
+        <Grid item sm={7}>
+          <FormControl
+            style={{ marginTop: '-8px' }}
+            fullWidth
+            size="small"
+            className={classes.formControl}>
+            <InputLabel id="multiple-select-label">Owner</InputLabel>
+            <Select
+              labelId="multiple-select-label"
+              id="filters"
+              multiple
+              value={schemas}
+              onChange={handleFilterChange}
+              input={<Input />}
+              renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}
+              MenuProps={{
+                getContentAnchorEl: null,
+              }}>
+              {finalSchemas &&
+                finalSchemas.map((module: any) => (
+                  <MenuItem key={module} value={module}>
+                    <Checkbox checked={schemas.indexOf(module) > -1} />
+                    <ListItemText primary={module} />
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item sm={5}>
+          <FormControl size="small" fullWidth variant="outlined" className={classes.formControl}>
             <InputLabel>Operation</InputLabel>
             <Select
               label="Provider"
@@ -126,13 +178,8 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item sm={1}>
-          <IconButton color="secondary" onClick={handleAddNewEndpoint}>
-            <AddCircleOutline />
-          </IconButton>
-        </Grid>
       </Grid>
-      <Divider flexItem variant="middle" className={classes.divider} />
+
       <Box height="72vh">
         <EndpointsList
           handleListItemSelect={handleListItemSelect}

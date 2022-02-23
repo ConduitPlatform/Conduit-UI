@@ -101,6 +101,7 @@ const EndpointInputs: FC<Props> = ({
       <Grid item xs={3}>
         <TextField
           variant="outlined"
+          size="small"
           placeholder={'Input name'}
           fullWidth
           label="Input name"
@@ -112,6 +113,7 @@ const EndpointInputs: FC<Props> = ({
       <Grid item xs={2}>
         <TextField
           select
+          size="small"
           label={'Select Types'}
           variant="outlined"
           fullWidth
@@ -130,11 +132,11 @@ const EndpointInputs: FC<Props> = ({
           select
           label={'Location'}
           variant="outlined"
+          size="small"
           fullWidth
           value={input.location}
           disabled={!editMode}
           onChange={(event) => handleInputLocationChange(event, index)}>
-          <MenuItem aria-label="None" value="" />
           <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Query params</MenuItem>
           <MenuItem value={InputLocationEnum.BODY}>Body</MenuItem>
           <MenuItem

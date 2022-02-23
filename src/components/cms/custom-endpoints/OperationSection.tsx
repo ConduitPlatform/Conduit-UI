@@ -157,6 +157,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
           <TextField
             select
             fullWidth
+            size="small"
             label={'Select Operation'}
             variant="outlined"
             className={classes.formControl}
