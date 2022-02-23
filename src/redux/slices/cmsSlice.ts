@@ -26,7 +26,7 @@ import { EndpointTypes, Schema } from '../../models/cms/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import { Pagination, Search, Sort } from '../../models/http/HttpModels';
+import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 
 export interface ICmsSlice {
@@ -89,10 +89,7 @@ const initialState: ICmsSlice = {
 
 export const asyncGetCmsSchemas = createAsyncThunk(
   'cms/getSchemas',
-  async (
-    params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] },
-    thunkAPI
-  ) => {
+  async (params: Pagination & Search & { enabled?: boolean } & { owner?: string[] }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getCmsSchemasRequest(params);
@@ -100,6 +97,24 @@ export const asyncGetCmsSchemas = createAsyncThunk(
       return {
         results: data.schemas as Schema[],
         documentsCount: data.count as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncAddCmsSchemas = createAsyncThunk(
+  'cms/addSchemas',
+  async (params: Pagination & Search & { enabled?: boolean } & { owner?: string[] }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getCmsSchemasRequest(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        results: data.schemas as Schema[],
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -507,6 +522,12 @@ const cmsSlice = createSlice({
     builder.addCase(asyncGetCmsSchemas.fulfilled, (state, action) => {
       state.data.schemas.schemaDocuments = action.payload.results;
       state.data.schemas.schemasCount = action.payload.documentsCount;
+    });
+    builder.addCase(asyncAddCmsSchemas.fulfilled, (state, action) => {
+      state.data.schemas.schemaDocuments = [
+        ...state.data.schemas.schemaDocuments,
+        ...action.payload.results,
+      ];
     });
     builder.addCase(asyncGetCmsSchemasDialog.fulfilled, (state, action) => {
       state.data.dialogSchemas.schemas = action.payload.dialogResults;

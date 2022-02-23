@@ -156,12 +156,12 @@ const Schemas = () => {
         skip,
         limit,
         search: debouncedSearch,
-        sort: prepareSort(sort),
+
         enabled,
         owner: owners,
       })
     );
-  }, [dispatch, skip, limit, debouncedSearch, enabled, sort, owners]);
+  }, [dispatch, skip, limit, debouncedSearch, enabled, owners]);
 
   useEffect(() => {
     setSkip(0);

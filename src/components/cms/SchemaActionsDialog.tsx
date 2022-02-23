@@ -57,9 +57,9 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   handleToggle: () => void;
-  handleToggleSchemas: () => void;
+  handleToggleSchemas?: () => void;
   handleDelete: (deleteData: boolean) => void;
-  handleDeleteSchemas: (deleteData: boolean) => void;
+  handleDeleteSchemas?: (deleteData: boolean) => void;
   selectedSchema: any;
 }
 
@@ -224,13 +224,13 @@ const SchemaActionsDialog: FC<Props> = ({
         handleDelete(deleteData);
         break;
       case 'deleteMany':
-        handleDeleteSchemas(deleteData);
+        handleDeleteSchemas && handleDeleteSchemas(deleteData);
         break;
       case 'archiveMany':
-        handleToggleSchemas();
+        handleToggleSchemas && handleToggleSchemas();
         break;
       case 'enableMany':
-        handleToggleSchemas();
+        handleToggleSchemas && handleToggleSchemas();
         break;
       default:
         break;
