@@ -3,10 +3,9 @@ import SharedLayout from './sharedLayout';
 import { Toc } from '@material-ui/icons';
 
 const CmsLayout: React.FC = ({ children }) => {
-  const pathNames = ['/cms/schemas', '/cms/schemadata', '/cms/custom', '/cms/settings'];
+  const pathNames = ['/cms/schemas', '/cms/custom', '/cms/settings'];
   const labels = [
     { name: 'schemas', id: 'schemas' },
-    { name: 'schema Data', id: 'schemadata' },
     { name: 'custom endpoints', id: 'custom' },
     { name: 'settings', id: 'settings' },
   ];

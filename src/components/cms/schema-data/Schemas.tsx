@@ -138,7 +138,7 @@ interface Filters {
   limit: number;
 }
 
-const SchemaData: FC = () => {
+const Schemas: FC = () => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -217,7 +217,7 @@ const SchemaData: FC = () => {
   }, [documents, documentsCount]);
 
   const handleChange = (value: string) => {
-    router.push(`/cms/schemadata?schemaModel=${value}`, undefined, { shallow: true });
+    router.push(`/cms/schemas?schemaModel=${value}`, undefined, { shallow: true });
   };
 
   const handleCloseDeleteDialog = () => {
@@ -438,7 +438,7 @@ const SchemaData: FC = () => {
               actualSchema={actualSchema}
             />
           </Box>
-          <Box padding="20px">
+          <Box padding="10px">
             <Button fullWidth variant="contained" color="secondary" onClick={handleAddSchema}>
               Create schema
             </Button>
@@ -472,4 +472,4 @@ const SchemaData: FC = () => {
   );
 };
 
-export default SchemaData;
+export default Schemas;

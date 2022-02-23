@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Grid, Paper, Typography, Box, Button } from '@material-ui/core';
+import { Grid, Paper, Box, Button } from '@material-ui/core';
 import { Schema } from '../../../models/cms/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
 import { ExtractSchemaInfo } from '../../../utils/ExtractSchemaInfo';
@@ -124,7 +124,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
       <Grid container spacing={3}>
         <Grid item xs={6} style={{ padding: '20px', marginTop: '23px' }}>
           <Box
-            height="68vh"
+            height="69vh"
             style={{
               overflow: 'auto',
               overflowX: 'hidden',
@@ -166,7 +166,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           <Grid item xs={12}>
             <Paper>
               <Grid item xs={12} style={{ padding: '10px' }}>
-                <Button fullWidth variant="outlined">
+                <Button fullWidth variant="outlined" color="primary">
                   Custom Endpoints
                 </Button>
               </Grid>

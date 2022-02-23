@@ -17,7 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   nested: {
-    paddingLeft: theme.spacing(6),
+    paddingLeft: theme.spacing(3),
   },
 }));
 
