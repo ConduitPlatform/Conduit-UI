@@ -23,7 +23,7 @@
     "@material-ui/lab": "^4.0.0-alpha.44",
     "@material-ui/pickers": "^3.2.10",
     "@material-ui/styles": "latest",
-    "@reduxjs/toolkit": "^1.7.1",
+    "@reduxjs/toolkit": "^1.7.2",
     "@types/react-json-editor-ajrm": "^2.5.2",
     "axios": "^0.25.0",
     "clsx": "^1.1.0",
