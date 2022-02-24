@@ -33,7 +33,7 @@ import {
   OutlinedInput,
   Tooltip,
 } from '@material-ui/core';
-import { Archive, Check, DoneOutline, Search } from '@material-ui/icons';
+import { Archive, Check, Search } from '@material-ui/icons';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
 import { Schema } from '../../../models/cms/CmsModels';
@@ -57,8 +57,7 @@ const useStyles = makeStyles((theme) => ({
   sideBox: {
     display: 'flex',
     flexDirection: 'column',
-    paddingRight: theme.spacing(2),
-    paddingLeft: theme.spacing(2),
+    padding: theme.spacing(4),
   },
   noContent: {
     textAlign: 'center',

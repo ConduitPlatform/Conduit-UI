@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   mainContentInfo: {
-    padding: theme.spacing(1),
     maxHeight: '72vh',
     overflowY: 'auto',
   },

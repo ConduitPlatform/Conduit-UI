@@ -88,6 +88,12 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
     dispatch(setEndpointsSearch(debouncedSearch));
   }, [debouncedSearch, dispatch]);
 
+  useEffect(() => {
+    if (schema) {
+      setSchemas([`${schema}`]);
+    }
+  }, [schema]);
+
   const handleListItemSelect = (endpoint: any) => {
     dispatch(setSelectedEndPoint(endpoint));
     dispatch(setEndpointData({ ...endpoint }));
@@ -102,13 +108,10 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
 
   const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
     setSchemas(event.target.value);
-  };
-
-  useEffect(() => {
     if (schema) {
-      setSchemas([`${schema}`]);
+      router.replace('/cms/custom', undefined, { shallow: true });
     }
-  }, [schema]);
+  };
 
   return (
     <Box>
