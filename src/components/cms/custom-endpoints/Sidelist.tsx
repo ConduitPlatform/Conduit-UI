@@ -1,22 +1,20 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import {
   Box,
-  Divider,
   Grid,
-  IconButton,
   TextField,
   InputAdornment,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Button,
+  IconButton,
   Checkbox,
   ListItemText,
-  Input,
+  OutlinedInput,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { AddCircleOutline, Search } from '@material-ui/icons';
+import { AddCircleOutlined, Search } from '@material-ui/icons';
 import EndpointsList from './EndpointsList';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import useDebounce from '../../../hooks/useDebounce';
@@ -26,6 +24,7 @@ import {
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
 import { setEndpointsOperation, setEndpointsSearch } from '../../../redux/slices/cmsSlice';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -61,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
   loadMore: {
     textAlign: 'center',
   },
+  addButton: {
+    marginTop: '-3px',
+  },
 }));
 
 interface Props {
@@ -70,14 +72,17 @@ interface Props {
 }
 
 const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
+  const router = useRouter();
+  const { schema } = router.query;
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
-  const [schemas, setSchemas] = useState<string[]>(['']);
+  const [schemas, setSchemas] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 500);
   const { schemaDocuments } = useAppSelector((state) => state.cmsSlice.data.schemas);
-
   const finalSchemas = schemaDocuments.map((schema) => schema.name);
+  const labelRef: any = useRef();
+  const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
   useEffect(() => {
     dispatch(setEndpointsSearch(debouncedSearch));
@@ -98,6 +103,12 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
     setSchemas(event.target.value);
   };
+
+  useEffect(() => {
+    if (schema) {
+      setSchemas([`${schema}`]);
+    }
+  }, [schema]);
 
   return (
     <Box>
@@ -121,44 +132,6 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
           />
         </Grid>
         <Grid item sm={5}>
-          <Button
-            fullWidth
-            endIcon={<AddCircleOutline />}
-            color="secondary"
-            variant="contained"
-            onClick={handleAddNewEndpoint}>
-            Add
-          </Button>
-        </Grid>
-        <Grid item sm={7}>
-          <FormControl
-            style={{ marginTop: '-8px' }}
-            fullWidth
-            size="small"
-            className={classes.formControl}>
-            <InputLabel id="multiple-select-label">Owner</InputLabel>
-            <Select
-              labelId="multiple-select-label"
-              id="filters"
-              multiple
-              value={schemas}
-              onChange={handleFilterChange}
-              input={<Input />}
-              renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}
-              MenuProps={{
-                getContentAnchorEl: null,
-              }}>
-              {finalSchemas &&
-                finalSchemas.map((module: any) => (
-                  <MenuItem key={module} value={module}>
-                    <Checkbox checked={schemas.indexOf(module) > -1} />
-                    <ListItemText primary={module} />
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item sm={5}>
           <FormControl size="small" fullWidth variant="outlined" className={classes.formControl}>
             <InputLabel>Operation</InputLabel>
             <Select
@@ -178,13 +151,49 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
             </Select>
           </FormControl>
         </Grid>
+        <Grid item sm={10}>
+          <FormControl fullWidth variant="outlined" size="small" className={classes.formControl}>
+            <InputLabel ref={labelRef} shrink htmlFor="my-input">
+              Schema
+            </InputLabel>
+            <Select
+              labelId="multiple-select-label"
+              id="filters"
+              multiple
+              variant="outlined"
+              value={schemas}
+              onChange={handleFilterChange}
+              input={<OutlinedInput labelWidth={labelWidth} type="file" id="my-input" />}
+              renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}
+              MenuProps={{
+                getContentAnchorEl: null,
+              }}>
+              {finalSchemas &&
+                finalSchemas.map((module: any) => (
+                  <MenuItem key={module} value={module}>
+                    <Checkbox checked={schemas.indexOf(module) > -1} />
+                    <ListItemText primary={module} />
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <IconButton
+            className={classes.addButton}
+            color="secondary"
+            onClick={handleAddNewEndpoint}>
+            <AddCircleOutlined />
+          </IconButton>
+        </Grid>
       </Grid>
 
-      <Box height="72vh">
+      <Box height="68vh">
         <EndpointsList
           handleListItemSelect={handleListItemSelect}
           search={filters.search}
           operation={filters.operation}
+          selectedSchemas={schemas}
         />
       </Box>
     </Box>

@@ -39,9 +39,8 @@ const useStyles = makeStyles((theme) => ({
     overflow: ' hidden ',
   },
   mainContent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: '100px',
+    textAlign: 'center',
   },
   button: {
     margin: theme.spacing(1),
@@ -301,7 +300,7 @@ const CustomQueries: FC = () => {
     if (!selectedEndpoint && !createMode) {
       return (
         <Box className={classes.mainContent}>
-          <Typography>Select an endpoint to view more</Typography>
+          <Typography variant="h6">Select an endpoint to view more</Typography>
         </Box>
       );
     } else {

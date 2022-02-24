@@ -119,6 +119,10 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
 
   const formattedFields = getSchemaFieldsWithExtra(schema.fields);
 
+  const goToSchemaEndpoints = (name: string) => {
+    router.push(`/cms/custom?schema=${name}`, undefined, { shallow: true });
+  };
+
   return (
     <>
       <Grid container spacing={3}>
@@ -145,13 +149,13 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
                   keys: '#07D9C4',
                   string: 'white',
                 }}
-                height="70vh"
+                height="69vh"
                 width="100%"
                 confirmGood={false}
               />
             )}
           </Box>
-          <Box display="flex" alignItems="center" justifyContent="center" padding="8px">
+          <Box display="flex" alignItems="center" justifyContent="center" padding="12px">
             <Button variant="outlined" onClick={() => setObjectView(!objectView)}>
               {objectView ? 'Switch to Json View' : 'Switch to Object View'}
             </Button>
@@ -166,7 +170,11 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           <Grid item xs={12}>
             <Paper>
               <Grid item xs={12} style={{ padding: '10px' }}>
-                <Button fullWidth variant="outlined" color="primary">
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => goToSchemaEndpoints(schema.name)}>
                   Custom Endpoints
                 </Button>
               </Grid>

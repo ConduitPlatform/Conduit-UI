@@ -379,7 +379,10 @@ export const asyncEditSchemaDocument = createAsyncThunk(
 
 export const asyncSetCustomEndpoints = createAsyncThunk(
   'cms/setEndpoints',
-  async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
+  async (
+    params: Pagination & Search & { schemaName?: string[] } & { operation?: number },
+    thunkAPI
+  ) => {
     try {
       const {
         data: { customEndpoints, count },
@@ -395,7 +398,10 @@ export const asyncSetCustomEndpoints = createAsyncThunk(
 
 export const asyncAddCustomEndpoints = createAsyncThunk(
   'cms/addEndpoints',
-  async (params: Pagination & Search & { operation?: number }, thunkAPI) => {
+  async (
+    params: Pagination & Search & { schemaName?: string[] } & { operation?: number },
+    thunkAPI
+  ) => {
     try {
       const {
         data: { customEndpoints },

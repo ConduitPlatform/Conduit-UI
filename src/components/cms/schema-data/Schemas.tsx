@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   asyncCreateSchemaDocument,
@@ -22,7 +22,6 @@ import {
   Checkbox,
   FormControl,
   Grid,
-  Input,
   InputAdornment,
   InputLabel,
   ListItemText,
@@ -31,8 +30,10 @@ import {
   TextField,
   Typography,
   Button,
+  OutlinedInput,
+  Tooltip,
 } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { Archive, Check, DoneOutline, Search } from '@material-ui/icons';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
 import { Schema } from '../../../models/cms/CmsModels';
@@ -88,10 +89,10 @@ const useStyles = makeStyles((theme) => ({
   },
   toggleButton: {
     '&.Mui-selected': {
-      background: theme.palette.primary.main,
-      color: 'white',
+      background: theme.palette.secondary.main,
+      color: theme.palette.secondary.contrastText,
       '&:hover': {
-        background: theme.palette.primary.main,
+        background: theme.palette.secondary.contrastText,
       },
     },
     textTransform: 'none',
@@ -168,8 +169,9 @@ const Schemas: FC = () => {
   const [enabled, setEnabled] = useState<boolean>(true);
   const [newSchemaDialog, setNewSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
-
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
+  const labelRef: any = useRef();
+  const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());
@@ -354,18 +356,12 @@ const Schemas: FC = () => {
       <Box className={classes.root}>
         <Box className={classes.sideBox}>
           <Box>
-            <Grid
-              style={{ width: '300px' }}
-              container
-              justifyContent="center"
-              spacing={1}
-              alignItems="center">
-              <Grid item xs={enabled ? 7 : 12}>
+            <Grid style={{ width: '300px' }} spacing={1} container>
+              <Grid item xs={12}>
                 <TextField
                   size="small"
                   variant="outlined"
                   name="Search"
-                  style={{ padding: '3px' }}
                   value={schemaSearch}
                   onChange={(e) => setSchemaSearch(e.target.value)}
                   label="Find schema"
@@ -378,53 +374,61 @@ const Schemas: FC = () => {
                   }}
                 />
               </Grid>
-              {enabled && (
-                <Grid item xs={5}>
-                  <FormControl className={classes.formControl}>
-                    <InputLabel id="multiple-select-label">Owner</InputLabel>
-                    <Select
-                      labelId="multiple-select-label"
-                      id="filters"
-                      multiple
-                      value={owners}
-                      onChange={handleFilterChange}
-                      input={<Input />}
-                      renderValue={(selected: any) =>
-                        selected.length === 1 ? selected : 'multiple'
-                      }
-                      MenuProps={{
-                        getContentAnchorEl: null,
-                      }}>
-                      {schemaOwners &&
-                        schemaOwners.map((module: any) => (
-                          <MenuItem key={module} value={module}>
-                            <Checkbox checked={owners.indexOf(module) > -1} />
-                            <ListItemText primary={module} />
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
+              <Grid container item style={{ paddingBottom: '10px' }}>
+                <Grid item xs={4}>
+                  <Box display="flex">
+                    <ToggleButtonGroup
+                      size="small"
+                      value={enabled}
+                      exclusive
+                      onChange={handleEnabled}>
+                      <ToggleButton key={1} value={true} className={classes.toggleButton}>
+                        <Tooltip title="Active Schemas">
+                          <Check />
+                        </Tooltip>
+                      </ToggleButton>
+                      <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
+                        <Tooltip title="Archived Schemas">
+                          <Archive />
+                        </Tooltip>
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
                 </Grid>
-              )}
-              <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  paddingBottom="10px">
-                  <ToggleButtonGroup
-                    size="small"
-                    value={enabled}
-                    exclusive
-                    onChange={handleEnabled}>
-                    <ToggleButton key={1} value={true} className={classes.toggleButton}>
-                      Active Schemas
-                    </ToggleButton>
-                    <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
-                      Archived Schemas
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                </Box>
+                {enabled && (
+                  <Grid item xs={8}>
+                    <FormControl size="small" variant="outlined" fullWidth>
+                      <InputLabel
+                        ref={labelRef}
+                        shrink
+                        htmlFor="my-input"
+                        id="multiple-select-label">
+                        Owner
+                      </InputLabel>
+                      <Select
+                        labelId="multiple-select-label"
+                        id="filters"
+                        multiple
+                        value={owners}
+                        onChange={handleFilterChange}
+                        input={<OutlinedInput labelWidth={labelWidth} id="my-input" />}
+                        renderValue={(selected: any) =>
+                          selected.length === 1 ? selected : 'multiple'
+                        }
+                        MenuProps={{
+                          getContentAnchorEl: null,
+                        }}>
+                        {schemaOwners &&
+                          schemaOwners.map((module: any) => (
+                            <MenuItem key={module} value={module}>
+                              <Checkbox checked={owners.indexOf(module) > -1} />
+                              <ListItemText primary={module} />
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
           </Box>

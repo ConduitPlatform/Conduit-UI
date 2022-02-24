@@ -115,7 +115,6 @@ const SchemasList: FC<Props> = ({
   const hasMountedRef = useRef(false);
 
   const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
-  const { selectedSchema } = useAppSelector((state) => state.cmsSlice.data);
 
   const isItemLoaded = (index: number) => !!schemaDocuments[index];
 

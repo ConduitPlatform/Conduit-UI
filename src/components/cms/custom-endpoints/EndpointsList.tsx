@@ -98,9 +98,10 @@ interface Props {
   handleListItemSelect: (endpoint: any) => void;
   search: string;
   operation: number;
+  selectedSchemas: string[];
 }
 
-const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) => {
+const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, selectedSchemas }) => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
 
@@ -120,18 +121,20 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
     hasMountedRef.current = true;
     const params = {
       skip: 0,
-      limit: 15,
+      limit: 20,
       search: search,
+      schemaName: selectedSchemas,
       operation: operation !== -2 ? operation : undefined,
     };
     dispatch(asyncSetCustomEndpoints(params));
-  }, [dispatch, operation, search]);
+  }, [dispatch, operation, search, selectedSchemas]);
 
   const addEndpoints = (skip: number, limit: number) => {
     const params = {
       skip: skip,
       limit: limit,
       search: search,
+      schemaName: selectedSchemas,
       operation: operation !== -2 ? operation : undefined,
     };
     dispatch(asyncAddCustomEndpoints(params));
@@ -183,7 +186,12 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation }) =
                 {getOperation(endpoint)}
               </Paper>
             </ListItemIcon>
-            <ListItemText primary={endpoint.name} />
+            <ListItemText
+              primary={endpoint.name}
+              primaryTypographyProps={{
+                style: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' },
+              }}
+            />
           </ListItem>
         )}
       </div>
