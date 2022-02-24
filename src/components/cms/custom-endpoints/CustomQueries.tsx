@@ -322,7 +322,7 @@ const CustomQueries: FC = () => {
             <Grid item xs={5} style={{ textAlign: 'end' }}>
               {!editMode && (
                 <IconButton aria-label="delete" onClick={handleDeleteClick}>
-                  <Delete />
+                  <Delete color="error" />
                 </IconButton>
               )}
               {!editMode && (

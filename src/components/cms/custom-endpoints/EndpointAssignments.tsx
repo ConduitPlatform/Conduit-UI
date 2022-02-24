@@ -31,9 +31,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'inherit',
     opacity: '1',
   },
-  remove: {
-    marginTop: '-20px',
-  },
+  remove: { marginLeft: '9px' },
   menuItem: {
     minHeight: 0,
     margin: theme.spacing(0),
@@ -307,129 +305,135 @@ const EndpointAssignments: FC<Props> = ({
 
   return selectedAssignments.map((assignment: Assignment, index: number) => (
     <Fragment key={`assignment-${index}`}>
-      <Grid item xs={1}>
-        <Typography>{index + 1}.</Typography>
-      </Grid>
-      <Grid item xs={3}>
-        <TextField
-          select
-          size="small"
-          label={'Schema Field'}
-          variant="outlined"
-          fullWidth
-          value={assignment.schemaField}
-          disabled={!editMode}
-          onChange={(event) => handleAssignmentFieldChange(event, index)}>
-          <MenuItem aria-label="None" value="-" />
-          {prepareOptions()}
-        </TextField>
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          select
-          size="small"
-          label={'Actions'}
-          variant="outlined"
-          fullWidth
-          value={assignment.action}
-          disabled={!editMode}
-          onChange={(event) => handleAssignmentActionChange(event, index)}>
-          <MenuItem aria-label="None" value="" />
-          <MenuItem value={ActionTypes.SET}>SET</MenuItem>
-          <MenuItem disabled={!isNumberType(assignment.schemaField)} value={ActionTypes.INCREMENT}>
-            INCREMENT
-          </MenuItem>
-          <MenuItem disabled={!isNumberType(assignment.schemaField)} value={ActionTypes.DECREMENT}>
-            DECREMENT
-          </MenuItem>
-          <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.APPEND}>
-            APPEND
-          </MenuItem>
-          <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.REMOVE}>
-            REMOVE
-          </MenuItem>
-        </TextField>
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          select
-          size="small"
-          label={'Assignment value'}
-          variant="outlined"
-          fullWidth
-          value={
-            assignment.assignmentField.type === 'Custom' ||
-            assignment.assignmentField.type === 'Context'
-              ? assignment.assignmentField.type
-              : assignment.assignmentField.type + '-' + assignment.assignmentField.value
-          }
-          disabled={!editMode}
-          onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
-          <MenuItem aria-label="None" value="-" />
-          <MenuItem disabled className={classes.group}>
-            Custom Value
-          </MenuItem>
-          <MenuItem className={classes.item} value={'Custom'}>
-            Add a custom value
-          </MenuItem>
-          <MenuItem disabled className={classes.group}>
-            Context Value
-          </MenuItem>
-          <MenuItem className={classes.item} value={'Context'}>
-            Add a value from context
-          </MenuItem>
-          <MenuItem disabled className={classes.group}>
-            Input Fields
-          </MenuItem>
-          {selectedInputs.map((input: any, index: number) => (
-            <MenuItem
-              disabled={isValueIncompatible(
-                assignment.schemaField,
-                input.type,
-                availableFieldsOfSchema
-              )}
-              className={classes.item}
-              key={`idx-${index}-input`}
-              value={'Input-' + input.name}>
-              {`${input.name} ${extractInputValueType(input.type)}`}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid>
-      {assignment.assignmentField.type === 'Custom' ||
-      assignment.assignmentField.type === 'Context' ? (
+      <Grid item container xs={12} spacing={3} alignItems="center" justifyContent="center">
+        <Grid item xs={1}>
+          <Typography>{index + 1}.</Typography>
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            select
+            size="small"
+            label={'Schema Field'}
+            variant="outlined"
+            fullWidth
+            value={assignment.schemaField}
+            disabled={!editMode}
+            onChange={(event) => handleAssignmentFieldChange(event, index)}>
+            <MenuItem aria-label="None" value="-" />
+            {prepareOptions()}
+          </TextField>
+        </Grid>
         <Grid item xs={2}>
           <TextField
+            select
             size="small"
-            label={extractCustomLabel(assignment.assignmentField.type, assignment.schemaField)}
-            type={
-              assignment.assignmentField.type === 'Custom' &&
-              getTypeOfValue(assignment.schemaField, availableFieldsOfSchema)
-            }
-            variant={'outlined'}
-            disabled={!editMode}
+            label={'Actions'}
+            variant="outlined"
             fullWidth
-            placeholder={'Value'}
-            value={assignment.assignmentField.value}
-            onChange={(event) =>
-              assignment.assignmentField.type === 'Custom'
-                ? handleAssignmentCustomValueChange(event, index, assignment.schemaField)
-                : handleAssignmentContextValueChange(event, index)
-            }
-          />
+            value={assignment.action}
+            disabled={!editMode}
+            onChange={(event) => handleAssignmentActionChange(event, index)}>
+            <MenuItem aria-label="None" value="" />
+            <MenuItem value={ActionTypes.SET}>SET</MenuItem>
+            <MenuItem
+              disabled={!isNumberType(assignment.schemaField)}
+              value={ActionTypes.INCREMENT}>
+              INCREMENT
+            </MenuItem>
+            <MenuItem
+              disabled={!isNumberType(assignment.schemaField)}
+              value={ActionTypes.DECREMENT}>
+              DECREMENT
+            </MenuItem>
+            <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.APPEND}>
+              APPEND
+            </MenuItem>
+            <MenuItem disabled={!isArrayType(assignment.schemaField)} value={ActionTypes.REMOVE}>
+              REMOVE
+            </MenuItem>
+          </TextField>
         </Grid>
-      ) : (
-        <Grid item xs={2} />
-      )}
-      <Grid item xs={1} />
-      <Grid item xs={1}>
-        <IconButton
-          className={classes.remove}
-          disabled={!editMode}
-          size="small"
-          onClick={() => handleRemoveAssignment(index)}>
-          <RemoveCircleOutlineIcon />
-        </IconButton>
+        <Grid item xs={2}>
+          <TextField
+            select
+            size="small"
+            label={'Assignment value'}
+            variant="outlined"
+            fullWidth
+            value={
+              assignment.assignmentField.type === 'Custom' ||
+              assignment.assignmentField.type === 'Context'
+                ? assignment.assignmentField.type
+                : assignment.assignmentField.type + '-' + assignment.assignmentField.value
+            }
+            disabled={!editMode}
+            onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
+            <MenuItem aria-label="None" value="-" />
+            <MenuItem disabled className={classes.group}>
+              Custom Value
+            </MenuItem>
+            <MenuItem className={classes.item} value={'Custom'}>
+              Add a custom value
+            </MenuItem>
+            <MenuItem disabled className={classes.group}>
+              Context Value
+            </MenuItem>
+            <MenuItem className={classes.item} value={'Context'}>
+              Add a value from context
+            </MenuItem>
+            <MenuItem disabled className={classes.group}>
+              Input Fields
+            </MenuItem>
+            {selectedInputs.map((input: any, index: number) => (
+              <MenuItem
+                disabled={isValueIncompatible(
+                  assignment.schemaField,
+                  input.type,
+                  availableFieldsOfSchema
+                )}
+                className={classes.item}
+                key={`idx-${index}-input`}
+                value={'Input-' + input.name}>
+                {`${input.name} ${extractInputValueType(input.type)}`}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        {assignment.assignmentField.type === 'Custom' ||
+        assignment.assignmentField.type === 'Context' ? (
+          <Grid item xs={2}>
+            <TextField
+              size="small"
+              label={extractCustomLabel(assignment.assignmentField.type, assignment.schemaField)}
+              type={
+                assignment.assignmentField.type === 'Custom' &&
+                getTypeOfValue(assignment.schemaField, availableFieldsOfSchema)
+              }
+              variant={'outlined'}
+              disabled={!editMode}
+              fullWidth
+              placeholder={'Value'}
+              value={assignment.assignmentField.value}
+              onChange={(event) =>
+                assignment.assignmentField.type === 'Custom'
+                  ? handleAssignmentCustomValueChange(event, index, assignment.schemaField)
+                  : handleAssignmentContextValueChange(event, index)
+              }
+            />
+          </Grid>
+        ) : (
+          <Grid item xs={2} />
+        )}
+        <Grid item xs={1} />
+        <Grid item xs={1}>
+          <IconButton
+            className={classes.remove}
+            disabled={!editMode}
+            size="small"
+            onClick={() => handleRemoveAssignment(index)}>
+            <RemoveCircleOutlineIcon />
+          </IconButton>
+        </Grid>
       </Grid>
     </Fragment>
   ));

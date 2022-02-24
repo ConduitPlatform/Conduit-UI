@@ -52,9 +52,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  alignment: {
-    marginTop: '-15px',
-  },
+
   item: {
     paddingLeft: theme.spacing(3),
   },
@@ -321,133 +319,131 @@ const CustomQueryRow: FC<Props> = ({
 
   return (
     <>
-      <Grid item xs={2}>
-        <TextField
-          select
-          size="small"
-          label={'Schema Field'}
-          variant="outlined"
-          fullWidth
-          value={query.schemaField}
-          disabled={!editMode}
-          onChange={(event) => {
-            handleQueryFieldChange(event, index);
-          }}>
-          <MenuItem aria-label="None" value="" />
-          {prepareOptions()}
-        </TextField>
-      </Grid>
-      <Grid item xs={3}>
-        <TextField
-          select
-          size="small"
-          label="Operator"
-          variant="outlined"
-          fullWidth
-          value={query.operation}
-          disabled={!editMode}
-          onChange={(event) => handleQueryConditionChange(event, index)}>
-          <MenuItem aria-label="None" value="-1" />
-          <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
-          <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
-          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER}>
-            {'(>) greater than'}
-          </MenuItem>
-          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER_EQ}>
-            {'(>=) greater that or equal to'}
-          </MenuItem>
-          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS}>
-            {'(<) less than'}
-          </MenuItem>
-          <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS_EQ}>
-            {'(<=) less that or equal to'}
-          </MenuItem>
-          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.EQUAL_SET}>
-            (in) equal to any of the following
-          </MenuItem>
-          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.NEQUAL_SET}>
-            (not-in) not equal to any of the following
-          </MenuItem>
-          <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.CONTAIN}>
-            (array-contains) an array containing
-          </MenuItem>
-        </TextField>
-      </Grid>
-      <Grid item xs={2}>
-        <TextField
-          size="small"
-          select
-          label={'Value'}
-          variant="outlined"
-          fullWidth
-          value={
-            query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'
-              ? query.comparisonField.type
-              : query.comparisonField.type + '-' + query.comparisonField.value
-          }
-          disabled={!editMode}
-          onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
-          <MenuItem aria-label="None" value="-" />
-          <MenuItem disabled className={classes.group}>
-            System Values
-          </MenuItem>
-          <MenuItem className={classes.item} value={'Context'}>
-            Add a value from context
-          </MenuItem>
-          <MenuItem disabled className={classes.group}>
-            Custom Value
-          </MenuItem>
-          <MenuItem className={classes.item} value={'Custom'}>
-            Add a custom value
-          </MenuItem>
-          <MenuItem disabled className={classes.group}>
-            Schema Fields
-          </MenuItem>
-          {prepareOptions(true)}
-          <MenuItem disabled className={classes.group}>
-            Input Fields {!selectedInputs.length && '(none available)'}
-          </MenuItem>
-          {selectedInputs.map((input, index) => (
-            <MenuItem
-              disabled={isValueInputIncompatible(input.type)}
-              className={classes.item}
-              key={`idxF-${index}-input`}
-              value={'Input-' + input.name}>
-              {`${input.name} ${extractInputValueType(input.type)}`}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid>
-      {query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context' ? (
-        <Grid item xs={2}>
-          {extractCustomField()}
+      <Grid item container xs={12} spacing={3}>
+        <Grid item xs={2} alignItems="center" justifyContent="center">
+          <TextField
+            select
+            size="small"
+            label={'Schema Field'}
+            variant="outlined"
+            fullWidth
+            value={query.schemaField}
+            disabled={!editMode}
+            onChange={(event) => {
+              handleQueryFieldChange(event, index);
+            }}>
+            <MenuItem aria-label="None" value="" />
+            {prepareOptions()}
+          </TextField>
         </Grid>
-      ) : (
-        <Grid item xs={2} />
-      )}
-      <Grid item xs={2}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              color={'primary'}
-              checked={query.comparisonField.like}
-              onClick={(event) => handleLikeValueChange(event, index)}
-              name="Like"
-              size={'small'}
-              disabled={!editMode}
-            />
-          }
-          label="Like"
-        />
-      </Grid>
-      <Grid item xs={1}>
-        <IconButton
-          className={classes.alignment}
-          disabled={!editMode}
-          size="small"
-          onClick={handleRemoveQuery}>
-          <RemoveCircleOutlineIcon />
-        </IconButton>
+        <Grid item xs={3}>
+          <TextField
+            select
+            size="small"
+            label="Operator"
+            variant="outlined"
+            fullWidth
+            value={query.operation}
+            disabled={!editMode}
+            onChange={(event) => handleQueryConditionChange(event, index)}>
+            <MenuItem aria-label="None" value="-1" />
+            <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
+            <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
+            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER}>
+              {'(>) greater than'}
+            </MenuItem>
+            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER_EQ}>
+              {'(>=) greater that or equal to'}
+            </MenuItem>
+            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS}>
+              {'(<) less than'}
+            </MenuItem>
+            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS_EQ}>
+              {'(<=) less that or equal to'}
+            </MenuItem>
+            <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.EQUAL_SET}>
+              (in) equal to any of the following
+            </MenuItem>
+            <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.NEQUAL_SET}>
+              (not-in) not equal to any of the following
+            </MenuItem>
+            <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.CONTAIN}>
+              (array-contains) an array containing
+            </MenuItem>
+          </TextField>
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            size="small"
+            select
+            label={'Value'}
+            variant="outlined"
+            fullWidth
+            value={
+              query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context'
+                ? query.comparisonField.type
+                : query.comparisonField.type + '-' + query.comparisonField.value
+            }
+            disabled={!editMode}
+            onChange={(event) => handleQueryComparisonFieldChange(event, index)}>
+            <MenuItem aria-label="None" value="-" />
+            <MenuItem disabled className={classes.group}>
+              System Values
+            </MenuItem>
+            <MenuItem className={classes.item} value={'Context'}>
+              Add a value from context
+            </MenuItem>
+            <MenuItem disabled className={classes.group}>
+              Custom Value
+            </MenuItem>
+            <MenuItem className={classes.item} value={'Custom'}>
+              Add a custom value
+            </MenuItem>
+            <MenuItem disabled className={classes.group}>
+              Schema Fields
+            </MenuItem>
+            {prepareOptions(true)}
+            <MenuItem disabled className={classes.group}>
+              Input Fields {!selectedInputs.length && '(none available)'}
+            </MenuItem>
+            {selectedInputs.map((input, index) => (
+              <MenuItem
+                disabled={isValueInputIncompatible(input.type)}
+                className={classes.item}
+                key={`idxF-${index}-input`}
+                value={'Input-' + input.name}>
+                {`${input.name} ${extractInputValueType(input.type)}`}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        {query.comparisonField.type === 'Custom' || query.comparisonField.type === 'Context' ? (
+          <Grid item xs={2}>
+            {extractCustomField()}
+          </Grid>
+        ) : (
+          <Grid item xs={2} />
+        )}
+        <Grid item xs={2}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                color={'primary'}
+                checked={query.comparisonField.like}
+                onClick={(event) => handleLikeValueChange(event, index)}
+                name="Like"
+                size={'small'}
+                disabled={!editMode}
+              />
+            }
+            label="Like"
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton disabled={!editMode} size="small" onClick={handleRemoveQuery}>
+            <RemoveCircleOutlineIcon />
+          </IconButton>
+        </Grid>
       </Grid>
     </>
   );
