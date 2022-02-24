@@ -1,13 +1,13 @@
 import Box from '@material-ui/core/Box';
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { SimpleGroupType } from '../types/SimpleType/SimpleType';
-import { BooleanGroupType } from '../types/BooleanType/BooleanType';
 import Tooltip from '@material-ui/core/Tooltip';
 import GroupIcon from '@material-ui/icons/PlaylistAdd';
 import FieldIndicators from '../FieldIndicators';
 import Grid from '@material-ui/core/Grid';
 import { IGroupChildData } from '../../../models/cms/BuildTypesModels';
+import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
+import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,13 +43,13 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
   const handleGroupContent = (item: any) => {
     switch (item.type) {
       case 'Text':
-        return <SimpleGroupType item={item} />;
+        return <SimpleGroupTypeViewer item={item} />;
       case 'Number':
-        return <SimpleGroupType item={item} />;
+        return <SimpleGroupTypeViewer item={item} />;
       case 'Date':
-        return <SimpleGroupType item={item} />;
+        return <SimpleGroupTypeViewer item={item} />;
       case 'Boolean':
-        return <BooleanGroupType item={item} />;
+        return <BooleanGroupTypeViewer item={item} />;
       default:
         return null;
     }
@@ -77,9 +77,12 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
           item.content.length > 0 &&
           item.content.map((groupItem, index) => {
             return (
-              <div key={index} className={classes.item}>
-                <Box width={'99%'}>{handleGroupContent(groupItem)}</Box>
-              </div>
+              <Grid container key={index}>
+                <Grid item xs={6}>
+                  {groupItem.name}
+                </Grid>
+                {handleGroupContent(groupItem)}
+              </Grid>
             );
           })}
       </div>

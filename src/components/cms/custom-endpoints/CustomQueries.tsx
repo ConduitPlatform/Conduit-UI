@@ -348,10 +348,10 @@ const CustomQueries: FC = () => {
   return (
     <Box className={classes.root}>
       <Grid container spacing={2} className={classes.grid}>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={9}>
           {renderMainContent()}
         </Grid>
       </Grid>

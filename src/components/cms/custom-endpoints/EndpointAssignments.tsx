@@ -316,6 +316,7 @@ const EndpointAssignments: FC<Props> = ({
       <Grid item xs={3}>
         <TextField
           select
+          size="small"
           label={'Schema Field'}
           variant="outlined"
           fullWidth
@@ -329,6 +330,7 @@ const EndpointAssignments: FC<Props> = ({
       <Grid item xs={2}>
         <TextField
           select
+          size="small"
           label={'Actions'}
           variant="outlined"
           fullWidth
@@ -354,6 +356,7 @@ const EndpointAssignments: FC<Props> = ({
       <Grid item xs={2}>
         <TextField
           select
+          size="small"
           label={'Assignment value'}
           variant="outlined"
           fullWidth
@@ -400,6 +403,7 @@ const EndpointAssignments: FC<Props> = ({
       assignment.assignmentField.type === 'Context' ? (
         <Grid item xs={2}>
           <TextField
+            size="small"
             label={extractCustomLabel(assignment.assignmentField.type, assignment.schemaField)}
             type={
               assignment.assignmentField.type === 'Custom' &&

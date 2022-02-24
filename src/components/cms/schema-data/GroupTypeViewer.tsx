@@ -6,18 +6,17 @@ import Typography from '@material-ui/core/Typography';
 import GroupIcon from '@material-ui/icons/PlaylistAdd';
 import React, { FC } from 'react';
 import FieldIndicators from '../FieldIndicators';
-import { BooleanGroupType } from '../types/BooleanType/BooleanType';
-import { EnumGroupType } from '../types/EnumType/EnumType';
-import { ObjectIdGroupType } from '../types/ObjectIdType/ObjectIdType';
-import { RelationGroupType } from '../types/RelationType/RelationType';
-import { SimpleGroupType } from '../types/SimpleType/SimpleType';
-
 import {
   IGroupChildContentData,
   IGroupChildData,
   IGroupData,
 } from '../../../models/cms/BuildTypesModels';
 import GroupTypeChildViewer from './GroupTypeChildViewer';
+import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
+import { ObjectIdGroupTypeViewer } from '../types/ObjectIdType/ObjectIdTypeViewer';
+import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
+import { RelationGroupTypeViewer } from '../types/RelationType/RelationTypeViewer';
+import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,20 +56,24 @@ const GroupTypeViewer: FC<IProps> = ({
     switch (item.type) {
       case 'Text':
         return item.isEnum ? (
-          <EnumGroupType item={item} /> //needs changes
+          <EnumGroupTypeViewer item={item} /> //needs changes
         ) : (
-          <SimpleGroupType item={item} />
+          <SimpleGroupTypeViewer item={item} />
         );
       case 'Number':
-        return item.isEnum ? <EnumGroupType item={item} /> : <SimpleGroupType item={item} />;
+        return item.isEnum ? (
+          <EnumGroupTypeViewer item={item} />
+        ) : (
+          <SimpleGroupTypeViewer item={item} />
+        );
       case 'Date':
-        return <SimpleGroupType item={item} />;
+        return <SimpleGroupTypeViewer item={item} />;
       case 'ObjectId':
-        return <ObjectIdGroupType item={item} />;
+        return <ObjectIdGroupTypeViewer item={item} />;
       case 'Boolean':
-        return <BooleanGroupType item={item} />;
+        return <BooleanGroupTypeViewer item={item} />;
       case 'Relation':
-        return <RelationGroupType item={item} />;
+        return <RelationGroupTypeViewer item={item} />;
       case 'Group':
         return <GroupTypeChildViewer item={item} groupIndex={groupIndex} itemIndex={index} />;
       default:
@@ -105,15 +108,16 @@ const GroupTypeViewer: FC<IProps> = ({
               index: number
             ) => (
               <div key={index} className={classes.item}>
-                <Box width={'99%'}>{handleGroupContent(groupItem, index)}</Box>
+                <Box width={'99%'}></Box>
                 <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
-                  <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
-                    <Box display={'flex'}>
+                  <Grid container>
+                    <Grid item xs={6}>
                       <Typography variant={'body2'} style={{ marginRight: 8 }}>
                         {groupItem.name}
                       </Typography>
-                    </Box>
-                  </Box>
+                    </Grid>
+                    {handleGroupContent(groupItem, index)}
+                  </Grid>
                 </Box>
               </div>
             )

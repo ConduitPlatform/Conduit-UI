@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   formControl: {
-    minWidth: 150,
+    minWidth: 120,
   },
   noEndpoints: {
     textAlign: 'center',
@@ -127,7 +127,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
             color="secondary"
             variant="contained"
             onClick={handleAddNewEndpoint}>
-            Add Endpoint
+            Add
           </Button>
         </Grid>
         <Grid item sm={7}>

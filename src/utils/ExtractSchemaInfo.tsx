@@ -31,6 +31,8 @@ export const ExtractSchemaInfo = (schema: Schema) => {
     setOpen(!open);
   };
 
+  console.log(schema);
+
   return (
     <List component="nav" aria-label="main mailbox folders">
       {cms && (
@@ -74,6 +76,14 @@ export const ExtractSchemaInfo = (schema: Schema) => {
             </List>
           </Collapse>
         </>
+      )}
+      {schema?.extensions?.length > 0 && (
+        <ListItem>
+          <ListItemIcon>
+            <ExtensionIcon />
+          </ListItemIcon>
+          <ListItemText primary="Schema has extensions" />
+        </ListItem>
       )}
       {permissions?.extendable && (
         <ListItem>

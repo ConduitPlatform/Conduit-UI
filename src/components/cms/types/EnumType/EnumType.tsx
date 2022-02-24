@@ -34,15 +34,11 @@ const EnumType: FC<IProps> = ({ item, ...rest }) => {
             <Tooltip title={'Enum field'}>
               <SelectIcon className={classes.icon} />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
-              enum placeholder
-            </Typography>
+            <FieldIndicators item={item} />
           </Box>
         </Grid>
         <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
+          <Box display={'flex'} alignItems={'center'}></Box>
         </Grid>
       </Grid>
     </Box>
