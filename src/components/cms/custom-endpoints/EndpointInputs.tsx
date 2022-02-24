@@ -16,8 +16,8 @@ import { Input } from '../../../models/customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 
 const useStyles = makeStyles((theme) => ({
-  checkBox: {
-    marginBottom: theme.spacing(-1.5),
+  remove: {
+    marginBottom: '-5px',
   },
 }));
 
@@ -150,7 +150,7 @@ const EndpointInputs: FC<Props> = ({
       </Grid>
       <Grid item xs={1} />
       <Grid item xs={2}>
-        <Box className={classes.checkBox}>
+        <Box>
           <FormControlLabel
             control={
               <Checkbox
@@ -180,7 +180,10 @@ const EndpointInputs: FC<Props> = ({
         </Box>
       </Grid>
       <Grid item xs={1}>
-        <IconButton disabled={!editMode} onClick={() => handleRemoveInput(index)}>
+        <IconButton
+          className={classes.remove}
+          disabled={!editMode}
+          onClick={() => handleRemoveInput(index)}>
           <RemoveCircleOutlineIcon />
         </IconButton>
       </Grid>

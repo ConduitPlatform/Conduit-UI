@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   alignment: {
-    marginBottom: theme.spacing(1),
+    marginTop: '-15px',
   },
   item: {
     paddingLeft: theme.spacing(3),
@@ -425,7 +425,7 @@ const CustomQueryRow: FC<Props> = ({
       ) : (
         <Grid item xs={2} />
       )}
-      <Grid item className={classes.alignment} xs={2}>
+      <Grid item xs={2}>
         <FormControlLabel
           control={
             <Checkbox
@@ -440,8 +440,12 @@ const CustomQueryRow: FC<Props> = ({
           label="Like"
         />
       </Grid>
-      <Grid item className={classes.alignment} xs={1}>
-        <IconButton disabled={!editMode} size="small" onClick={handleRemoveQuery}>
+      <Grid item xs={1}>
+        <IconButton
+          className={classes.alignment}
+          disabled={!editMode}
+          size="small"
+          onClick={handleRemoveQuery}>
           <RemoveCircleOutlineIcon />
         </IconButton>
       </Grid>

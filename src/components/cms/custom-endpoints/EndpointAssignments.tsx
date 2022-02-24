@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     opacity: '1',
   },
   remove: {
-    marginBottom: theme.spacing(1.5),
+    marginTop: '-20px',
   },
   menuItem: {
     minHeight: 0,
@@ -50,9 +50,6 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
       },
     },
-  },
-  alignment: {
-    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -425,8 +422,12 @@ const EndpointAssignments: FC<Props> = ({
         <Grid item xs={2} />
       )}
       <Grid item xs={1} />
-      <Grid item xs={1} className={classes.remove}>
-        <IconButton disabled={!editMode} size="small" onClick={() => handleRemoveAssignment(index)}>
+      <Grid item xs={1}>
+        <IconButton
+          className={classes.remove}
+          disabled={!editMode}
+          size="small"
+          onClick={() => handleRemoveAssignment(index)}>
           <RemoveCircleOutlineIcon />
         </IconButton>
       </Grid>
