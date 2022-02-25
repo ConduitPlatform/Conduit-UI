@@ -11,11 +11,11 @@ import {
 } from '@material-ui/core';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
-import ConditionsEnum from '../../models/ConditionsEnum';
+import ConditionsEnum from '../../../models/ConditionsEnum';
 import { isArray } from 'lodash';
-import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
-import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { useAppDispatch } from '../../redux/store';
+import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../../utils/cms';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
+import { useAppDispatch } from '../../../redux/store';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({

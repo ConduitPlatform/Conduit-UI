@@ -13,7 +13,7 @@ export const postCmsSchemaRequest = (data: any) =>
   axios.post(`${CONDUIT_API}/admin/database/schemas`, { ...data });
 
 export const patchCmsSchemaRequest = (_id: string, data: any) =>
-  axios.patch(`${CONDUIT_API}/admin/cdatabasems/schemas/${_id}`, { ...data });
+  axios.patch(`${CONDUIT_API}/admin/database/schemas/${_id}`, { ...data });
 
 export const setSchemaExtension = (_id: string, data: any) =>
   axios.post(`${CONDUIT_API}/admin/database/schemas/${_id}/extensions/`, { fields: data });

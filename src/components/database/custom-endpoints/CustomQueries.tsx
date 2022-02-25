@@ -57,6 +57,8 @@ const useStyles = makeStyles((theme) => ({
   mainContentInfo: {
     maxHeight: '72vh',
     overflowY: 'auto',
+    alignItems: 'center',
+    paddingTop: '3px',
   },
 }));
 
@@ -66,14 +68,11 @@ const CustomQueries: FC = () => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
-
   const { filters } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
   const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
-
   const {
     schemas: { schemaDocuments },
   } = useAppSelector((state) => state.databaseSlice.data);
-
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   const initializeData = useCallback(() => {

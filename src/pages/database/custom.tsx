@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import { asyncGetCmsSchemas } from '../../redux/slices/databaseSlice';
-import CustomQueries from '../../components/cms/custom-endpoints/CustomQueries';
+import CustomQueries from '../../components/database/custom-endpoints/CustomQueries';
 import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
 
 const Custom = () => {

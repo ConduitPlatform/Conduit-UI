@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import EnumType from './../types/EnumType/EnumType';
+import EnumType from '../types/EnumType/EnumType';
 import { BoxProps } from '@material-ui/core/Box/Box';
 import GroupTypeViewer from './GroupTypeViewer';
 import RelationTypeViewer from '../types/RelationType/RelationTypeViewer';

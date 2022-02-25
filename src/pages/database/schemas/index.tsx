@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import Schemas from '../../../components/cms/schema-data/Schemas';
+import Schemas from '../../../components/database/schemas/Schemas';
 import DatabaseLayout from '../../../components/navigation/InnerLayouts/databaseLayout';
 
 const SchemasPage = () => {

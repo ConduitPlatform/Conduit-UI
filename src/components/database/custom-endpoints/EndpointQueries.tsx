@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import CustomQueryRow from '../CustomQueryRow';
+import CustomQueryRow from './CustomQueryRow';
 import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
 import { Grid, Box } from '@material-ui/core';

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, resetServerContext } from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import BuildTypesList from '../../../components/cms/BuildTypesList';
-import BuildTypesContent from '../../../components/cms/BuildTypesContent';
-import BuildTypesDrawer from '../../../components/cms/BuildTypesDrawer';
-import Header, { headerHeight } from '../../../components/cms/Header';
+import BuildTypesList from '../../../components/database/BuildTypesList';
+import BuildTypesContent from '../../../components/database/BuildTypesContent';
+import BuildTypesDrawer from '../../../components/database/BuildTypesDrawer';
+import Header, { headerHeight } from '../../../components/database/Header';
 import {
   addToChildGroup,
   addToGroup,

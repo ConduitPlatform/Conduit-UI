@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { getFieldsArray } from '../../schema-data/SchemaDataUtils';
+import { getFieldsArray } from '../../schemas/SchemaDataUtils';
 import { TreeView } from '@material-ui/lab';
 import { Box, Typography } from '@material-ui/core';
 import TreeElementByType from './TreeElementByType';

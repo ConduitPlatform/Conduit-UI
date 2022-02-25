@@ -4,7 +4,7 @@ import {
   isFieldArray,
   isFieldObject,
   isFieldRelation,
-} from '../schema-data/SchemaDataUtils';
+} from '../schemas/SchemaDataUtils';
 import { Schema } from '../../../models/cms/CmsModels';
 import { TreeItem } from '@material-ui/lab';
 import getDeepValue from '../../../utils/getDeepValue';
