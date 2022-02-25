@@ -27,21 +27,18 @@ const EnumType: FC<IProps> = ({ item, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid item xs={6} alignItems={'center'}>
+    <>
+      <Grid item container xs={1}>
+        <SelectIcon className={classes.icon} />
+      </Grid>
+      <Grid item container justifyContent="flex-end" xs={5}>
+        <Grid item xs={6}>
           <Box display={'flex'} alignItems={'center'}>
-            <Tooltip title={'Enum field'}>
-              <SelectIcon className={classes.icon} />
-            </Tooltip>
             <FieldIndicators item={item} />
           </Box>
         </Grid>
-        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}></Box>
-        </Grid>
       </Grid>
-    </Box>
+    </>
   );
 };
 
@@ -51,24 +48,17 @@ export const EnumGroupType: FC<IProps> = ({ item, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid item xs={6} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}>
-            <Tooltip title={'Enum field'}>
-              <SelectIcon className={classes.icon} />
-            </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
-              enum placeholder
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
+    <>
+      <Grid item container xs={1}>
+        <SelectIcon className={classes.icon} />
+      </Grid>
+      <Grid item container justifyContent="flex-end" xs={5}>
+        <Grid item xs={6}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>
         </Grid>
       </Grid>
-    </Box>
+    </>
   );
 };

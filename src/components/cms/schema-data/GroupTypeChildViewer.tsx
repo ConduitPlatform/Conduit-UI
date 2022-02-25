@@ -14,12 +14,10 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 100,
     width: '100%',
     border: '1px dotted black',
+    padding: theme.spacing(3),
   },
   item: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
     padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
   },
   groupIcon: {
     height: theme.spacing(3),
@@ -65,7 +63,7 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
             </Tooltip>
           </Box>
         </Grid>
-        <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>
+        <Grid container item xs={5} alignItems={'center'} justifyContent={'flex-end'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>
@@ -77,7 +75,7 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
           item.content.length > 0 &&
           item.content.map((groupItem, index) => {
             return (
-              <Grid container key={index}>
+              <Grid container className={classes.item} key={index}>
                 <Grid item xs={6}>
                   {groupItem.name}
                 </Grid>

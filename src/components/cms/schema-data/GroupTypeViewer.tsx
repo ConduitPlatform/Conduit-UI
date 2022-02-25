@@ -24,18 +24,13 @@ const useStyles = makeStyles((theme) => ({
     border: '1px dotted black',
   },
   groupIcon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
     opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
   },
   item: {
     display: 'flex',
     flexDirection: 'column-reverse',
     padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(0.5),
   },
 }));
 
@@ -91,7 +86,7 @@ const GroupTypeViewer: FC<IProps> = ({
             </Tooltip>
           </Box>
         </Grid>
-        <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>
+        <Grid container item xs={5} alignItems={'center'} justifyContent={'flex-end'}>
           <Box display={'flex'} alignItems={'center'}>
             <FieldIndicators item={item} />
           </Box>

@@ -22,9 +22,8 @@ const useStyles = makeStyles((theme) => ({
   item: {
     display: 'flex',
     flexDirection: 'column-reverse',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    borderLeft: '1px solid #dce0e5',
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -68,7 +67,7 @@ const SchemaViewer: FC<Props> = ({ dataKey, data, ...rest }) => {
               <Grid container>
                 <Grid item xs={6}>
                   <Typography variant={'body2'} style={{ marginRight: 8 }}>
-                    Field name: <strong>{item.name}</strong>
+                    <strong>{item.name}</strong>
                   </Typography>
                 </Grid>
                 {handleItemContent(item, index)}

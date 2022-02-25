@@ -27,18 +27,18 @@ const ObjectIdTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid container item xs={6} alignItems={'center'}>
+    <>
+      <Grid item container xs={1}>
+        <CodeIcon className={classes.icon} />
+      </Grid>
+      <Grid item container justifyContent="flex-end" xs={5}>
+        <Grid item xs={6}>
           <Box display={'flex'} alignItems={'center'}>
-            <Tooltip title={'ObjectId field'}>
-              <CodeIcon className={classes.icon} />
-            </Tooltip>
             <FieldIndicators item={item} />
           </Box>
         </Grid>
       </Grid>
-    </Box>
+    </>
   );
 };
 
@@ -48,13 +48,17 @@ export const ObjectIdGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Grid container item xs={6} alignItems={'center'}>
-      <Box display={'flex'} alignItems={'center'}>
-        <Tooltip title={'ObjectId field'}>
-          <CodeIcon className={classes.icon} />
-        </Tooltip>
-        <FieldIndicators item={item} />
-      </Box>
-    </Grid>
+    <>
+      <Grid item container xs={1}>
+        <CodeIcon className={classes.icon} />
+      </Grid>
+      <Grid item container justifyContent="flex-end" xs={5}>
+        <Grid item xs={6}>
+          <Box display={'flex'} alignItems={'center'}>
+            <FieldIndicators item={item} />
+          </Box>
+        </Grid>
+      </Grid>
+    </>
   );
 };
