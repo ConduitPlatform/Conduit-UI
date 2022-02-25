@@ -9,7 +9,7 @@ import {
   asyncGetSchemaDocuments,
   asyncGetSchemaOwners,
   asyncToggleSchema,
-} from '../../../redux/slices/cmsSlice';
+} from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
@@ -144,14 +144,16 @@ const Schemas: FC = () => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(0);
   const { schemaModel, schemaDocumentId } = router.query;
-  const { schemaOwners } = useAppSelector((state) => state.cmsSlice.data);
-  const { documents, documentsCount } = useAppSelector((state) => state.cmsSlice.data.documents);
+  const { schemaOwners } = useAppSelector((state) => state.databaseSlice.data);
+  const { documents, documentsCount } = useAppSelector(
+    (state) => state.databaseSlice.data.documents
+  );
   const [documentsState, setDocumentsState] = useState({
     data: [],
     count: 0,
   });
   const [owners, setOwners] = useState<string[]>(['database']);
-  const { schemaDocuments: schemas } = useAppSelector((state) => state.cmsSlice.data.schemas);
+  const { schemaDocuments: schemas } = useAppSelector((state) => state.databaseSlice.data.schemas);
   const [createDialog, setCreateDialog] = useState<boolean>(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [deleteDocumentDialog, setDeleteDocumentDialog] = useState(false);

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
-import { clearSelectedSchema } from '../../redux/slices/cmsSlice';
+import { clearSelectedSchema } from '../../redux/slices/databaseSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { ModifyOptions, Permissions, Schema } from '../../models/cms/CmsModels';

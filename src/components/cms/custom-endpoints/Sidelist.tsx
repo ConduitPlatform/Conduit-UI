@@ -27,9 +27,8 @@ import {
   asyncGetSchemasWithEndpoints,
   setEndpointsOperation,
   setEndpointsSearch,
-} from '../../../redux/slices/cmsSlice';
+} from '../../../redux/slices/databaseSlice';
 import { useRouter } from 'next/router';
-import { includes } from 'lodash';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 
 const useStyles = makeStyles((theme) => ({
@@ -85,7 +84,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const [search, setSearch] = useState('');
   const [schemas, setSchemas] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 500);
-  const { schemasWithEndpoints } = useAppSelector((state) => state.cmsSlice.data);
+  const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
   const labelRef: any = useRef();
   const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 

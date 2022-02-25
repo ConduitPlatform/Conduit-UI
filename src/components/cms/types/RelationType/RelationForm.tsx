@@ -14,7 +14,7 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, useEffect, useState } from 'react';
-import { asyncGetCmsSchemas } from '../../../../redux/slices/cmsSlice';
+import { asyncGetCmsSchemas } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { IDrawerData, IRelationData } from '../../../../models/cms/BuildTypesModels';
 
@@ -77,7 +77,7 @@ const RelationForm: FC<IProps> = ({
   const {
     schemas: { schemaDocuments },
     selectedSchema,
-  } = useAppSelector((state) => state.cmsSlice.data);
+  } = useAppSelector((state) => state.databaseSlice.data);
 
   const [simpleData, setSimpleData] = useState({
     name: selectedItem ? selectedItem.name : '',

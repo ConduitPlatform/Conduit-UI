@@ -26,7 +26,7 @@ import {
   asyncGetCmsSchemas,
   asyncModifyExtension,
   clearSelectedSchema,
-} from '../../../redux/slices/cmsSlice';
+} from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
 import { Chip, Typography } from '@material-ui/core';
@@ -107,7 +107,7 @@ const BuildTypes: React.FC = () => {
   const { id } = router.query;
   resetServerContext();
 
-  const { data } = useAppSelector((state) => state.cmsSlice);
+  const { data } = useAppSelector((state) => state.databaseSlice);
   const [editableFields, setEditableFields] = useState<any>({ newTypeFields: [] });
   const [nonEditableFields, setNonEditableFields] = useState<any[]>([]);
   const [selectedSchema, setSelectedSchema] = useState<Schema>();

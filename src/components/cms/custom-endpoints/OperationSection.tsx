@@ -9,7 +9,7 @@ import { Schema } from '../../../models/cms/CmsModels';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
-import { asyncGetCmsSchemasDialog } from '../../../redux/slices/cmsSlice';
+import { asyncGetCmsSchemasDialog } from '../../../redux/slices/databaseSlice';
 import { Loop } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
@@ -116,7 +116,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   };
 
   const { schemas: schemasForDialog, schemasCount } = useAppSelector(
-    (state) => state.cmsSlice.data.dialogSchemas
+    (state) => state.databaseSlice.data.dialogSchemas
   );
 
   const getData = useCallback(

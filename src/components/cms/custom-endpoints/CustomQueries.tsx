@@ -30,7 +30,7 @@ import {
   asyncCreateCustomEndpoints,
   asyncDeleteCustomEndpoints,
   asyncUpdateCustomEndpoints,
-} from '../../../redux/slices/cmsSlice';
+} from '../../../redux/slices/databaseSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,12 +67,12 @@ const CustomQueries: FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
 
-  const { filters } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
-  const { endpoints } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+  const { filters } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
+  const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
 
   const {
     schemas: { schemaDocuments },
-  } = useAppSelector((state) => state.cmsSlice.data);
+  } = useAppSelector((state) => state.databaseSlice.data);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 

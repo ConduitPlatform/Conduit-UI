@@ -30,7 +30,7 @@ import { enqueueErrorNotification, enqueueSuccessNotification } from '../../util
 import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 
-export interface ICmsSlice {
+export interface IDatabaseSlice {
   data: {
     schemas: {
       schemaDocuments: Schema[];
@@ -60,7 +60,7 @@ export interface ICmsSlice {
   };
 }
 
-const initialState: ICmsSlice = {
+const initialState: IDatabaseSlice = {
   data: {
     schemas: {
       schemaDocuments: [],
@@ -91,7 +91,7 @@ const initialState: ICmsSlice = {
 };
 
 export const asyncGetCmsSchemas = createAsyncThunk(
-  'cms/getSchemas',
+  'database/getSchemas',
   async (params: Pagination & Search & { enabled?: boolean } & { owner?: string[] }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -110,7 +110,7 @@ export const asyncGetCmsSchemas = createAsyncThunk(
 );
 
 export const asyncAddCmsSchemas = createAsyncThunk(
-  'cms/addSchemas',
+  'database/addSchemas',
   async (params: Pagination & Search & { enabled?: boolean } & { owner?: string[] }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -128,7 +128,7 @@ export const asyncAddCmsSchemas = createAsyncThunk(
 );
 
 export const asyncGetSchemaOwners = createAsyncThunk(
-  'cms/getSchemaOwners',
+  'database/getSchemaOwners',
   async (param, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -146,7 +146,7 @@ export const asyncGetSchemaOwners = createAsyncThunk(
 );
 
 export const asyncGetCmsSchemasDialog = createAsyncThunk(
-  'cms/getSchemasDialog',
+  'database/getSchemasDialog',
   async (params: Pagination & Search & { enabled?: boolean } & { owner: string[] }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -165,7 +165,7 @@ export const asyncGetCmsSchemasDialog = createAsyncThunk(
 );
 
 export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
-  'cms/createNewSchema',
+  'database/createNewSchema',
   async (dataForSchema, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -182,7 +182,7 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
 );
 
 export const asyncToggleSchema = createAsyncThunk(
-  'cms/toggleSchema',
+  'database/toggleSchema',
   async (_id: string, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -198,7 +198,7 @@ export const asyncToggleSchema = createAsyncThunk(
 );
 
 export const asyncToggleMultipleSchemas = createAsyncThunk(
-  'cms/toggleMultiple',
+  'database/toggleMultiple',
   async (params: { ids: string[]; enabled: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -219,7 +219,7 @@ export const asyncToggleMultipleSchemas = createAsyncThunk(
 );
 
 export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>(
-  'cms/editSchema',
+  'database/editSchema',
   async (params, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -237,7 +237,7 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
 );
 
 export const asyncDeleteSelectedSchemas = createAsyncThunk(
-  'cms/deleteSchema',
+  'database/deleteSchema',
   async (args: { ids: string[]; deleteData: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -260,7 +260,7 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
 );
 
 export const asyncModifyExtension = createAsyncThunk<any, { _id: string; data: any }>(
-  'cms/modifyExtension',
+  'database/modifyExtension',
   async (params, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -278,7 +278,7 @@ export const asyncModifyExtension = createAsyncThunk<any, { _id: string; data: a
 );
 
 export const asyncGetSchemaDocuments = createAsyncThunk(
-  'cms/getDocs',
+  'database/getDocs',
   async (params: { name: string; skip: number; limit: number; query: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -294,7 +294,7 @@ export const asyncGetSchemaDocuments = createAsyncThunk(
 );
 
 export const asyncGetSchemaDocument = createAsyncThunk(
-  'cms/getDoc',
+  'database/getDoc',
   async (
     params: {
       schemaName: string;
@@ -321,7 +321,7 @@ export const asyncGetSchemaDocument = createAsyncThunk(
 export const asyncCreateSchemaDocument = createAsyncThunk<
   any,
   { schemaName: string; document: any; getSchemaDocuments: () => void }
->('cms/createDoc', async (params, thunkAPI) => {
+>('database/createDoc', async (params, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
     const body = { schemaName: params.schemaName, inputDocument: params.document };
@@ -338,7 +338,7 @@ export const asyncCreateSchemaDocument = createAsyncThunk<
 export const asyncDeleteSchemaDocument = createAsyncThunk<
   any,
   { schemaName: string; documentId: string; getSchemaDocuments: () => void }
->('cms/deleteDoc', async (params, thunkAPI) => {
+>('database/deleteDoc', async (params, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
     await deleteSchemaDocumentRequest(params.schemaName, params.documentId);
@@ -352,7 +352,7 @@ export const asyncDeleteSchemaDocument = createAsyncThunk<
 });
 
 export const asyncEditSchemaDocument = createAsyncThunk(
-  'cms/editDoc',
+  'database/editDoc',
   async (
     params: {
       schemaName: string;
@@ -381,7 +381,7 @@ export const asyncEditSchemaDocument = createAsyncThunk(
 );
 
 export const asyncSetCustomEndpoints = createAsyncThunk(
-  'cms/setEndpoints',
+  'database/setEndpoints',
   async (
     params: Pagination & Search & { schemaName?: string[] } & { operation?: number },
     thunkAPI
@@ -400,7 +400,7 @@ export const asyncSetCustomEndpoints = createAsyncThunk(
 );
 
 export const asyncAddCustomEndpoints = createAsyncThunk(
-  'cms/addEndpoints',
+  'database/addEndpoints',
   async (
     params: Pagination & Search & { schemaName?: string[] } & { operation?: number },
     thunkAPI
@@ -419,7 +419,7 @@ export const asyncAddCustomEndpoints = createAsyncThunk(
 );
 
 export const asyncUpdateCustomEndpoints = createAsyncThunk(
-  'cms/updateEndpoints',
+  'database/updateEndpoints',
   async (params: { _id: string; endpointData: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -439,7 +439,7 @@ export const asyncUpdateCustomEndpoints = createAsyncThunk(
 );
 
 export const asyncDeleteCustomEndpoints = createAsyncThunk(
-  'cms/deleteEndpoints',
+  'database/deleteEndpoints',
   async (params: { _id: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -456,7 +456,7 @@ export const asyncDeleteCustomEndpoints = createAsyncThunk(
 );
 
 export const asyncCreateCustomEndpoints = createAsyncThunk(
-  'cms/createEndpoints',
+  'database/createEndpoints',
   async (
     params: {
       endpointData: any;
@@ -500,7 +500,7 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
 );
 
 export const asyncGetSchemasWithEndpoints = createAsyncThunk(
-  'cms/getSchemasWithEndpoints',
+  'database/getSchemasWithEndpoints',
   async (param, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -521,8 +521,8 @@ const findSchemaById = (_id: string, schemaDocuments: Schema[]) => {
   return found ? found : null;
 };
 
-const cmsSlice = createSlice({
-  name: 'cms',
+const databaseSlice = createSlice({
+  name: 'database',
   initialState,
   reducers: {
     setSelectedSchema(state, action) {
@@ -614,6 +614,6 @@ const cmsSlice = createSlice({
   },
 });
 
-export default cmsSlice.reducer;
+export default databaseSlice.reducer;
 export const { setSelectedSchema, clearSelectedSchema, setEndpointsSearch, setEndpointsOperation } =
-  cmsSlice.actions;
+  databaseSlice.actions;

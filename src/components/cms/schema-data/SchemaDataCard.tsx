@@ -4,7 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { CardContent } from '@material-ui/core';
 import { Schema } from '../../../models/cms/CmsModels';
-import { asyncEditSchemaDocument, asyncGetSchemaDocument } from '../../../redux/slices/cmsSlice';
+import {
+  asyncEditSchemaDocument,
+  asyncGetSchemaDocument,
+} from '../../../redux/slices/databaseSlice';
 import { useAppDispatch } from '../../../redux/store';
 import { DocumentActions, EditDocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 import { cloneDeep, set } from 'lodash';

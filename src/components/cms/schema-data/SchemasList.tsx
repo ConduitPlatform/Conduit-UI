@@ -5,9 +5,9 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
+import { Box, ListItem, ListItemText, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { asyncAddCmsSchemas, asyncGetCmsSchemas } from '../../../redux/slices/cmsSlice';
+import { asyncAddCmsSchemas, asyncGetCmsSchemas } from '../../../redux/slices/databaseSlice';
 import clsx from 'clsx';
 import { Schema } from '../../../models/cms/CmsModels';
 
@@ -114,7 +114,9 @@ const SchemasList: FC<Props> = ({
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
-  const { schemaDocuments, schemasCount } = useAppSelector((state) => state.cmsSlice.data.schemas);
+  const { schemaDocuments, schemasCount } = useAppSelector(
+    (state) => state.databaseSlice.data.schemas
+  );
 
   const isItemLoaded = (index: number) => !!schemaDocuments[index];
 

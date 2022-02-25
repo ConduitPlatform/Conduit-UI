@@ -4,7 +4,7 @@ import { localeEn } from '../../../models/JSONEditorAjrmLocale';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
 import { useAppDispatch } from '../../../redux/store';
 import { Schema } from '../../../models/cms/CmsModels';
-import { asyncEditSchemaDocument } from '../../../redux/slices/cmsSlice';
+import { asyncEditSchemaDocument } from '../../../redux/slices/databaseSlice';
 import { enqueueErrorNotification } from '../../../utils/useNotifier';
 import { makeStyles } from '@material-ui/core';
 

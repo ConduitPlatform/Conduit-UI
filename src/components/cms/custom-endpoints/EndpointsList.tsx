@@ -9,7 +9,10 @@ import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@m
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { Skeleton } from '@material-ui/lab';
-import { asyncAddCustomEndpoints, asyncSetCustomEndpoints } from '../../../redux/slices/cmsSlice';
+import {
+  asyncAddCustomEndpoints,
+  asyncSetCustomEndpoints,
+} from '../../../redux/slices/databaseSlice';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -108,7 +111,7 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, sel
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
-  const { endpoints, count } = useAppSelector((state) => state.cmsSlice.data.customEndpoints);
+  const { endpoints, count } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   const isItemLoaded = (index: number) => !!endpoints[index];

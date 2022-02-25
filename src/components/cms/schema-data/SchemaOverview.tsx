@@ -7,7 +7,7 @@ import { localeEn } from '../../../models/JSONEditorAjrmLocale';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from '../../../redux/store';
 import SchemaActionsDialog, { actions } from '../SchemaActionsDialog';
-import { asyncDeleteSelectedSchemas, asyncToggleSchema } from '../../../redux/slices/cmsSlice';
+import { asyncDeleteSelectedSchemas, asyncToggleSchema } from '../../../redux/slices/databaseSlice';
 import SchemaViewer from './SchemaViewer';
 import { getSchemaFieldsWithExtra } from '../../../utils/type-functions';
 
