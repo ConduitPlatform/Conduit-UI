@@ -4,30 +4,30 @@ import { CONDUIT_API } from './requestsConfig';
 
 export const getCmsSchemasRequest = (
   params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] }
-) => axios.get(`${CONDUIT_API}/admin/cms/schemas`, { params });
+) => axios.get(`${CONDUIT_API}/admin/database/schemas`, { params });
 
 export const getCmsSchemaByIdRequest = (_id: string) =>
-  axios.get(`${CONDUIT_API}/admin/cms/schemas${_id}`);
+  axios.get(`${CONDUIT_API}/admin/database/schemas${_id}`);
 
 export const postCmsSchemaRequest = (data: any) =>
-  axios.post(`${CONDUIT_API}/admin/cms/schemas`, { ...data });
+  axios.post(`${CONDUIT_API}/admin/database/schemas`, { ...data });
 
 export const patchCmsSchemaRequest = (_id: string, data: any) =>
-  axios.patch(`${CONDUIT_API}/admin/cms/schemas/${_id}`, { ...data });
+  axios.patch(`${CONDUIT_API}/admin/cdatabasems/schemas/${_id}`, { ...data });
 
 export const setSchemaExtension = (_id: string, data: any) =>
-  axios.post(`${CONDUIT_API}/admin/cms/schemas/${_id}/extensions/`, { fields: data });
+  axios.post(`${CONDUIT_API}/admin/database/schemas/${_id}/extensions/`, { fields: data });
 
-export const getSchemaOwners = () => axios.get(`${CONDUIT_API}/admin/cms/schemas/owners`);
+export const getSchemaOwners = () => axios.get(`${CONDUIT_API}/admin/database/schemas/owners`);
 
 export const deleteCmsSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
-  return axios.delete(`${CONDUIT_API}/admin/cms/schemas`, { params });
+  return axios.delete(`${CONDUIT_API}/admin/database/schemas`, { params });
 };
 export const toggleSchemaByIdRequest = (_id: string) =>
-  axios.post(`${CONDUIT_API}/admin/cms/schemas/${_id}/toggle`);
+  axios.post(`${CONDUIT_API}/admin/database/schemas/${_id}/toggle`);
 
 export const toggleMultipleSchemasRequest = (params: { ids: string[]; enabled: boolean }) =>
-  axios.post(`${CONDUIT_API}/admin/cms/schemas/toggle`, { ...params });
+  axios.post(`${CONDUIT_API}/admin/database/schemas/toggle`, { ...params });
 
 export const getCmsDocumentsByNameRequest = (params: {
   name: string;
@@ -35,9 +35,9 @@ export const getCmsDocumentsByNameRequest = (params: {
   limit: number;
   query?: string;
 }) =>
-  axios.post(`${CONDUIT_API}/admin/cms/schemas/${params.name}/query`, {
+  axios.post(`${CONDUIT_API}/admin/database/schemas/${params.name}/query`, {
     ...params,
   });
 
 export const getCmsDocumentByIdRequest = (params: { schemaName: string; id: string }) =>
-  axios.get(`${CONDUIT_API}/admin/cms/schemas/${params.schemaName}/docs/${params.id}`);
+  axios.get(`${CONDUIT_API}/admin/database/schemas/${params.schemaName}/docs/${params.id}`);

@@ -162,7 +162,7 @@ const Home = () => {
                 <Typography variant="subtitle2">
                   Add data to your newly created schema!
                   <IconButton className={classes.iconButton} size="small">
-                    <Link href="/cms/schemadata">
+                    <Link href="/database/schemas">
                       <ArrowForward />
                     </Link>
                   </IconButton>

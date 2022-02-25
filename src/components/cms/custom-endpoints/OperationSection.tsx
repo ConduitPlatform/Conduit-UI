@@ -122,7 +122,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const getData = useCallback(
     (params: Pagination & Search) => {
       if (drawer) {
-        dispatch(asyncGetCmsSchemasDialog({ ...params, owner: ['cms'] }));
+        dispatch(asyncGetCmsSchemasDialog({ ...params, owner: ['database'] }));
       }
     },
     [dispatch, drawer]

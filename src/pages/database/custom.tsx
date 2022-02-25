@@ -1,9 +1,8 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
-import CmsLayout from '../../components/navigation/InnerLayouts/cmsLayout';
 import { asyncGetCmsSchemas } from '../../redux/slices/cmsSlice';
-
 import CustomQueries from '../../components/cms/custom-endpoints/CustomQueries';
+import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
 
 const Custom = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +15,7 @@ const Custom = () => {
 };
 
 Custom.getLayout = function getLayout(page: ReactElement) {
-  return <CmsLayout>{page}</CmsLayout>;
+  return <DatabaseLayout>{page}</DatabaseLayout>;
 };
 
 export default Custom;

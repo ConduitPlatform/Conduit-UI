@@ -83,7 +83,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           setSelectedSchemaForAction({ data: schema, action: 'archive' });
           setOpenDialog(true);
         }}
-        disabled={schema.ownerModule !== 'cms'}
+        disabled={schema.ownerModule !== 'database'}
         fullWidth
         variant="outlined">
         Archive
@@ -112,7 +112,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
         variant="contained"
         color="secondary"
         onClick={() => handleEditClick(schema._id)}>
-        {schema.ownerModule === 'cms' ? 'Edit' : 'Extend'}
+        {schema.ownerModule === 'database' ? 'Edit' : 'Extend'}
       </Button>
     );
   };
@@ -120,7 +120,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
   const formattedFields = getSchemaFieldsWithExtra(schema.fields);
 
   const goToSchemaEndpoints = (name: string) => {
-    router.push(`/cms/custom?schema=${name}`, undefined, { shallow: true });
+    router.push(`/database/custom?schema=${name}`, undefined, { shallow: true });
   };
 
   return (

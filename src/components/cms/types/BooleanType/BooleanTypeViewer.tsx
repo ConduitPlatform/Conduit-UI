@@ -13,7 +13,7 @@ interface IProps {
 const BooleanTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <>
-      <Grid item container alignItems="center" xs={1}>
+      <Grid item container alignItems="center" justifyContent="center" xs={1}>
         <Typography variant={'body2'} style={{ opacity: 0.4 }}>
           {item.placeholderFalse}
         </Typography>
@@ -38,7 +38,7 @@ export default BooleanTypeViewer;
 export const BooleanGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <>
-      <Grid item container alignItems="center" xs={1}>
+      <Grid item container justifyContent="center" alignItems="center" xs={1}>
         <Typography variant={'body2'} style={{ opacity: 0.4 }}>
           {item.placeholderFalse}
         </Typography>

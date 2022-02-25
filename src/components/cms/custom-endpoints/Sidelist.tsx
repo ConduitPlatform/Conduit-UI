@@ -23,8 +23,14 @@ import {
   setEndpointData,
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
-import { setEndpointsOperation, setEndpointsSearch } from '../../../redux/slices/cmsSlice';
+import {
+  asyncGetSchemasWithEndpoints,
+  setEndpointsOperation,
+  setEndpointsSearch,
+} from '../../../redux/slices/cmsSlice';
 import { useRouter } from 'next/router';
+import { includes } from 'lodash';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -79,8 +85,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const [search, setSearch] = useState('');
   const [schemas, setSchemas] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 500);
-  const { schemaDocuments } = useAppSelector((state) => state.cmsSlice.data.schemas);
-  const finalSchemas = schemaDocuments.map((schema) => schema.name);
+  const { schemasWithEndpoints } = useAppSelector((state) => state.cmsSlice.data);
   const labelRef: any = useRef();
   const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
@@ -89,10 +94,26 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   }, [debouncedSearch, dispatch]);
 
   useEffect(() => {
+    dispatch(asyncGetSchemasWithEndpoints());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (schema) {
-      setSchemas([`${schema}`]);
+      const isFound = schemasWithEndpoints.some((element) => {
+        if (element.name === schema) {
+          return true;
+        }
+      });
+      if (!isFound) {
+        router.replace('/database/custom', undefined, { shallow: true });
+        dispatch(
+          enqueueInfoNotification('Selected schema has no available endpoints!', 'duplicate')
+        );
+      } else {
+        setSchemas([`${schema}`]);
+      }
     }
-  }, [schema]);
+  }, [schema, dispatch, router, schemasWithEndpoints]);
 
   const handleListItemSelect = (endpoint: any) => {
     dispatch(setSelectedEndPoint(endpoint));
@@ -109,7 +130,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
     setSchemas(event.target.value);
     if (schema) {
-      router.replace('/cms/custom', undefined, { shallow: true });
+      router.replace('/database/custom', undefined, { shallow: true });
     }
   };
 
@@ -171,11 +192,11 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
               MenuProps={{
                 getContentAnchorEl: null,
               }}>
-              {finalSchemas &&
-                finalSchemas.map((module: any) => (
-                  <MenuItem key={module} value={module}>
-                    <Checkbox checked={schemas.indexOf(module) > -1} />
-                    <ListItemText primary={module} />
+              {schemasWithEndpoints &&
+                schemasWithEndpoints.map((schema: { name: string; id: string }) => (
+                  <MenuItem key={schema.name} value={schema.name}>
+                    <Checkbox checked={schemas.indexOf(schema.name) > -1} />
+                    <ListItemText primary={schema.name} />
                   </MenuItem>
                 ))}
             </Select>

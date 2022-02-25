@@ -37,8 +37,8 @@ module.exports = (phase) => {
         permanent: true,
       },
       {
-        source: '/cms',
-        destination: '/cms/schemas',
+        source: '/database',
+        destination: '/database/schemas',
         permanent: true,
       },
       {

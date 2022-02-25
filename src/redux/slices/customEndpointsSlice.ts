@@ -25,6 +25,7 @@ interface ICustomEndpointSlice {
     };
     schemaFields: [];
     selectedEndpoint: any;
+    endpointsWithSchemas: string[];
   };
 }
 
@@ -44,6 +45,7 @@ const initialState: ICustomEndpointSlice = {
     },
     schemaFields: [],
     selectedEndpoint: undefined,
+    endpointsWithSchemas: [],
   },
 };
 

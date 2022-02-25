@@ -2,8 +2,8 @@ import React from 'react';
 import SharedLayout from './sharedLayout';
 import { Toc } from '@material-ui/icons';
 
-const CmsLayout: React.FC = ({ children }) => {
-  const pathNames = ['/cms/schemas', '/cms/custom', '/cms/settings'];
+const DatabaseLayout: React.FC = ({ children }) => {
+  const pathNames = ['/database/schemas', '/database/custom', '/database/settings'];
   const labels = [
     { name: 'schemas', id: 'schemas' },
     { name: 'custom endpoints', id: 'custom' },
@@ -12,7 +12,7 @@ const CmsLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      title={'CMS'}
+      title={'Database'}
       labels={labels}
       pathNames={pathNames}
       swagger={'cms'}
@@ -22,4 +22,4 @@ const CmsLayout: React.FC = ({ children }) => {
   );
 };
 
-export default CmsLayout;
+export default DatabaseLayout;

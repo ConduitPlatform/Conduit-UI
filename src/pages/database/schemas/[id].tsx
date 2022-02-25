@@ -153,7 +153,7 @@ const BuildTypes: React.FC = () => {
     if (!selectedSchema) {
       setCrudOperations(true);
     }
-    if (data && selectedSchema && selectedSchema.ownerModule === 'cms') {
+    if (data && selectedSchema && selectedSchema.ownerModule === 'database') {
       setSchemaName(selectedSchema.name);
       if (
         selectedSchema.modelOptions.conduit.cms.authentication !== null &&
@@ -178,7 +178,7 @@ const BuildTypes: React.FC = () => {
     } else if (
       data &&
       selectedSchema &&
-      selectedSchema.ownerModule === 'cms' &&
+      selectedSchema.ownerModule === 'database' &&
       selectedSchema.extensions
     ) {
       setSchemaName(selectedSchema.name);
@@ -191,7 +191,7 @@ const BuildTypes: React.FC = () => {
       setNonEditableFields(extensionSchemas);
       const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
       setEditableFields({ newTypeFields: formattedFields });
-    } else if (data && selectedSchema && selectedSchema.ownerModule !== 'cms') {
+    } else if (data && selectedSchema && selectedSchema.ownerModule !== 'database') {
       setSchemaName(selectedSchema.name);
       setAuthentication(false);
       setCrudOperations(false);
@@ -481,7 +481,7 @@ const BuildTypes: React.FC = () => {
   ) => {
     if (
       selectedSchema &&
-      selectedSchema?.ownerModule !== 'cms' &&
+      selectedSchema?.ownerModule !== 'database' &&
       selectedSchema.modelOptions.conduit.permissions.extendable
     ) {
       const { _id } = selectedSchema;
@@ -514,7 +514,7 @@ const BuildTypes: React.FC = () => {
       }
     }
     dispatch(clearSelectedSchema());
-    router.push({ pathname: '/cms/schemas' });
+    router.push({ pathname: '/database/schemas' });
   };
 
   const extractEditableTitle = () => {
@@ -539,7 +539,7 @@ const BuildTypes: React.FC = () => {
   };
 
   const showEditableFields = () => {
-    if (selectedSchema?.ownerModule === 'cms' || !selectedSchema) {
+    if (selectedSchema?.ownerModule === 'database' || !selectedSchema) {
       return true;
     } else if (selectedSchema.modelOptions.conduit.permissions.extendable) {
       return true;
@@ -549,7 +549,7 @@ const BuildTypes: React.FC = () => {
   };
 
   const disabledFields = () => {
-    if (selectedSchema && selectedSchema?.ownerModule !== 'cms') {
+    if (selectedSchema && selectedSchema?.ownerModule !== 'database') {
       return true;
     } else {
       return false;

@@ -81,7 +81,7 @@ const PermissionsDialog: React.FC<Props> = ({
   };
 
   const isDisabled = () => {
-    if (selectedSchema && selectedSchema.ownerModule !== 'cms') {
+    if (selectedSchema && selectedSchema.ownerModule !== 'database') {
       return true;
     } else return false;
   };

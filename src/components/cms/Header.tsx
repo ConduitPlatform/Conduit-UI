@@ -140,7 +140,7 @@ const Header: FC<Props> = ({
   };
 
   const isDisabled = () => {
-    if (selectedSchema && selectedSchema.ownerModule !== 'cms') {
+    if (selectedSchema && selectedSchema.ownerModule !== 'database') {
       return true;
     } else return false;
   };
@@ -148,7 +148,7 @@ const Header: FC<Props> = ({
   return (
     <Box boxShadow={3} className={clsx(classes.header, classes.colorWhite)} {...rest}>
       <Box display={'flex'} alignItems={'center'}>
-        <Link href="/cms/schemas">
+        <Link href="/database/schemas">
           {/* TODO call dispatch clear cms */}
           <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
             <Box className={classes.backIconContainer}>

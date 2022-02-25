@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
-import CmsLayout from '../../../components/navigation/InnerLayouts/cmsLayout';
 import Schemas from '../../../components/cms/schema-data/Schemas';
+import DatabaseLayout from '../../../components/navigation/InnerLayouts/databaseLayout';
 
 const SchemasPage = () => {
   return <Schemas />;
 };
 
 SchemasPage.getLayout = function getLayout(page: ReactElement) {
-  return <CmsLayout>{page}</CmsLayout>;
+  return <DatabaseLayout>{page}</DatabaseLayout>;
 };
 
 export default SchemasPage;

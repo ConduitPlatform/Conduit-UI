@@ -88,18 +88,18 @@ const useStyles = makeStyles((theme) => ({
   },
   toggleButton: {
     '&.Mui-selected': {
-      background: theme.palette.secondary.main,
-      color: theme.palette.secondary.contrastText,
+      background: theme.palette.primary.main,
+      color: 'white',
       '&:hover': {
-        background: theme.palette.secondary.contrastText,
+        background: theme.palette.secondary.main,
       },
     },
     textTransform: 'none',
   },
   toggleButtonDisabled: {
     '&.Mui-selected': {
-      background: theme.palette.secondary.main,
-      color: theme.palette.secondary.contrastText,
+      background: theme.palette.primary.main,
+      color: 'white',
       '&:hover': {
         background: theme.palette.secondary.main,
       },
@@ -150,7 +150,7 @@ const Schemas: FC = () => {
     data: [],
     count: 0,
   });
-  const [owners, setOwners] = useState<string[]>(['cms']);
+  const [owners, setOwners] = useState<string[]>(['database']);
   const { schemaDocuments: schemas } = useAppSelector((state) => state.cmsSlice.data.schemas);
   const [createDialog, setCreateDialog] = useState<boolean>(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
@@ -218,7 +218,7 @@ const Schemas: FC = () => {
   }, [documents, documentsCount]);
 
   const handleChange = (value: string) => {
-    router.push(`/cms/schemas?schemaModel=${value}`, undefined, { shallow: true });
+    router.push(`/database/schemas?schemaModel=${value}`, undefined, { shallow: true });
   };
 
   const handleCloseDeleteDialog = () => {
@@ -343,7 +343,7 @@ const Schemas: FC = () => {
 
   const handleEnabled = (event: any, newValue: any) => {
     setEnabled(newValue);
-    setOwners(['cms']);
+    setOwners(['database']);
   };
 
   const handleAddSchema = () => {
