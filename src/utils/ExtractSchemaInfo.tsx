@@ -31,8 +31,6 @@ export const ExtractSchemaInfo = (schema: Schema) => {
     setOpen(!open);
   };
 
-  console.log(schema);
-
   return (
     <List component="nav" aria-label="main mailbox folders">
       {cms && (
