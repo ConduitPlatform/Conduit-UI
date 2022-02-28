@@ -36,7 +36,7 @@ import {
 import { Archive, Check, Search } from '@material-ui/icons';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import SchemasList from './SchemasList';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { SchemaTabs } from './SchemaTabs';

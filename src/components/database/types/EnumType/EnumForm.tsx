@@ -12,7 +12,7 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, useState } from 'react';
-import { IDrawerData, IEnumData } from '../../../../models/cms/BuildTypesModels';
+import { IDrawerData, IEnumData } from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   form: {

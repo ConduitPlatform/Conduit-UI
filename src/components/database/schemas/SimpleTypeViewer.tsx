@@ -6,7 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import FieldIndicators from '../FieldIndicators';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import Grid from '@material-ui/core/Grid';
-import { IRelationData } from '../../../models/cms/BuildTypesModels';
+import { IRelationData } from '../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   icon: {

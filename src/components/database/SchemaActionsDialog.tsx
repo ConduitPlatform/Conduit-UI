@@ -13,7 +13,7 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 import { isArray } from 'lodash';
-import { Schema } from '../../models/cms/CmsModels';
+import { Schema } from '../../models/database/CmsModels';
 import { SchemaUI } from './CmsModels';
 
 const useStyles = makeStyles((theme) => ({
@@ -87,22 +87,22 @@ const SchemaActionsDialog: FC<Props> = ({
   const createDialogTitle = (action: actions) => {
     switch (action) {
       case 'enable': {
-        return 'Enable CMS schema:';
+        return 'Enableschema:';
       }
       case 'archive': {
-        return 'Archive CMS schema:';
+        return 'Archive schema:';
       }
       case 'enableMany': {
-        return 'Enable selected CSM schemas:';
+        return 'Enable selected schemas:';
       }
       case 'archiveMany': {
-        return 'Archive selected CSM schemas:';
+        return 'Archive selected schemas:';
       }
       case 'delete': {
-        return 'Delete CMS schema:';
+        return 'Delete schema:';
       }
       case 'deleteMany': {
-        return 'Delete CMS schemas:';
+        return 'Delete schemas:';
       }
       default:
         return '';

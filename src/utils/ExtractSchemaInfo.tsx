@@ -11,7 +11,7 @@ import EditAttributesIcon from '@material-ui/icons/EditAttributes';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import TocIcon from '@material-ui/icons/Toc';
 import PersonIcon from '@material-ui/icons/Person';
-import { Schema } from '../models/cms/CmsModels';
+import { Schema } from '../models/database/CmsModels';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 

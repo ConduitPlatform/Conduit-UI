@@ -2,17 +2,17 @@ import axios from 'axios';
 import { Pagination, Search, Sort } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 
-export const getCmsSchemasRequest = (
+export const getSchemasRequest = (
   params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] }
 ) => axios.get(`${CONDUIT_API}/admin/database/schemas`, { params });
 
-export const getCmsSchemaByIdRequest = (_id: string) =>
+export const getSchemaByIdRequest = (_id: string) =>
   axios.get(`${CONDUIT_API}/admin/database/schemas${_id}`);
 
-export const postCmsSchemaRequest = (data: any) =>
+export const postSchemaRequest = (data: any) =>
   axios.post(`${CONDUIT_API}/admin/database/schemas`, { ...data });
 
-export const patchCmsSchemaRequest = (_id: string, data: any) =>
+export const patchSchemaRequest = (_id: string, data: any) =>
   axios.patch(`${CONDUIT_API}/admin/database/schemas/${_id}`, { ...data });
 
 export const setSchemaExtension = (_id: string, data: any) =>
@@ -20,7 +20,7 @@ export const setSchemaExtension = (_id: string, data: any) =>
 
 export const getSchemaOwners = () => axios.get(`${CONDUIT_API}/admin/database/schemas/owners`);
 
-export const deleteCmsSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
+export const deleteSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
   return axios.delete(`${CONDUIT_API}/admin/database/schemas`, { params });
 };
 export const toggleSchemaByIdRequest = (_id: string) =>
@@ -29,7 +29,7 @@ export const toggleSchemaByIdRequest = (_id: string) =>
 export const toggleMultipleSchemasRequest = (params: { ids: string[]; enabled: boolean }) =>
   axios.post(`${CONDUIT_API}/admin/database/schemas/toggle`, { ...params });
 
-export const getCmsDocumentsByNameRequest = (params: {
+export const getDocumentsByNameRequest = (params: {
   name: string;
   skip: number;
   limit: number;
@@ -39,5 +39,5 @@ export const getCmsDocumentsByNameRequest = (params: {
     ...params,
   });
 
-export const getCmsDocumentByIdRequest = (params: { schemaName: string; id: string }) =>
+export const getDocumentByIdRequest = (params: { schemaName: string; id: string }) =>
   axios.get(`${CONDUIT_API}/admin/database/schemas/${params.schemaName}/docs/${params.id}`);

@@ -5,7 +5,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import { set, cloneDeep } from 'lodash';
 
 import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';

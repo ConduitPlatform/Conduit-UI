@@ -19,7 +19,7 @@ import {
   IGroupChildContentData,
   IGroupChildData,
   IGroupData,
-} from '../../../../models/cms/BuildTypesModels';
+} from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   root: {

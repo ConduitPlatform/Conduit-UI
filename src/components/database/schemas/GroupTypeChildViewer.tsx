@@ -5,7 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import GroupIcon from '@material-ui/icons/PlaylistAdd';
 import FieldIndicators from '../FieldIndicators';
 import Grid from '@material-ui/core/Grid';
-import { IGroupChildData } from '../../../models/cms/BuildTypesModels';
+import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 

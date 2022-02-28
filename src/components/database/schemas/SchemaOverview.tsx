@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Grid, Paper, Box, Button } from '@material-ui/core';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
 import { ExtractSchemaInfo } from '../../../utils/ExtractSchemaInfo';
 import { localeEn } from '../../../models/JSONEditorAjrmLocale';

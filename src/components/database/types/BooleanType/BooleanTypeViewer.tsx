@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 import FieldIndicators from '../../FieldIndicators';
 import Grid from '@material-ui/core/Grid';
-import { IBooleanData } from '../../../../models/cms/BuildTypesModels';
+import { IBooleanData } from '../../../../models/database/BuildTypesModels';
 
 interface IProps {
   item: IBooleanData;

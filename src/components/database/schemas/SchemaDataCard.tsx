@@ -3,7 +3,7 @@ import Card, { CardProps } from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { CardContent } from '@material-ui/core';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import {
   asyncEditSchemaDocument,
   asyncGetSchemaDocument,

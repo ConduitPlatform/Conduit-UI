@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import EnumForm from './types/EnumType/EnumForm';
 import ObjectIdForm from './types/ObjectIdType/ObjectIdForm';
 import RelationForm from './types/RelationType/RelationForm';
-import { IDrawerData } from '../../models/cms/BuildTypesModels';
+import { IDrawerData } from '../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {

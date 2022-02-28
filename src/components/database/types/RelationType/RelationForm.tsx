@@ -14,9 +14,9 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, useEffect, useState } from 'react';
-import { asyncGetCmsSchemas } from '../../../../redux/slices/databaseSlice';
+import { asyncGetSchemas } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import { IDrawerData, IRelationData } from '../../../../models/cms/BuildTypesModels';
+import { IDrawerData, IRelationData } from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -90,7 +90,7 @@ const RelationForm: FC<IProps> = ({
   const [availableSchemas, setAvailableSchemas] = useState<any>([]);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 1000 }));
+    dispatch(asyncGetSchemas({ skip: 0, limit: 1000 }));
   }, [dispatch]);
 
   useEffect(() => {

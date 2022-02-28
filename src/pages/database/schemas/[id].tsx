@@ -23,12 +23,12 @@ import { useRouter } from 'next/router';
 import {
   asyncCreateNewSchema,
   asyncEditSchema,
-  asyncGetCmsSchemas,
+  asyncGetSchemas,
   asyncModifyExtension,
   clearSelectedSchema,
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { ModifyOptions, Permissions, Schema } from '../../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../../models/database/CmsModels';
 import { Chip, Typography } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -135,7 +135,7 @@ const BuildTypes: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 100 }));
+    dispatch(asyncGetSchemas({ skip: 0, limit: 100 }));
   }, [dispatch]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
-import { asyncGetCmsSchemas } from '../../redux/slices/databaseSlice';
+import { asyncGetSchemas } from '../../redux/slices/databaseSlice';
 import CustomQueries from '../../components/database/custom-endpoints/CustomQueries';
 import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
 
@@ -8,7 +8,7 @@ const Custom = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetCmsSchemas({ skip: 0, limit: 50, enabled: true }));
+    dispatch(asyncGetSchemas({ skip: 0, limit: 50, enabled: true }));
   }, [dispatch]);
 
   return <CustomQueries />;

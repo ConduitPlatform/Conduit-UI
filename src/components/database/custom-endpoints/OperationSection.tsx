@@ -5,11 +5,11 @@ import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
-import { asyncGetCmsSchemasDialog } from '../../../redux/slices/databaseSlice';
+import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
 import { Loop } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
@@ -122,7 +122,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const getData = useCallback(
     (params: Pagination & Search) => {
       if (drawer) {
-        dispatch(asyncGetCmsSchemasDialog({ ...params, owner: ['database'] }));
+        dispatch(asyncGetSchemasDialog({ ...params, owner: ['database'] }));
       }
     },
     [dispatch, drawer]

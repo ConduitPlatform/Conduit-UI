@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Checkbox from '@material-ui/core/Checkbox';
-import { IDrawerData, IGroupData } from '../../../../models/cms/BuildTypesModels';
+import { IDrawerData, IGroupData } from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({
   form: {

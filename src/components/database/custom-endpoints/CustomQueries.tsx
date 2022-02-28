@@ -24,7 +24,7 @@ import {
   setSchemaFields,
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import {
   asyncCreateCustomEndpoints,

@@ -10,7 +10,7 @@ import {
   IGroupChildContentData,
   IGroupChildData,
   IGroupData,
-} from '../../../models/cms/BuildTypesModels';
+} from '../../../models/database/BuildTypesModels';
 import GroupTypeChildViewer from './GroupTypeChildViewer';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { ObjectIdGroupTypeViewer } from '../types/ObjectIdType/ObjectIdTypeViewer';

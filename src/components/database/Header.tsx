@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/databaseSlice';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { ModifyOptions, Permissions, Schema } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;

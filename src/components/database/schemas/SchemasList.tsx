@@ -7,9 +7,9 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, ListItem, ListItemText, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { asyncAddCmsSchemas, asyncGetCmsSchemas } from '../../../redux/slices/databaseSlice';
+import { asyncAddSchemas, asyncGetSchemas } from '../../../redux/slices/databaseSlice';
 import clsx from 'clsx';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 
 const useStyles = makeStyles((theme) => ({
   listBox: {
@@ -133,7 +133,7 @@ const SchemasList: FC<Props> = ({
       owner: owners,
       enabled: enabled,
     };
-    dispatch(asyncGetCmsSchemas(params));
+    dispatch(asyncGetSchemas(params));
   }, [dispatch, search, owners, enabled]);
 
   const addSchemas = (skip: number, limit: number) => {
@@ -144,7 +144,7 @@ const SchemasList: FC<Props> = ({
       owner: owners,
       enabled: enabled,
     };
-    dispatch(asyncAddCmsSchemas(params));
+    dispatch(asyncAddSchemas(params));
   };
 
   const debouncedGetApiItems = debounce(

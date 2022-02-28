@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core';
 import React, { FC } from 'react';
 import { createDocumentArray } from '../schemas/SchemaDataUtils';
 import TreeElement from './TreeElement';
-import { Schema } from '../../../models/cms/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import { TreeView } from '@material-ui/lab';
 import { ChevronRight, ExpandMore } from '@material-ui/icons';
 

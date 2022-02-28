@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import { ModifyOptions, Permissions, Schema } from '../../models/cms/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
 import { DoneOutline } from '@material-ui/icons';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
