@@ -156,7 +156,9 @@ const ReusableAccordion: React.FC<Props> = ({
               justifyContent={'space-between'}
               alignItems={'center'}>
               <Typography variant={'button'} style={{ width: '100%' }}>
-                Allow users to sign up using their {name} account.
+                {name !== 'phoneAuthentication'
+                  ? `Allow users to sign up using their ${name} account.`
+                  : `Allow users to sign up using their phone number.`}
               </Typography>
               <FormControlLabel
                 control={

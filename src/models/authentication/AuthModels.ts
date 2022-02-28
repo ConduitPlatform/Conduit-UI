@@ -20,7 +20,7 @@ export interface AuthUserUI {
 export interface SignInTypes {
   enabled: boolean;
   OAuth2Flow?: boolean;
-  accountLinking: boolean;
+  accountLinking?: boolean;
   sendVerificationEmail?: boolean;
   verificationRequired?: boolean;
   clientId?: string;
@@ -39,7 +39,8 @@ export type SocialNameTypes =
   | 'microsoft'
   | 'slack'
   | 'github'
-  | 'figma';
+  | 'figma'
+  | 'phoneAuthentication';
 
 export interface ServiceAccount {
   active: boolean;
@@ -69,7 +70,7 @@ export interface IAuthenticationConfig {
   tokenInvalidationPeriod: number;
   twofa: { enabled: boolean };
   service: { enabled: boolean };
-
+  phoneAuthentication: { enabled: boolean };
   facebook: SignInTypes;
   google: SignInTypes;
   local: SignInTypes;
