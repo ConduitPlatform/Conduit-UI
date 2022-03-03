@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { EndpointInputs } from '../../models/cms/CmsModels';
+import { EndpointInputs } from '../../models/database/CmsModels';
 import { Assignment } from '../../models/customEndpoints/customEndpointsModels';
 
 // TODO create proper Interface for the slices' initial state
@@ -25,6 +25,7 @@ interface ICustomEndpointSlice {
     };
     schemaFields: [];
     selectedEndpoint: any;
+    endpointsWithSchemas: string[];
   };
 }
 
@@ -44,6 +45,7 @@ const initialState: ICustomEndpointSlice = {
     },
     schemaFields: [],
     selectedEndpoint: undefined,
+    endpointsWithSchemas: [],
   },
 };
 

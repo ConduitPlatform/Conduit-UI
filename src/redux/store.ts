@@ -5,7 +5,7 @@ import notificationsSlice from './slices/notificationsSlice';
 import storageSlice from './slices/storageSlice';
 import settingsSlice from './slices/settingsSlice';
 import emailsSlice from './slices/emailsSlice';
-import cmsSlice from './slices/cmsSlice';
+import databaseSlice from './slices/databaseSlice';
 import customEndpointsSlice from './slices/customEndpointsSlice';
 import smsSlice from './slices/smsSlice';
 import { useMemo } from 'react';
@@ -24,7 +24,7 @@ export const makeStore = (preloadedState: any) =>
       appAuthSlice,
       authenticationSlice,
       formsSlice,
-      cmsSlice,
+      databaseSlice,
       customEndpointsSlice,
       notificationsSlice,
       paymentsSlice,

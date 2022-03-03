@@ -3,7 +3,6 @@ import {
   Chat,
   Cloud,
   Email,
-  FilterDrama,
   FormatAlignLeft,
   Notifications,
   Payment,
@@ -24,8 +23,6 @@ export const getModuleIcon = (moduleName: string) => {
       return <Sms color={'inherit'} />;
     case 'email':
       return <Email color={'inherit'} />;
-    case 'cms':
-      return <Toc color={'inherit'} />;
     case 'storage':
       return <Cloud color={'inherit'} />;
     case 'settings':
@@ -37,7 +34,7 @@ export const getModuleIcon = (moduleName: string) => {
     case 'payments':
       return <Payment color={'inherit'} />;
     case 'database':
-      return <FilterDrama color={'inherit'} />;
+      return <Toc color={'inherit'} />;
     default:
       return <ViewModule color={'inherit'} />;
   }
@@ -54,8 +51,8 @@ export const handleModuleNavigation = (moduleName: string) => {
       return '/authentication/users';
     case 'email':
       return '/email/templates';
-    case 'cms':
-      return '/cms/schemas';
+    case 'database':
+      return '/database/schemas';
     case 'storage':
       return '/storage/files';
     case 'settings':

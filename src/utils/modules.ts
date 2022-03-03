@@ -3,7 +3,6 @@ import { IModule } from '../models/appAuth';
 const modules = [
   'authentication',
   'email',
-  'cms',
   'storage',
   'forms',
   'pushNotifications',
