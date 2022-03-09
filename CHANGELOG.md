@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.11.0...v0.12.0) (2022-03-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* everything cms related moved to database
+
+* Cms refactor (#37) ([c5cefa0](https://github.com/ConduitPlatform/Conduit-UI/commit/c5cefa045eb139051854406daab063b92153542c)), closes [#37](https://github.com/ConduitPlatform/Conduit-UI/issues/37)
+
 ### [0.11.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.10.6...v0.11.0) (2022-02-17)
 
 
