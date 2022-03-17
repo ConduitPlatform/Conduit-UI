@@ -14,7 +14,7 @@ import {
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 import { IndeterminateCheckBox } from '@material-ui/icons';
 import { AuthUserUI } from '../../models/authentication/AuthModels';
-import { SchemaUI } from '../cms/CmsModels';
+import { SchemaUI } from '../database/CmsModels';
 import { NotificationData } from '../../models/notifications/NotificationModels';
 import DataTableRows from './DataTableRows';
 
