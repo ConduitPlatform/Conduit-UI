@@ -1118,10 +1118,10 @@ bson@^1.0.1:
   resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.6.tgz#fb819be9a60cd677e0853aee4ca712a785d6618a"
   integrity sha512-EvVNVeGo4tHxwi8L6bPj3y3itEvStdwvvlojVxxbyYfoaxJ6keLgrTuKdyfEAszFK+H3olzBuafE0yoh0D1gdg==
 
-bson@^4.0.3:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-4.6.0.tgz#15c3b39ba3940c3d915a0c44d51459f4b4fbf1b2"
-  integrity sha512-8jw1NU1hglS+Da1jDOUYuNcBJ4cNHCFIqzlwoFNnsTOg2R/ox0aTYcTiBN4dzRa9q7Cvy6XErh3L8ReTEb9AQQ==
+bson@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-4.6.1.tgz#2b5da517539bb0f7f3ffb54ac70a384ca899641c"
+  integrity sha512-I1LQ7Hz5zgwR4QquilLNZwbhPw0Apx7i7X9kGMBTsqPdml/03Q9NBtD9nt/19ahjlphktQImrnderxqpzeVDjw==
   dependencies:
     buffer "^5.6.0"
 
@@ -3411,12 +3411,12 @@ mongodb-language-model@^2.3.0:
   resolved "https://registry.yarnpkg.com/mongodb-language-model/-/mongodb-language-model-2.3.0.tgz#a5bac5bbe3fe6d367dffacd9a8098e37c514b5fe"
   integrity sha512-8g0dIFmoII4YAkVuvXhxm291aqLrfrYiPYGnYAk8fqgC3q6QpDfEczbW2XDrbYCvusyGjG1vY3E3tLn2G5OW7w==
 
-mongodb-query-parser@^2.4.3:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/mongodb-query-parser/-/mongodb-query-parser-2.4.3.tgz#9bb9b008c052df7336b6cc71c207b1956f8ced9d"
-  integrity sha512-16gcMoM3iTWY9eB4Q/oNlefcYBgCs9XVZVtBG3NGcOE3zwX+S1VV164JOBMeh8kRFASXjh5MmVuaM5028W55Zw==
+mongodb-query-parser@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/mongodb-query-parser/-/mongodb-query-parser-2.4.4.tgz#178b85eca8391260cd311af9b5f34f02a3a03d14"
+  integrity sha512-uceyN+HkikyQA1X4fTW2cNW10iLbfWwOBD0uA8GnQgFGwlxgi8EkyYh05ryBo2qdi/8iCe7QYjJh3uJj+Dz1wg==
   dependencies:
-    bson "^4.0.3"
+    bson "^4.6.1"
     debug "^4.1.1"
     ejson-shell-parser "^1.1.1"
     is-json "^2.0.1"
