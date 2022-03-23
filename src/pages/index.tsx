@@ -93,9 +93,13 @@ const Home = () => {
           <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
             SWAGGER
           </Button>
-          <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
-            GraphQL
-          </Button>
+          <a
+            style={{ textDecoration: 'none' }}
+            href={`${process.env.CONDUIT_URL}/graphql`}
+            target="_blank"
+            rel="noreferrer">
+            <Button variant="outlined">GraphQL</Button>
+          </a>
           <a
             href="https://getconduit.dev/docs/"
             target="_blank"

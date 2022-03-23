@@ -105,9 +105,13 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
               }
               target="_blank"
               rel="noreferrer">
-              <Button variant="outlined" endIcon={icon}>
-                Swagger
-              </Button>
+              <a
+                style={{ textDecoration: 'none' }}
+                href={`${process.env.CONDUIT_URL}/graphql`}
+                target="_blank"
+                rel="noreferrer">
+                <Button variant="outlined">GraphQL</Button>
+              </a>
             </a>
           </Box>
           <Box
