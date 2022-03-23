@@ -14,6 +14,8 @@ import {
   Divider,
   Button,
   Link,
+  SvgIcon,
+  Icon,
 } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import LockIcon from '@material-ui/icons/Lock';
@@ -22,6 +24,9 @@ import SectetIcon from '@material-ui/icons/VpnKey';
 import Description from '@material-ui/icons/Description';
 import { ArrowForward } from '@material-ui/icons';
 import SwaggerModal from '../components/common/SwaggerModal';
+import GraphQL from '../assets/svgs/graphQL.svg';
+import Swagger from '../assets/svgs/swagger.svg';
+import Image from 'next/image';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,8 +95,15 @@ const Home = () => {
             justifyContent="flex-end"
             alignItems={'flex-end'}
             flex={1}
-            style={{ marginBottom: '20px', gap: 7 }}>
-            <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
+            style={{ marginBottom: '20px', gap: 10 }}>
+            <Button
+              variant="outlined"
+              startIcon={
+                <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                  <Image src={Swagger} alt="swagger" />
+                </Icon>
+              }
+              onClick={() => setSwaggerModal(true)}>
               SWAGGER
             </Button>
             <a
@@ -99,7 +111,15 @@ const Home = () => {
               href={`${process.env.CONDUIT_URL}/graphql`}
               target="_blank"
               rel="noreferrer">
-              <Button variant="outlined">GraphQL</Button>
+              <Button
+                startIcon={
+                  <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                    <Image src={GraphQL} alt="swagger" />
+                  </Icon>
+                }
+                variant="outlined">
+                GraphQL
+              </Button>
             </a>
             <a
               href="https://getconduit.dev/docs/"

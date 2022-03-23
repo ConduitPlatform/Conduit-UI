@@ -26,7 +26,6 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
   };
 
   const modulesInstance = [...modules];
-
   const sortedArray = modulesInstance.sort((a, b) => {
     const textA = a.moduleName.toUpperCase();
     const textB = b.moduleName.toUpperCase();

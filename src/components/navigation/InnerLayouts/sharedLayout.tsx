@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography, Tabs, Tab, createStyles, makeStyles } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Typography,
+  Tabs,
+  Tab,
+  createStyles,
+  makeStyles,
+  Icon,
+} from '@material-ui/core';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import SwaggerModal from '../../common/SwaggerModal';
+import Image from 'next/image';
+import Swagger from '../../../assets/svgs/swagger.svg';
+import GraphQL from '../../../assets/svgs/graphQL.svg';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -70,17 +82,29 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
               <Button
                 className={classes.swaggerButton}
                 variant="outlined"
-                endIcon={icon}
+                startIcon={
+                  <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                    <Image src={Swagger} alt="swagger" />
+                  </Icon>
+                }
                 onClick={() => setSwaggerOpen(true)}>
                 SWAGGER
               </Button>
-              <Button
-                className={classes.graphQlButton}
-                variant="outlined"
-                endIcon={icon}
-                onClick={() => setSwaggerOpen(true)}>
-                GraphQL
-              </Button>
+              <a
+                style={{ textDecoration: 'none', paddingLeft: 10 }}
+                href={`${process.env.CONDUIT_URL}/graphql`}
+                target="_blank"
+                rel="noreferrer">
+                <Button
+                  startIcon={
+                    <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                      <Image src={GraphQL} alt="swagger" />
+                    </Icon>
+                  }
+                  variant="outlined">
+                  GraphQL
+                </Button>
+              </a>
             </>
           )}
         </Typography>
