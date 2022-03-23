@@ -21,7 +21,7 @@ const SettingsLayout: React.FC = ({ children }) => {
       title={'Settings'}
       labels={labels}
       pathNames={pathNames}
-      swagger={'cms'}
+      swagger={'settings'}
       icon={<Settings />}>
       {children}
     </SharedLayout>

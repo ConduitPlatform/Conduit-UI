@@ -21,7 +21,6 @@ import SchemaIcon from '@material-ui/icons/VerticalSplit';
 import SectetIcon from '@material-ui/icons/VpnKey';
 import Description from '@material-ui/icons/Description';
 import { ArrowForward } from '@material-ui/icons';
-import Storage from '@material-ui/icons/Storage';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -145,23 +144,6 @@ const Home = () => {
                 <Typography variant="subtitle2">
                   Create your schema with a user friendly UI!
                   <IconButton className={classes.iconButton} size="small">
-                    <Link href="/cms/build-types">
-                      <ArrowForward />
-                    </Link>
-                  </IconButton>
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Paper className={classes.paper} variant="elevation">
-                <div className={classes.textIcon}>
-                  <Storage className={classes.headerIcon} />
-                  <Typography>&nbsp; add data </Typography>
-                </div>
-                <Divider className={classes.divider} />
-                <Typography variant="subtitle2">
-                  Add data to your newly created schema!
-                  <IconButton className={classes.iconButton} size="small">
                     <Link href="/database/schemas">
                       <ArrowForward />
                     </Link>
@@ -169,6 +151,7 @@ const Home = () => {
                 </Typography>
               </Paper>
             </Grid>
+
             <Grid item xs={12} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
@@ -179,7 +162,7 @@ const Home = () => {
                 <Typography variant="subtitle2">
                   Select your preferred provider and start mailing!
                   <IconButton className={classes.iconButton} size="small">
-                    <Link href="/emails/provider">
+                    <Link href="/email/config">
                       <ArrowForward />
                     </Link>
                   </IconButton>

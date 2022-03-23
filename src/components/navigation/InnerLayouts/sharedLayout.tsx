@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography, Tabs, Tab, createStyles, makeStyles } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import SwaggerModal from '../../common/SwaggerModal';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -49,6 +50,7 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
   const classes = useStyles();
   const router = useRouter();
   const [value, setValue] = useState(0);
+  const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const index = pathNames.findIndex((pathname: string) => pathname === router.pathname);
@@ -60,15 +62,13 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
       <Box className={classes.navBar}>
         <Typography className={classes.navContent} variant={'h4'}>
           {title}
-          <a
-            href={`${process.env.CONDUIT_URL}/swagger/#/${swagger}`}
-            target="_blank"
-            rel="noreferrer"
-            className={classes.swaggerButton}>
-            <Button variant="outlined" endIcon={icon}>
-              SWAGGER
-            </Button>
-          </a>
+          <Button
+            className={classes.swaggerButton}
+            variant="outlined"
+            endIcon={icon}
+            onClick={() => setSwaggerOpen(true)}>
+            SWAGGER
+          </Button>
         </Typography>
         <Tabs value={value} className={classes.navContent}>
           {labels.map((label: { name: string; id: string }, index: number) => {
@@ -85,6 +85,13 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
             );
           })}
         </Tabs>
+        <SwaggerModal
+          open={swaggerOpen}
+          setOpen={setSwaggerOpen}
+          title={title}
+          icon={icon}
+          swagger={swagger}
+        />
       </Box>
       <Box>{children}</Box>
     </Box>
