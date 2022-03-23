@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) =>
         textDecoration: 'none',
       },
     },
+    graphQlButton: {
+      marginLeft: theme.spacing(3),
+    },
   })
 );
 
@@ -62,13 +65,24 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
       <Box className={classes.navBar}>
         <Typography className={classes.navContent} variant={'h4'}>
           {title}
-          <Button
-            className={classes.swaggerButton}
-            variant="outlined"
-            endIcon={icon}
-            onClick={() => setSwaggerOpen(true)}>
-            SWAGGER
-          </Button>
+          {title !== 'Settings' && (
+            <>
+              <Button
+                className={classes.swaggerButton}
+                variant="outlined"
+                endIcon={icon}
+                onClick={() => setSwaggerOpen(true)}>
+                SWAGGER
+              </Button>
+              <Button
+                className={classes.graphQlButton}
+                variant="outlined"
+                endIcon={icon}
+                onClick={() => setSwaggerOpen(true)}>
+                GraphQL
+              </Button>
+            </>
+          )}
         </Typography>
         <Tabs value={value} className={classes.navContent}>
           {labels.map((label: { name: string; id: string }, index: number) => {

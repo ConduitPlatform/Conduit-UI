@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React from 'react';
+import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slide from '@material-ui/core/Slide';
 import Box from '@material-ui/core/Box';
@@ -21,6 +21,7 @@ import SchemaIcon from '@material-ui/icons/VerticalSplit';
 import SectetIcon from '@material-ui/icons/VpnKey';
 import Description from '@material-ui/icons/Description';
 import { ArrowForward } from '@material-ui/icons';
+import SwaggerModal from '../components/common/SwaggerModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Home = () => {
   const classes = useStyles();
+  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
 
   return (
     <>
@@ -87,7 +89,13 @@ const Home = () => {
           justifyContent="flex-end"
           alignItems={'flex-end'}
           flex={1}
-          style={{ marginBottom: '20px' }}>
+          style={{ marginBottom: '20px', gap: 7 }}>
+          <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
+            SWAGGER
+          </Button>
+          <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
+            GraphQL
+          </Button>
           <a
             href="https://getconduit.dev/docs/"
             target="_blank"
@@ -187,6 +195,7 @@ const Home = () => {
               </Paper>
             </Grid>
           </Grid>
+          <SwaggerModal open={swaggerModal} setOpen={setSwaggerModal} />
         </Container>
       </div>
     </>

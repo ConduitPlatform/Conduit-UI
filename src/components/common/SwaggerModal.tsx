@@ -13,7 +13,7 @@ interface Props {
   title: string;
   open: boolean;
   setOpen: (open: boolean) => void;
-  icon: JSX.Element;
+  icon?: JSX.Element;
   swagger: string;
 }
 
@@ -95,11 +95,11 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
             justifyContent="space-between"
             alignItems="center"
             style={{ gap: 14 }}>
-            <Typography>Go to swagger: </Typography>
+            <Typography>Go to {title} Swagger: </Typography>
             <a
               style={{ textDecoration: 'none' }}
               href={
-                swagger === 'settings'
+                !swagger
                   ? `${process.env.CONDUIT_URL}/swagger/`
                   : `${process.env.CONDUIT_URL}/swagger/#/${swagger}`
               }
@@ -115,11 +115,11 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
             justifyContent="space-between"
             alignItems="center"
             style={{ gap: 14 }}>
-            <Typography>Go to admin Swagger: </Typography>
+            <Typography>Go to {title} Admin Swagger: </Typography>
             <a
               style={{ textDecoration: 'none' }}
               href={
-                swagger === 'settings'
+                !swagger
                   ? `${process.env.CONDUIT_URL}/admin/swagger/`
                   : `${process.env.CONDUIT_URL}/admin/swagger/#/${swagger}`
               }
@@ -145,7 +145,7 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
             justifyContent="space-between"
             alignItems="center"
             style={{ gap: 14 }}>
-            <Typography>Download admin Swagger: </Typography>
+            <Typography>Download Admin Swagger: </Typography>
             <Button variant="outlined" onClick={handleAdminDownload}>
               Download Json
             </Button>
