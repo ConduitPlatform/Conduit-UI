@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Container, Grid, Paper, Typography } from '@material-ui/core';
+import { Container, Grid, Paper, Typography } from '@mui/material';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { INotificationConfig } from '../../models/notifications/NotificationModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';

@@ -1,7 +1,7 @@
-import { Container, Typography, Paper, Grid, Button } from '@material-ui/core';
+import { Container, Typography, Paper, Grid, Button } from '@mui/material';
 import React, { FC, useCallback, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { NotificationsOutlined, Send } from '@material-ui/icons';
+import makeStyles from '@mui/styles/makeStyles';
+import { NotificationsOutlined, Send } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppSelector } from '../../redux/store';
 import { useDispatch } from 'react-redux';

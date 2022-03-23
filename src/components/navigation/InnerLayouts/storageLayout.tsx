@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Cloud } from '@material-ui/icons';
+import { Cloud } from '@mui/icons-material';
 
 const StorageLayout: React.FC = ({ children }) => {
   const pathNames = ['/storage/files', '/storage/config'];

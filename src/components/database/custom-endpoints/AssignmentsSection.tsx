@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import { Button, Divider, Grid, Typography } from '@material-ui/core';
+import { Button, Divider, Grid, Typography } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EndpointAssignments from './EndpointAssignments';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
 

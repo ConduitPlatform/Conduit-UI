@@ -6,7 +6,7 @@ import { useAppDispatch } from '../../../redux/store';
 import { Schema } from '../../../models/database/CmsModels';
 import { asyncEditSchemaDocument } from '../../../redux/slices/databaseSlice';
 import { enqueueErrorNotification } from '../../../utils/useNotifier';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   container: {

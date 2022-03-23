@@ -7,11 +7,11 @@ import {
   Button,
   Container,
   Grid,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from '@mui/icons-material/Close';
 import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
-import { DoneOutline } from '@material-ui/icons';
+import { DoneOutline } from '@mui/icons-material';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
@@ -90,7 +90,7 @@ const PermissionsDialog: React.FC<Props> = ({
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
         Permissions
-        <IconButton onClick={handleCloseDialog} className={classes.customizedButton}>
+        <IconButton onClick={handleCloseDialog} className={classes.customizedButton} size="large">
           <CloseIcon />
         </IconButton>
       </DialogTitle>

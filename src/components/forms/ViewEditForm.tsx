@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, Grid, Button, Paper } from '@material-ui/core';
+import { Box, Container, Grid, Button, Paper } from '@mui/material';
 import Image from 'next/dist/client/image';
 import FormsImage from '../../assets/svgs/forms.svg';
 import { FormsModel } from '../../models/forms/FormsModels';

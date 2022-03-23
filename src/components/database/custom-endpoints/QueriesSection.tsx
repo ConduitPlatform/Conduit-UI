@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import { Button, Divider, Grid, Typography } from '@material-ui/core';
+import { Button, Divider, Grid, Typography } from '@mui/material';
 import EndpointQueries from './EndpointQueries';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { makeStyles } from '@material-ui/core/styles';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import makeStyles from '@mui/styles/makeStyles';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
 import { recursiveNodeIteration } from '../../../utils/cms';
 import { v4 as uuidv4 } from 'uuid';

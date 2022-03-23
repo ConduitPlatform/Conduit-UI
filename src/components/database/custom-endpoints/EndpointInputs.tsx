@@ -8,14 +8,11 @@ import {
   MenuItem,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
 import InputLocationEnum from '../../../models/InputLocationEnum';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-
-const useStyles = makeStyles((theme) => ({}));
 
 interface Props {
   editMode: boolean;
@@ -32,7 +29,6 @@ const EndpointInputs: FC<Props> = ({
   setSelectedInputs,
   handleRemoveInput,
 }) => {
-  const classes = useStyles();
   const handleInputNameChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
     const value = event.target.value;
     const currentInputs = selectedInputs.slice();
@@ -177,7 +173,7 @@ const EndpointInputs: FC<Props> = ({
           </Box>
         </Grid>
         <Grid item xs={1}>
-          <IconButton disabled={!editMode} onClick={() => handleRemoveInput(index)}>
+          <IconButton disabled={!editMode} onClick={() => handleRemoveInput(index)} size="large">
             <RemoveCircleOutlineIcon />
           </IconButton>
         </Grid>

@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { Container } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { Container } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { IChatConfig } from '../../models/chat/ChatModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncPutChatConfig } from '../../redux/slices/chatSlice';

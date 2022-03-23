@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { List, ListItemIcon, ListItemText, ListItem, Collapse } from '@material-ui/core';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import AddIcon from '@material-ui/icons/Add';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import UpdateIcon from '@material-ui/icons/Update';
-import PeopleIcon from '@material-ui/icons/People';
-import EditAttributesIcon from '@material-ui/icons/EditAttributes';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import TocIcon from '@material-ui/icons/Toc';
-import PersonIcon from '@material-ui/icons/Person';
+import { List, ListItemIcon, ListItemText, ListItem, Collapse } from '@mui/material';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import AddIcon from '@mui/icons-material/Add';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import UpdateIcon from '@mui/icons-material/Update';
+import PeopleIcon from '@mui/icons-material/People';
+import EditAttributesIcon from '@mui/icons-material/EditAttributes';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import TocIcon from '@mui/icons-material/Toc';
+import PersonIcon from '@mui/icons-material/Person';
 import { Schema } from '../models/database/CmsModels';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   nested: {

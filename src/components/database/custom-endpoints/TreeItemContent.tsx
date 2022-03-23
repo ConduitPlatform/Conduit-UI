@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
-import { AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { makeStyles } from '@material-ui/styles';
+import { Box, Button, Grid } from '@mui/material';
+import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles(() => ({
   selected: {

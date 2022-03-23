@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import TextIcon from '@material-ui/icons/Title';
-import NumberIcon from '@material-ui/icons/Filter7';
-import DateIcon from '@material-ui/icons/DateRange';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import TextIcon from '@mui/icons-material/Title';
+import NumberIcon from '@mui/icons-material/Filter7';
+import DateIcon from '@mui/icons-material/DateRange';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import FieldIndicators from '../../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { ISimpleDataTypes } from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({

@@ -1,7 +1,7 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
 import { IEmailConfig } from '../../models/emails/EmailModels';
 import { useWatch } from 'react-hook-form';
 import { Control } from 'react-hook-form/dist/types';

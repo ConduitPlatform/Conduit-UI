@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import { ListItem, Theme } from '@material-ui/core';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import makeStyles from '@mui/styles/makeStyles';
+import { ListItem, Theme } from '@mui/material';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({

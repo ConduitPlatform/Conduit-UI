@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import useLongPress from '../../hooks/useLongPress';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,7 +51,7 @@ export const ChatRoomTabSkeleton: FC = ({ ...rest }) => {
     <div className={classes.root} {...rest}>
       <Skeleton
         animation="wave"
-        variant="rect"
+        variant="rectangular"
         height={32}
         className={classes.skeletonContentContainer}
       />

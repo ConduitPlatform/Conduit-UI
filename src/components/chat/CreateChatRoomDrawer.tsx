@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState } from 'react';
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, Grid, TextField } from '@mui/material';
 import DrawerWrapper from '../navigation/SideDrawerWrapper';
 import TableDialog from '../common/TableDialog';
 import { useAppDispatch, useAppSelector } from '../../redux/store';

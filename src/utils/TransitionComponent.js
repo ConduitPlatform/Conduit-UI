@@ -1,4 +1,4 @@
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@mui/material/Collapse';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { animated, useSpring } from 'react-spring';

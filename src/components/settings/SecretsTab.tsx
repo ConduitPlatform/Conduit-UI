@@ -6,20 +6,21 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import DeleteIcon from '@material-ui/icons/Delete';
+} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ClientPlatformEnum from '../../models/ClientPlatformEnum';
-import Button from '@material-ui/core/Button';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import Button from '@mui/material/Button';
+import React, { useEffect, useState } from 'react';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDispatch } from 'react-redux';
 import { IClient, IPlatformTypes } from '../../models/settings/SettingsModels';
 import {
@@ -99,7 +100,7 @@ const SecretsTab: React.FC = () => {
                       <Typography variant={'caption'}>{client.platform}</Typography>
                     </TableCell>
                     <TableCell>
-                      <IconButton onClick={() => handleDeletion(client._id)}>
+                      <IconButton onClick={() => handleDeletion(client._id)} size="large">
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>
@@ -116,7 +117,7 @@ const SecretsTab: React.FC = () => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={platform}
-              onChange={(event: ChangeEvent<any>) => setPlatform(event.target.value)}>
+              onChange={(event: any) => setPlatform(event.target.value)}>
               <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
               <MenuItem value={ClientPlatformEnum.ANDROID}>ANDROID</MenuItem>
               <MenuItem value={ClientPlatformEnum.IOS}>IOS</MenuItem>

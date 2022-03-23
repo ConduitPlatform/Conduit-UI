@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import { Cancel } from '@material-ui/icons';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import { Cancel } from '@mui/icons-material';
 import React from 'react';
-import { Button, Paper } from '@material-ui/core';
+import { Button, Paper } from '@mui/material';
 import { useAppDispatch } from '../../redux/store';
 import { Customer } from '../../models/payments/PaymentsModels';
 import { enqueueErrorNotification } from '../../utils/useNotifier';

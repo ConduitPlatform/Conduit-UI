@@ -1,17 +1,17 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { Clear, Send, Sms } from '@material-ui/icons';
-import Button from '@material-ui/core/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { Clear, Send, Sms } from '@mui/icons-material';
+import Button from '@mui/material/Button';
 import { FormProvider, useForm } from 'react-hook-form';
 import sharedClasses from '../common/sharedClasses';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { ISendSms } from '../../models/sms/SmsModels';
 import { useAppDispatch } from '../../redux/store';
 import { asyncSendSms } from '../../redux/slices/smsSlice';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 const SendSms: React.FC = () => {
   const classes = sharedClasses();

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { Button, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Grid } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   margin: {

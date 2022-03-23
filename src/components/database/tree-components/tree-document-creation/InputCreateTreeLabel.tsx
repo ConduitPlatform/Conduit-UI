@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import CustomDatepicker from '../../../common/CustomDatepicker';
-import { Box, IconButton, Input, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { DeleteForeverRounded } from '@material-ui/icons';
+import { Box, IconButton, Input, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { DeleteForeverRounded } from '@mui/icons-material';
 import RelationSelectInput from './RelationSelectInput';
 
 const useStyles = makeStyles((theme) => ({

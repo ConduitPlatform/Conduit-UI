@@ -1,14 +1,8 @@
 import React, { isValidElement, useState } from 'react';
-import {
-  Checkbox,
-  IconButton,
-  makeStyles,
-  TableCell,
-  TableRow,
-  TableRowProps,
-} from '@material-ui/core';
+import { Checkbox, IconButton, TableCell, TableRow, TableRowProps } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import DataTableActions from './DataTableActions';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import moment from 'moment';
 import InnerTable from './InnerTable';
 

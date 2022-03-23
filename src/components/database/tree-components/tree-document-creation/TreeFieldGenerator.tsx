@@ -1,9 +1,9 @@
 import React, { FC, memo } from 'react';
 import { getFieldsArray } from '../../schemas/SchemaDataUtils';
-import { TreeView } from '@material-ui/lab';
-import { Box, Typography } from '@material-ui/core';
+import { TreeView } from '@mui/lab';
+import { Box, Typography } from '@mui/material';
 import TreeElementByType from './TreeElementByType';
-import { ChevronRight, ExpandMore } from '@material-ui/icons';
+import { ChevronRight, ExpandMore } from '@mui/icons-material';
 
 type TreeFieldGeneratorProps = {
   schema: any;

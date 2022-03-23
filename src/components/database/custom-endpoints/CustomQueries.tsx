@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Box, Grid, IconButton, TextField, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Delete, Edit } from '@material-ui/icons';
+import { Box, Grid, IconButton, TextField, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { Delete, Edit } from '@mui/icons-material';
 import {
   findFieldsWithTypes,
   getAvailableFieldsOfSchema,
@@ -319,12 +319,16 @@ const CustomQueries: FC = () => {
             <Grid item xs={2} />
             <Grid item xs={5} style={{ textAlign: 'end' }}>
               {!editMode && (
-                <IconButton aria-label="delete" onClick={handleDeleteClick}>
+                <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
                   <Delete color="error" />
                 </IconButton>
               )}
               {!editMode && (
-                <IconButton color="secondary" aria-label="edit" onClick={handleEditClick}>
+                <IconButton
+                  color="secondary"
+                  aria-label="edit"
+                  onClick={handleEditClick}
+                  size="large">
                   <Edit />
                 </IconButton>
               )}

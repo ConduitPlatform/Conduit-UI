@@ -12,9 +12,9 @@ import {
   Checkbox,
   ListItemText,
   OutlinedInput,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { AddCircleOutlined, Search } from '@material-ui/icons';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { AddCircleOutlined, Search } from '@mui/icons-material';
 import EndpointsList from './EndpointsList';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import useDebounce from '../../../hooks/useDebounce';
@@ -126,7 +126,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
     setCreateMode(true);
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
+  const handleFilterChange = (event: any) => {
     setSchemas(event.target.value);
     if (schema) {
       router.replace('/database/custom', undefined, { shallow: true });
@@ -186,11 +186,8 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
               variant="outlined"
               value={schemas}
               onChange={handleFilterChange}
-              input={<OutlinedInput labelWidth={labelWidth} type="file" id="my-input" />}
-              renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}
-              MenuProps={{
-                getContentAnchorEl: null,
-              }}>
+              input={<OutlinedInput type="file" id="my-input" />}
+              renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}>
               {schemasWithEndpoints &&
                 schemasWithEndpoints.map((schema: { name: string; id: string }) => (
                   <MenuItem key={schema.name} value={schema.name}>
@@ -205,7 +202,8 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
           <IconButton
             className={classes.addButton}
             color="secondary"
-            onClick={handleAddNewEndpoint}>
+            onClick={handleAddNewEndpoint}
+            size="large">
             <AddCircleOutlined />
           </IconButton>
         </Grid>

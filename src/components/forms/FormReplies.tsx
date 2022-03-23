@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import makeStyles from '@mui/styles/makeStyles';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormsModel } from '../../models/forms/FormsModels';
 import { asyncGetFormReplies } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { Chip, Container, Grid, TextField } from '@material-ui/core';
+import { Chip, Container, Grid, TextField } from '@mui/material';
 import Image from 'next/dist/client/image';
 import formReplies from '../../assets/svgs/formReplies.svg';
 

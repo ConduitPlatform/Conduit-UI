@@ -1,11 +1,12 @@
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import NewUserModal from '../../components/authentication/AddUserDrawerContent';
 import AuthUsers from '../../components/authentication/AuthUsers';
 import Paginator from '../../components/common/Paginator';
 import SearchFilter from '../../components/authentication/SearchFilter';
-import Grid from '@material-ui/core/Grid';
-import { Button, ButtonGroup, IconButton, makeStyles, Tooltip } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import useDebounce from '../../hooks/useDebounce';
 import {
   asyncAddNewUser,
@@ -28,9 +29,9 @@ import {
   handleDeleteDescription,
   handleDeleteTitle,
 } from '../../utils/userDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
-import BlockIcon from '@material-ui/icons/Block';
-import { AddCircle } from '@material-ui/icons';
+import DeleteIcon from '@mui/icons-material/Delete';
+import BlockIcon from '@mui/icons-material/Block';
+import { AddCircle } from '@mui/icons-material';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import { isString } from 'lodash';
 
@@ -277,7 +278,8 @@ const Users = () => {
                     open: true,
                     multiple: true,
                   })
-                }>
+                }
+                size="large">
                 <Tooltip title="Block multiple users">
                   <BlockIcon />
                 </Tooltip>
@@ -290,7 +292,8 @@ const Users = () => {
                     open: true,
                     multiple: true,
                   })
-                }>
+                }
+                size="large">
                 <Tooltip title="Delete multiple users">
                   <DeleteIcon />
                 </Tooltip>

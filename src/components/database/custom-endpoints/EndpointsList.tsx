@@ -4,11 +4,11 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/material';
 import {
   asyncAddCustomEndpoints,
   asyncSetCustomEndpoints,

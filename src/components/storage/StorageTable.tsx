@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import { Button, Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import { Button, Grid, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import DataTable from '../common/DataTable';
-import FolderIcon from '@material-ui/icons/Folder';
-import DescriptionIcon from '@material-ui/icons/Description';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import FolderIcon from '@mui/icons-material/Folder';
+import DescriptionIcon from '@mui/icons-material/Description';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import Paginator from '../common/Paginator';
 import {
   ContainerDataProps,

@@ -1,13 +1,11 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Slide from '@material-ui/core/Slide';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+import Box from '@mui/material/Box';
 import {
   Container,
-  createStyles,
   Grid,
-  makeStyles,
   Paper,
   Theme,
   IconButton,
@@ -16,13 +14,15 @@ import {
   Link,
   SvgIcon,
   Icon,
-} from '@material-ui/core';
-import EmailIcon from '@material-ui/icons/Email';
-import LockIcon from '@material-ui/icons/Lock';
-import SchemaIcon from '@material-ui/icons/VerticalSplit';
-import SectetIcon from '@material-ui/icons/VpnKey';
-import Description from '@material-ui/icons/Description';
-import { ArrowForward } from '@material-ui/icons';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
+import SchemaIcon from '@mui/icons-material/VerticalSplit';
+import SectetIcon from '@mui/icons-material/VpnKey';
+import Description from '@mui/icons-material/Description';
+import { ArrowForward } from '@mui/icons-material';
 import SwaggerModal from '../components/common/SwaggerModal';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';

@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Switch from '@mui/material/Switch';
 import FieldIndicators from '../../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { IBooleanData } from '../../../../models/database/BuildTypesModels';
 
 interface IProps {

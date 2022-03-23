@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import {
   SocialNameTypes,
   IAuthenticationConfig,
   SignInTypes,
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './ReusableAccordion';
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {

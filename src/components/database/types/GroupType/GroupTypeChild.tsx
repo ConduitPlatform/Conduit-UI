@@ -1,16 +1,16 @@
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SettingsIcon from '@material-ui/icons/Settings';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsIcon from '@mui/icons-material/Settings';
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { SimpleGroupType } from '../SimpleType/SimpleType';
 import { BooleanGroupType } from '../BooleanType/BooleanType';
-import Tooltip from '@material-ui/core/Tooltip';
-import GroupIcon from '@material-ui/icons/PlaylistAdd';
+import Tooltip from '@mui/material/Tooltip';
+import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import FieldIndicators from '../../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({

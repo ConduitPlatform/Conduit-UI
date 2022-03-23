@@ -2,11 +2,11 @@ import React, { FC, useState } from 'react';
 import CustomQueryRow from './CustomQueryRow';
 import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
-import { Grid, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { TreeView } from '@material-ui/lab';
+import { Grid, Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { TreeView } from '@mui/lab';
 import { deepClone } from '../../../utils/deepClone';
-import { Add, Remove } from '@material-ui/icons';
+import { Add, Remove } from '@mui/icons-material';
 import { v4 as uuidV4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({

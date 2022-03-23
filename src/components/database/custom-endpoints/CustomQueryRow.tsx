@@ -8,9 +8,9 @@ import {
   Select,
   TextField,
   Typography,
-} from '@material-ui/core';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import makeStyles from '@mui/styles/makeStyles';
 import ConditionsEnum from '../../../models/ConditionsEnum';
 import { isArray } from 'lodash';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../../utils/cms';
@@ -106,7 +106,6 @@ const CustomQueryRow: FC<Props> = ({
 }) => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
-
   const [schemaType, setSchemaType] = useState('');
 
   useEffect(() => {
@@ -182,7 +181,7 @@ const CustomQueryRow: FC<Props> = ({
           value={query.comparisonField.value}
           native
           fullWidth
-          onChange={(event) => inputCustomChange(event, index)}>
+          onChange={(event: any) => inputCustomChange(event, index)}>
           <option />
           <option value="true">true</option>
           <option value="false">false</option>

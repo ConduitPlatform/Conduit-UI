@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect, useState } from 'react';
-import { Box, Slider, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Slider, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { getPasswordStrength } from '../../../utils/getPasswordStrength';
 
 const useStyles = makeStyles(() => ({

@@ -11,7 +11,7 @@ import {
   Sms,
   Toc,
   ViewModule,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 export const getModuleIcon = (moduleName: string) => {
   switch (moduleName) {

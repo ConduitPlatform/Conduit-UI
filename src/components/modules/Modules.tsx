@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home } from '@material-ui/icons';
+import { Home } from '@mui/icons-material';
 import { getModuleIcon, getModuleName, handleModuleNavigation } from './moduleUtils';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';

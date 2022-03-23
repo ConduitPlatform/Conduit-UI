@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode, useEffect } from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import type { AppContext, AppProps } from 'next/app';
 import App from 'next/app';
 import { Provider } from 'react-redux';
@@ -13,6 +13,11 @@ import { NextPage } from 'next';
 import theme from '../theme';
 import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import Snackbar from '../components/navigation/Snackbar';
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -47,18 +52,20 @@ const ConduitApp = ({ Component, pageProps }: AppPropsWithLayout) => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <Provider store={reduxStore}>
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider
-            preventDuplicate={true}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            content={(key, message) => <Snackbar id={key} options={formOptions(message)} />}>
-            <CssBaseline />
-            <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
-          </SnackbarProvider>
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <SnackbarProvider
+              preventDuplicate={true}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              content={(key, message) => <Snackbar id={key} options={formOptions(message)} />}>
+              <CssBaseline />
+              <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
       </Provider>
     </>
   );

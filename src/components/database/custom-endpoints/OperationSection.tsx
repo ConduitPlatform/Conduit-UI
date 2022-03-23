@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
@@ -10,7 +10,7 @@ import { Assignment } from '../../../models/customEndpoints/customEndpointsModel
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
-import { Loop } from '@material-ui/icons';
+import { Loop } from '@mui/icons-material';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

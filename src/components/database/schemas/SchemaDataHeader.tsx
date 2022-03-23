@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import Paginator from '../../common/Paginator';
-import { BoxProps } from '@material-ui/core/Box/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { Search, Refresh, AccountTree } from '@material-ui/icons';
+import { BoxProps } from '@mui/material/Box/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import InputAdornment from '@mui/material/InputAdornment';
+import { Search, Refresh, AccountTree } from '@mui/icons-material';
 import useParseQuery from './useParseQuery';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import clsx from 'clsx';
 
 const ObjText = '{ }';

@@ -6,7 +6,7 @@ import {
   isFieldRelation,
 } from '../schemas/SchemaDataUtils';
 import { Schema } from '../../../models/database/CmsModels';
-import { TreeItem } from '@material-ui/lab';
+import { TreeItem } from '@mui/lab';
 import getDeepValue from '../../../utils/getDeepValue';
 import ViewableTreeItemLabel from './ViewableTreeItemLabel';
 import EditableTreeItemLabel from './EditableTreeItemLabel';

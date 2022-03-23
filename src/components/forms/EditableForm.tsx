@@ -10,8 +10,8 @@ import {
   Select,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { Add, Delete } from '@material-ui/icons';
+} from '@mui/material';
+import { Add, Delete } from '@mui/icons-material';
 import { v4 as uuidV4 } from 'uuid';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
@@ -79,7 +79,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
     handleSubmitData({ ...data, fields: fields });
   };
 
-  const handleFieldsChange = (id: string) => (evt: React.ChangeEvent<any>) => {
+  const handleFieldsChange = (id: string) => (evt: any) => {
     const { value } = evt.target;
 
     const regex = /[^a-z0-9_]/gi;

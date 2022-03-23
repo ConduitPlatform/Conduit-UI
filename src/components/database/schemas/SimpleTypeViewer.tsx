@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import FieldIndicators from '../FieldIndicators';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import Grid from '@material-ui/core/Grid';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({

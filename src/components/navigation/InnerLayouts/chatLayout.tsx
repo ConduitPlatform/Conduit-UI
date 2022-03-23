@@ -1,5 +1,5 @@
 import React from 'react';
-import { Toc } from '@material-ui/icons';
+import { Toc } from '@mui/icons-material';
 import SharedLayout from './sharedLayout';
 
 const ChatLayout: React.FC = ({ children }) => {

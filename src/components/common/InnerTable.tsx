@@ -1,5 +1,7 @@
 import React, { FC } from 'react';
-import { Box, Chip, Collapse, makeStyles, TableCell, TableRow } from '@material-ui/core';
+import { Box, Chip, Collapse, TableCell, TableRow } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   pill: {

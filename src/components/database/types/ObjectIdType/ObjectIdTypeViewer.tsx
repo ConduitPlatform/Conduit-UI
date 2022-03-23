@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import CodeIcon from '@material-ui/icons/Code';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import CodeIcon from '@mui/icons-material/Code';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import FieldIndicators from '../../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { IObjectData } from '../../../../models/database/BuildTypesModels';
 
 const useStyles = makeStyles((theme) => ({

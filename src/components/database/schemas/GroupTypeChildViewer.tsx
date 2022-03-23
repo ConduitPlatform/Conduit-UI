@@ -1,10 +1,10 @@
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import GroupIcon from '@material-ui/icons/PlaylistAdd';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from '@mui/material/Tooltip';
+import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import FieldIndicators from '../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';

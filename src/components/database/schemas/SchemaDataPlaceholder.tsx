@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { BoxProps } from '@material-ui/core/Box/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { BoxProps } from '@mui/material/Box/Box';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   emptyDocuments: {

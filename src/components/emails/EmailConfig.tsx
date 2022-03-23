@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Container } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import { Container } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { IEmailConfig } from '../../models/emails/EmailModels';
 import TransportSettings from './TransportSettings';
 import { useAppDispatch, useAppSelector } from '../../redux/store';

@@ -1,9 +1,9 @@
-import { Dialog, DialogContent, DialogTitle, Typography } from '@material-ui/core';
+import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import moment from 'moment';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import React, { FC } from 'react';
 import { IChatRoom } from '../../models/chat/ChatModels';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
   dialogInfo: {

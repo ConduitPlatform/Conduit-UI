@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
-import { Box, Button, Chip, Grid, makeStyles, Typography } from '@material-ui/core';
-import { AddCircle } from '@material-ui/icons';
-import { BoxProps } from '@material-ui/core/Box/Box';
+import { Box, Button, Chip, Grid, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { AddCircle } from '@mui/icons-material';
+import { BoxProps } from '@mui/material/Box/Box';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

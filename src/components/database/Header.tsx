@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input, Checkbox } from '@material-ui/core';
-import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Typography, Button, Input, Checkbox } from '@mui/material';
+import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/databaseSlice';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
 import PermissionsDialog from './PermissionsDialog';

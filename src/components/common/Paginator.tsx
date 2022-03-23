@@ -1,6 +1,6 @@
 import React from 'react';
-import Grid, { GridProps } from '@material-ui/core/Grid';
-import TablePagination from '@material-ui/core/TablePagination';
+import Grid, { GridProps } from '@mui/material/Grid';
+import TablePagination from '@mui/material/TablePagination';
 
 interface Props extends GridProps {
   page: number;

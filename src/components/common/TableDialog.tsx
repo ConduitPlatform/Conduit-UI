@@ -7,14 +7,15 @@ import {
   Dialog,
   Button,
   InputAdornment,
-  makeStyles,
   TextField,
   IconButton,
-} from '@material-ui/core';
+} from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 import DataTable from './DataTable';
 import Paginator from './Paginator';
-import { Search as SearchIcon, Close } from '@material-ui/icons';
+import { Search as SearchIcon, Close } from '@mui/icons-material';
 import useDebounce from '../../hooks/useDebounce';
 
 const useStyles = makeStyles((theme) => ({
@@ -140,7 +141,11 @@ const TableDialog: React.FC<Props> = ({
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
-      <IconButton aria-label="Close" className={classes.closeButton} onClick={handleClose}>
+      <IconButton
+        aria-label="Close"
+        className={classes.closeButton}
+        onClick={handleClose}
+        size="large">
         <Close />
       </IconButton>
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>

@@ -1,11 +1,11 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
+import SaveIcon from '@mui/icons-material/Save';
 import addUser from '../../assets/svgs/addUser.svg';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Image from 'next/image';
-import Container from '@material-ui/core/Container';
+import Container from '@mui/material/Container';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 

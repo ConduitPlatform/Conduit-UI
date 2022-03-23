@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import CustomDrawer from './Drawer';
 import { useRouter } from 'next/router';
 import { asyncGetAdminModules } from '../../redux/slices/appAuthSlice';
-import { Theme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import useNotifier from '../../utils/useNotifier';
 
 const useStyles = makeStyles((theme: Theme) => ({

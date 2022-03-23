@@ -1,6 +1,6 @@
-import { Container, Grid, Typography } from '@material-ui/core';
-import { GetApp } from '@material-ui/icons';
-import Button from '@material-ui/core/Button';
+import { Container, Grid, Typography } from '@mui/material';
+import { GetApp } from '@mui/icons-material';
+import Button from '@mui/material/Button';
 import React from 'react';
 
 const SdksTab: React.FC = () => {

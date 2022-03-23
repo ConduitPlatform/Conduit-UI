@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography } from '@material-ui/core';
+import { Chip, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { startCase, camelCase } from 'lodash';
 import moment from 'moment';

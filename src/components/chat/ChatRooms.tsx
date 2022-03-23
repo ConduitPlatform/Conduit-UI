@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Button, Paper, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Paper, TextField } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import {
   asyncGetChatRooms,
@@ -8,7 +8,7 @@ import {
   clearChatMessages,
 } from '../../redux/slices/chatSlice';
 import ChatRoomPanel from './ChatRoomPanel';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import CreateChatRoomDrawer from './CreateChatRoomDrawer';
 import useDebounce from '../../hooks/useDebounce';
 import ChatRoomTabs from './ChatRoomTabs';

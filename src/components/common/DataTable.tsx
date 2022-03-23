@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   Table,
   TableBody,
@@ -10,9 +10,9 @@ import {
   TableSortLabel,
   Checkbox,
   TableRowProps,
-} from '@material-ui/core';
-import Paper, { PaperProps } from '@material-ui/core/Paper';
-import { IndeterminateCheckBox } from '@material-ui/icons';
+} from '@mui/material';
+import Paper, { PaperProps } from '@mui/material/Paper';
+import { IndeterminateCheckBox } from '@mui/icons-material';
 import { AuthUserUI } from '../../models/authentication/AuthModels';
 import { SchemaUI } from '../database/CmsModels';
 import { NotificationData } from '../../models/notifications/NotificationModels';

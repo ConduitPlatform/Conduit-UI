@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, resetServerContext } from 'react-beautiful-dnd';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
 import BuildTypesList from '../../../components/database/BuildTypesList';
 import BuildTypesContent from '../../../components/database/BuildTypesContent';
 import BuildTypesDrawer from '../../../components/database/BuildTypesDrawer';
@@ -29,11 +29,11 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { ModifyOptions, Permissions, Schema } from '../../../models/database/CmsModels';
-import { Chip, Typography } from '@material-ui/core';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Chip, Typography } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 resetServerContext();
 
@@ -583,7 +583,6 @@ const BuildTypes: React.FC = () => {
                       </Typography>
                       <Chip
                         color="secondary"
-                        variant="default"
                         style={{ marginLeft: '30px', cursor: 'pointer' }}
                         label="READ ONLY"
                       />

@@ -4,13 +4,13 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  makeStyles,
   TextField,
   Tooltip,
   Typography,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import { AddCircleOutline, DeleteTwoTone } from '@material-ui/icons';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import SearchIcon from '@mui/icons-material/Search';
+import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 import DataTable from '../../components/common/DataTable';
@@ -285,7 +285,8 @@ const Create = () => {
             <IconButton
               aria-label="delete"
               color="primary"
-              onClick={() => setOpenDeleteForms(true)}>
+              onClick={() => setOpenDeleteForms(true)}
+              size="large">
               <Tooltip title="Delete multiple forms">
                 <DeleteTwoTone />
               </Tooltip>

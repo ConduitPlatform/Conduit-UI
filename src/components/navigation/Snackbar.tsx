@@ -1,9 +1,9 @@
 import React, { forwardRef, useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { SnackbarContent, useSnackbar } from 'notistack';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({

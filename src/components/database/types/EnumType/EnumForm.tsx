@@ -1,16 +1,16 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import makeStyles from '@mui/styles/makeStyles';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { FC, useState } from 'react';
 import { IDrawerData, IEnumData } from '../../../../models/database/BuildTypesModels';
 
@@ -70,7 +70,7 @@ const EnumForm: FC<IProps> = ({
     setSimpleData({ ...simpleData, name: event.target.value.split(' ').join('') });
   };
 
-  const handleFieldType = (event: React.ChangeEvent<{ name?: string; value: any }>) => {
+  const handleFieldType = (event: any) => {
     setSimpleData({ ...simpleData, type: event.target.value });
   };
 

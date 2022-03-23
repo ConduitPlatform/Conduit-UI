@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import { Box, Tooltip, IconButton } from '@material-ui/core';
-import { DeleteOutline, EditOutlined, KeyboardArrowDown } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import { BoxProps } from '@material-ui/core/Box/Box';
-import Button from '@material-ui/core/Button';
+import { Box, Tooltip, IconButton } from '@mui/material';
+import { DeleteOutline, EditOutlined, KeyboardArrowDown } from '@mui/icons-material';
+import makeStyles from '@mui/styles/makeStyles';
+import { BoxProps } from '@mui/material/Box/Box';
+import Button from '@mui/material/Button';
 
 const useStyles = makeStyles((theme) => ({
   marginRight: {
@@ -23,18 +23,21 @@ const useStyles = makeStyles((theme) => ({
 interface ExpandableArrowProps extends BoxProps {
   expandable: string[];
   handleExpandAll: () => void;
+  className: any;
 }
 
 export const ExpandableArrow: FC<ExpandableArrowProps> = ({
   expandable,
   handleExpandAll,
-  ...rest
+  className,
 }) => {
   if (expandable.length < 1) return <></>;
 
+  console.log(className);
+
   return (
-    <IconButton size={'small'} onClick={handleExpandAll} {...rest}>
-      <KeyboardArrowDown color={'secondary'} />
+    <IconButton size={'small'} onClick={handleExpandAll}>
+      <KeyboardArrowDown color={'secondary'} className={className} />
     </IconButton>
   );
 };

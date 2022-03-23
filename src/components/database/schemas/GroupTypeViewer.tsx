@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import GroupIcon from '@material-ui/icons/PlaylistAdd';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import React, { FC } from 'react';
 import FieldIndicators from '../FieldIndicators';
 import {

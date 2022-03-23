@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { IChatMessage } from '../../models/chat/ChatModels';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@mui/material';
 import moment from 'moment';
 import useLongPress from '../../hooks/useLongPress';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,14 +103,14 @@ export const ChatRoomBubbleSkeleton: FC<SkeletonProps> = ({ className, ...rest }
     <div className={clsx(classes.root, className)} {...rest}>
       <Skeleton
         animation="wave"
-        variant="circle"
+        variant="circular"
         height={32}
         width={32}
         className={classes.skeletonIconContainer}
       />
       <Skeleton
         animation="wave"
-        variant="rect"
+        variant="rectangular"
         height={32}
         className={classes.skeletonContentContainer}
       />

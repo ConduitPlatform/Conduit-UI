@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState } from 'react';
 import sharedClasses from '../../common/sharedClasses';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid } from '@mui/material';
 import { Customer } from '../../../models/payments/PaymentsModels';
 import { FormInputText } from '../../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';

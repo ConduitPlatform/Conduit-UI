@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 const primary = '#5B44F2';
 const secondary = '#07D9C4';
@@ -8,7 +8,7 @@ const disabled = '#808080';
 
 const theme = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       main: primary,
       contrastText: '#F2F2F2',
@@ -36,9 +36,9 @@ const theme = createTheme({
   typography: {
     fontFamily: 'JetBrains Mono',
   },
-  overrides: {
+  components: {
     MuiCssBaseline: {
-      '@global': {
+      styleOverrides: {
         body: {
           scrollbarColor: '#6b6b6b #2b2b2b',
           '&::-webkit-scrollbar, & *::-webkit-scrollbar': {

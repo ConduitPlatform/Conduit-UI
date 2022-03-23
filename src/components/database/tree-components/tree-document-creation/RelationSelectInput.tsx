@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
 import { getDocumentsByNameRequest } from '../../../../http/DatabaseRequests';
-import { Box, CircularProgress, IconButton, Select, Typography } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
-import { RemoveRedEye } from '@material-ui/icons';
+import { Box, CircularProgress, IconButton, Select, Typography } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import makeStyles from '@mui/styles/makeStyles';
+import { RemoveRedEye } from '@mui/icons-material';
 
 const useStyles = makeStyles((theme) => ({
   muiSelect: {
@@ -105,7 +105,8 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
                 `/cms/schemadata?schemaModel=${schemaModel}&schemaDocumentId=${item._id}`
               );
               e.stopPropagation();
-            }}>
+            }}
+            size="large">
             <RemoveRedEye />
           </IconButton>
         </MenuItem>

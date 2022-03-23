@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 interface FormCheckboxProps {
   name: string;

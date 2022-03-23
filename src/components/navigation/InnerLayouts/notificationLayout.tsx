@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Notifications } from '@material-ui/icons';
+import { Notifications } from '@mui/icons-material';
 
 const NotificationLayout: React.FC = ({ children }) => {
   const pathNames = ['/push-notifications/send', '/push-notifications/config'];

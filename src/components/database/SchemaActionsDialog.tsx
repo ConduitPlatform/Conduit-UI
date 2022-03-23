@@ -9,9 +9,9 @@ import {
   Chip,
   FormControlLabel,
   FormGroup,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import makeStyles from '@mui/styles/makeStyles';
 import { isArray } from 'lodash';
 import { Schema } from '../../models/database/CmsModels';
 import { SchemaUI } from './CmsModels';

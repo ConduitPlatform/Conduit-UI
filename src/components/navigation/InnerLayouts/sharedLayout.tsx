@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Typography,
-  Tabs,
-  Tab,
-  createStyles,
-  makeStyles,
-  Icon,
-} from '@material-ui/core';
+import { Box, Button, Typography, Tabs, Tab, Icon } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import SwaggerModal from '../../common/SwaggerModal';

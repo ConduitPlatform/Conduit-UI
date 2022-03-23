@@ -1,12 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { EmailTemplateType } from '../../models/emails/EmailModels';
 import Image from 'next/dist/client/image';
 import EmailImage from '../../assets/email.svg';
-import { Button, Paper } from '@material-ui/core';
+import { Button, Paper } from '@mui/material';
 import sharedClasses from '../common/sharedClasses';
 
 import TemplateForm from './TemplateForm';

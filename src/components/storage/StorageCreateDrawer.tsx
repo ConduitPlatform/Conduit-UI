@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
-import { Button, Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Button, Grid } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import DrawerWrapper from '../navigation/SideDrawerWrapper';
 import { CreateFormSelected, IContainer, ICreateForm } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';

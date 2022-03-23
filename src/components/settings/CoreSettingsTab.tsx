@@ -1,7 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
-import { Grid, Container, Button } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Container, Button } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';

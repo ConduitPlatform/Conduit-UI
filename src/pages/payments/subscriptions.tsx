@@ -1,8 +1,9 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import DataTable from '../../components/common/DataTable';
-import { Grid, Typography, TextField, makeStyles, InputAdornment, Box } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';

@@ -1,7 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC } from 'react';
-import { AccountTree } from '@material-ui/icons';
-import { Typography } from '@material-ui/core';
+import { AccountTree } from '@mui/icons-material';
+import { Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {

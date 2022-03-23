@@ -1,13 +1,13 @@
 import React, { FC, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import { BoxProps } from '@material-ui/core/Box/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import { BoxProps } from '@mui/material/Box/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import { asyncDeleteChatMessages } from '../../redux/slices/chatSlice';
 import { useAppDispatch } from '../../redux/store';
-import { IconButton, Paper, Typography } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { IconButton, Paper, Typography } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ChatInfoDialog from './ChatInfoDialog';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import ChatRoomMessages from './ChatRoomMessages';
@@ -121,11 +121,17 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
         <Typography>{panelData.name}</Typography>
         <Box className={classes.actionContainer}>
           {selected.length > 0 && (
-            <IconButton className={classes.actionButton} onClick={() => onDeletePress()}>
+            <IconButton
+              className={classes.actionButton}
+              onClick={() => onDeletePress()}
+              size="large">
               <DeleteIcon />
             </IconButton>
           )}
-          <IconButton className={classes.actionButton} onClick={() => handleOpenModal()}>
+          <IconButton
+            className={classes.actionButton}
+            onClick={() => handleOpenModal()}
+            size="large">
             <InfoOutlined />
           </IconButton>
         </Box>

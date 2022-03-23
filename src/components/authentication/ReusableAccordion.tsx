@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Accordion from '@material-ui/core/Accordion';
-import { makeStyles } from '@material-ui/core/styles';
-import { Button, InputLabel, MenuItem, Select } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Accordion from '@mui/material/Accordion';
+import makeStyles from '@mui/styles/makeStyles';
+import { Button, InputLabel, MenuItem, Select } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
 import {
   IAuthenticationConfig,
   SignInTypes,

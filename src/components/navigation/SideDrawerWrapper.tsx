@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Box, DialogTitle, Drawer, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, DialogTitle, Drawer, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,7 +70,7 @@ const DrawerWrapper: FC<PropsDrawer> = ({
       }}
       transitionDuration={{ appear: 300, enter: 300, exit: 200 }}>
       <Box className={classes.close}>
-        <IconButton onClick={toggleDrawer(false)} className={classes.button}>
+        <IconButton onClick={toggleDrawer(false)} className={classes.button} size="large">
           <CloseIcon />
         </IconButton>
       </Box>

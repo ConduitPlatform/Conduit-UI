@@ -1,15 +1,15 @@
 import React from 'react';
-import { Box, IconButton, Tooltip } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import BlockIcon from '@material-ui/icons/Block';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import View from '@material-ui/icons/ViewDay';
-import Upload from '@material-ui/icons/CloudUpload';
-import Sync from '@material-ui/icons/Sync';
-import ReplyAll from '@material-ui/icons/ReplyAll';
-import ArchiveIcon from '@material-ui/icons/Archive';
-import { Add } from '@material-ui/icons';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import View from '@mui/icons-material/ViewDay';
+import Upload from '@mui/icons-material/CloudUpload';
+import Sync from '@mui/icons-material/Sync';
+import ReplyAll from '@mui/icons-material/ReplyAll';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import { Add } from '@mui/icons-material';
 
 interface Action {
   title: string;
@@ -64,7 +64,8 @@ const DataTableActions: React.FC<Props> = ({ actions, onActionClick, isBlocked, 
                   event.stopPropagation();
                   onActionClick(action);
                 }}
-                disabled={action.type === 'edit' && editDisabled}>
+                disabled={action.type === 'edit' && editDisabled}
+                size="large">
                 {handleActions(action)}
               </IconButton>
             </Tooltip>

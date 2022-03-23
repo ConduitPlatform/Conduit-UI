@@ -7,12 +7,12 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@mui/material';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-import { CallMissedOutgoing } from '@material-ui/icons';
+import { CallMissedOutgoing } from '@mui/icons-material';
 import { asyncGetExternalTemplates } from '../../redux/slices/emailsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailTemplateType } from '../../models/emails/EmailModels';

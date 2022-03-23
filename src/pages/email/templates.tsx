@@ -17,15 +17,15 @@ import {
   Typography,
   TextField,
   IconButton,
-  makeStyles,
   InputAdornment,
   Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import TabPanel from '../../components/emails/TabPanel';
-import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@material-ui/icons';
-import Sync from '@material-ui/icons/Sync';
-import SearchIcon from '@material-ui/icons/Search';
+import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
+import Sync from '@mui/icons-material/Sync';
+import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
 import ExternalTemplates from '../../components/emails/ExternalTemplates';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
@@ -295,7 +295,8 @@ const Templates = () => {
             <IconButton
               aria-label="delete"
               color="primary"
-              onClick={() => setOpenDeleteTemplates(true)}>
+              onClick={() => setOpenDeleteTemplates(true)}
+              size="large">
               <Tooltip title="Delete multiple templates">
                 <DeleteTwoTone />
               </Tooltip>
@@ -304,7 +305,8 @@ const Templates = () => {
           <IconButton
             color="primary"
             className={classes.btnAlignment}
-            onClick={() => dispatch(asyncSyncTemplates())}>
+            onClick={() => dispatch(asyncSyncTemplates())}
+            size="large">
             <Tooltip title="Sync external templates">
               <Sync color="primary" />
             </Tooltip>

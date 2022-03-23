@@ -10,8 +10,8 @@ import {
   DialogTitle,
   Grid,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
   image: {
@@ -66,7 +66,7 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
           </Box>
         )}
         {imgLoading ? (
-          <Grid container alignItems={'center'} justify={'center'}>
+          <Grid container alignItems={'center'} justifyContent={'center'}>
             <Box mb={3}>
               <CircularProgress />
             </Box>

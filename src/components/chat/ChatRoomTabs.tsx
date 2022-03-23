@@ -5,11 +5,11 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch } from '../../redux/store';
 import { asyncGetChatRooms } from '../../redux/slices/chatSlice';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import memoize from 'memoize-one';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import ChatRoomTab, { ChatRoomTabSkeleton } from './ChatRoomTab';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   tabSelected: {

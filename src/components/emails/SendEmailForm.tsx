@@ -1,15 +1,7 @@
-import {
-  Box,
-  Container,
-  TextField,
-  Button,
-  Grid,
-  Paper,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, Container, TextField, Button, Grid, Paper, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Clear, MailOutline, Send } from '@material-ui/icons';
+import { Clear, MailOutline, Send } from '@mui/icons-material';
 import { useForm, useWatch, Controller, FormProvider } from 'react-hook-form';
 import { EmailUI } from '../../models/emails/EmailModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';

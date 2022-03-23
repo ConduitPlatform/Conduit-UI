@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import {
   Dialog,
   DialogTitle,
@@ -7,12 +7,12 @@ import {
   DialogActions,
   TextField,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { useRouter } from 'next/router';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from '@mui/icons-material/Close';
 import Link from 'next/link';
 
 const useStyles = makeStyles((theme) => ({

@@ -9,12 +9,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Button from '@material-ui/core/Button';
+} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Button from '@mui/material/Button';
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   getServiceAccounts,
   deleteServiceAccounts,
@@ -24,7 +24,7 @@ import {
 import moment from 'moment';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import GetServiceAccountToken from './GetServiceAccountToken';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
 
@@ -183,10 +183,10 @@ const ServiceAccountsTabs = () => {
                         </Typography>
                       </TableCell>
                       <TableCell className={classes.serviceButtons}>
-                        <IconButton onClick={() => handleDeleteClick(service._id)}>
+                        <IconButton onClick={() => handleDeleteClick(service._id)} size="large">
                           <DeleteIcon />
                         </IconButton>
-                        <IconButton onClick={() => handleRefresh(service._id)}>
+                        <IconButton onClick={() => handleRefresh(service._id)} size="large">
                           <RefreshIcon />
                         </IconButton>
                       </TableCell>

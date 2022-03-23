@@ -1,6 +1,6 @@
 import Editor from 'react-simple-code-editor';
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import { highlight, languages } from 'prismjs';
 
 import 'prismjs/components/prism-handlebars';

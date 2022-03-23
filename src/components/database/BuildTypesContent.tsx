@@ -1,20 +1,20 @@
 import React, { FC } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Content from '@material-ui/icons/PermMedia';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Content from '@mui/icons-material/PermMedia';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 import SimpleType from './types/SimpleType/SimpleType';
 import BooleanType from './types/BooleanType/BooleanType';
 import GroupType from './types/GroupType/GroupType';
 import EnumType from './types/EnumType/EnumType';
 import ObjectIdType from './types/ObjectIdType/ObjectIdType';
 import RelationType from './types/RelationType/RelationType';
-import Button from '@material-ui/core/Button';
-import { BoxProps } from '@material-ui/core/Box/Box';
+import Button from '@mui/material/Button';
+import { BoxProps } from '@mui/material/Box/Box';
 
 const useStyles = makeStyles((theme) => ({
   list: {

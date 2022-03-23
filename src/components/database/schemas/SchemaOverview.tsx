@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Grid, Paper, Box, Button } from '@material-ui/core';
+import { Grid, Paper, Box, Button } from '@mui/material';
 import { Schema } from '../../../models/database/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
 import { ExtractSchemaInfo } from '../../../utils/ExtractSchemaInfo';

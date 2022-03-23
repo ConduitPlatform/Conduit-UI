@@ -1,11 +1,12 @@
-import { Container, makeStyles } from '@material-ui/core';
+import { Container } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { IAuthenticationConfig } from '../../models/authentication/AuthModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';

@@ -1,5 +1,6 @@
-import { alpha, withStyles } from '@material-ui/core/styles';
-import TreeItem from '@material-ui/lab/TreeItem';
+import { alpha } from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
+import TreeItem from '@mui/lab/TreeItem';
 import React from 'react';
 import TransitionComponent from '../../utils/TransitionComponent';
 

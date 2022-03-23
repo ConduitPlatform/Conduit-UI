@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Chip, Paper, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import { Chip, Paper, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import Image from 'next/dist/client/image';
 import SubsriptionImage from '../../assets/svgs/subscriptions.svg';
 import { Subscription, Transaction } from '../../models/payments/PaymentsModels';

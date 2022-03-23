@@ -1,4 +1,4 @@
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid } from '@mui/material';
 import React, { FC } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import TemplateEditor from './TemplateEditor';

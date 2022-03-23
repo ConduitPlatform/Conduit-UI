@@ -1,18 +1,18 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import makeStyles from '@mui/styles/makeStyles';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { FC, useEffect, useState } from 'react';
 import { asyncGetSchemas } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
@@ -120,7 +120,7 @@ const RelationForm: FC<IProps> = ({
     setSimpleData({ ...simpleData, isArray: !simpleData.isArray });
   };
 
-  const handleFieldRelation = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const handleFieldRelation = (event: any) => {
     setSimpleData({ ...simpleData, model: event.target.value as string });
   };
 

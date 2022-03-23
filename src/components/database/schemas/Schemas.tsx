@@ -1,7 +1,7 @@
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
@@ -32,13 +32,14 @@ import {
   Button,
   OutlinedInput,
   Tooltip,
-} from '@material-ui/core';
-import { Archive, Check, Search } from '@material-ui/icons';
+  SelectChangeEvent,
+} from '@mui/material';
+import { Archive, Check, Search } from '@mui/icons-material';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
 import { Schema } from '../../../models/database/CmsModels';
 import SchemasList from './SchemasList';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview';
 import NewSchemaDialog from '../NewSchemaDialog';
@@ -339,7 +340,7 @@ const Schemas: FC = () => {
       );
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
+  const handleFilterChange = (event: any) => {
     setOwners(event.target.value);
   };
 
@@ -412,13 +413,10 @@ const Schemas: FC = () => {
                         multiple
                         value={owners}
                         onChange={handleFilterChange}
-                        input={<OutlinedInput labelWidth={labelWidth} id="my-input" />}
+                        input={<OutlinedInput id="my-input" />}
                         renderValue={(selected: any) =>
                           selected.length === 1 ? selected : 'multiple'
-                        }
-                        MenuProps={{
-                          getContentAnchorEl: null,
-                        }}>
+                        }>
                         {schemaOwners &&
                           schemaOwners.map((module: any) => (
                             <MenuItem key={module} value={module}>

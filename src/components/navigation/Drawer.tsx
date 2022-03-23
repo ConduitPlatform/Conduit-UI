@@ -1,11 +1,11 @@
 import React from 'react';
-import { Paper, Theme } from '@material-ui/core';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import { ExitToApp, Settings } from '@material-ui/icons';
+import { Paper, Theme } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import { ExitToApp, Settings } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import CustomListItem from './CustomListItem';

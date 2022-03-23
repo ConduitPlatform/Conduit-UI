@@ -1,7 +1,7 @@
 import React from 'react';
 import MomentUtils from '@date-io/moment';
-import { makeStyles } from '@material-ui/core/styles';
-import { Today } from '@material-ui/icons';
+import makeStyles from '@mui/styles/makeStyles';
+import { Today } from '@mui/icons-material';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { ParsableDate } from '@material-ui/pickers/constants/prop-types';

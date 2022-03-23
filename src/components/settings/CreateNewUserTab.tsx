@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Button, Container, Grid, Theme, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Container, Grid, Theme, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { INewAdminUser } from '../../models/settings/SettingsModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useDispatch } from 'react-redux';

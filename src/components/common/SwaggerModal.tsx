@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 
-import DialogContent from '@material-ui/core/DialogContent';
-import CloseIcon from '@material-ui/icons/Close';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Box, DialogContentText, IconButton, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import DialogContent from '@mui/material/DialogContent';
+import CloseIcon from '@mui/icons-material/Close';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Box, DialogContentText, IconButton, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import axios from 'axios';
 
 interface Props {
@@ -80,7 +80,7 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
       <DialogTitle id="alert-dialog-slide-title">
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h6">{title} Swagger </Typography>
-          <IconButton onClick={handleClose} className={classes.customizedButton}>
+          <IconButton onClick={handleClose} className={classes.customizedButton} size="large">
             <CloseIcon />
           </IconButton>
         </Box>
