@@ -83,33 +83,35 @@ const Home = () => {
         <title>Conduit - App</title>
       </Head>
       <div>
-        <Box
-          p={2}
-          display={'flex'}
-          justifyContent="flex-end"
-          alignItems={'flex-end'}
-          flex={1}
-          style={{ marginBottom: '20px', gap: 7 }}>
-          <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
-            SWAGGER
-          </Button>
-          <a
-            style={{ textDecoration: 'none' }}
-            href={`${process.env.CONDUIT_URL}/graphql`}
-            target="_blank"
-            rel="noreferrer">
-            <Button variant="outlined">GraphQL</Button>
-          </a>
-          <a
-            href="https://getconduit.dev/docs/"
-            target="_blank"
-            rel="noreferrer"
-            style={{ textDecoration: 'none' }}>
-            <Button variant="outlined" startIcon={<Description />}>
-              DOCUMENTATION
+        <Container maxWidth="xl">
+          <Box
+            p={2}
+            display={'flex'}
+            justifyContent="flex-end"
+            alignItems={'flex-end'}
+            flex={1}
+            style={{ marginBottom: '20px', gap: 7 }}>
+            <Button variant="outlined" onClick={() => setSwaggerModal(true)}>
+              SWAGGER
             </Button>
-          </a>
-        </Box>
+            <a
+              style={{ textDecoration: 'none' }}
+              href={`${process.env.CONDUIT_URL}/graphql`}
+              target="_blank"
+              rel="noreferrer">
+              <Button variant="outlined">GraphQL</Button>
+            </a>
+            <a
+              href="https://getconduit.dev/docs/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: 'none' }}>
+              <Button variant="outlined" startIcon={<Description />}>
+                DOCUMENTATION
+              </Button>
+            </a>
+          </Box>
+        </Container>
         <Box
           p={2}
           display={'flex'}
@@ -199,7 +201,7 @@ const Home = () => {
               </Paper>
             </Grid>
           </Grid>
-          <SwaggerModal open={swaggerModal} setOpen={setSwaggerModal} />
+          <SwaggerModal open={swaggerModal} setOpen={setSwaggerModal} swagger="App" title="App" />
         </Container>
       </div>
     </>
