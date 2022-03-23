@@ -13,10 +13,10 @@ const EmailsLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      title={'Emails'}
+      title={'Email'}
       labels={labels}
       pathNames={pathNames}
-      swagger={'cms'}
+      swagger={'email'}
       icon={<Email />}>
       {children}
     </SharedLayout>

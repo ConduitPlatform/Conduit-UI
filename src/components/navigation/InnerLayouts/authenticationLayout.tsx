@@ -21,7 +21,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
       title={'Authentication'}
       labels={labels}
       pathNames={pathNames}
-      swagger={'cms'}
+      swagger={'authentication'}
       icon={<People />}>
       {children}
     </SharedLayout>

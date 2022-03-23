@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React from 'react';
+import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slide from '@material-ui/core/Slide';
 import Box from '@material-ui/core/Box';
@@ -14,6 +14,8 @@ import {
   Divider,
   Button,
   Link,
+  SvgIcon,
+  Icon,
 } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import LockIcon from '@material-ui/icons/Lock';
@@ -21,7 +23,10 @@ import SchemaIcon from '@material-ui/icons/VerticalSplit';
 import SectetIcon from '@material-ui/icons/VpnKey';
 import Description from '@material-ui/icons/Description';
 import { ArrowForward } from '@material-ui/icons';
-import Storage from '@material-ui/icons/Storage';
+import SwaggerModal from '../components/common/SwaggerModal';
+import GraphQL from '../assets/svgs/graphQL.svg';
+import Swagger from '../assets/svgs/swagger.svg';
+import Image from 'next/image';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,6 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Home = () => {
   const classes = useStyles();
+  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
 
   return (
     <>
@@ -82,23 +88,50 @@ const Home = () => {
         <title>Conduit - App</title>
       </Head>
       <div>
-        <Box
-          p={2}
-          display={'flex'}
-          justifyContent="flex-end"
-          alignItems={'flex-end'}
-          flex={1}
-          style={{ marginBottom: '20px' }}>
-          <a
-            href="https://getconduit.dev/docs/"
-            target="_blank"
-            rel="noreferrer"
-            style={{ textDecoration: 'none' }}>
-            <Button variant="outlined" startIcon={<Description />}>
-              DOCUMENTATION
+        <Container maxWidth="xl">
+          <Box
+            p={2}
+            display={'flex'}
+            justifyContent="flex-end"
+            alignItems={'flex-end'}
+            flex={1}
+            style={{ marginBottom: '20px', gap: 10 }}>
+            <Button
+              variant="outlined"
+              startIcon={
+                <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                  <Image src={Swagger} alt="swagger" />
+                </Icon>
+              }
+              onClick={() => setSwaggerModal(true)}>
+              SWAGGER
             </Button>
-          </a>
-        </Box>
+            <a
+              style={{ textDecoration: 'none' }}
+              href={`${process.env.CONDUIT_URL}/graphql`}
+              target="_blank"
+              rel="noreferrer">
+              <Button
+                startIcon={
+                  <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                    <Image src={GraphQL} alt="swagger" />
+                  </Icon>
+                }
+                variant="outlined">
+                GraphQL
+              </Button>
+            </a>
+            <a
+              href="https://getconduit.dev/docs/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: 'none' }}>
+              <Button variant="outlined" startIcon={<Description />}>
+                DOCUMENTATION
+              </Button>
+            </a>
+          </Box>
+        </Container>
         <Box
           p={2}
           display={'flex'}
@@ -145,23 +178,6 @@ const Home = () => {
                 <Typography variant="subtitle2">
                   Create your schema with a user friendly UI!
                   <IconButton className={classes.iconButton} size="small">
-                    <Link href="/cms/build-types">
-                      <ArrowForward />
-                    </Link>
-                  </IconButton>
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Paper className={classes.paper} variant="elevation">
-                <div className={classes.textIcon}>
-                  <Storage className={classes.headerIcon} />
-                  <Typography>&nbsp; add data </Typography>
-                </div>
-                <Divider className={classes.divider} />
-                <Typography variant="subtitle2">
-                  Add data to your newly created schema!
-                  <IconButton className={classes.iconButton} size="small">
                     <Link href="/database/schemas">
                       <ArrowForward />
                     </Link>
@@ -169,6 +185,7 @@ const Home = () => {
                 </Typography>
               </Paper>
             </Grid>
+
             <Grid item xs={12} md={6}>
               <Paper className={classes.paper} variant="elevation">
                 <div className={classes.textIcon}>
@@ -179,7 +196,7 @@ const Home = () => {
                 <Typography variant="subtitle2">
                   Select your preferred provider and start mailing!
                   <IconButton className={classes.iconButton} size="small">
-                    <Link href="/emails/provider">
+                    <Link href="/email/config">
                       <ArrowForward />
                     </Link>
                   </IconButton>
@@ -204,6 +221,7 @@ const Home = () => {
               </Paper>
             </Grid>
           </Grid>
+          <SwaggerModal open={swaggerModal} setOpen={setSwaggerModal} swagger="App" title="App" />
         </Container>
       </div>
     </>

@@ -25,6 +25,13 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
     dispatch(enqueueInfoNotification('Module currently disabled.'));
   };
 
+  const modulesInstance = [...modules];
+  const sortedArray = modulesInstance.sort((a, b) => {
+    const textA = a.moduleName.toUpperCase();
+    const textB = b.moduleName.toUpperCase();
+    return textA < textB ? -1 : textA > textB ? 1 : 0;
+  });
+
   return (
     <>
       {homeEnabled ? (
@@ -38,8 +45,8 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
       ) : (
         <></>
       )}
-      {modules &&
-        modules.map((module, index) => {
+      {sortedArray &&
+        sortedArray.map((module, index) => {
           if (disabled) {
             return (
               <CustomListItem

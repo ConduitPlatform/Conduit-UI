@@ -15,7 +15,7 @@ const SMSLayout: React.FC = ({ children }) => {
       title={'SMS'}
       labels={labels}
       pathNames={pathNames}
-      swagger={'cms'}
+      swagger={'sms'}
       icon={<Sms />}>
       {children}
     </SharedLayout>
