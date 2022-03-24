@@ -8,50 +8,11 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormsModel } from '../../models/forms/FormsModels';
 import { asyncGetFormReplies } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { Chip, Container, Grid, TextField } from '@mui/material';
+import { Box, Chip, Container, Grid, TextField } from '@mui/material';
 import Image from 'next/dist/client/image';
 import formReplies from '../../assets/svgs/formReplies.svg';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    display: 'flex',
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  grid: {
-    marginBottom: theme.spacing(3),
-  },
-  centeredImg: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textField: {
-    width: '100%',
-  },
-  marginTop: {
-    marginTop: '60px',
-  },
-  fields: {
-    marginTop: theme.spacing(0.5),
-    display: 'flex',
-    marginBottom: theme.spacing(0.5),
-    alignItems: 'center',
-    width: '80%',
-    justifyContent: 'center',
-  },
-  badgeSpacing: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
   disabledInput: {
     color: theme.palette.secondary.main,
   },
@@ -127,13 +88,21 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
               </Grid>
             </AccordionSummary>
             <AccordionDetails>
-              <div className={classes.badgeSpacing}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                  '& > *': {
+                    margin: 0.5,
+                  },
+                }}>
                 <Grid container spacing={3}>
                   {Object.entries(reply.data).map(([key, value]) => {
                     return (
                       <Grid key={value} item xs={12}>
                         <TextField
-                          className={classes.textField}
+                          sx={{ width: '100%' }}
                           InputProps={{ classes: { disabled: classes.disabledInput } }}
                           disabled
                           color="primary"
@@ -146,7 +115,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
                     );
                   })}
                 </Grid>
-              </div>
+              </Box>
             </AccordionDetails>
           </Accordion>
         ))
@@ -155,9 +124,9 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
           <Typography style={{ textAlign: 'center' }}>
             No replies available for the current form
           </Typography>
-          <div className={classes.centeredImg}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Image src={formReplies} alt="form replies" width="200px" />
-          </div>
+          </Box>
         </>
       )}
     </Container>

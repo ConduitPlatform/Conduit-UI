@@ -22,9 +22,6 @@ const useStyles = makeStyles((theme) => ({
   bubbleSelected: {
     backgroundColor: `${theme.palette.grey[700]}80`,
   },
-  placeholder: {
-    whiteSpace: 'nowrap',
-  },
 }));
 
 const timeoutAmount = 750;
@@ -166,7 +163,11 @@ const ChatRoomMessages: FC<Props> = ({
       {({ height, width }) => {
         if (!count) {
           if (areEmpty)
-            return <Typography className={classes.placeholder}>No available messages</Typography>;
+            return (
+              <Typography sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+                No available messages
+              </Typography>
+            );
           return <></>;
         }
         return (

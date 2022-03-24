@@ -1,50 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography, Tabs, Tab, Icon } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import SwaggerModal from '../../common/SwaggerModal';
 import Image from 'next/image';
 import Swagger from '../../../assets/svgs/swagger.svg';
 import GraphQL from '../../../assets/svgs/graphQL.svg';
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      height: '100vh',
-      padding: theme.spacing(4),
-    },
-    navBar: {
-      marginBottom: theme.spacing(2),
-    },
-    swaggerButton: {
-      textDecoration: 'none',
-      marginLeft: theme.spacing(8),
-    },
-    navContent: {
-      marginTop: '10px',
-    },
-    link: {
-      textDecoration: 'none',
-      color: 'inherit',
-    },
-    tab: {
-      '&:hover': {
-        textDecoration: 'none',
-      },
-    },
-    tabSelected: {
-      opacity: 1,
-      '&:hover': {
-        textDecoration: 'none',
-      },
-    },
-    graphQlButton: {
-      marginLeft: theme.spacing(3),
-    },
-  })
-);
 
 interface Props {
   pathNames: string[];
@@ -55,7 +16,6 @@ interface Props {
 }
 
 const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, labels, title }) => {
-  const classes = useStyles();
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
@@ -66,15 +26,15 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
   }, [router.pathname, pathNames]);
 
   return (
-    <Box className={classes.root}>
-      <Box className={classes.navBar}>
-        <Typography className={classes.navContent} variant={'h4'}>
+    <Box sx={{ height: '100vh', p: 4 }}>
+      <Box sx={{ mb: 2 }}>
+        <Typography sx={{ mt: 2 }} variant={'h4'}>
           {title}
           {title !== 'Settings' && (
             <>
               <Button
                 color="secondary"
-                className={classes.swaggerButton}
+                sx={{ textDecoration: 'none', ml: 8 }}
                 variant="outlined"
                 startIcon={
                   <Icon style={{ display: 'flex', alignContent: 'center' }}>
@@ -103,16 +63,27 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
             </>
           )}
         </Typography>
-        <Tabs value={value} className={classes.navContent}>
+        <Tabs value={value} sx={{ mt: 2 }}>
           {labels.map((label: { name: string; id: string }, index: number) => {
             return (
               <Link href={pathNames[index]} passHref key={index}>
                 <Tab
                   label={label.name}
                   id={label.id}
-                  classes={{
-                    root: value === index ? classes.tabSelected : classes.tab,
-                  }}
+                  sx={
+                    value === index
+                      ? {
+                          opacity: 1,
+                          '&:hover': {
+                            textDecoration: 'none',
+                          },
+                        }
+                      : {
+                          '&:hover': {
+                            textDecoration: 'none',
+                          },
+                        }
+                  }
                 />
               </Link>
             );

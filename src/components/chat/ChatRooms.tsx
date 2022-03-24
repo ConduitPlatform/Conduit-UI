@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Paper, TextField } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import {
   asyncGetChatRooms,
@@ -14,35 +13,7 @@ import useDebounce from '../../hooks/useDebounce';
 import ChatRoomTabs from './ChatRoomTabs';
 import { AuthUserUI } from '../../models/authentication/AuthModels';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    height: '75vh',
-    padding: theme.spacing(1),
-  },
-  innerRoot: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: theme.spacing(30),
-  },
-  topContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
-  },
-  search: {
-    marginBottom: theme.spacing(1),
-  },
-  tabContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-  },
-}));
-
 const ChatRooms: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const {
@@ -88,7 +59,7 @@ const ChatRooms: React.FC = () => {
 
   return (
     <>
-      <Box className={classes.topContainer}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
         <Box />
         <Button
           variant="contained"
@@ -98,10 +69,14 @@ const ChatRooms: React.FC = () => {
           Create chat room
         </Button>
       </Box>
-      <Paper className={classes.root}>
-        <Box className={classes.innerRoot}>
+      <Paper sx={{ display: 'flex', height: '75vh', padding: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: 220 }}>
           <TextField
-            className={classes.search}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginBottom: 2,
+            }}
             label={'Search'}
             variant={'outlined'}
             value={search}
@@ -109,7 +84,7 @@ const ChatRooms: React.FC = () => {
               setSearch(event.target.value);
             }}
           />
-          <Box className={classes.tabContainer}>
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
             <ChatRoomTabs
               chatRooms={data}
               chatRoomCount={count}

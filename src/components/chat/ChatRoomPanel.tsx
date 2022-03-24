@@ -1,7 +1,6 @@
 import React, { FC, useState } from 'react';
 import Box from '@mui/material/Box';
 import { BoxProps } from '@mui/material/Box/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import { asyncDeleteChatMessages } from '../../redux/slices/chatSlice';
 import { useAppDispatch } from '../../redux/store';
@@ -12,63 +11,12 @@ import ChatInfoDialog from './ChatInfoDialog';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import ChatRoomMessages from './ChatRoomMessages';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-    padding: theme.spacing(2, 0, 2, 2),
-  },
-  infoContainer: {
-    padding: theme.spacing(1, 2),
-    backgroundColor: theme.palette.grey[600],
-    marginLeft: theme.spacing(1),
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  infoButton: {
-    cursor: 'pointer',
-  },
-  bubble: {
-    marginBottom: theme.spacing(0.5),
-    padding: theme.spacing(1, 1),
-    borderRadius: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-  },
-  bubbleSelected: {
-    backgroundColor: `${theme.palette.grey[700]}80`,
-  },
-  actionContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  actionButton: {
-    padding: theme.spacing(1),
-  },
-  selectedContainer: {
-    backgroundColor: theme.palette.grey[600],
-    borderRadius: theme.spacing(3),
-    padding: theme.spacing(1, 2),
-    position: 'absolute',
-    top: theme.spacing(8),
-    right: theme.spacing(2.5),
-    zIndex: 1,
-  },
-}));
-
 interface Props extends BoxProps {
   panelData: IChatRoom;
   selectedPanel: number;
 }
 
 const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const [infoDialog, setInfoDialog] = useState<boolean>(false);
@@ -116,32 +64,45 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
   };
 
   return (
-    <Box className={classes.root}>
-      <Paper className={classes.infoContainer} elevation={6}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <Paper
+        sx={{
+          padding: 1,
+          backgroundColor: 'gray',
+          marginLeft: 1,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          position: 'relative',
+        }}
+        elevation={6}>
         <Typography>{panelData.name}</Typography>
-        <Box className={classes.actionContainer}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {selected.length > 0 && (
-            <IconButton
-              className={classes.actionButton}
-              onClick={() => onDeletePress()}
-              size="large">
+            <IconButton sx={{ padding: 1 }} onClick={() => onDeletePress()} size="large">
               <DeleteIcon />
             </IconButton>
           )}
-          <IconButton
-            className={classes.actionButton}
-            onClick={() => handleOpenModal()}
-            size="large">
+          <IconButton sx={{ padding: 1 }} onClick={() => handleOpenModal()} size="large">
             <InfoOutlined />
           </IconButton>
         </Box>
         {selected.length > 0 && (
-          <Box className={classes.selectedContainer}>
+          <Box
+            sx={{
+              backgroundColor: 'gray',
+              borderRadius: 3,
+              padding: 1,
+              position: 'absolute',
+              top: 8,
+              right: 2,
+              zIndex: 1,
+            }}>
             <Typography>{selected.length}selected</Typography>
           </Box>
         )}
       </Paper>
-      <Box className={classes.contentContainer}>
+      <Box sx={{ flex: 1, pt: 2, pl: 2, pb: 2 }}>
         <ChatRoomMessages
           roomId={panelData._id}
           selectedPanel={selectedPanel}

@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 import { Clear, Send, Sms } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { FormProvider, useForm } from 'react-hook-form';
-import sharedClasses from '../common/sharedClasses';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { ISendSms } from '../../models/sms/SmsModels';
 import { useAppDispatch } from '../../redux/store';
@@ -14,7 +13,6 @@ import { asyncSendSms } from '../../redux/slices/smsSlice';
 import { Box } from '@mui/material';
 
 const SendSms: React.FC = () => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const methods = useForm<ISendSms>({
@@ -33,9 +31,9 @@ const SendSms: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ p: 2, color: 'text.secondary', mt: 2 }}>
         <Box>
-          <Typography variant={'h6'} className={classes.marginBottom}>
+          <Typography variant={'h6'} sx={{ mb: 4 }}>
             <Sms fontSize={'small'} /> Compose your SMS
           </Typography>
         </Box>

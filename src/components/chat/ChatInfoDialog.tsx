@@ -3,13 +3,6 @@ import moment from 'moment';
 import Box from '@mui/material/Box';
 import React, { FC } from 'react';
 import { IChatRoom } from '../../models/chat/ChatModels';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles((theme) => ({
-  dialogInfo: {
-    marginBottom: theme.spacing(1),
-  },
-}));
 
 interface Props {
   data: IChatRoom;
@@ -18,18 +11,17 @@ interface Props {
 }
 
 const ChatInfoDialog: FC<Props> = ({ data, open, onClose }) => {
-  const classes = useStyles();
   return (
     <Dialog onClose={onClose} open={open} fullWidth maxWidth="xs">
       <DialogTitle>Info</DialogTitle>
       <DialogContent>
-        <Typography variant="body1" className={classes.dialogInfo}>
+        <Typography variant="body1" sx={{ mb: 1 }}>
           id: {data._id}
         </Typography>
-        <Typography variant="body1" className={classes.dialogInfo}>
+        <Typography variant="body1" sx={{ mb: 1 }}>
           Name: {data.name}
         </Typography>
-        <Typography variant="body1" className={classes.dialogInfo}>
+        <Typography variant="body1" sx={{ mb: 1 }}>
           Created at: {moment(data.createdAt).format('MMM Do YYYY, h:mm:ss a')}
         </Typography>
         <Box>

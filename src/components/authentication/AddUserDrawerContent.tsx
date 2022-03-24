@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
 import SaveIcon from '@mui/icons-material/Save';
 import addUser from '../../assets/svgs/addUser.svg';
 import Grid from '@mui/material/Grid';
@@ -8,31 +7,7 @@ import Image from 'next/image';
 import Container from '@mui/material/Container';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  textField: {
-    textAlign: 'center',
-  },
-  customizedButton: {
-    position: 'absolute',
-    left: '92%',
-    top: '1%',
-    color: 'gray',
-  },
-
-  centeredImg: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-}));
+import { Box } from '@mui/material';
 
 interface Props {
   handleNewUserDispatch: (values: { password: string; email: string }) => void;
@@ -49,7 +24,6 @@ const defaultValues = {
 };
 
 const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
-  const classes = useStyles();
   const methods = useForm<NewUserInputs>({ defaultValues: defaultValues });
 
   const onSubmit = (data: { password: string; email: string }) => {
@@ -58,10 +32,28 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
 
   return (
     <div>
-      <Container className={classes.root} maxWidth="sm">
+      <Container
+        sx={{
+          flexGrow: 6,
+          alignItems: 'center',
+          justifyContent: 'center',
+          justifyItems: 'center',
+          justifySelf: 'center',
+        }}
+        maxWidth="sm">
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Grid container alignItems="center" className={classes.root} spacing={2}>
+            <Grid
+              container
+              alignItems="center"
+              sx={{
+                flexGrow: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                justifyItems: 'center',
+                justifySelf: 'center',
+              }}
+              spacing={2}>
               <Grid item sm={12}>
                 <FormInputText
                   name="email"
@@ -93,9 +85,9 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
         </FormProvider>
       </Container>
 
-      <div className={classes.centeredImg}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Image src={addUser} width="200px" alt="addUser" />
-      </div>
+      </Box>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Container } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -16,23 +15,7 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  innerGrid: {
-    paddingLeft: theme.spacing(4),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    width: '100%',
-  },
-}));
-
 const EmailConfig: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { config } = useAppSelector((state) => state.emailsSlice.data);
@@ -114,7 +97,7 @@ const EmailConfig: React.FC = () => {
             disabled={!edit}
           />
         </Grid>
-        <Divider className={classes.divider} />
+        <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
         <TransportSettings data={config} control={control} disabled={!edit} />
       </>
     );
@@ -122,7 +105,7 @@ const EmailConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ padding: 2, color: 'text.secondary' }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
@@ -134,8 +117,8 @@ const EmailConfig: React.FC = () => {
                 <Typography variant={'h6'}>Activate Email Module</Typography>
                 <FormInputSwitch name="active" />
               </Box>
-              <Divider className={classes.divider} />
-              <Grid container spacing={2} className={classes.innerGrid}>
+              <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+              <Grid container spacing={2} sx={{ pl: 4 }}>
                 {isActive && renderSettingsFields()}
               </Grid>
               <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />

@@ -1,6 +1,5 @@
 import { Container, Typography, Paper, Grid, Button } from '@mui/material';
 import React, { FC, useCallback, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { NotificationsOutlined, Send } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppSelector } from '../../redux/store';
@@ -12,27 +11,6 @@ import SelectedElements from '../common/SelectedElements';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { NotificationData } from '../../models/notifications/NotificationModels';
 import { Pagination, Search } from '../../models/http/HttpModels';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  typography: {
-    marginBottom: theme.spacing(4),
-  },
-  chip: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
-  center: {
-    textAlign: 'center',
-  },
-}));
 
 type SendNotificationProps = {
   handleSend: (value: NotificationData) => void;
@@ -49,7 +27,6 @@ const defaultValues = {
 };
 
 const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const methods = useForm<NotificationInputs>({ defaultValues: defaultValues });
   const [drawer, setDrawer] = useState<boolean>(false);
@@ -95,8 +72,8 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
 
   return (
     <Container maxWidth="md">
-      <Paper className={classes.paper} elevation={5}>
-        <Typography variant={'h6'} className={classes.typography}>
+      <Paper sx={{ p: 2, color: 'text.secondary' }} elevation={5}>
+        <Typography variant={'h6'} sx={{ mb: 4 }}>
           <NotificationsOutlined fontSize={'small'} style={{ marginBottom: '-2px' }} /> Push
           notification
         </Typography>

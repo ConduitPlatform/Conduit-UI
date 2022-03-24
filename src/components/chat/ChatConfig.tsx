@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Container } from '@mui/material';
@@ -13,35 +12,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  innerGrid: {
-    paddingLeft: theme.spacing(4),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    width: '100%',
-  },
-  box: {
-    width: '100%',
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  subBox: {
-    width: '50%',
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-}));
-
 const ChatConfig: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
 
@@ -76,26 +47,44 @@ const ChatConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ padding: 2, color: 'text.secondary' }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
-              <Box className={classes.box}>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'inline-flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
                 <Typography variant={'h6'}>Activate Chat Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
-              <Divider className={classes.divider} />
-              <Grid container spacing={2} className={classes.innerGrid}>
+              <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+              <Grid container spacing={2} sx={{ paddingLeft: 4 }}>
                 {isActive && (
                   <>
                     <Grid item xs={12}>
-                      <Box className={classes.subBox}>
+                      <Box
+                        sx={{
+                          width: '50%',
+                          display: 'inline-flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}>
                         <Typography variant={'subtitle1'}>Allow Message Edit</Typography>
                         <FormInputSwitch name={'allowMessageEdit'} disabled={!edit} />
                       </Box>
                     </Grid>
                     <Grid item xs={12}>
-                      <Box className={classes.subBox}>
+                      <Box
+                        sx={{
+                          width: '50%',
+                          display: 'inline-flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}>
                         <Typography variant={'subtitle1'}>Allow Message Delete</Typography>
                         <FormInputSwitch name={'allowMessageDelete'} disabled={!edit} />
                       </Box>

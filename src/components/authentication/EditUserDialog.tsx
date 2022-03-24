@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogContent';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
@@ -19,25 +18,6 @@ import { AuthUser } from '../../models/authentication/AuthModels';
 import { asyncEditUser } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  textField: {
-    textAlign: 'center',
-  },
-  customizedButton: {
-    position: 'absolute',
-    left: '92%',
-    top: '1%',
-    color: 'gray',
-  },
-}));
-
 interface Props {
   data: AuthUser;
   open: boolean;
@@ -46,7 +26,6 @@ interface Props {
 
 const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const [values, setValues] = useState<AuthUser>({
     email: '',
     phoneNumber: '',
@@ -82,18 +61,38 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="simple-dialog-title">
         Edit user
-        <IconButton onClick={handleClose} className={classes.customizedButton} size="large">
+        <IconButton
+          onClick={handleClose}
+          sx={{ position: 'absolute', left: '92%', top: '1%', color: 'gray' }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
-          <Container className={classes.root} maxWidth="sm">
-            <Grid container alignItems="center" className={classes.root} spacing={2}>
+          <Container
+            sx={{
+              flexGrow: 6,
+              alignItems: 'center',
+              justifyContent: 'center',
+              justifyItems: 'center',
+              justifySelf: 'center',
+            }}
+            maxWidth="sm">
+            <Grid
+              container
+              alignItems="center"
+              sx={{
+                flexGrow: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                justifyItems: 'center',
+                justifySelf: 'center',
+              }}
+              spacing={2}>
               <Grid item sm={12}>
                 <TextField
                   fullWidth
-                  className={classes.textField}
+                  sx={{ textAlign: 'center' }}
                   variant="outlined"
                   id="email"
                   name="email"

@@ -14,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import {
   getServiceAccounts,
   deleteServiceAccounts,
@@ -28,21 +27,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
 
-const useStyles = makeStyles({
-  titleContainer: {
-    justifyContent: 'space-between',
-  },
-  button: {
-    width: 170,
-  },
-  serviceButtons: {
-    minWidth: 150,
-  },
-});
-
 const ServiceAccountsTabs = () => {
-  const classes = useStyles();
-
   const [name, setName] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [serviceId, setServiceId] = useState<string>('');
@@ -133,7 +118,7 @@ const ServiceAccountsTabs = () => {
     <>
       <Container maxWidth="lg">
         <Grid container>
-          <Grid container item xs={10} className={classes.titleContainer}>
+          <Grid container item xs={10} sx={{ justifyContent: 'space-between' }}>
             <Box>
               <Typography variant={'h6'}>All available Service Accounts</Typography>
               <Typography variant={'subtitle1'}>
@@ -143,7 +128,7 @@ const ServiceAccountsTabs = () => {
             <Button
               variant={'contained'}
               color={'primary'}
-              className={classes.button}
+              sx={{ width: 170 }}
               onClick={handleGenerateNew}>
               Generate new Service Account
             </Button>
@@ -182,7 +167,7 @@ const ServiceAccountsTabs = () => {
                           {moment(service.createdAt).format('DD/MM/YYYY')}
                         </Typography>
                       </TableCell>
-                      <TableCell className={classes.serviceButtons}>
+                      <TableCell sx={{ minWidth: 150 }}>
                         <IconButton onClick={() => handleDeleteClick(service._id)} size="large">
                           <DeleteIcon />
                         </IconButton>

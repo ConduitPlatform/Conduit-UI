@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { IChatMessage } from '../../models/chat/ChatModels';
 import { Tooltip } from '@mui/material';
@@ -9,43 +8,11 @@ import moment from 'moment';
 import useLongPress from '../../hooks/useLongPress';
 import { Skeleton } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
+const classes = {
   root: {
     display: 'flex',
   },
-  contentContainer: {
-    backgroundColor: theme.palette.grey[700],
-    borderRadius: theme.spacing(2),
-    padding: theme.spacing(1, 2),
-    maxWidth: '80%',
-  },
-  skeletonContentContainer: {
-    backgroundColor: theme.palette.grey[700],
-    width: '30%',
-    borderRadius: theme.spacing(2),
-  },
-  iconOuterContainer: {
-    alignSelf: 'flex-end',
-  },
-  iconContainer: {
-    height: theme.spacing(4),
-    width: theme.spacing(4),
-    borderRadius: '50%',
-    backgroundColor: theme.palette.primary.main,
-    marginRight: theme.spacing(1),
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  skeletonIconContainer: {
-    backgroundColor: theme.palette.grey[700],
-    marginRight: theme.spacing(1),
-  },
-  name: {
-    textTransform: 'capitalize',
-  },
-}));
+};
 
 interface Props {
   data: IChatMessage;
@@ -55,8 +22,6 @@ interface Props {
 }
 
 const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...rest }) => {
-  const classes = useStyles();
-
   const handleLongPress = () => {
     onLongPress(data._id);
   };
@@ -73,17 +38,36 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
 
   return (
     <div className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
-      <Box className={classes.iconOuterContainer}>
+      <Box sx={{ alignSelf: 'flex-end' }}>
         <Tooltip title={data.senderUser.email} placement="left">
-          <Box className={classes.iconContainer}>
-            <Typography className={classes.name}>{data.senderUser.email.charAt(0)}</Typography>
+          <Box
+            sx={{
+              height: 35,
+              width: 35,
+              borderRadius: '50%',
+              backgroundColor: 'primary.main',
+              marginRight: 2,
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Typography sx={{ textTransform: 'capitalize' }}>
+              {data.senderUser.email.charAt(0)}
+            </Typography>
           </Box>
         </Tooltip>
       </Box>
       <Tooltip
         title={`Sent: ${moment(data?.createdAt).format('MMM Do YYYY, h:mm:ss a')}`}
         placement="right">
-        <Box className={classes.contentContainer}>
+        <Box
+          sx={{
+            backgroundColor: 'gray',
+            borderRadius: 2,
+            padding: 1,
+            maxWidth: '80%',
+          }}>
           <Typography variant="body2">{data?.message}</Typography>
         </Box>
       </Tooltip>
@@ -98,21 +82,24 @@ interface SkeletonProps {
 }
 
 export const ChatRoomBubbleSkeleton: FC<SkeletonProps> = ({ className, ...rest }) => {
-  const classes = useStyles();
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Skeleton
         animation="wave"
         variant="circular"
-        height={32}
-        width={32}
-        className={classes.skeletonIconContainer}
+        height={35}
+        width={35}
+        sx={{ backgroundColor: 'gray', width: '30%', mr: 2 }}
       />
       <Skeleton
         animation="wave"
         variant="rectangular"
         height={32}
-        className={classes.skeletonContentContainer}
+        sx={{
+          backgroundColor: 'gray',
+          width: '30%',
+          borderRadius: 2,
+        }}
       />
     </div>
   );

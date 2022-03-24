@@ -16,29 +16,8 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  divider: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: '100%',
-  },
-  menuItem: {
-    textTransform: 'capitalize',
-  },
-  muiSelect: {
-    textTransform: 'capitalize',
-  },
   marginBottom: {
     marginBottom: theme.spacing(1),
-  },
-  cancel: {
-    marginRight: theme.spacing(2),
-  },
-  submit: {
-    alignSelf: 'flex-end',
   },
 }));
 
@@ -115,7 +94,7 @@ const SmsConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ p: 2, color: 'text.secondary' }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
@@ -136,7 +115,7 @@ const SmsConfig: React.FC = () => {
                       }))}
                     />
                   </Grid>
-                  <Divider className={classes.divider} />
+                  <Divider sx={{ mt: 1, mb: 1, width: '100%' }} />
                   {hasProvider && (
                     <Grid item container xs={4}>
                       <FormInputText
@@ -180,15 +159,12 @@ const SmsConfig: React.FC = () => {
                   <Grid item container xs={12} justifyContent={'flex-end'}>
                     {edit ? (
                       <>
-                        <Button
-                          onClick={() => handleCancel()}
-                          className={classes.cancel}
-                          color={'primary'}>
+                        <Button onClick={() => handleCancel()} sx={{ mr: 2 }} color={'primary'}>
                           Cancel
                         </Button>
                         <Button
                           type="submit"
-                          className={classes.submit}
+                          sx={{ alignSelf: 'flex-end' }}
                           variant="contained"
                           color="primary">
                           Save

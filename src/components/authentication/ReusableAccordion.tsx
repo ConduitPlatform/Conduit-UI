@@ -21,24 +21,6 @@ import { extractProviderIcon, extractProviderName } from '../../utils/extractPro
 import Image from 'next/image';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  titleContent: {
-    backgroundColor: theme.palette.grey[200],
-    height: theme.spacing(6),
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-  },
-  expandedPanel: {
-    '&.MuiAccordion-root.Mui-expanded': {
-      marginTop: '20px',
-    },
-  },
-  details: {
-    borderTop: '1px solid',
-    borderColor: 'rgb(217, 217, 217)',
-  },
   typography: {
     flex: 1,
   },
@@ -115,13 +97,17 @@ const ReusableAccordion: React.FC<Props> = ({
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
       style={{ cursor: 'default' }}
-      classes={{ root: classes.expandedPanel }}>
+      sx={{
+        '&.MuiAccordion-root.Mui-expanded': {
+          marginTop: '20px',
+        },
+      }}>
       <AccordionSummary id={'local'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
           <div style={{ marginTop: '3px', paddingRight: '8px' }}>
             <Image src={extractProviderIcon(name)} alt={name} />
           </div>
-          <Typography variant={'subtitle2'} className={classes.typography}>
+          <Typography variant={'subtitle2'} sx={{ flex: 1 }}>
             {extractProviderName(name)}
           </Typography>
 
@@ -136,7 +122,7 @@ const ReusableAccordion: React.FC<Props> = ({
           </Typography>
         </Box>
       </AccordionSummary>
-      <AccordionDetails classes={{ root: classes.details }}>
+      <AccordionDetails sx={{ borderTop: '1px solid', borderColor: 'rgb(217, 217, 217)' }}>
         <Box
           display={'flex'}
           flexDirection={'column'}

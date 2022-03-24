@@ -2,7 +2,6 @@ import { Button, Grid } from '@mui/material';
 import React, { FC } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import TemplateEditor from './TemplateEditor';
-import sharedClasses from '../common/sharedClasses';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { EmailTemplateType } from '../../models/emails/EmailModels';
 
@@ -12,8 +11,6 @@ interface Props {
 }
 
 const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
-  const classes = sharedClasses();
-
   const methods = useForm<EmailTemplateType>({ defaultValues: preloadedValues });
 
   const { handleSubmit, reset } = methods;
@@ -58,7 +55,7 @@ const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             />
           </Grid>
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item mr={1}>
               <Button variant="outlined" onClick={() => onCancel()}>
                 Cancel
               </Button>

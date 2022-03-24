@@ -1,7 +1,6 @@
 import { Container } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import makeStyles from '@mui/styles/makeStyles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -13,29 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  innerGrid: {
-    paddingLeft: theme.spacing(4),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    width: '100%',
-  },
-  alignEnd: {
-    alignSelf: 'flex-end',
-  },
-  marginRight: {
-    marginRight: '16px',
-  },
-}));
-
 const FormsConfig: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
   const { config } = useAppSelector((state) => state.formsSlice.data);
@@ -72,7 +49,7 @@ const FormsConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ p: 2, color: 'text.secondary' }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
@@ -85,9 +62,9 @@ const FormsConfig: React.FC = () => {
                 <FormInputSwitch disabled={!edit} name={'active'} />
               </Box>
 
-              <Divider className={classes.divider} />
+              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
 
-              <Grid container spacing={2} className={classes.innerGrid}>
+              <Grid container spacing={2} sx={{ pl: 4 }}>
                 {isActive && (
                   <Grid item xs={12}>
                     <Box
