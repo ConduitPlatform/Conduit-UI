@@ -37,6 +37,9 @@ const theme = createTheme({
     fontFamily: 'JetBrains Mono',
   },
   components: {
+    MuiPaper: {
+      styleOverrides: { root: { backgroundImage: 'unset' } },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         body: {
