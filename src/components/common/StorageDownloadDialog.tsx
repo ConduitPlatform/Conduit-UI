@@ -11,16 +11,6 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles(() => ({
-  image: {
-    objectFit: 'contain',
-    maxWidth: '1500px',
-    maxHeight: '1000px',
-    borderRadius: '4px',
-  },
-}));
 
 interface DownloadDialogProps {
   fileUrl: string;
@@ -34,7 +24,6 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
   fileMimeType,
   ...props
 }) => {
-  const classes = useStyles();
   const [imgLoading, setImgLoading] = useState(false);
 
   useEffect(() => {
@@ -53,7 +42,12 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
       <DialogContent>
         {fileMimeType?.includes('image') ? (
           <img
-            className={classes.image}
+            style={{
+              objectFit: 'contain',
+              maxWidth: '1500px',
+              maxHeight: '1000px',
+              borderRadius: '4px',
+            }}
             width={'100%'}
             height={'100%'}
             src={fileUrl}

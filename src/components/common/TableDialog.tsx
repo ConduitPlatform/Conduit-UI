@@ -10,26 +10,10 @@ import {
   TextField,
   IconButton,
 } from '@mui/material';
-
-import makeStyles from '@mui/styles/makeStyles';
-
 import DataTable from './DataTable';
 import Paginator from './Paginator';
 import { Search as SearchIcon, Close } from '@mui/icons-material';
 import useDebounce from '../../hooks/useDebounce';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {},
-  typography: {
-    marginBottom: theme.spacing(4),
-  },
-  closeButton: {
-    position: 'absolute',
-    right: '8px',
-    top: '8px',
-    color: theme.palette.secondary.main,
-  },
-}));
 
 interface Props {
   open: boolean;
@@ -59,8 +43,6 @@ const TableDialog: React.FC<Props> = ({
   externalElements,
   setExternalElements,
 }) => {
-  const classes = useStyles();
-
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
   const [limit, setLimit] = useState<number>(25);
@@ -134,7 +116,6 @@ const TableDialog: React.FC<Props> = ({
 
   return (
     <Dialog
-      className={classes.paper}
       fullWidth
       maxWidth="lg"
       open={open}
@@ -143,7 +124,14 @@ const TableDialog: React.FC<Props> = ({
       aria-describedby="alert-dialog-description">
       <IconButton
         aria-label="Close"
-        className={classes.closeButton}
+        sx={{
+          closeButton: {
+            position: 'absolute',
+            right: '8px',
+            top: '8px',
+            color: 'secondary',
+          },
+        }}
         onClick={handleClose}
         size="large">
         <Close />

@@ -40,6 +40,61 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: { root: { backgroundImage: 'unset' } },
     },
+    MuiButton: {
+      styleOverrides: { root: { borderRadius: 8 } },
+    },
+    MuiTextField: {
+      styleOverrides: { root: { borderRadius: '10px', color: 'secondary' } },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          width: 45,
+          height: 20,
+          padding: 0,
+          color: secondary,
+          '& .MuiSwitch-switchBase': {
+            '&.Mui-checked': {
+              transform: 'translateX(20px)',
+              color: '#fff',
+            },
+          },
+        },
+        switchBase: {
+          height: 20,
+          width: 25,
+          padding: 0,
+          color: '#fff',
+          '&.Mui-checked + .MuiSwitch-track': {
+            opacity: 1,
+          },
+        },
+        track: {
+          opacity: 1,
+          borderRadius: 32,
+          backgroundColor: 'gray',
+        },
+        thumb: {
+          flexShrink: 0,
+          width: '14px',
+          height: '14px',
+        },
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        disableTouchRipple: true,
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          paddingTop: 7,
+          paddingBottom: 7,
+        },
+      },
+    },
+
     MuiCssBaseline: {
       styleOverrides: {
         body: {

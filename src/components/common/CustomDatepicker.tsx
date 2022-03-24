@@ -3,7 +3,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Today } from '@mui/icons-material';
 import DatePicker from '@mui/lab/DatePicker';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import AdapterMoment from '@mui/lab/AdapterMoment';
 import { TextField } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
@@ -16,11 +16,6 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiInputBase-input': {
       cursor: 'pointer',
     },
-  },
-  iconButton: {
-    padding: 0,
-    marginRight: 8,
-    cursor: 'pointer',
   },
   datepicker: {
     margin: theme.spacing(0, 1),
@@ -50,7 +45,7 @@ const CustomDatepicker: React.FC<Props> = ({
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
       <DatePicker
         {...rest}
         disabled={disabled}
@@ -62,7 +57,9 @@ const CustomDatepicker: React.FC<Props> = ({
         InputProps={{
           disableUnderline: true,
           className: classes.dateInput,
-          startAdornment: <Today color={'inherit'} className={classes.iconButton} />,
+          startAdornment: (
+            <Today color={'inherit'} sx={{ padding: 0, marginRight: 8, cursor: 'pointer' }} />
+          ),
         }}
       />
     </LocalizationProvider>

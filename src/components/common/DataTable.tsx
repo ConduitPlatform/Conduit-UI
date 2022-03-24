@@ -1,5 +1,4 @@
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import {
   Table,
   TableBody,
@@ -17,35 +16,6 @@ import { AuthUserUI } from '../../models/authentication/AuthModels';
 import { SchemaUI } from '../database/CmsModels';
 import { NotificationData } from '../../models/notifications/NotificationModels';
 import DataTableRows from './DataTableRows';
-
-const useStyles = makeStyles((theme) => ({
-  table: {
-    minWidth: 650,
-  },
-  header: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  tableContainer: {
-    maxHeight: '70vh',
-  },
-  innerTableContainer: {
-    maxHeight: '70vh',
-    backgroundColor: theme.palette.background.default,
-  },
-  ellipsisStyle: {
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    width: '350px',
-    maxWidth: '350px',
-  },
-  placeholder: {
-    textAlign: 'center',
-  },
-  density: {
-    color: theme.palette.secondary.main,
-  },
-}));
 
 type Action = {
   title: string;
@@ -95,8 +65,6 @@ const DataTable: React.FC<Props> = ({
   disableMultiSelect,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const onSelectedField = (index: string) => {
     if (setSort !== undefined)
       setSort((prevState: { asc: boolean; index: string | null }) => {
@@ -135,13 +103,17 @@ const DataTable: React.FC<Props> = ({
 
   return (
     <TableContainer
-      className={!inner ? classes.tableContainer : classes.innerTableContainer}
+      sx={
+        !inner
+          ? { maxHeight: '70vh' }
+          : { maxHeight: '70vh', backgroundColor: 'background.default' }
+      }
       component={Paper}
       {...rest}>
-      <Table size="small" stickyHeader className={classes.table}>
+      <Table size="small" stickyHeader sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
-            <TableCell className={classes.header} align="left" padding="none">
+            <TableCell sx={{ backgroundColor: 'background.paper' }} align="left" padding="none">
               {!collapsible && selectable && (
                 <Checkbox
                   color="primary"
@@ -154,7 +126,7 @@ const DataTable: React.FC<Props> = ({
               )}
             </TableCell>
             {headers.map((header: any, idx: number) => (
-              <TableCell className={classes.header} key={idx}>
+              <TableCell sx={{ backgroundColor: 'background.paper' }} key={idx}>
                 {header.sort && sort ? (
                   <TableSortLabel
                     active={sort?.index === header.sort}
@@ -167,13 +139,13 @@ const DataTable: React.FC<Props> = ({
                 )}
               </TableCell>
             ))}
-            {actions && <TableCell className={classes.header} />}
+            {actions && <TableCell sx={{ backgroundColor: 'background.paper' }} />}
           </TableRow>
         </TableHead>
         {dsData.length < 1 && placeholder ? (
           <TableBody>
             <TableRow>
-              <TableCell colSpan={headers.length + 3} className={classes.placeholder}>
+              <TableCell colSpan={headers.length + 3} sx={{ textAlign: 'center' }}>
                 {placeholder}
               </TableCell>
             </TableRow>

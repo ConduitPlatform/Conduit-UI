@@ -12,7 +12,6 @@ import {
   Divider,
   Button,
   Link,
-  SvgIcon,
   Icon,
 } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
@@ -97,6 +96,7 @@ const Home = () => {
             flex={1}
             style={{ marginBottom: '20px', gap: 10 }}>
             <Button
+              color="secondary"
               variant="outlined"
               startIcon={
                 <Icon style={{ display: 'flex', alignContent: 'center' }}>
@@ -112,6 +112,7 @@ const Home = () => {
               target="_blank"
               rel="noreferrer">
               <Button
+                color="secondary"
                 startIcon={
                   <Icon style={{ display: 'flex', alignContent: 'center' }}>
                     <Image src={GraphQL} alt="swagger" />
@@ -126,7 +127,7 @@ const Home = () => {
               target="_blank"
               rel="noreferrer"
               style={{ textDecoration: 'none' }}>
-              <Button variant="outlined" startIcon={<Description />}>
+              <Button variant="contained" color="secondary" startIcon={<Description />}>
                 DOCUMENTATION
               </Button>
             </a>

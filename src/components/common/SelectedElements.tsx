@@ -1,32 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Button, Chip, Grid, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { AddCircle } from '@mui/icons-material';
 import { BoxProps } from '@mui/material/Box/Box';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  typography: {
-    marginBottom: theme.spacing(4),
-  },
-  chip: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
-  center: {
-    textAlign: 'center',
-  },
-  button: {
-    marginBottom: theme.spacing(1),
-  },
-}));
 
 interface Props extends BoxProps {
   disabled?: boolean;
@@ -46,14 +21,12 @@ const SelectedElements: FC<Props> = ({
   header,
   ...rest
 }) => {
-  const classes = useStyles();
-
   return (
     <Box {...rest}>
       <Grid item xs={12}>
         <Button
           disabled={disabled}
-          className={classes.button}
+          sx={{ marginBottom: 1 }}
           variant="contained"
           color="secondary"
           endIcon={<AddCircle />}
@@ -63,12 +36,22 @@ const SelectedElements: FC<Props> = ({
       </Grid>
       {selectedElements && selectedElements.length > 0 && (
         <>
-          <Grid className={classes.center} item xs={12}>
-            <Typography className={classes.center} variant="caption">
+          <Grid sx={{ textAlign: 'center' }} item xs={12}>
+            <Typography sx={{ textAlign: 'center' }} variant="caption">
               {header}:
             </Typography>
           </Grid>
-          <Grid className={classes.chip} item xs={12}>
+          <Grid
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              '& > *': {
+                margin: 0.5,
+              },
+            }}
+            item
+            xs={12}>
             {selectedElements.map((element, index) => (
               <Chip
                 key={index}

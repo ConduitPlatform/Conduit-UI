@@ -1,28 +1,9 @@
 import React, { isValidElement, useState } from 'react';
 import { Checkbox, IconButton, TableCell, TableRow, TableRowProps } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import DataTableActions from './DataTableActions';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import moment from 'moment';
 import InnerTable from './InnerTable';
-
-const useStyles = makeStyles((theme) => ({
-  ellipsisStyle: {
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    width: '350px',
-    maxWidth: '350px',
-  },
-  pill: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
-}));
 
 type Action = {
   title: string;
@@ -55,7 +36,6 @@ const DataTableRows: React.FC<Props> = ({
   selectable,
   tableRowProps,
 }) => {
-  const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   const getValue = (value: any) => {
@@ -118,7 +98,15 @@ const DataTableRows: React.FC<Props> = ({
           {extractIcon()}
         </TableCell>
         {Object.keys(row).map((item, j) => (
-          <TableCell className={classes.ellipsisStyle} key={`row ${j}`}>
+          <TableCell
+            sx={{
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              width: '350px',
+              maxWidth: '350px',
+            }}
+            key={`row ${j}`}>
             {getValue(row[item])}
           </TableCell>
         ))}

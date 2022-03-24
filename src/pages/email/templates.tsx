@@ -20,7 +20,6 @@ import {
   InputAdornment,
   Tooltip,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import TabPanel from '../../components/emails/TabPanel';
 import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
@@ -33,20 +32,7 @@ import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
 
-const useStyles = makeStyles((theme) => ({
-  btnAlignment: {
-    marginLeft: theme.spacing(1.5),
-  },
-  btnAlignment2: {
-    marginRight: theme.spacing(1.5),
-  },
-  actions: {
-    margin: theme.spacing(1),
-  },
-}));
-
 const Templates = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const originalTemplateState = {
@@ -272,7 +258,7 @@ const Templates = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" sx={{ margin: 1 }}>
         <Grid item>
           <TextField
             size="small"
@@ -290,7 +276,7 @@ const Templates = () => {
             }}
           />
         </Grid>
-        <Grid item>
+        <Grid item pr={1}>
           {selectedTemplates.length > 0 && (
             <IconButton
               aria-label="delete"
@@ -304,7 +290,7 @@ const Templates = () => {
           )}
           <IconButton
             color="primary"
-            className={classes.btnAlignment}
+            sx={{ marginLeft: 1.5 }}
             onClick={() => dispatch(asyncSyncTemplates())}
             size="large">
             <Tooltip title="Sync external templates">
@@ -312,7 +298,7 @@ const Templates = () => {
             </Tooltip>
           </IconButton>
           <Button
-            className={classes.btnAlignment2}
+            sx={{ marginRight: 1.5 }}
             variant="contained"
             color="secondary"
             onClick={() => handleImportTemplate()}

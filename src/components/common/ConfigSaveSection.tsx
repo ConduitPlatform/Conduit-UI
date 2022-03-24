@@ -1,19 +1,5 @@
 import React, { FC } from 'react';
 import { Button, Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    marginRight: theme.spacing(2),
-  },
-  saveBtn: {
-    alignSelf: 'flex-end',
-  },
-  gridItem: {
-    justifyContent: 'flex-end',
-    padding: theme.spacing(1),
-  },
-}));
 
 interface Props {
   edit: boolean;
@@ -22,22 +8,21 @@ interface Props {
 }
 
 const ConfigSaveSection: FC<Props> = ({ edit, setEdit, handleCancel }) => {
-  const classes = useStyles();
   return (
     <>
       {edit && (
-        <Grid item container xs={12} className={classes.gridItem}>
-          <Button onClick={() => handleCancel()} className={classes.margin} color={'primary'}>
+        <Grid item container xs={12} sx={{ justifyContent: 'flex-end', padding: 1 }}>
+          <Button onClick={() => handleCancel()} sx={{ marginRight: 2 }} color={'primary'}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" className={classes.saveBtn} type="submit">
+          <Button variant="contained" color="primary" sx={{ alignSelf: 'flex-end' }} type="submit">
             Save
           </Button>
         </Grid>
       )}
       {!edit && (
-        <Grid item container xs={12} className={classes.gridItem}>
-          <Button onClick={() => setEdit(true)} className={classes.margin} color={'primary'}>
+        <Grid item container xs={12} sx={{ justifyContent: 'flex-end', padding: 1 }}>
+          <Button onClick={() => setEdit(true)} sx={{ marginRight: 2 }} color={'primary'}>
             Edit
           </Button>
         </Grid>

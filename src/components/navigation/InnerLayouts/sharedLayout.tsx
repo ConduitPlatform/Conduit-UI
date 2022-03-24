@@ -73,6 +73,7 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
           {title !== 'Settings' && (
             <>
               <Button
+                color="secondary"
                 className={classes.swaggerButton}
                 variant="outlined"
                 startIcon={
@@ -89,6 +90,7 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
                 target="_blank"
                 rel="noreferrer">
                 <Button
+                  color="secondary"
                   startIcon={
                     <Icon style={{ display: 'flex', alignContent: 'center' }}>
                       <Image src={GraphQL} alt="swagger" />

@@ -6,7 +6,6 @@ import DialogContent from '@mui/material/DialogContent';
 import CloseIcon from '@mui/icons-material/Close';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, DialogContentText, IconButton, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import axios from 'axios';
 
 interface Props {
@@ -17,28 +16,7 @@ interface Props {
   swagger: string;
 }
 
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  textField: {
-    textAlign: 'center',
-  },
-  customizedButton: {
-    position: 'absolute',
-    left: '90%',
-    top: '1%',
-    color: 'gray',
-  },
-}));
-
 const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
-  const classes = useStyles();
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -76,11 +54,14 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
       onClose={handleClose}
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
-      style={{ padding: 40 }}>
+      sx={{ padding: 40 }}>
       <DialogTitle id="alert-dialog-slide-title">
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h6">{title} Swagger </Typography>
-          <IconButton onClick={handleClose} className={classes.customizedButton} size="large">
+          <IconButton
+            onClick={handleClose}
+            sx={{ position: 'absolute', left: '90%', top: '1%', color: 'gray' }}
+            size="large">
             <CloseIcon />
           </IconButton>
         </Box>
