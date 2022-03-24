@@ -37,7 +37,7 @@
     "mongodb-query-parser": "^2.4.4",
     "next": "^12.1.0",
     "next-redux-wrapper": "^5.0.0",
-    "notistack": "^1.0.10",
+    "notistack": "^2.0.3",
     "prismjs": "^1.27.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
