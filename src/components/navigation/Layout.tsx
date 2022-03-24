@@ -2,36 +2,16 @@ import React, { useState, useEffect } from 'react';
 import CustomDrawer from './Drawer';
 import { useRouter } from 'next/router';
 import { asyncGetAdminModules } from '../../redux/slices/appAuthSlice';
-import { Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { Box } from '@mui/material';
+
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import useNotifier from '../../utils/useNotifier';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-    padding: 0,
-    minHeight: '100vh',
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  snackBar: {
-    maxWidth: '80%',
-    width: 'auto',
-  },
-}));
-
 export const Layout: React.FC = ({ children, ...rest }) => {
   useNotifier();
-  const classes = useStyles();
+
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { token } = useAppSelector((state) => state.appAuthSlice.data);
@@ -61,12 +41,21 @@ export const Layout: React.FC = ({ children, ...rest }) => {
   }, [dispatch, token]);
 
   return (
-    <div className={classes.root} {...rest}>
+    <Box display="flex" {...rest}>
       {!menuDisabled ? <CustomDrawer itemSelected={itemSelected} /> : <></>}
-      <main className={classes.content}>{children}</main>
-      <Backdrop open={loading} className={classes.backdrop}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          padding: 0,
+          minHeight: '100vh',
+        }}>
+        {children}
+      </Box>
+      <Backdrop open={loading} sx={{ zIndex: 1000 }}>
         <CircularProgress color="secondary" />
       </Backdrop>
-    </div>
+    </Box>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Container } from '@mui/material';
@@ -15,38 +14,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveStorageConfig } from '../../redux/slices/storageSlice';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  innerGrid: {
-    paddingLeft: theme.spacing(4),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    width: '100%',
-  },
-  formControl: {
-    minWidth: 250,
-  },
-  actions: {
-    paddingTop: theme.spacing(3),
-  },
-  buttonSpacing: {
-    marginRight: theme.spacing(3),
-  },
-  box: {
-    width: '100%',
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-}));
-
 const StorageConfig: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
 
@@ -92,16 +60,22 @@ const StorageConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ padding: 2, color: 'text.secondary' }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
-              <Box className={classes.box}>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'inline-flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
                 <Typography variant={'h6'}>Activate Storage Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
-              <Divider className={classes.divider} />
-              <Grid container spacing={2} className={classes.innerGrid}>
+              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+              <Grid container spacing={2} sx={{ pl: 4 }}>
                 {isActive && (
                   <>
                     <Grid item xs={12}>
@@ -118,7 +92,7 @@ const StorageConfig: React.FC = () => {
                         }))}
                       />
                     </Grid>
-                    <Divider className={classes.divider} />
+                    <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
                     <Grid item spacing={1} container xs={12}>
                       {watchProvider === 'azure' && (
                         <Grid item xs={6}>

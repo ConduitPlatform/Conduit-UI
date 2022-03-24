@@ -8,7 +8,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -29,24 +28,7 @@ import {
 } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 
-const useStyles = makeStyles((theme) => ({
-  btnAlignment: {
-    marginLeft: theme.spacing(1),
-  },
-  btnAlignment2: {
-    marginRight: theme.spacing(1),
-  },
-  noAvailable: {
-    textAlign: 'center',
-    marginTop: '50px',
-  },
-  searchbar: {
-    marginBottom: theme.spacing(1),
-  },
-}));
-
 const Create = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const emptyFormState = {
@@ -262,7 +244,7 @@ const Create = () => {
 
   return (
     <div>
-      <Grid container justifyContent="space-between" className={classes.searchbar}>
+      <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
         <Grid item>
           <TextField
             size="small"
@@ -316,7 +298,7 @@ const Create = () => {
             selectedItems={selectedForms}
           />
 
-          <Grid container style={{ marginTop: '-8px' }}>
+          <Grid container sx={{ mt: '-8px' }}>
             <Grid item xs={7} />
             <Grid item xs={5}>
               <Paginator
@@ -330,7 +312,7 @@ const Create = () => {
           </Grid>
         </Box>
       ) : (
-        <Typography className={classes.noAvailable}>No available forms </Typography>
+        <Typography sx={{ textAlign: 'center', mt: '50px' }}>No available forms </Typography>
       )}
       <DrawerWrapper
         title={create ? 'Create a new form' : 'Edit form'}

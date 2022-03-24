@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useState } from 'react';
-import sharedClasses from '../../common/sharedClasses';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Button, Grid } from '@mui/material';
 import { Customer } from '../../../models/payments/PaymentsModels';
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const methods = useForm<Customer>({ defaultValues: preloadedValues });
@@ -94,7 +92,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             </Grid>
           ))}
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item sx={{ mr: 2 }}>
               <Button variant="outlined" onClick={() => onCancel()}>
                 Cancel
               </Button>

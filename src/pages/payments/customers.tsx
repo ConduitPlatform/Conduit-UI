@@ -12,7 +12,6 @@ import {
   Tooltip,
   Box,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
@@ -30,24 +29,7 @@ import { Customer } from '../../models/payments/PaymentsModels';
 import ViewEditCustomer from '../../components/payments/ViewEditCustomer';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 
-const useStyles = makeStyles((theme) => ({
-  btnAlignment: {
-    marginLeft: theme.spacing(1.5),
-  },
-  btnAlignment2: {
-    marginRight: theme.spacing(1.5),
-  },
-  actions: {
-    marginBottom: theme.spacing(1),
-  },
-  noCustomers: {
-    textAlign: 'center',
-    marginTop: '200px',
-  },
-}));
-
 const Customers = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const originalCustomerState = {
@@ -268,7 +250,7 @@ const Customers = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
         <Grid item>
           {count >= 0 && (
             <TextField
@@ -337,7 +319,7 @@ const Customers = () => {
           </Grid>
         </>
       ) : (
-        <Box className={classes.noCustomers}>
+        <Box sx={{ textAlign: 'center', mt: '200px' }}>
           <Typography>No available customers</Typography>
         </Box>
       )}

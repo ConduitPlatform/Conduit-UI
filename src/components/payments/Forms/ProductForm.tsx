@@ -1,5 +1,4 @@
 import React, { FC, useEffect } from 'react';
-import sharedClasses from '../../common/sharedClasses';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { Button, Grid, Paper, Typography } from '@mui/material';
 import { Product, reccuringEnum } from '../../../models/payments/PaymentsModels';
@@ -22,7 +21,6 @@ interface IProductForm {
 }
 
 const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
-  const classes = sharedClasses();
   const methods = useForm<IProductForm>({ defaultValues: preloadedValues });
 
   const { handleSubmit, reset, control, setValue } = methods;
@@ -112,7 +110,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           <Grid item sm={6}>
             <FormInputSelect name="currency" options={currencies} label="Currency" />
           </Grid>
-          <Paper className={classes.paper} style={{ width: '100%' }}>
+          <Paper sx={{ p: 2, marginTop: 2, color: 'text.secondary', width: '100%' }}>
             <Grid item container sm={12}>
               <Grid item sm={11}>
                 <Typography>Is subscription:</Typography>
@@ -143,7 +141,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             )}
           </Paper>
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item sx={{ mr: 2 }}>
               <Button variant="outlined" onClick={() => onCancel()}>
                 Cancel
               </Button>

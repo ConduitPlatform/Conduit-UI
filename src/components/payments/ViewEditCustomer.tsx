@@ -7,7 +7,6 @@ import { Button, Paper } from '@mui/material';
 import { useAppDispatch } from '../../redux/store';
 import { Customer } from '../../models/payments/PaymentsModels';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import sharedClasses from '../common/sharedClasses';
 import ExtractView from './ExtractView';
 import CustomerForm from './Forms/CustomerForm';
 
@@ -32,7 +31,6 @@ const ViewEditCustomer: React.FC<Props> = ({
   setCreate,
   handleClose,
 }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const handleSaveClick = (data: Customer) => {
@@ -55,7 +53,13 @@ const ViewEditCustomer: React.FC<Props> = ({
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
           <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
               <CustomerForm preloadedValues={customer} handleSubmitData={handleSaveClick} />

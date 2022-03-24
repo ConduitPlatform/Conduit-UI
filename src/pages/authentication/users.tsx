@@ -6,7 +6,6 @@ import Paginator from '../../components/common/Paginator';
 import SearchFilter from '../../components/authentication/SearchFilter';
 import Grid from '@mui/material/Grid';
 import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import useDebounce from '../../hooks/useDebounce';
 import {
   asyncAddNewUser,
@@ -35,35 +34,7 @@ import { AddCircle } from '@mui/icons-material';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import { isString } from 'lodash';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(0),
-    },
-    marginBottom: '3px',
-  },
-  groupActionContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'start',
-  },
-  addUserBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginLeft: theme.spacing(-2),
-  },
-  btnGroup: {
-    marginRight: theme.spacing(3),
-  },
-  searchbar: {
-    marginBottom: theme.spacing(1),
-  },
-}));
-
 const Users = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { users, count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
@@ -254,7 +225,7 @@ const Users = () => {
 
   return (
     <div>
-      <Grid container className={classes.searchbar}>
+      <Grid container sx={{ mb: 1 }}>
         <Grid item xs={8}>
           <SearchFilter
             setSearch={setSearch}
@@ -263,13 +234,17 @@ const Users = () => {
             handleFilterChange={handleFilterChange}
           />
         </Grid>
-        <Grid item xs={4} className={classes.addUserBtn}>
+        <Grid
+          item
+          xs={4}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            marginLeft: -2,
+          }}>
           {selectedUsers.length > 1 && (
-            <ButtonGroup
-              size="small"
-              variant="contained"
-              color="primary"
-              className={classes.btnGroup}>
+            <ButtonGroup size="small" variant="contained" color="primary" sx={{ mr: 1 }}>
               <IconButton
                 aria-label="block"
                 color="primary"

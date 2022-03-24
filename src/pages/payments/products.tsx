@@ -265,7 +265,7 @@ const Products = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
         <Grid item>
           {count >= 0 && (
             <TextField
@@ -334,7 +334,7 @@ const Products = () => {
           </Grid>
         </>
       ) : (
-        <Box className={classes.noProducts}>
+        <Box sx={{ textAlign: 'center', mt: '200px' }}>
           <Typography>No available products</Typography>
         </Box>
       )}

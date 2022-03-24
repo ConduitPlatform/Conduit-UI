@@ -7,7 +7,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import sharedClasses from '../common/sharedClasses';
 
 interface Props {
   data: { open: boolean; type: CreateFormSelected };
@@ -32,7 +31,6 @@ const StorageCreateDrawer: FC<Props> = ({
   handleCreateContainer,
   path,
 }) => {
-  const classes = sharedClasses();
   const methods = useForm<FormProps>({
     defaultValues: { name: '', container: '', isPublic: false },
   });
@@ -99,7 +97,7 @@ const StorageCreateDrawer: FC<Props> = ({
               <FormInputSwitch name="isPublic" />
             </Grid>
             <Grid container item>
-              <Grid item className={classes.marginRight}>
+              <Grid item sx={{ mr: 2 }}>
                 <Button variant="outlined" onClick={() => handleCancel()}>
                   Cancel
                 </Button>

@@ -15,17 +15,11 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(0.5),
       paddingBottom: theme.spacing(0),
     },
-    button: {
-      padding: theme.spacing(1),
-    },
     paper: {
       minWidth: (props: any) => props.minWidth,
       maxWidth: (props: any) => props.maxWidth,
       width: (props: any) => props.width,
       padding: theme.spacing(3),
-    },
-    header: {
-      textAlign: 'center',
     },
   })
 );
@@ -70,11 +64,11 @@ const DrawerWrapper: FC<PropsDrawer> = ({
       }}
       transitionDuration={{ appear: 300, enter: 300, exit: 200 }}>
       <Box className={classes.close}>
-        <IconButton onClick={toggleDrawer(false)} className={classes.button} size="large">
+        <IconButton onClick={toggleDrawer(false)} sx={{ p: 1 }} size="large">
           <CloseIcon />
         </IconButton>
       </Box>
-      {title && <DialogTitle className={classes.header}> {title} </DialogTitle>}
+      {title && <DialogTitle sx={{ textAlign: 'center' }}> {title} </DialogTitle>}
       {children}
     </Drawer>
   );

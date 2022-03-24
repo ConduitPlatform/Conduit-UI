@@ -10,14 +10,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetTransactions } from '../../redux/slices/paymentsSlice';
 import DataTable from '../common/DataTable';
 import Paginator from '../common/Paginator';
-import sharedClasses from '../common/sharedClasses';
 
 interface Props {
   subscription: Subscription;
 }
 
 const ViewSubscription: React.FC<Props> = ({ subscription }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
   const [skip, setSkip] = useState<number>(0);
   const [limit, setLimit] = useState<number>(25);
@@ -84,7 +82,13 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
           <Typography style={{ marginBottom: '25px' }}>Transactions: </Typography>
           <Grid container spacing={2} justifyContent="space-around">
             {transactions.length ? (
@@ -102,13 +106,31 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
               <Typography style={{ textAlign: 'center' }}>No available transactions </Typography>
             )}
           </Grid>
-          <Grid container spacing={2} justifyContent="space-around" className={classes.chip}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-around"
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              '& > *': {
+                margin: 0.5,
+              },
+              marginTop: '50px',
+            }}>
             {chipsToDisplay(subscription)}
           </Grid>
         </Paper>
-        <div className={classes.centeredImg}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '-30px',
+          }}>
           <Image src={SubsriptionImage} width="200px" alt="transaction" />
-        </div>
+        </Box>
       </Box>
     </Container>
   );

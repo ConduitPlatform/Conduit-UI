@@ -3,82 +3,45 @@ import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import {
-  Container,
-  Grid,
-  Paper,
-  Theme,
-  IconButton,
-  Divider,
-  Button,
-  Link,
-  Icon,
-} from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { Container, Grid, Theme, Divider, Button, Link, Icon, styled, Card } from '@mui/material';
+
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
-import SectetIcon from '@mui/icons-material/VpnKey';
+import SecretIcon from '@mui/icons-material/VpnKey';
 import Description from '@mui/icons-material/Description';
-import { ArrowForward } from '@mui/icons-material';
 import SwaggerModal from '../components/common/SwaggerModal';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paper: {
-      height: 125,
-      width: 'auto',
-      display: 'flex',
-      padding: '20px',
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderRadius: '8px',
-      borderColor: theme.palette.primary.main,
-      flexDirection: 'column',
-      backgroundColor: theme.palette.background.default,
+const BoxWithIconText = styled(Box)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+}));
 
-      color: '#fff',
-      '&:hover': {
-        borderWidth: '1px',
-        borderStyle: 'solid',
-        borderColor: theme.palette.secondary.main,
-      },
-      '&:focus': {
-        borderWidth: '1px',
-        borderStyle: 'solid',
-        borderColor: theme.palette.secondary.main,
-      },
-    },
-    iconButton: {
-      color: theme.palette.secondary.main,
-    },
-    headerIcon: {
-      color: theme.palette.secondary.main,
-      marginLeft: '1px',
-    },
-    divider: {
-      color: theme.palette.primary.main,
-      marginBottom: '10px',
-    },
-    textIcon: {
-      display: 'flex',
-      alignItems: 'center',
-      flexWrap: 'wrap',
-    },
-    welcomeTypography: {
-      display: 'flex',
-      justifyContent: 'center',
-      flex: 1,
-    },
-  })
-);
+const CustomizedDivider = styled(Divider)(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.main,
+  marginBottom: '10px',
+}));
+
+const CustomizedCard = styled(Card)(() => ({
+  borderRadius: 8,
+  backgroundColor: 'common.white',
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  padding: 20,
+  '&:hover': {
+    boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
+  },
+  '&:focus': {
+    boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
+  },
+}));
 
 const Home = () => {
-  const classes = useStyles();
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
 
   return (
@@ -139,7 +102,7 @@ const Home = () => {
           alignItems={'center'}
           flex={1}
           style={{ marginBottom: '200px' }}>
-          <Typography variant={'h4'} className={classes.welcomeTypography}>
+          <Typography variant={'h4'} sx={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
             Welcome to C
             <Slide timeout={1000} in direction={'down'}>
               <Typography variant={'h4'} component={'span'} role="img" aria-label="okhand">
@@ -149,77 +112,66 @@ const Home = () => {
             nduit!
           </Typography>
         </Box>
-
         <Container maxWidth="md">
           <Grid container spacing={6}>
             <Grid item sm={12} md={6}>
-              <Paper className={classes.paper} variant="elevation">
-                <div className={classes.textIcon}>
-                  <SectetIcon className={classes.headerIcon} />
-                  <Typography> &nbsp; set up an auth method</Typography>
-                </div>
-                <Divider className={classes.divider} />
-                <Typography variant="subtitle2">
-                  Easily login with the method of your choice!
-                  <IconButton className={classes.iconButton} size="small">
-                    <Link href="/authentication/signIn">
-                      <ArrowForward />
-                    </Link>
-                  </IconButton>
-                </Typography>
-              </Paper>
+              <Link
+                style={{ textDecoration: 'none', cursor: 'pointer' }}
+                href="/authentication/signIn">
+                <CustomizedCard>
+                  <BoxWithIconText>
+                    <SecretIcon />
+                    <Typography> &nbsp; set up an auth method</Typography>
+                  </BoxWithIconText>
+                  <CustomizedDivider />
+                  <Typography variant="subtitle2">
+                    Easily login with the method of your choice!
+                  </Typography>
+                </CustomizedCard>
+              </Link>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Paper className={classes.paper} variant="elevation">
-                <div className={classes.textIcon}>
-                  <SchemaIcon className={classes.headerIcon} />
-                  <Typography align="center">&nbsp; create a schema</Typography>
-                </div>
-                <Divider className={classes.divider} />
-                <Typography variant="subtitle2">
-                  Create your schema with a user friendly UI!
-                  <IconButton className={classes.iconButton} size="small">
-                    <Link href="/database/schemas">
-                      <ArrowForward />
-                    </Link>
-                  </IconButton>
-                </Typography>
-              </Paper>
+              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/database/schemas">
+                <CustomizedCard>
+                  <BoxWithIconText>
+                    <SchemaIcon />
+                    <Typography align="center">&nbsp; create a schema</Typography>
+                  </BoxWithIconText>
+                  <CustomizedDivider />
+                  <Typography variant="subtitle2">
+                    Create your schema with a user friendly UI and start editing you documents right
+                    away!
+                  </Typography>
+                </CustomizedCard>
+              </Link>
             </Grid>
-
             <Grid item xs={12} md={6}>
-              <Paper className={classes.paper} variant="elevation">
-                <div className={classes.textIcon}>
-                  <EmailIcon className={classes.headerIcon} />
-                  <Typography> &nbsp;set up email provider</Typography>
-                </div>
-                <Divider className={classes.divider} />
-                <Typography variant="subtitle2">
-                  Select your preferred provider and start mailing!
-                  <IconButton className={classes.iconButton} size="small">
-                    <Link href="/email/config">
-                      <ArrowForward />
-                    </Link>
-                  </IconButton>
-                </Typography>
-              </Paper>
+              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/email/config">
+                <CustomizedCard>
+                  <BoxWithIconText>
+                    <EmailIcon />
+                    <Typography> &nbsp;set up email provider</Typography>
+                  </BoxWithIconText>
+                  <CustomizedDivider />
+                  <Typography variant="subtitle2">
+                    Select your preferred provider and start mailing!
+                  </Typography>
+                </CustomizedCard>
+              </Link>
             </Grid>
             <Grid item xs={6} md={6}>
-              <Paper className={classes.paper} variant="elevation">
-                <div className={classes.textIcon}>
-                  <LockIcon className={classes.headerIcon} />
-                  <Typography>&nbsp; set up client secrets</Typography>
-                </div>
-                <Divider className={classes.divider} />
-                <Typography variant="subtitle2">
-                  Set up your client secret across multiple platforms!
-                  <IconButton className={classes.iconButton} size="small">
-                    <Link href="/settings/secrets">
-                      <ArrowForward />
-                    </Link>
-                  </IconButton>
-                </Typography>
-              </Paper>
+              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/settings/secrets">
+                <CustomizedCard>
+                  <BoxWithIconText>
+                    <LockIcon />
+                    <Typography>&nbsp; set up client secrets</Typography>
+                  </BoxWithIconText>
+                  <CustomizedDivider />
+                  <Typography variant="subtitle2">
+                    Set up your client secret across multiple platforms!
+                  </Typography>
+                </CustomizedCard>
+              </Link>
             </Grid>
           </Grid>
           <SwaggerModal open={swaggerModal} setOpen={setSwaggerModal} swagger="App" title="App" />
