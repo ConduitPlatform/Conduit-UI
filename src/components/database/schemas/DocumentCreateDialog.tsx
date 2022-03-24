@@ -15,13 +15,6 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     maxHeight: '70vh',
   },
-  dialogContent: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  textField: {
-    marginBottom: theme.spacing(2),
-  },
 }));
 
 interface Props {
@@ -58,7 +51,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
           e.preventDefault();
           handleCreate(fieldValues);
         }}>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <TreeFieldGenerator schema={schema} onChange={onChange} fieldValues={fieldValues} />
         </DialogContent>
         <DialogActions>

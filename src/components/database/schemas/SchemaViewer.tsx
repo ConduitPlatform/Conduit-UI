@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import EnumType from '../types/EnumType/EnumType';
@@ -11,30 +10,12 @@ import ObjectIdTypeViewer from '../types/ObjectIdType/ObjectIdTypeViewer';
 import SimpleTypeViewer from '../types/SimpleType/SimpleTypeViewer';
 import { Grid } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  list: {
-    maxHeight: '70vh',
-    border: '1px',
-    padding: theme.spacing(3, 5),
-    minHeight: theme.spacing(65),
-    borderRadius: '4px',
-  },
-  item: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
-    padding: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-}));
-
 interface Props extends BoxProps {
   dataKey: any;
   data: any;
 }
 
 const SchemaViewer: FC<Props> = ({ dataKey, data, ...rest }) => {
-  const classes = useStyles();
-
   const handleItemContent = (item: any, index: number) => {
     switch (item.type) {
       case 'Text':
@@ -58,12 +39,21 @@ const SchemaViewer: FC<Props> = ({ dataKey, data, ...rest }) => {
 
   return (
     <Box {...rest}>
-      <div className={classes.list}>
+      <Box
+        sx={{
+          maxHeight: '70vh',
+          border: '1px',
+          padding: 5,
+          minHeight: 65,
+          borderRadius: '4px',
+        }}>
         {data &&
           Array.isArray(data[dataKey]) &&
           data[dataKey].length > 0 &&
           data[dataKey].map((item: any, index: number) => (
-            <div key={index} className={classes.item}>
+            <Box
+              key={index}
+              sx={{ display: 'flex', flexDirection: 'column-reverse', padding: 1, mb: 1 }}>
               <Grid container>
                 <Grid item xs={6}>
                   <Typography variant={'body2'} style={{ marginRight: 8 }}>
@@ -72,9 +62,9 @@ const SchemaViewer: FC<Props> = ({ dataKey, data, ...rest }) => {
                 </Grid>
                 {handleItemContent(item, index)}
               </Grid>
-            </div>
+            </Box>
           ))}
-      </div>
+      </Box>
     </Box>
   );
 };

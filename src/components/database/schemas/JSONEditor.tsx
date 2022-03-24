@@ -7,22 +7,9 @@ import { Schema } from '../../../models/database/CmsModels';
 import { asyncEditSchemaDocument } from '../../../redux/slices/databaseSlice';
 import { enqueueErrorNotification } from '../../../utils/useNotifier';
 import makeStyles from '@mui/styles/makeStyles';
+import { Box } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    '& $actionContainer': {
-      display: 'none',
-    },
-    '&:hover $actionContainer': {
-      display: 'flex',
-    },
-  },
-  paper: {
-    marginTop: theme.spacing(1),
-    height: '20px',
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
   actionContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -81,15 +68,29 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.paper}>
+    <Box
+      sx={{
+        '& $actionContainer': {
+          display: 'none',
+        },
+        '&:hover $actionContainer': {
+          display: 'flex',
+        },
+      }}>
+      <Box
+        sx={{
+          marginTop: 1,
+          height: '20px',
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}>
         <DocumentActions
           className={classes.actionContainer}
           onEdit={onEdit}
           onDelete={onDelete}
           edit={edit}
         />
-      </div>
+      </Box>
       <JSONInput
         id={documents._id}
         placeholder={documentState}
@@ -101,7 +102,7 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
         width="100%"
       />
       <EditDocumentActions edit={edit} handleCancel={handleCancel} handleSave={handleSave} />
-    </div>
+    </Box>
   );
 };
 

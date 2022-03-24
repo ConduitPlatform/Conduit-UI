@@ -297,14 +297,18 @@ const CustomQueries: FC = () => {
   const renderMainContent = () => {
     if (!selectedEndpoint && !createMode) {
       return (
-        <Box className={classes.mainContent}>
+        <Box sx={{ marginTop: '100px', textAlign: 'center' }}>
           <Typography variant="h6">Select an endpoint to view more</Typography>
         </Box>
       );
     } else {
       return (
         <Box>
-          <Grid container className={classes.mainContentInfo} spacing={2} alignItems="flex-end">
+          <Grid
+            container
+            sx={{ maxHeight: '72vh', overflowY: 'auto', alignItems: 'center', paddingTop: '3px' }}
+            spacing={2}
+            alignItems="flex-end">
             <Grid item xs={5}>
               <TextField
                 size="small"
@@ -347,8 +351,11 @@ const CustomQueries: FC = () => {
   };
 
   return (
-    <Box className={classes.root}>
-      <Grid container spacing={2} className={classes.grid}>
+    <Box sx={{ ml: 4, mr: 4, overflow: ' hidden ' }}>
+      <Grid
+        container
+        spacing={2}
+        sx={{ background: 'rgba(0, 0, 0, 0.05)', borderRadius: '4px', p: 3 }}>
         <Grid item xs={3}>
           <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>

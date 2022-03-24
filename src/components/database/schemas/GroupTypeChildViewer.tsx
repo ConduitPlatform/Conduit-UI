@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import React, { FC } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Tooltip from '@mui/material/Tooltip';
 import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import FieldIndicators from '../FieldIndicators';
@@ -9,26 +8,6 @@ import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: 100,
-    width: '100%',
-    border: '1px dotted black',
-    padding: theme.spacing(3),
-  },
-  item: {
-    padding: theme.spacing(2),
-  },
-  groupIcon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
-
 interface IProps {
   item: IGroupChildData;
   groupIndex: number;
@@ -36,8 +15,6 @@ interface IProps {
 }
 
 const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest }) => {
-  const classes = useStyles();
-
   const handleGroupContent = (item: any) => {
     switch (item.type) {
       case 'Text':
@@ -59,7 +36,16 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Group field'}>
-              <GroupIcon className={classes.groupIcon} />
+              <GroupIcon
+                sx={{
+                  height: 3,
+                  width: 3,
+                  marginRight: 1,
+                  opacity: 0.6,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              />
             </Tooltip>
           </Box>
         </Grid>
@@ -69,13 +55,19 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
           </Box>
         </Grid>
       </Grid>
-      <div className={classes.root}>
+      <Box
+        sx={{
+          minHeight: 100,
+          width: '100%',
+          border: '1px dotted black',
+          padding: 3,
+        }}>
         {item.content &&
           Array.isArray(item.content) &&
           item.content.length > 0 &&
           item.content.map((groupItem, index) => {
             return (
-              <Grid container className={classes.item} key={index}>
+              <Grid container sx={{ padding: 2 }} key={index}>
                 <Grid item xs={6}>
                   {groupItem.name}
                 </Grid>
@@ -83,7 +75,7 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
               </Grid>
             );
           })}
-      </div>
+      </Box>
     </Box>
   );
 };

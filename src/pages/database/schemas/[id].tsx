@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, resetServerContext } from 'react-beautiful-dnd';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import BuildTypesList from '../../../components/database/BuildTypesList';
 import BuildTypesContent from '../../../components/database/BuildTypesContent';
@@ -39,69 +38,7 @@ resetServerContext();
 
 const items = ['Text', 'Number', 'Date', 'Boolean', 'Enum', 'ObjectId', 'Group', 'Relation'];
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: '100vh',
-    backgroundColor: theme.palette.background.default,
-    width: '75%',
-  },
-  cmsContainer: {
-    minHeight: '100vh',
-    flexDirection: 'column',
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  contentContainer: {
-    width: '75%',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(2, 14),
-    justifyContent: 'center',
-    paddingTop: headerHeight,
-  },
-  listContainer: {
-    height: `calc(100vh - ${headerHeight}px)`,
-    width: '25%',
-    backgroundColor: '#262840',
-    padding: theme.spacing(2),
-    position: 'fixed',
-    top: headerHeight,
-    right: 0,
-    bottom: 0,
-  },
-  list: {
-    width: '100%',
-    height: '100%',
-    border: '1px',
-    background: '#262840',
-    borderRadius: 4,
-  },
-  accordionDetails: {
-    '&.MuiAccordionDetails-root': {
-      alignItems: 'center',
-      justifyContent: 'center',
-      display: 'flex',
-    },
-  },
-
-  accordionSummary: {
-    '&.MuiAccordionSummary-root': {
-      backgroundColor: theme.palette.secondary.main,
-    },
-  },
-
-  accordionHeading: {
-    flexBasis: '88%',
-    flexShrink: 0,
-  },
-  accordionHeadingEditable: {
-    flexBasis: '88%',
-    flexShrink: 0,
-  },
-}));
-
 const BuildTypes: React.FC = () => {
-  const classes = useStyles();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { id } = router.query;
@@ -557,7 +494,7 @@ const BuildTypes: React.FC = () => {
   };
 
   return (
-    <Box className={classes.root}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default', width: '75%' }}>
       <Header
         name={schemaName}
         authentication={authentication}
@@ -578,7 +515,7 @@ const BuildTypes: React.FC = () => {
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
                       id="panel1a-header">
-                      <Typography className={classes.accordionHeading} variant="h6">
+                      <Typography sx={{ flexBasis: '88%', flexShrink: 0 }} variant="h6">
                         {Object.keys(ext).toString().toUpperCase()}
                       </Typography>
                       <Chip
@@ -587,7 +524,14 @@ const BuildTypes: React.FC = () => {
                         label="READ ONLY"
                       />
                     </AccordionSummary>
-                    <AccordionDetails className={classes.accordionDetails}>
+                    <AccordionDetails
+                      sx={{
+                        '&.MuiAccordionDetails-root': {
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          display: 'flex',
+                        },
+                      }}>
                       {nonEditableFields.length &&
                         Object.keys(ext).map((dataKey, i) => (
                           <BuildTypesContent
@@ -615,12 +559,19 @@ const BuildTypes: React.FC = () => {
                 expandIcon={<ExpandMoreIcon color="action" />}
                 aria-controls="panel1a-content"
                 id="panel1a-header">
-                <Typography className={classes.accordionHeadingEditable} variant="h6">
+                <Typography sx={{ flexBasis: '88%', flexShrink: 0 }} variant="h6">
                   {extractEditableTitle()}
                 </Typography>
                 {editableFieldsChip()}
               </AccordionSummary>
-              <AccordionDetails className={classes.accordionDetails}>
+              <AccordionDetails
+                sx={{
+                  '&.MuiAccordionDetails-root': {
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                  },
+                }}>
                 {editableFields &&
                   Object.keys(editableFields).map((dataKey, i) => (
                     <BuildTypesContent
@@ -643,15 +594,33 @@ const BuildTypes: React.FC = () => {
               Schema cannot be extended
             </Typography>
           )}
-          <Box className={classes.listContainer}>
+          <Box
+            sx={{
+              height: `calc(100vh - ${headerHeight}px)`,
+              width: '25%',
+              backgroundColor: '#262840',
+              padding: 2,
+              position: 'fixed',
+              top: headerHeight,
+              right: 0,
+              bottom: 0,
+            }}>
             <Droppable droppableId="ITEMS" isDropDisabled={true}>
               {(provided) => (
-                <div className={classes.list} ref={provided.innerRef}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    border: '1px',
+                    background: '#262840',
+                    borderRadius: 4,
+                  }}
+                  ref={provided.innerRef}>
                   {items.map((item, index) => (
                     <BuildTypesList item={item} index={index} key={item} />
                   ))}
                   {provided.placeholder}
-                </div>
+                </Box>
               )}
             </Droppable>
           </Box>

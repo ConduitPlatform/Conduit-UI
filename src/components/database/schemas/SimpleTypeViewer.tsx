@@ -24,15 +24,22 @@ interface IProps {
 }
 
 const RelationType: FC<IProps> = ({ item, ...rest }) => {
-  const classes = useStyles();
-
   return (
     <Box {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Date field'}>
-              <DeviceHubIcon className={classes.icon} />
+              <DeviceHubIcon
+                sx={{
+                  height: 30,
+                  width: 30,
+                  marginRight: 1,
+                  opacity: 0.6,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              />
             </Tooltip>
             <Typography variant={'body2'} style={{ opacity: 0.4 }}>
               relation placeholder
@@ -52,15 +59,22 @@ const RelationType: FC<IProps> = ({ item, ...rest }) => {
 export default RelationType;
 
 export const RelationGroupType: FC<IProps> = ({ item, ...rest }) => {
-  const classes = useStyles();
-
   return (
     <Box {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Date field'}>
-              <DeviceHubIcon className={classes.icon} />
+              <DeviceHubIcon
+                sx={{
+                  height: 30,
+                  width: 30,
+                  marginRight: 1,
+                  opacity: 0.6,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              />
             </Tooltip>
             <Typography variant={'body2'} style={{ opacity: 0.4 }}>
               relation placeholder

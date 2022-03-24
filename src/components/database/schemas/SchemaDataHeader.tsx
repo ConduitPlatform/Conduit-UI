@@ -119,7 +119,7 @@ const SchemaDataHeader: FC<Props> = ({
 
   return (
     <Box {...rest}>
-      <Box className={classes.topContainer}>
+      <Box sx={{ display: 'flex', padding: 1, pb: 0, justifyContent: 'space-between' }}>
         <TextField
           size="small"
           variant="outlined"
