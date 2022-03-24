@@ -1,10 +1,10 @@
 import React from 'react';
-import MomentUtils from '@date-io/moment';
 import makeStyles from '@mui/styles/makeStyles';
 import { Today } from '@mui/icons-material';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import { ParsableDate } from '@material-ui/pickers/constants/prop-types';
+import DatePicker from '@mui/lab/DatePicker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { TextField } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   dateInput: {
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   required?: boolean;
-  value: ParsableDate;
-  setValue: (date: MaterialUiPickersDate) => void;
+  value: string | undefined;
+  setValue: (date: any) => void;
   placeholder?: string;
   disabled?: boolean;
 }
@@ -45,32 +45,27 @@ const CustomDatepicker: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
 
-  const handleDateChange = (date: MaterialUiPickersDate) => {
+  const handleDateChange = (date: any) => {
     setValue(date);
   };
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker
         {...rest}
-        required={required}
         disabled={disabled}
         className={classes.datepicker}
-        autoOk
-        variant="inline"
-        format="DD/MM/YYYY"
+        inputFormat="dd-MM-yyyy"
         value={value ? value : null}
         onChange={handleDateChange}
-        placeholder={placeholder}
-        invalidDateMessage={''}
-        emptyLabel={' -- / -- / ---- '}
+        renderInput={(params) => <TextField {...params} />}
         InputProps={{
           disableUnderline: true,
           className: classes.dateInput,
           startAdornment: <Today color={'inherit'} className={classes.iconButton} />,
         }}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 
