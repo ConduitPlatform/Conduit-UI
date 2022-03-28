@@ -84,7 +84,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} style={{}}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
@@ -124,7 +124,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                 <Grid item sm={12}>
                   <FormInputSelect options={recuringOptions} name="recurring" label="Recurring" />
                 </Grid>
-                <Grid item sm={12} style={{ marginTop: '10px' }}>
+                <Grid item sm={12} sx={{ marginTop: '10px' }}>
                   <FormInputText
                     name="recurringCount"
                     label="Recurring count"

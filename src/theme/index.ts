@@ -44,7 +44,14 @@ const theme = createTheme({
       styleOverrides: { root: { borderRadius: 8 } },
     },
     MuiTextField: {
-      styleOverrides: { root: { borderRadius: '10px', color: 'secondary' } },
+      styleOverrides: {
+        root: { '& .MuiInputBase-root': { borderRadius: 10, color: 'secondary' } },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: { borderRadius: 10 },
+      },
     },
     MuiSwitch: {
       styleOverrides: {
@@ -86,6 +93,7 @@ const theme = createTheme({
         disableTouchRipple: true,
       },
     },
+
     MuiTooltip: {
       styleOverrides: {
         tooltip: {

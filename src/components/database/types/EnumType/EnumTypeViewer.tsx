@@ -49,7 +49,7 @@ export const EnumGroupTypeViewer: FC<IProps> = ({ item }) => {
         <Tooltip title={'Enum field'}>
           <SelectIcon className={classes.icon} />
         </Tooltip>
-        <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
           enum placeholder
         </Typography>
         <FieldIndicators item={item} />

@@ -34,7 +34,7 @@ const ObjectIdType: FC<IProps> = ({ item, ...rest }) => {
             <Tooltip title={'ObjectId field'}>
               <CodeIcon className={classes.icon} />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               object placeholder
             </Typography>
           </Box>
@@ -62,7 +62,7 @@ export const ObjectIdGroupType: FC<IProps> = ({ item, ...rest }) => {
             <Tooltip title={'ObjectId field'}>
               <CodeIcon className={classes.icon} />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               object placeholder
             </Typography>
           </Box>

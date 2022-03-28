@@ -220,7 +220,7 @@ const Transactions = () => {
             handleAction={handleAction}
             selectedItems={selectedTransactions}
           />
-          <Grid container style={{ marginTop: '-8px' }}>
+          <Grid container sx={{ marginTop: '-8px' }}>
             <Grid item xs={7} />
             <Grid item xs={5}>
               <Paginator

@@ -57,12 +57,12 @@ const Home = () => {
             justifyContent="flex-end"
             alignItems={'flex-end'}
             flex={1}
-            style={{ marginBottom: '20px', gap: 10 }}>
+            sx={{ marginBottom: '20px', gap: 10 }}>
             <Button
               color="secondary"
               variant="outlined"
               startIcon={
-                <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                   <Image src={Swagger} alt="swagger" />
                 </Icon>
               }
@@ -77,7 +77,7 @@ const Home = () => {
               <Button
                 color="secondary"
                 startIcon={
-                  <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                  <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                     <Image src={GraphQL} alt="swagger" />
                   </Icon>
                 }
@@ -96,12 +96,7 @@ const Home = () => {
             </a>
           </Box>
         </Container>
-        <Box
-          p={2}
-          display={'flex'}
-          alignItems={'center'}
-          flex={1}
-          style={{ marginBottom: '200px' }}>
+        <Box p={2} display={'flex'} alignItems={'center'} flex={1} sx={{ marginBottom: '200px' }}>
           <Typography variant={'h4'} sx={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
             Welcome to C
             <Slide timeout={1000} in direction={'down'}>
@@ -116,7 +111,7 @@ const Home = () => {
           <Grid container spacing={6}>
             <Grid item sm={12} md={6}>
               <Link
-                style={{ textDecoration: 'none', cursor: 'pointer' }}
+                sx={{ textDecoration: 'none', cursor: 'pointer' }}
                 href="/authentication/signIn">
                 <CustomizedCard>
                   <BoxWithIconText>

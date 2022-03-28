@@ -43,7 +43,7 @@ import { SchemaOverview } from './SchemaOverview';
 import NewSchemaDialog from '../NewSchemaDialog';
 
 const TabPanel: FC = ({ children }) => {
-  return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>{children}</Box>;
+  return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
 };
 
 interface Filters {
@@ -282,7 +282,7 @@ const Schemas: FC = () => {
         }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 4 }}>
           <Box>
-            <Grid style={{ width: '300px' }} spacing={1} container>
+            <Grid sx={{ width: '300px' }} spacing={1} container>
               <Grid item xs={12}>
                 <TextField
                   size="small"

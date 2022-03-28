@@ -1,6 +1,5 @@
 import React, { FC, Fragment, useCallback } from 'react';
-import { Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { Grid, IconButton, MenuItem, styled, TextField, Typography } from '@mui/material';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { deepClone } from '../../../utils/deepClone';
@@ -17,36 +16,20 @@ interface Props {
   availableFieldsOfSchema: [];
 }
 
-const useStyles = makeStyles((theme) => ({
-  item: {
-    paddingLeft: theme.spacing(4),
+const CustomMenuItem = styled(MenuItem)(({ theme }) => ({
+  minHeight: 0,
+  margin: theme.spacing(0),
+  padding: theme.spacing(0),
+  '&.MuiMenuItem-dense': {
+    paddingLeft: 12,
+    fontWeight: 'bold',
   },
-  schemaItem: {
-    paddingLeft: theme.spacing(1),
-  },
-  schemaInnerItem: {
-    paddingLeft: theme.spacing(3),
-  },
-  group: {
-    fontWeight: 'inherit',
-    opacity: '1',
-  },
-  remove: { marginLeft: '9px' },
-  menuItem: {
-    minHeight: 0,
-    margin: theme.spacing(0),
-    padding: theme.spacing(0),
-    '&.MuiMenuItem-dense': {
-      paddingLeft: 12,
-      fontWeight: 'bold',
-    },
-    '&.Mui-selected': {
+  '&.Mui-selected': {
+    backgroundColor: theme.palette.primary.main,
+    color: 'white',
+    '&:hover': {
       backgroundColor: theme.palette.primary.main,
       color: 'white',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-      },
     },
   },
 }));
@@ -58,7 +41,6 @@ const EndpointAssignments: FC<Props> = ({
   setSelectedAssignments,
   availableFieldsOfSchema,
 }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const handleAssignmentFieldChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
@@ -197,22 +179,20 @@ const EndpointAssignments: FC<Props> = ({
   const getSecondSubField = (field: any, valuePrefix: any, suffix: any) => {
     const keys = Object?.keys(field?.type);
     const itemTop = (
-      <MenuItem
-        className={classes.menuItem}
+      <CustomMenuItem
         dense
         disabled={selectedAssignments.find((assignment: any) =>
           assignment.schemaField.includes(`${valuePrefix}.${suffix}`)
         )}
         value={`${valuePrefix}.${suffix}`}>
         {suffix}
-      </MenuItem>
+      </CustomMenuItem>
     );
 
     const restItems = keys?.map((item, i) => {
       if (typeof field.type === 'string' || Array.isArray(field.type)) {
         return (
-          <MenuItem
-            className={classes.menuItem}
+          <CustomMenuItem
             disabled={
               Array.isArray(field.type) ||
               selectedAssignments.find((assignment: any) =>
@@ -226,7 +206,7 @@ const EndpointAssignments: FC<Props> = ({
             key={`ido-${i}-field`}
             value={`${valuePrefix}.${suffix}.${item}`}>
             {item}
-          </MenuItem>
+          </CustomMenuItem>
         );
       }
     });
@@ -247,9 +227,9 @@ const EndpointAssignments: FC<Props> = ({
       const keys = Object?.keys(field?.type);
 
       const itemTop = (
-        <MenuItem disabled className={classes.menuItem} value={field.name}>
+        <CustomMenuItem disabled value={field.name}>
           {field.name}
-        </MenuItem>
+        </CustomMenuItem>
       );
 
       const restItems = keys?.map((item, i) => {
@@ -261,7 +241,7 @@ const EndpointAssignments: FC<Props> = ({
         ) {
           return (
             <MenuItem
-              className={classes.schemaInnerItem}
+              sx={{ paddingLeft: 3 }}
               disabled={
                 Array.isArray(field.type) ||
                 (selectedAssignments &&
@@ -292,7 +272,7 @@ const EndpointAssignments: FC<Props> = ({
               selectedAssignments &&
               selectedAssignments.find((assignment: any) => assignment.schemaField === field.name)
             }
-            className={classes.schemaItem}
+            sx={{ paddingLeft: 1 }}
             key={`idxO-${index}-field`}
             value={field.name}>
             {field.name}
@@ -369,19 +349,19 @@ const EndpointAssignments: FC<Props> = ({
             disabled={!editMode}
             onChange={(event) => handleAssignmentValueFieldChange(event, index)}>
             <MenuItem aria-label="None" value="-" />
-            <MenuItem disabled className={classes.group}>
+            <MenuItem disabled sx={{ fontWeight: 'inherit', opacity: '1' }}>
               Custom Value
             </MenuItem>
-            <MenuItem className={classes.item} value={'Custom'}>
+            <MenuItem sx={{ paddingLeft: 4 }} value={'Custom'}>
               Add a custom value
             </MenuItem>
-            <MenuItem disabled className={classes.group}>
+            <MenuItem disabled sx={{ fontWeight: 'inherit', opacity: '1' }}>
               Context Value
             </MenuItem>
-            <MenuItem className={classes.item} value={'Context'}>
+            <MenuItem sx={{ paddingLeft: 4 }} value={'Context'}>
               Add a value from context
             </MenuItem>
-            <MenuItem disabled className={classes.group}>
+            <MenuItem disabled sx={{ fontWeight: 'inherit', opacity: '1' }}>
               Input Fields
             </MenuItem>
             {selectedInputs.map((input: any, index: number) => (
@@ -391,7 +371,7 @@ const EndpointAssignments: FC<Props> = ({
                   input.type,
                   availableFieldsOfSchema
                 )}
-                className={classes.item}
+                sx={{ paddingLeft: 4 }}
                 key={`idx-${index}-input`}
                 value={'Input-' + input.name}>
                 {`${input.name} ${extractInputValueType(input.type)}`}
@@ -427,7 +407,7 @@ const EndpointAssignments: FC<Props> = ({
         <Grid item xs={1} />
         <Grid item xs={1}>
           <IconButton
-            className={classes.remove}
+            sx={{ marginLeft: 1 }}
             disabled={!editMode}
             size="small"
             onClick={() => handleRemoveAssignment(index)}>

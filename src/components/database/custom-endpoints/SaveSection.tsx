@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Button, Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 
 interface Props {
   editMode: boolean;
@@ -11,12 +10,6 @@ interface Props {
   handleCancelClick: () => void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    paddingTop: theme.spacing(4),
-  },
-}));
-
 const SaveSection: FC<Props> = ({
   editMode,
   createMode,
@@ -25,9 +18,8 @@ const SaveSection: FC<Props> = ({
   handleCreateClick,
   handleCancelClick,
 }) => {
-  const classes = useStyles();
   return (
-    <Grid container justifyContent="flex-end" spacing={1} className={classes.container}>
+    <Grid container justifyContent="flex-end" spacing={1} sx={{ pt: 4 }}>
       <Grid item xs={3} md={1}>
         <Button variant="contained" color="secondary" onClick={handleCancelClick}>
           Cancel

@@ -3,44 +3,14 @@ import { Button, Divider, Grid, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EndpointInputs from './EndpointInputs';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
-import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginLeft: theme.spacing(4),
-    marginRight: theme.spacing(4),
-  },
-  mainContent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-  },
-  button: {
-    margin: theme.spacing(1),
-    textTransform: 'none',
-  },
-  grid: {
-    background: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: '4px',
-    padding: theme.spacing(3),
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  textField: {
-    width: '245px',
-  },
-}));
 
 interface Props {
   editMode: boolean;
 }
 
 const InputsSection: FC<Props> = ({ editMode }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -132,7 +102,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         </Typography>
       </Grid>
 
-      <Grid item xs={12} style={{ padding: '0' }}>
+      <Grid item xs={12} sx={{ padding: '0' }}>
         <Divider />
       </Grid>
       <EndpointInputs
@@ -142,12 +112,12 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}
       />
-      <Grid item xs={12} style={{ textAlign: 'center', padding: '0' }}>
+      <Grid item xs={12} sx={{ textAlign: 'center', padding: '0' }}>
         <Button
           disabled={!editMode || maxInputs()}
           variant="text"
           color={'secondary'}
-          className={classes.button}
+          sx={{ margin: 1, textTransform: 'none' }}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddInput}>
           Add input

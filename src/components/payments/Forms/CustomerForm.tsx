@@ -71,7 +71,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <SelectedElements

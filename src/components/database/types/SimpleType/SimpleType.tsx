@@ -62,7 +62,7 @@ const SimpleType: FC<IProps> = ({ item, ...rest }) => {
         <Grid item xs={6}>
           <Box display={'flex'} alignItems={'center'}>
             <SimpleIcon type={item.type} />
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               simple placeholder
             </Typography>
           </Box>
@@ -86,7 +86,7 @@ export const SimpleGroupType: FC<IProps> = ({ item, ...rest }) => {
         <Grid item xs={6}>
           <Box display={'flex'} alignItems={'center'}>
             <SimpleIcon type={item.type} />
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               simple placeholder
             </Typography>
           </Box>

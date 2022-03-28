@@ -96,8 +96,8 @@ const ReusableAccordion: React.FC<Props> = ({
     <Accordion
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
-      style={{ cursor: 'default' }}
       sx={{
+        cursor: 'default',
         '&.MuiAccordion-root.Mui-expanded': {
           marginTop: '20px',
         },
@@ -135,13 +135,14 @@ const ReusableAccordion: React.FC<Props> = ({
             display={'flex'}
             width={'100%'}
             flexDirection={'column'}
+            gap={1}
             alignItems={'center'}>
             <Box
               width={'100%'}
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 {name !== 'phoneAuthentication'
                   ? `Allow users to sign up using their ${name} account.`
                   : `Allow users to sign up using their phone number.`}
@@ -173,7 +174,7 @@ const ReusableAccordion: React.FC<Props> = ({
                       display={'inline-flex'}
                       justifyContent={'space-between'}
                       alignItems={'center'}>
-                      <Typography variant={'overline'} style={{ width: '100%' }}>
+                      <Typography variant={'overline'} sx={{ width: '100%' }}>
                         {key.split(/(?=[A-Z])/).join(' ')}
                       </Typography>
                       <FormControlLabel
@@ -207,7 +208,7 @@ const ReusableAccordion: React.FC<Props> = ({
                       id="identifier-id"
                       labelId="identifier-label"
                       name="identifier"
-                      style={{ width: '100%', marginBottom: 8 }}
+                      sx={{ width: '100%', marginBottom: 8 }}
                       value={accProps.identifier}
                       placeholder={'identifier'}
                       disabled={!accProps.enabled}
@@ -236,7 +237,7 @@ const ReusableAccordion: React.FC<Props> = ({
                   <Box width={'100%'} mt={2} key={key}>
                     <Grid container item xs={8}>
                       <TextField
-                        style={{ width: '100%', marginBottom: 8 }}
+                        sx={{ width: '100%', marginBottom: 8 }}
                         id={key}
                         label={key
                           .split(/(?=[A-Z&])/)
@@ -267,7 +268,7 @@ const ReusableAccordion: React.FC<Props> = ({
             <Button
               variant="contained"
               color="primary"
-              style={{ alignSelf: 'flex-end' }}
+              sx={{ alignSelf: 'flex-end' }}
               onClick={() => handleSubmit(name, accProps)}>
               Save
             </Button>

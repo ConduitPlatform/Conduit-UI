@@ -142,7 +142,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
         </Grid>
       )}
       {selectedTemplate.name !== '' && (
-        <Grid container xs={12} justifyContent="space-around" style={{ marginTop: '15px' }}>
+        <Grid container xs={12} justifyContent="space-around" sx={{ marginTop: '15px' }}>
           <Grid>
             <Button
               variant="contained"

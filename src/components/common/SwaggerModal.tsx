@@ -66,16 +66,12 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent style={{ minWidth: '500px' }}>
+      <DialogContent sx={{ minWidth: '500px' }}>
         <DialogContentText>
           Swagger is used to describe and document RESTful APIs.
         </DialogContentText>
-        <Box padding={5} display="flex" flexDirection={'column'} style={{ gap: 10 }}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ gap: 14 }}>
+        <Box padding={5} display="flex" flexDirection={'column'} sx={{ gap: 10 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 14 }}>
             <Typography>Go to {title} Swagger: </Typography>
             <a
               style={{ textDecoration: 'none' }}
@@ -89,11 +85,7 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ gap: 14 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 14 }}>
             <Typography>Go to {title} Admin Swagger: </Typography>
             <a
               style={{ textDecoration: 'none' }}
@@ -107,21 +99,13 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            style={{ gap: 14 }}>
+          <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ gap: 14 }}>
             <Typography>Download App Swagger: </Typography>
             <Button variant="outlined" onClick={handleDownload}>
               Download Json
             </Button>
           </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ gap: 14 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 14 }}>
             <Typography>Download Admin Swagger: </Typography>
             <Button variant="outlined" onClick={handleAdminDownload}>
               Download Json

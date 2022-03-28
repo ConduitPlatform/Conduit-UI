@@ -1,36 +1,6 @@
-import makeStyles from '@mui/styles/makeStyles';
 import React, { FC } from 'react';
 import { AccountTree } from '@mui/icons-material';
 import { Typography } from '@mui/material';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0.25, 0),
-    minHeight: 28,
-  },
-  bold: {
-    marginRight: theme.spacing(1),
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap',
-  },
-  textInput: {
-    fontSize: '14px',
-  },
-  textInputProps: {
-    padding: theme.spacing(0.25, 0),
-  },
-  asterisk: {
-    marginRight: theme.spacing(0.25),
-  },
-  muiSelect: {
-    padding: 0,
-    '& .MuiSelect-outlined': {
-      padding: theme.spacing(1, 5, 1, 1),
-    },
-  },
-}));
 
 interface Document {
   id: string;
@@ -43,8 +13,6 @@ interface TreeItemLabelProps {
 }
 
 const ViewableTreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation }) => {
-  const classes = useStyles();
-
   const handleLabelContent = () => {
     const isArray = Array.isArray(document.data);
     const isObject =
@@ -66,8 +34,15 @@ const ViewableTreeItemLabel: FC<TreeItemLabelProps> = ({ document, isRelation })
   };
 
   return (
-    <Typography variant={'subtitle2'} className={classes.root}>
-      <Typography component={'span'} className={classes.bold}>
+    <Typography
+      variant={'subtitle2'}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: 0.25,
+        minHeight: 28,
+      }}>
+      <Typography component={'span'} sx={{ mr: 1, fontWeight: 'bold', whiteSpace: 'nowrap' }}>
         {`${document.id}: `}
       </Typography>
       {handleLabelContent()}

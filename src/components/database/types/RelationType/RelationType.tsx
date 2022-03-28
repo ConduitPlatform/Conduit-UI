@@ -34,7 +34,7 @@ const RelationType: FC<IProps> = ({ item, ...rest }) => {
             <Tooltip title={'Date field'}>
               <DeviceHubIcon className={classes.icon} />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               relation placeholder
             </Typography>
           </Box>
@@ -62,7 +62,7 @@ export const RelationGroupType: FC<IProps> = ({ item, ...rest }) => {
             <Tooltip title={'Date field'}>
               <DeviceHubIcon className={classes.icon} />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               relation placeholder
             </Typography>
           </Box>

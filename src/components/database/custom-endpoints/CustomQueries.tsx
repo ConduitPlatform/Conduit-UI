@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Box, Grid, IconButton, TextField, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { Delete, Edit } from '@mui/icons-material';
 import {
   findFieldsWithTypes,
@@ -32,38 +31,7 @@ import {
   asyncUpdateCustomEndpoints,
 } from '../../../redux/slices/databaseSlice';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginLeft: theme.spacing(4),
-    marginRight: theme.spacing(4),
-    overflow: ' hidden ',
-  },
-  mainContent: {
-    marginTop: '100px',
-    textAlign: 'center',
-  },
-  button: {
-    margin: theme.spacing(1),
-    textTransform: 'none',
-  },
-  grid: {
-    background: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: '4px',
-    padding: theme.spacing(3),
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  mainContentInfo: {
-    maxHeight: '72vh',
-    overflowY: 'auto',
-    alignItems: 'center',
-    paddingTop: '3px',
-  },
-}));
-
 const CustomQueries: FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -321,7 +289,7 @@ const CustomQueries: FC = () => {
               />
             </Grid>
             <Grid item xs={2} />
-            <Grid item xs={5} style={{ textAlign: 'end' }}>
+            <Grid item xs={5} sx={{ textAlign: 'end' }}>
               {!editMode && (
                 <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
                   <Delete color="error" />
@@ -352,10 +320,7 @@ const CustomQueries: FC = () => {
 
   return (
     <Box sx={{ ml: 4, mr: 4, overflow: ' hidden ' }}>
-      <Grid
-        container
-        spacing={2}
-        sx={{ background: 'rgba(0, 0, 0, 0.05)', borderRadius: '4px', p: 3 }}>
+      <Grid container spacing={2} sx={{ background: 'rgba(0, 0, 0, 0.05)', borderRadius: 7, p: 3 }}>
         <Grid item xs={3}>
           <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>

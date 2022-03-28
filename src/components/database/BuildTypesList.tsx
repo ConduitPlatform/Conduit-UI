@@ -83,7 +83,7 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
           {handleIcon(item)}
           <Box ml={2}>{item}</Box>
         </Box>
-        <DragHandleIcon style={{ fill: '#dce0e5' }} />
+        <DragHandleIcon sx={{ fill: '#dce0e5' }} />
       </>
     );
   };

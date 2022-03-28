@@ -65,7 +65,7 @@ const TabPanel: React.FC<Props> = ({
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="body1">Body</Typography>
-                  <Typography variant="subtitle2" style={{ whiteSpace: 'pre-line' }}>
+                  <Typography variant="subtitle2" sx={{ whiteSpace: 'pre-line' }}>
                     {template.body}
                   </Typography>
                 </Grid>

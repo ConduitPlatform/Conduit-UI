@@ -58,7 +58,7 @@ const GroupTypeViewer: FC<IProps> = ({
   };
 
   return (
-    <Box style={{ width: '100%' }} {...rest}>
+    <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
@@ -101,7 +101,7 @@ const GroupTypeViewer: FC<IProps> = ({
                 <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                      <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                         {groupItem.name}
                       </Typography>
                     </Grid>

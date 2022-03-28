@@ -59,7 +59,7 @@ const AuthenticationConfig: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ padding: 4, color: 'text.secondary' }}>
+      <Paper sx={{ padding: 4, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
             <Grid container spacing={3}>

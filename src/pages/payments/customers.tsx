@@ -273,7 +273,7 @@ const Customers = () => {
         <Grid item>
           {selectedCustomers.length > 0 && (
             <IconButton
-              style={{ marginRight: '10px' }}
+              sx={{ marginRight: '10px' }}
               size="small"
               aria-label="delete"
               color="primary"
@@ -305,7 +305,7 @@ const Customers = () => {
             handleSelectAll={handleSelectAll}
             selectedItems={selectedCustomers}
           />
-          <Grid container style={{ marginTop: '-8px' }}>
+          <Grid container sx={{ marginTop: '-8px' }}>
             <Grid item xs={7} />
             <Grid item xs={5}>
               <Paginator

@@ -49,7 +49,7 @@ const FormsConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper sx={{ p: 2, color: 'text.secondary' }}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>

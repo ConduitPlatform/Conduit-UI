@@ -90,7 +90,7 @@ const SecretsTab: React.FC = () => {
                       <Typography variant={'caption'}>{client.clientId}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Box style={{ maxWidth: 500 }}>
+                      <Box sx={{ maxWidth: 500 }}>
                         <span style={{ overflowWrap: 'break-word' }}>
                           {client.clientSecret ? client.clientSecret : 'This is a secret'}
                         </span>

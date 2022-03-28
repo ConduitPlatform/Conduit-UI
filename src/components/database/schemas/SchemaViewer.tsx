@@ -56,7 +56,7 @@ const SchemaViewer: FC<Props> = ({ dataKey, data, ...rest }) => {
               sx={{ display: 'flex', flexDirection: 'column-reverse', padding: 1, mb: 1 }}>
               <Grid container>
                 <Grid item xs={6}>
-                  <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                  <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                     <strong>{item.name}</strong>
                   </Typography>
                 </Grid>

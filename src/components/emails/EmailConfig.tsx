@@ -105,7 +105,7 @@ const EmailConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper sx={{ padding: 2, color: 'text.secondary' }}>
+      <Paper sx={{ padding: 2, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>

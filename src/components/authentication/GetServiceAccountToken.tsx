@@ -37,7 +37,7 @@ const GetServiceAccountToken: React.FC<Props> = ({ token, open, handleClose }) =
           <Typography
             variant={'h6'}
             align={'center'}
-            style={{
+            sx={{
               overflowWrap: 'break-word',
               overflow: 'hidden',
             }}>

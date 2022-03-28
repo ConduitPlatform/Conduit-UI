@@ -31,7 +31,7 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
   };
 
   return (
-    <Box style={{ width: '100%' }} {...rest}>
+    <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>

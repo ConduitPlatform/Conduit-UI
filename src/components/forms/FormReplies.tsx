@@ -121,7 +121,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
         ))
       ) : (
         <>
-          <Typography style={{ textAlign: 'center' }}>
+          <Typography sx={{ textAlign: 'center' }}>
             No replies available for the current form
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

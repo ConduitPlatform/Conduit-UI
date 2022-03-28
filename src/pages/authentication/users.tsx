@@ -298,7 +298,7 @@ const Users = () => {
         <Typography>No users available</Typography>
       )}
       {users && users.length > 0 && (
-        <Grid container style={{ marginTop: '-8px' }}>
+        <Grid container sx={{ marginTop: '-8px' }}>
           <Grid item xs={7} />
           <Grid item xs={5}>
             <Paginator

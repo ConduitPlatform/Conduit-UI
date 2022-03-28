@@ -2,32 +2,17 @@ import React, { FC } from 'react';
 import { Button, Divider, Grid, Typography } from '@mui/material';
 import EndpointQueries from './EndpointQueries';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import makeStyles from '@mui/styles/makeStyles';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
 import { recursiveNodeIteration } from '../../../utils/cms';
 import { v4 as uuidv4 } from 'uuid';
 import { deepClone } from '../../../utils/deepClone';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-    textTransform: 'none',
-  },
-  addQueryBtn: {
-    textAlign: 'center',
-  },
-  divider: {
-    padding: '0',
-  },
-}));
-
 interface Props {
   editMode: boolean;
 }
 
 const QueriesSection: FC<Props> = ({ editMode }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -159,7 +144,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
           <strong>Queries</strong>
         </Typography>
       </Grid>
-      <Grid item xs={12} className={classes.divider}>
+      <Grid item xs={12} sx={{ padding: '0' }}>
         <Divider />
       </Grid>
       <EndpointQueries
@@ -174,12 +159,12 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
         availableFieldsOfSchema={schemaFields}
         handleChangeNodeOperator={handleChangeNodeOperator}
       />
-      <Grid item xs={12} className={classes.addQueryBtn}>
+      <Grid item xs={12} sx={{ textAlign: 'center' }}>
         <Button
           disabled={!editMode}
           variant="text"
           color={'secondary'}
-          className={classes.button}
+          sx={{ margin: 1, textTransform: 'none' }}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddParentNode}>
           Add query

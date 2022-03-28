@@ -126,10 +126,10 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item xs={6} style={{ padding: '20px', marginTop: '23px' }}>
+        <Grid item xs={6} sx={{ padding: '20px', marginTop: '23px' }}>
           <Box
             height="69vh"
-            style={{
+            sx={{
               overflow: 'auto',
               overflowX: 'hidden',
               background: '#202030',
@@ -166,10 +166,10 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           container
           xs={6}
           alignContent="space-between"
-          style={{ padding: '20px', marginTop: '23px' }}>
+          sx={{ padding: '20px', marginTop: '23px' }}>
           <Grid item xs={12}>
             <Paper>
-              <Grid item xs={12} style={{ padding: '10px' }}>
+              <Grid item xs={12} sx={{ padding: '10px' }}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -178,7 +178,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
                   Custom Endpoints
                 </Button>
               </Grid>
-              <Grid container spacing={2} style={{ padding: '10px' }}>
+              <Grid container spacing={2} sx={{ padding: '10px' }}>
                 <Grid item xs={6}>
                   {extractButtonsLeft()}
                 </Grid>

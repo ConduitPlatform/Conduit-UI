@@ -37,7 +37,7 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
                 sx={{ textDecoration: 'none', ml: 8 }}
                 variant="outlined"
                 startIcon={
-                  <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                  <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                     <Image src={Swagger} alt="swagger" />
                   </Icon>
                 }
@@ -52,7 +52,7 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
                 <Button
                   color="secondary"
                   startIcon={
-                    <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                    <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                       <Image src={GraphQL} alt="swagger" />
                     </Icon>
                   }
@@ -63,7 +63,7 @@ const SharedLayout: React.FC<Props> = ({ children, pathNames, swagger, icon, lab
             </>
           )}
         </Typography>
-        <Tabs value={value} sx={{ mt: 2 }}>
+        <Tabs value={value} indicatorColor="secondary" sx={{ mt: 2 }}>
           {labels.map((label: { name: string; id: string }, index: number) => {
             return (
               <Link href={pathNames[index]} passHref key={index}>

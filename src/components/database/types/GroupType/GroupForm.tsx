@@ -109,7 +109,7 @@ const GroupForm: FC<IProps> = ({
             display={'inline-flex'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <Typography variant={'button'} style={{ width: '100%' }}>
+            <Typography variant={'button'} sx={{ width: '100%' }}>
               Required
             </Typography>
             <FormControlLabel
@@ -139,7 +139,7 @@ const GroupForm: FC<IProps> = ({
             display={'inline-flex'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <Typography variant={'button'} style={{ width: '100%' }}>
+            <Typography variant={'button'} sx={{ width: '100%' }}>
               Select
             </Typography>
             <FormControlLabel
@@ -164,7 +164,7 @@ const GroupForm: FC<IProps> = ({
             display={'inline-flex'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <Typography variant={'button'} style={{ width: '100%' }}>
+            <Typography variant={'button'} sx={{ width: '100%' }}>
               Array
             </Typography>
             <FormControlLabel
@@ -187,7 +187,7 @@ const GroupForm: FC<IProps> = ({
       </Grid>
 
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" style={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 16 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>

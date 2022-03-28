@@ -82,7 +82,7 @@ const GroupGroupType: FC<IProps> = ({
   const groupId = `child-${item.name}`;
 
   return (
-    <Box style={{ width: '100%' }} {...rest}>
+    <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
@@ -120,7 +120,7 @@ const GroupGroupType: FC<IProps> = ({
                         <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
                           <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                             <Box display={'flex'}>
-                              <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                              <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                                 {groupItem.name}
                               </Typography>
                             </Box>

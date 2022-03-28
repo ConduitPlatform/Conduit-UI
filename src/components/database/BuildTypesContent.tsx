@@ -154,7 +154,7 @@ const BuildTypesContent: FC<Props> = ({
                       <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
                         <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                           <Box display={'flex'}>
-                            <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                            <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                               Field name: <strong>{item.name}</strong>
                             </Typography>
                           </Box>
@@ -188,7 +188,7 @@ const BuildTypesContent: FC<Props> = ({
             ) : (
               <Box
                 className={classes.listPlaceholder}
-                style={snapshot.isDraggingOver ? { opacity: 0.4 } : {}}>
+                sx={snapshot.isDraggingOver ? { opacity: 0.4 } : {}}>
                 <Content className={classes.listPlaceholderItems} />
                 <Typography variant={'subtitle2'} className={classes.listPlaceholderItems}>
                   Simply drag and drop

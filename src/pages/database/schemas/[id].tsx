@@ -468,7 +468,7 @@ const BuildTypes: React.FC = () => {
         <Chip
           color="secondary"
           variant="outlined"
-          style={{ marginLeft: '30px', cursor: 'pointer' }}
+          sx={{ marginLeft: '30px', cursor: 'pointer' }}
           label={`Fields: ${editableFields.newTypeFields.length}`}
         />
       );
@@ -505,7 +505,7 @@ const BuildTypes: React.FC = () => {
         selectedSchema={selectedSchema}
       />
 
-      <Box style={{ marginTop: '60px', padding: '20px' }}>
+      <Box sx={{ marginTop: '60px', padding: '20px' }}>
         <DragDropContext onDragEnd={onDragEnd}>
           {nonEditableFields.length
             ? nonEditableFields.map((ext, i) => {
@@ -520,7 +520,7 @@ const BuildTypes: React.FC = () => {
                       </Typography>
                       <Chip
                         color="secondary"
-                        style={{ marginLeft: '30px', cursor: 'pointer' }}
+                        sx={{ marginLeft: '30px', cursor: 'pointer' }}
                         label="READ ONLY"
                       />
                     </AccordionSummary>
@@ -590,7 +590,7 @@ const BuildTypes: React.FC = () => {
               </AccordionDetails>
             </Accordion>
           ) : (
-            <Typography style={{ textAlign: 'center', marginTop: '60px' }}>
+            <Typography sx={{ textAlign: 'center', marginTop: '60px' }}>
               Schema cannot be extended
             </Typography>
           )}

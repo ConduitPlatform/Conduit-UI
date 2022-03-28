@@ -52,7 +52,7 @@ const SendSms: React.FC = () => {
                     variant="outlined"
                     color="primary"
                     startIcon={<Clear />}
-                    style={{ marginRight: 16 }}
+                    sx={{ marginRight: 16 }}
                     onClick={() => reset()}>
                     Clear
                   </Button>

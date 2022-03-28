@@ -8,41 +8,24 @@ import makeStyles from '@mui/styles/makeStyles';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Search, Refresh, AccountTree } from '@mui/icons-material';
 import useParseQuery from './useParseQuery';
-import { Typography } from '@mui/material';
+import { styled, Typography } from '@mui/material';
 import clsx from 'clsx';
 
 const ObjText = '{ }';
 
+const ButtonContainer = styled(Box)(({ theme }) => ({
+  height: theme.spacing(3),
+  width: theme.spacing(3),
+  borderRadius: theme.spacing(0.5),
+  cursor: 'pointer',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: theme.spacing(2),
+  marginLeft: theme.spacing(1),
+}));
+
 const useStyles = makeStyles((theme) => ({
-  topContainer: {
-    display: 'flex',
-    padding: theme.spacing(1),
-    paddingBottom: 0,
-    justifyContent: 'space-between',
-  },
-  searchInput: {
-    flex: 1,
-    borderColor: 'red',
-  },
-  divider: {
-    width: theme.spacing(1),
-  },
-  paginator: {
-    display: 'flex',
-    alignItems: 'center',
-    borderBottom: '1px solid rgb(255 255 255 / 12%)',
-  },
-  buttonContainer: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    borderRadius: theme.spacing(0.5),
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: theme.spacing(2),
-    marginLeft: theme.spacing(1),
-  },
   objText: {
     whiteSpace: 'nowrap',
     fontSize: 14,
@@ -119,11 +102,18 @@ const SchemaDataHeader: FC<Props> = ({
 
   return (
     <Box {...rest}>
-      <Box sx={{ display: 'flex', padding: 1, pb: 0, justifyContent: 'space-between' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          padding: 1,
+          pb: 0,
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
         <TextField
           size="small"
           variant="outlined"
-          className={classes.searchInput}
+          sx={{ flex: 1, borderColor: 'red' }}
           name="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -137,31 +127,36 @@ const SchemaDataHeader: FC<Props> = ({
           }}
           error={isSearchError()}
         />
-        <Box className={classes.divider} />
-        <Button disabled={disabled} color="secondary" size={'small'} onClick={() => onRefresh()}>
-          <Refresh />
-          Refresh
-        </Button>
-        <Box className={classes.divider} />
-        <Button
-          disabled={disabled}
-          variant="contained"
-          color="primary"
-          size={'small'}
-          onClick={() => onCreateDocument()}>
-          Add Document
-        </Button>
-      </Box>
-      <Box className={classes.paginator}>
-        <Box className={classes.buttonContainer} onClick={() => setObjectView(false)}>
-          <AccountTree color={objectView ? 'inherit' : 'primary'} />
+        <Box sx={{ display: 'flex', gap: 2, pt: 1 }}>
+          <Button disabled={disabled} color="secondary" size={'small'} onClick={() => onRefresh()}>
+            <Refresh />
+            Refresh
+          </Button>
+          <Button
+            disabled={disabled}
+            variant="contained"
+            color="primary"
+            size={'small'}
+            onClick={() => onCreateDocument()}>
+            Add Document
+          </Button>
         </Box>
-        <Box className={classes.buttonContainer} onClick={() => setObjectView(true)}>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          pb: 2,
+        }}>
+        <ButtonContainer onClick={() => setObjectView(false)}>
+          <AccountTree color={objectView ? 'inherit' : 'primary'} />
+        </ButtonContainer>
+        <ButtonContainer onClick={() => setObjectView(true)}>
           <Typography
             className={objectView ? clsx(classes.objText, classes.selected) : classes.objText}>
             {ObjText}
           </Typography>
-        </Box>
+        </ButtonContainer>
         <Paginator
           handlePageChange={(event, value) => handlePageChange(value)}
           limit={filters.limit}

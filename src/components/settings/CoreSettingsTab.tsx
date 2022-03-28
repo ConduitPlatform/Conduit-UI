@@ -72,7 +72,7 @@ const CoreSettingsTab: React.FC = () => {
               </Typography>
               <FormInputSelect name="selectedEnum" label="Environment" options={selectOptions} />
             </Grid>
-            <Grid item xs={12} style={{ marginTop: 16 }} container wrap={'nowrap'}>
+            <Grid item xs={12} sx={{ marginTop: 16 }} container wrap={'nowrap'}>
               <Grid
                 item
                 xs={8}
@@ -80,7 +80,7 @@ const CoreSettingsTab: React.FC = () => {
                 container
                 alignItems={'center'}
                 wrap={'nowrap'}
-                style={{ marginRight: 32 }}>
+                sx={{ marginRight: 32 }}>
                 <Typography
                   component={'span'}
                   variant={'subtitle2'}
@@ -99,7 +99,7 @@ const CoreSettingsTab: React.FC = () => {
                 <FormInputText name="port" label="Port" />
               </Grid>
             </Grid>
-            <Grid item xs={12} style={{ marginTop: 32 }}>
+            <Grid item xs={12} sx={{ marginTop: 32 }}>
               <Typography variant={'h6'}>Transport section</Typography>
             </Grid>
             <Grid item xs={12} container alignItems={'center'}>
@@ -110,9 +110,9 @@ const CoreSettingsTab: React.FC = () => {
               <Typography variant={'subtitle1'}>Toggle GraphQL:</Typography>
               <FormInputSwitch name="toggleGraphQL" />
             </Grid>
-            <Grid item xs={12} style={{ marginTop: 32 }}>
+            <Grid item xs={12} sx={{ marginTop: 32 }}>
               <Button
-                style={{ marginRight: 32 }}
+                sx={{ marginRight: 32 }}
                 placeholder={'Cancel'}
                 onClick={() => reset()}
                 variant={'contained'}>

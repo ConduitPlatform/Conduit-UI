@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
@@ -7,17 +6,6 @@ import FieldIndicators from '../FieldIndicators';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
 
 interface IProps {
   item: IRelationData;
@@ -41,7 +29,7 @@ const RelationType: FC<IProps> = ({ item, ...rest }) => {
                 }}
               />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               relation placeholder
             </Typography>
           </Box>
@@ -76,7 +64,7 @@ export const RelationGroupType: FC<IProps> = ({ item, ...rest }) => {
                 }}
               />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               relation placeholder
             </Typography>
           </Box>

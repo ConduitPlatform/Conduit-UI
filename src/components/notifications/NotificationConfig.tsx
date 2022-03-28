@@ -94,7 +94,7 @@ const NotificationConfig: FC = () => {
 
   return (
     <Container>
-      <Paper sx={{ p: 2, color: 'text.secondary' }} elevation={5}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }} elevation={5}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>

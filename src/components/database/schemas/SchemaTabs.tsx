@@ -9,7 +9,7 @@ interface Props {
 export const SchemaTabs: FC<Props> = ({ value, handleChange }) => {
   return (
     <Tabs
-      style={{ width: '100%' }}
+      sx={{ width: '100%' }}
       value={value}
       onChange={handleChange}
       indicatorColor="secondary"

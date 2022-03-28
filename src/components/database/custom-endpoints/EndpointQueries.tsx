@@ -3,20 +3,10 @@ import CustomQueryRow from './CustomQueryRow';
 import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
 import { Grid, Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { TreeView } from '@mui/lab';
 import { deepClone } from '../../../utils/deepClone';
 import { Add, Remove } from '@mui/icons-material';
 import { v4 as uuidV4 } from 'uuid';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  queries: {
-    padding: theme.spacing(1.5),
-  },
-}));
 
 interface Props {
   editMode: boolean;
@@ -43,8 +33,6 @@ const EndpointQueries: FC<Props> = ({
   availableFieldsOfSchema,
   handleChangeNodeOperator,
 }) => {
-  const classes = useStyles();
-
   const [expanded, setExpanded] = useState<string[]>([]);
 
   const deconstructQueries = (queries: any) => {
@@ -219,7 +207,7 @@ const EndpointQueries: FC<Props> = ({
               container
               alignItems={'flex-end'}
               spacing={2}
-              className={classes.queries}
+              sx={{ p: 1.5 }}
               key={`query-${selectedSchema}-${node._id}`}>
               <CustomQueryRow
                 query={node}
@@ -245,7 +233,7 @@ const EndpointQueries: FC<Props> = ({
     <Box padding={2} width={'100%'}>
       <TreeView
         expanded={expanded}
-        className={classes.root}
+        sx={{ flexGrow: 1 }}
         defaultCollapseIcon={<Remove />}
         defaultExpandIcon={<Add />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}

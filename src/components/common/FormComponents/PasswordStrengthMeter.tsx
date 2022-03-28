@@ -44,10 +44,10 @@ const PasswordStrengthMeter: FC<PasswordStrengthProps> = ({ password }) => {
     <Box>
       <Slider
         classes={{ root: classes.root }}
-        style={{ color: passwordState.color }}
+        sx={{ color: passwordState.color }}
         value={passwordState.percentage}
       />
-      <Typography variant={'subtitle2'} style={{ color: passwordState.color }} align={'center'}>
+      <Typography variant={'subtitle2'} sx={{ color: passwordState.color }} align={'center'}>
         {passwordState.message}
       </Typography>
     </Box>

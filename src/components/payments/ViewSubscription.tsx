@@ -89,7 +89,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
             color: 'text.secondary',
             mt: 2,
           }}>
-          <Typography style={{ marginBottom: '25px' }}>Transactions: </Typography>
+          <Typography sx={{ marginBottom: '25px' }}>Transactions: </Typography>
           <Grid container spacing={2} justifyContent="space-around">
             {transactions.length ? (
               <>
@@ -103,7 +103,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
                 />
               </>
             ) : (
-              <Typography style={{ textAlign: 'center' }}>No available transactions </Typography>
+              <Typography sx={{ textAlign: 'center' }}>No available transactions </Typography>
             )}
           </Grid>
           <Grid

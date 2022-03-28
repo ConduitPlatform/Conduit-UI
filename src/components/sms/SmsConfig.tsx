@@ -94,7 +94,7 @@ const SmsConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper sx={{ p: 2, color: 'text.secondary' }}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
@@ -145,7 +145,7 @@ const SmsConfig: React.FC = () => {
                       <Grid item xs={12}>
                         <Typography variant="subtitle1">Verify:</Typography>
                       </Grid>
-                      <Box style={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography>Active</Typography>
                         <FormInputSwitch name={'twilio.verify.active'} />
                       </Box>
