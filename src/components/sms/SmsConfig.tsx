@@ -1,6 +1,5 @@
 import { Container } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -15,14 +14,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
 
-const useStyles = makeStyles((theme) => ({
-  marginBottom: {
-    marginBottom: theme.spacing(1),
-  },
-}));
-
 const SmsConfig: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { config } = useAppSelector((state) => state.smsSlice.data);
@@ -123,7 +115,7 @@ const SmsConfig: React.FC = () => {
                         label={'Phone Number'}
                         disabled={!edit}
                         textFieldProps={{
-                          className: classes.marginBottom,
+                          sx: { marginBottom: 1 },
                         }}
                       />
                       <FormInputText
@@ -131,7 +123,7 @@ const SmsConfig: React.FC = () => {
                         label={'Account SID'}
                         disabled={!edit}
                         textFieldProps={{
-                          className: classes.marginBottom,
+                          sx: { marginBottom: 1 },
                         }}
                       />
                       <FormInputText
@@ -139,7 +131,7 @@ const SmsConfig: React.FC = () => {
                         label={'Auth Token'}
                         disabled={!edit}
                         textFieldProps={{
-                          className: classes.marginBottom,
+                          sx: { marginBottom: 1 },
                         }}
                       />
                       <Grid item xs={12}>

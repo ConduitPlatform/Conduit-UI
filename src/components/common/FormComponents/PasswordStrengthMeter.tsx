@@ -1,30 +1,12 @@
 import React, { FC, memo, useEffect, useState } from 'react';
 import { Box, Slider, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { getPasswordStrength } from '../../../utils/getPasswordStrength';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    pointerEvents: 'none',
-    '& .MuiSlider-thumb': {
-      display: 'none',
-    },
-    '& .MuiSlider-rail': {
-      height: '15px',
-    },
-    '& .MuiSlider-track': {
-      height: '15px',
-    },
-  },
-}));
 
 interface PasswordStrengthProps {
   password: string;
 }
 
 const PasswordStrengthMeter: FC<PasswordStrengthProps> = ({ password }) => {
-  const classes = useStyles();
-
   const [passwordState, setPasswordState] = useState({
     color: 'red',
     percentage: 0,
@@ -43,8 +25,19 @@ const PasswordStrengthMeter: FC<PasswordStrengthProps> = ({ password }) => {
   return (
     <Box>
       <Slider
-        classes={{ root: classes.root }}
-        sx={{ color: passwordState.color }}
+        sx={{
+          pointerEvents: 'none',
+          '& .MuiSlider-thumb': {
+            display: 'none',
+          },
+          '& .MuiSlider-rail': {
+            height: '15px',
+          },
+          '& .MuiSlider-track': {
+            height: '15px',
+          },
+          color: passwordState.color,
+        }}
         value={passwordState.percentage}
       />
       <Typography variant={'subtitle2'} sx={{ color: passwordState.color }} align={'center'}>

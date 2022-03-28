@@ -3,30 +3,26 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { FC, useState } from 'react';
 import { IDrawerData, ISimpleData } from '../../../../models/database/BuildTypesModels';
+import { styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
+export const StyledForm = styled('form')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(2),
+}));
+
+export const InfoTypography = styled(Typography)(({ theme }) => ({
+  width: '100%',
+  fontSize: 14,
+  marginBottom: theme.spacing(3),
+  opacity: '0.5',
 }));
 
 interface IProps {
@@ -47,8 +43,6 @@ const SimpleForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const [simpleData, setSimpleData] = useState({
     name: selectedItem ? selectedItem.name : '',
     default: selectedItem ? selectedItem.default : '',
@@ -89,14 +83,14 @@ const SimpleForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={simpleData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         InputProps={{
@@ -110,7 +104,7 @@ const SimpleForm: FC<IProps> = ({
         onChange={handleFieldDefault}
         value={simpleData.default}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         helperText={'Default value of this field'}
       />
@@ -139,7 +133,9 @@ const SimpleForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'subtitle1'} className={classes.info}>
+            <Typography
+              variant={'subtitle1'}
+              sx={{ width: '100%', fontSize: 14, marginBottom: 3, opacity: '0.5' }}>
               {"If active, this field's value must be unique"}
             </Typography>
           </Grid>
@@ -169,9 +165,9 @@ const SimpleForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               If active, this field will be required
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -198,9 +194,9 @@ const SimpleForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               This option defines if the field should be returned from the database
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -227,22 +223,22 @@ const SimpleForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               Activate this option if you want your field to be of type Array
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
       </Box>
 
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 3 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 

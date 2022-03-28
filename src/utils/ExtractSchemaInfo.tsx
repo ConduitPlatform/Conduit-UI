@@ -13,16 +13,8 @@ import TocIcon from '@mui/icons-material/Toc';
 import PersonIcon from '@mui/icons-material/Person';
 import { Schema } from '../models/database/CmsModels';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles((theme) => ({
-  nested: {
-    paddingLeft: theme.spacing(3),
-  },
-}));
 
 export const ExtractSchemaInfo = (schema: Schema) => {
-  const classes = useStyles();
   const permissions = schema?.modelOptions?.conduit?.permissions;
   const cms = schema?.modelOptions?.conduit?.cms;
   const [open, setOpen] = useState(true);
@@ -44,7 +36,7 @@ export const ExtractSchemaInfo = (schema: Schema) => {
           </ListItem>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem className={classes.nested}>
+              <ListItem sx={{ pl: 3 }}>
                 <ListItemIcon>
                   <PeopleIcon />
                 </ListItemIcon>
@@ -53,7 +45,7 @@ export const ExtractSchemaInfo = (schema: Schema) => {
                   secondary={cms.authentication ? 'Enabled' : 'Disabled'}
                 />
               </ListItem>
-              <ListItem className={classes.nested}>
+              <ListItem sx={{ pl: 3 }}>
                 <ListItemIcon>
                   <EditAttributesIcon />
                 </ListItemIcon>
@@ -62,7 +54,7 @@ export const ExtractSchemaInfo = (schema: Schema) => {
                   secondary={cms.crudOperations ? 'Enabled' : 'Disabled'}
                 />
               </ListItem>
-              <ListItem className={classes.nested}>
+              <ListItem sx={{ pl: 3 }}>
                 <ListItemIcon>
                   <DoneAllIcon />
                 </ListItemIcon>

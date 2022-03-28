@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -12,18 +11,11 @@ import { Box, Chip, Container, Grid, TextField } from '@mui/material';
 import Image from 'next/dist/client/image';
 import formReplies from '../../assets/svgs/formReplies.svg';
 
-const useStyles = makeStyles((theme) => ({
-  disabledInput: {
-    color: theme.palette.secondary.main,
-  },
-}));
-
 interface Props {
   repliesForm: FormsModel;
 }
 
 const FormReplies: React.FC<Props> = ({ repliesForm }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -31,40 +23,6 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
   });
 
   const { replies } = useAppSelector((state) => state.formsSlice.data);
-
-  //Placeholder replies
-  // const replies = [
-  //   {
-  //     _id: '1232342332352',
-  //     form: {},
-  //     data: { name: 'Nick', surname: 'Lamprou', age: 23 },
-  //     possibleSpam: false,
-  //   },
-  //   {
-  //     _id: '12323432233235',
-  //     form: {},
-  //     data: {
-  //       name: 'Nick',
-  //       surname: 'Charalampous',
-  //       age: 46,
-  //       image: 'image.jpg',
-  //       file: 'drivingLicense',
-  //     },
-  //     possibleSpam: true,
-  //   },
-  //   {
-  //     _id: '12323412233235',
-  //     form: {},
-  //     data: { name: 'Kostas', surname: 'Feggoulis', age: 26 },
-  //     possibleSpam: false,
-  //   },
-  //   {
-  //     _id: '12323423353235',
-  //     form: {},
-  //     data: { name: 'George', surname: 'Nikolaou', age: 42 },
-  //     possibleSpam: false,
-  //   },
-  // ];
 
   return (
     <Container>
@@ -102,8 +60,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
                     return (
                       <Grid key={value} item xs={12}>
                         <TextField
-                          sx={{ width: '100%' }}
-                          InputProps={{ classes: { disabled: classes.disabledInput } }}
+                          sx={{ width: '100%', '& .Mui-disabled': { color: 'secondary.main' } }}
                           disabled
                           color="primary"
                           id="outlined-disabled"

@@ -1,49 +1,42 @@
 import React, { FC } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import TextIcon from '@mui/icons-material/Title';
 import NumberIcon from '@mui/icons-material/Filter7';
 import DateIcon from '@mui/icons-material/DateRange';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import FieldIndicators from '../../FieldIndicators';
 import Grid from '@mui/material/Grid';
 import { ISimpleDataTypes } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
+import { CustomIcon } from './SimpleType';
 
 interface ISimpleIconProps {
   type: ISimpleDataTypes;
 }
 
 const SimpleIcon: FC<ISimpleIconProps> = ({ type }) => {
-  const classes = useStyles();
   switch (type) {
     case 'Text':
       return (
         <Tooltip title={'Text field'}>
-          <TextIcon className={classes.icon} />
+          <CustomIcon>
+            <TextIcon />
+          </CustomIcon>
         </Tooltip>
       );
     case 'Number':
       return (
         <Tooltip title={'Number field'}>
-          <NumberIcon className={classes.icon} />
+          <CustomIcon>
+            <NumberIcon />
+          </CustomIcon>
         </Tooltip>
       );
     case 'Date':
       return (
         <Tooltip title={'Date field'}>
-          <DateIcon className={classes.icon} />
+          <CustomIcon>
+            <DateIcon />
+          </CustomIcon>
         </Tooltip>
       );
     default:

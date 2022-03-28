@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import { Container, Grid, Theme, Divider, Button, Link, Icon, styled, Card } from '@mui/material';
+import { Container, Grid, Divider, Button, Link, Icon, styled, Card } from '@mui/material';
 
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
@@ -50,52 +50,51 @@ const Home = () => {
         <title>Conduit - App</title>
       </Head>
       <div>
-        <Container maxWidth="xl">
-          <Box
-            p={2}
-            display={'flex'}
-            justifyContent="flex-end"
-            alignItems={'flex-end'}
-            flex={1}
-            sx={{ marginBottom: '20px', gap: 10 }}>
+        <Box
+          p={2}
+          display={'flex'}
+          justifyContent="flex-end"
+          alignItems={'flex-end'}
+          flex={1}
+          sx={{ marginBottom: '20px', gap: 2 }}>
+          <Button
+            color="secondary"
+            variant="outlined"
+            startIcon={
+              <Icon sx={{ display: 'flex', alignContent: 'center' }}>
+                <Image src={Swagger} alt="swagger" />
+              </Icon>
+            }
+            onClick={() => setSwaggerModal(true)}>
+            SWAGGER
+          </Button>
+          <a
+            style={{ textDecoration: 'none' }}
+            href={`${process.env.CONDUIT_URL}/graphql`}
+            target="_blank"
+            rel="noreferrer">
             <Button
               color="secondary"
-              variant="outlined"
               startIcon={
                 <Icon sx={{ display: 'flex', alignContent: 'center' }}>
-                  <Image src={Swagger} alt="swagger" />
+                  <Image src={GraphQL} alt="swagger" />
                 </Icon>
               }
-              onClick={() => setSwaggerModal(true)}>
-              SWAGGER
+              variant="outlined">
+              GraphQL
             </Button>
-            <a
-              style={{ textDecoration: 'none' }}
-              href={`${process.env.CONDUIT_URL}/graphql`}
-              target="_blank"
-              rel="noreferrer">
-              <Button
-                color="secondary"
-                startIcon={
-                  <Icon sx={{ display: 'flex', alignContent: 'center' }}>
-                    <Image src={GraphQL} alt="swagger" />
-                  </Icon>
-                }
-                variant="outlined">
-                GraphQL
-              </Button>
-            </a>
-            <a
-              href="https://getconduit.dev/docs/"
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: 'none' }}>
-              <Button variant="contained" color="secondary" startIcon={<Description />}>
-                DOCUMENTATION
-              </Button>
-            </a>
-          </Box>
-        </Container>
+          </a>
+          <a
+            href="https://getconduit.dev/docs/"
+            target="_blank"
+            rel="noreferrer"
+            style={{ textDecoration: 'none' }}>
+            <Button variant="contained" color="secondary" startIcon={<Description />}>
+              DOCUMENTATION
+            </Button>
+          </a>
+        </Box>
+
         <Box p={2} display={'flex'} alignItems={'center'} flex={1} sx={{ marginBottom: '200px' }}>
           <Typography variant={'h4'} sx={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
             Welcome to C

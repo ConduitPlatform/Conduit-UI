@@ -1,4 +1,3 @@
-import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, memo, useEffect, useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,13 +9,6 @@ import { set, cloneDeep } from 'lodash';
 
 import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
 
-const useStyles = makeStyles((theme) => ({
-  paperRoot: {
-    height: '100%',
-    maxHeight: '70vh',
-  },
-}));
-
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -25,7 +17,6 @@ interface Props {
 }
 
 const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, schema }) => {
-  const classes = useStyles();
   const [fieldValues, setFieldValues] = useState<any>({});
 
   useEffect(() => {
@@ -40,7 +31,12 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
 
   return (
     <Dialog
-      classes={{ paper: classes.paperRoot }}
+      sx={{
+        '& .MuiDialog-paper': {
+          height: '100%',
+          maxHeight: '70vh',
+        },
+      }}
       fullWidth
       maxWidth="md"
       open={open}

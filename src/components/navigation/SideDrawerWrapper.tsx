@@ -1,28 +1,6 @@
 import React, { FC } from 'react';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { Box, DialogTitle, Drawer, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    close: {
-      zIndex: 10,
-      position: 'absolute',
-      right: 0,
-      top: 0,
-      padding: theme.spacing(0.5),
-      paddingBottom: theme.spacing(0),
-    },
-    paper: {
-      minWidth: (props: any) => props.minWidth,
-      maxWidth: (props: any) => props.maxWidth,
-      width: (props: any) => props.width,
-      padding: theme.spacing(3),
-    },
-  })
-);
 
 interface PropsDrawer {
   open: boolean;
@@ -41,8 +19,6 @@ const DrawerWrapper: FC<PropsDrawer> = ({
   title,
   children,
 }) => {
-  const classes = useStyles({ minWidth: minWidth, maxWidth: maxWidth, width: width });
-
   const toggleDrawer = (close: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
       event.type === 'keydown' &&
@@ -59,11 +35,24 @@ const DrawerWrapper: FC<PropsDrawer> = ({
       open={open}
       anchor={'right'}
       onClose={toggleDrawer(false)}
-      classes={{
-        paper: classes.paper,
+      sx={{
+        '& .MuiDrawer-paper': {
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          width: width,
+          padding: 3,
+        },
       }}
       transitionDuration={{ appear: 300, enter: 300, exit: 200 }}>
-      <Box className={classes.close}>
+      <Box
+        sx={{
+          zIndex: 10,
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          padding: 0.5,
+          paddingBottom: 0,
+        }}>
         <IconButton onClick={toggleDrawer(false)} sx={{ p: 1 }} size="large">
           <CloseIcon />
         </IconButton>

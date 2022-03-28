@@ -11,49 +11,8 @@ import {
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { useRouter } from 'next/router';
-import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
 import Link from 'next/link';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  boxType: {
-    backgroundColor: 'white',
-    height: 300,
-    width: 300,
-    padding: theme.spacing(5),
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  selectedType: {
-    backgroundColor: theme.palette.grey[100],
-  },
-  closeIcon: {
-    position: 'absolute',
-    top: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-  textField: {
-    width: '100%',
-    marginBottom: 16,
-  },
-  dialogTitle: {
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  anchor: {
-    textDecoration: 'none',
-  },
-  actions: {
-    justifyContent: 'center',
-  },
-}));
 
 interface Props {
   open: boolean;
@@ -61,7 +20,6 @@ interface Props {
 }
 
 const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [typeName, setTypeName] = useState('');
@@ -91,37 +49,35 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
   };
 
   return (
-    <Dialog
-      fullWidth={true}
-      maxWidth={'sm'}
-      open={open}
-      onClose={handleCloseClick}
-      classes={{ paper: classes.paper }}>
+    <Dialog fullWidth={true} maxWidth={'sm'} open={open} onClose={handleCloseClick}>
       <Box maxWidth={600}>
-        <DialogTitle id="new-custom-type" className={classes.dialogTitle}>
+        <DialogTitle id="new-custom-type" sx={{ textAlign: 'center', marginBottom: 4 }}>
           Create new Schema
         </DialogTitle>
         <DialogContent>
-          <TextField
-            className={classes.textField}
-            id="type-name"
-            label="Enter your type name"
-            variant="outlined"
-            value={typeName}
-            onChange={(event) => handleTypeName(event.target.value)}
-            onKeyPress={(event) => {
-              if (event.key === 'Enter' && typeName !== '') {
-                router.push(`schemas/${typeName}`);
-              }
-            }}
-          />
+          <Box display="flex" justifyContent="center">
+            <TextField
+              sx={{ width: '70%', mb: 4, mt: 2 }}
+              id="type-name"
+              label="Enter your Schema name"
+              variant="outlined"
+              value={typeName}
+              onChange={(event) => handleTypeName(event.target.value)}
+              onKeyPress={(event) => {
+                if (event.key === 'Enter' && typeName !== '') {
+                  router.push(`schemas/${typeName}`);
+                }
+              }}
+            />
+          </Box>
         </DialogContent>
-        <DialogActions className={classes.actions}>
+        <DialogActions sx={{ justifyContent: 'center' }}>
           <Link href={`schemas/${typeName}`}>
-            <a className={classes.anchor}>
+            <a style={{ textDecoration: 'none' }}>
               <Button
                 onClick={handleAddType}
                 color="primary"
+                sx={{ mb: 3 }}
                 variant="contained"
                 disabled={typeName === ''}>
                 Create new Schema
@@ -130,7 +86,7 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
           </Link>
         </DialogActions>
       </Box>
-      <Button onClick={handleCloseClick} className={classes.closeIcon}>
+      <Button onClick={handleCloseClick} sx={{ position: 'absolute', top: 8, right: 2 }}>
         <CloseIcon />
       </Button>
     </Dialog>

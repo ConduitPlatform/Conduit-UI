@@ -20,7 +20,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ClientPlatformEnum from '../../models/ClientPlatformEnum';
 import Button from '@mui/material/Button';
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { useDispatch } from 'react-redux';
 import { IClient, IPlatformTypes } from '../../models/settings/SettingsModels';
 import {
@@ -30,14 +29,7 @@ import {
 } from '../../redux/slices/settingsSlice';
 import { useAppSelector } from '../../redux/store';
 
-const useStyles = makeStyles({
-  table: {
-    maxWidth: 650,
-  },
-});
-
 const SecretsTab: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const [platform, setPlatform] = useState<IPlatformTypes>('WEB');
@@ -74,7 +66,7 @@ const SecretsTab: React.FC = () => {
         </Grid>
         <Grid item xs={8}>
           <TableContainer>
-            <Table className={classes.table}>
+            <Table sx={{ maxWidth: 650 }}>
               <TableHead>
                 <TableRow>
                   <TableCell>Client ID</TableCell>

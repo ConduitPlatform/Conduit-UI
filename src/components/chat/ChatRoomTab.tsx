@@ -4,7 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import useLongPress from '../../hooks/useLongPress';
-import { Skeleton } from '@mui/material';
+import { Box, Skeleton } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,10 +13,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     cursor: 'pointer',
     padding: theme.spacing(1),
-  },
-  skeletonContentContainer: {
-    backgroundColor: theme.palette.grey[700],
-    width: '100%',
   },
 }));
 
@@ -37,24 +33,31 @@ const ChatRoomTab: FC<Props> = ({ data, className, onPress, onLongPress, ...rest
   const longPressEvent = useLongPress(onLongPress, onPress, defaultOptions);
 
   return (
-    <div className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
+    <Box className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
       <Typography variant="body2">{data?.name}</Typography>
-    </div>
+    </Box>
   );
 };
 
 export default ChatRoomTab;
 
 export const ChatRoomTabSkeleton: FC = ({ ...rest }) => {
-  const classes = useStyles();
   return (
-    <div className={classes.root} {...rest}>
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        padding: 1,
+      }}
+      {...rest}>
       <Skeleton
         animation="wave"
         variant="rectangular"
         height={32}
-        className={classes.skeletonContentContainer}
+        sx={{ backgroundColor: 'grey.700', width: '100%' }}
       />
-    </div>
+    </Box>
   );
 };

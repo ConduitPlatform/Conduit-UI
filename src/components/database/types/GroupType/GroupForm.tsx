@@ -3,31 +3,12 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Checkbox from '@mui/material/Checkbox';
 import { IDrawerData, IGroupData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
-}));
+import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {
   drawerData: IDrawerData;
@@ -47,8 +28,6 @@ const GroupForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const [groupData, setGroupData] = useState({
     name: selectedItem ? selectedItem.name : '',
     content: selectedItem ? selectedItem.content : [],
@@ -86,14 +65,14 @@ const GroupForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={groupData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         InputProps={{
@@ -126,9 +105,7 @@ const GroupForm: FC<IProps> = ({
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant={'body2'} className={classes.info}>
-            If active, this field will be required
-          </Typography>
+          <InfoTypography variant={'body2'}>If active, this field will be required</InfoTypography>
         </Grid>
       </Grid>
 
@@ -151,9 +128,9 @@ const GroupForm: FC<IProps> = ({
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant={'body2'} className={classes.info}>
+          <InfoTypography variant={'body2'}>
             This option defines if the field should be returned from the database
-          </Typography>
+          </InfoTypography>
         </Grid>
       </Grid>
 
@@ -180,9 +157,9 @@ const GroupForm: FC<IProps> = ({
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant={'body2'} className={classes.info}>
+          <InfoTypography variant={'body2'}>
             Activate this option if you want your field to be of type Array
-          </Typography>
+          </InfoTypography>
         </Grid>
       </Grid>
 
@@ -194,7 +171,7 @@ const GroupForm: FC<IProps> = ({
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 

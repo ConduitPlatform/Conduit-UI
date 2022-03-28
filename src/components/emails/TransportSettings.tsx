@@ -1,17 +1,10 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import { IEmailConfig } from '../../models/emails/EmailModels';
 import { useWatch } from 'react-hook-form';
 import { Control } from 'react-hook-form/dist/types';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-
-const useStyles = makeStyles((theme) => ({
-  input: {
-    marginBottom: theme.spacing(1),
-  },
-}));
 
 interface Props {
   data: IEmailConfig;
@@ -20,8 +13,6 @@ interface Props {
 }
 
 const TransportSettings: React.FC<Props> = ({ data, control, disabled }) => {
-  const classes = useStyles();
-
   const transportProvider = useWatch({
     control,
     name: 'transport',
@@ -40,7 +31,7 @@ const TransportSettings: React.FC<Props> = ({ data, control, disabled }) => {
                   label={childField}
                   textFieldProps={{
                     fullWidth: false,
-                    className: classes.input,
+                    sx: { mb: 1 },
                   }}
                   disabled={disabled}
                   key={childField}
@@ -54,7 +45,7 @@ const TransportSettings: React.FC<Props> = ({ data, control, disabled }) => {
               label={field}
               textFieldProps={{
                 fullWidth: false,
-                className: classes.input,
+                sx: { mb: 1 },
               }}
               disabled={disabled}
               key={field}

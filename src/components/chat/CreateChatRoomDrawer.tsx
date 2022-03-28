@@ -105,11 +105,11 @@ const CreateChatRoomDrawer: FC<Props> = ({ open, handleCreateChatRoom, closeDraw
               removeSelectedElement={removeSelectedUser}
               buttonText={'Add participants'}
               header={'Selected participants'}
-              className={classes.selectedElements}
+              style={{ margin: 2 }}
             />
           </Grid>
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item sx={{ mr: 2 }}>
               <Button variant="outlined" onClick={() => handleCancel()}>
                 Cancel
               </Button>

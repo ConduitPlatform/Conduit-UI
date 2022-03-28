@@ -4,30 +4,10 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import makeStyles from '@mui/styles/makeStyles';
 import { Box, ListItem, ListItemText, Typography } from '@mui/material';
 import { Skeleton } from '@mui/material';
 import { asyncAddSchemas, asyncGetSchemas } from '../../../redux/slices/databaseSlice';
 import { Schema } from '../../../models/database/CmsModels';
-
-const useStyles = makeStyles((theme) => ({
-  listItem: {
-    '&.MuiListItem-root:hover': {
-      background: theme.palette.grey[600],
-      borderRadius: '4px',
-    },
-    '&.Mui-selected': {
-      background: theme.palette.grey[700],
-      borderRadius: '4px',
-      color: '#ffffff',
-    },
-    '&.Mui-selected:hover': {
-      background: theme.palette.grey[800],
-      borderRadius: '4px',
-      color: '#ffffff',
-    },
-  },
-}));
 
 const timeoutAmount = 750;
 
@@ -47,7 +27,6 @@ const SchemasList: FC<Props> = ({
   actualSchema,
 }) => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
 
   const infiniteLoaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
@@ -108,7 +87,22 @@ const SchemasList: FC<Props> = ({
           <ListItem
             button
             key={`endpoint-${schema._id}`}
-            className={classes.listItem}
+            sx={{
+              '&.MuiListItem-root:hover': {
+                background: 'grey.600',
+                borderRadius: '4px',
+              },
+              '&.Mui-selected': {
+                background: 'grey.700',
+                borderRadius: '4px',
+                color: '#ffffff',
+              },
+              '&.Mui-selected:hover': {
+                background: 'grey.800',
+                borderRadius: '4px',
+                color: '#ffffff',
+              },
+            }}
             onClick={() => handleListItemSelect(schema.name)}
             selected={actualSchema?._id === schema?._id}>
             <ListItemText primary={schema.name} />

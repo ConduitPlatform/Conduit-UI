@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Accordion from '@mui/material/Accordion';
-import makeStyles from '@mui/styles/makeStyles';
 import { Button, InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import {
@@ -19,18 +17,6 @@ import {
 } from '../../models/authentication/AuthModels';
 import { extractProviderIcon, extractProviderName } from '../../utils/extractProviderUtils';
 import Image from 'next/image';
-
-const useStyles = makeStyles((theme) => ({
-  typography: {
-    flex: 1,
-  },
-  statusEnabled: {
-    color: theme.palette.secondary.main,
-  },
-  statusDisabled: {
-    color: theme.palette.primary.main,
-  },
-}));
 
 interface Props {
   name: SocialNameTypes;
@@ -47,8 +33,6 @@ const ReusableAccordion: React.FC<Props> = ({
   configData,
   accProps,
 }) => {
-  const classes = useStyles();
-
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleCancel = () => {
@@ -113,10 +97,10 @@ const ReusableAccordion: React.FC<Props> = ({
 
           <Typography
             variant={'subtitle2'}
-            className={
+            sx={
               accProps.enabled
-                ? clsx(classes.typography, classes.statusEnabled)
-                : clsx(classes.typography, classes.statusDisabled)
+                ? { flex: 1, color: 'secondary.main' }
+                : { flex: 1, color: 'primary.main' }
             }>
             {accProps.enabled ? 'Enabled' : 'Disabled'}
           </Typography>

@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Box, Typography, Button, Input, Checkbox } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../redux/slices/databaseSlice';
@@ -12,68 +10,6 @@ import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsMod
 import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;
-
-const useStyles = makeStyles((theme) => ({
-  header: {
-    zIndex: 9998,
-    height: headerHeight,
-    backgroundColor: theme.palette.background.paper,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    left: 0,
-  },
-  input: {
-    height: theme.spacing(5),
-    padding: theme.spacing(1),
-    marginRight: theme.spacing(3),
-    '&:hover': {
-      border: '1px solid',
-      borderColor: 'rgba(255,255,255,0.5)',
-    },
-    borderBottom: '1px solid rgba(255,255,255,0.5)',
-  },
-  checkbox: {
-    color: '#FFFFFF',
-    '&.Mui-checked': {
-      color: '#FFFFFF',
-    },
-  },
-  backIconContainer: {
-    height: theme.spacing(8),
-    width: theme.spacing(8),
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: theme.spacing(3),
-    cursor: 'pointer',
-  },
-  backIcon: {
-    height: theme.spacing(5),
-    width: theme.spacing(5),
-  },
-  selectMenu: {
-    backgroundColor: theme.palette.primary.main,
-  },
-  saveButton: {
-    margin: theme.spacing(0, 2),
-  },
-  saveIcon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-  },
-  colorWhite: {
-    color: theme.palette.common.white,
-  },
-  saveBox: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
 
 interface Props {
   name: string;
@@ -95,7 +31,6 @@ const Header: FC<Props> = ({
   handleSave,
   ...rest
 }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const [schemaName, setSchemaName] = useState(name);
@@ -146,21 +81,55 @@ const Header: FC<Props> = ({
   };
 
   return (
-    <Box boxShadow={3} className={clsx(classes.header, classes.colorWhite)} {...rest}>
+    <Box
+      boxShadow={3}
+      sx={{
+        zIndex: 9998,
+        height: headerHeight,
+        backgroundColor: 'background.paper',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        left: 0,
+        color: 'common.white',
+      }}
+      {...rest}>
       <Box display={'flex'} alignItems={'center'}>
         <Link href="/database/schemas">
           {/* TODO call dispatch clear cms */}
           <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
-            <Box className={classes.backIconContainer}>
+            <Box
+              sx={{
+                height: 80,
+                width: 80,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginRight: 3,
+                cursor: 'pointer',
+              }}>
               <ArrowBackIcon
                 onClick={() => clearSelectedSchema}
-                className={clsx(classes.backIcon, classes.colorWhite)}
+                sx={{ height: 30, width: 30, color: 'common.white' }}
               />
             </Box>
           </a>
         </Link>
         <Input
-          className={clsx(classes.input, classes.colorWhite)}
+          sx={{
+            height: 5,
+            padding: 1,
+            marginRight: 3,
+            '&:hover': {
+              border: '1px solid',
+              borderColor: 'rgba(255,255,255,0.5)',
+            },
+            borderBottom: '1px solid rgba(255,255,255,0.5)',
+            color: 'common.white',
+          }}
           id="data-name"
           placeholder={'Schema name'}
           onChange={(event) => handleDataName(event.target.value)}
@@ -172,7 +141,12 @@ const Header: FC<Props> = ({
           control={
             <Checkbox
               size="small"
-              className={classes.checkbox}
+              sx={{
+                color: '#FFFFFF',
+                '&.Mui-checked': {
+                  color: '#FFFFFF',
+                },
+              }}
               checked={schemaAuthentication}
               disabled={isDisabled()}
               onChange={(event) => {
@@ -187,7 +161,12 @@ const Header: FC<Props> = ({
           control={
             <Checkbox
               size="small"
-              className={classes.checkbox}
+              sx={{
+                color: '#FFFFFF',
+                '&.Mui-checked': {
+                  color: '#FFFFFF',
+                },
+              }}
               checked={schemaCrudOperations}
               disabled={isDisabled()}
               onChange={(event) => {
@@ -202,11 +181,9 @@ const Header: FC<Props> = ({
           Permissions
         </Button>
       </Box>
-      <Box className={classes.saveBox}>
-        <Button
-          className={clsx(classes.saveButton, classes.colorWhite)}
-          onClick={() => handleData()}>
-          <SaveIcon className={classes.saveIcon} />
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Button sx={{ margin: 2, color: 'common.white' }} onClick={() => handleData()}>
+          <SaveIcon />
           <Typography>Save</Typography>
         </Button>
       </Box>

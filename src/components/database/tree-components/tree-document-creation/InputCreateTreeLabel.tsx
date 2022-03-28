@@ -8,26 +8,10 @@ import { DeleteForeverRounded } from '@mui/icons-material';
 import RelationSelectInput from './RelationSelectInput';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0.25, 0),
-    minHeight: 28,
-  },
-  bold: {
-    marginRight: theme.spacing(1),
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap',
-  },
-  textInput: {
-    fontSize: '14px',
-  },
   textInputProps: {
     padding: theme.spacing(0.25, 0),
   },
-  asterisk: {
-    marginRight: theme.spacing(0.25),
-  },
+
   muiSelect: {
     padding: 0,
     '& .MuiSelect-outlined': {
@@ -123,7 +107,7 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({
       default:
         return (
           <Input
-            className={classes.textInput}
+            sx={{ fontSize: '14px' }}
             autoComplete="new-password"
             value={value}
             onChange={(event) => onChange(event.target.value)}
@@ -153,14 +137,20 @@ const InputCreateTreeLabel: FC<InputCreateTreeLabelProps> = ({
   };
 
   return (
-    <Box className={classes.root}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: 0.25,
+        minHeight: 28,
+      }}>
       {required && (
-        <Typography component="span" variant="body2" className={classes.asterisk}>
+        <Typography component="span" variant="body2" sx={{ mr: 0.25 }}>
           {'*'}
         </Typography>
       )}
       {isArrayElement && handleArrayFunctions()}
-      <Typography component="span" className={classes.bold}>
+      <Typography component="span" sx={{ mr: 1, fontWeight: 'bold', whiteSpace: 'nowrap' }}>
         {schemaDoc.name}
         {schemaDoc.data.type === 'Relation' && `( ${schemaDoc.data.model} )`}:
       </Typography>

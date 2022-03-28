@@ -6,15 +6,12 @@ import { useAppDispatch } from '../../../redux/store';
 import { Schema } from '../../../models/database/CmsModels';
 import { asyncEditSchemaDocument } from '../../../redux/slices/databaseSlice';
 import { enqueueErrorNotification } from '../../../utils/useNotifier';
-import makeStyles from '@mui/styles/makeStyles';
-import { Box } from '@mui/material';
+import { Box, styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  actionContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    zIndex: 1,
-  },
+const StyledDocActions = styled(DocumentActions)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
 }));
 
 interface Props {
@@ -25,7 +22,6 @@ interface Props {
 }
 
 const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete }) => {
-  const classes = useStyles();
   const [edit, setEdit] = useState<boolean>(false);
   const [documentState, setDocumentState] = useState<any>(documents);
   const dispatch = useAppDispatch();
@@ -84,12 +80,7 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
           display: 'flex',
           justifyContent: 'flex-end',
         }}>
-        <DocumentActions
-          className={classes.actionContainer}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          edit={edit}
-        />
+        <StyledDocActions onEdit={onEdit} onDelete={onDelete} edit={edit} />
       </Box>
       <JSONInput
         id={documents._id}

@@ -7,8 +7,6 @@ import { EmailTemplateType } from '../../models/emails/EmailModels';
 import Image from 'next/dist/client/image';
 import EmailImage from '../../assets/email.svg';
 import { Button, Paper } from '@mui/material';
-import sharedClasses from '../common/sharedClasses';
-
 import TemplateForm from './TemplateForm';
 
 interface Props {
@@ -30,8 +28,6 @@ const TabPanel: React.FC<Props> = ({
   create,
   setCreate,
 }) => {
-  const classes = sharedClasses();
-
   const handleSaveClick = (data: EmailTemplateType) => {
     if (create) {
       handleCreate(data);
@@ -45,7 +41,13 @@ const TabPanel: React.FC<Props> = ({
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
+        <Paper
+          elevation={0}
+          sx={{
+            padding: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
           <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
               <TemplateForm preloadedValues={template} handleSubmitData={handleSaveClick} />

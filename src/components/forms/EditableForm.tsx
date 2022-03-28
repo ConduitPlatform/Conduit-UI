@@ -161,7 +161,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                     />
                   </Grid>
                   <Grid item xs={5} className={classes.fields}>
-                    <FormControl className={classes.formFields}>
+                    <FormControl sx={{ minWidth: 200 }}>
                       <Select
                         variant="outlined"
                         value={inputField.type}
@@ -211,7 +211,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             </Grid>
           </Grid>
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item sx={{ mr: 2 }}>
               <Button variant="outlined" onClick={() => onCancel()}>
                 Cancel
               </Button>

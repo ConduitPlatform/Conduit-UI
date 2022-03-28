@@ -7,35 +7,12 @@ import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import makeStyles from '@mui/styles/makeStyles';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { FC, useState } from 'react';
 import { IDrawerData, IEnumData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {
   drawerData: IDrawerData;
@@ -55,8 +32,6 @@ const EnumForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const [simpleData, setSimpleData] = useState({
     name: selectedItem ? selectedItem.name : '',
     type: selectedItem ? selectedItem.type : drawerData.type,
@@ -92,21 +67,21 @@ const EnumForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={simpleData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         inputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
         helperText={'It will appear in the entry editor'}
       />
-      <FormControl className={classes.formControl} variant={'outlined'} fullWidth required>
+      <FormControl sx={{ margin: 1, minWidth: 120 }} variant={'outlined'} fullWidth required>
         <InputLabel id="field-type">Type</InputLabel>
         <Select
           labelId="field-type"
@@ -130,7 +105,7 @@ const EnumForm: FC<IProps> = ({
         onChange={handleOptions}
         value={simpleData.enumValues}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         helperText={'(Define one option per line)'}
@@ -161,9 +136,9 @@ const EnumForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               If active, this field will be required
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -190,9 +165,9 @@ const EnumForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               This option defines if the field should be returned from the database
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
       </Box>
@@ -205,7 +180,7 @@ const EnumForm: FC<IProps> = ({
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 

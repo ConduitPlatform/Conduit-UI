@@ -9,27 +9,25 @@ import makeStyles from '@mui/styles/makeStyles';
 import memoize from 'memoize-one';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import ChatRoomTab, { ChatRoomTabSkeleton } from './ChatRoomTab';
-import { Typography } from '@mui/material';
+import { styled, Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   tabSelected: {
     backgroundColor: `${theme.palette.grey[700]}80`,
   },
-  noScrollbars: {
-    scrollbarWidth: 'thin',
-    scrollbarColor: 'transparent transparent',
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: 'transparent',
-    },
+}));
+
+const CustomizedList = styled(List)(() => ({
+  scrollbarWidth: 'thin',
+  scrollbarColor: 'transparent transparent',
+  '&::-webkit-scrollbar': {
+    display: 'none',
   },
-  placeholder: {
-    whiteSpace: 'nowrap',
+  '&::-webkit-scrollbar-track': {
+    background: 'transparent',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: 'transparent',
   },
 }));
 
@@ -133,7 +131,7 @@ const ChatRoomTabs: FC<Props> = ({
       {({ height, width }) => {
         if (!chatRoomCount) {
           if (areEmpty)
-            return <Typography className={classes.placeholder}>No available Rooms</Typography>;
+            return <Typography sx={{ whiteSpace: 'nowrap' }}>No available Rooms</Typography>;
           return <></>;
         }
         return (
@@ -145,17 +143,16 @@ const ChatRoomTabs: FC<Props> = ({
             threshold={4}>
             {({ onItemsRendered, ref }) => {
               return (
-                <List
+                <CustomizedList
                   height={height}
                   itemCount={chatRoomCount}
                   itemSize={56}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
                   itemData={itemData}
-                  className={classes.noScrollbars}
                   width={width}>
                   {Row}
-                </List>
+                </CustomizedList>
               );
             }}
           </InfiniteLoader>

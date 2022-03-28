@@ -8,7 +8,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import sharedClasses from '../common/sharedClasses';
 
 interface Props {
   open: boolean;
@@ -26,7 +25,6 @@ interface FormData {
 }
 
 const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddFile, path }) => {
-  const classes = sharedClasses();
   const [fileName, setFileName] = useState('');
   const [fileData, setFileData] = useState<{ data: string; mimeType: string }>({
     data: '',
@@ -113,7 +111,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
               <FormInputSwitch name="isPublic" />
             </Grid>
             <Grid container item>
-              <Grid item className={classes.marginRight}>
+              <Grid item sx={{ mr: 2 }}>
                 <Button variant="outlined" onClick={() => handleCancel()}>
                   Cancel
                 </Button>

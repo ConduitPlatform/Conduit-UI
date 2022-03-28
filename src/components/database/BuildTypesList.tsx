@@ -1,7 +1,5 @@
 import React, { FC } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import Box from '@mui/material/Box';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import Card from '@mui/material/Card';
@@ -13,25 +11,6 @@ import SelectIcon from '@mui/icons-material/FormatListBulleted';
 import BooleanIcon from '@mui/icons-material/ToggleOn';
 import DateIcon from '@mui/icons-material/DateRange';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
-
-const useStyles = makeStyles((theme) => ({
-  item: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    userSelect: 'none',
-  },
-  itemClone: {
-    '&~div': {
-      transform: 'none !important',
-    },
-  },
-  icon: {
-    marginRight: theme.spacing(1),
-  },
-}));
 
 interface Props {
   item: any; //todo fix this
@@ -47,8 +26,6 @@ interface Props {
 }
 
 const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
-  const classes = useStyles();
-
   const handleIcon = (
     item: 'Text' | 'Number' | 'Date' | 'Boolean' | 'Enum' | 'ObjectId' | 'Group' | 'Relation'
   ) => {
@@ -93,14 +70,34 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
       {(provided, snapshot) => (
         <>
           <Card
-            className={classes.item}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: 2,
+              marginBottom: 2,
+              userSelect: 'none',
+            }}
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}>
             {handleItem(item)}
           </Card>
           {snapshot.isDragging && (
-            <Card className={clsx(classes.item, classes.itemClone)}>{handleItem(item)}</Card>
+            <Card
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 2,
+                marginBottom: 2,
+                userSelect: 'none',
+                '&~div': {
+                  transform: 'none !important',
+                },
+              }}>
+              {handleItem(item)}
+            </Card>
           )}
         </>
       )}

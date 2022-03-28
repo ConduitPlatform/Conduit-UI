@@ -4,12 +4,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Paginator from '../../common/Paginator';
 import { BoxProps } from '@mui/material/Box/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Search, Refresh, AccountTree } from '@mui/icons-material';
 import useParseQuery from './useParseQuery';
 import { styled, Typography } from '@mui/material';
-import clsx from 'clsx';
 
 const ObjText = '{ }';
 
@@ -23,16 +21,6 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(2),
   marginLeft: theme.spacing(1),
-}));
-
-const useStyles = makeStyles((theme) => ({
-  objText: {
-    whiteSpace: 'nowrap',
-    fontSize: 14,
-  },
-  selected: {
-    color: theme.palette.primary.main,
-  },
 }));
 
 interface Filters {
@@ -67,8 +55,6 @@ const SchemaDataHeader: FC<Props> = ({
   setObjectView,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const isValidSearch = useParseQuery(search, 0);
 
   const isSearchError = () => {
@@ -153,7 +139,11 @@ const SchemaDataHeader: FC<Props> = ({
         </ButtonContainer>
         <ButtonContainer onClick={() => setObjectView(true)}>
           <Typography
-            className={objectView ? clsx(classes.objText, classes.selected) : classes.objText}>
+            sx={
+              objectView
+                ? { whiteSpace: 'nowrap', fontSize: 14, color: 'primary.main' }
+                : { whiteSpace: 'nowrap', fontSize: 14 }
+            }>
             {ObjText}
           </Typography>
         </ButtonContainer>

@@ -8,32 +8,12 @@ import {
   Container,
   Grid,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
 import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
 import { DoneOutline } from '@mui/icons-material';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  textField: {
-    textAlign: 'center',
-  },
-  customizedButton: {
-    position: 'absolute',
-    left: '92%',
-    top: '1%',
-    color: 'gray',
-  },
-}));
 
 interface Props {
   permissions: Permissions;
@@ -56,8 +36,6 @@ const PermissionsDialog: React.FC<Props> = ({
   selectedSchema,
   setPermissions,
 }) => {
-  const classes = useStyles();
-
   const methods = useForm<Permissions>({
     defaultValues: useMemo(() => {
       return permissions;
@@ -90,12 +68,23 @@ const PermissionsDialog: React.FC<Props> = ({
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
         Permissions
-        <IconButton onClick={handleCloseDialog} className={classes.customizedButton} size="large">
+        <IconButton
+          onClick={handleCloseDialog}
+          sx={{ position: 'absolute', left: '92%', top: '1%', color: 'gray' }}
+          size="large">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Container className={classes.root} maxWidth="sm">
+        <Container
+          sx={{
+            flexGrow: 6,
+            alignItems: 'center',
+            justifyContent: 'center',
+            justifyItems: 'center',
+            justifySelf: 'center',
+          }}
+          maxWidth="sm">
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container alignItems="center" spacing={2}>
