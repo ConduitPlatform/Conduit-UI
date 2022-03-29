@@ -11,6 +11,12 @@ export interface IStorageConfig {
     serviceAccountKeyPath: string;
     bucketName: string;
   };
+  aws: {
+    region: string;
+    accessKeyId: string;
+    secretAccessKey: string;
+    accountId: string;
+  };
   local: {
     storagePath: string;
   };

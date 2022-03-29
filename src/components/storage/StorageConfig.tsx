@@ -56,6 +56,7 @@ const StorageConfig: React.FC = () => {
     { label: 'Azure', value: 'azure' },
     { label: 'Google', value: 'google' },
     { label: 'Local', value: 'local' },
+    { label: 'Aws S3', value: 'aws' },
   ];
 
   return (
@@ -116,6 +117,34 @@ const StorageConfig: React.FC = () => {
                             <FormInputText
                               name="google.bucketName"
                               label="Bucket Name"
+                              disabled={!edit}
+                            />
+                          </Grid>
+                        </>
+                      )}
+                      {watchProvider === 'aws' && (
+                        <>
+                          <Grid item xs={6}>
+                            <FormInputText name="aws.region" label="Region" disabled={!edit} />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <FormInputText
+                              name="google.secretAccessKey"
+                              label="Secret Access Key"
+                              disabled={!edit}
+                            />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <FormInputText
+                              name="google.accessKeyId"
+                              label="Access Key Id"
+                              disabled={!edit}
+                            />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <FormInputText
+                              name="google.accountId"
+                              label="Account Id"
                               disabled={!edit}
                             />
                           </Grid>
