@@ -219,7 +219,7 @@ const EndpointQueries: FC<Props> = ({
   });
 
   const CustomTreeItem = (props: TreeItemProps) => (
-    <TreeItem ContentComponent={CustomContent} {...props} />
+    <TreeItem sx={{ p: 0.2 }} ContentComponent={CustomContent} {...props} />
   );
 
   const renderItem = (node: any) => {
@@ -281,7 +281,7 @@ const EndpointQueries: FC<Props> = ({
     <Box padding={2} width={'100%'}>
       <TreeView
         expanded={expanded}
-        sx={{ height: 240, flexGrow: 1, overflowY: 'auto', zIndex: 1000 }}
+        sx={{ flexGrow: 1, overflowY: 'auto', padding: 0.1 }}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}
