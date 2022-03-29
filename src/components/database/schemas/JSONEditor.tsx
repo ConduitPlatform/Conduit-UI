@@ -75,12 +75,12 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
       }}>
       <Box
         sx={{
-          marginTop: 1,
+          mb: 2,
           height: '20px',
           display: 'flex',
           justifyContent: 'flex-end',
         }}>
-        <StyledDocActions onEdit={onEdit} onDelete={onDelete} edit={edit} />
+        <StyledDocActions sx={{ mb: 2 }} onEdit={onEdit} onDelete={onDelete} edit={edit} />
       </Box>
       <JSONInput
         id={documents._id}

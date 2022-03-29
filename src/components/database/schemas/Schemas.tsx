@@ -73,7 +73,7 @@ const Schemas: FC = () => {
   const [filters, setFilters] = useState<Filters>({
     page: 0,
     skip: 0,
-    limit: 10,
+    limit: 25,
   });
   const [search, setSearch] = useState<string>('');
   const [objectView, setObjectView] = useState<boolean>(false);
@@ -280,7 +280,7 @@ const Schemas: FC = () => {
           backgroundColor: 'rgba(0,0,0,0.05)',
           display: 'flex',
         }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 3 }}>
           <Box>
             <Grid sx={{ minWidth: '300px' }} spacing={1} container>
               <Grid item xs={12}>

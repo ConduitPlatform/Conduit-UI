@@ -13,14 +13,16 @@ interface IProps {
 const BooleanTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <>
-      <Grid item container alignItems="center" justifyContent="center" xs={1}>
-        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.placeholderFalse}
-        </Typography>
-        <Switch disabled checked={item.default} value="Boolean" />
-        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.placeholderTrue}
-        </Typography>
+      <Grid item container xs={1}>
+        <Box display="flex" justifyContent="flex-start" alignItems="center">
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderFalse}
+          </Typography>
+          <Switch disabled sx={{ ml: -1 }} checked={item.default} value="Boolean" />
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderTrue}
+          </Typography>
+        </Box>
       </Grid>
       <Grid item container justifyContent="flex-end" xs={5}>
         <Grid item xs={6}>
@@ -38,14 +40,16 @@ export default BooleanTypeViewer;
 export const BooleanGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <>
-      <Grid item container justifyContent="center" alignItems="center" xs={1}>
-        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.placeholderFalse}
-        </Typography>
-        <Switch disabled checked={item.default} value="Boolean" />
-        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.placeholderTrue}
-        </Typography>
+      <Grid item container xs={1}>
+        <Box display="flex" justifyContent="flex-start" alignItems="center">
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderFalse}
+          </Typography>
+          <Switch disabled checked={item.default} sx={{ ml: -1 }} value="Boolean" />
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderTrue}
+          </Typography>
+        </Box>
       </Grid>
       <Grid item container justifyContent="flex-end" xs={5}>
         <Grid item xs={6}>

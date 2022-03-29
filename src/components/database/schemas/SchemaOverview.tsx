@@ -63,7 +63,8 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
             setSelectedSchemaForAction({ data: schema, action: 'delete' });
             setOpenDialog(true);
           }}
-          variant="outlined">
+          variant="outlined"
+          color="error">
           Delete
         </Button>
       );
@@ -75,7 +76,8 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           setSelectedSchemaForAction({ data: schema, action: 'delete' });
           setOpenDialog(true);
         }}
-        variant="outlined">
+        variant="outlined"
+        color="error">
         Delete
       </Button>;
     return (
@@ -85,6 +87,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           setOpenDialog(true);
         }}
         disabled={schema.ownerModule !== 'database'}
+        color="warning"
         variant="outlined">
         Archive
       </Button>
@@ -120,7 +123,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
 
   return (
     <>
-      <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={1}>
+      <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
         <Button
           onClick={() => setInfoDrawer(true)}
           variant="outlined"
@@ -130,12 +133,11 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
         <Button variant="outlined" color="primary" onClick={() => goToSchemaEndpoints(schema.name)}>
           Custom Endpoints
         </Button>
-
         {extractButtonsLeft()}
         {extractButtonsRight()}
       </Box>
       <Grid container spacing={3}>
-        <Grid item xs={12} sx={{ padding: '20px', marginTop: 2 }}>
+        <Grid item xs={12} sx={{ padding: '20px', mt: 2 }}>
           <Box
             height="65vh"
             sx={{

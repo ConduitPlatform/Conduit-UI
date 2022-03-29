@@ -314,10 +314,10 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
           borderTopRightRadius: 4,
         }}
         boxShadow={2}>
-        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 24 }}>
+        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 2 }}>
           Provider
         </Typography>
-        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 24 }}>
+        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 2 }}>
           Status
         </Typography>
       </Box>
