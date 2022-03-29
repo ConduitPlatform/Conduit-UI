@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import ArrowDropDownRounded from '@mui/icons-material/ArrowDropDownRounded';
 
 const primary = '#5B44F2';
 const secondary = '#07D9C4';
@@ -49,8 +50,16 @@ const theme = createTheme({
       },
     },
     MuiSelect: {
+      defaultProps: {
+        IconComponent: ArrowDropDownRounded,
+      },
       styleOverrides: {
-        root: { borderRadius: 10 },
+        outlined: {
+          borderRadius: 4,
+        },
+        iconFilled: {
+          top: 'calc(50% - .25em)',
+        },
       },
     },
     MuiSwitch: {

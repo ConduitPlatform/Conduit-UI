@@ -158,6 +158,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
           <FormControl size="small" fullWidth variant="outlined" className={classes.formControl}>
             <InputLabel>Operation</InputLabel>
             <Select
+              sx={{ borderRadius: 2 }}
               label="Provider"
               value={filters.operation}
               onChange={(event) => {
@@ -180,6 +181,7 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
               Schema
             </InputLabel>
             <Select
+              sx={{ borderRadius: 2 }}
               labelId="multiple-select-label"
               id="filters"
               multiple

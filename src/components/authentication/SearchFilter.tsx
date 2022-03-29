@@ -40,6 +40,7 @@ const SearchFilter: React.FC<Props> = ({ search, setSearch, filter, handleFilter
           <Select
             label="Provider"
             value={filter}
+            sx={{ borderRadius: 2 }}
             onChange={(event) => handleFilterChange(event.target.value)}>
             <MenuItem value="">
               <em>All</em>

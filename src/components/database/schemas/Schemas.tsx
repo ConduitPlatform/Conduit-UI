@@ -282,11 +282,12 @@ const Schemas: FC = () => {
         }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 4 }}>
           <Box>
-            <Grid sx={{ width: '300px' }} spacing={1} container>
+            <Grid sx={{ minWidth: '300px' }} spacing={1} container>
               <Grid item xs={12}>
                 <TextField
                   size="small"
                   variant="outlined"
+                  fullWidth
                   name="Search"
                   value={schemaSearch}
                   onChange={(e) => setSchemaSearch(e.target.value)}
@@ -300,8 +301,8 @@ const Schemas: FC = () => {
                   }}
                 />
               </Grid>
-              <Grid container item sx={{ pb: '10px' }}>
-                <Grid item xs={4}>
+              <Grid container item spacing={2} sx={{ pb: '10px' }}>
+                <Grid item xs={3}>
                   <Box display="flex">
                     <ToggleButtonGroup
                       size="small"
@@ -322,7 +323,7 @@ const Schemas: FC = () => {
                   </Box>
                 </Grid>
                 {enabled && (
-                  <Grid item xs={8}>
+                  <Grid item xs={9}>
                     <FormControl size="small" variant="outlined" fullWidth>
                       <InputLabel
                         ref={labelRef}
@@ -334,6 +335,7 @@ const Schemas: FC = () => {
                       <Select
                         labelId="multiple-select-label"
                         id="filters"
+                        sx={{ borderRadius: 2 }}
                         multiple
                         value={owners}
                         onChange={handleFilterChange}
