@@ -68,12 +68,13 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
       <Paper
         sx={{
           padding: 1,
-          backgroundColor: 'gray',
+          backgroundColor: 'secondary.dark',
           marginLeft: 1,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           position: 'relative',
+          borderRadius: 2,
         }}
         elevation={6}>
         <Typography>{panelData.name}</Typography>

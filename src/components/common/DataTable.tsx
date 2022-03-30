@@ -113,7 +113,7 @@ const DataTable: React.FC<Props> = ({
       <Table size="small" stickyHeader sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ backgroundColor: 'background.paper' }} align="left" padding="none">
+            <TableCell sx={{ backgroundColor: 'secondary.dark' }} align="left" padding="none">
               {!collapsible && selectable && (
                 <Checkbox
                   color="primary"
@@ -126,7 +126,7 @@ const DataTable: React.FC<Props> = ({
               )}
             </TableCell>
             {headers.map((header: any, idx: number) => (
-              <TableCell sx={{ backgroundColor: 'background.paper' }} key={idx}>
+              <TableCell sx={{ backgroundColor: 'secondary.dark' }} key={idx}>
                 {header.sort && sort ? (
                   <TableSortLabel
                     active={sort?.index === header.sort}
@@ -139,7 +139,7 @@ const DataTable: React.FC<Props> = ({
                 )}
               </TableCell>
             ))}
-            {actions && <TableCell sx={{ backgroundColor: 'background.paper' }} />}
+            {actions && <TableCell sx={{ backgroundColor: 'secondary.dark' }} />}
           </TableRow>
         </TableHead>
         {dsData.length < 1 && placeholder ? (

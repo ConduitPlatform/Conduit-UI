@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer',
+    borderRadius: 8,
     padding: theme.spacing(1),
   },
 }));
