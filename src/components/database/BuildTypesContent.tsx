@@ -1,70 +1,26 @@
 import React, { FC } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Content from '@material-ui/icons/PermMedia';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
+import Box from '@mui/material/Box';
+import Content from '@mui/icons-material/PermMedia';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 import SimpleType from './types/SimpleType/SimpleType';
 import BooleanType from './types/BooleanType/BooleanType';
 import GroupType from './types/GroupType/GroupType';
 import EnumType from './types/EnumType/EnumType';
 import ObjectIdType from './types/ObjectIdType/ObjectIdType';
 import RelationType from './types/RelationType/RelationType';
-import Button from '@material-ui/core/Button';
-import { BoxProps } from '@material-ui/core/Box/Box';
+import Button from '@mui/material/Button';
+import { BoxProps } from '@mui/material/Box/Box';
+import { styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  list: {
-    height: '100%',
-    border: '1px',
-    background: 'inherit',
-    padding: theme.spacing(4, 10),
-    minHeight: theme.spacing(65),
-    borderRadius: '4px',
-  },
-  item: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    borderLeft: '1px solid #dce0e5',
-  },
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-  },
-  dragHandleIcon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginLeft: theme.spacing(1),
-    cursor: 'pointer',
-  },
-  dragIconDisabled: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginLeft: theme.spacing(1),
-    color: 'grey',
-  },
-  listPlaceholder: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: theme.spacing(47),
-    border: 'dashed 1px #667587',
-  },
-  listPlaceholderItems: {
-    marginBottom: theme.spacing(2),
-  },
-  button: {
-    minWidth: 0,
-    minHeight: 0,
-    padding: 0,
-    marginLeft: theme.spacing(1),
-  },
+const CustomizedButton = styled(Button)(({ theme }) => ({
+  minWidth: 0,
+  minHeight: 0,
+  padding: 0,
+  marginLeft: theme.spacing(1),
 }));
 
 interface Props extends BoxProps {
@@ -97,8 +53,6 @@ const BuildTypesContent: FC<Props> = ({
 
   ...rest
 }) => {
-  const classes = useStyles();
-
   const handleItemContent = (item: any, index: number) => {
     switch (item.type) {
       case 'Text':
@@ -137,7 +91,16 @@ const BuildTypesContent: FC<Props> = ({
     <Box {...rest}>
       <Droppable isDropDisabled={disabled} droppableId={dataKey}>
         {(provided, snapshot) => (
-          <div className={classes.list} ref={provided.innerRef}>
+          <Box
+            sx={{
+              height: '100%',
+              border: '1px',
+              background: 'inherit',
+              padding: 4,
+              minHeight: 550,
+              borderRadius: '4px',
+            }}
+            ref={provided.innerRef}>
             {data && Array.isArray(data[dataKey]) && data[dataKey].length > 0 ? (
               data[dataKey].map((item: any, index: number) => (
                 <Draggable
@@ -146,51 +109,74 @@ const BuildTypesContent: FC<Props> = ({
                   draggableId={item.name}
                   index={index}>
                   {(provided) => (
-                    <div
-                      className={classes.item}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column-reverse',
+                        padding: 2,
+                        marginBottom: 2,
+                        borderLeft: '1px solid #dce0e5',
+                      }}
                       ref={provided.innerRef}
                       {...provided.draggableProps}>
                       <Box width={'99%'}>{handleItemContent(item, index)}</Box>
                       <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
                         <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                           <Box display={'flex'}>
-                            <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                            <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                               Field name: <strong>{item.name}</strong>
                             </Typography>
                           </Box>
                           <Box display={'flex'}>
-                            <Button
+                            <CustomizedButton
                               onClick={() => handleDelete(index)}
-                              className={classes.button}
                               disabled={disabled ? true : checkIfDisabled(item.name)}>
-                              <DeleteIcon color="error" className={classes.icon} />
-                            </Button>
-                            <Button
+                              <DeleteIcon color="error" sx={{ height: 25, width: 25 }} />
+                            </CustomizedButton>
+                            <CustomizedButton
                               onClick={() => handleDrawer(item, index)}
-                              className={classes.button}
                               disabled={disabled ? true : checkIfDisabled(item.name)}>
-                              <SettingsIcon className={classes.icon} />
-                            </Button>
+                              <SettingsIcon sx={{ height: 25, width: 25 }} />
+                            </CustomizedButton>
                             <Box
                               {...provided.dragHandleProps}
-                              className={
-                                !disabled ? classes.dragHandleIcon : classes.dragIconDisabled
+                              sx={
+                                !disabled
+                                  ? {
+                                      height: 25,
+                                      width: 25,
+                                      marginLeft: 1,
+                                      cursor: 'pointer',
+                                    }
+                                  : {
+                                      height: 25,
+                                      width: 25,
+                                      marginLeft: 1,
+                                      color: 'grey',
+                                    }
                               }>
                               <DragHandleIcon />
                             </Box>
                           </Box>
                         </Box>
                       </Box>
-                    </div>
+                    </Box>
                   )}
                 </Draggable>
               ))
             ) : (
               <Box
-                className={classes.listPlaceholder}
-                style={snapshot.isDraggingOver ? { opacity: 0.4 } : {}}>
-                <Content className={classes.listPlaceholderItems} />
-                <Typography variant={'subtitle2'} className={classes.listPlaceholderItems}>
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: 420,
+                  border: 'dashed 1px #667587',
+                  opacity: snapshot.isDraggingOver ? 0.4 : undefined,
+                }}>
+                <Content sx={{ mb: 2 }} />
+                <Typography variant={'subtitle2'} sx={{ marginBottom: 2 }}>
                   Simply drag and drop
                 </Typography>
                 <Typography variant={'body2'}>
@@ -199,7 +185,7 @@ const BuildTypesContent: FC<Props> = ({
               </Box>
             )}
             {provided.placeholder}
-          </div>
+          </Box>
         )}
       </Droppable>
     </Box>

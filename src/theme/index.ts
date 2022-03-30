@@ -1,4 +1,5 @@
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
+import ArrowDropDownRounded from '@mui/icons-material/ArrowDropDownRounded';
 
 const primary = '#5B44F2';
 const secondary = '#07D9C4';
@@ -8,7 +9,7 @@ const disabled = '#808080';
 
 const theme = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       main: primary,
       contrastText: '#F2F2F2',
@@ -36,9 +37,83 @@ const theme = createTheme({
   typography: {
     fontFamily: 'JetBrains Mono',
   },
-  overrides: {
+  components: {
+    MuiPaper: {
+      styleOverrides: { root: { backgroundImage: 'unset' } },
+    },
+    MuiButton: {
+      styleOverrides: { root: { borderRadius: 8 } },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: { '& .MuiInputBase-root': { borderRadius: 10, color: 'secondary' } },
+      },
+    },
+    MuiSelect: {
+      defaultProps: {
+        IconComponent: ArrowDropDownRounded,
+      },
+      styleOverrides: {
+        outlined: {
+          borderRadius: 4,
+        },
+        iconFilled: {
+          top: 'calc(50% - .25em)',
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          width: 45,
+          height: 20,
+          padding: 0,
+          color: secondary,
+          '& .MuiSwitch-switchBase': {
+            '&.Mui-checked': {
+              transform: 'translateX(20px)',
+              color: '#fff',
+            },
+          },
+        },
+        switchBase: {
+          height: 20,
+          width: 25,
+          padding: 0,
+          color: '#fff',
+          '&.Mui-checked + .MuiSwitch-track': {
+            opacity: 1,
+          },
+        },
+        track: {
+          opacity: 1,
+          borderRadius: 32,
+          backgroundColor: 'gray',
+        },
+        thumb: {
+          flexShrink: 0,
+          width: '14px',
+          height: '14px',
+        },
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        disableTouchRipple: true,
+      },
+    },
+
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          paddingTop: 7,
+          paddingBottom: 7,
+        },
+      },
+    },
+
     MuiCssBaseline: {
-      '@global': {
+      styleOverrides: {
         body: {
           scrollbarColor: '#6b6b6b #2b2b2b',
           '&::-webkit-scrollbar, & *::-webkit-scrollbar': {

@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
-import Card, { CardProps } from '@material-ui/core/Card';
-import { makeStyles } from '@material-ui/core/styles';
+import Card, { CardProps } from '@mui/material/Card';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import { CardContent } from '@material-ui/core';
+import { CardContent } from '@mui/material';
 import { Schema } from '../../../models/database/CmsModels';
 import {
   asyncEditSchemaDocument,

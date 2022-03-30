@@ -1,10 +1,9 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Container, Grid, Paper, Typography } from '@material-ui/core';
+import { Container, Grid, Paper, Typography } from '@mui/material';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { INotificationConfig } from '../../models/notifications/NotificationModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
@@ -13,52 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  textField: {
-    marginBottom: theme.spacing(2),
-  },
-  simpleTextField: {
-    width: '65ch',
-  },
-  formControl: {
-    minWidth: 250,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  buttonSpacing: {
-    marginLeft: theme.spacing(2),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    width: '100%',
-  },
-  innerGrid: {
-    padding: theme.spacing(3),
-  },
-  typography: {
-    margin: '0px 10px 10px',
-  },
-  box: {
-    width: '100%',
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  jsonBtn: {
-    marginTop: '30px',
-    marginLeft: '-25px',
-  },
-}));
-
 const NotificationConfig: FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const { config } = useAppSelector((state) => state.notificationsSlice.data);
   const [edit, setEdit] = useState<boolean>(false);
@@ -140,16 +94,22 @@ const NotificationConfig: FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper} elevation={5}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }} elevation={5}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container>
-              <Box className={classes.box}>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'inline-flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
                 <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
-              <Divider className={classes.divider} />
-              <Grid container spacing={2} className={classes.innerGrid}>
+              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+              <Grid container spacing={2} sx={{ p: 3 }}>
                 {isActive && (
                   <>
                     <Grid container item alignContent={'center'} xs={12}>
@@ -186,9 +146,9 @@ const NotificationConfig: FC = () => {
                             disabled={!edit}
                           />
                         </Grid>
-                        <Typography className={classes.typography}> OR </Typography>
+                        <Typography sx={{ margin: '30px 15px 10px' }}> OR </Typography>
                         <Button
-                          className={classes.jsonBtn}
+                          sx={{ mt: 10, ml: -5 }}
                           disabled={!edit}
                           variant="contained"
                           component="label">

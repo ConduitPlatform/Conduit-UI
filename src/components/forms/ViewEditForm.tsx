@@ -1,9 +1,8 @@
 import React from 'react';
-import { Box, Container, Grid, Button, Paper } from '@material-ui/core';
+import { Box, Container, Grid, Button, Paper } from '@mui/material';
 import Image from 'next/dist/client/image';
 import FormsImage from '../../assets/svgs/forms.svg';
 import { FormsModel } from '../../models/forms/FormsModels';
-import sharedClasses from '../common/sharedClasses';
 import EditableForm from './EditableForm';
 import ExtractView from '../payments/ExtractView';
 
@@ -26,8 +25,6 @@ const ViewEditForm: React.FC<Props> = ({
   create,
   setCreate,
 }) => {
-  const classes = sharedClasses();
-
   const handleSaveClick = (data: FormsModel) => {
     if (create) {
       handleCreate(data);
@@ -41,7 +38,13 @@ const ViewEditForm: React.FC<Props> = ({
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
+        <Paper
+          elevation={0}
+          sx={{
+            padding: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
           <Grid container spacing={2}>
             {edit ? (
               <>

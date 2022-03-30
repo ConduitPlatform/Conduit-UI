@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
-import sharedClasses from '../../common/sharedClasses';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid } from '@mui/material';
 import { Customer } from '../../../models/payments/PaymentsModels';
 import { FormInputText } from '../../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const methods = useForm<Customer>({ defaultValues: preloadedValues });
@@ -73,7 +71,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <SelectedElements
@@ -94,7 +92,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             </Grid>
           ))}
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item sx={{ mr: 2 }}>
               <Button variant="outlined" onClick={() => onCancel()}>
                 Cancel
               </Button>

@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Payment } from '@material-ui/icons';
+import { Payment } from '@mui/icons-material';
 
 const PaymentsLayout: React.FC = ({ children }) => {
   const pathNames = [

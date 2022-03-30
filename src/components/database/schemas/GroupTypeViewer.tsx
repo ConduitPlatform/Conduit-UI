@@ -1,9 +1,8 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import GroupIcon from '@material-ui/icons/PlaylistAdd';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import React, { FC } from 'react';
 import FieldIndicators from '../FieldIndicators';
 import {
@@ -18,22 +17,6 @@ import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 import { RelationGroupTypeViewer } from '../types/RelationType/RelationTypeViewer';
 import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    border: '1px dotted black',
-  },
-  groupIcon: {
-    opacity: 0.6,
-  },
-  item: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(0.5),
-  },
-}));
-
 interface IProps {
   item: IGroupData;
   groupIndex: number;
@@ -45,8 +28,6 @@ const GroupTypeViewer: FC<IProps> = ({
 
   ...rest
 }) => {
-  const classes = useStyles();
-
   const handleGroupContent = (item: IGroupChildContentData | IGroupChildData, index: number) => {
     switch (item.type) {
       case 'Text':
@@ -77,12 +58,12 @@ const GroupTypeViewer: FC<IProps> = ({
   };
 
   return (
-    <Box style={{ width: '100%' }} {...rest}>
+    <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Group field'}>
-              <GroupIcon className={classes.groupIcon} />
+              <GroupIcon sx={{ opacity: 0.6 }} />
             </Tooltip>
           </Box>
         </Grid>
@@ -93,7 +74,13 @@ const GroupTypeViewer: FC<IProps> = ({
         </Grid>
       </Grid>
 
-      <div className={classes.root}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column-reverse',
+          padding: 2,
+          mb: 0.5,
+        }}>
         {item.content &&
           Array.isArray(item.content) &&
           item.content.length > 0 &&
@@ -102,22 +89,29 @@ const GroupTypeViewer: FC<IProps> = ({
               groupItem: any, //todo fix this
               index: number
             ) => (
-              <div key={index} className={classes.item}>
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column-reverse',
+                  padding: 2,
+                  marginBottom: 0.5,
+                }}>
                 <Box width={'99%'}></Box>
                 <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                      <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                         {groupItem.name}
                       </Typography>
                     </Grid>
                     {handleGroupContent(groupItem, index)}
                   </Grid>
                 </Box>
-              </div>
+              </Box>
             )
           )}
-      </div>
+      </Box>
     </Box>
   );
 };

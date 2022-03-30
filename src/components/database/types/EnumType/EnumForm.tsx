@@ -1,41 +1,18 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { FC, useState } from 'react';
 import { IDrawerData, IEnumData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {
   drawerData: IDrawerData;
@@ -55,8 +32,6 @@ const EnumForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const [simpleData, setSimpleData] = useState({
     name: selectedItem ? selectedItem.name : '',
     type: selectedItem ? selectedItem.type : drawerData.type,
@@ -70,7 +45,7 @@ const EnumForm: FC<IProps> = ({
     setSimpleData({ ...simpleData, name: event.target.value.split(' ').join('') });
   };
 
-  const handleFieldType = (event: React.ChangeEvent<{ name?: string; value: any }>) => {
+  const handleFieldType = (event: any) => {
     setSimpleData({ ...simpleData, type: event.target.value });
   };
 
@@ -92,21 +67,21 @@ const EnumForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={simpleData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         inputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
         helperText={'It will appear in the entry editor'}
       />
-      <FormControl className={classes.formControl} variant={'outlined'} fullWidth required>
+      <FormControl sx={{ margin: 1, minWidth: 120 }} variant={'outlined'} fullWidth required>
         <InputLabel id="field-type">Type</InputLabel>
         <Select
           labelId="field-type"
@@ -130,7 +105,7 @@ const EnumForm: FC<IProps> = ({
         onChange={handleOptions}
         value={simpleData.enumValues}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         helperText={'(Define one option per line)'}
@@ -144,7 +119,7 @@ const EnumForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Required
               </Typography>
               <FormControlLabel
@@ -161,9 +136,9 @@ const EnumForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               If active, this field will be required
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -174,7 +149,7 @@ const EnumForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Select
               </Typography>
               <FormControlLabel
@@ -190,22 +165,22 @@ const EnumForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               This option defines if the field should be returned from the database
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
       </Box>
 
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" style={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 

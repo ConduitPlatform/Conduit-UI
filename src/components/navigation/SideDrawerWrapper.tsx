@@ -1,32 +1,6 @@
 import React, { FC } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Box, DialogTitle, Drawer, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    close: {
-      zIndex: 10,
-      position: 'absolute',
-      right: 0,
-      top: 0,
-      padding: theme.spacing(0.5),
-      paddingBottom: theme.spacing(0),
-    },
-    button: {
-      padding: theme.spacing(1),
-    },
-    paper: {
-      minWidth: (props: any) => props.minWidth,
-      maxWidth: (props: any) => props.maxWidth,
-      width: (props: any) => props.width,
-      padding: theme.spacing(3),
-    },
-    header: {
-      textAlign: 'center',
-    },
-  })
-);
+import { Box, DialogTitle, Drawer, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface PropsDrawer {
   open: boolean;
@@ -45,8 +19,6 @@ const DrawerWrapper: FC<PropsDrawer> = ({
   title,
   children,
 }) => {
-  const classes = useStyles({ minWidth: minWidth, maxWidth: maxWidth, width: width });
-
   const toggleDrawer = (close: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
       event.type === 'keydown' &&
@@ -63,16 +35,29 @@ const DrawerWrapper: FC<PropsDrawer> = ({
       open={open}
       anchor={'right'}
       onClose={toggleDrawer(false)}
-      classes={{
-        paper: classes.paper,
+      sx={{
+        '& .MuiDrawer-paper': {
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          width: width,
+          padding: 3,
+        },
       }}
       transitionDuration={{ appear: 300, enter: 300, exit: 200 }}>
-      <Box className={classes.close}>
-        <IconButton onClick={toggleDrawer(false)} className={classes.button}>
+      <Box
+        sx={{
+          zIndex: 10,
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          padding: 0.5,
+          paddingBottom: 0,
+        }}>
+        <IconButton onClick={toggleDrawer(false)} sx={{ p: 1 }} size="large">
           <CloseIcon />
         </IconButton>
       </Box>
-      {title && <DialogTitle className={classes.header}> {title} </DialogTitle>}
+      {title && <DialogTitle sx={{ textAlign: 'center' }}> {title} </DialogTitle>}
       {children}
     </Drawer>
   );

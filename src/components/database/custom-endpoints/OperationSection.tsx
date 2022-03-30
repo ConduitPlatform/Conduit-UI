@@ -1,6 +1,13 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  MenuItem,
+  styled,
+  TextField,
+} from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
@@ -10,30 +17,13 @@ import { Assignment } from '../../../models/customEndpoints/customEndpointsModel
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
-import { Loop } from '@material-ui/icons';
+import { Loop } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    minWidth: 180,
-  },
-  divider: {
-    '&.MuiDivider-root': {
-      height: theme.spacing(0.25),
-      background: '#000000',
-      borderRadius: theme.spacing(0.5),
-    },
-  },
-  operationContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-  },
+const CustomizedGrid = styled(Grid)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
 }));
 
 interface Props {
@@ -43,7 +33,6 @@ interface Props {
 }
 
 const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [drawer, setDrawer] = useState<boolean>(false);
   const [displayedSchema, setDisplayedSchema] = useState<Schema[]>([]);
@@ -153,14 +142,14 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   return (
     <>
       <Grid item container spacing={6} xs={12}>
-        <Grid item xs={3} className={classes.operationContainer}>
+        <Grid item xs={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TextField
             select
             fullWidth
             size="small"
             label={'Select Operation'}
             variant="outlined"
-            className={classes.formControl}
+            sx={{ minWidth: 180 }}
             value={endpoint.operation}
             disabled={!editMode}
             onChange={handleOperationChange}>
@@ -172,7 +161,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
           </TextField>
         </Grid>
-        <Grid item xs={3} className={classes.container}>
+        <CustomizedGrid item xs={3}>
           <Grid item sm={12}>
             <Button
               size="small"
@@ -184,11 +173,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
               {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
             </Button>
           </Grid>
-        </Grid>
-        <Grid
-          item
-          xs={endpoint.operation === OperationsEnum.GET ? 2 : 3}
-          className={classes.container}>
+        </CustomizedGrid>
+        <CustomizedGrid item xs={endpoint.operation === OperationsEnum.GET ? 2 : 3}>
           <FormControlLabel
             control={
               <Checkbox
@@ -202,10 +188,10 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             }
             label="Authenticated"
           />
-        </Grid>
+        </CustomizedGrid>
         {endpoint.operation === OperationsEnum.GET ? (
           <>
-            <Grid item xs={2} className={classes.container}>
+            <CustomizedGrid item xs={2}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -219,8 +205,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
                 }
                 label="Paginated"
               />
-            </Grid>
-            <Grid item xs={2} className={classes.container}>
+            </CustomizedGrid>
+            <CustomizedGrid item xs={2}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -234,7 +220,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
                 }
                 label="Sorted"
               />
-            </Grid>
+            </CustomizedGrid>
           </>
         ) : (
           <Grid item xs={4} />

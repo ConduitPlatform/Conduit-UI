@@ -1,19 +1,16 @@
 import Editor from 'react-simple-code-editor';
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
 import { highlight, languages } from 'prismjs';
-
 import 'prismjs/components/prism-handlebars';
 import 'prismjs/components/prism-markup-templating';
 import 'prismjs/components/prism-clike';
 import 'prismjs/themes/prism-dark.css';
+import { styled } from '@mui/material';
 
-const useStyles = makeStyles(() => ({
-  editor: {
-    minHeight: 300,
-    width: '100%',
-    backgroundColor: 'rgb(40 40 40)',
-  },
+const CustomizedEditor = styled(Editor)(() => ({
+  minHeight: 300,
+  width: '100%',
+  backgroundColor: 'rgb(40 40 40)',
 }));
 
 interface Props {
@@ -23,7 +20,6 @@ interface Props {
 }
 
 const TemplateEditor: FC<Props> = ({ value, setValue, disabled }) => {
-  const classes = useStyles();
   const onValueChange = (editorValue: string) => {
     if (setValue) {
       setValue(editorValue);
@@ -31,8 +27,7 @@ const TemplateEditor: FC<Props> = ({ value, setValue, disabled }) => {
   };
 
   return (
-    <Editor
-      className={classes.editor}
+    <CustomizedEditor
       disabled={disabled}
       value={value}
       onValueChange={(editorValue) => onValueChange(editorValue)}

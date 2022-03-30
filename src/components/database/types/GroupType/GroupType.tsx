@@ -1,11 +1,10 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import GroupIcon from '@material-ui/icons/PlaylistAdd';
-import SettingsIcon from '@material-ui/icons/Settings';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import GroupIcon from '@mui/icons-material/PlaylistAdd';
+import SettingsIcon from '@mui/icons-material/Settings';
 import React, { FC } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import FieldIndicators from '../../FieldIndicators';
@@ -13,46 +12,14 @@ import { BooleanGroupType } from '../BooleanType/BooleanType';
 import { EnumGroupType } from '../EnumType/EnumType';
 import { ObjectIdGroupType } from '../ObjectIdType/ObjectIdType';
 import { RelationGroupType } from '../RelationType/RelationType';
-import { SimpleGroupType } from '../SimpleType/SimpleType';
+import { CustomIcon, SimpleGroupType } from '../SimpleType/SimpleType';
 import GroupGroupType from './GroupTypeChild';
 import {
   IGroupChildContentData,
   IGroupChildData,
   IGroupData,
 } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: 300,
-    width: '100%',
-    border: '1px dotted black',
-  },
-  rootDragging: {
-    minHeight: 300,
-    width: '100%',
-    backgroundColor: theme.palette.grey['500'],
-  },
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginLeft: theme.spacing(1),
-    cursor: 'pointer',
-  },
-  groupIcon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  item: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-}));
+import { Icon, styled } from '@mui/material';
 
 interface IProps {
   item: IGroupData;
@@ -63,6 +30,13 @@ interface IProps {
   handleGroupDrawer: any;
 }
 
+export const GroupItemIcon = styled(Icon)(({ theme }) => ({
+  height: theme.spacing(3),
+  width: theme.spacing(3),
+  marginLeft: theme.spacing(1),
+  cursor: 'pointer',
+}));
+
 const GroupType: FC<IProps> = ({
   item,
   groupIndex,
@@ -72,8 +46,6 @@ const GroupType: FC<IProps> = ({
   handleGroupDrawer,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const handleGroupContent = (item: IGroupChildContentData | IGroupChildData, index: number) => {
     switch (item.type) {
       case 'Text':
@@ -110,12 +82,14 @@ const GroupType: FC<IProps> = ({
   const groupId = `group-${item.name}`;
 
   return (
-    <Box style={{ width: '100%' }} {...rest}>
+    <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Group field'}>
-              <GroupIcon className={classes.groupIcon} />
+              <CustomIcon>
+                <GroupIcon />
+              </CustomIcon>
             </Tooltip>
           </Box>
         </Grid>
@@ -127,9 +101,13 @@ const GroupType: FC<IProps> = ({
       </Grid>
       <Droppable droppableId={groupId} isCombineEnabled>
         {(provided, snapshot) => (
-          <div
+          <Box
             ref={provided.innerRef}
-            className={snapshot.isDraggingOver ? classes.rootDragging : classes.root}>
+            sx={
+              snapshot.isDraggingOver
+                ? { minHeight: 300, width: '100%', backgroundColor: 'grey.500' }
+                : { minHeight: 300, width: '100%', border: '1px dotted black' }
+            }>
             {item.content && Array.isArray(item.content) && item.content.length > 0 ? (
               item.content.map(
                 (
@@ -142,8 +120,13 @@ const GroupType: FC<IProps> = ({
                     index={index}
                     isDragDisabled>
                     {(provided) => (
-                      <div
-                        className={classes.item}
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column-reverse',
+                          padding: 2,
+                          marginBottom: 2,
+                        }}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}>
@@ -151,23 +134,23 @@ const GroupType: FC<IProps> = ({
                         <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
                           <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                             <Box display={'flex'}>
-                              <Typography variant={'body2'} style={{ marginRight: 8 }}>
+                              <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                                 {groupItem.name}
                               </Typography>
                             </Box>
                             <Box display={'flex'}>
-                              <DeleteIcon
-                                className={classes.icon}
-                                onClick={() => handleDelete(index, groupIndex)}
-                              />
-                              <SettingsIcon
-                                className={classes.icon}
-                                onClick={() => handleDrawer(groupItem, index, groupIndex)}
-                              />
+                              <GroupItemIcon>
+                                <DeleteIcon onClick={() => handleDelete(index, groupIndex)} />
+                              </GroupItemIcon>
+                              <GroupItemIcon>
+                                <SettingsIcon
+                                  onClick={() => handleDrawer(groupItem, index, groupIndex)}
+                                />
+                              </GroupItemIcon>
                             </Box>
                           </Box>
                         </Box>
-                      </div>
+                      </Box>
                     )}
                   </Draggable>
                 )
@@ -176,7 +159,7 @@ const GroupType: FC<IProps> = ({
               <Box>Place items</Box>
             )}
             {provided.placeholder}
-          </div>
+          </Box>
         )}
       </Droppable>
     </Box>

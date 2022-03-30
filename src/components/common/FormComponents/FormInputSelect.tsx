@@ -1,8 +1,8 @@
 import React from 'react';
-import { MenuItem } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
+import { MenuItem } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
-import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { TextFieldProps } from '@mui/material/TextField/TextField';
 
 interface FormSelectProps {
   name: string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Settings } from '@material-ui/icons';
+import { Settings } from '@mui/icons-material';
 
 const SettingsLayout: React.FC = ({ children }) => {
   const pathNames = [

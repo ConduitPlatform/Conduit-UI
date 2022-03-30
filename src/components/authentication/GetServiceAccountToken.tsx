@@ -7,10 +7,10 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 interface Props {
   token: string;
@@ -37,7 +37,7 @@ const GetServiceAccountToken: React.FC<Props> = ({ token, open, handleClose }) =
           <Typography
             variant={'h6'}
             align={'center'}
-            style={{
+            sx={{
               overflowWrap: 'break-word',
               overflow: 'hidden',
             }}>

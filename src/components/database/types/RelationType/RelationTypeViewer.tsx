@@ -1,35 +1,22 @@
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import Box from '@mui/material/Box';
 import FieldIndicators from '../../FieldIndicators';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import Grid from '@material-ui/core/Grid';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
+import { CustomIcon } from '../SimpleType/SimpleType';
 
 interface IProps {
   item: IRelationData;
 }
 
 const RelationTypeViewer: FC<IProps> = ({ item, ...rest }) => {
-  const classes = useStyles();
-
   return (
     <>
       <Grid item container xs={1}>
-        <DeviceHubIcon className={classes.icon} />
+        <CustomIcon>
+          <DeviceHubIcon />
+        </CustomIcon>
       </Grid>
       <Grid item container justifyContent="flex-end" xs={5}>
         <Grid item xs={6}>
@@ -45,12 +32,12 @@ const RelationTypeViewer: FC<IProps> = ({ item, ...rest }) => {
 export default RelationTypeViewer;
 
 export const RelationGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
-  const classes = useStyles();
-
   return (
     <>
       <Grid item container xs={1}>
-        <DeviceHubIcon className={classes.icon} />
+        <CustomIcon>
+          <DeviceHubIcon />
+        </CustomIcon>
       </Grid>
       <Grid item container justifyContent="flex-end" xs={5}>
         <Grid item xs={6}>

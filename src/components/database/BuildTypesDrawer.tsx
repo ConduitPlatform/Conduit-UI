@@ -1,34 +1,15 @@
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import Drawer from '@mui/material/Drawer';
 import SimpleForm from './types/SimpleType/SimpleForm';
 import BooleanForm from './types/BooleanType/BooleanForm';
 import GroupForm from './types/GroupType/GroupForm';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import EnumForm from './types/EnumType/EnumForm';
 import ObjectIdForm from './types/ObjectIdType/ObjectIdForm';
 import RelationForm from './types/RelationType/RelationForm';
 import { IDrawerData } from '../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  drawerPaper: {
-    width: '25%',
-    alignItems: 'center',
-  },
-  duplicateId: {
-    color: 'red',
-    marginBottom: theme.spacing(2),
-  },
-  title: {
-    width: '100%',
-    padding: theme.spacing(2),
-    fontWeight: 'bold',
-    borderBottom: '1px solid',
-    borderColor: theme.palette.primary.main,
-  },
-}));
 
 interface Props {
   // drawerData: IDrawerData;
@@ -53,8 +34,6 @@ const BuildTypesDrawer: FC<Props> = ({
   invalidName,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const handleForm = (data: IDrawerData) => {
     switch (data.type) {
       case 'Text':
@@ -161,15 +140,28 @@ const BuildTypesDrawer: FC<Props> = ({
     <Drawer
       anchor="right"
       open={drawerData.open}
-      classes={{ paper: classes.drawerPaper }}
+      sx={{
+        '& .MuiDrawer-paper': {
+          width: '25%',
+          alignItems: 'center',
+        },
+      }}
       {...rest}>
-      <Typography variant={'subtitle1'} className={classes.title}>
+      <Typography
+        variant={'subtitle1'}
+        sx={{
+          width: '100%',
+          padding: 2,
+          fontWeight: 'bold',
+          borderBottom: '1px solid',
+          borderColor: 'primary.main,',
+        }}>
         Configuration of {drawerData.type} field
       </Typography>
       {handleForm(drawerData)}
       {duplicateId && (
         <Box textAlign={'center'}>
-          <Typography variant={'button'} className={classes.duplicateId}>
+          <Typography variant={'button'} sx={{ color: 'red', marginBottom: 2 }}>
             Warning! Duplicate Field name
           </Typography>
           <Typography variant={'body1'}>Please provide a unique field name</Typography>
@@ -177,7 +169,7 @@ const BuildTypesDrawer: FC<Props> = ({
       )}
       {invalidName && (
         <Box textAlign={'center'}>
-          <Typography variant={'button'} className={classes.duplicateId}>
+          <Typography variant={'button'} sx={{ color: 'red', marginBottom: 2 }}>
             Warning! Invalid Field name
           </Typography>
           <Typography variant={'body1'}>Field name type is forbidden</Typography>

@@ -10,8 +10,8 @@ import {
   Select,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { Add, Delete } from '@material-ui/icons';
+} from '@mui/material';
+import { Add, Delete } from '@mui/icons-material';
 import { v4 as uuidV4 } from 'uuid';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
@@ -79,7 +79,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
     handleSubmitData({ ...data, fields: fields });
   };
 
-  const handleFieldsChange = (id: string) => (evt: React.ChangeEvent<any>) => {
+  const handleFieldsChange = (id: string) => (evt: any) => {
     const { value } = evt.target;
 
     const regex = /[^a-z0-9_]/gi;
@@ -161,7 +161,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                     />
                   </Grid>
                   <Grid item xs={5} className={classes.fields}>
-                    <FormControl className={classes.formFields}>
+                    <FormControl sx={{ minWidth: 200 }}>
                       <Select
                         variant="outlined"
                         value={inputField.type}
@@ -211,7 +211,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             </Grid>
           </Grid>
           <Grid container item>
-            <Grid item className={classes.marginRight}>
+            <Grid item sx={{ mr: 2 }}>
               <Button variant="outlined" onClick={() => onCancel()}>
                 Cancel
               </Button>

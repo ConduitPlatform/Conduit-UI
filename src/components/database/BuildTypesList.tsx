@@ -1,37 +1,16 @@
 import React, { FC } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import Box from '@material-ui/core/Box';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
-import Card from '@material-ui/core/Card';
-import TextIcon from '@material-ui/icons/Title';
-import CodeIcon from '@material-ui/icons/Code';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import NumberIcon from '@material-ui/icons/Filter7';
-import SelectIcon from '@material-ui/icons/FormatListBulleted';
-import BooleanIcon from '@material-ui/icons/ToggleOn';
-import DateIcon from '@material-ui/icons/DateRange';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
-
-const useStyles = makeStyles((theme) => ({
-  item: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    userSelect: 'none',
-  },
-  itemClone: {
-    '&~div': {
-      transform: 'none !important',
-    },
-  },
-  icon: {
-    marginRight: theme.spacing(1),
-  },
-}));
+import Box from '@mui/material/Box';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
+import Card from '@mui/material/Card';
+import TextIcon from '@mui/icons-material/Title';
+import CodeIcon from '@mui/icons-material/Code';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import NumberIcon from '@mui/icons-material/Filter7';
+import SelectIcon from '@mui/icons-material/FormatListBulleted';
+import BooleanIcon from '@mui/icons-material/ToggleOn';
+import DateIcon from '@mui/icons-material/DateRange';
+import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 
 interface Props {
   item: any; //todo fix this
@@ -47,8 +26,6 @@ interface Props {
 }
 
 const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
-  const classes = useStyles();
-
   const handleIcon = (
     item: 'Text' | 'Number' | 'Date' | 'Boolean' | 'Enum' | 'ObjectId' | 'Group' | 'Relation'
   ) => {
@@ -83,7 +60,7 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
           {handleIcon(item)}
           <Box ml={2}>{item}</Box>
         </Box>
-        <DragHandleIcon style={{ fill: '#dce0e5' }} />
+        <DragHandleIcon sx={{ fill: '#dce0e5' }} />
       </>
     );
   };
@@ -93,14 +70,34 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
       {(provided, snapshot) => (
         <>
           <Card
-            className={classes.item}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: 2,
+              marginBottom: 2,
+              userSelect: 'none',
+            }}
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}>
             {handleItem(item)}
           </Card>
           {snapshot.isDragging && (
-            <Card className={clsx(classes.item, classes.itemClone)}>{handleItem(item)}</Card>
+            <Card
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 2,
+                marginBottom: 2,
+                userSelect: 'none',
+                '&~div': {
+                  transform: 'none !important',
+                },
+              }}>
+              {handleItem(item)}
+            </Card>
           )}
         </>
       )}

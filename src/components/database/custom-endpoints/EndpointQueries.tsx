@@ -1,22 +1,13 @@
 import React, { FC, useState } from 'react';
 import CustomQueryRow from './CustomQueryRow';
-import StyledTreeItem from '../../custom/StyledTreeItem';
 import TreeItemContent from './TreeItemContent';
-import { Grid, Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { TreeView } from '@material-ui/lab';
+import { Grid, Box, Typography } from '@mui/material';
+import { TreeItem, TreeItemContentProps, TreeItemProps, TreeView, useTreeItem } from '@mui/lab';
 import { deepClone } from '../../../utils/deepClone';
-import { Add, Remove } from '@material-ui/icons';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { v4 as uuidV4 } from 'uuid';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  queries: {
-    padding: theme.spacing(1.5),
-  },
-}));
+import clsx from 'clsx';
 
 interface Props {
   editMode: boolean;
@@ -43,8 +34,6 @@ const EndpointQueries: FC<Props> = ({
   availableFieldsOfSchema,
   handleChangeNodeOperator,
 }) => {
-  const classes = useStyles();
-
   const [expanded, setExpanded] = useState<string[]>([]);
 
   const deconstructQueries = (queries: any) => {
@@ -182,44 +171,91 @@ const EndpointQueries: FC<Props> = ({
     }
   };
 
+  const CustomContent = React.forwardRef(function CustomContent(props: TreeItemContentProps, ref) {
+    const { classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon } = props;
+
+    const {
+      disabled,
+      expanded,
+      selected,
+      focused,
+      handleExpansion,
+      handleSelection,
+      preventSelection,
+    } = useTreeItem(nodeId);
+
+    const icon = iconProp || expansionIcon || displayIcon;
+
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      preventSelection(event);
+    };
+
+    const handleExpansionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      handleExpansion(event);
+    };
+
+    const handleSelectionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      handleSelection(event);
+    };
+
+    return (
+      <div
+        onMouseDown={handleMouseDown}
+        ref={ref as React.Ref<HTMLDivElement>}
+        className={clsx(className, classes.root, {
+          [classes.expanded]: expanded,
+          [classes.selected]: selected,
+          [classes.focused]: focused,
+          [classes.disabled]: disabled,
+        })}>
+        <div onClick={handleExpansionClick} className={classes.iconContainer}>
+          {icon}
+        </div>
+        <Typography onClick={handleSelectionClick} component="div" className={classes.label}>
+          {label}
+        </Typography>
+      </div>
+    );
+  });
+
+  const CustomTreeItem = (props: TreeItemProps) => (
+    <TreeItem sx={{ p: 0.2 }} ContentComponent={CustomContent} {...props} />
+  );
+
   const renderItem = (node: any) => {
     if ('operator' in node && node.queries) {
       return (
-        <Box key={node._id}>
-          <StyledTreeItem
-            key={node._id ? node._id : uuidV4()}
-            nodeId={node._id ? node._id : 'defaultNodeId'}
-            onLabelClick={(e: any) => e.preventDefault()}
-            label={
-              <TreeItemContent
-                editMode={editMode}
-                operator={node.operator}
-                key={node._id}
-                handleAddQuery={() => handleAdd(node._id)}
-                handleAddNode={() => handleAddNode(node._id)}
-                handleRemoveNode={() => handleRemoveNode(node._id)}
-                handleOperatorChange={(operator: any) =>
-                  handleOperatorChange(node._id, node.operator, operator)
-                }
-              />
-            }>
-            {node.queries.map((q: any) => renderItem(q))}
-          </StyledTreeItem>
-        </Box>
+        <CustomTreeItem
+          key={node._id ? node._id : uuidV4()}
+          nodeId={node._id ? node._id : 'defaultNodeId'}
+          label={
+            <TreeItemContent
+              editMode={editMode}
+              operator={node.operator}
+              key={node._id}
+              handleAddQuery={() => handleAdd(node._id)}
+              handleAddNode={() => handleAddNode(node._id)}
+              handleRemoveNode={() => handleRemoveNode(node._id)}
+              handleOperatorChange={(operator: any) =>
+                handleOperatorChange(node._id, node.operator, operator)
+              }
+            />
+          }>
+          {node.queries.map((q: any) => renderItem(q))}
+        </CustomTreeItem>
       );
     }
     if ('schemaField' in node) {
       return (
-        <StyledTreeItem
+        <CustomTreeItem
           key={node._id ? node._id : uuidV4()}
           nodeId={node._id}
-          onLabelClick={(e: any) => e.preventDefault()}
           label={
             <Grid
               container
               alignItems={'flex-end'}
               spacing={2}
-              className={classes.queries}
+              sx={{ p: 1.5, marginTop: 0.4 }}
               key={`query-${selectedSchema}-${node._id}`}>
               <CustomQueryRow
                 query={node}
@@ -245,9 +281,9 @@ const EndpointQueries: FC<Props> = ({
     <Box padding={2} width={'100%'}>
       <TreeView
         expanded={expanded}
-        className={classes.root}
-        defaultCollapseIcon={<Remove />}
-        defaultExpandIcon={<Add />}
+        sx={{ flexGrow: 1, overflowY: 'auto', padding: 0.1 }}
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpandIcon={<ChevronRightIcon />}
         onNodeSelect={(e: React.ChangeEvent<any>) => e.preventDefault()}
         onNodeToggle={(event, nodeIds) => handleToggle(nodeIds)}>
         {selectedQueries.map((q: any) => renderItem(q))}

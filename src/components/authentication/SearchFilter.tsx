@@ -1,26 +1,12 @@
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
-
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: theme.spacing(1),
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
 
 interface Props {
   search: string;
@@ -30,15 +16,13 @@ interface Props {
 }
 
 const SearchFilter: React.FC<Props> = ({ search, setSearch, filter, handleFilterChange }) => {
-  const classes = useStyles();
-
   return (
     <form>
       <Grid container>
         <TextField
           size="small"
           variant="outlined"
-          className={classes.margin}
+          sx={{ margin: 1 }}
           name="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -51,11 +35,12 @@ const SearchFilter: React.FC<Props> = ({ search, setSearch, filter, handleFilter
             ),
           }}
         />
-        <FormControl variant="outlined" className={classes.formControl} size="small">
+        <FormControl variant="outlined" sx={{ margin: 1, minWidth: 120 }} size="small">
           <InputLabel>Provider</InputLabel>
           <Select
             label="Provider"
             value={filter}
+            sx={{ borderRadius: 2 }}
             onChange={(event) => handleFilterChange(event.target.value)}>
             <MenuItem value="">
               <em>All</em>

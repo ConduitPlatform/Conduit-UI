@@ -1,20 +1,18 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { Clear, Send, Sms } from '@material-ui/icons';
-import Button from '@material-ui/core/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { Clear, Send, Sms } from '@mui/icons-material';
+import Button from '@mui/material/Button';
 import { FormProvider, useForm } from 'react-hook-form';
-import sharedClasses from '../common/sharedClasses';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { ISendSms } from '../../models/sms/SmsModels';
 import { useAppDispatch } from '../../redux/store';
 import { asyncSendSms } from '../../redux/slices/smsSlice';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 const SendSms: React.FC = () => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const methods = useForm<ISendSms>({
@@ -33,9 +31,9 @@ const SendSms: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ p: 2, color: 'text.secondary', mt: 2, borderRadius: 8 }}>
         <Box>
-          <Typography variant={'h6'} className={classes.marginBottom}>
+          <Typography variant={'h6'} sx={{ mb: 4 }}>
             <Sms fontSize={'small'} /> Compose your SMS
           </Typography>
         </Box>
@@ -54,7 +52,7 @@ const SendSms: React.FC = () => {
                     variant="outlined"
                     color="primary"
                     startIcon={<Clear />}
-                    style={{ marginRight: 16 }}
+                    sx={{ marginRight: 4 }}
                     onClick={() => reset()}>
                     Clear
                   </Button>

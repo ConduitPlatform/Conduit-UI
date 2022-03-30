@@ -1,30 +1,13 @@
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC } from 'react';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import CustomDatepicker from '../../common/CustomDatepicker';
-import { Input, Typography } from '@material-ui/core';
+import { Input, Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0.25, 0),
-    minHeight: 28,
-  },
-  bold: {
-    marginRight: theme.spacing(1),
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap',
-  },
-  textInput: {
-    fontSize: '14px',
-  },
   textInputProps: {
     padding: theme.spacing(0.25, 0),
-  },
-  asterisk: {
-    marginRight: theme.spacing(0.25),
   },
   muiSelect: {
     padding: 0,
@@ -108,7 +91,7 @@ const EditableTreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, onChan
         return (
           <Input
             disabled={isInputDisabled}
-            className={classes.textInput}
+            sx={{ fontSize: '14px' }}
             autoComplete="new-password"
             value={document.data}
             onChange={(event) => onChange(event.target.value)}
@@ -124,8 +107,17 @@ const EditableTreeItemLabel: FC<TreeItemLabelProps> = ({ field, document, onChan
   };
 
   return (
-    <Typography variant={'subtitle2'} className={classes.root}>
-      <Typography component={'span'} className={classes.bold}>
+    <Typography
+      variant={'subtitle2'}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: 0.25,
+        minHeight: 28,
+      }}>
+      <Typography
+        component={'span'}
+        sx={{ marginRight: 1, fontWeight: 'bold', whiteSpace: 'nowrap' }}>
         {`${document.id}: `}
       </Typography>
       {handleEditContent()}

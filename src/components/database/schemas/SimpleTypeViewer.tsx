@@ -1,40 +1,35 @@
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import FieldIndicators from '../FieldIndicators';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import Grid from '@material-ui/core/Grid';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
-}));
 
 interface IProps {
   item: IRelationData;
 }
 
 const RelationType: FC<IProps> = ({ item, ...rest }) => {
-  const classes = useStyles();
-
   return (
     <Box {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Date field'}>
-              <DeviceHubIcon className={classes.icon} />
+              <DeviceHubIcon
+                sx={{
+                  height: 30,
+                  width: 30,
+                  marginRight: 1,
+                  opacity: 0.6,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               relation placeholder
             </Typography>
           </Box>
@@ -52,17 +47,24 @@ const RelationType: FC<IProps> = ({ item, ...rest }) => {
 export default RelationType;
 
 export const RelationGroupType: FC<IProps> = ({ item, ...rest }) => {
-  const classes = useStyles();
-
   return (
     <Box {...rest}>
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Date field'}>
-              <DeviceHubIcon className={classes.icon} />
+              <DeviceHubIcon
+                sx={{
+                  height: 30,
+                  width: 30,
+                  marginRight: 1,
+                  opacity: 0.6,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              />
             </Tooltip>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               relation placeholder
             </Typography>
           </Box>

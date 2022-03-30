@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Toc } from '@material-ui/icons';
+import { Toc } from '@mui/icons-material';
 
 const DatabaseLayout: React.FC = ({ children }) => {
   const pathNames = ['/database/schemas', '/database/custom', '/database/settings'];

@@ -65,6 +65,12 @@ const initialState: IStorageSlice = {
       local: {
         storagePath: '',
       },
+      aws: {
+        accessKeyId: '',
+        accountId: '',
+        region: '',
+        secretAccessKey: '',
+      },
     },
     containers: {
       containers: [],

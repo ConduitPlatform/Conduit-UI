@@ -1,32 +1,17 @@
 import React, { FC } from 'react';
-import { Button, Divider, Grid, Typography } from '@material-ui/core';
+import { Button, Divider, Grid, Typography } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EndpointAssignments from './EndpointAssignments';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
-import { makeStyles } from '@material-ui/core/styles';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-    textTransform: 'none',
-  },
-  divider: {
-    paddingBottom: theme.spacing(1),
-  },
-  addAssignmentBtn: {
-    textAlign: 'center',
-  },
-}));
 
 interface Props {
   editMode: boolean;
 }
 
 const AssignmentsSection: FC<Props> = ({ editMode }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -52,7 +37,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
         </Typography>
       </Grid>
 
-      <Grid item xs={12} className={classes.divider}>
+      <Grid item xs={12} sx={{ paddingBottom: 1 }}>
         <Divider />
       </Grid>
       <EndpointAssignments
@@ -62,7 +47,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
         setSelectedAssignments={handleAssignmentChanges}
         availableFieldsOfSchema={schemaFields}
       />
-      <Grid item xs={12} className={classes.addAssignmentBtn}>
+      <Grid item xs={12} sx={{ textAlign: 'center' }}>
         <Button
           disabled={
             !editMode ||
@@ -71,7 +56,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           }
           variant="text"
           color={'secondary'}
-          className={classes.button}
+          sx={{ margin: 1, textTransform: 'none' }}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddAssignment}>
           Add assignment

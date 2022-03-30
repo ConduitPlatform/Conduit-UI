@@ -7,12 +7,11 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+} from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-import { CallMissedOutgoing } from '@material-ui/icons';
+import { CallMissedOutgoing } from '@mui/icons-material';
 import { asyncGetExternalTemplates } from '../../redux/slices/emailsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailTemplateType } from '../../models/emails/EmailModels';
@@ -20,47 +19,11 @@ import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { camelCase } from 'lodash';
 import TemplateEditor from './TemplateEditor';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: '30px',
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    minWidth: '300px',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    width: '90%',
-  },
-  inputLabel: {
-    width: '100%',
-  },
-  header: {
-    textAlign: 'center',
-    marginTop: '20px',
-  },
-  templateInfo: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-    marginTop: theme.spacing(2),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  textField: {
-    width: '100%',
-    marginTop: theme.spacing(2),
-  },
-}));
-
 interface Props {
   handleSave: (templateState: EmailTemplateType) => void;
 }
 
 const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const emptyTemplate = {
@@ -109,9 +72,9 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
   };
 
   return (
-    <Box className={classes.root}>
+    <Box mt={10}>
       <Grid container justifyContent="center">
-        <FormControl variant="outlined" className={classes.formControl}>
+        <FormControl variant="outlined" sx={{ margin: 1, minWidth: 120, width: '90%' }}>
           <InputLabel>{select === -1 ? 'Select template' : 'Selected template'}</InputLabel>
           <Select label="Select your template" value={select} onChange={handleTemplateChange}>
             <MenuItem value={-1}>
@@ -126,18 +89,24 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
           </Select>
         </FormControl>
       </Grid>
-      <Divider className={classes.divider} />
+      <Divider sx={{ mt: 2, mb: 2 }} />
       {externalTemplates.length > 0 ? (
-        <Typography className={classes.header}>
+        <Typography mt={2} textAlign="center">
           {selectedTemplate.name === ''
             ? 'Select a template to proceed with the import'
             : 'Preview your imported template'}
         </Typography>
       ) : (
-        <Typography className={classes.header}>No external templates at the moment</Typography>
+        <Typography mt={2} textAlign="center">
+          No external templates at the moment
+        </Typography>
       )}
       {selectedTemplate.name !== '' && (
-        <Grid container spacing={2} justifyContent="space-around" className={classes.templateInfo}>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="space-around"
+          sx={{ p: 2, color: 'text.secondary', mt: 2 }}>
           <Grid item xs={12}>
             <Typography variant="subtitle2">Template name:</Typography>
             <Typography variant="body2">{selectedTemplate.name}</Typography>
@@ -153,7 +122,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
           <Grid item xs={12}>
             <Typography variant="subtitle2">Subject:</Typography>
             <TextField
-              className={classes.textField}
+              sx={{ width: '100%', mt: 2 }}
               label={'Subject'}
               variant={'outlined'}
               value={selectedTemplate.subject}
@@ -173,7 +142,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
         </Grid>
       )}
       {selectedTemplate.name !== '' && (
-        <Grid container xs={12} justifyContent="space-around" style={{ marginTop: '15px' }}>
+        <Grid container xs={12} justifyContent="space-around" sx={{ marginTop: '15px' }}>
           <Grid>
             <Button
               variant="contained"

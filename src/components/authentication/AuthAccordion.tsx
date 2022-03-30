@@ -1,45 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import {
   SocialNameTypes,
   IAuthenticationConfig,
   SignInTypes,
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './ReusableAccordion';
-import { Container } from '@material-ui/core';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  titleContent: {
-    backgroundColor: theme.palette.secondary.main,
-    height: theme.spacing(6),
-    color: '#000',
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-  },
-  expandedPanel: {
-    '&.MuiAccordion-root.Mui-expanded': {
-      marginTop: 10,
-    },
-  },
-  details: {
-    borderTop: '1px solid',
-    borderColor: 'rgb(217, 217, 217)',
-  },
-  typography: {
-    flex: 1,
-  },
-  statusEnabled: {
-    color: theme.palette.secondary.main,
-  },
-  statusDisabled: {
-    color: theme.palette.primary.main,
-  },
-}));
 
 interface Props {
   configData: IAuthenticationConfig;
@@ -47,7 +14,6 @@ interface Props {
 }
 
 const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => {
-  const classes = useStyles();
   const [local, setLocal] = useState<SignInTypes>({
     enabled: false,
     sendVerificationEmail: false,
@@ -336,12 +302,22 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
   }, [phoneAuthentication, configData, handleData]);
 
   return (
-    <Box className={classes.root} {...rest}>
-      <Box display={'flex'} alignItems={'center'} className={classes.titleContent} boxShadow={2}>
-        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
+    <Box sx={{ width: '100%' }} {...rest}>
+      <Box
+        display={'flex'}
+        alignItems={'center'}
+        sx={{
+          backgroundColor: 'secondary.main',
+          height: 38,
+          color: '#000',
+          borderTopLeftRadius: 4,
+          borderTopRightRadius: 4,
+        }}
+        boxShadow={2}>
+        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 2 }}>
           Provider
         </Typography>
-        <Typography variant={'subtitle2'} style={{ width: '50%', paddingLeft: 24 }}>
+        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 2 }}>
           Status
         </Typography>
       </Box>

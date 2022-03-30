@@ -1,49 +1,18 @@
 import React, { useEffect } from 'react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 import { asyncLogin } from '../redux/slices/appAuthSlice';
-import { Box, Theme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { useRouter } from 'next/router';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import LoginIllustration from '../assets/svgs/LoginIllustration';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../components/common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../components/common/FormComponents/FormInputCheckbox';
 import ConduitLogo from '../assets/svgs/conduitLogo.svg';
 import Image from 'next/image';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: '100vh',
-  },
-  paper: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: theme.palette.background.paper,
-  },
-  avatar: {
-    backgroundColor: theme.palette.secondary.main,
-  },
-  title: {
-    marginBottom: theme.spacing(4),
-  },
-  form: {
-    width: '100%',
-  },
-  submit: {},
-  snackBar: {
-    maxWidth: '80%',
-    width: 'auto',
-  },
-  illustrationContainer: {
-    background: '#262840',
-    padding: theme.spacing(4),
-  },
-}));
 
 interface ILoginValues {
   username: string;
@@ -71,21 +40,28 @@ const Login: React.FC = () => {
     dispatch(asyncLogin(values));
   };
 
-  const classes = useStyles();
-
   return (
-    <Grid container className={classes.root}>
-      <Grid container item xs={8} className={classes.illustrationContainer}>
+    <Grid container sx={{ height: '100vh' }}>
+      <Grid container item xs={8} sx={{ background: '#262840', p: 4 }}>
         <LoginIllustration />
       </Grid>
-      <Grid container item xs={4} className={classes.paper}>
+      <Grid
+        container
+        item
+        xs={4}
+        sx={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'background.paper',
+        }}>
         <Box marginBottom="20px">
           <Image src={ConduitLogo} alt="conduit-logo" />
         </Box>
         <Typography variant="h6">Sign in</Typography>
         <Container maxWidth="xs">
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(handleLogin)} className={classes.form}>
+            <form onSubmit={methods.handleSubmit(handleLogin)} style={{ width: '100%' }}>
               <Box mt={2}>
                 <FormInputText
                   name="username"
@@ -111,7 +87,6 @@ const Login: React.FC = () => {
                 fullWidth
                 variant="contained"
                 color="primary"
-                className={classes.submit}
                 disabled={loading}>
                 Sign In
               </Button>

@@ -9,12 +9,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Button from '@material-ui/core/Button';
+} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Button from '@mui/material/Button';
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import {
   getServiceAccounts,
   deleteServiceAccounts,
@@ -24,25 +23,11 @@ import {
 import moment from 'moment';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import GetServiceAccountToken from './GetServiceAccountToken';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
 
-const useStyles = makeStyles({
-  titleContainer: {
-    justifyContent: 'space-between',
-  },
-  button: {
-    width: 170,
-  },
-  serviceButtons: {
-    minWidth: 150,
-  },
-});
-
 const ServiceAccountsTabs = () => {
-  const classes = useStyles();
-
   const [name, setName] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [serviceId, setServiceId] = useState<string>('');
@@ -133,7 +118,7 @@ const ServiceAccountsTabs = () => {
     <>
       <Container maxWidth="lg">
         <Grid container>
-          <Grid container item xs={10} className={classes.titleContainer}>
+          <Grid container item xs={10} sx={{ justifyContent: 'space-between' }}>
             <Box>
               <Typography variant={'h6'}>All available Service Accounts</Typography>
               <Typography variant={'subtitle1'}>
@@ -143,7 +128,7 @@ const ServiceAccountsTabs = () => {
             <Button
               variant={'contained'}
               color={'primary'}
-              className={classes.button}
+              sx={{ width: 170 }}
               onClick={handleGenerateNew}>
               Generate new Service Account
             </Button>
@@ -182,11 +167,11 @@ const ServiceAccountsTabs = () => {
                           {moment(service.createdAt).format('DD/MM/YYYY')}
                         </Typography>
                       </TableCell>
-                      <TableCell className={classes.serviceButtons}>
-                        <IconButton onClick={() => handleDeleteClick(service._id)}>
+                      <TableCell sx={{ minWidth: 150 }}>
+                        <IconButton onClick={() => handleDeleteClick(service._id)} size="large">
                           <DeleteIcon />
                         </IconButton>
-                        <IconButton onClick={() => handleRefresh(service._id)}>
+                        <IconButton onClick={() => handleRefresh(service._id)} size="large">
                           <RefreshIcon />
                         </IconButton>
                       </TableCell>

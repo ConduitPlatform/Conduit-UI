@@ -5,11 +5,11 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetChatMessages } from '../../redux/slices/chatSlice';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import memoize from 'memoize-one';
 import ChatRoomBubble, { ChatRoomBubbleSkeleton } from './ChatRoomBubble';
 import clsx from 'clsx';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   bubble: {
@@ -21,9 +21,6 @@ const useStyles = makeStyles((theme) => ({
   },
   bubbleSelected: {
     backgroundColor: `${theme.palette.grey[700]}80`,
-  },
-  placeholder: {
-    whiteSpace: 'nowrap',
   },
 }));
 
@@ -166,7 +163,11 @@ const ChatRoomMessages: FC<Props> = ({
       {({ height, width }) => {
         if (!count) {
           if (areEmpty)
-            return <Typography className={classes.placeholder}>No available messages</Typography>;
+            return (
+              <Typography sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+                No available messages
+              </Typography>
+            );
           return <></>;
         }
         return (

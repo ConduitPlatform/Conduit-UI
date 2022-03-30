@@ -1,11 +1,11 @@
-import { Container, makeStyles } from '@material-ui/core';
+import { Container } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { IAuthenticationConfig } from '../../models/authentication/AuthModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
@@ -14,24 +14,9 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 import ConfigSaveSection from '../common/ConfigSaveSection';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(4),
-    color: theme.palette.text.secondary,
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    width: '100%',
-  },
-  innerGrid: {
-    padding: theme.spacing(3),
-  },
-}));
-
 const AuthenticationConfig: React.FC = () => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
+
   const [edit, setEdit] = useState<boolean>(false);
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
   const methods = useForm<IAuthenticationConfig>({
@@ -74,7 +59,7 @@ const AuthenticationConfig: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper className={classes.paper}>
+      <Paper sx={{ padding: 4, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
             <Grid container spacing={3}>
@@ -86,8 +71,8 @@ const AuthenticationConfig: React.FC = () => {
                 <Typography variant={'h6'}>Activate Authentication Module</Typography>
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
-              <Divider className={classes.divider} />
-              <Grid container spacing={2} className={classes.innerGrid}>
+              <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+              <Grid container spacing={2} sx={{ padding: 3 }}>
                 {isActive && (
                   <>
                     {inputFields.map((field, index) => (

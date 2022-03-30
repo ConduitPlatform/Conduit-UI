@@ -1,11 +1,10 @@
 import React from 'react';
-import { Paper, Theme } from '@material-ui/core';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import { ExitToApp, Settings } from '@material-ui/icons';
+import { Box, Paper } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import { ExitToApp, Settings } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
-import { makeStyles } from '@material-ui/core/styles';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import CustomListItem from './CustomListItem';
@@ -13,36 +12,11 @@ import Link from 'next/link';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import Image from 'next/image';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  drawer: {
-    minWidth: 224,
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  listContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    marginTop: theme.spacing(3),
-  },
-  logoutContainer: {
-    margin: 0,
-    paddingLeft: theme.spacing(1),
-  },
-  logo: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: theme.spacing(4),
-  },
-}));
-
 interface Props {
   itemSelected?: string;
 }
 
 const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -54,11 +28,18 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   };
 
   return (
-    <Paper className={classes.drawer} elevation={2} {...rest}>
-      <ListItem className={classes.logo}>
+    <Paper sx={{ minWidth: 224, display: 'flex', flexDirection: 'column' }} elevation={2} {...rest}>
+      <ListItem sx={{ alignItems: 'center', justifyContent: 'center', mt: 4 }}>
         <Image src={ConduitLogo} alt="conduit-logo" />
       </ListItem>
-      <div className={classes.listContainer}>
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          mt: 4,
+        }}>
         <List component="nav">
           <Modules modules={enabledModules} homeEnabled itemSelected={itemSelected} />
           <Link href="/settings/clientsdk" passHref>
@@ -76,13 +57,14 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             <></>
           )}
         </List>
-        <CustomListItem
-          icon={<ExitToApp color={'inherit'} />}
-          title="Log out"
-          onClick={() => handleLogout()}
-          className={classes.logoutContainer}
-        />
-      </div>
+        <Box sx={{ margin: 0, paddingLeft: 1 }}>
+          <CustomListItem
+            icon={<ExitToApp color={'inherit'} />}
+            title="Log out"
+            onClick={() => handleLogout()}
+          />
+        </Box>
+      </Box>
     </Paper>
   );
 };

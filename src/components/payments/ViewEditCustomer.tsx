@@ -1,13 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import { Cancel } from '@material-ui/icons';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import { Cancel } from '@mui/icons-material';
 import React from 'react';
-import { Button, Paper } from '@material-ui/core';
+import { Button, Paper } from '@mui/material';
 import { useAppDispatch } from '../../redux/store';
 import { Customer } from '../../models/payments/PaymentsModels';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import sharedClasses from '../common/sharedClasses';
 import ExtractView from './ExtractView';
 import CustomerForm from './Forms/CustomerForm';
 
@@ -32,7 +31,6 @@ const ViewEditCustomer: React.FC<Props> = ({
   setCreate,
   handleClose,
 }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const handleSaveClick = (data: Customer) => {
@@ -55,7 +53,13 @@ const ViewEditCustomer: React.FC<Props> = ({
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
           <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
               <CustomerForm preloadedValues={customer} handleSubmitData={handleSaveClick} />
@@ -64,7 +68,7 @@ const ViewEditCustomer: React.FC<Props> = ({
             )}
           </Grid>
         </Paper>
-        <Grid container item xs={12} justifyContent="space-around" style={{ marginTop: '15px' }}>
+        <Grid container item xs={12} justifyContent="space-around" sx={{ marginTop: '15px' }}>
           {!edit && (
             <Button
               disabled

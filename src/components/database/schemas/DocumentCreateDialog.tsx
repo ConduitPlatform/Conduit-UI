@@ -1,28 +1,13 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React, { FC, memo, useEffect, useState } from 'react';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import { Schema } from '../../../models/database/CmsModels';
 import { set, cloneDeep } from 'lodash';
 
 import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
-
-const useStyles = makeStyles((theme) => ({
-  paperRoot: {
-    height: '100%',
-    maxHeight: '70vh',
-  },
-  dialogContent: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  textField: {
-    marginBottom: theme.spacing(2),
-  },
-}));
 
 interface Props {
   open: boolean;
@@ -32,7 +17,6 @@ interface Props {
 }
 
 const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, schema }) => {
-  const classes = useStyles();
   const [fieldValues, setFieldValues] = useState<any>({});
 
   useEffect(() => {
@@ -47,7 +31,12 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
 
   return (
     <Dialog
-      classes={{ paper: classes.paperRoot }}
+      sx={{
+        '& .MuiDialog-paper': {
+          height: '100%',
+          maxHeight: '70vh',
+        },
+      }}
       fullWidth
       maxWidth="md"
       open={open}
@@ -58,7 +47,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
           e.preventDefault();
           handleCreate(fieldValues);
         }}>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <TreeFieldGenerator schema={schema} onChange={onChange} fieldValues={fieldValues} />
         </DialogContent>
         <DialogActions>

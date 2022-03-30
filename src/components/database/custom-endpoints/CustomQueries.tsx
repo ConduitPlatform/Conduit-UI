@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Box, Grid, IconButton, TextField, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Delete, Edit } from '@material-ui/icons';
+import { Box, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Delete, Edit } from '@mui/icons-material';
 import {
   findFieldsWithTypes,
   getAvailableFieldsOfSchema,
@@ -32,38 +31,7 @@ import {
   asyncUpdateCustomEndpoints,
 } from '../../../redux/slices/databaseSlice';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginLeft: theme.spacing(4),
-    marginRight: theme.spacing(4),
-    overflow: ' hidden ',
-  },
-  mainContent: {
-    marginTop: '100px',
-    textAlign: 'center',
-  },
-  button: {
-    margin: theme.spacing(1),
-    textTransform: 'none',
-  },
-  grid: {
-    background: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: '4px',
-    padding: theme.spacing(3),
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  mainContentInfo: {
-    maxHeight: '72vh',
-    overflowY: 'auto',
-    alignItems: 'center',
-    paddingTop: '3px',
-  },
-}));
-
 const CustomQueries: FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -297,14 +265,18 @@ const CustomQueries: FC = () => {
   const renderMainContent = () => {
     if (!selectedEndpoint && !createMode) {
       return (
-        <Box className={classes.mainContent}>
+        <Box sx={{ marginTop: '100px', textAlign: 'center' }}>
           <Typography variant="h6">Select an endpoint to view more</Typography>
         </Box>
       );
     } else {
       return (
         <Box>
-          <Grid container className={classes.mainContentInfo} spacing={2} alignItems="flex-end">
+          <Grid
+            container
+            sx={{ maxHeight: '72vh', overflowY: 'auto', alignItems: 'center', paddingTop: '3px' }}
+            spacing={2}
+            alignItems="flex-end">
             <Grid item xs={5}>
               <TextField
                 size="small"
@@ -317,14 +289,18 @@ const CustomQueries: FC = () => {
               />
             </Grid>
             <Grid item xs={2} />
-            <Grid item xs={5} style={{ textAlign: 'end' }}>
+            <Grid item xs={5} sx={{ textAlign: 'end' }}>
               {!editMode && (
-                <IconButton aria-label="delete" onClick={handleDeleteClick}>
+                <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
                   <Delete color="error" />
                 </IconButton>
               )}
               {!editMode && (
-                <IconButton color="secondary" aria-label="edit" onClick={handleEditClick}>
+                <IconButton
+                  color="secondary"
+                  aria-label="edit"
+                  onClick={handleEditClick}
+                  size="large">
                   <Edit />
                 </IconButton>
               )}
@@ -343,8 +319,8 @@ const CustomQueries: FC = () => {
   };
 
   return (
-    <Box className={classes.root}>
-      <Grid container spacing={2} className={classes.grid}>
+    <Box sx={{ ml: 4, mr: 4, overflow: ' hidden ' }}>
+      <Grid container spacing={2} sx={{ background: 'rgba(0, 0, 0, 0.05)', borderRadius: 7, p: 3 }}>
         <Grid item xs={3}>
           <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>

@@ -1,7 +1,6 @@
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
@@ -32,104 +31,19 @@ import {
   Button,
   OutlinedInput,
   Tooltip,
-} from '@material-ui/core';
-import { Archive, Check, Search } from '@material-ui/icons';
+} from '@mui/material';
+import { Archive, Check, Search } from '@mui/icons-material';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
 import { Schema } from '../../../models/database/CmsModels';
 import SchemasList from './SchemasList';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview';
 import NewSchemaDialog from '../NewSchemaDialog';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '80vh',
-    flexGrow: 1,
-    borderRadius: 4,
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    display: 'flex',
-  },
-  textMargin: {
-    marginTop: 64,
-  },
-  sideBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(4),
-  },
-  noContent: {
-    textAlign: 'center',
-    marginTop: '100px',
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    minWidth: '300px',
-  },
-  headerContainer: {
-    display: 'flex',
-    flexGrow: 1,
-    flexDirection: 'column',
-    width: '100%',
-    paddingBottom: '0',
-    marginBottom: '0',
-  },
-  card: {
-    background: 'rgba(0,0,0,0.2)',
-    margin: theme.spacing(1),
-    paddingLeft: theme.spacing(2),
-    position: 'relative',
-  },
-  cardContainer: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: 12,
-  },
-  toggleButton: {
-    '&.Mui-selected': {
-      background: theme.palette.primary.main,
-      color: 'white',
-      '&:hover': {
-        background: theme.palette.secondary.main,
-      },
-    },
-    textTransform: 'none',
-  },
-  toggleButtonDisabled: {
-    '&.Mui-selected': {
-      background: theme.palette.primary.main,
-      color: 'white',
-      '&:hover': {
-        background: theme.palette.secondary.main,
-      },
-    },
-    textTransform: 'none',
-  },
-  toggle: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(1),
-  },
-  formControl: {
-    minWidth: 120,
-    width: '100%',
-    marginBottom: theme.spacing(1),
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: '33.33%',
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-}));
-
 const TabPanel: FC = ({ children }) => {
-  const classes = useStyles();
-  return <Box className={classes.cardContainer}>{children}</Box>;
+  return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
 };
 
 interface Filters {
@@ -139,7 +53,6 @@ interface Filters {
 }
 
 const Schemas: FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(0);
@@ -160,7 +73,7 @@ const Schemas: FC = () => {
   const [filters, setFilters] = useState<Filters>({
     page: 0,
     skip: 0,
-    limit: 10,
+    limit: 25,
   });
   const [search, setSearch] = useState<string>('');
   const [objectView, setObjectView] = useState<boolean>(false);
@@ -283,7 +196,12 @@ const Schemas: FC = () => {
         <SchemaDataCard
           schema={actualSchema}
           documents={docs}
-          className={classes.card}
+          sx={{
+            background: 'rgba(0,0,0,0.2)',
+            margin: 1,
+            paddingLeft: 1,
+            position: 'relative',
+          }}
           onDelete={() => onDelete(index)}
           getSchemaDocuments={getSchemaDocuments}
           key={`card${index}`}
@@ -315,7 +233,7 @@ const Schemas: FC = () => {
       return <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />;
 
     return (
-      <Typography className={classes.textMargin} variant={'h6'} align={'center'}>
+      <Typography sx={{ marginTop: 64 }} variant={'h6'} align={'center'}>
         No selected Schema
       </Typography>
     );
@@ -339,7 +257,7 @@ const Schemas: FC = () => {
       );
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{ value: any }>) => {
+  const handleFilterChange = (event: any) => {
     setOwners(event.target.value);
   };
 
@@ -354,14 +272,22 @@ const Schemas: FC = () => {
 
   return (
     <Container maxWidth={'xl'}>
-      <Box className={classes.root}>
-        <Box className={classes.sideBox}>
+      <Box
+        sx={{
+          height: '80vh',
+          flexGrow: 1,
+          borderRadius: 4,
+          backgroundColor: 'rgba(0,0,0,0.05)',
+          display: 'flex',
+        }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 3 }}>
           <Box>
-            <Grid style={{ width: '300px' }} spacing={1} container>
+            <Grid sx={{ minWidth: '300px' }} spacing={1} container>
               <Grid item xs={12}>
                 <TextField
                   size="small"
                   variant="outlined"
+                  fullWidth
                   name="Search"
                   value={schemaSearch}
                   onChange={(e) => setSchemaSearch(e.target.value)}
@@ -375,20 +301,20 @@ const Schemas: FC = () => {
                   }}
                 />
               </Grid>
-              <Grid container item style={{ paddingBottom: '10px' }}>
-                <Grid item xs={4}>
+              <Grid container item spacing={2} sx={{ pb: '10px' }}>
+                <Grid item xs={3}>
                   <Box display="flex">
                     <ToggleButtonGroup
                       size="small"
                       value={enabled}
                       exclusive
                       onChange={handleEnabled}>
-                      <ToggleButton key={1} value={true} className={classes.toggleButton}>
+                      <ToggleButton key={1} value={true}>
                         <Tooltip title="Active Schemas">
                           <Check />
                         </Tooltip>
                       </ToggleButton>
-                      <ToggleButton key={2} value={false} className={classes.toggleButtonDisabled}>
+                      <ToggleButton key={2} value={false}>
                         <Tooltip title="Archived Schemas">
                           <Archive />
                         </Tooltip>
@@ -397,7 +323,7 @@ const Schemas: FC = () => {
                   </Box>
                 </Grid>
                 {enabled && (
-                  <Grid item xs={8}>
+                  <Grid item xs={9}>
                     <FormControl size="small" variant="outlined" fullWidth>
                       <InputLabel
                         ref={labelRef}
@@ -409,16 +335,14 @@ const Schemas: FC = () => {
                       <Select
                         labelId="multiple-select-label"
                         id="filters"
+                        sx={{ borderRadius: 2 }}
                         multiple
                         value={owners}
                         onChange={handleFilterChange}
-                        input={<OutlinedInput labelWidth={labelWidth} id="my-input" />}
+                        input={<OutlinedInput id="my-input" />}
                         renderValue={(selected: any) =>
                           selected.length === 1 ? selected : 'multiple'
-                        }
-                        MenuProps={{
-                          getContentAnchorEl: null,
-                        }}>
+                        }>
                         {schemaOwners &&
                           schemaOwners.map((module: any) => (
                             <MenuItem key={module} value={module}>
@@ -449,7 +373,15 @@ const Schemas: FC = () => {
             </Button>
           </Box>
         </Box>
-        <Box className={classes.headerContainer}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            flexDirection: 'column',
+            width: '100%',
+            paddingBottom: '0',
+            marginBottom: '0',
+          }}>
           <SchemaTabs handleChange={handleTabChange} value={selectedTab} />
           {prepareNavigation()}
           {prepareCardContainer()}

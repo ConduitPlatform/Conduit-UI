@@ -1,10 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import React from 'react';
-import { Button, Paper } from '@material-ui/core';
+import { Button, Paper } from '@mui/material';
 import { Product } from '../../models/payments/PaymentsModels';
-import sharedClasses from '../common/sharedClasses';
 import ExtractView from './ExtractView';
 
 import ProductForm from './Forms/ProductForm';
@@ -29,8 +28,6 @@ const ViewEditProduct: React.FC<Props> = ({
   create,
   setCreate,
 }) => {
-  const classes = sharedClasses();
-
   const handleSaveClick = (data: Product) => {
     if (create) {
       handleCreate(data);
@@ -44,7 +41,13 @@ const ViewEditProduct: React.FC<Props> = ({
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
           <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
               <ProductForm preloadedValues={product} handleSubmitData={handleSaveClick} />

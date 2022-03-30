@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Chip, Paper, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import { Chip, Paper, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import Image from 'next/dist/client/image';
 import SubsriptionImage from '../../assets/svgs/subscriptions.svg';
 import { Subscription, Transaction } from '../../models/payments/PaymentsModels';
@@ -10,14 +10,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetTransactions } from '../../redux/slices/paymentsSlice';
 import DataTable from '../common/DataTable';
 import Paginator from '../common/Paginator';
-import sharedClasses from '../common/sharedClasses';
 
 interface Props {
   subscription: Subscription;
 }
 
 const ViewSubscription: React.FC<Props> = ({ subscription }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
   const [skip, setSkip] = useState<number>(0);
   const [limit, setLimit] = useState<number>(25);
@@ -84,8 +82,14 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
   return (
     <Container>
       <Box>
-        <Paper elevation={0} className={classes.paper}>
-          <Typography style={{ marginBottom: '25px' }}>Transactions: </Typography>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            color: 'text.secondary',
+            mt: 2,
+          }}>
+          <Typography sx={{ marginBottom: '25px' }}>Transactions: </Typography>
           <Grid container spacing={2} justifyContent="space-around">
             {transactions.length ? (
               <>
@@ -99,16 +103,34 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
                 />
               </>
             ) : (
-              <Typography style={{ textAlign: 'center' }}>No available transactions </Typography>
+              <Typography sx={{ textAlign: 'center' }}>No available transactions </Typography>
             )}
           </Grid>
-          <Grid container spacing={2} justifyContent="space-around" className={classes.chip}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-around"
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              '& > *': {
+                margin: 0.5,
+              },
+              marginTop: '50px',
+            }}>
             {chipsToDisplay(subscription)}
           </Grid>
         </Paper>
-        <div className={classes.centeredImg}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '-30px',
+          }}>
           <Image src={SubsriptionImage} width="200px" alt="transaction" />
-        </div>
+        </Box>
       </Box>
     </Container>
   );

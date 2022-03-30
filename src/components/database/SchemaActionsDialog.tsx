@@ -9,49 +9,12 @@ import {
   Chip,
   FormControlLabel,
   FormGroup,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/core/styles';
+  Box,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { isArray } from 'lodash';
 import { Schema } from '../../models/database/CmsModels';
 import { SchemaUI } from './CmsModels';
-
-const useStyles = makeStyles((theme) => ({
-  closeIcon: {
-    position: 'absolute',
-    top: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-  deleteButton: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.common.white,
-  },
-  enableButton: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.common.white,
-  },
-  archiveButton: {
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.common.white,
-  },
-  chip: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
-  dialogTitle: {
-    marginBottom: '16px',
-  },
-  dialogContent: {
-    fontWeight: 'bold',
-  },
-  dialogActionButtons: {
-    textTransform: 'none',
-  },
-}));
 
 interface Props {
   open: boolean;
@@ -81,7 +44,6 @@ const SchemaActionsDialog: FC<Props> = ({
   handleDeleteSchemas,
   selectedSchema,
 }) => {
-  const classes = useStyles();
   const [deleteData, setDeleteData] = useState<boolean>(false);
 
   const createDialogTitle = (action: actions) => {
@@ -166,25 +128,25 @@ const SchemaActionsDialog: FC<Props> = ({
     }
   };
 
-  const generateButtonClass = (action: actions) => {
+  const generateButton = (action: actions) => {
     switch (action) {
       case 'enable': {
-        return classes.enableButton;
+        return 'success.main';
       }
       case 'archive': {
-        return classes.archiveButton;
+        return 'secondary.main';
       }
       case 'enableMany': {
-        return classes.enableButton;
+        return 'success.main';
       }
       case 'archiveMany': {
-        return classes.archiveButton;
+        return 'secondary.main';
       }
       case 'delete': {
-        return classes.deleteButton;
+        return 'error.main';
       }
       case 'deleteMany': {
-        return classes.deleteButton;
+        return 'error.main';
       }
     }
   };
@@ -240,11 +202,19 @@ const SchemaActionsDialog: FC<Props> = ({
   const extractNames = () => {
     if (isArray(selectedSchema.data)) {
       return (
-        <div className={classes.chip}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            '& > *': {
+              margin: 0.5,
+            },
+          }}>
           {selectedSchema.data.map((schema: Schema | SchemaUI, index: number) => (
             <Chip color="secondary" key={index} label={schema.name} />
           ))}
-        </div>
+        </Box>
       );
     }
 
@@ -253,28 +223,25 @@ const SchemaActionsDialog: FC<Props> = ({
 
   return (
     <Dialog fullWidth={true} maxWidth={'md'} open={open} onClose={handleClose}>
-      <DialogTitle id="new-custom-type" className={classes.dialogTitle}>
+      <DialogTitle id="new-custom-type" sx={{ marginBottom: '16px' }}>
         {createDialogTitle(selectedSchema.action)}
       </DialogTitle>
       <DialogContent>
-        <span className={classes.dialogContent}>{extractNames()}</span>
+        <span style={{ fontWeight: 'bold' }}>{extractNames()}</span>
       </DialogContent>
       <DialogContent>{createDialogInfo(selectedSchema.action)}</DialogContent>
       <DialogActions>
-        <Button
-          onClick={() => handleClose()}
-          variant="contained"
-          className={classes.dialogActionButtons}>
+        <Button onClick={() => handleClose()} variant="contained" sx={{ textTransform: 'none' }}>
           Cancel
         </Button>
         <Button
           onClick={handleClick}
-          className={generateButtonClass(selectedSchema?.action)}
+          sx={{ color: 'common.white', backgroundColor: generateButton(selectedSchema?.action) }}
           variant="contained">
           {generateButtonName(selectedSchema.action)}
         </Button>
       </DialogActions>
-      <Button onClick={handleClose} className={classes.closeIcon}>
+      <Button onClick={handleClose} sx={{ position: 'absolute', top: 10, right: 2 }}>
         <CloseIcon />
       </Button>
     </Dialog>

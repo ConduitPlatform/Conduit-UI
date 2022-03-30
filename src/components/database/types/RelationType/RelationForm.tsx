@@ -1,46 +1,22 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { FC, useEffect, useState } from 'react';
 import { asyncGetSchemas } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { IDrawerData, IRelationData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-}));
+import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -71,7 +47,6 @@ const RelationForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const {
@@ -120,7 +95,7 @@ const RelationForm: FC<IProps> = ({
     setSimpleData({ ...simpleData, isArray: !simpleData.isArray });
   };
 
-  const handleFieldRelation = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const handleFieldRelation = (event: any) => {
     setSimpleData({ ...simpleData, model: event.target.value as string });
   };
 
@@ -130,14 +105,14 @@ const RelationForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={simpleData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         InputProps={{
@@ -153,7 +128,7 @@ const RelationForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Required
               </Typography>
               <FormControlLabel
@@ -170,9 +145,9 @@ const RelationForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               If active, this field will be required
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -183,7 +158,7 @@ const RelationForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Select
               </Typography>
               <FormControlLabel
@@ -199,9 +174,9 @@ const RelationForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               This option defines if the field should be returned from the database
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -212,7 +187,7 @@ const RelationForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Array
               </Typography>
               <FormControlLabel
@@ -228,13 +203,13 @@ const RelationForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               Activate this option if you want your field to be of type Array
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
       </Box>
-      <FormControl className={classes.formControl} variant={'outlined'} fullWidth>
+      <FormControl sx={{ margin: 1, minWidth: 120, maxWidth: 300 }} variant={'outlined'} fullWidth>
         <InputLabel id="field-type">Relation</InputLabel>
         <Select
           labelId="field-relation"
@@ -255,14 +230,14 @@ const RelationForm: FC<IProps> = ({
       </FormControl>
 
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" style={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 

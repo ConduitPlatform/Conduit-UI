@@ -1,7 +1,6 @@
-import { Container, Typography, Paper, Grid, Button } from '@material-ui/core';
+import { Container, Typography, Paper, Grid, Button, Box } from '@mui/material';
 import React, { FC, useCallback, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { NotificationsOutlined, Send } from '@material-ui/icons';
+import { NotificationsOutlined, Send } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppSelector } from '../../redux/store';
 import { useDispatch } from 'react-redux';
@@ -12,27 +11,6 @@ import SelectedElements from '../common/SelectedElements';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { NotificationData } from '../../models/notifications/NotificationModels';
 import { Pagination, Search } from '../../models/http/HttpModels';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  typography: {
-    marginBottom: theme.spacing(4),
-  },
-  chip: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
-  center: {
-    textAlign: 'center',
-  },
-}));
 
 type SendNotificationProps = {
   handleSend: (value: NotificationData) => void;
@@ -49,7 +27,6 @@ const defaultValues = {
 };
 
 const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const methods = useForm<NotificationInputs>({ defaultValues: defaultValues });
   const [drawer, setDrawer] = useState<boolean>(false);
@@ -95,21 +72,23 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
 
   return (
     <Container maxWidth="md">
-      <Paper className={classes.paper} elevation={5}>
-        <Typography variant={'h6'} className={classes.typography}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 8 }} elevation={5}>
+        <Typography variant={'h6'} sx={{ mb: 4 }}>
           <NotificationsOutlined fontSize={'small'} style={{ marginBottom: '-2px' }} /> Push
-          notification
+          notifications
         </Typography>
         <FormProvider {...methods}>
           <form noValidate autoComplete="off" onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
-              <SelectedElements
-                selectedElements={selectedUsers.map((user) => user.Email)}
-                handleButtonAction={() => setDrawer(true)}
-                removeSelectedElement={removeSelectedUser}
-                buttonText={'Add users'}
-                header={'Selected users'}
-              />
+              <Box sx={{ padding: 3 }}>
+                <SelectedElements
+                  selectedElements={selectedUsers.map((user) => user.Email)}
+                  handleButtonAction={() => setDrawer(true)}
+                  removeSelectedElement={removeSelectedUser}
+                  buttonText={'Add users'}
+                  header={'Selected users'}
+                />
+              </Box>
               <Grid item xs={12}>
                 <FormInputText name="title" label="title" />
               </Grid>

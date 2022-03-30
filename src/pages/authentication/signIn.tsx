@@ -1,4 +1,4 @@
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import React, { ReactElement, useEffect } from 'react';
 import { SignInTypes, SocialNameTypes } from '../../models/authentication/AuthModels';
 import {

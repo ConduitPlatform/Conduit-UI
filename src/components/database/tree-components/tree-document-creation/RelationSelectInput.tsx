@@ -1,19 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import { getDocumentsByNameRequest } from '../../../../http/DatabaseRequests';
-import { Box, CircularProgress, IconButton, Select, Typography } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
-import { RemoveRedEye } from '@material-ui/icons';
-
-const useStyles = makeStyles((theme) => ({
-  muiSelect: {
-    padding: 0,
-    minWidth: 120,
-    '& .MuiSelect-outlined': {
-      padding: theme.spacing(1, 5, 1, 1),
-    },
-  },
-}));
+import { Box, CircularProgress, IconButton, Select, Typography } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import { RemoveRedEye } from '@mui/icons-material';
 
 type RelationSelectInputProps = {
   value?: string;
@@ -30,7 +19,6 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
   schemaModel,
   required = false,
 }) => {
-  const classes = useStyles();
   const [relations, setRelations] = useState<any[]>([]);
   const [docCount, setDocCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -73,7 +61,13 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
   return (
     <Select
       disabled={loading}
-      className={classes.muiSelect}
+      sx={{
+        padding: 0,
+        minWidth: 120,
+        '& .MuiSelect-outlined': {
+          padding: [1, 5, 1, 1],
+        },
+      }}
       placeholder={'Relation Id'}
       value={value}
       IconComponent={loading ? selectIcon : undefined}
@@ -105,7 +99,8 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
                 `/cms/schemadata?schemaModel=${schemaModel}&schemaDocumentId=${item._id}`
               );
               e.stopPropagation();
-            }}>
+            }}
+            size="large">
             <RemoveRedEye />
           </IconButton>
         </MenuItem>

@@ -10,17 +10,7 @@ import {
   DialogTitle,
   Grid,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(() => ({
-  image: {
-    objectFit: 'contain',
-    maxWidth: '1500px',
-    maxHeight: '1000px',
-    borderRadius: '4px',
-  },
-}));
+} from '@mui/material';
 
 interface DownloadDialogProps {
   fileUrl: string;
@@ -34,7 +24,6 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
   fileMimeType,
   ...props
 }) => {
-  const classes = useStyles();
   const [imgLoading, setImgLoading] = useState(false);
 
   useEffect(() => {
@@ -53,7 +42,12 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
       <DialogContent>
         {fileMimeType?.includes('image') ? (
           <img
-            className={classes.image}
+            style={{
+              objectFit: 'contain',
+              maxWidth: '1500px',
+              maxHeight: '1000px',
+              borderRadius: '4px',
+            }}
             width={'100%'}
             height={'100%'}
             src={fileUrl}
@@ -66,7 +60,7 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
           </Box>
         )}
         {imgLoading ? (
-          <Grid container alignItems={'center'} justify={'center'}>
+          <Grid container alignItems={'center'} justifyContent={'center'}>
             <Box mb={3}>
               <CircularProgress />
             </Box>

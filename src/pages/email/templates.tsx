@@ -17,15 +17,14 @@ import {
   Typography,
   TextField,
   IconButton,
-  makeStyles,
   InputAdornment,
   Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import TabPanel from '../../components/emails/TabPanel';
-import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@material-ui/icons';
-import Sync from '@material-ui/icons/Sync';
-import SearchIcon from '@material-ui/icons/Search';
+import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
+import Sync from '@mui/icons-material/Sync';
+import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
 import ExternalTemplates from '../../components/emails/ExternalTemplates';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
@@ -33,20 +32,7 @@ import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
 
-const useStyles = makeStyles((theme) => ({
-  btnAlignment: {
-    marginLeft: theme.spacing(1.5),
-  },
-  btnAlignment2: {
-    marginRight: theme.spacing(1.5),
-  },
-  actions: {
-    margin: theme.spacing(1),
-  },
-}));
-
 const Templates = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const originalTemplateState = {
@@ -272,7 +258,7 @@ const Templates = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" sx={{ margin: 1 }}>
         <Grid item>
           <TextField
             size="small"
@@ -290,12 +276,13 @@ const Templates = () => {
             }}
           />
         </Grid>
-        <Grid item>
+        <Grid item pr={1}>
           {selectedTemplates.length > 0 && (
             <IconButton
               aria-label="delete"
               color="primary"
-              onClick={() => setOpenDeleteTemplates(true)}>
+              onClick={() => setOpenDeleteTemplates(true)}
+              size="large">
               <Tooltip title="Delete multiple templates">
                 <DeleteTwoTone />
               </Tooltip>
@@ -303,14 +290,15 @@ const Templates = () => {
           )}
           <IconButton
             color="primary"
-            className={classes.btnAlignment}
-            onClick={() => dispatch(asyncSyncTemplates())}>
+            sx={{ marginLeft: 1.5 }}
+            onClick={() => dispatch(asyncSyncTemplates())}
+            size="large">
             <Tooltip title="Sync external templates">
               <Sync color="primary" />
             </Tooltip>
           </IconButton>
           <Button
-            className={classes.btnAlignment2}
+            sx={{ marginRight: 1.5 }}
             variant="contained"
             color="secondary"
             onClick={() => handleImportTemplate()}
@@ -339,7 +327,7 @@ const Templates = () => {
             handleSelectAll={handleSelectAll}
             selectedItems={selectedTemplates}
           />
-          <Grid container style={{ marginTop: '-8px' }}>
+          <Grid container sx={{ marginTop: '-8px' }}>
             <Grid item xs={7} />
             <Grid item xs={5}>
               <Paginator

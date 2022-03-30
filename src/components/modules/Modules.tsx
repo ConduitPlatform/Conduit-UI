@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home } from '@material-ui/icons';
+import { Home } from '@mui/icons-material';
 import { getModuleIcon, getModuleName, handleModuleNavigation } from './moduleUtils';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
@@ -48,15 +48,18 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
       {sortedArray &&
         sortedArray.map((module, index) => {
           if (disabled) {
-            return (
-              <CustomListItem
-                icon={getModuleIcon(module.moduleName)}
-                title={getModuleName(module.moduleName)}
-                onClick={() => handleDisabledClick()}
-                key={index}
-                disabled={disabled}
-              />
-            );
+            if (getModuleName(module.moduleName) === 'payments') {
+              return;
+            } else
+              return (
+                <CustomListItem
+                  icon={getModuleIcon(module.moduleName)}
+                  title={getModuleName(module.moduleName)}
+                  onClick={() => handleDisabledClick()}
+                  key={index}
+                  disabled={disabled}
+                />
+              );
           }
           const currentUrl = handleModuleNavigation(module.moduleName);
           return (

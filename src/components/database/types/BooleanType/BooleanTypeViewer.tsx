@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Switch from '@mui/material/Switch';
 import FieldIndicators from '../../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { IBooleanData } from '../../../../models/database/BuildTypesModels';
 
 interface IProps {
@@ -13,14 +13,16 @@ interface IProps {
 const BooleanTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <>
-      <Grid item container alignItems="center" justifyContent="center" xs={1}>
-        <Typography variant={'body2'} style={{ opacity: 0.4 }}>
-          {item.placeholderFalse}
-        </Typography>
-        <Switch disabled checked={item.default} value="Boolean" />
-        <Typography variant={'body2'} style={{ opacity: 0.4 }}>
-          {item.placeholderTrue}
-        </Typography>
+      <Grid item container xs={1}>
+        <Box display="flex" justifyContent="flex-start" alignItems="center">
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderFalse}
+          </Typography>
+          <Switch disabled sx={{ ml: -1 }} checked={item.default} value="Boolean" />
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderTrue}
+          </Typography>
+        </Box>
       </Grid>
       <Grid item container justifyContent="flex-end" xs={5}>
         <Grid item xs={6}>
@@ -38,14 +40,16 @@ export default BooleanTypeViewer;
 export const BooleanGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <>
-      <Grid item container justifyContent="center" alignItems="center" xs={1}>
-        <Typography variant={'body2'} style={{ opacity: 0.4 }}>
-          {item.placeholderFalse}
-        </Typography>
-        <Switch disabled checked={item.default} value="Boolean" />
-        <Typography variant={'body2'} style={{ opacity: 0.4 }}>
-          {item.placeholderTrue}
-        </Typography>
+      <Grid item container xs={1}>
+        <Box display="flex" justifyContent="flex-start" alignItems="center">
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderFalse}
+          </Typography>
+          <Switch disabled checked={item.default} sx={{ ml: -1 }} value="Boolean" />
+          <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+            {item.placeholderTrue}
+          </Typography>
+        </Box>
       </Grid>
       <Grid item container justifyContent="flex-end" xs={5}>
         <Grid item xs={6}>

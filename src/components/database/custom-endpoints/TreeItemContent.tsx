@@ -1,23 +1,8 @@
 import React, { FC } from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
-import { AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { makeStyles } from '@material-ui/styles';
-
-const useStyles = makeStyles(() => ({
-  selected: {
-    '&&': {
-      backgroundColor: '#07D9C4',
-      color: '#262840',
-    },
-  },
-  button: {
-    width: '52px',
-    height: '35px',
-    fontWeight: 'bold',
-  },
-}));
+import { Box, Button, Grid } from '@mui/material';
+import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 interface Props {
   operator: any;
@@ -36,7 +21,6 @@ const TreeItemContent: FC<Props> = ({
   handleRemoveNode,
   handleAddQuery,
 }) => {
-  const classes = useStyles();
   const handleChange = () => {
     if (operator === 'AND') handleOperatorChange('OR');
     if (operator === 'OR') handleOperatorChange('AND');
@@ -58,14 +42,20 @@ const TreeItemContent: FC<Props> = ({
                 value="AND"
                 aria-label="left aligned"
                 color="primary"
-                classes={{ selected: classes.selected, root: classes.button }}>
+                sx={{
+                  '&.Mui-selected': { '&&': { backgroundColor: '#07D9C4', color: '#262840' } },
+                  '&.MuiToggleButton-root': { width: '52px', height: '35px', fontWeight: 'bold' },
+                }}>
                 AND
               </ToggleButton>
               <ToggleButton
                 disabled={!editMode}
                 value="OR"
                 aria-label="centered"
-                classes={{ selected: classes.selected, root: classes.button }}>
+                sx={{
+                  '&.Mui-selected': { '&&': { backgroundColor: '#07D9C4', color: '#262840' } },
+                  '&.MuiToggleButton-root': { width: '52px', height: '35px', fontWeight: 'bold' },
+                }}>
                 OR
               </ToggleButton>
             </ToggleButtonGroup>

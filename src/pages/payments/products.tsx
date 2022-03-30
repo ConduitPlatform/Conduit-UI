@@ -8,16 +8,15 @@ import {
   Typography,
   TextField,
   IconButton,
-  makeStyles,
   InputAdornment,
   Tooltip,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-import SearchIcon from '@material-ui/icons/Search';
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
-import { DeleteTwoTone } from '@material-ui/icons';
+import { DeleteTwoTone } from '@mui/icons-material';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import {
@@ -30,24 +29,7 @@ import { Product, reccuringEnum } from '../../models/payments/PaymentsModels';
 import ViewEditProduct from '../../components/payments/ViewEditProduct';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 
-const useStyles = makeStyles((theme) => ({
-  btnAlignment: {
-    marginLeft: theme.spacing(1.5),
-  },
-  btnAlignment2: {
-    marginRight: theme.spacing(1.5),
-  },
-  actions: {
-    marginBottom: theme.spacing(1),
-  },
-  noProducts: {
-    textAlign: 'center',
-    marginTop: '200px',
-  },
-}));
-
 const Products = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const originalProductState = {
@@ -265,7 +247,7 @@ const Products = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
         <Grid item>
           {count >= 0 && (
             <TextField
@@ -334,7 +316,7 @@ const Products = () => {
           </Grid>
         </>
       ) : (
-        <Box className={classes.noProducts}>
+        <Box sx={{ textAlign: 'center', mt: '200px' }}>
           <Typography>No available products</Typography>
         </Box>
       )}

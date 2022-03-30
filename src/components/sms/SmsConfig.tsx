@@ -1,12 +1,11 @@
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ISmsConfig } from '../../models/sms/SmsModels';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
@@ -15,35 +14,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  divider: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: '100%',
-  },
-  menuItem: {
-    textTransform: 'capitalize',
-  },
-  muiSelect: {
-    textTransform: 'capitalize',
-  },
-  marginBottom: {
-    marginBottom: theme.spacing(1),
-  },
-  cancel: {
-    marginRight: theme.spacing(2),
-  },
-  submit: {
-    alignSelf: 'flex-end',
-  },
-}));
-
 const SmsConfig: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { config } = useAppSelector((state) => state.smsSlice.data);
@@ -115,7 +86,7 @@ const SmsConfig: React.FC = () => {
 
   return (
     <Container>
-      <Paper className={classes.paper}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
@@ -136,7 +107,7 @@ const SmsConfig: React.FC = () => {
                       }))}
                     />
                   </Grid>
-                  <Divider className={classes.divider} />
+                  <Divider sx={{ mt: 1, mb: 1, width: '100%' }} />
                   {hasProvider && (
                     <Grid item container xs={4}>
                       <FormInputText
@@ -144,7 +115,7 @@ const SmsConfig: React.FC = () => {
                         label={'Phone Number'}
                         disabled={!edit}
                         textFieldProps={{
-                          className: classes.marginBottom,
+                          sx: { marginBottom: 1 },
                         }}
                       />
                       <FormInputText
@@ -152,7 +123,7 @@ const SmsConfig: React.FC = () => {
                         label={'Account SID'}
                         disabled={!edit}
                         textFieldProps={{
-                          className: classes.marginBottom,
+                          sx: { marginBottom: 1 },
                         }}
                       />
                       <FormInputText
@@ -160,13 +131,13 @@ const SmsConfig: React.FC = () => {
                         label={'Auth Token'}
                         disabled={!edit}
                         textFieldProps={{
-                          className: classes.marginBottom,
+                          sx: { marginBottom: 1 },
                         }}
                       />
                       <Grid item xs={12}>
                         <Typography variant="subtitle1">Verify:</Typography>
                       </Grid>
-                      <Box style={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography>Active</Typography>
                         <FormInputSwitch name={'twilio.verify.active'} />
                       </Box>
@@ -180,15 +151,12 @@ const SmsConfig: React.FC = () => {
                   <Grid item container xs={12} justifyContent={'flex-end'}>
                     {edit ? (
                       <>
-                        <Button
-                          onClick={() => handleCancel()}
-                          className={classes.cancel}
-                          color={'primary'}>
+                        <Button onClick={() => handleCancel()} sx={{ mr: 2 }} color={'primary'}>
                           Cancel
                         </Button>
                         <Button
                           type="submit"
-                          className={classes.submit}
+                          sx={{ alignSelf: 'flex-end' }}
                           variant="contained"
                           color="primary">
                           Save

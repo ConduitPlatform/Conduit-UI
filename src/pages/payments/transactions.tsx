@@ -2,9 +2,9 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import DataTable from '../../components/common/DataTable';
 import { EmailUI } from '../../models/emails/EmailModels';
-import { Grid, Typography, TextField, makeStyles, InputAdornment, Box } from '@material-ui/core';
+import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
@@ -13,24 +13,7 @@ import { Transaction } from '../../models/payments/PaymentsModels';
 import ViewTransaction from '../../components/payments/ViewTransaction';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 
-const useStyles = makeStyles((theme) => ({
-  btnAlignment: {
-    marginLeft: theme.spacing(1.5),
-  },
-  btnAlignment2: {
-    marginRight: theme.spacing(1.5),
-  },
-  actions: {
-    marginBottom: theme.spacing(1),
-  },
-  noTransactions: {
-    textAlign: 'center',
-    marginTop: '200px',
-  },
-}));
-
 const Transactions = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const originalTransactionState = {
@@ -202,7 +185,7 @@ const Transactions = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" className={classes.actions}>
+      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
         <Grid item>
           {count >= 0 && (
             <TextField
@@ -237,7 +220,7 @@ const Transactions = () => {
             handleAction={handleAction}
             selectedItems={selectedTransactions}
           />
-          <Grid container style={{ marginTop: '-8px' }}>
+          <Grid container sx={{ marginTop: '-8px' }}>
             <Grid item xs={7} />
             <Grid item xs={5}>
               <Paginator
@@ -251,7 +234,7 @@ const Transactions = () => {
           </Grid>
         </>
       ) : (
-        <Box className={classes.noTransactions}>
+        <Box sx={{ textAlign: 'center', mt: '200px' }}>
           <Typography>No available transactions</Typography>
         </Box>
       )}

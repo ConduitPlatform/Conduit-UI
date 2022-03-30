@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import clsx from 'clsx';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Accordion from '@material-ui/core/Accordion';
-import { makeStyles } from '@material-ui/core/styles';
-import { Button, InputLabel, MenuItem, Select } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Accordion from '@mui/material/Accordion';
+import { Button, InputLabel, MenuItem, Select } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
 import {
   IAuthenticationConfig,
   SignInTypes,
@@ -19,36 +17,6 @@ import {
 } from '../../models/authentication/AuthModels';
 import { extractProviderIcon, extractProviderName } from '../../utils/extractProviderUtils';
 import Image from 'next/image';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  titleContent: {
-    backgroundColor: theme.palette.grey[200],
-    height: theme.spacing(6),
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-  },
-  expandedPanel: {
-    '&.MuiAccordion-root.Mui-expanded': {
-      marginTop: '20px',
-    },
-  },
-  details: {
-    borderTop: '1px solid',
-    borderColor: 'rgb(217, 217, 217)',
-  },
-  typography: {
-    flex: 1,
-  },
-  statusEnabled: {
-    color: theme.palette.secondary.main,
-  },
-  statusDisabled: {
-    color: theme.palette.primary.main,
-  },
-}));
 
 interface Props {
   name: SocialNameTypes;
@@ -65,8 +33,6 @@ const ReusableAccordion: React.FC<Props> = ({
   configData,
   accProps,
 }) => {
-  const classes = useStyles();
-
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleCancel = () => {
@@ -114,29 +80,33 @@ const ReusableAccordion: React.FC<Props> = ({
     <Accordion
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
-      style={{ cursor: 'default' }}
-      classes={{ root: classes.expandedPanel }}>
+      sx={{
+        cursor: 'default',
+        '&.MuiAccordion-root.Mui-expanded': {
+          marginTop: '20px',
+        },
+      }}>
       <AccordionSummary id={'local'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
           <div style={{ marginTop: '3px', paddingRight: '8px' }}>
             <Image src={extractProviderIcon(name)} alt={name} />
           </div>
-          <Typography variant={'subtitle2'} className={classes.typography}>
+          <Typography variant={'subtitle2'} sx={{ flex: 1 }}>
             {extractProviderName(name)}
           </Typography>
 
           <Typography
             variant={'subtitle2'}
-            className={
+            sx={
               accProps.enabled
-                ? clsx(classes.typography, classes.statusEnabled)
-                : clsx(classes.typography, classes.statusDisabled)
+                ? { flex: 1, color: 'secondary.main' }
+                : { flex: 1, color: 'primary.main' }
             }>
             {accProps.enabled ? 'Enabled' : 'Disabled'}
           </Typography>
         </Box>
       </AccordionSummary>
-      <AccordionDetails classes={{ root: classes.details }}>
+      <AccordionDetails sx={{ borderTop: '1px solid', borderColor: 'rgb(217, 217, 217)' }}>
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -149,13 +119,14 @@ const ReusableAccordion: React.FC<Props> = ({
             display={'flex'}
             width={'100%'}
             flexDirection={'column'}
+            gap={1}
             alignItems={'center'}>
             <Box
               width={'100%'}
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 {name !== 'phoneAuthentication'
                   ? `Allow users to sign up using their ${name} account.`
                   : `Allow users to sign up using their phone number.`}
@@ -187,7 +158,7 @@ const ReusableAccordion: React.FC<Props> = ({
                       display={'inline-flex'}
                       justifyContent={'space-between'}
                       alignItems={'center'}>
-                      <Typography variant={'overline'} style={{ width: '100%' }}>
+                      <Typography variant={'overline'} sx={{ width: '100%' }}>
                         {key.split(/(?=[A-Z])/).join(' ')}
                       </Typography>
                       <FormControlLabel
@@ -221,7 +192,7 @@ const ReusableAccordion: React.FC<Props> = ({
                       id="identifier-id"
                       labelId="identifier-label"
                       name="identifier"
-                      style={{ width: '100%', marginBottom: 8 }}
+                      sx={{ width: '100%', marginBottom: 8, borderRadius: 2 }}
                       value={accProps.identifier}
                       placeholder={'identifier'}
                       disabled={!accProps.enabled}
@@ -247,10 +218,10 @@ const ReusableAccordion: React.FC<Props> = ({
             {Object.entries(accProps).map(([key, value]) => {
               if (typeof value === 'string' && key !== 'identifier') {
                 return (
-                  <Box width={'100%'} mt={2} key={key}>
+                  <Box width={'100%'} key={key}>
                     <Grid container item xs={8}>
                       <TextField
-                        style={{ width: '100%', marginBottom: 8 }}
+                        sx={{ width: '100%', mb: 3 }}
                         id={key}
                         label={key
                           .split(/(?=[A-Z&])/)
@@ -281,7 +252,7 @@ const ReusableAccordion: React.FC<Props> = ({
             <Button
               variant="contained"
               color="primary"
-              style={{ alignSelf: 'flex-end' }}
+              sx={{ alignSelf: 'flex-end' }}
               onClick={() => handleSubmit(name, accProps)}>
               Save
             </Button>

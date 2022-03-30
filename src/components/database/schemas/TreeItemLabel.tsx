@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import { Input, Typography } from '@material-ui/core';
-import { AccountTree } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { Input, Typography } from '@mui/material';
+import { AccountTree } from '@mui/icons-material';
+import makeStyles from '@mui/styles/makeStyles';
 import CustomDatepicker from '../../common/CustomDatepicker';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,18 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Grid, Container, Button } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Container, Button } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-
-const useStyles = makeStyles(() => ({
-  textSpacing: {
-    marginRight: 12,
-    fontWeight: 'bold',
-  },
-}));
 
 interface CoreSettings {
   selectedEnum: string;
@@ -31,7 +23,6 @@ const initialStates = {
 };
 
 const CoreSettingsTab: React.FC = () => {
-  const classes = useStyles();
   // const dispatch = useDispatch();
   const methods = useForm<CoreSettings>({ defaultValues: initialStates });
 
@@ -67,12 +58,12 @@ const CoreSettingsTab: React.FC = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} container alignItems={'center'}>
-              <Typography variant={'subtitle2'} className={classes.textSpacing}>
+              <Typography variant={'subtitle2'} sx={{ marginRight: 12, fontWeight: 'bold' }}>
                 Environment:
               </Typography>
               <FormInputSelect name="selectedEnum" label="Environment" options={selectOptions} />
             </Grid>
-            <Grid item xs={12} style={{ marginTop: 16 }} container wrap={'nowrap'}>
+            <Grid item xs={12} sx={{ marginTop: 16 }} container wrap={'nowrap'}>
               <Grid
                 item
                 xs={8}
@@ -80,11 +71,11 @@ const CoreSettingsTab: React.FC = () => {
                 container
                 alignItems={'center'}
                 wrap={'nowrap'}
-                style={{ marginRight: 32 }}>
+                sx={{ marginRight: 32 }}>
                 <Typography
                   component={'span'}
                   variant={'subtitle2'}
-                  className={classes.textSpacing}>
+                  sx={{ marginRight: 12, fontWeight: 'bold' }}>
                   Url:
                 </Typography>
                 <FormInputText name="url" label="URL" />
@@ -93,13 +84,13 @@ const CoreSettingsTab: React.FC = () => {
                 <Typography
                   component={'span'}
                   variant={'subtitle2'}
-                  className={classes.textSpacing}>
+                  sx={{ marginRight: 12, fontWeight: 'bold' }}>
                   Port:
                 </Typography>
                 <FormInputText name="port" label="Port" />
               </Grid>
             </Grid>
-            <Grid item xs={12} style={{ marginTop: 32 }}>
+            <Grid item xs={12} sx={{ marginTop: 32 }}>
               <Typography variant={'h6'}>Transport section</Typography>
             </Grid>
             <Grid item xs={12} container alignItems={'center'}>
@@ -110,9 +101,9 @@ const CoreSettingsTab: React.FC = () => {
               <Typography variant={'subtitle1'}>Toggle GraphQL:</Typography>
               <FormInputSwitch name="toggleGraphQL" />
             </Grid>
-            <Grid item xs={12} style={{ marginTop: 32 }}>
+            <Grid item xs={12} sx={{ marginTop: 32 }}>
               <Button
-                style={{ marginRight: 32 }}
+                sx={{ marginRight: 32 }}
                 placeholder={'Cancel'}
                 onClick={() => reset()}
                 variant={'contained'}>

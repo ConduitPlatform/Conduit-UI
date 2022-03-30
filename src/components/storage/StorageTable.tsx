@@ -1,11 +1,10 @@
 import React, { FC, useState } from 'react';
-import { Button, Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import { Button, Grid, Typography } from '@mui/material';
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import DataTable from '../common/DataTable';
-import FolderIcon from '@material-ui/icons/Folder';
-import DescriptionIcon from '@material-ui/icons/Description';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import FolderIcon from '@mui/icons-material/Folder';
+import DescriptionIcon from '@mui/icons-material/Description';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import Paginator from '../common/Paginator';
 import {
   ContainerDataProps,
@@ -15,28 +14,6 @@ import {
 import { asyncSetSelectedStorageFile } from '../../redux/slices/storageSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import StorageDownloadDialog from '../common/StorageDownloadDialog';
-
-const useStyles = makeStyles((theme) => ({
-  topContainer: {
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing(1),
-  },
-  createButton: {
-    marginRight: theme.spacing(1),
-  },
-  pathContainer: {
-    display: 'flex',
-  },
-  pathItem: {
-    cursor: 'pointer',
-    '&:hover': {
-      textDecoration: 'underline',
-    },
-  },
-  tableRow: {
-    cursor: 'pointer',
-  },
-}));
 
 interface IContainerTable {
   icon: JSX.Element;
@@ -92,7 +69,6 @@ const StorageTable: FC<Props> = ({
   count,
   placeholder,
 }) => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const appLoading = useAppSelector((state) => state.appSlice.loading);
   const fileUrl = useAppSelector((state) => state.storageSlice.data.selectedFileUrl);
@@ -188,13 +164,22 @@ const StorageTable: FC<Props> = ({
 
   return (
     <>
-      <Grid container item xs={12} className={classes.topContainer}>
-        <Grid item className={classes.pathContainer}>
+      <Grid container item xs={12} sx={{ justifyContent: 'space-between', marginBottom: 1 }}>
+        <Grid item sx={{ display: 'flex' }}>
           {path.split('/').map((item, index) => {
             return (
               <Typography
                 variant="subtitle1"
-                className={item || index === 0 ? classes.pathItem : undefined}
+                sx={
+                  item || index === 0
+                    ? {
+                        cursor: 'pointer',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }
+                    : undefined
+                }
                 onClick={() => onPathClick(item, index)}
                 key={index}>
                 {index === 0 ? '..' : `/${item}`}
@@ -206,7 +191,7 @@ const StorageTable: FC<Props> = ({
           <Button
             variant="contained"
             color="primary"
-            className={classes.createButton}
+            sx={{ mr: 2 }}
             startIcon={<AddCircleOutline />}
             onClick={() => handleCreateContainer()}>
             Create Container
@@ -214,7 +199,7 @@ const StorageTable: FC<Props> = ({
           <Button
             variant="contained"
             color="primary"
-            className={classes.createButton}
+            sx={{ mr: 2 }}
             startIcon={<AddCircleOutline />}
             disabled={path === '/'}
             onClick={() => handleCreateFolder()}>
@@ -238,12 +223,12 @@ const StorageTable: FC<Props> = ({
         handleRowClick={(value) => onPathClick(value.Name)}
         headers={path === '/' ? containerHeaders : headers}
         tableRowProps={{
-          className: classes.tableRow,
+          sx: { cursor: 'pointer' },
         }}
         placeholder={placeholder}
       />
       {!placeholder && (
-        <Grid container style={{ marginTop: '-8px' }}>
+        <Grid container sx={{ marginTop: '-8px' }}>
           <Grid item xs={7} />
           <Grid item xs={5}>
             <Paginator

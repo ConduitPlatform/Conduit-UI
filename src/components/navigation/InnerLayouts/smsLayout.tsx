@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Sms } from '@material-ui/icons';
+import { Sms } from '@mui/icons-material';
 
 const SMSLayout: React.FC = ({ children }) => {
   const pathNames = ['/sms/send', '/sms/config'];

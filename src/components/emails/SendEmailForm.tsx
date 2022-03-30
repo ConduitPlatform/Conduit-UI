@@ -1,15 +1,6 @@
-import {
-  Box,
-  Container,
-  TextField,
-  Button,
-  Grid,
-  Paper,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, Container, TextField, Button, Grid, Paper, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Clear, MailOutline, Send } from '@material-ui/icons';
+import { Clear, MailOutline, Send } from '@mui/icons-material';
 import { useForm, useWatch, Controller, FormProvider } from 'react-hook-form';
 import { EmailUI } from '../../models/emails/EmailModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -22,22 +13,6 @@ import TableDialog from '../common/TableDialog';
 import SelectedElements from '../common/SelectedElements';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  simpleTextField: {
-    width: '65ch',
-  },
-  typography: {
-    marginBottom: theme.spacing(4),
-  },
-  checkBox: {
-    marginTop: '5px',
-  },
-}));
-
 interface FormProps {
   email: string;
   sender: string;
@@ -47,7 +22,6 @@ interface FormProps {
   withTemplate: boolean;
 }
 const SendEmailForm: React.FC = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const [variables, setVariables] = useState<{ [key: string]: string }>({});
@@ -150,9 +124,9 @@ const SendEmailForm: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper className={classes.paper} elevation={1}>
-        <Typography variant={'h6'} className={classes.typography}>
-          <MailOutline fontSize={'small'} /> Compose your email
+      <Paper sx={{ padding: 3, color: 'text.secondary', borderRadius: 7 }} elevation={1}>
+        <Typography variant={'h6'} mb={2} sx={{ display: 'flex', alignItems: 'center' }}>
+          <MailOutline fontSize={'small'} sx={{ mr: 2 }} /> Compose your email
         </Typography>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -166,7 +140,7 @@ const SendEmailForm: React.FC = () => {
               <Grid item xs={8}>
                 <FormInputText name="subject" label={'Subject'} disabled={withTemplate} />
               </Grid>
-              <Grid item xs={4} className={classes.checkBox}>
+              <Grid item xs={4} mt={1}>
                 <FormInputCheckBox name="withTemplate" label="With Template" />
               </Grid>
               <Grid item xs={12}>
@@ -216,7 +190,7 @@ const SendEmailForm: React.FC = () => {
                     variant="outlined"
                     color="primary"
                     startIcon={<Clear />}
-                    style={{ marginRight: 16 }}
+                    sx={{ marginRight: 4 }}
                     onClick={() => handleCancel()}>
                     Clear
                   </Button>

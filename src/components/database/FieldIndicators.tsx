@@ -1,17 +1,15 @@
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import styled from '@emotion/styled';
 
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-    marginRight: theme.spacing(1),
-    opacity: 0.6,
-    display: 'flex',
-    alignItems: 'center',
-  },
+const CustomizedTypography = styled(Typography)(({ theme }) => ({
+  height: 25,
+  width: 25,
+  marginRight: 5,
+  opacity: 0.6,
+  display: 'flex',
+  alignItems: 'center',
 }));
 
 interface Props {
@@ -26,36 +24,26 @@ interface Props {
 }
 
 const FieldIndicators: FC<Props> = ({ item }) => {
-  const classes = useStyles();
-
   return (
     <>
       {item.required && (
         <Tooltip title={'Required field'}>
-          <Typography className={classes.icon} variant={'h6'}>
-            R
-          </Typography>
+          <CustomizedTypography variant={'h6'}>R</CustomizedTypography>
         </Tooltip>
       )}
       {item.unique && (
         <Tooltip title={'Unique field'}>
-          <Typography className={classes.icon} variant={'h6'}>
-            U
-          </Typography>
+          <CustomizedTypography variant={'h6'}>U</CustomizedTypography>
         </Tooltip>
       )}
       {item.select && (
         <Tooltip title={'Selected field'}>
-          <Typography className={classes.icon} variant={'h6'}>
-            S
-          </Typography>
+          <CustomizedTypography variant={'h6'}>S</CustomizedTypography>
         </Tooltip>
       )}
       {item.isArray && (
         <Tooltip title={'Array of selected type'}>
-          <Typography className={classes.icon} variant={'h6'}>
-            A
-          </Typography>
+          <CustomizedTypography variant={'h6'}>A</CustomizedTypography>
         </Tooltip>
       )}
     </>

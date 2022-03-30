@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
-import { Switch, SwitchProps } from '@material-ui/core';
+import { Switch, SwitchProps } from '@mui/material';
 
 interface FormSwitchProps {
   name: string;

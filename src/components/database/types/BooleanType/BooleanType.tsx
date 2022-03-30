@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Switch from '@mui/material/Switch';
 import FieldIndicators from '../../FieldIndicators';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { IBooleanData } from '../../../../models/database/BuildTypesModels';
 
 interface IProps {
@@ -16,11 +16,11 @@ const BooleanType: FC<IProps> = ({ item, ...rest }) => {
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               {item.placeholderFalse}
             </Typography>
             <Switch disabled checked={item.default} value="Boolean" />
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               {item.placeholderTrue}
             </Typography>
           </Box>
@@ -43,11 +43,11 @@ export const BooleanGroupType: FC<IProps> = ({ item, ...rest }) => {
       <Grid container>
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               {item.placeholderFalse}
             </Typography>
             <Switch disabled checked={item.default} value="Boolean" />
-            <Typography variant={'body2'} style={{ opacity: 0.4 }}>
+            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
               {item.placeholderTrue}
             </Typography>
           </Box>

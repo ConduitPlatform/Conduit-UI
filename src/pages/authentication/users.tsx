@@ -1,11 +1,11 @@
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import NewUserModal from '../../components/authentication/AddUserDrawerContent';
 import AuthUsers from '../../components/authentication/AuthUsers';
 import Paginator from '../../components/common/Paginator';
 import SearchFilter from '../../components/authentication/SearchFilter';
-import Grid from '@material-ui/core/Grid';
-import { Button, ButtonGroup, IconButton, makeStyles, Tooltip } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
 import useDebounce from '../../hooks/useDebounce';
 import {
   asyncAddNewUser,
@@ -28,41 +28,13 @@ import {
   handleDeleteDescription,
   handleDeleteTitle,
 } from '../../utils/userDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
-import BlockIcon from '@material-ui/icons/Block';
-import { AddCircle } from '@material-ui/icons';
+import DeleteIcon from '@mui/icons-material/Delete';
+import BlockIcon from '@mui/icons-material/Block';
+import { AddCircle } from '@mui/icons-material';
 import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import { isString } from 'lodash';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(0),
-    },
-    marginBottom: '3px',
-  },
-  groupActionContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'start',
-  },
-  addUserBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginLeft: theme.spacing(-2),
-  },
-  btnGroup: {
-    marginRight: theme.spacing(3),
-  },
-  searchbar: {
-    marginBottom: theme.spacing(1),
-  },
-}));
-
 const Users = () => {
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const { users, count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
@@ -253,7 +225,7 @@ const Users = () => {
 
   return (
     <div>
-      <Grid container className={classes.searchbar}>
+      <Grid container sx={{ mb: 1 }}>
         <Grid item xs={8}>
           <SearchFilter
             setSearch={setSearch}
@@ -262,13 +234,17 @@ const Users = () => {
             handleFilterChange={handleFilterChange}
           />
         </Grid>
-        <Grid item xs={4} className={classes.addUserBtn}>
+        <Grid
+          item
+          xs={4}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            marginLeft: -2,
+          }}>
           {selectedUsers.length > 1 && (
-            <ButtonGroup
-              size="small"
-              variant="contained"
-              color="primary"
-              className={classes.btnGroup}>
+            <ButtonGroup size="small" variant="contained" color="primary" sx={{ mr: 1 }}>
               <IconButton
                 aria-label="block"
                 color="primary"
@@ -277,7 +253,8 @@ const Users = () => {
                     open: true,
                     multiple: true,
                   })
-                }>
+                }
+                size="large">
                 <Tooltip title="Block multiple users">
                   <BlockIcon />
                 </Tooltip>
@@ -290,7 +267,8 @@ const Users = () => {
                     open: true,
                     multiple: true,
                   })
-                }>
+                }
+                size="large">
                 <Tooltip title="Delete multiple users">
                   <DeleteIcon />
                 </Tooltip>
@@ -320,7 +298,7 @@ const Users = () => {
         <Typography>No users available</Typography>
       )}
       {users && users.length > 0 && (
-        <Grid container style={{ marginTop: '-8px' }}>
+        <Grid container sx={{ marginTop: '-8px' }}>
           <Grid item xs={7} />
           <Grid item xs={5}>
             <Paginator

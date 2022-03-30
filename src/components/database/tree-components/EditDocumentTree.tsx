@@ -1,10 +1,10 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React, { FC } from 'react';
 import { createDocumentArray } from '../schemas/SchemaDataUtils';
 import TreeElement from './TreeElement';
 import { Schema } from '../../../models/database/CmsModels';
-import { TreeView } from '@material-ui/lab';
-import { ChevronRight, ExpandMore } from '@material-ui/icons';
+import { TreeView } from '@mui/lab';
+import { ChevronRight, ExpandMore } from '@mui/icons-material';
 
 type ViewOnlyTreeProps = {
   document: any;

@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { TreeItem } from '@material-ui/lab';
+import { TreeItem } from '@mui/lab';
 import InputCreateTreeLabel from './InputCreateTreeLabel';
 import getDeepValue from '../../../../utils/getDeepValue';
 import ArrayCreateTreeLabel from './ArrayCreateTreeLabel';

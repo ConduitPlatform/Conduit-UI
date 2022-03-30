@@ -1,12 +1,11 @@
 import React, { FC } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 
-import DialogContent from '@material-ui/core/DialogContent';
-import CloseIcon from '@material-ui/icons/Close';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Box, DialogContentText, IconButton, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import DialogContent from '@mui/material/DialogContent';
+import CloseIcon from '@mui/icons-material/Close';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Box, DialogContentText, IconButton, Typography } from '@mui/material';
 import axios from 'axios';
 
 interface Props {
@@ -17,28 +16,7 @@ interface Props {
   swagger: string;
 }
 
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  textField: {
-    textAlign: 'center',
-  },
-  customizedButton: {
-    position: 'absolute',
-    left: '90%',
-    top: '1%',
-    color: 'gray',
-  },
-}));
-
 const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
-  const classes = useStyles();
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -76,25 +54,24 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
       onClose={handleClose}
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
-      style={{ padding: 40 }}>
+      sx={{ padding: 10 }}>
       <DialogTitle id="alert-dialog-slide-title">
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h6">{title} Swagger </Typography>
-          <IconButton onClick={handleClose} className={classes.customizedButton}>
+          <IconButton
+            onClick={handleClose}
+            sx={{ position: 'absolute', left: '90%', top: '1%', color: 'gray' }}
+            size="large">
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent style={{ minWidth: '500px' }}>
+      <DialogContent sx={{ minWidth: '500px' }}>
         <DialogContentText>
           Swagger is used to describe and document RESTful APIs.
         </DialogContentText>
-        <Box padding={5} display="flex" flexDirection={'column'} style={{ gap: 10 }}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ gap: 14 }}>
+        <Box padding={5} display="flex" flexDirection={'column'} sx={{ gap: 5 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
             <Typography>Go to {title} Swagger: </Typography>
             <a
               style={{ textDecoration: 'none' }}
@@ -108,11 +85,7 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ gap: 14 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
             <Typography>Go to {title} Admin Swagger: </Typography>
             <a
               style={{ textDecoration: 'none' }}
@@ -126,21 +99,13 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            style={{ gap: 14 }}>
+          <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ gap: 5 }}>
             <Typography>Download App Swagger: </Typography>
             <Button variant="outlined" onClick={handleDownload}>
               Download Json
             </Button>
           </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ gap: 14 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
             <Typography>Download Admin Swagger: </Typography>
             <Button variant="outlined" onClick={handleAdminDownload}>
               Download Json

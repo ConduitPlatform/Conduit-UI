@@ -1,46 +1,14 @@
 import React, { forwardRef, useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { SnackbarContent, useSnackbar } from 'notistack';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import clsx from 'clsx';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import { styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    cursor: 'pointer',
-    [theme.breakpoints.up('sm')]: {
-      minWidth: '300px !important',
-    },
-  },
-  card: {
-    width: '100%',
-  },
-  typography: {
-    fontWeight: 'bold',
-  },
-  actionRoot: {
-    padding: '8px 8px 8px 16px',
-    justifyContent: 'space-between',
-  },
-  icons: {
-    marginLeft: 'auto',
-  },
-  error: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.text.primary,
-  },
-  success: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.text.primary,
-  },
-  info: {
-    backgroundColor: theme.palette.info.main,
-    color: theme.palette.text.primary,
-  },
-  warning: {
-    backgroundColor: theme.palette.warning.main,
-    color: theme.palette.text.primary,
+const StyledSnackbar = styled(SnackbarContent)(({ theme }) => ({
+  cursor: 'pointer',
+  [theme.breakpoints.up('sm')]: {
+    minWidth: '300px !important',
   },
 }));
 
@@ -55,19 +23,18 @@ interface IProps {
 }
 
 const Snackbar = forwardRef<HTMLDivElement, IProps>((props, ref) => {
-  const classes = useStyles();
   const { closeSnackbar } = useSnackbar();
 
   const getVariantColor = (variant: Variant) => {
     switch (variant) {
       case 'info':
-        return classes.info;
+        return 'info.main';
       case 'error':
-        return classes.error;
+        return 'error.main';
       case 'warning':
-        return classes.warning;
+        return 'warning.main';
       default:
-        return classes.success;
+        return 'success.main';
     }
   };
 
@@ -76,15 +43,20 @@ const Snackbar = forwardRef<HTMLDivElement, IProps>((props, ref) => {
   }, [closeSnackbar, props.id]);
 
   return (
-    <SnackbarContent ref={ref} className={classes.root} onClick={() => handleDismiss()}>
-      <Card className={clsx(classes.card, getVariantColor(props.options.variant))}>
-        <CardActions classes={{ root: classes.actionRoot }}>
-          <Typography variant="subtitle2" className={classes.typography}>
+    <StyledSnackbar ref={ref} onClick={() => handleDismiss()}>
+      <Card
+        sx={{
+          width: '100%',
+          color: 'text.primary',
+          backgroundColor: getVariantColor(props.options.variant),
+        }}>
+        <CardActions sx={{ padding: '8px 8px 8px 16px', justifyContent: 'space-between' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
             {props.options.message}
           </Typography>
         </CardActions>
       </Card>
-    </SnackbarContent>
+    </StyledSnackbar>
   );
 });
 

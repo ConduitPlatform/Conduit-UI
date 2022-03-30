@@ -1,6 +1,6 @@
 import React from 'react';
 import SharedLayout from './sharedLayout';
-import { Email } from '@material-ui/icons';
+import { Email } from '@mui/icons-material';
 
 const EmailsLayout: React.FC = ({ children }) => {
   const pathNames = ['/email/templates', '/email/send', '/email/config'];

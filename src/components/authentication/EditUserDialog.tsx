@@ -1,42 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogContent';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import EmailIcon from '@material-ui/icons/Email';
-import Button from '@material-ui/core/Button';
-import PhoneIcon from '@material-ui/icons/Phone';
-import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogContent';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import EmailIcon from '@mui/icons-material/Email';
+import Button from '@mui/material/Button';
+import PhoneIcon from '@mui/icons-material/Phone';
+import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { asyncEditUser } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    justifyItems: 'center',
-    justifySelf: 'center',
-  },
-  textField: {
-    textAlign: 'center',
-  },
-  customizedButton: {
-    position: 'absolute',
-    left: '92%',
-    top: '1%',
-    color: 'gray',
-  },
-}));
 
 interface Props {
   data: AuthUser;
@@ -46,7 +26,6 @@ interface Props {
 
 const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const [values, setValues] = useState<AuthUser>({
     email: '',
     phoneNumber: '',
@@ -82,18 +61,38 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="simple-dialog-title">
         Edit user
-        <IconButton onClick={handleClose} className={classes.customizedButton}>
+        <IconButton
+          onClick={handleClose}
+          sx={{ position: 'absolute', left: '92%', top: '1%', color: 'gray' }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
-          <Container className={classes.root} maxWidth="sm">
-            <Grid container alignItems="center" className={classes.root} spacing={2}>
+          <Container
+            sx={{
+              flexGrow: 6,
+              alignItems: 'center',
+              justifyContent: 'center',
+              justifyItems: 'center',
+              justifySelf: 'center',
+            }}
+            maxWidth="sm">
+            <Grid
+              container
+              alignItems="center"
+              sx={{
+                flexGrow: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                justifyItems: 'center',
+                justifySelf: 'center',
+              }}
+              spacing={2}>
               <Grid item sm={12}>
                 <TextField
                   fullWidth
-                  className={classes.textField}
+                  sx={{ textAlign: 'center' }}
                   variant="outlined"
                   id="email"
                   name="email"

@@ -1,16 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Chip, Collapse, makeStyles, TableCell, TableRow } from '@material-ui/core';
-
-const useStyles = makeStyles((theme) => ({
-  pill: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
-    },
-  },
-}));
+import { Box, Chip, Collapse, TableCell, TableRow } from '@mui/material';
 
 interface Props {
   collapsibleData?: any;
@@ -18,13 +7,19 @@ interface Props {
 }
 
 const InnerTable: FC<Props> = ({ collapsibleData, open }) => {
-  const classes = useStyles();
-
   return (
     <TableRow>
-      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+      <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <Box className={classes.pill}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              '& > *': {
+                margin: 0.5,
+              },
+            }}>
             {Object.entries(collapsibleData).map(([key, value], innerIndex: number) =>
               Array.isArray(value) ? (
                 <Box
@@ -35,7 +30,16 @@ const InnerTable: FC<Props> = ({ collapsibleData, open }) => {
                   justifyContent="center"
                   alignContent="center"></Box>
               ) : (
-                <Box key={innerIndex} className={classes.pill}>
+                <Box
+                  key={innerIndex}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap',
+                    '& > *': {
+                      margin: 0.5,
+                    },
+                  }}>
                   <Chip
                     size="small"
                     color={`primary`}

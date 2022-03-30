@@ -1,33 +1,14 @@
 import React, { FC, MouseEventHandler, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { IBooleanData, IDrawerData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-}));
+import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {
   drawerData: IDrawerData;
@@ -58,8 +39,6 @@ const BooleanForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const [booleanData, setBooleanData] = useState({
     name: selectedItem ? selectedItem.name : '',
     placeholderFalse: selectedItem ? selectedItem.placeholderFalse : '',
@@ -116,14 +95,14 @@ const BooleanForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={booleanData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         InputProps={{
@@ -138,7 +117,7 @@ const BooleanForm: FC<IProps> = ({
         placeholder={'false'}
         value={booleanData.placeholderFalse}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         helperText={'Placeholder to appear in the editor'}
@@ -150,7 +129,7 @@ const BooleanForm: FC<IProps> = ({
         placeholder={'true'}
         value={booleanData.placeholderTrue}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         helperText={'Placeholder to appear in the editor'}
@@ -163,7 +142,7 @@ const BooleanForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Default Value
               </Typography>
               <FormControlLabel
@@ -179,9 +158,7 @@ const BooleanForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'subtitle1'} className={classes.info}>
-              The default value of the field
-            </Typography>
+            <InfoTypography variant={'subtitle1'}>The default value of the field</InfoTypography>
           </Grid>
         </Grid>
 
@@ -192,7 +169,7 @@ const BooleanForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Unique field
               </Typography>
               <FormControlLabel
@@ -209,9 +186,9 @@ const BooleanForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'subtitle1'} className={classes.info}>
+            <InfoTypography variant={'subtitle1'}>
               {"If active, this field's value must be unique"}
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -222,7 +199,7 @@ const BooleanForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Required
               </Typography>
               <FormControlLabel
@@ -239,9 +216,9 @@ const BooleanForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               If active, this field will be required
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -252,7 +229,7 @@ const BooleanForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Select
               </Typography>
               <FormControlLabel
@@ -268,9 +245,9 @@ const BooleanForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               This option defines if the field should be returned from the database
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -281,7 +258,7 @@ const BooleanForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Array
               </Typography>
               <FormControlLabel
@@ -297,21 +274,21 @@ const BooleanForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               Activate this option if you want your field to be of type Array
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
       </Box>
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" style={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 

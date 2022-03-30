@@ -1,32 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { FC, useState } from 'react';
 import { IDrawerData, IObjectData } from '../../../../models/database/BuildTypesModels';
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(2),
-  },
-  textField: {
-    marginBottom: theme.spacing(1),
-  },
-  info: {
-    width: '100%',
-    fontSize: 14,
-    marginBottom: theme.spacing(3),
-    opacity: '0.5',
-  },
-}));
+import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {
   drawerData: IDrawerData;
@@ -46,8 +27,6 @@ const ObjectIdForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const classes = useStyles();
-
   const [simpleData, setSimpleData] = useState({
     name: selectedItem ? selectedItem.name : '',
     type: selectedItem ? selectedItem.type : drawerData.type,
@@ -78,14 +57,14 @@ const ObjectIdForm: FC<IProps> = ({
   };
 
   return (
-    <form autoComplete="off" onSubmit={handleSubmit} className={classes.form} {...rest}>
+    <StyledForm autoComplete="off" onSubmit={handleSubmit} {...rest}>
       <TextField
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
         value={simpleData.name}
         variant="outlined"
-        className={classes.textField}
+        sx={{ mb: 1 }}
         fullWidth
         required
         InputProps={{
@@ -101,7 +80,7 @@ const ObjectIdForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Unique field
               </Typography>
               <FormControlLabel
@@ -118,9 +97,9 @@ const ObjectIdForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'subtitle1'} className={classes.info}>
+            <InfoTypography variant={'subtitle1'}>
               {"If active, this field's value must be unique"}
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -131,7 +110,7 @@ const ObjectIdForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Required
               </Typography>
               <FormControlLabel
@@ -148,9 +127,9 @@ const ObjectIdForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               If active, this field will be required
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -161,7 +140,7 @@ const ObjectIdForm: FC<IProps> = ({
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'button'} style={{ width: '100%' }}>
+              <Typography variant={'button'} sx={{ width: '100%' }}>
                 Select
               </Typography>
               <FormControlLabel
@@ -177,22 +156,22 @@ const ObjectIdForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant={'body2'} className={classes.info}>
+            <InfoTypography variant={'body2'}>
               This option defines if the field should be returned from the database
-            </Typography>
+            </InfoTypography>
           </Grid>
         </Grid>
       </Box>
 
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" style={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>
           CANCEL
         </Button>
       </Box>
-    </form>
+    </StyledForm>
   );
 };
 
