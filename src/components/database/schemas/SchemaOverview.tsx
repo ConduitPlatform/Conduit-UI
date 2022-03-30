@@ -12,6 +12,8 @@ import SchemaViewer from './SchemaViewer';
 import { getSchemaFieldsWithExtra } from '../../../utils/type-functions';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import DrawerWrapper from '../../navigation/SideDrawerWrapper';
+import Data from '../../../assets/svgs/data.svg';
+import Image from 'next/image';
 
 interface Props {
   schema: Schema;
@@ -123,23 +125,33 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
 
   return (
     <>
-      <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
-        <Button
-          onClick={() => setInfoDrawer(true)}
-          variant="outlined"
-          startIcon={<InfoOutlinedIcon />}>
-          Schema Info
-        </Button>
-        <Button variant="outlined" color="primary" onClick={() => goToSchemaEndpoints(schema.name)}>
-          Custom Endpoints
-        </Button>
-        {extractButtonsLeft()}
-        {extractButtonsRight()}
+      <Box display="flex" justifyContent="space-between">
+        <Box pr={3} pt={2}>
+          <Button variant="outlined" onClick={() => setObjectView(!objectView)}>
+            {objectView ? 'Switch to Json View' : 'Switch to Object View'}
+          </Button>
+        </Box>
+        <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
+          <Button
+            onClick={() => setInfoDrawer(true)}
+            variant="outlined"
+            startIcon={<InfoOutlinedIcon />}>
+            Schema Info
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => goToSchemaEndpoints(schema.name)}>
+            Custom Endpoints
+          </Button>
+          {extractButtonsLeft()}
+          {extractButtonsRight()}
+        </Box>
       </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} sx={{ padding: '20px', mt: 2 }}>
           <Box
-            height="65vh"
+            height="69vh"
             sx={{
               overflow: 'auto',
               overflowX: 'hidden',
@@ -166,11 +178,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
               />
             )}
           </Box>
-          <Box textAlign="center" pt={2}>
-            <Button variant="outlined" onClick={() => setObjectView(!objectView)}>
-              {objectView ? 'Switch to Json View' : 'Switch to Object View'}
-            </Button>
-          </Box>
+          <Box textAlign="center" pt={2}></Box>
         </Grid>
         <Grid
           item
@@ -184,6 +192,9 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
         open={infoDrawer}
         closeDrawer={() => setInfoDrawer(false)}>
         <Box padding={3}>{ExtractSchemaInfo(schema)}</Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Image src={Data} width="200px" height="200px" alt="addUser" />
+        </Box>
       </DrawerWrapper>
       <SchemaActionsDialog
         open={openDialog}
