@@ -26,14 +26,35 @@ const SignIn = () => {
       delete newValue.redirect_uri;
       delete newValue.clientSecret;
     }
-    const data = {
-      ...config,
-      [type]: {
-        ...newValue,
-      },
-    };
 
-    dispatch(asyncUpdateAuthenticationConfig(data));
+    if (type === 'local') {
+      const newData = {
+        identifier: newValue.identifier,
+        enabled: newValue.enabled,
+        verification: {
+          required: newValue.verificationRequired,
+          sendEmail: newValue.sendVerificationEmail,
+          redirectUri: newValue.verification_redirect_uri,
+        },
+        forgot_password_redirect_uri: newValue.forgot_password_redirect_uri,
+      };
+
+      const data = {
+        ...config,
+        [type]: {
+          ...newData,
+        },
+      };
+      dispatch(asyncUpdateAuthenticationConfig(data));
+    } else {
+      const data = {
+        ...config,
+        [type]: {
+          ...newValue,
+        },
+      };
+      dispatch(asyncUpdateAuthenticationConfig(data));
+    }
   };
 
   return (

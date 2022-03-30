@@ -90,14 +90,12 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     if (configData) {
       if (configData.local) {
         const localData = configData.local;
-
         setLocal({
           enabled: localData.enabled,
-          sendVerificationEmail: localData.sendVerificationEmail,
-          accountLinking: localData.accountLinking,
-          verificationRequired: localData.verificationRequired,
+          sendVerificationEmail: localData.verification?.sendEmail ?? false,
+          verificationRequired: localData.verification?.required || false,
           identifier: localData.identifier || '',
-          verification_redirect_uri: localData.verification_redirect_uri || '',
+          verification_redirect_uri: localData.verification?.redirectUri || '',
           forgot_password_redirect_uri: localData.forgot_password_redirect_uri || '',
         });
       }
