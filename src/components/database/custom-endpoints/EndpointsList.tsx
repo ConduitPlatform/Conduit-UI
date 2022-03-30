@@ -99,16 +99,16 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, sel
             button
             key={`endpoint-${endpoint._id}`}
             sx={{
-              '&.MuiListItem-root:hover': {
+              '& .MuiListItem-root:hover': {
                 background: 'grey.600',
                 borderRadius: '4px',
               },
-              '&.Mui-selected': {
-                background: 'grey.700',
+              '& .Mui-selected': {
+                background: 'secondary.dark',
                 borderRadius: '4px',
                 color: '#ffffff',
               },
-              '&.Mui-selected:hover': {
+              '& .Mui-selected:hover': {
                 background: 'grey.800',
                 borderRadius: '4px',
                 color: '#ffffff',
