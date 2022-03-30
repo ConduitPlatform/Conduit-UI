@@ -192,7 +192,7 @@ const ReusableAccordion: React.FC<Props> = ({
                       id="identifier-id"
                       labelId="identifier-label"
                       name="identifier"
-                      sx={{ width: '100%', marginBottom: 8 }}
+                      sx={{ width: '100%', marginBottom: 8, borderRadius: 2 }}
                       value={accProps.identifier}
                       placeholder={'identifier'}
                       disabled={!accProps.enabled}
@@ -218,10 +218,10 @@ const ReusableAccordion: React.FC<Props> = ({
             {Object.entries(accProps).map(([key, value]) => {
               if (typeof value === 'string' && key !== 'identifier') {
                 return (
-                  <Box width={'100%'} mt={2} key={key}>
+                  <Box width={'100%'} key={key}>
                     <Grid container item xs={8}>
                       <TextField
-                        sx={{ width: '100%', marginBottom: 8 }}
+                        sx={{ width: '100%', mb: 3 }}
                         id={key}
                         label={key
                           .split(/(?=[A-Z&])/)

@@ -153,7 +153,7 @@ const Home = () => {
                 </CustomizedCard>
               </Link>
             </Grid>
-            <Grid item xs={6} md={6}>
+            <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/settings/secrets">
                 <CustomizedCard>
                   <BoxWithIconText>

@@ -173,7 +173,7 @@ const EnumForm: FC<IProps> = ({
       </Box>
 
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 16 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>

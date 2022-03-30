@@ -1,4 +1,4 @@
-import { Container, Typography, Paper, Grid, Button } from '@mui/material';
+import { Container, Typography, Paper, Grid, Button, Box } from '@mui/material';
 import React, { FC, useCallback, useState } from 'react';
 import { NotificationsOutlined, Send } from '@mui/icons-material';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -72,21 +72,23 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ p: 2, color: 'text.secondary' }} elevation={5}>
+      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 8 }} elevation={5}>
         <Typography variant={'h6'} sx={{ mb: 4 }}>
           <NotificationsOutlined fontSize={'small'} style={{ marginBottom: '-2px' }} /> Push
-          notification
+          notifications
         </Typography>
         <FormProvider {...methods}>
           <form noValidate autoComplete="off" onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
-              <SelectedElements
-                selectedElements={selectedUsers.map((user) => user.Email)}
-                handleButtonAction={() => setDrawer(true)}
-                removeSelectedElement={removeSelectedUser}
-                buttonText={'Add users'}
-                header={'Selected users'}
-              />
+              <Box sx={{ padding: 3 }}>
+                <SelectedElements
+                  selectedElements={selectedUsers.map((user) => user.Email)}
+                  handleButtonAction={() => setDrawer(true)}
+                  removeSelectedElement={removeSelectedUser}
+                  buttonText={'Add users'}
+                  header={'Selected users'}
+                />
+              </Box>
               <Grid item xs={12}>
                 <FormInputText name="title" label="title" />
               </Grid>
