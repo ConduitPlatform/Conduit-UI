@@ -131,7 +131,11 @@ const EndpointInputs: FC<Props> = ({
             disabled={!editMode}
             onChange={(event) => handleInputLocationChange(event, index)}>
             <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Query params</MenuItem>
-            <MenuItem value={InputLocationEnum.BODY}>Body</MenuItem>
+            <MenuItem
+              disabled={operationType === OperationsEnum.GET}
+              value={InputLocationEnum.BODY}>
+              Body
+            </MenuItem>
             <MenuItem
               disabled={
                 operationType === OperationsEnum.DELETE || operationType === OperationsEnum.GET
