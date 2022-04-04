@@ -34,10 +34,12 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
     setValue('active', data.active);
     setValue('isVerified', data.isVerified);
     setValue('hasTwoFA', data.hasTwoFA);
-  }, [data]);
+    setValue('_id', data._id);
+  }, [data, setValue]);
 
   const onSubmit = (data: AuthUser) => {
     dispatch(asyncEditUser(data));
+    reset();
     handleClose();
   };
 
