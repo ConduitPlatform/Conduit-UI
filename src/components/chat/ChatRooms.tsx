@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Button, Paper, TextField } from '@mui/material';
+import { Box, Button, InputAdornment, Paper, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import {
   asyncGetChatRooms,
@@ -12,6 +12,7 @@ import CreateChatRoomDrawer from './CreateChatRoomDrawer';
 import useDebounce from '../../hooks/useDebounce';
 import ChatRoomTabs from './ChatRoomTabs';
 import { AuthUserUI } from '../../models/authentication/AuthModels';
+import { Search } from '@mui/icons-material';
 
 const ChatRooms: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -61,21 +62,21 @@ const ChatRooms: React.FC = () => {
     <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
         <Box />
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddCircleOutline />}
-          onClick={() => setDrawerOpen(true)}>
-          Create chat room
-        </Button>
       </Box>
-      <Paper sx={{ display: 'flex', height: '75vh', padding: 1 }}>
+      <Paper sx={{ display: 'flex', height: '80vh', padding: 1, borderRadius: 4 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: 220 }}>
           <TextField
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               marginBottom: 2,
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
             label={'Search'}
             variant={'outlined'}
@@ -84,7 +85,13 @@ const ChatRooms: React.FC = () => {
               setSearch(event.target.value);
             }}
           />
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <Box
+            sx={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+            }}>
             <ChatRoomTabs
               chatRooms={data}
               chatRoomCount={count}
@@ -95,6 +102,15 @@ const ChatRooms: React.FC = () => {
               areEmpty={areEmpty}
             />
           </Box>
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ margin: 1, p: 0.5 }}
+            color="primary"
+            startIcon={<AddCircleOutline />}
+            onClick={() => setDrawerOpen(true)}>
+            Create chat room
+          </Button>
         </Box>
         {data.map((item, index) => {
           if (index === selected) {
@@ -102,6 +118,7 @@ const ChatRooms: React.FC = () => {
           }
         })}
       </Paper>
+
       <CreateChatRoomDrawer
         open={drawerOpen}
         handleCreateChatRoom={handleCreateChatRoom}

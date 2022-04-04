@@ -62,7 +62,7 @@ const AuthenticationConfig: React.FC = () => {
       <Paper sx={{ padding: 4, color: 'text.secondary', borderRadius: 7 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
-            <Grid container spacing={3}>
+            <Grid container>
               <Box
                 width={'100%'}
                 display={'inline-flex'}
@@ -72,7 +72,7 @@ const AuthenticationConfig: React.FC = () => {
                 <FormInputSwitch name={'active'} disabled={!edit} />
               </Box>
               <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
-              <Grid container spacing={2} sx={{ padding: 3 }}>
+              <Grid container spacing={5} sx={{ padding: 3 }}>
                 {isActive && (
                   <>
                     {inputFields.map((field, index) => (

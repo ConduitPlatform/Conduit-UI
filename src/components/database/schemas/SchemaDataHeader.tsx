@@ -147,13 +147,15 @@ const SchemaDataHeader: FC<Props> = ({
             {ObjText}
           </Typography>
         </ButtonContainer>
-        <Paginator
-          handlePageChange={(event, value) => handlePageChange(value)}
-          limit={filters.limit}
-          handleLimitChange={handleLimitChange}
-          page={filters.page}
-          count={count}
-        />
+        {count > 0 && (
+          <Paginator
+            handlePageChange={(event, value) => handlePageChange(value)}
+            limit={filters.limit}
+            handleLimitChange={handleLimitChange}
+            page={filters.page}
+            count={count}
+          />
+        )}
       </Box>
     </Box>
   );
