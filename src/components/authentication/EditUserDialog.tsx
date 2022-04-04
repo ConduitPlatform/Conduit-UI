@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogContent';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import EmailIcon from '@mui/icons-material/Email';
 import Button from '@mui/material/Button';
-import PhoneIcon from '@mui/icons-material/Phone';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { asyncEditUser } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
