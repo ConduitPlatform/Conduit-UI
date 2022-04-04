@@ -132,6 +132,15 @@ const ReusableAccordion: React.FC<Props> = ({
                   : `Allow users to sign up using their phone number.`}
               </Typography>
               <FormControlLabel
+                sx={{
+                  '&.MuiFormControlLabel-root': {
+                    '&.MuiFormControlLabel-labelPlacementStart': {
+                      '&	.MuiFormControlLabel-label': {
+                        mr: 2,
+                      },
+                    },
+                  },
+                }}
                 control={
                   <Switch
                     checked={accProps.enabled}
@@ -145,6 +154,7 @@ const ReusableAccordion: React.FC<Props> = ({
                     color="primary"
                   />
                 }
+                labelPlacement="start"
                 label={accProps.enabled ? 'Enabled' : 'Disabled'}
               />
             </Box>
@@ -162,6 +172,15 @@ const ReusableAccordion: React.FC<Props> = ({
                         {key.split(/(?=[A-Z])/).join(' ')}
                       </Typography>
                       <FormControlLabel
+                        sx={{
+                          '&.MuiFormControlLabel-root': {
+                            '&.MuiFormControlLabel-labelPlacementStart': {
+                              '&	.MuiFormControlLabel-label': {
+                                mr: 2,
+                              },
+                            },
+                          },
+                        }}
                         control={
                           <Switch
                             checked={value}
@@ -176,6 +195,7 @@ const ReusableAccordion: React.FC<Props> = ({
                             color="primary"
                           />
                         }
+                        labelPlacement="start"
                         label={value ? 'Enabled' : 'Disabled'}
                         disabled={!accProps.enabled || accProps?.identifier === 'username'}
                       />
