@@ -92,9 +92,9 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         setLocal({
           enabled: localData.enabled,
           sendVerificationEmail: localData.verification?.send_email ?? false,
-          verificationRequired: localData.verification?.required || false,
-          verification_redirect_uri: localData.verification?.redirect_uri || '',
-          forgot_password_redirect_uri: localData.forgot_password_redirect_uri || '',
+          verificationRequired: localData.verification?.required ?? false,
+          verification_redirect_uri: localData.verification?.redirect_uri ?? '',
+          forgot_password_redirect_uri: localData.forgot_password_redirect_uri ?? '',
         });
       }
       if (configData.google) {

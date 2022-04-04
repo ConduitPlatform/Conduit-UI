@@ -32,8 +32,8 @@ const SignIn = () => {
         enabled: newValue.enabled,
         verification: {
           required: newValue.verificationRequired,
-          sendEmail: newValue.sendVerificationEmail,
-          redirectUri: newValue.verification_redirect_uri,
+          send_email: newValue.sendVerificationEmail,
+          redirect_uri: newValue.verification_redirect_uri,
         },
         forgot_password_redirect_uri: newValue.forgot_password_redirect_uri,
       };
@@ -45,8 +45,7 @@ const SignIn = () => {
         },
       };
 
-      console.log(newData);
-      // dispatch(asyncUpdateAuthenticationConfig(data));
+      dispatch(asyncUpdateAuthenticationConfig(data));
     } else {
       const data = {
         ...config,
