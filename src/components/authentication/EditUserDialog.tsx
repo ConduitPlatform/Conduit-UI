@@ -17,6 +17,9 @@ import Checkbox from '@mui/material/Checkbox';
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { asyncEditUser } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
+import { FormProvider, useForm } from 'react-hook-form';
+import { FormInputText } from '../common/FormComponents/FormInputText';
+import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 
 interface Props {
   data: AuthUser;
@@ -26,35 +29,21 @@ interface Props {
 
 const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
   const dispatch = useAppDispatch();
-  const [values, setValues] = useState<AuthUser>({
-    email: '',
-    phoneNumber: '',
-    active: false,
-    isVerified: false,
-    hasTwoFA: false,
-    updatedAt: '',
-    createdAt: '',
-    _id: '',
-  });
+  const methods = useForm<AuthUser>({ defaultValues: data });
+
+  const { handleSubmit, reset, setValue } = methods;
 
   useEffect(() => {
-    setValues({ ...data });
+    setValue('email', data.email);
+    setValue('phoneNumber', data.phoneNumber);
+    setValue('active', data.active);
+    setValue('isVerified', data.isVerified);
+    setValue('hasTwoFA', data.hasTwoFA);
   }, [data]);
 
-  const handleInputChange = (e: { target: { name: string; value: string } }) => {
-    const { name, value } = e.target;
-
-    setValues({ ...values, [name]: value });
-  };
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    dispatch(asyncEditUser(values));
+  const onSubmit = (data: AuthUser) => {
+    dispatch(asyncEditUser(data));
     handleClose();
-  };
-
-  const handleCheckBoxChange = (event: { target: { name: string; checked: boolean } }) => {
-    setValues({ ...values, [event.target.name]: event.target.checked });
   };
 
   return (
@@ -68,19 +57,9 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <Container
-            sx={{
-              flexGrow: 6,
-              alignItems: 'center',
-              justifyContent: 'center',
-              justifyItems: 'center',
-              justifySelf: 'center',
-            }}
-            maxWidth="sm">
-            <Grid
-              container
-              alignItems="center"
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Container
               sx={{
                 flexGrow: 6,
                 alignItems: 'center',
@@ -88,98 +67,58 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 justifyItems: 'center',
                 justifySelf: 'center',
               }}
-              spacing={2}>
-              <Grid item sm={12}>
-                <TextField
-                  fullWidth
-                  sx={{ textAlign: 'center' }}
-                  variant="outlined"
-                  id="email"
-                  name="email"
-                  label="Username/Email"
-                  onChange={handleInputChange}
-                  value={values.email}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <EmailIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+              maxWidth="sm">
+              <Grid
+                container
+                alignItems="center"
+                sx={{
+                  flexGrow: 6,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  justifyItems: 'center',
+                  justifySelf: 'center',
+                }}
+                spacing={2}>
+                <Grid item sm={12}>
+                  <FormInputText
+                    name="email"
+                    label="email"
+                    rules={{
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                        message: 'Not a valid e-mail!',
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item sm={12}>
+                  <FormInputText name="phoneNumber" label="Phone Number" />
+                </Grid>
+                <Grid item sm={3}>
+                  <FormInputCheckBox name="active" label="Active" />
+                </Grid>
+                <Grid item sm={3}>
+                  <FormInputCheckBox name="isVerified" label="Verified" />
+                </Grid>
+                <Grid item sm={3}>
+                  <FormInputCheckBox name="hasTwoFA" label="Has Two-factor Authentication" />
+                </Grid>
+                <Grid item sm={12}>
+                  <Button
+                    fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    startIcon={<DoneOutlineIcon />}>
+                    Save
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item sm={12}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  label="Phone number"
-                  onChange={handleInputChange}
-                  value={values.phoneNumber}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PhoneIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item sm={3}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={values.active}
-                      onChange={handleCheckBoxChange}
-                      name="active"
-                      color="secondary"
-                    />
-                  }
-                  label="Active"
-                />
-              </Grid>
-              <Grid item sm={3}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={values.isVerified}
-                      onChange={handleCheckBoxChange}
-                      name="isVerified"
-                      color="secondary"
-                    />
-                  }
-                  label="Verified"
-                />
-              </Grid>
-              <Grid item sm={3}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={values.hasTwoFA}
-                      onChange={handleCheckBoxChange}
-                      name="hasTwoFA"
-                      color="secondary"
-                      disabled={!values.phoneNumber}
-                    />
-                  }
-                  label="Has 2 factor authentication"
-                />
-              </Grid>
-              <Grid item sm={12}>
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  startIcon={<DoneOutlineIcon />}>
-                  Save
-                </Button>
-              </Grid>
-            </Grid>
-          </Container>
-        </form>
+            </Container>
+          </form>
+        </FormProvider>
       </DialogContent>
     </Dialog>
   );

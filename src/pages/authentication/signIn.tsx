@@ -29,7 +29,6 @@ const SignIn = () => {
 
     if (type === 'local') {
       const newData = {
-        identifier: newValue.identifier,
         enabled: newValue.enabled,
         verification: {
           required: newValue.verificationRequired,
@@ -45,7 +44,9 @@ const SignIn = () => {
           ...newData,
         },
       };
-      dispatch(asyncUpdateAuthenticationConfig(data));
+
+      console.log(newData);
+      // dispatch(asyncUpdateAuthenticationConfig(data));
     } else {
       const data = {
         ...config,

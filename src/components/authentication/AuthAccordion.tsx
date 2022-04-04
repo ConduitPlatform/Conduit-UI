@@ -19,7 +19,6 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
     sendVerificationEmail: false,
     accountLinking: false,
     verificationRequired: false,
-    identifier: '',
     verification_redirect_uri: '',
     forgot_password_redirect_uri: '',
   });
@@ -92,10 +91,9 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
         const localData = configData.local;
         setLocal({
           enabled: localData.enabled,
-          sendVerificationEmail: localData.verification?.sendEmail ?? false,
+          sendVerificationEmail: localData.verification?.send_email ?? false,
           verificationRequired: localData.verification?.required || false,
-          identifier: localData.identifier || '',
-          verification_redirect_uri: localData.verification?.redirectUri || '',
+          verification_redirect_uri: localData.verification?.redirect_uri || '',
           forgot_password_redirect_uri: localData.forgot_password_redirect_uri || '',
         });
       }
