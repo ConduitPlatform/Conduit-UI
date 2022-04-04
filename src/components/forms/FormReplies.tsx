@@ -20,7 +20,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
 
   useEffect(() => {
     if (repliesForm._id !== undefined) dispatch(asyncGetFormReplies({ id: repliesForm._id }));
-  });
+  }, [dispatch]);
 
   const { replies } = useAppSelector((state) => state.formsSlice.data);
 
