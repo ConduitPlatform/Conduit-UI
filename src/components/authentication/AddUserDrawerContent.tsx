@@ -58,7 +58,13 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
                 <FormInputText
                   name="email"
                   label="Username/Email"
-                  rules={{ required: 'Username/mail is required' }}
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                      message: 'Not a valid e-mail!',
+                    },
+                  }}
                   typeOfInput={'text'}
                 />
               </Grid>

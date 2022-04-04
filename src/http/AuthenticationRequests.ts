@@ -8,7 +8,7 @@ export const getAuthUsersDataReq = (params: Pagination & Search & { provider: st
 
 export const createNewUsers = (values: { email: string; password: string }) =>
   axios.post(`${CONDUIT_API}/admin/authentication/users`, {
-    identification: values.email,
+    email: values.email,
     password: values.password,
   });
 

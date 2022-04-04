@@ -26,6 +26,7 @@ export interface SignInTypes {
   clientId?: string;
   identifier?: string;
   verification_redirect_uri?: string;
+  verification?: { required: boolean; send_email: boolean; redirect_uri: string };
   forgot_password_redirect_uri?: string;
   redirect_uri?: string;
   clientSecret?: string;
