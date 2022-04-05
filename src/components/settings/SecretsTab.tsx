@@ -5,6 +5,7 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
   Table,
@@ -56,72 +57,78 @@ const SecretsTab: React.FC = () => {
 
   return (
     <Container>
-      <Box display="flex" justifyContent="space-between">
-        <Typography variant={'h6'}>Available conduit Clients</Typography>
-        <Box display="flex" gap={1} justifyContent="space-between">
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Platform</InputLabel>
-            <Select
+      <Paper sx={{ p: 4, borderRadius: 8 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant={'h6'}>Available conduit Clients</Typography>
+          <Box display="flex" gap={1} justifyContent="space-between" alignItems="center">
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Platform</InputLabel>
+              <Select
+                size="small"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Platform"
+                value={platform}
+                onChange={(event: any) => setPlatform(event.target.value)}>
+                <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
+                <MenuItem value={ClientPlatformEnum.ANDROID}>ANDROID</MenuItem>
+                <MenuItem value={ClientPlatformEnum.IOS}>IOS</MenuItem>
+                <MenuItem value={ClientPlatformEnum.IPADOS}>IPADOS</MenuItem>
+                <MenuItem value={ClientPlatformEnum.LINUX}>LINUX</MenuItem>
+                <MenuItem value={ClientPlatformEnum.MACOS}>MACOS</MenuItem>
+                <MenuItem value={ClientPlatformEnum.WINDOWS}>WINDOWS</MenuItem>
+              </Select>
+            </FormControl>
+            <Button
+              variant={'contained'}
+              color={'primary'}
               size="small"
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Platform"
-              value={platform}
-              onChange={(event: any) => setPlatform(event.target.value)}>
-              <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
-              <MenuItem value={ClientPlatformEnum.ANDROID}>ANDROID</MenuItem>
-              <MenuItem value={ClientPlatformEnum.IOS}>IOS</MenuItem>
-              <MenuItem value={ClientPlatformEnum.IPADOS}>IPADOS</MenuItem>
-              <MenuItem value={ClientPlatformEnum.LINUX}>LINUX</MenuItem>
-              <MenuItem value={ClientPlatformEnum.MACOS}>MACOS</MenuItem>
-              <MenuItem value={ClientPlatformEnum.WINDOWS}>WINDOWS</MenuItem>
-            </Select>
-          </FormControl>
-          <Button variant={'contained'} color={'primary'} size="small" onClick={handleGenerateNew}>
-            Generate new Client
-          </Button>
+              fullWidth
+              onClick={handleGenerateNew}>
+              Generate new Client
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      <Box display="flex" justifyContent="center" mt={2}>
-        <TableContainer
-          sx={{ display: 'flex', justifyContent: 'center', height: '69vh', maxWidth: 900 }}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ backgroundColor: 'secondary.dark' }}>Client ID</TableCell>
-                <TableCell sx={{ backgroundColor: 'secondary.dark' }}>Client Secret</TableCell>
-                <TableCell sx={{ backgroundColor: 'secondary.dark' }}>Platform</TableCell>
-                <TableCell sx={{ backgroundColor: 'secondary.dark' }} />
-                <TableCell sx={{ backgroundColor: 'secondary.dark' }} />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {availableClients.map((client: IClient, index: number) => (
-                <TableRow sx={{ backgroundColor: 'background.paper' }} key={index}>
-                  <TableCell>
-                    <Typography variant={'caption'}>{client.clientId}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ maxWidth: 500 }}>
-                      <span style={{ overflowWrap: 'break-word' }}>
-                        {client.clientSecret ? client.clientSecret : 'This is a secret'}
-                      </span>
-                    </Box>
-                  </TableCell>
-                  <TableCell colSpan={2}>
-                    <Typography variant={'caption'}>{client.platform}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleDeletion(client._id)} size="large">
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+        <Box display="flex" justifyContent="center" mt={2}>
+          <TableContainer sx={{ display: 'flex', justifyContent: 'center', maxHeight: '69vh' }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Client ID</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+              </TableHead>
+              <TableBody>
+                {availableClients.map((client: IClient, index: number) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Typography variant={'caption'}>{client.clientId}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ maxWidth: 500 }}>
+                        <span style={{ overflowWrap: 'break-word' }}>
+                          {client.clientSecret ? client.clientSecret : 'This is a secret'}
+                        </span>
+                      </Box>
+                    </TableCell>
+                    <TableCell colSpan={2}>
+                      <Typography variant={'caption'}>{client.platform}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleDeletion(client._id)} size="large">
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Paper>
     </Container>
   );
 };

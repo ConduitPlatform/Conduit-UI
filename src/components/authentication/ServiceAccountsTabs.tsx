@@ -136,15 +136,15 @@ const ServiceAccountsTabs = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer>
-            <Table sx={{ maxHeight: '70vh' }}>
+          <TableContainer sx={{ maxHeight: '70vh', mt: 1 }}>
+            <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Token</TableCell>
-                  <TableCell>Active</TableCell>
-                  <TableCell>Created At</TableCell>
-                  <TableCell />
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Name</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Token</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Active</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Created At</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
                 </TableRow>
               </TableHead>
               <TableBody>
