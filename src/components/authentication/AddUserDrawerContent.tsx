@@ -52,6 +52,7 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
                 justifyContent: 'center',
                 justifyItems: 'center',
                 justifySelf: 'center',
+                mt: 10,
               }}
               spacing={2}>
               <Grid item sm={12}>

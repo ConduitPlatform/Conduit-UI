@@ -325,21 +325,16 @@ const Schemas: FC = () => {
                 {enabled && (
                   <Grid item xs={9}>
                     <FormControl size="small" variant="outlined" fullWidth>
-                      <InputLabel
-                        ref={labelRef}
-                        shrink
-                        htmlFor="my-input"
-                        id="multiple-select-label">
-                        Owner
-                      </InputLabel>
+                      <InputLabel id="filters">Owner</InputLabel>
                       <Select
-                        labelId="multiple-select-label"
+                        labelId="filters"
                         id="filters"
+                        label="Owner"
+                        variant="outlined"
                         sx={{ borderRadius: 2 }}
                         multiple
                         value={owners}
                         onChange={handleFilterChange}
-                        input={<OutlinedInput id="my-input" />}
                         renderValue={(selected: any) =>
                           selected.length === 1 ? selected : 'multiple'
                         }>

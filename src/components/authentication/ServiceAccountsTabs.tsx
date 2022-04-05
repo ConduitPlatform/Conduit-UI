@@ -3,6 +3,7 @@ import {
   Container,
   Grid,
   IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -117,71 +118,70 @@ const ServiceAccountsTabs = () => {
   return (
     <>
       <Container maxWidth="lg">
-        <Grid container>
-          <Grid container item xs={10} sx={{ justifyContent: 'space-between' }}>
+        <Paper sx={{ p: 4, borderRadius: 8 }}>
+          <Box display="flex" justifyContent="space-between">
             <Box>
               <Typography variant={'h6'}>All available Service Accounts</Typography>
               <Typography variant={'subtitle1'}>
                 Create, delete, refresh your Service Accounts
               </Typography>
             </Box>
-            <Button
-              variant={'contained'}
-              color={'primary'}
-              sx={{ width: 170 }}
-              onClick={handleGenerateNew}>
-              Generate new Service Account
-            </Button>
-          </Grid>
-          <Grid container item xs={2} />
-          <Grid item xs={10}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Token</TableCell>
-                    <TableCell>Active</TableCell>
-                    <TableCell>Created At</TableCell>
-                    <TableCell />
+            <Box>
+              <Button
+                variant={'contained'}
+                color={'primary'}
+                sx={{ width: 170 }}
+                onClick={handleGenerateNew}>
+                Generate new Service Account
+              </Button>
+            </Box>
+          </Box>
+          <TableContainer>
+            <Table sx={{ maxHeight: '70vh' }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Token</TableCell>
+                  <TableCell>Active</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {serviceAccounts.map((service, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Typography variant={'caption'}>{service.name}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant={'caption'}>
+                        {Array(service.hashedToken.length + 1).join('*')}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant={'caption'}>
+                        {service.active ? 'TRUE' : 'FALSE'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant={'caption'}>
+                        {moment(service.createdAt).format('DD/MM/YYYY')}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ minWidth: 150, display: 'flex', justifyContent: 'flex-end' }}>
+                      <IconButton onClick={() => handleDeleteClick(service._id)} size="large">
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                      <IconButton onClick={() => handleRefresh(service._id)} size="large">
+                        <RefreshIcon color="secondary" />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {serviceAccounts.map((service, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Typography variant={'caption'}>{service.name}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant={'caption'}>
-                          {Array(service.hashedToken.length + 1).join('*')}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant={'caption'}>
-                          {service.active ? 'TRUE' : 'FALSE'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant={'caption'}>
-                          {moment(service.createdAt).format('DD/MM/YYYY')}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ minWidth: 150 }}>
-                        <IconButton onClick={() => handleDeleteClick(service._id)} size="large">
-                          <DeleteIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleRefresh(service._id)} size="large">
-                          <RefreshIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-        </Grid>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       </Container>
       <ConfirmationDialog
         open={confirmation}

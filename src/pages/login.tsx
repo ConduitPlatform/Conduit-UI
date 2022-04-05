@@ -81,7 +81,9 @@ const Login: React.FC = () => {
                   label="Password"
                 />
               </Box>
-              <FormInputCheckBox name="remember" label="Remember me" />
+              <Box display="flex" justifyContent="flex-end">
+                <FormInputCheckBox name="remember" label="Remember me" />
+              </Box>
               <Button
                 type="submit"
                 fullWidth

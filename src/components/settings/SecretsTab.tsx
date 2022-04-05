@@ -56,58 +56,16 @@ const SecretsTab: React.FC = () => {
 
   return (
     <Container>
-      <Grid container>
-        <Grid item xs={12}>
-          <Typography variant={'h6'}>All available conduit Clients</Typography>
-          <Typography variant={'subtitle1'}>
-            Below you can see all previously generated Clients, create new ones or delete old
-            clients
-          </Typography>
-        </Grid>
-        <Grid item xs={8}>
-          <TableContainer>
-            <Table sx={{ maxWidth: 650 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Client ID</TableCell>
-                  <TableCell>Client Secret</TableCell>
-                  <TableCell>Platform</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {availableClients.map((client: IClient, index: number) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Typography variant={'caption'}>{client.clientId}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ maxWidth: 500 }}>
-                        <span style={{ overflowWrap: 'break-word' }}>
-                          {client.clientSecret ? client.clientSecret : 'This is a secret'}
-                        </span>
-                      </Box>
-                    </TableCell>
-                    <TableCell colSpan={2}>
-                      <Typography variant={'caption'}>{client.platform}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleDeletion(client._id)} size="large">
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
-        <Grid item xs={2}>
-          <FormControl>
+      <Box display="flex" justifyContent="space-between">
+        <Typography variant={'h6'}>Available conduit Clients</Typography>
+        <Box display="flex" gap={1} justifyContent="space-between">
+          <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Platform</InputLabel>
             <Select
+              size="small"
               labelId="demo-simple-select-label"
               id="demo-simple-select"
+              label="Platform"
               value={platform}
               onChange={(event: any) => setPlatform(event.target.value)}>
               <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
@@ -119,13 +77,51 @@ const SecretsTab: React.FC = () => {
               <MenuItem value={ClientPlatformEnum.WINDOWS}>WINDOWS</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
-        <Grid item xs={2}>
-          <Button variant={'contained'} color={'primary'} onClick={handleGenerateNew}>
+          <Button variant={'contained'} color={'primary'} size="small" onClick={handleGenerateNew}>
             Generate new Client
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
+      <Box display="flex" justifyContent="center" mt={2}>
+        <TableContainer
+          sx={{ display: 'flex', justifyContent: 'center', height: '69vh', maxWidth: 900 }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ backgroundColor: 'secondary.dark' }}>Client ID</TableCell>
+                <TableCell sx={{ backgroundColor: 'secondary.dark' }}>Client Secret</TableCell>
+                <TableCell sx={{ backgroundColor: 'secondary.dark' }}>Platform</TableCell>
+                <TableCell sx={{ backgroundColor: 'secondary.dark' }} />
+                <TableCell sx={{ backgroundColor: 'secondary.dark' }} />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {availableClients.map((client: IClient, index: number) => (
+                <TableRow sx={{ backgroundColor: 'background.paper' }} key={index}>
+                  <TableCell>
+                    <Typography variant={'caption'}>{client.clientId}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ maxWidth: 500 }}>
+                      <span style={{ overflowWrap: 'break-word' }}>
+                        {client.clientSecret ? client.clientSecret : 'This is a secret'}
+                      </span>
+                    </Box>
+                  </TableCell>
+                  <TableCell colSpan={2}>
+                    <Typography variant={'caption'}>{client.platform}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleDeletion(client._id)} size="large">
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </Container>
   );
 };

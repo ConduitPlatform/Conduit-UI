@@ -76,7 +76,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
       <Grid container justifyContent="center">
         <FormControl variant="outlined" sx={{ margin: 1, minWidth: 120, width: '90%' }}>
           <InputLabel>{select === -1 ? 'Select template' : 'Selected template'}</InputLabel>
-          <Select label="Select your template" value={select} onChange={handleTemplateChange}>
+          <Select label="Select template" value={select} onChange={handleTemplateChange}>
             <MenuItem value={-1}>
               <em>None</em>
             </MenuItem>
