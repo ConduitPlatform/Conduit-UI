@@ -29,7 +29,6 @@ import {
   TextField,
   Typography,
   Button,
-  OutlinedInput,
   Tooltip,
 } from '@mui/material';
 import { Archive, Check, Search } from '@mui/icons-material';
@@ -84,8 +83,6 @@ const Schemas: FC = () => {
   const [newSchemaDialog, setNewSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
-  const labelRef: any = useRef();
-  const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());

@@ -11,7 +11,6 @@ import {
   IconButton,
   Checkbox,
   ListItemText,
-  OutlinedInput,
 } from '@mui/material';
 import { AddCircleOutlined, Search } from '@mui/icons-material';
 import EndpointsList from './EndpointsList';
@@ -44,8 +43,6 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const [schemas, setSchemas] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 500);
   const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
-  const labelRef: any = useRef();
-  const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
   useEffect(() => {
     dispatch(setEndpointsSearch(debouncedSearch));
