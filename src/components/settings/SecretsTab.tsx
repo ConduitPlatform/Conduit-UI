@@ -1,13 +1,8 @@
 import {
+  Button,
   Container,
-  FormControl,
-  Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
-  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
@@ -18,32 +13,18 @@ import {
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ClientPlatformEnum from '../../models/ClientPlatformEnum';
-import Button from '@mui/material/Button';
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { IClient, IPlatformTypes } from '../../models/settings/SettingsModels';
-import {
-  asyncDeleteClient,
-  asyncGenerateNewClient,
-  asyncGetAvailableClients,
-} from '../../redux/slices/settingsSlice';
+import { IClient } from '../../models/settings/SettingsModels';
+import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/settingsSlice';
 import { useAppSelector } from '../../redux/store';
+import SecretsDialog from './SecretsDialog';
+import { Add } from '@mui/icons-material';
 
 const SecretsTab: React.FC = () => {
   const dispatch = useDispatch();
-
-  const [platform, setPlatform] = useState<IPlatformTypes>('WEB');
-
-  const handleGenerateNew = () => {
-    dispatch(asyncGenerateNewClient(platform));
-    setTimeout(() => {
-      dispatch(asyncGetAvailableClients());
-    }, 140);
-  };
-  //TODO We don't get an _id from the server for each new client we create
-  // so as a workaround we have to refetch-all client in
-  // TODO order to be able delete newly made clients
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(asyncGetAvailableClients());
@@ -55,39 +36,18 @@ const SecretsTab: React.FC = () => {
     dispatch(asyncDeleteClient(_id));
   };
 
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
   return (
     <Container>
       <Paper sx={{ p: 4, borderRadius: 8 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant={'h6'}>Available conduit Clients</Typography>
-          <Box display="flex" gap={1} justifyContent="space-between" alignItems="center">
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Platform</InputLabel>
-              <Select
-                size="small"
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Platform"
-                value={platform}
-                onChange={(event: any) => setPlatform(event.target.value)}>
-                <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
-                <MenuItem value={ClientPlatformEnum.ANDROID}>ANDROID</MenuItem>
-                <MenuItem value={ClientPlatformEnum.IOS}>IOS</MenuItem>
-                <MenuItem value={ClientPlatformEnum.IPADOS}>IPADOS</MenuItem>
-                <MenuItem value={ClientPlatformEnum.LINUX}>LINUX</MenuItem>
-                <MenuItem value={ClientPlatformEnum.MACOS}>MACOS</MenuItem>
-                <MenuItem value={ClientPlatformEnum.WINDOWS}>WINDOWS</MenuItem>
-              </Select>
-            </FormControl>
-            <Button
-              variant={'contained'}
-              color={'primary'}
-              size="small"
-              fullWidth
-              onClick={handleGenerateNew}>
-              Generate new Client
-            </Button>
-          </Box>
+          <Typography variant={'h6'}>Available Security Clients</Typography>
+          <Button startIcon={<Add />} variant="outlined" onClick={() => setOpenDialog(true)}>
+            Generate
+          </Button>
         </Box>
         <Box display="flex" justifyContent="center" mt={2}>
           <TableContainer sx={{ display: 'flex', justifyContent: 'center', maxHeight: '69vh' }}>
@@ -129,8 +89,13 @@ const SecretsTab: React.FC = () => {
           </TableContainer>
         </Box>
       </Paper>
+      <SecretsDialog open={openDialog} handleClose={handleClose} />
     </Container>
   );
 };
 
 export default SecretsTab;
+
+//TODO We don't get an _id from the server for each new client we create
+// so as a workaround we have to refetch-all client in
+// TODO order to be able delete newly made clients
