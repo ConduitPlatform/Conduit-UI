@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.12.0...v0.12.1) (2022-04-05)
+
+
+### Bug Fixes
+
+* **EndpointInputs:** get operation can no longer accept body params ([#52](https://github.com/ConduitPlatform/Conduit-UI/issues/52)) ([ffe8087](https://github.com/ConduitPlatform/Conduit-UI/commit/ffe80873982aa363a38904986cbb6cf423549b0d))
+* package.json & yarn.lock to reduce vulnerabilities ([#29](https://github.com/ConduitPlatform/Conduit-UI/issues/29)) ([70c7c4e](https://github.com/ConduitPlatform/Conduit-UI/commit/70c7c4e8206523cef0e44c5782f9cee90efe493a))
+* package.json & yarn.lock to reduce vulnerabilities ([#30](https://github.com/ConduitPlatform/Conduit-UI/issues/30)) ([02c235b](https://github.com/ConduitPlatform/Conduit-UI/commit/02c235b0415d4dffd4bfaa2584eccdbf60625657))
+* upgrade @reduxjs/toolkit from 1.7.1 to 1.7.2 ([#33](https://github.com/ConduitPlatform/Conduit-UI/issues/33)) ([d9ffb55](https://github.com/ConduitPlatform/Conduit-UI/commit/d9ffb55c634fb42c99863267cb563b6e4d806bba))
+* upgrade @reduxjs/toolkit from 1.7.2 to 1.8.0 ([#46](https://github.com/ConduitPlatform/Conduit-UI/issues/46)) ([f13d596](https://github.com/ConduitPlatform/Conduit-UI/commit/f13d59611c5cd3c86652734e517b71897881cb24))
+* upgrade axios from 0.25.0 to 0.26.0 ([#44](https://github.com/ConduitPlatform/Conduit-UI/issues/44)) ([7cff401](https://github.com/ConduitPlatform/Conduit-UI/commit/7cff401c4ed22a46c1a2e6bdb758883a99c11191))
+* upgrade mongodb-query-parser from 2.4.3 to 2.4.4 ([#45](https://github.com/ConduitPlatform/Conduit-UI/issues/45)) ([8481ebf](https://github.com/ConduitPlatform/Conduit-UI/commit/8481ebf2b898abdaeacd2d5d84e045e83bf43ab4))
+* upgrade react-dropzone from 11.5.3 to 11.7.0 ([#36](https://github.com/ConduitPlatform/Conduit-UI/issues/36)) ([31eab6f](https://github.com/ConduitPlatform/Conduit-UI/commit/31eab6fdf1bb9efea59d572427a7be1e747b2cf0))
+* upgrade react-hook-form from 7.25.3 to 7.26.0 ([#34](https://github.com/ConduitPlatform/Conduit-UI/issues/34)) ([3795315](https://github.com/ConduitPlatform/Conduit-UI/commit/37953150afca3024574f4ae518d7d2f46317a4e3))
+* upgrade react-hook-form from 7.27.1 to 7.28.0 ([#55](https://github.com/ConduitPlatform/Conduit-UI/issues/55)) ([8f0ec47](https://github.com/ConduitPlatform/Conduit-UI/commit/8f0ec476c52b28ca18505aaf554a2fc818b66ffe))
+* upgrade react-spring from 9.4.2 to 9.4.3 ([#43](https://github.com/ConduitPlatform/Conduit-UI/issues/43)) ([f75ec20](https://github.com/ConduitPlatform/Conduit-UI/commit/f75ec20148e7ddaef8d99fd8cb2ee91cb805475c))
+
 ## [0.12.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.11.0...v0.12.0) (2022-03-09)
 
 
