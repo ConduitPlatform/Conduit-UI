@@ -150,7 +150,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           <Grid item sm={12}>
             {inputFields.map((inputField, index: number) => {
               return (
-                <Grid key={index} container spacing={2}>
+                <Grid key={index} container spacing={2} sx={{ mt: 0.2 }}>
                   <Grid item xs={5} className={classes.fields}>
                     <TextField
                       name="key"
@@ -164,6 +164,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                     <FormControl sx={{ minWidth: 200 }}>
                       <Select
                         variant="outlined"
+                        sx={{ borderRadius: 2 }}
                         value={inputField.type}
                         onChange={handleFieldsChange(inputField.id)}
                         name="type">

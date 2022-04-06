@@ -11,7 +11,6 @@ import {
   IconButton,
   Checkbox,
   ListItemText,
-  OutlinedInput,
 } from '@mui/material';
 import { AddCircleOutlined, Search } from '@mui/icons-material';
 import EndpointsList from './EndpointsList';
@@ -44,8 +43,6 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
   const [schemas, setSchemas] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 500);
   const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
-  const labelRef: any = useRef();
-  const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
   useEffect(() => {
     dispatch(setEndpointsSearch(debouncedSearch));
@@ -115,10 +112,11 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
         </Grid>
         <Grid item sm={5}>
           <FormControl size="small" fullWidth variant="outlined" sx={{ minWidth: 120 }}>
-            <InputLabel>Operation</InputLabel>
+            <InputLabel id="operation">Operation</InputLabel>
             <Select
               sx={{ borderRadius: 2 }}
               label="Provider"
+              labelId="operation"
               value={filters.operation}
               onChange={(event) => {
                 dispatch(setEndpointsOperation(event.target.value as number));
@@ -136,18 +134,16 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
         </Grid>
         <Grid item sm={10}>
           <FormControl fullWidth variant="outlined" size="small" sx={{ minWidth: 120 }}>
-            <InputLabel ref={labelRef} shrink htmlFor="my-input">
-              Schema
-            </InputLabel>
+            <InputLabel id="schemas">Schema</InputLabel>
             <Select
               sx={{ borderRadius: 2 }}
-              labelId="multiple-select-label"
+              labelId="schemas"
               id="filters"
+              label="Schema"
               multiple
               variant="outlined"
               value={schemas}
               onChange={handleFilterChange}
-              input={<OutlinedInput type="file" id="my-input" />}
               renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}>
               {schemasWithEndpoints &&
                 schemasWithEndpoints.map((schema: { name: string; id: string }) => (

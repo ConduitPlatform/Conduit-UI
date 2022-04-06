@@ -29,7 +29,6 @@ import {
   TextField,
   Typography,
   Button,
-  OutlinedInput,
   Tooltip,
 } from '@mui/material';
 import { Archive, Check, Search } from '@mui/icons-material';
@@ -84,8 +83,6 @@ const Schemas: FC = () => {
   const [newSchemaDialog, setNewSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
-  const labelRef: any = useRef();
-  const labelWidth = labelRef.current ? labelRef.current.clientWidth : 0;
 
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());
@@ -325,21 +322,16 @@ const Schemas: FC = () => {
                 {enabled && (
                   <Grid item xs={9}>
                     <FormControl size="small" variant="outlined" fullWidth>
-                      <InputLabel
-                        ref={labelRef}
-                        shrink
-                        htmlFor="my-input"
-                        id="multiple-select-label">
-                        Owner
-                      </InputLabel>
+                      <InputLabel id="filters">Owner</InputLabel>
                       <Select
-                        labelId="multiple-select-label"
+                        labelId="filters"
                         id="filters"
+                        label="Owner"
+                        variant="outlined"
                         sx={{ borderRadius: 2 }}
                         multiple
                         value={owners}
                         onChange={handleFilterChange}
-                        input={<OutlinedInput id="my-input" />}
                         renderValue={(selected: any) =>
                           selected.length === 1 ? selected : 'multiple'
                         }>
