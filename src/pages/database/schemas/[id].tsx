@@ -9,7 +9,7 @@ import {
   addToChildGroup,
   addToGroup,
   cloneItem,
-  cmsExtension,
+  databaseExtension,
   deleteItem,
   getSchemaFieldsWithExtra,
   prepareFields,
@@ -83,6 +83,8 @@ const BuildTypes: React.FC = () => {
     }
   }, [data.schemas.schemaDocuments, id]);
 
+  console.log(selectedSchema);
+
   useEffect(() => {
     if (selectedSchema) {
       setReadOnly(true);
@@ -138,8 +140,8 @@ const BuildTypes: React.FC = () => {
         selectedSchema.extensions.length &&
         selectedSchema.modelOptions.conduit.permissions.extendable
       ) {
-        if (cmsExtension(selectedSchema.extensions)) {
-          const foundCmsSchemaFields = cmsExtension(selectedSchema.extensions);
+        if (databaseExtension(selectedSchema.extensions)) {
+          const foundCmsSchemaFields = databaseExtension(selectedSchema.extensions);
           const formattedFields = getSchemaFieldsWithExtra(foundCmsSchemaFields);
           setEditableFields({ newTypeFields: formattedFields });
 
@@ -149,7 +151,9 @@ const BuildTypes: React.FC = () => {
           const mainField = {
             [selectedSchema.name]: getSchemaFieldsWithExtra(selectedSchema.fields),
           };
-          const finalizedArray = [mainField, ...extensionSchemas].filter((obj: any) => !obj.cms);
+          const finalizedArray = [mainField, ...extensionSchemas].filter(
+            (obj: any) => !obj.database
+          );
           setNonEditableFields(finalizedArray);
         } else {
           const extensionSchemas = selectedSchema.extensions.map((ext) => ({
