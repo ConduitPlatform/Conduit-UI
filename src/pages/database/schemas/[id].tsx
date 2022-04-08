@@ -83,8 +83,6 @@ const BuildTypes: React.FC = () => {
     }
   }, [data.schemas.schemaDocuments, id]);
 
-  console.log(selectedSchema);
-
   useEffect(() => {
     if (selectedSchema) {
       setReadOnly(true);
