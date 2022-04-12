@@ -83,7 +83,12 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                     rules={{
                       required: 'Email is required',
                       pattern: {
-                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                        value: new RegExp(
+                          '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))' +
+                            '(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.' +
+                            '[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
+                        ),
+
                         message: 'Not a valid e-mail!',
                       },
                     }}
