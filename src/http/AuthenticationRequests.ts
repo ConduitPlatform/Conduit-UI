@@ -18,7 +18,7 @@ export const editUser = (values: AuthUser) =>
   });
 
 export const deleteUsers = (ids: string[]) => {
-  return axios.delete(`${CONDUIT_API}/admin/authentication/users`, { params: { ...ids } });
+  return axios.delete(`${CONDUIT_API}/admin/authentication/users`, { data: { ids } });
 };
 
 export const searchUser = (identifier: string) => {
