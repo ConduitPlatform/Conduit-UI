@@ -1,9 +1,7 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import DataTable from '../../components/common/DataTable';
 import { EmailUI } from '../../models/emails/EmailModels';
 import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
 import useDebounce from '../../hooks/useDebounce';
@@ -12,6 +10,7 @@ import { asyncDeleteTransactions, asyncGetTransactions } from '../../redux/slice
 import { Transaction } from '../../models/payments/PaymentsModels';
 import ViewTransaction from '../../components/payments/ViewTransaction';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
+import { SideDrawerWrapper, DataTable } from 'ui-components';
 
 const Transactions = () => {
   const dispatch = useAppDispatch();
@@ -238,7 +237,7 @@ const Transactions = () => {
           <Typography>No available transactions</Typography>
         </Box>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         title={'Transaction overview'}
         open={drawer}
         closeDrawer={() => handleClose()}
@@ -246,7 +245,7 @@ const Transactions = () => {
         <Box>
           <ViewTransaction transaction={selectedTransaction} />
         </Box>
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteTransactions}
         handleClose={handleClose}

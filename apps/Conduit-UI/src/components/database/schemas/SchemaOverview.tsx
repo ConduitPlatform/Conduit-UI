@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Grid, Paper, Box, Button } from '@mui/material';
+import { Grid, Box, Button } from '@mui/material';
 import { Schema } from '../../../models/database/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
 import { ExtractSchemaInfo } from '../../../utils/ExtractSchemaInfo';
@@ -11,7 +11,7 @@ import { asyncDeleteSelectedSchemas, asyncToggleSchema } from '../../../redux/sl
 import SchemaViewer from './SchemaViewer';
 import { getSchemaFieldsWithExtra } from '../../../utils/type-functions';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import DrawerWrapper from '../../navigation/SideDrawerWrapper';
+import { SideDrawerWrapper } from 'ui-components';
 import Data from '../../../assets/svgs/data.svg';
 import Image from 'next/image';
 
@@ -187,7 +187,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           alignContent="space-between"
           sx={{ padding: '20px', marginTop: '23px' }}></Grid>
       </Grid>
-      <DrawerWrapper
+      <SideDrawerWrapper
         title="Schema information"
         open={infoDrawer}
         closeDrawer={() => setInfoDrawer(false)}>
@@ -195,7 +195,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Image src={Data} width="200px" height="200px" alt="addUser" />
         </Box>
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <SchemaActionsDialog
         open={openDialog}
         handleClose={() => setOpenDialog(false)}

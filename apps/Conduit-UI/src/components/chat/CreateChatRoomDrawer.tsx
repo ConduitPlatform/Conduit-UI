@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import { Button, Grid, TextField } from '@mui/material';
-import DrawerWrapper from '../navigation/SideDrawerWrapper';
+import { SideDrawerWrapper } from 'ui-components';
 import TableDialog from '../common/TableDialog';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
@@ -79,7 +79,7 @@ const CreateChatRoomDrawer: FC<Props> = ({ open, handleCreateChatRoom, closeDraw
 
   return (
     <>
-      <DrawerWrapper
+      <SideDrawerWrapper
         title=" Create chat room"
         open={open}
         closeDrawer={() => closeDrawer()}
@@ -121,7 +121,7 @@ const CreateChatRoomDrawer: FC<Props> = ({ open, handleCreateChatRoom, closeDraw
             </Grid>
           </Grid>
         </Grid>
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <TableDialog
         open={usersDialog}
         title={'Select users'}

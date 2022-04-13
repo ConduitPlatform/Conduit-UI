@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Button, Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import DrawerWrapper from '../navigation/SideDrawerWrapper';
+import { SideDrawerWrapper } from 'ui-components';
 import Dropzone from '../common/Dropzone';
 import { IContainer, IStorageFile } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -84,7 +84,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
   };
 
   return (
-    <DrawerWrapper title={'Add File'} open={open} closeDrawer={() => closeDrawer()} width={512}>
+    <SideDrawerWrapper title={'Add File'} open={open} closeDrawer={() => closeDrawer()} width={512}>
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(handleAdd)}>
           <Grid container spacing={2}>
@@ -125,7 +125,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
           </Grid>
         </form>
       </FormProvider>
-    </DrawerWrapper>
+    </SideDrawerWrapper>
   );
 };
 

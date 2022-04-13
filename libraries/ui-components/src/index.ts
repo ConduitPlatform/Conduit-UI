@@ -22,7 +22,6 @@ import SharedLayout from "./components/navigation/InnerLayouts/sharedLayout";
 import SMSLayout from "./components/navigation/InnerLayouts/smsLayout";
 import StorageLayout from "./components/navigation/InnerLayouts/storageLayout";
 import SideDrawerWrapper from "./components/navigation/SideDrawerWrapper";
-import MulitSelect from "./components/MultiSelect";
 
 export {
   ConduitMultiSelect,
@@ -49,5 +48,4 @@ export {
   SMSLayout,
   StorageLayout,
   SideDrawerWrapper,
-  MulitSelect,
 };

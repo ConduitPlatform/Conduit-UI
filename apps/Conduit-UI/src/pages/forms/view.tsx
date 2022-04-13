@@ -12,12 +12,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
-import DataTable from '../../components/common/DataTable';
-import Paginator from '../../components/common/Paginator';
 import FormReplies from '../../components/forms/FormReplies';
 import ViewEditForm from '../../components/forms/ViewEditForm';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import useDebounce from '../../hooks/useDebounce';
 import { FormsModel, FormsUI } from '../../models/forms/FormsModels';
 import {
@@ -27,6 +24,7 @@ import {
   asyncGetForms,
 } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { SideDrawerWrapper, DataTable, Paginator } from 'ui-components';
 
 const Create = () => {
   const dispatch = useAppDispatch();
@@ -314,7 +312,7 @@ const Create = () => {
       ) : (
         <Typography sx={{ textAlign: 'center', mt: '50px' }}>No available forms </Typography>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         title={create ? 'Create a new form' : 'Edit form'}
         open={drawer}
         closeDrawer={() => handleCloseDrawer()}
@@ -342,7 +340,7 @@ const Create = () => {
             <FormReplies repliesForm={repliesForm} />
           </>
         )}
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteForms}
         handleClose={handleCloseDrawer}

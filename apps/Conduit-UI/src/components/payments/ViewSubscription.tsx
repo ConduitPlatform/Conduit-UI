@@ -8,7 +8,7 @@ import SubsriptionImage from '../../assets/svgs/subscriptions.svg';
 import { Subscription, Transaction } from '../../models/payments/PaymentsModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetTransactions } from '../../redux/slices/paymentsSlice';
-import DataTable from '../common/DataTable';
+import { DataTable } from 'ui-components';
 import Paginator from '../common/Paginator';
 
 interface Props {

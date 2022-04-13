@@ -9,7 +9,6 @@ import {
   asyncSyncTemplates,
   asyncUploadTemplate,
 } from '../../redux/slices/emailsSlice';
-import { DataTable, Paginator } from 'ui-components';
 import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
 import {
   Button,
@@ -20,7 +19,6 @@ import {
   InputAdornment,
   Tooltip,
 } from '@mui/material';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import TabPanel from '../../components/emails/TabPanel';
 import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
 import Sync from '@mui/icons-material/Sync';
@@ -30,6 +28,7 @@ import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
+import { DataTable, Paginator, SideDrawerWrapper } from 'ui-components';
 
 const Templates = () => {
   const dispatch = useAppDispatch();
@@ -342,7 +341,7 @@ const Templates = () => {
       ) : (
         <Typography>No available templates</Typography>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         open={drawer}
         title={extractTitle()}
         closeDrawer={() => handleClose()}
@@ -360,7 +359,7 @@ const Templates = () => {
         ) : (
           <ExternalTemplates handleSave={createNewTemplate} />
         )}
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteTemplates}
         handleClose={handleClose}

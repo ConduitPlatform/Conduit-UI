@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { Button, Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import DrawerWrapper from '../navigation/SideDrawerWrapper';
+import { SideDrawerWrapper } from 'ui-components';
 import { CreateFormSelected, IContainer, ICreateForm } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
@@ -76,7 +76,7 @@ const StorageCreateDrawer: FC<Props> = ({
   };
 
   return (
-    <DrawerWrapper
+    <SideDrawerWrapper
       title={`Create ${data.type}`}
       open={data.open}
       closeDrawer={() => closeDrawer()}
@@ -111,7 +111,7 @@ const StorageCreateDrawer: FC<Props> = ({
           </Grid>
         </form>
       </FormProvider>
-    </DrawerWrapper>
+    </SideDrawerWrapper>
   );
 };
 

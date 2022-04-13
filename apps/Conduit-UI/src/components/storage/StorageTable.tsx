@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import DataTable from '../common/DataTable';
+import { DataTable } from 'ui-components';
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';

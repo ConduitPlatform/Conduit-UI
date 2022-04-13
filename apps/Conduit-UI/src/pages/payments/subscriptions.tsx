@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import DataTable from '../../components/common/DataTable';
 import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
@@ -8,7 +7,7 @@ import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import { asyncGetSubscriptions } from '../../redux/slices/paymentsSlice';
 import { Subscription } from '../../models/payments/PaymentsModels';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
+import { SideDrawerWrapper, DataTable } from 'ui-components';
 import ViewSubscription from '../../components/payments/ViewSubscription';
 
 const Subscriptions = () => {
@@ -191,7 +190,7 @@ const Subscriptions = () => {
           <Typography>No available subscription data</Typography>
         </Box>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         title={'Subscription overview'}
         open={drawer}
         closeDrawer={() => handleClose()}
@@ -199,7 +198,7 @@ const Subscriptions = () => {
         <Box>
           <ViewSubscription subscription={selectedSubscription} />
         </Box>
-      </DrawerWrapper>
+      </SideDrawerWrapper>
     </div>
   );
 };

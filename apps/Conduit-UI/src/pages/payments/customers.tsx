@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import DataTable from '../../components/common/DataTable';
 import { EmailUI } from '../../models/emails/EmailModels';
 import {
   Button,
@@ -12,7 +11,7 @@ import {
   Tooltip,
   Box,
 } from '@mui/material';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
+import { SideDrawerWrapper, DataTable } from 'ui-components';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
@@ -323,7 +322,7 @@ const Customers = () => {
           <Typography>No available customers</Typography>
         </Box>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         title={!create ? 'Customer overview' : 'Create a new customer'}
         open={drawer}
         closeDrawer={() => handleClose()}
@@ -338,7 +337,7 @@ const Customers = () => {
           setCreate={setCreate}
           handleClose={() => handleClose()}
         />
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteCustomers}
         handleClose={handleClose}

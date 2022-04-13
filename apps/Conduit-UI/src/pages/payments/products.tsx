@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import DataTable from '../../components/common/DataTable';
 import { EmailUI } from '../../models/emails/EmailModels';
 import {
   Button,
@@ -12,7 +11,7 @@ import {
   Tooltip,
   Box,
 } from '@mui/material';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
+import { SideDrawerWrapper, DataTable } from 'ui-components';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import Paginator from '../../components/common/Paginator';
@@ -320,7 +319,7 @@ const Products = () => {
           <Typography>No available products</Typography>
         </Box>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         title={!create ? 'Product overview' : 'Create a new product'}
         open={drawer}
         closeDrawer={() => handleClose()}
@@ -337,7 +336,7 @@ const Products = () => {
             handleClose={() => handleClose()}
           />
         </Box>
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteProducts}
         handleClose={handleClose}
