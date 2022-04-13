@@ -2,7 +2,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React, { FC } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import CustomDatepicker from '../../common/CustomDatepicker';
+import { CustomDatepicker } from 'ui-components';
 import { Input, Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
