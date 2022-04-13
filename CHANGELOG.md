@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.2](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.12.1...v0.12.2) (2022-04-13)
+
+
+### Bug Fixes
+
+* package.json & yarn.lock to reduce vulnerabilities ([#58](https://github.com/ConduitPlatform/Conduit-UI/issues/58)) ([a607625](https://github.com/ConduitPlatform/Conduit-UI/commit/a607625fd2977d1ebd502014d39d92ea4bafed07))
+* **schemas:** editing schemas had a leftover from the old 'cms' which… ([#59](https://github.com/ConduitPlatform/Conduit-UI/issues/59)) ([954905b](https://github.com/ConduitPlatform/Conduit-UI/commit/954905b77f71d244260c63987c9b62e336223bcd))
+* upgrade @types/react-json-editor-ajrm from 2.5.2 to 2.5.3 ([#60](https://github.com/ConduitPlatform/Conduit-UI/issues/60)) ([809b24b](https://github.com/ConduitPlatform/Conduit-UI/commit/809b24bbd06053f129944fb62086df2cd1374f87))
+
 ### [0.12.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.12.0...v0.12.1) (2022-04-05)
 
 
