@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Container } from '@mui/material';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { IStorageConfig } from '../../models/storage/StorageModels';
@@ -12,7 +10,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveStorageConfig } from '../../redux/slices/storageSlice';
-import ConfigSaveSection from '../common/ConfigSaveSection';
+import { ConfigSaveSection, ConfigContainer } from 'ui-components';
 
 const StorageConfig: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -60,117 +58,115 @@ const StorageConfig: React.FC = () => {
   ];
 
   return (
-    <Container>
-      <Paper sx={{ padding: 2, color: 'text.secondary', borderRadius: 7 }}>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Grid container>
-              <Box
-                sx={{
-                  width: '100%',
-                  display: 'inline-flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                <Typography variant={'h6'}>Activate Storage Module</Typography>
-                <FormInputSwitch name={'active'} disabled={!edit} />
-              </Box>
-              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
-              <Grid container spacing={2} sx={{ pl: 4 }}>
-                {isActive && (
-                  <>
-                    <Grid item xs={12}>
-                      <Typography variant={'h6'}>The provider to use for storage</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <FormInputSelect
-                        disabled={!edit}
-                        label={'Provider'}
-                        name="provider"
-                        options={providers?.map((template) => ({
-                          label: template.label,
-                          value: template.value,
-                        }))}
-                      />
-                    </Grid>
-                    <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
-                    <Grid item spacing={1} container xs={12}>
-                      {watchProvider === 'azure' && (
+    <ConfigContainer>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Grid container>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'inline-flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <Typography variant={'h6'}>Activate Storage Module</Typography>
+              <FormInputSwitch name={'active'} disabled={!edit} />
+            </Box>
+            <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+            <Grid container spacing={2} sx={{ pl: 4 }}>
+              {isActive && (
+                <>
+                  <Grid item xs={12}>
+                    <Typography variant={'h6'}>The provider to use for storage</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <FormInputSelect
+                      disabled={!edit}
+                      label={'Provider'}
+                      name="provider"
+                      options={providers?.map((template) => ({
+                        label: template.label,
+                        value: template.value,
+                      }))}
+                    />
+                  </Grid>
+                  <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+                  <Grid item spacing={1} container xs={12}>
+                    {watchProvider === 'azure' && (
+                      <Grid item xs={6}>
+                        <FormInputText
+                          name="azure.connectionString"
+                          label="Connection String"
+                          disabled={!edit}
+                        />
+                      </Grid>
+                    )}
+                    {watchProvider === 'google' && (
+                      <>
                         <Grid item xs={6}>
                           <FormInputText
-                            name="azure.connectionString"
-                            label="Connection String"
+                            name="google.serviceAccountKeyPath"
+                            label="Service Account Key Path"
                             disabled={!edit}
                           />
                         </Grid>
-                      )}
-                      {watchProvider === 'google' && (
-                        <>
-                          <Grid item xs={6}>
-                            <FormInputText
-                              name="google.serviceAccountKeyPath"
-                              label="Service Account Key Path"
-                              disabled={!edit}
-                            />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <FormInputText
-                              name="google.bucketName"
-                              label="Bucket Name"
-                              disabled={!edit}
-                            />
-                          </Grid>
-                        </>
-                      )}
-                      {watchProvider === 'aws' && (
-                        <>
-                          <Grid item xs={6}>
-                            <FormInputText name="aws.region" label="Region" disabled={!edit} />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <FormInputText
-                              name="google.secretAccessKey"
-                              label="Secret Access Key"
-                              disabled={!edit}
-                            />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <FormInputText
-                              name="google.accessKeyId"
-                              label="Access Key Id"
-                              disabled={!edit}
-                            />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <FormInputText
-                              name="google.accountId"
-                              label="Account Id"
-                              disabled={!edit}
-                            />
-                          </Grid>
-                        </>
-                      )}
-                      {watchProvider === 'local' && (
-                        <>
-                          <Grid item xs={6}>
-                            <FormInputText
-                              name="local.storagePath"
-                              label="Storage Path"
-                              disabled={!edit}
-                            />
-                          </Grid>
-                        </>
-                      )}
-                    </Grid>
-                  </>
-                )}
-              </Grid>
-              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+                        <Grid item xs={6}>
+                          <FormInputText
+                            name="google.bucketName"
+                            label="Bucket Name"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                      </>
+                    )}
+                    {watchProvider === 'aws' && (
+                      <>
+                        <Grid item xs={6}>
+                          <FormInputText name="aws.region" label="Region" disabled={!edit} />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <FormInputText
+                            name="google.secretAccessKey"
+                            label="Secret Access Key"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <FormInputText
+                            name="google.accessKeyId"
+                            label="Access Key Id"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <FormInputText
+                            name="google.accountId"
+                            label="Account Id"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                      </>
+                    )}
+                    {watchProvider === 'local' && (
+                      <>
+                        <Grid item xs={6}>
+                          <FormInputText
+                            name="local.storagePath"
+                            label="Storage Path"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                      </>
+                    )}
+                  </Grid>
+                </>
+              )}
             </Grid>
-          </form>
-        </FormProvider>
-      </Paper>
-    </Container>
+            <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+          </Grid>
+        </form>
+      </FormProvider>
+    </ConfigContainer>
   );
 };
 

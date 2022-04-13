@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Container, Grid, Paper, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -10,7 +10,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
-import ConfigSaveSection from '../common/ConfigSaveSection';
+import { ConfigSaveSection, ConfigContainer } from 'ui-components';
 
 const NotificationConfig: FC = () => {
   const dispatch = useAppDispatch();
@@ -93,87 +93,85 @@ const NotificationConfig: FC = () => {
   ];
 
   return (
-    <Container>
-      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }} elevation={5}>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Grid container>
-              <Box
-                sx={{
-                  width: '100%',
-                  display: 'inline-flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
-                <FormInputSwitch name={'active'} disabled={!edit} />
-              </Box>
-              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
-              <Grid container spacing={2} sx={{ p: 3 }}>
-                {isActive && (
-                  <>
-                    <Grid container item alignContent={'center'} xs={12}>
-                      <FormInputSelect
-                        label={'Provider name'}
-                        name="providerName"
-                        disabled={!edit}
-                        options={providers?.map((provider) => ({
-                          label: provider.name,
-                          value: provider.name,
-                        }))}
-                      />
-                    </Grid>
-                    {hasProvider && (
-                      <>
-                        <Grid item xs={12}>
-                          <FormInputText
-                            name={'firebase.projectId'}
-                            label={'Project Id'}
-                            disabled={!edit}
-                          />
-                        </Grid>
-                        <Grid item xs={12}>
-                          <FormInputText
-                            name={'firebase.privateKey'}
-                            label={'Private key'}
-                            disabled={!edit}
-                          />
-                        </Grid>
-                        <Grid item xs={12}>
-                          <FormInputText
-                            name={'firebase.clientEmail'}
-                            label={'Client Email'}
-                            disabled={!edit}
-                          />
-                        </Grid>
-                        <Typography sx={{ margin: '30px 15px 10px' }}> OR </Typography>
-                        <Button
-                          sx={{ mt: 10, ml: -5 }}
+    <ConfigContainer>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Grid container>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'inline-flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
+              <FormInputSwitch name={'active'} disabled={!edit} />
+            </Box>
+            <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+            <Grid container spacing={2} sx={{ p: 3 }}>
+              {isActive && (
+                <>
+                  <Grid container item alignContent={'center'} xs={12}>
+                    <FormInputSelect
+                      label={'Provider name'}
+                      name="providerName"
+                      disabled={!edit}
+                      options={providers?.map((provider) => ({
+                        label: provider.name,
+                        value: provider.name,
+                      }))}
+                    />
+                  </Grid>
+                  {hasProvider && (
+                    <>
+                      <Grid item xs={12}>
+                        <FormInputText
+                          name={'firebase.projectId'}
+                          label={'Project Id'}
                           disabled={!edit}
-                          variant="contained"
-                          component="label">
-                          Upload JSON File
-                          <input
-                            type="file"
-                            hidden
-                            onChange={(event) => {
-                              event.target.files && handleFileChange(event.target.files[0]);
-                            }}
-                          />
-                        </Button>
-                      </>
-                    )}
-                  </>
-                )}
-              </Grid>
-              <Grid item container justifyContent="flex-end" xs={12}>
-                <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
-              </Grid>
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormInputText
+                          name={'firebase.privateKey'}
+                          label={'Private key'}
+                          disabled={!edit}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormInputText
+                          name={'firebase.clientEmail'}
+                          label={'Client Email'}
+                          disabled={!edit}
+                        />
+                      </Grid>
+                      <Typography sx={{ margin: '30px 15px 10px' }}> OR </Typography>
+                      <Button
+                        sx={{ mt: 10, ml: -5 }}
+                        disabled={!edit}
+                        variant="contained"
+                        component="label">
+                        Upload JSON File
+                        <input
+                          type="file"
+                          hidden
+                          onChange={(event) => {
+                            event.target.files && handleFileChange(event.target.files[0]);
+                          }}
+                        />
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
             </Grid>
-          </form>
-        </FormProvider>
-      </Paper>
-    </Container>
+            <Grid item container justifyContent="flex-end" xs={12}>
+              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+            </Grid>
+          </Grid>
+        </form>
+      </FormProvider>
+    </ConfigContainer>
   );
 };
 

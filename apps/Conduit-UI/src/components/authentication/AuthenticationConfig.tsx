@@ -10,8 +10,7 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
-import ConfigSaveSection from '../common/ConfigSaveSection';
-import { ConfigContainer } from 'ui-components';
+import { ConfigContainer, ConfigSaveSection } from 'ui-components';
 
 const AuthenticationConfig: React.FC = () => {
   const dispatch = useAppDispatch();

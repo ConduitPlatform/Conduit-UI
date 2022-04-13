@@ -2,7 +2,6 @@ import Typography from '@mui/material/Typography';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import NewUserModal from '../../components/authentication/AddUserDrawerContent';
 import AuthUsers from '../../components/authentication/AuthUsers';
-import Paginator from '../../components/common/Paginator';
 import SearchFilter from '../../components/authentication/SearchFilter';
 import Grid from '@mui/material/Grid';
 import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
@@ -31,8 +30,8 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import { AddCircle } from '@mui/icons-material';
-import DrawerWrapper from '../../components/navigation/SideDrawerWrapper';
 import { isString } from 'lodash';
+import { Paginator, SideDrawerWrapper } from 'ui-components';
 
 const Users = () => {
   const dispatch = useAppDispatch();
@@ -311,7 +310,7 @@ const Users = () => {
           </Grid>
         </Grid>
       )}
-      <DrawerWrapper
+      <SideDrawerWrapper
         open={drawer}
         maxWidth={550}
         title="Add a new user"
@@ -319,7 +318,7 @@ const Users = () => {
           setDrawer(false);
         }}>
         <NewUserModal handleNewUserDispatch={handleNewUserDispatch} />
-      </DrawerWrapper>
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteUser.open}
         handleClose={handleClose}

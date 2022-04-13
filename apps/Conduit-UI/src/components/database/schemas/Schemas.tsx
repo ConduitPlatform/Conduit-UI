@@ -1,13 +1,11 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
-  asyncDeleteSelectedSchemas,
   asyncGetSchemaDocuments,
   asyncGetSchemaOwners,
-  asyncToggleSchema,
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
@@ -17,20 +15,7 @@ import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaDataPlaceholder';
 import JSONEditor from './JSONEditor';
-import {
-  Checkbox,
-  FormControl,
-  Grid,
-  InputAdornment,
-  InputLabel,
-  ListItemText,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  Button,
-  Tooltip,
-} from '@mui/material';
+import { Grid, InputAdornment, TextField, Typography, Button, Tooltip } from '@mui/material';
 import { Archive, Check, Search } from '@mui/icons-material';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -40,6 +25,7 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview';
 import NewSchemaDialog from '../NewSchemaDialog';
+import { ConduitMultiSelect } from 'ui-components';
 
 const TabPanel: FC = ({ children }) => {
   return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
@@ -321,29 +307,12 @@ const Schemas: FC = () => {
                 </Grid>
                 {enabled && (
                   <Grid item xs={9}>
-                    <FormControl size="small" variant="outlined" fullWidth>
-                      <InputLabel id="filters">Owner</InputLabel>
-                      <Select
-                        labelId="filters"
-                        id="filters"
-                        label="Owner"
-                        variant="outlined"
-                        sx={{ borderRadius: 2 }}
-                        multiple
-                        value={owners}
-                        onChange={handleFilterChange}
-                        renderValue={(selected: any) =>
-                          selected.length === 1 ? selected : 'multiple'
-                        }>
-                        {schemaOwners &&
-                          schemaOwners.map((module: any) => (
-                            <MenuItem key={module} value={module}>
-                              <Checkbox checked={owners.indexOf(module) > -1} />
-                              <ListItemText primary={module} />
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
+                    <ConduitMultiSelect
+                      handleChange={handleFilterChange}
+                      label="Owner"
+                      options={schemaOwners}
+                      values={owners}
+                    />
                   </Grid>
                 )}
               </Grid>

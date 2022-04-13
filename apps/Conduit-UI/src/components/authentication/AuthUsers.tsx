@@ -1,6 +1,6 @@
-import DataTable from '../common/DataTable';
 import React from 'react';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
+import { DataTable } from 'ui-components';
 
 interface Props {
   sort: any;

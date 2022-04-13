@@ -1,7 +1,5 @@
-import { Container } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -10,7 +8,7 @@ import { IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
-import ConfigSaveSection from '../common/ConfigSaveSection';
+import { ConfigContainer, ConfigSaveSection } from 'ui-components';
 
 const FormsConfig: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -48,42 +46,40 @@ const FormsConfig: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }}>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
-                <Typography variant={'h6'}>Activate Forms Module</Typography>
-                <FormInputSwitch disabled={!edit} name={'active'} />
-              </Box>
+    <ConfigContainer>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Grid container>
+            <Box
+              width={'100%'}
+              display={'inline-flex'}
+              justifyContent={'space-between'}
+              alignItems={'center'}>
+              <Typography variant={'h6'}>Activate Forms Module</Typography>
+              <FormInputSwitch disabled={!edit} name={'active'} />
+            </Box>
 
-              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+            <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
 
-              <Grid container spacing={2} sx={{ pl: 4 }}>
-                {isActive && (
-                  <Grid item xs={12}>
-                    <Box
-                      width={'100%'}
-                      display={'inline-flex'}
-                      justifyContent={'space-between'}
-                      alignItems={'center'}>
-                      <Typography variant={'h6'}>Use Attachments</Typography>
-                      <FormInputSwitch disabled={!edit} name={'useAttachments'} />
-                    </Box>
-                  </Grid>
-                )}
-              </Grid>
-              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+            <Grid container spacing={2} sx={{ pl: 4 }}>
+              {isActive && (
+                <Grid item xs={12}>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'h6'}>Use Attachments</Typography>
+                    <FormInputSwitch disabled={!edit} name={'useAttachments'} />
+                  </Box>
+                </Grid>
+              )}
             </Grid>
-          </form>
-        </FormProvider>
-      </Paper>
-    </Container>
+            <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+          </Grid>
+        </form>
+      </FormProvider>
+    </ConfigContainer>
   );
 };
 

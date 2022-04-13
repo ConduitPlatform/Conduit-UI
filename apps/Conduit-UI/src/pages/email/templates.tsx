@@ -9,7 +9,7 @@ import {
   asyncSyncTemplates,
   asyncUploadTemplate,
 } from '../../redux/slices/emailsSlice';
-import DataTable from '../../components/common/DataTable';
+import { DataTable, Paginator } from 'ui-components';
 import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
 import {
   Button,
@@ -25,7 +25,6 @@ import TabPanel from '../../components/emails/TabPanel';
 import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
 import Sync from '@mui/icons-material/Sync';
 import SearchIcon from '@mui/icons-material/Search';
-import Paginator from '../../components/common/Paginator';
 import ExternalTemplates from '../../components/emails/ExternalTemplates';
 import ConfirmationDialog from '../../components/common/ConfirmationDialog';
 import useDebounce from '../../hooks/useDebounce';

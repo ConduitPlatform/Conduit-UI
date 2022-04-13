@@ -10,7 +10,7 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdatePaymentConfig } from '../../redux/slices/paymentsSlice';
-import ConfigSaveSection from '../common/ConfigSaveSection';
+import { ConfigSaveSection, ConfigContainer } from 'ui-components';
 
 interface FormProps {
   active: boolean;
@@ -71,50 +71,48 @@ const PaymentsConfig: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 7 }}>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
-                <Typography variant={'h6'}>Activate Payments Module</Typography>
-                <FormInputSwitch name={'active'} disabled={!edit} />
-              </Box>
+    <ConfigContainer>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Grid container>
+            <Box
+              width={'100%'}
+              display={'inline-flex'}
+              justifyContent={'space-between'}
+              alignItems={'center'}>
+              <Typography variant={'h6'}>Activate Payments Module</Typography>
+              <FormInputSwitch name={'active'} disabled={!edit} />
+            </Box>
 
-              <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+            <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
 
-              <Grid container spacing={2} sx={{ pl: 4 }}>
-                {isActive && (
-                  <>
-                    <Grid item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <Typography variant={'h6'}>Enable stripe payments</Typography>
-                        <FormInputSwitch name={'enabled'} disabled={!edit} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant={'h6'}>Stripe secret key</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <FormInputText name={'secret_key'} label={'Secret key'} disabled={!edit} />
-                    </Grid>
-                  </>
-                )}
-              </Grid>
-              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+            <Grid container spacing={2} sx={{ pl: 4 }}>
+              {isActive && (
+                <>
+                  <Grid item xs={6}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography variant={'h6'}>Enable stripe payments</Typography>
+                      <FormInputSwitch name={'enabled'} disabled={!edit} />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant={'h6'}>Stripe secret key</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormInputText name={'secret_key'} label={'Secret key'} disabled={!edit} />
+                  </Grid>
+                </>
+              )}
             </Grid>
-          </form>
-        </FormProvider>
-      </Paper>
-    </Container>
+            <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+          </Grid>
+        </form>
+      </FormProvider>
+    </ConfigContainer>
   );
 };
 

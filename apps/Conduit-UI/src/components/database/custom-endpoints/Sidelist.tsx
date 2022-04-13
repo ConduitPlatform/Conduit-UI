@@ -28,6 +28,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useRouter } from 'next/router';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
+import { ConduitMultiSelect } from 'ui-components';
 
 interface Props {
   setEditMode: (edit: boolean) => void;
@@ -133,27 +134,13 @@ const SideList: FC<Props> = ({ setEditMode, setCreateMode, filters }) => {
           </FormControl>
         </Grid>
         <Grid item sm={10}>
-          <FormControl fullWidth variant="outlined" size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="schemas">Schema</InputLabel>
-            <Select
-              sx={{ borderRadius: 2 }}
-              labelId="schemas"
-              id="filters"
-              label="Schema"
-              multiple
-              variant="outlined"
-              value={schemas}
-              onChange={handleFilterChange}
-              renderValue={(selected: any) => (selected.length === 1 ? selected : 'multiple')}>
-              {schemasWithEndpoints &&
-                schemasWithEndpoints.map((schema: { name: string; id: string }) => (
-                  <MenuItem key={schema.name} value={schema.name}>
-                    <Checkbox checked={schemas.indexOf(schema.name) > -1} />
-                    <ListItemText primary={schema.name} />
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
+          <ConduitMultiSelect
+            handleChange={handleFilterChange}
+            label="Schemas"
+            options={schemasWithEndpoints}
+            values={schemas}
+            sortBy="name"
+          />
         </Grid>
         <Grid item xs={2}>
           <IconButton

@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Container } from '@mui/material';
-import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -12,8 +10,8 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import ConfigSaveSection from '../common/ConfigSaveSection';
 import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
+import { ConfigContainer, ConfigSaveSection } from 'ui-components';
 
 const EmailConfig: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -104,29 +102,27 @@ const EmailConfig: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Paper sx={{ padding: 2, color: 'text.secondary', borderRadius: 7 }}>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
-                <Typography variant={'h6'}>Activate Email Module</Typography>
-                <FormInputSwitch name="active" />
-              </Box>
-              <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
-              <Grid container spacing={2} sx={{ pl: 4 }}>
-                {isActive && renderSettingsFields()}
-              </Grid>
-              <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+    <ConfigContainer>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Grid container>
+            <Box
+              width={'100%'}
+              display={'inline-flex'}
+              justifyContent={'space-between'}
+              alignItems={'center'}>
+              <Typography variant={'h6'}>Activate Email Module</Typography>
+              <FormInputSwitch name="active" />
+            </Box>
+            <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+            <Grid container spacing={2} sx={{ pl: 4 }}>
+              {isActive && renderSettingsFields()}
             </Grid>
-          </form>
-        </FormProvider>
-      </Paper>
-    </Container>
+            <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
+          </Grid>
+        </form>
+      </FormProvider>
+    </ConfigContainer>
   );
 };
 
