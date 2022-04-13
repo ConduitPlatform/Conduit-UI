@@ -10,8 +10,7 @@ import {
   TextField,
   IconButton,
 } from '@mui/material';
-import DataTable from './DataTable';
-import Paginator from './Paginator';
+import { DataTable, Paginator } from 'ui-components';
 import { Search as SearchIcon, Close } from '@mui/icons-material';
 import useDebounce from '../../hooks/useDebounce';
 

@@ -5,8 +5,7 @@ import TableDialog from '../common/TableDialog';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
-import SelectedElements from '../common/SelectedElements';
-import sharedClasses from '../common/sharedClasses';
+import { SelectedElements } from 'ui-components';
 import { Pagination, Search } from '../../models/http/HttpModels';
 
 interface ICreateChatRoom {
@@ -21,7 +20,6 @@ interface Props {
 }
 
 const CreateChatRoomDrawer: FC<Props> = ({ open, handleCreateChatRoom, closeDrawer }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
 
   const initialInputData = {

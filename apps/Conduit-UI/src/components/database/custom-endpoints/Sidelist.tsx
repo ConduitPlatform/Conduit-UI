@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -9,8 +9,6 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Checkbox,
-  ListItemText,
 } from '@mui/material';
 import { AddCircleOutlined, Search } from '@mui/icons-material';
 import EndpointsList from './EndpointsList';

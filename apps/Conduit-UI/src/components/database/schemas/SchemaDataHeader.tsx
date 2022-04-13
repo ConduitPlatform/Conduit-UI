@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Paginator from '../../common/Paginator';
+import { Paginator } from 'ui-components';
 import { BoxProps } from '@mui/material/Box/Box';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Search, Refresh, AccountTree } from '@mui/icons-material';
