@@ -2,7 +2,8 @@
   "name": "root",
   "scripts": {
     "lerna:clean": "lerna clean",
-    "lerna:build": "lerna run build --scope=ui-components"
+    "lerna:build": "lerna run build",
+    "lerna:build:lib": "lerna run build --scope=ui-components"
   },
   "workspaces": [
     "apps/*",
