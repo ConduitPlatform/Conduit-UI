@@ -9,7 +9,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaDataCard';
-import ConfirmationDialog from '../../common/ConfirmationDialog';
+import { ConfirmationDialog } from 'ui-components';
 import SchemaDataHeader from './SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './DocumentCreateDialog';

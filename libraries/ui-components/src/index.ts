@@ -9,19 +9,11 @@ import InnerTable from "./components/InnerTable";
 import SelectedElements from "./components/SelectedElements";
 import Paginator from "./components/Paginator";
 import CustomDatepicker from "./components/CustomDatepicker";
-import SwaggerModal from "./components/SwaggerModal";
-import AuthenticationLayout from "./components/navigation/InnerLayouts/authenticationLayout";
-import ChatLayout from "./components/navigation/InnerLayouts/chatLayout";
-import DatabaseLayout from "./components/navigation/InnerLayouts/databaseLayout";
-import EmailsLayout from "./components/navigation/InnerLayouts/emailsLayout";
-import FormsLayout from "./components/navigation/InnerLayouts/formsLayout";
-import NotificationLayout from "./components/navigation/InnerLayouts/notificationLayout";
-import PaymentsLayout from "./components/navigation/InnerLayouts/paymentsLayout";
-import SettingsLayout from "./components/navigation/InnerLayouts/settingsLayout";
-import SharedLayout from "./components/navigation/InnerLayouts/sharedLayout";
-import SMSLayout from "./components/navigation/InnerLayouts/smsLayout";
-import StorageLayout from "./components/navigation/InnerLayouts/storageLayout";
+import SharedLayout from "./components/navigation/sharedLayout";
 import SideDrawerWrapper from "./components/navigation/SideDrawerWrapper";
+import StorageDownloadDialog from "./components/StorageDownloadDialog";
+import Dropzone from "./components/Dropzone";
+import SwaggerModal from "./components/SwaggerModal";
 
 export {
   ConduitMultiSelect,
@@ -35,17 +27,9 @@ export {
   SelectedElements,
   Paginator,
   CustomDatepicker,
-  SwaggerModal,
-  AuthenticationLayout,
-  ChatLayout,
-  DatabaseLayout,
-  EmailsLayout,
-  FormsLayout,
-  NotificationLayout,
-  PaymentsLayout,
-  SettingsLayout,
   SharedLayout,
-  SMSLayout,
-  StorageLayout,
   SideDrawerWrapper,
+  StorageDownloadDialog,
+  Dropzone,
+  SwaggerModal,
 };

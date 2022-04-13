@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { Cloud } from '@mui/icons-material';
 
 const StorageLayout: React.FC = ({ children }) => {
@@ -12,6 +12,7 @@ const StorageLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Storage'}
       labels={labels}
       pathNames={pathNames}

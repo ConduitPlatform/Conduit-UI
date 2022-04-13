@@ -8,7 +8,7 @@ import { IconButton, Paper, Typography } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ChatInfoDialog from './ChatInfoDialog';
-import ConfirmationDialog from '../common/ConfirmationDialog';
+import { ConfirmationDialog } from 'ui-components';
 import ChatRoomMessages from './ChatRoomMessages';
 
 interface Props extends BoxProps {

@@ -24,7 +24,7 @@ import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-
 import Sync from '@mui/icons-material/Sync';
 import SearchIcon from '@mui/icons-material/Search';
 import ExternalTemplates from '../../components/emails/ExternalTemplates';
-import ConfirmationDialog from '../../components/common/ConfirmationDialog';
+import { ConfirmationDialog } from 'ui-components';
 import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';

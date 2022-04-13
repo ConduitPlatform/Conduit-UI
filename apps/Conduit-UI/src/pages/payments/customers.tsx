@@ -14,7 +14,6 @@ import {
 import { SideDrawerWrapper, DataTable } from 'ui-components';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
-import Paginator from '../../components/common/Paginator';
 import { DeleteTwoTone } from '@mui/icons-material';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
@@ -26,7 +25,7 @@ import {
 } from '../../redux/slices/paymentsSlice';
 import { Customer } from '../../models/payments/PaymentsModels';
 import ViewEditCustomer from '../../components/payments/ViewEditCustomer';
-import ConfirmationDialog from '../../components/common/ConfirmationDialog';
+import { ConfirmationDialog, Paginator } from 'ui-components';
 
 const Customers = () => {
   const dispatch = useAppDispatch();

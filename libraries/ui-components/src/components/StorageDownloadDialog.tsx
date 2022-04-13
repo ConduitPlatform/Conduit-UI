@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   DialogTitle,
   Grid,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
 interface DownloadDialogProps {
   fileUrl: string;
@@ -27,29 +27,29 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
   const [imgLoading, setImgLoading] = useState(false);
 
   useEffect(() => {
-    if (fileMimeType?.includes('image')) setImgLoading(true);
+    if (fileMimeType?.includes("image")) setImgLoading(true);
   }, [fileMimeType, fileUrl]);
 
   const onClose = (e: React.MouseEvent<HTMLElement>) => {
-    if (props?.onClose) props.onClose(e, 'backdropClick');
+    if (props?.onClose) props.onClose(e, "backdropClick");
   };
 
   return (
     <Dialog {...props}>
       <DialogTitle>
-        <Typography>{fileName ?? 'File Preview'}</Typography>
+        <Typography>{fileName ?? "File Preview"}</Typography>
       </DialogTitle>
       <DialogContent>
-        {fileMimeType?.includes('image') ? (
+        {fileMimeType?.includes("image") ? (
           <img
             style={{
-              objectFit: 'contain',
-              maxWidth: '1500px',
-              maxHeight: '1000px',
-              borderRadius: '4px',
+              objectFit: "contain",
+              maxWidth: "1500px",
+              maxHeight: "1000px",
+              borderRadius: "4px",
             }}
-            width={'100%'}
-            height={'100%'}
+            width={"100%"}
+            height={"100%"}
             src={fileUrl}
             onLoad={() => setImgLoading(false)}
             alt={fileName}
@@ -60,7 +60,7 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
           </Box>
         )}
         {imgLoading ? (
-          <Grid container alignItems={'center'} justifyContent={'center'}>
+          <Grid container alignItems={"center"} justifyContent={"center"}>
             <Box mb={3}>
               <CircularProgress />
             </Box>
@@ -69,7 +69,12 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant={'outlined'} color={'secondary'} href={fileUrl} target={'_blank'}>
+        <Button
+          variant={"outlined"}
+          color={"secondary"}
+          href={fileUrl}
+          target={"_blank"}
+        >
           Download
         </Button>
       </DialogActions>

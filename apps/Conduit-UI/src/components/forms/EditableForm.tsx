@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from 'react';
-import sharedClasses from '../common/sharedClasses';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
   Button,
@@ -8,6 +7,7 @@ import {
   IconButton,
   MenuItem,
   Select,
+  styled,
   TextField,
   Typography,
 } from '@mui/material';
@@ -38,8 +38,16 @@ interface IForm {
   enabled: boolean;
 }
 
+const CustomizedGrid = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(0.5),
+  display: 'flex',
+  marginBottom: theme.spacing(0.5),
+  alignItems: 'center',
+  width: '80%',
+  justifyContent: 'center',
+}));
+
 const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
-  const classes = sharedClasses();
   const dispatch = useAppDispatch();
   const [inputFields, setInputFields] = useState<{ id: string; key: string; type: string }[]>([
     { id: uuidV4(), key: '', type: '' },
@@ -151,7 +159,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             {inputFields.map((inputField, index: number) => {
               return (
                 <Grid key={index} container spacing={2} sx={{ mt: 0.2 }}>
-                  <Grid item xs={5} className={classes.fields}>
+                  <CustomizedGrid item xs={5}>
                     <TextField
                       name="key"
                       label="Key"
@@ -159,8 +167,8 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                       value={inputField.key}
                       onChange={handleFieldsChange(inputField.id)}
                     />
-                  </Grid>
-                  <Grid item xs={5} className={classes.fields}>
+                  </CustomizedGrid>
+                  <CustomizedGrid item xs={5}>
                     <FormControl sx={{ minWidth: 200 }}>
                       <Select
                         variant="outlined"
@@ -174,8 +182,8 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                         <MenuItem value={'Number'}>Number</MenuItem>
                       </Select>
                     </FormControl>
-                  </Grid>
-                  <Grid item xs={2} className={classes.fields}>
+                  </CustomizedGrid>
+                  <CustomizedGrid item xs={2}>
                     <IconButton
                       color="primary"
                       size="small"
@@ -183,7 +191,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                       onClick={() => handleRemoveField(inputField.id)}>
                       <Delete />
                     </IconButton>
-                  </Grid>
+                  </CustomizedGrid>
                 </Grid>
               );
             })}

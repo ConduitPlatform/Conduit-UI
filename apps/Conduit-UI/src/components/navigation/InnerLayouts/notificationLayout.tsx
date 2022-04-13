@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { Notifications } from '@mui/icons-material';
 
 const NotificationLayout: React.FC = ({ children }) => {
@@ -12,6 +12,7 @@ const NotificationLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Push Notifications'}
       labels={labels}
       pathNames={pathNames}

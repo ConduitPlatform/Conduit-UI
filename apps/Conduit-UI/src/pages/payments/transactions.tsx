@@ -3,14 +3,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailUI } from '../../models/emails/EmailModels';
 import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import Paginator from '../../components/common/Paginator';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import { asyncDeleteTransactions, asyncGetTransactions } from '../../redux/slices/paymentsSlice';
 import { Transaction } from '../../models/payments/PaymentsModels';
 import ViewTransaction from '../../components/payments/ViewTransaction';
-import ConfirmationDialog from '../../components/common/ConfirmationDialog';
-import { SideDrawerWrapper, DataTable } from 'ui-components';
+import { SideDrawerWrapper, DataTable, ConfirmationDialog, Paginator } from 'ui-components';
 
 const Transactions = () => {
   const dispatch = useAppDispatch();

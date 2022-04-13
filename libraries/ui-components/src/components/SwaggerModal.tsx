@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import CloseIcon from '@mui/icons-material/Close';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Box, DialogContentText, IconButton, Typography } from '@mui/material';
-import axios from 'axios';
+import React, { FC } from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import CloseIcon from "@mui/icons-material/Close";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Box, DialogContentText, IconButton, Typography } from "@mui/material";
+import axios from "axios";
 
 interface Props {
   title: string;
@@ -13,35 +13,47 @@ interface Props {
   setOpen: (open: boolean) => void;
   icon?: JSX.Element;
   swagger: string;
+  baseUrl: string;
 }
 
-const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
+const SwaggerModal: FC<Props> = ({
+  open,
+  setOpen,
+  title,
+  icon,
+  swagger,
+  baseUrl,
+}) => {
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleDownload = () => {
-    const link = document.createElement('a');
-    link.download = 'conduitSwagger.json';
+    const link = document.createElement("a");
+    link.download = "conduitSwagger.json";
     axios
-      .get('https://conduit-core.dev.quintessential.gr/swagger.json', {
-        responseType: 'blob',
+      .get(`${baseUrl}/swagger.json`, {
+        responseType: "blob",
       })
       .then((res) => {
-        link.href = URL.createObjectURL(new Blob([res.data], { type: 'application/json' }));
+        link.href = URL.createObjectURL(
+          new Blob([res.data], { type: "application/json" })
+        );
         link.click();
       });
   };
 
   const handleAdminDownload = () => {
-    const link = document.createElement('a');
-    link.download = 'conduitAdminSwagger.json';
+    const link = document.createElement("a");
+    link.download = "conduitAdminSwagger.json";
     axios
-      .get('https://conduit-core.dev.quintessential.gr/admin/swagger.json', {
-        responseType: 'blob',
+      .get(`${baseUrl}/admin/swagger.json`, {
+        responseType: "blob",
       })
       .then((res) => {
-        link.href = URL.createObjectURL(new Blob([res.data], { type: 'application/json' }));
+        link.href = URL.createObjectURL(
+          new Blob([res.data], { type: "application/json" })
+        );
         link.click();
       });
   };
@@ -53,58 +65,87 @@ const SwaggerModal: FC<Props> = ({ open, setOpen, title, icon, swagger }) => {
       onClose={handleClose}
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
-      sx={{ padding: 10 }}>
+      sx={{ padding: 10 }}
+    >
       <DialogTitle id="alert-dialog-slide-title">
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h6">{title} Swagger </Typography>
           <IconButton
             onClick={handleClose}
-            sx={{ position: 'absolute', left: '90%', top: '1%', color: 'gray' }}
-            size="large">
+            sx={{ position: "absolute", left: "90%", top: "1%", color: "gray" }}
+            size="large"
+          >
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent sx={{ minWidth: '500px' }}>
+      <DialogContent sx={{ minWidth: "500px" }}>
         <DialogContentText>
           Swagger is used to describe and document RESTful APIs.
         </DialogContentText>
-        <Box padding={5} display="flex" flexDirection={'column'} sx={{ gap: 5 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
+        <Box
+          padding={5}
+          display="flex"
+          flexDirection={"column"}
+          sx={{ gap: 5 }}
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ gap: 5 }}
+          >
             <Typography>Go to {title} Swagger: </Typography>
             <a
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: "none" }}
               href={
                 !swagger
-                  ? `${process.env.CONDUIT_URL}/swagger/`
-                  : `${process.env.CONDUIT_URL}/swagger/#/${swagger}`
+                  ? `${baseUrl}/swagger/`
+                  : `${baseUrl}/swagger/#/${swagger}`
               }
               target="_blank"
-              rel="noreferrer">
+              rel="noreferrer"
+            >
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ gap: 5 }}
+          >
             <Typography>Go to {title} Admin Swagger: </Typography>
             <a
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: "none" }}
               href={
                 !swagger
                   ? `${process.env.CONDUIT_URL}/admin/swagger/`
                   : `${process.env.CONDUIT_URL}/admin/swagger/#/${swagger}`
               }
               target="_blank"
-              rel="noreferrer">
+              rel="noreferrer"
+            >
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
-          <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ gap: 5 }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ gap: 5 }}
+          >
             <Typography>Download App Swagger: </Typography>
             <Button variant="outlined" onClick={handleDownload}>
               Download Json
             </Button>
           </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ gap: 5 }}
+          >
             <Typography>Download Admin Swagger: </Typography>
             <Button variant="outlined" onClick={handleAdminDownload}>
               Download Json

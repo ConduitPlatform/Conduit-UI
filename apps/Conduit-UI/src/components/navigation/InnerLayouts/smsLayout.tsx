@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { Sms } from '@mui/icons-material';
 
 const SMSLayout: React.FC = ({ children }) => {
@@ -12,6 +12,7 @@ const SMSLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'SMS'}
       labels={labels}
       pathNames={pathNames}

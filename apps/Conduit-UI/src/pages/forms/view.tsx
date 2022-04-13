@@ -11,7 +11,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import ConfirmationDialog from '../../components/common/ConfirmationDialog';
+import { ConfirmationDialog } from 'ui-components';
 import FormReplies from '../../components/forms/FormReplies';
 import ViewEditForm from '../../components/forms/ViewEditForm';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';

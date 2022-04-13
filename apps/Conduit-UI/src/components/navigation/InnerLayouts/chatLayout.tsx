@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toc } from '@mui/icons-material';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 
 const ChatLayout: React.FC = ({ children }) => {
   const pathNames = ['/chat/rooms', '/chat/config'];
@@ -11,6 +11,7 @@ const ChatLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Chat'}
       labels={labels}
       pathNames={pathNames}

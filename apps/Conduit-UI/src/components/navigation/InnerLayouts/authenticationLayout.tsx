@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { People } from '@mui/icons-material';
 
 const AuthenticationLayout: React.FC = ({ children }) => {
@@ -18,6 +18,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Authentication'}
       labels={labels}
       pathNames={pathNames}

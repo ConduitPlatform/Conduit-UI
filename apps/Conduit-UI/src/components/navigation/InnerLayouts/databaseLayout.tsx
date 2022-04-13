@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { Toc } from '@mui/icons-material';
 
 const DatabaseLayout: React.FC = ({ children }) => {
@@ -12,6 +12,7 @@ const DatabaseLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Database'}
       labels={labels}
       pathNames={pathNames}

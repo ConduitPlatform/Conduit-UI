@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { Payment } from '@mui/icons-material';
 
 const PaymentsLayout: React.FC = ({ children }) => {
@@ -21,6 +21,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Payments'}
       labels={labels}
       pathNames={pathNames}

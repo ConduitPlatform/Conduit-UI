@@ -17,7 +17,7 @@ import {
 } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
-import ConfirmationDialog from '../../components/common/ConfirmationDialog';
+import { ConfirmationDialog } from 'ui-components';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
 import EditUserDialog from '../../components/authentication/EditUserDialog';
 import {

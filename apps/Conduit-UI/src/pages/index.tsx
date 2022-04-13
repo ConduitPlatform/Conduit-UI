@@ -4,13 +4,12 @@ import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
 import { Container, Grid, Divider, Button, Link, Icon, styled, Card } from '@mui/material';
-
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
 import SecretIcon from '@mui/icons-material/VpnKey';
 import Description from '@mui/icons-material/Description';
-import SwaggerModal from '../components/common/SwaggerModal';
+import { SwaggerModal } from 'ui-components';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
@@ -168,7 +167,13 @@ const Home = () => {
               </Link>
             </Grid>
           </Grid>
-          <SwaggerModal open={swaggerModal} setOpen={setSwaggerModal} swagger="App" title="App" />
+          <SwaggerModal
+            open={swaggerModal}
+            setOpen={setSwaggerModal}
+            swagger="App"
+            title="App"
+            baseUrl={`${process.env.CONDUIT_URL}`}
+          />
         </Container>
       </div>
     </>

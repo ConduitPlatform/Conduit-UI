@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { FormatAlignLeft } from '@mui/icons-material';
 
 const FormsLayout: React.FC = ({ children }) => {
@@ -12,6 +12,7 @@ const FormsLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Forms'}
       labels={labels}
       pathNames={pathNames}

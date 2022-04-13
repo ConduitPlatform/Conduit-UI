@@ -1,5 +1,5 @@
 import React from 'react';
-import SharedLayout from './sharedLayout';
+import { SharedLayout } from 'ui-components';
 import { Settings } from '@mui/icons-material';
 
 const SettingsLayout: React.FC = ({ children }) => {
@@ -18,6 +18,7 @@ const SettingsLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
+      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Settings'}
       labels={labels}
       pathNames={pathNames}
