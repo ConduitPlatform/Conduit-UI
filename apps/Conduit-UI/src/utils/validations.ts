@@ -9,3 +9,5 @@ export const emailRegExp = new RegExp(
 );
 
 export const phoneNumberRegExp = /^[0-9]{4,12}$/;
+
+export const noSpacesOrSpecialChars = /^(\d|\w)+$/;
