@@ -12,6 +12,7 @@ import { Pagination, Search } from '../../models/http/HttpModels';
 import TableDialog from '../common/TableDialog';
 import { SelectedElements } from 'ui-components';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
+import { emailRegExp } from '../../utils/validations';
 
 interface FormProps {
   email: string;
@@ -132,10 +133,32 @@ const SendEmailForm: React.FC = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <FormInputText name="email" label={'Recipient (To:)'} />
+                <FormInputText
+                  name="email"
+                  label={'Recipient (To:)'}
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: emailRegExp,
+                      message: 'Not a valid e-mail!',
+                    },
+                  }}
+                  typeOfInput={'text'}
+                />
               </Grid>
               <Grid item xs={12}>
-                <FormInputText name="sender" label={'Sender (From:)'} />
+                <FormInputText
+                  name="sender"
+                  label={'Sender (From:)'}
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: emailRegExp,
+                      message: 'Not a valid e-mail!',
+                    },
+                  }}
+                  typeOfInput={'text'}
+                />
               </Grid>
               <Grid item xs={8}>
                 <FormInputText name="subject" label={'Subject'} disabled={withTemplate} />

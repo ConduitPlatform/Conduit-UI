@@ -11,6 +11,7 @@ import { ISendSms } from '../../models/sms/SmsModels';
 import { useAppDispatch } from '../../redux/store';
 import { asyncSendSms } from '../../redux/slices/smsSlice';
 import { Box } from '@mui/material';
+import { phoneNumberRegExp } from '../../utils/validations';
 
 const SendSms: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +42,18 @@ const SendSms: React.FC = () => {
           <form onSubmit={methods.handleSubmit(handleSend)}>
             <Grid container spacing={2}>
               <Grid item sm={12}>
-                <FormInputText name="to" label="Send to" />
+                <FormInputText
+                  name="to"
+                  label="Send to"
+                  rules={{
+                    required: 'phone number is required',
+                    pattern: {
+                      value: phoneNumberRegExp,
+                      message: 'Not a valid phone number!',
+                    },
+                  }}
+                  typeOfInput={'text'}
+                />
               </Grid>
               <Grid item sm={12}>
                 <FormInputText name="message" rows={4} label="Message" />

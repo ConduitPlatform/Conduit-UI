@@ -8,6 +8,7 @@ import Container from '@mui/material/Container';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { Box } from '@mui/material';
+import { emailRegExp, passwordRegExp } from '../../utils/validations';
 
 interface Props {
   handleNewUserDispatch: (values: { password: string; email: string }) => void;
@@ -62,11 +63,7 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
                   rules={{
                     required: 'Email is required',
                     pattern: {
-                      value: new RegExp(
-                        '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))' +
-                          '(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.' +
-                          '[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
-                      ),
+                      value: emailRegExp,
                       message: 'Not a valid e-mail!',
                     },
                   }}
@@ -77,7 +74,10 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
                 <FormInputText
                   name="password"
                   label="Password"
-                  rules={{ required: 'Password is required' }}
+                  rules={{
+                    required: 'Password is required',
+                    pattern: { value: passwordRegExp, message: 'Not a valid password' },
+                  }}
                   typeOfInput={'password'}
                 />
               </Grid>

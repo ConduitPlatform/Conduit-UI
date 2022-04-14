@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../redux/store';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
+import { emailRegExp, phoneNumberRegExp } from '../../utils/validations';
 
 interface Props {
   data: AuthUser;
@@ -83,19 +84,23 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                     rules={{
                       required: 'Email is required',
                       pattern: {
-                        value: new RegExp(
-                          '/^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))' +
-                            '(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.' +
-                            '[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/'
-                        ),
-
+                        value: emailRegExp,
                         message: 'Not a valid e-mail!',
                       },
                     }}
                   />
                 </Grid>
                 <Grid item sm={12}>
-                  <FormInputText name="phoneNumber" label="Phone Number" />
+                  <FormInputText
+                    name="phoneNumber"
+                    label="Phone Number"
+                    rules={{
+                      pattern: {
+                        value: phoneNumberRegExp,
+                        message: 'Not a valid phone number',
+                      },
+                    }}
+                  />
                 </Grid>
                 <Grid item sm={3}>
                   <FormInputCheckBox name="active" label="Active" />
