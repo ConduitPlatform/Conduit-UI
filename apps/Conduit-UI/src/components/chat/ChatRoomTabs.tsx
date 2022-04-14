@@ -143,7 +143,7 @@ const ChatRoomTabs: FC<Props> = ({
             threshold={4}>
             {({ onItemsRendered, ref }) => {
               return (
-                <List
+                <CustomizedList
                   height={height}
                   itemCount={chatRoomCount}
                   itemSize={56}
@@ -152,7 +152,7 @@ const ChatRoomTabs: FC<Props> = ({
                   itemData={itemData}
                   width={width}>
                   {Row}
-                </List>
+                </CustomizedList>
               );
             }}
           </InfiniteLoader>
