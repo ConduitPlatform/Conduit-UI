@@ -1,14 +1,20 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailUI } from '../../models/emails/EmailModels';
-import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
+import { TextField, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import { asyncDeleteTransactions, asyncGetTransactions } from '../../redux/slices/paymentsSlice';
 import { Transaction } from '../../models/payments/PaymentsModels';
 import ViewTransaction from '../../components/payments/ViewTransaction';
-import { SideDrawerWrapper, DataTable, ConfirmationDialog, Paginator } from 'ui-components';
+import {
+  SideDrawerWrapper,
+  DataTable,
+  ConfirmationDialog,
+  TableContainer,
+  TableActionsContainer,
+} from 'ui-components';
 
 const Transactions = () => {
   const dispatch = useAppDispatch();
@@ -181,60 +187,45 @@ const Transactions = () => {
   ];
 
   return (
-    <div>
-      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
-        <Grid item>
-          {count >= 0 && (
-            <TextField
-              size="small"
-              variant="outlined"
-              name="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              label="Find transaction"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-        </Grid>
-        <Grid item></Grid>
-      </Grid>
-      {transactions.length > 0 ? (
-        <>
-          <DataTable
-            sort={sort}
-            setSort={setSort}
-            headers={headers}
-            dsData={formatData(transactions)}
-            handleSelect={handleSelect}
-            handleSelectAll={handleSelectAll}
-            actions={actions}
-            handleAction={handleAction}
-            selectedItems={selectedTransactions}
+    <Box>
+      <TableActionsContainer>
+        {count >= 0 && (
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find transaction"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
           />
-          <Grid container sx={{ marginTop: '-8px' }}>
-            <Grid item xs={7} />
-            <Grid item xs={5}>
-              <Paginator
-                handlePageChange={handlePageChange}
-                limit={limit}
-                handleLimitChange={handleLimitChange}
-                page={page}
-                count={count}
-              />
-            </Grid>
-          </Grid>
-        </>
-      ) : (
-        <Box sx={{ textAlign: 'center', mt: '200px' }}>
-          <Typography>No available transactions</Typography>
-        </Box>
-      )}
+        )}
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={count}
+        noData={!transactions.length ? 'transactions' : undefined}>
+        <DataTable
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          dsData={formatData(transactions)}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          actions={actions}
+          handleAction={handleAction}
+          selectedItems={selectedTransactions}
+        />
+      </TableContainer>
       <SideDrawerWrapper
         title={'Transaction overview'}
         open={drawer}
@@ -252,7 +243,7 @@ const Transactions = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
-    </div>
+    </Box>
   );
 };
 

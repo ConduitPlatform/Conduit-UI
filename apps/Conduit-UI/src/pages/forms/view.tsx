@@ -11,7 +11,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { ConfirmationDialog } from 'ui-components';
+import { ConfirmationDialog, TableActionsContainer, TableContainer } from 'ui-components';
 import FormReplies from '../../components/forms/FormReplies';
 import ViewEditForm from '../../components/forms/ViewEditForm';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
@@ -242,25 +242,23 @@ const Create = () => {
 
   return (
     <div>
-      <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-        <Grid item>
-          <TextField
-            size="small"
-            variant="outlined"
-            name="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            label="Find template"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-        <Grid item>
+      <TableActionsContainer>
+        <TextField
+          size="small"
+          variant="outlined"
+          name="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          label="Find template"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Box display="flex" alignItems="center" gap={2}>
           {selectedForms.length > 0 && (
             <IconButton
               aria-label="delete"
@@ -272,7 +270,6 @@ const Create = () => {
               </Tooltip>
             </IconButton>
           )}
-
           <Button
             variant="contained"
             color="primary"
@@ -280,38 +277,27 @@ const Create = () => {
             onClick={() => newForm()}>
             Add new form
           </Button>
-        </Grid>
-      </Grid>
-      {forms.length ? (
-        <Box>
-          <DataTable
-            headers={headers}
-            sort={sort}
-            setSort={setSort}
-            dsData={formatData(forms)}
-            actions={actions}
-            handleAction={handleAction}
-            handleSelect={handleSelect}
-            handleSelectAll={handleSelectAll}
-            selectedItems={selectedForms}
-          />
-
-          <Grid container sx={{ mt: '-8px' }}>
-            <Grid item xs={7} />
-            <Grid item xs={5}>
-              <Paginator
-                handlePageChange={handlePageChange}
-                limit={limit}
-                handleLimitChange={handleLimitChange}
-                page={page}
-                count={count}
-              />
-            </Grid>
-          </Grid>
         </Box>
-      ) : (
-        <Typography sx={{ textAlign: 'center', mt: '50px' }}>No available forms </Typography>
-      )}
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={count}
+        noData={!forms.length ? 'forms' : undefined}>
+        <DataTable
+          headers={headers}
+          sort={sort}
+          setSort={setSort}
+          dsData={formatData(forms)}
+          actions={actions}
+          handleAction={handleAction}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          selectedItems={selectedForms}
+        />
+      </TableContainer>
       <SideDrawerWrapper
         title={create ? 'Create a new form' : 'Edit form'}
         open={drawer}

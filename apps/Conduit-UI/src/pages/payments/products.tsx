@@ -1,17 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailUI } from '../../models/emails/EmailModels';
-import {
-  Button,
-  Grid,
-  Typography,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Tooltip,
-  Box,
-} from '@mui/material';
-import { SideDrawerWrapper, DataTable } from 'ui-components';
+import { Button, TextField, IconButton, InputAdornment, Tooltip, Box } from '@mui/material';
+import { SideDrawerWrapper, DataTable, TableContainer, TableActionsContainer } from 'ui-components';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import { DeleteTwoTone } from '@mui/icons-material';
@@ -25,7 +16,7 @@ import {
 } from '../../redux/slices/paymentsSlice';
 import { Product, reccuringEnum } from '../../models/payments/PaymentsModels';
 import ViewEditProduct from '../../components/payments/ViewEditProduct';
-import { ConfirmationDialog, Paginator } from 'ui-components';
+import { ConfirmationDialog } from 'ui-components';
 
 const Products = () => {
   const dispatch = useAppDispatch();
@@ -245,27 +236,25 @@ const Products = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
-        <Grid item>
-          {count >= 0 && (
-            <TextField
-              size="small"
-              variant="outlined"
-              name="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              label="Find product"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-        </Grid>
-        <Grid item>
+      <TableActionsContainer>
+        {count >= 0 && (
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find product"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        )}
+        <Box display="flex" gap={3} alignItems="center">
           {selectedProducts.length > 0 && (
             <IconButton
               style={{ marginRight: '10px' }}
@@ -285,39 +274,27 @@ const Products = () => {
             onClick={() => newProduct()}>
             Add products
           </Button>
-        </Grid>
-      </Grid>
-      {products.length > 0 ? (
-        <>
-          <DataTable
-            sort={sort}
-            setSort={setSort}
-            headers={headers}
-            dsData={formatData(products)}
-            actions={actions}
-            handleAction={handleAction}
-            handleSelect={handleSelect}
-            handleSelectAll={handleSelectAll}
-            selectedItems={selectedProducts}
-          />
-          <Grid container style={{ marginTop: '-8px' }}>
-            <Grid item xs={7} />
-            <Grid item xs={5}>
-              <Paginator
-                handlePageChange={handlePageChange}
-                limit={limit}
-                handleLimitChange={handleLimitChange}
-                page={page}
-                count={count}
-              />
-            </Grid>
-          </Grid>
-        </>
-      ) : (
-        <Box sx={{ textAlign: 'center', mt: '200px' }}>
-          <Typography>No available products</Typography>
         </Box>
-      )}
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={count}
+        noData={!products.length ? 'products' : undefined}>
+        <DataTable
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          dsData={formatData(products)}
+          actions={actions}
+          handleAction={handleAction}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          selectedItems={selectedProducts}
+        />
+      </TableContainer>
       <SideDrawerWrapper
         title={!create ? 'Product overview' : 'Create a new product'}
         open={drawer}
