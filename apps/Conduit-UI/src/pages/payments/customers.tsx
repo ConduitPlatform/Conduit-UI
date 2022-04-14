@@ -1,17 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailUI } from '../../models/emails/EmailModels';
-import {
-  Button,
-  Grid,
-  Typography,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Tooltip,
-  Box,
-} from '@mui/material';
-import { SideDrawerWrapper, DataTable } from 'ui-components';
+import { Button, TextField, IconButton, InputAdornment, Tooltip, Box } from '@mui/material';
+import { SideDrawerWrapper, DataTable, TableActionsContainer, TableContainer } from 'ui-components';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import { DeleteTwoTone } from '@mui/icons-material';
@@ -25,7 +16,7 @@ import {
 } from '../../redux/slices/paymentsSlice';
 import { Customer } from '../../models/payments/PaymentsModels';
 import ViewEditCustomer from '../../components/payments/ViewEditCustomer';
-import { ConfirmationDialog, Paginator } from 'ui-components';
+import { ConfirmationDialog } from 'ui-components';
 
 const Customers = () => {
   const dispatch = useAppDispatch();
@@ -247,28 +238,26 @@ const Customers = () => {
   ];
 
   return (
-    <div>
-      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
-        <Grid item>
-          {count >= 0 && (
-            <TextField
-              size="small"
-              variant="outlined"
-              name="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              label="Find customer"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-        </Grid>
-        <Grid item>
+    <Box>
+      <TableActionsContainer>
+        {count >= 0 && (
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find customer"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        )}
+        <Box display="flex" alignItems="center" gap={3}>
           {selectedCustomers.length > 0 && (
             <IconButton
               sx={{ marginRight: '10px' }}
@@ -288,39 +277,27 @@ const Customers = () => {
             onClick={() => newCustomer()}>
             Add Customer
           </Button>
-        </Grid>
-      </Grid>
-      {customers.length > 0 ? (
-        <>
-          <DataTable
-            sort={sort}
-            setSort={setSort}
-            headers={headers}
-            dsData={formatData(customers)}
-            actions={actions}
-            handleAction={handleAction}
-            handleSelect={handleSelect}
-            handleSelectAll={handleSelectAll}
-            selectedItems={selectedCustomers}
-          />
-          <Grid container sx={{ marginTop: '-8px' }}>
-            <Grid item xs={7} />
-            <Grid item xs={5}>
-              <Paginator
-                handlePageChange={handlePageChange}
-                limit={limit}
-                handleLimitChange={handleLimitChange}
-                page={page}
-                count={count}
-              />
-            </Grid>
-          </Grid>
-        </>
-      ) : (
-        <Box sx={{ textAlign: 'center', mt: '200px' }}>
-          <Typography>No available customers</Typography>
         </Box>
-      )}
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={count}
+        noData={!customers.length ? 'customers' : undefined}>
+        <DataTable
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          dsData={formatData(customers)}
+          actions={actions}
+          handleAction={handleAction}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          selectedItems={selectedCustomers}
+        />
+      </TableContainer>
       <SideDrawerWrapper
         title={!create ? 'Customer overview' : 'Create a new customer'}
         open={drawer}
@@ -345,7 +322,7 @@ const Customers = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
-    </div>
+    </Box>
   );
 };
 

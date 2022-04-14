@@ -1,14 +1,13 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
+import { TextField, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import { asyncGetSubscriptions } from '../../redux/slices/paymentsSlice';
 import { Subscription } from '../../models/payments/PaymentsModels';
-import { SideDrawerWrapper, DataTable } from 'ui-components';
+import { SideDrawerWrapper, DataTable, TableContainer, TableActionsContainer } from 'ui-components';
 import ViewSubscription from '../../components/payments/ViewSubscription';
-import { Paginator } from 'ui-components';
 
 const Subscriptions = () => {
   const dispatch = useAppDispatch();
@@ -137,59 +136,44 @@ const Subscriptions = () => {
 
   return (
     <div>
-      <Grid container item xs={12} justifyContent="space-between" sx={{ mb: 1 }}>
-        <Grid item>
-          {subscriptions && (
-            <TextField
-              size="small"
-              variant="outlined"
-              name="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              label="Find transaction"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-        </Grid>
-        <Grid item></Grid>
-      </Grid>
-      {subscriptions.length > 0 ? (
-        <>
-          <DataTable
-            dsData={formatData(subscriptions)}
-            sort={sort}
-            setSort={setSort}
-            headers={headers}
-            handleSelect={handleSelect}
-            handleSelectAll={handleSelectAll}
-            actions={actions}
-            handleAction={handleAction}
-            selectedItems={selectedSubscriptions}
+      <TableActionsContainer>
+        {subscriptions && (
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find transaction"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
           />
-          <Grid container sx={{ marginTop: '-8px' }}>
-            <Grid item xs={7} />
-            <Grid item xs={5}>
-              <Paginator
-                handlePageChange={handlePageChange}
-                limit={limit}
-                handleLimitChange={handleLimitChange}
-                page={page}
-                count={count}
-              />
-            </Grid>
-          </Grid>
-        </>
-      ) : (
-        <Box sx={{ textAlign: 'center', mt: '200px' }}>
-          <Typography>No available subscription data</Typography>
-        </Box>
-      )}
+        )}
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={count}
+        noData={!subscriptions.length ? 'subscriptions' : undefined}>
+        <DataTable
+          dsData={formatData(subscriptions)}
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          actions={actions}
+          handleAction={handleAction}
+          selectedItems={selectedSubscriptions}
+        />
+      </TableContainer>
       <SideDrawerWrapper
         title={'Subscription overview'}
         open={drawer}

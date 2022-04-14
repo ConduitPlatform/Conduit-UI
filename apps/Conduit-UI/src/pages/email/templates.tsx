@@ -10,15 +10,7 @@ import {
   asyncUploadTemplate,
 } from '../../redux/slices/emailsSlice';
 import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
-import {
-  Button,
-  Grid,
-  Typography,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Tooltip,
-} from '@mui/material';
+import { Button, TextField, IconButton, InputAdornment, Tooltip, Box } from '@mui/material';
 import TabPanel from '../../components/emails/TabPanel';
 import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
 import Sync from '@mui/icons-material/Sync';
@@ -27,7 +19,13 @@ import ExternalTemplates from '../../components/emails/ExternalTemplates';
 import useDebounce from '../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
-import { DataTable, Paginator, SideDrawerWrapper, ConfirmationDialog } from 'ui-components';
+import {
+  DataTable,
+  SideDrawerWrapper,
+  ConfirmationDialog,
+  TableActionsContainer,
+  TableContainer,
+} from 'ui-components';
 
 const Templates = () => {
   const dispatch = useAppDispatch();
@@ -254,26 +252,24 @@ const Templates = () => {
   };
 
   return (
-    <div>
-      <Grid container item xs={12} justifyContent="space-between" sx={{ margin: 1 }}>
-        <Grid item>
-          <TextField
-            size="small"
-            variant="outlined"
-            name="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            label="Find template"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-        <Grid item pr={1}>
+    <Box>
+      <TableActionsContainer>
+        <TextField
+          size="small"
+          variant="outlined"
+          name="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          label="Find template"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Box display="flex" gap={2} alignItems="center">
           {selectedTemplates.length > 0 && (
             <IconButton
               aria-label="delete"
@@ -285,17 +281,12 @@ const Templates = () => {
               </Tooltip>
             </IconButton>
           )}
-          <IconButton
-            color="primary"
-            sx={{ marginLeft: 1.5 }}
-            onClick={() => dispatch(asyncSyncTemplates())}
-            size="large">
+          <IconButton color="primary" onClick={() => dispatch(asyncSyncTemplates())} size="large">
             <Tooltip title="Sync external templates">
               <Sync color="primary" />
             </Tooltip>
           </IconButton>
           <Button
-            sx={{ marginRight: 1.5 }}
             variant="contained"
             color="secondary"
             onClick={() => handleImportTemplate()}
@@ -309,37 +300,27 @@ const Templates = () => {
             onClick={() => newTemplate()}>
             New Template
           </Button>
-        </Grid>
-      </Grid>
-      {templateDocuments.length > 0 ? (
-        <>
-          <DataTable
-            sort={sort}
-            setSort={setSort}
-            headers={headers}
-            dsData={formatData(templateDocuments)}
-            actions={actions}
-            handleAction={handleAction}
-            handleSelect={handleSelect}
-            handleSelectAll={handleSelectAll}
-            selectedItems={selectedTemplates}
-          />
-          <Grid container sx={{ marginTop: '-8px' }}>
-            <Grid item xs={7} />
-            <Grid item xs={5}>
-              <Paginator
-                handlePageChange={handlePageChange}
-                limit={limit}
-                handleLimitChange={handleLimitChange}
-                page={page}
-                count={totalCount}
-              />
-            </Grid>
-          </Grid>
-        </>
-      ) : (
-        <Typography>No available templates</Typography>
-      )}
+        </Box>
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={totalCount}
+        noData={templateDocuments.length === 0 ? 'templates' : undefined}>
+        <DataTable
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          dsData={formatData(templateDocuments)}
+          actions={actions}
+          handleAction={handleAction}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          selectedItems={selectedTemplates}
+        />
+      </TableContainer>
       <SideDrawerWrapper
         open={drawer}
         title={extractTitle()}
@@ -367,7 +348,7 @@ const Templates = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
-    </div>
+    </Box>
   );
 };
 

@@ -1,9 +1,7 @@
-import Typography from '@mui/material/Typography';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import NewUserModal from '../../components/authentication/AddUserDrawerContent';
 import AuthUsers from '../../components/authentication/AuthUsers';
 import SearchFilter from '../../components/authentication/SearchFilter';
-import Grid from '@mui/material/Grid';
 import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
 import useDebounce from '../../hooks/useDebounce';
 import {
@@ -17,7 +15,7 @@ import {
 } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
-import { ConfirmationDialog } from 'ui-components';
+import { ConfirmationDialog, TableContainer } from 'ui-components';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
 import EditUserDialog from '../../components/authentication/EditUserDialog';
 import {
@@ -31,7 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import { AddCircle } from '@mui/icons-material';
 import { isString } from 'lodash';
-import { Paginator, SideDrawerWrapper } from 'ui-components';
+import { SideDrawerWrapper, TableActionsContainer } from 'ui-components';
 
 const Users = () => {
   const dispatch = useAppDispatch();
@@ -224,66 +222,60 @@ const Users = () => {
 
   return (
     <div>
-      <Grid container sx={{ mb: 1 }}>
-        <Grid item xs={8}>
-          <SearchFilter
-            setSearch={setSearch}
-            search={search}
-            filter={filter}
-            handleFilterChange={handleFilterChange}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            marginLeft: -2,
-          }}>
-          {selectedUsers.length > 1 && (
-            <ButtonGroup size="small" variant="contained" color="primary" sx={{ mr: 1 }}>
-              <IconButton
-                aria-label="block"
-                color="primary"
-                onClick={() =>
-                  setOpenBlockUI({
-                    open: true,
-                    multiple: true,
-                  })
-                }
-                size="large">
-                <Tooltip title="Block multiple users">
-                  <BlockIcon />
-                </Tooltip>
-              </IconButton>
-              <IconButton
-                aria-label="delete"
-                color="primary"
-                onClick={() =>
-                  setOpenDeleteUser({
-                    open: true,
-                    multiple: true,
-                  })
-                }
-                size="large">
-                <Tooltip title="Delete multiple users">
-                  <DeleteIcon />
-                </Tooltip>
-              </IconButton>
-            </ButtonGroup>
-          )}
-          <Button
-            color="primary"
-            variant="contained"
-            endIcon={<AddCircle />}
-            onClick={() => setDrawer(true)}>
-            ADD USER
-          </Button>
-        </Grid>
-      </Grid>
-      {users && users.length > 0 ? (
+      <TableActionsContainer>
+        <SearchFilter
+          setSearch={setSearch}
+          search={search}
+          filter={filter}
+          handleFilterChange={handleFilterChange}
+        />
+        {selectedUsers.length > 1 && (
+          <ButtonGroup size="small" variant="contained" color="primary" sx={{ mr: 1 }}>
+            <IconButton
+              aria-label="block"
+              color="primary"
+              onClick={() =>
+                setOpenBlockUI({
+                  open: true,
+                  multiple: true,
+                })
+              }
+              size="large">
+              <Tooltip title="Block multiple users">
+                <BlockIcon />
+              </Tooltip>
+            </IconButton>
+            <IconButton
+              aria-label="delete"
+              color="primary"
+              onClick={() =>
+                setOpenDeleteUser({
+                  open: true,
+                  multiple: true,
+                })
+              }
+              size="large">
+              <Tooltip title="Delete multiple users">
+                <DeleteIcon />
+              </Tooltip>
+            </IconButton>
+          </ButtonGroup>
+        )}
+        <Button
+          color="primary"
+          variant="contained"
+          endIcon={<AddCircle />}
+          onClick={() => setDrawer(true)}>
+          ADD USER
+        </Button>
+      </TableActionsContainer>
+      <TableContainer
+        handlePageChange={handlePageChange}
+        limit={limit}
+        handleLimitChange={handleLimitChange}
+        page={page}
+        count={count}
+        noData={!users.length ? 'users' : undefined}>
         <AuthUsers
           sort={sort}
           setSort={setSort}
@@ -293,23 +285,7 @@ const Users = () => {
           handleSelectAll={handleSelectAll}
           selectedUsers={selectedUsers}
         />
-      ) : (
-        <Typography>No users available</Typography>
-      )}
-      {users && users.length > 0 && (
-        <Grid container sx={{ marginTop: '-8px' }}>
-          <Grid item xs={7} />
-          <Grid item xs={5}>
-            <Paginator
-              handlePageChange={handlePageChange}
-              limit={limit}
-              handleLimitChange={handleLimitChange}
-              page={page}
-              count={count}
-            />
-          </Grid>
-        </Grid>
-      )}
+      </TableContainer>
       <SideDrawerWrapper
         open={drawer}
         maxWidth={550}

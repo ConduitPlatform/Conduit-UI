@@ -16,6 +16,8 @@ import Dropzone from "./components/Dropzone";
 import SwaggerModal from "./components/SwaggerModal";
 import ModuleItem from "./components/navigation/ModuleItem";
 import HomePageCard from "./components/HomePageCard";
+import TableActionsContainer from "./components/TableActionsContainer";
+import TableContainer from "./components/TableContainer";
 
 export {
   ConduitMultiSelect,
@@ -36,4 +38,6 @@ export {
   SwaggerModal,
   ModuleItem,
   HomePageCard,
+  TableActionsContainer,
+  TableContainer,
 };
