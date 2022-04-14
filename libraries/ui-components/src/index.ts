@@ -15,6 +15,7 @@ import StorageDownloadDialog from "./components/StorageDownloadDialog";
 import Dropzone from "./components/Dropzone";
 import SwaggerModal from "./components/SwaggerModal";
 import ModuleItem from "./components/navigation/ModuleItem";
+import HomePageCard from "./components/HomePageCard";
 
 export {
   ConduitMultiSelect,
@@ -34,4 +35,5 @@ export {
   Dropzone,
   SwaggerModal,
   ModuleItem,
+  HomePageCard,
 };

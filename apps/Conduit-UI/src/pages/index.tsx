@@ -3,42 +3,16 @@ import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import { Container, Grid, Divider, Button, Link, Icon, styled, Card } from '@mui/material';
+import { Container, Grid, Button, Link, Icon } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
 import SecretIcon from '@mui/icons-material/VpnKey';
 import Description from '@mui/icons-material/Description';
-import { SwaggerModal } from 'ui-components';
+import { SwaggerModal, HomePageCard } from 'ui-components';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
-
-const BoxWithIconText = styled(Box)(() => ({
-  display: 'flex',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-}));
-
-const CustomizedDivider = styled(Divider)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.main,
-  marginBottom: '10px',
-}));
-
-const CustomizedCard = styled(Card)(() => ({
-  borderRadius: 8,
-  backgroundColor: 'common.white',
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  padding: 20,
-  '&:hover': {
-    boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
-  },
-  '&:focus': {
-    boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
-  },
-}));
 
 const Home = () => {
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
@@ -111,59 +85,40 @@ const Home = () => {
               <Link
                 sx={{ textDecoration: 'none', cursor: 'pointer' }}
                 href="/authentication/signIn">
-                <CustomizedCard>
-                  <BoxWithIconText>
-                    <SecretIcon />
-                    <Typography> &nbsp; set up an auth method</Typography>
-                  </BoxWithIconText>
-                  <CustomizedDivider />
-                  <Typography variant="subtitle2">
-                    Easily login with the method of your choice!
-                  </Typography>
-                </CustomizedCard>
+                <HomePageCard
+                  icon={<SecretIcon />}
+                  title="set up an auth method"
+                  description="Easily login with the method of your choice!"
+                />
               </Link>
             </Grid>
             <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/database/schemas">
-                <CustomizedCard>
-                  <BoxWithIconText>
-                    <SchemaIcon />
-                    <Typography align="center">&nbsp; create a schema</Typography>
-                  </BoxWithIconText>
-                  <CustomizedDivider />
-                  <Typography variant="subtitle2">
-                    Create your schema with a user friendly UI and start editing you documents right
-                    away!
-                  </Typography>
-                </CustomizedCard>
+                <HomePageCard
+                  icon={<SchemaIcon />}
+                  title="create a schema"
+                  description={
+                    'Create your schema with a user friendly UI and start editing you documents right away!'
+                  }
+                />
               </Link>
             </Grid>
             <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/email/config">
-                <CustomizedCard>
-                  <BoxWithIconText>
-                    <EmailIcon />
-                    <Typography> &nbsp;set up email provider</Typography>
-                  </BoxWithIconText>
-                  <CustomizedDivider />
-                  <Typography variant="subtitle2">
-                    Select your preferred provider and start mailing!
-                  </Typography>
-                </CustomizedCard>
+                <HomePageCard
+                  icon={<EmailIcon />}
+                  title="set up email provider"
+                  description="Select your preferred provider and start mailing!"
+                />
               </Link>
             </Grid>
             <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/settings/secrets">
-                <CustomizedCard>
-                  <BoxWithIconText>
-                    <LockIcon />
-                    <Typography>&nbsp; set up client secrets</Typography>
-                  </BoxWithIconText>
-                  <CustomizedDivider />
-                  <Typography variant="subtitle2">
-                    Set up your client secret across multiple platforms!
-                  </Typography>
-                </CustomizedCard>
+                <HomePageCard
+                  icon={<LockIcon />}
+                  title="set up client secrets"
+                  description="Set up your client secret across multiple platforms!"
+                />
               </Link>
             </Grid>
           </Grid>
