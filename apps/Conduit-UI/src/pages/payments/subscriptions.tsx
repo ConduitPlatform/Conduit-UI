@@ -2,13 +2,13 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { Grid, Typography, TextField, InputAdornment, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import Paginator from '../../components/common/Paginator';
 import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import { asyncGetSubscriptions } from '../../redux/slices/paymentsSlice';
 import { Subscription } from '../../models/payments/PaymentsModels';
 import { SideDrawerWrapper, DataTable } from 'ui-components';
 import ViewSubscription from '../../components/payments/ViewSubscription';
+import { Paginator } from 'ui-components';
 
 const Subscriptions = () => {
   const dispatch = useAppDispatch();
