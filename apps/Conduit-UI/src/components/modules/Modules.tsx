@@ -3,7 +3,7 @@ import { Home } from '@mui/icons-material';
 import { getModuleIcon, getModuleName, handleModuleNavigation } from './moduleUtils';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import CustomListItem from '../navigation/CustomListItem';
+import { ModuleItem } from 'ui-components';
 import Link from 'next/link';
 
 interface IModule {
@@ -36,7 +36,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
     <>
       {homeEnabled ? (
         <Link href="/" passHref>
-          <CustomListItem
+          <ModuleItem
             selected={itemSelected === ''}
             icon={<Home color={'inherit'} />}
             title="home"
@@ -52,7 +52,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
               return;
             } else
               return (
-                <CustomListItem
+                <ModuleItem
                   icon={getModuleIcon(module.moduleName)}
                   title={getModuleName(module.moduleName)}
                   onClick={() => handleDisabledClick()}
@@ -64,7 +64,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
           const currentUrl = handleModuleNavigation(module.moduleName);
           return (
             <Link href={currentUrl} passHref key={index}>
-              <CustomListItem
+              <ModuleItem
                 selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}
                 title={getModuleName(module.moduleName)}

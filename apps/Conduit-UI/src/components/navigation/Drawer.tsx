@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
-import CustomListItem from './CustomListItem';
+import { ModuleItem } from 'ui-components';
 import Link from 'next/link';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import Image from 'next/image';
@@ -43,7 +43,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
         <List component="nav">
           <Modules modules={enabledModules} homeEnabled itemSelected={itemSelected} />
           <Link href="/settings/clientsdk" passHref>
-            <CustomListItem
+            <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}
               title="Settings"
@@ -58,7 +58,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           )}
         </List>
         <Box sx={{ margin: 0, paddingLeft: 1 }}>
-          <CustomListItem
+          <ModuleItem
             icon={<ExitToApp color={'inherit'} />}
             title="Log out"
             onClick={() => handleLogout()}

@@ -14,6 +14,7 @@ import SideDrawerWrapper from "./components/navigation/SideDrawerWrapper";
 import StorageDownloadDialog from "./components/StorageDownloadDialog";
 import Dropzone from "./components/Dropzone";
 import SwaggerModal from "./components/SwaggerModal";
+import ModuleItem from "./components/navigation/ModuleItem";
 
 export {
   ConduitMultiSelect,
@@ -32,4 +33,5 @@ export {
   StorageDownloadDialog,
   Dropzone,
   SwaggerModal,
+  ModuleItem,
 };

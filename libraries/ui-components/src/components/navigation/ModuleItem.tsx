@@ -1,12 +1,12 @@
-import React, { forwardRef } from 'react';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import makeStyles from '@mui/styles/makeStyles';
-import { ListItem, styled, Theme } from '@mui/material';
-import clsx from 'clsx';
+import React, { forwardRef } from "react";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import makeStyles from "@mui/styles/makeStyles";
+import { ListItem, styled, Theme } from "@mui/material";
+import clsx from "clsx";
 
-const StyledAtag = styled('a')(() => ({
-  textDecoration: 'none',
+const StyledAtag = styled("a")(() => ({
+  textDecoration: "none",
 }));
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -17,21 +17,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.primary.contrastText,
     borderWidth: 1,
     padding: theme.spacing(1.6),
-    '&:hover': {
+    "&:hover": {
       borderWidth: 1,
     },
-    '&:focus': {
+    "&:focus": {
       borderWidth: 1,
     },
-    '&.Mui-selected': {
-      color: 'white',
+    "&.Mui-selected": {
+      color: "white",
       background: theme.palette.secondary.dark,
       borderWidth: 1,
-      '&:hover': {
+      "&:hover": {
         background: theme.palette.secondary.dark,
         borderWidth: 1,
       },
-      '&:focus': {
+      "&:focus": {
         background: theme.palette.secondary.dark,
         borderWidth: 1,
       },
@@ -49,8 +49,11 @@ interface Props {
   disabled?: boolean;
 }
 
-const CustomListItem = forwardRef<HTMLAnchorElement, Props>(
-  ({ selected, title, icon, onClick, className, href, disabled, ...rest }, ref) => {
+const ModuleItem = forwardRef<HTMLAnchorElement, Props>(
+  (
+    { selected, title, icon, onClick, className, href, disabled, ...rest },
+    ref
+  ) => {
     const classes = useStyles();
     return (
       <StyledAtag href={href} onClick={onClick} ref={ref}>
@@ -59,17 +62,18 @@ const CustomListItem = forwardRef<HTMLAnchorElement, Props>(
           button
           className={clsx(classes.listItem, className)}
           selected={selected}
-          {...rest}>
-          <ListItemIcon sx={{ minWidth: 35, marginRight: 1, color: 'inherit' }}>
+          {...rest}
+        >
+          <ListItemIcon sx={{ minWidth: 35, marginRight: 1, color: "inherit" }}>
             {icon}
           </ListItemIcon>
           <ListItemText
             primary={title}
             sx={{
-              '&	.MuiListItemText-primary': {
-                color: 'inherit',
-                textTransform: 'capitalize',
-                fontWeight: 'bold',
+              "&	.MuiListItemText-primary": {
+                color: "inherit",
+                textTransform: "capitalize",
+                fontWeight: "bold",
                 fontSize: 12,
               },
             }}
@@ -80,6 +84,6 @@ const CustomListItem = forwardRef<HTMLAnchorElement, Props>(
   }
 );
 
-CustomListItem.displayName = 'CustomListItem';
+ModuleItem.displayName = "CustomListItem";
 
-export default CustomListItem;
+export default ModuleItem;
