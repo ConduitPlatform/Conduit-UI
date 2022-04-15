@@ -7,7 +7,7 @@ const TableActionsContainer: FC = ({ children }) => {
       display="flex"
       justifyContent="space-between"
       alignItems="center"
-      py={0.1}
+      py={1}
     >
       {children}
     </Box>

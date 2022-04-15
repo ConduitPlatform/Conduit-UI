@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
+import { Box } from '@mui/material';
 
 interface Props {
   search: string;
@@ -18,11 +19,10 @@ interface Props {
 const SearchFilter: React.FC<Props> = ({ search, setSearch, filter, handleFilterChange }) => {
   return (
     <form>
-      <Grid container>
+      <Box display="flex" gap={2}>
         <TextField
           size="small"
           variant="outlined"
-          sx={{ margin: 1 }}
           name="Search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -35,7 +35,7 @@ const SearchFilter: React.FC<Props> = ({ search, setSearch, filter, handleFilter
             ),
           }}
         />
-        <FormControl variant="outlined" sx={{ margin: 1, minWidth: 120 }} size="small">
+        <FormControl variant="outlined" sx={{ minWidth: 120 }} size="small">
           <InputLabel>Provider</InputLabel>
           <Select
             label="Provider"
@@ -51,7 +51,7 @@ const SearchFilter: React.FC<Props> = ({ search, setSearch, filter, handleFilter
             <MenuItem value="twitch">Twitch</MenuItem>
           </Select>
         </FormControl>
-      </Grid>
+      </Box>
     </form>
   );
 };

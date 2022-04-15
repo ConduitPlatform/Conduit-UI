@@ -281,7 +281,7 @@ const Templates = () => {
               </Tooltip>
             </IconButton>
           )}
-          <IconButton color="primary" onClick={() => dispatch(asyncSyncTemplates())} size="large">
+          <IconButton color="primary" onClick={() => dispatch(asyncSyncTemplates())} size="small">
             <Tooltip title="Sync external templates">
               <Sync color="primary" />
             </Tooltip>

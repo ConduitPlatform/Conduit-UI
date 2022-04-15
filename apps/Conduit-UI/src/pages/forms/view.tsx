@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Grid,
   IconButton,
   InputAdornment,
   TextField,
@@ -24,7 +23,7 @@ import {
   asyncGetForms,
 } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { SideDrawerWrapper, DataTable, Paginator } from 'ui-components';
+import { SideDrawerWrapper, DataTable } from 'ui-components';
 
 const Create = () => {
   const dispatch = useAppDispatch();
