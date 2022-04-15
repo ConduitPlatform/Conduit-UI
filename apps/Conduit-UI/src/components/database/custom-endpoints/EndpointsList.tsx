@@ -104,6 +104,14 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, sel
           </Typography>
         ) : (
           <ListItemButton
+            sx={{
+              '&.MuiListItemButton-root': {
+                '&.Mui-selected': {
+                  background: 'secondary',
+                },
+                borderRadius: '10px',
+              },
+            }}
             key={`endpoint-${endpoint._id}`}
             onClick={() => handleListItemSelect(endpoint)}
             selected={selectedEndpoint?._id === endpoint?._id}>

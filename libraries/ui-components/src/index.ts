@@ -18,6 +18,7 @@ import ModuleItem from "./components/navigation/ModuleItem";
 import HomePageCard from "./components/HomePageCard";
 import TableActionsContainer from "./components/TableActionsContainer";
 import TableContainer from "./components/TableContainer";
+import ExtractDrawerInfo from "./components/ExtractDrawerInfo";
 
 export {
   ConduitMultiSelect,
@@ -40,4 +41,5 @@ export {
   HomePageCard,
   TableActionsContainer,
   TableContainer,
+  ExtractDrawerInfo,
 };

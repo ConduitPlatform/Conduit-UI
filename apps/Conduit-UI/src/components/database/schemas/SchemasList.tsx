@@ -85,7 +85,14 @@ const SchemasList: FC<Props> = ({
           </Typography>
         ) : (
           <ListItemButton
-            sx={{ borderRadius: '8px' }}
+            sx={{
+              borderRadius: '10px',
+              '&.MuiListItemButton-root': {
+                '&.Mui-selected': {
+                  background: 'secondary',
+                },
+              },
+            }}
             key={`endpoint-${schema._id}`}
             onClick={() => handleListItemSelect(schema.name)}
             selected={actualSchema?._id === schema?._id}>

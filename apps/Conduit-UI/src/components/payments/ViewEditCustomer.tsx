@@ -7,8 +7,8 @@ import { Button, Paper } from '@mui/material';
 import { useAppDispatch } from '../../redux/store';
 import { Customer } from '../../models/payments/PaymentsModels';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import ExtractView from './ExtractView';
 import CustomerForm from './Forms/CustomerForm';
+import { ExtractDrawerInfo } from 'ui-components';
 
 interface Props {
   handleCreate: (customer: Customer) => void;
@@ -64,7 +64,7 @@ const ViewEditCustomer: React.FC<Props> = ({
             {edit ? (
               <CustomerForm preloadedValues={customer} handleSubmitData={handleSaveClick} />
             ) : (
-              <ExtractView valuesToShow={customer} />
+              <ExtractDrawerInfo valuesToShow={customer} />
             )}
           </Grid>
         </Paper>

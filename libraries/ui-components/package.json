@@ -42,6 +42,7 @@
     "react-dropzone": "^11.7.0",
     "notistack": "^2.0.3",
     "next": "^12.1.0",
-    "axios": "^0.26.0"
+    "axios": "^0.26.0",
+    "lodash": "^4.17.15"
   }
 }

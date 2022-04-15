@@ -4,7 +4,7 @@ import Image from 'next/dist/client/image';
 import FormsImage from '../../assets/svgs/forms.svg';
 import { FormsModel } from '../../models/forms/FormsModels';
 import EditableForm from './EditableForm';
-import ExtractView from '../payments/ExtractView';
+import { ExtractDrawerInfo } from 'ui-components';
 
 interface Props {
   handleCreate: (formsState: FormsModel) => void;
@@ -51,7 +51,7 @@ const ViewEditForm: React.FC<Props> = ({
                 <EditableForm preloadedValues={form} handleSubmitData={handleSaveClick} />
               </>
             ) : (
-              <ExtractView valuesToShow={form} />
+              <ExtractDrawerInfo valuesToShow={form} />
             )}
           </Grid>
         </Paper>

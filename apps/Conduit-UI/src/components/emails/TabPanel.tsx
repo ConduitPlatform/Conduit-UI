@@ -1,11 +1,9 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import React from 'react';
 import { EmailTemplateType } from '../../models/emails/EmailModels';
-import Image from 'next/dist/client/image';
-import EmailImage from '../../assets/email.svg';
+import { ExtractDrawerInfo } from 'ui-components';
 import { Button, Paper } from '@mui/material';
 import TemplateForm from './TemplateForm';
 
@@ -53,24 +51,7 @@ const TabPanel: React.FC<Props> = ({
               <TemplateForm preloadedValues={template} handleSubmitData={handleSaveClick} />
             ) : (
               <>
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2">Template name:</Typography>
-                  <Typography variant="h6">{template.name}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2">Sender:</Typography>
-                  <Typography variant="h6">{template.sender}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Subject</Typography>
-                  <Typography variant="subtitle2">{template.subject}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Body</Typography>
-                  <Typography variant="subtitle2" sx={{ whiteSpace: 'pre-line' }}>
-                    {template.body}
-                  </Typography>
-                </Grid>
+                <ExtractDrawerInfo valuesToShow={template} />
               </>
             )}
           </Grid>
@@ -81,9 +62,6 @@ const TabPanel: React.FC<Props> = ({
               <Button size={'large'} variant={'outlined'} onClick={() => setEdit(!edit)}>
                 Edit
               </Button>
-            </Grid>
-            <Grid item>
-              <Image src={EmailImage} width="200px" alt="mail" />
             </Grid>
           </Grid>
         )}

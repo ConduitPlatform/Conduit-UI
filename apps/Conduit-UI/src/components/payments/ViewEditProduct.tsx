@@ -4,9 +4,8 @@ import Grid from '@mui/material/Grid';
 import React from 'react';
 import { Button, Paper } from '@mui/material';
 import { Product } from '../../models/payments/PaymentsModels';
-import ExtractView from './ExtractView';
-
 import ProductForm from './Forms/ProductForm';
+import { ExtractDrawerInfo } from 'ui-components';
 
 interface Props {
   handleCreate: (product: Product) => void;
@@ -52,7 +51,7 @@ const ViewEditProduct: React.FC<Props> = ({
             {edit ? (
               <ProductForm preloadedValues={product} handleSubmitData={handleSaveClick} />
             ) : (
-              <ExtractView valuesToShow={product} />
+              <ExtractDrawerInfo valuesToShow={product} />
             )}
           </Grid>
         </Paper>

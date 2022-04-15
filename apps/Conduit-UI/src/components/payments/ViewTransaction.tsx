@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import Image from 'next/dist/client/image';
 import TransactionImage from '../../assets/svgs/transaction.svg';
 import { Transaction } from '../../models/payments/PaymentsModels';
-import ExtractView from './ExtractView';
+import { ExtractDrawerInfo } from 'ui-components';
 
 interface Props {
   transaction: Transaction;
@@ -24,7 +24,7 @@ const ViewTransaction: React.FC<Props> = ({ transaction }) => {
             mt: 2,
           }}>
           <Grid container spacing={2} justifyContent="space-around">
-            <ExtractView valuesToShow={transaction} />
+            <ExtractDrawerInfo valuesToShow={transaction} />
           </Grid>
         </Paper>
         <Box
