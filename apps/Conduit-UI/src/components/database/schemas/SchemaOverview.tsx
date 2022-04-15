@@ -126,18 +126,18 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
   return (
     <>
       <Box display="flex" justifyContent="space-between">
-        <Box pr={3} pt={2}>
+        <Box pr={3} pt={2} display="flex" gap={2}>
           <Button variant="outlined" onClick={() => setObjectView(!objectView)}>
             {objectView ? 'Switch to Json View' : 'Switch to Object View'}
           </Button>
-        </Box>
-        <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
           <Button
             onClick={() => setInfoDrawer(true)}
             variant="outlined"
             startIcon={<InfoOutlinedIcon />}>
             Schema Info
           </Button>
+        </Box>
+        <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
           <Button
             variant="outlined"
             color="primary"

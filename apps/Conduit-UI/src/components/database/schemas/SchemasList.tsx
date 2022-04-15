@@ -4,7 +4,7 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { Box, ListItem, ListItemText, Typography } from '@mui/material';
+import { Box, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { Skeleton } from '@mui/material';
 import { asyncAddSchemas, asyncGetSchemas } from '../../../redux/slices/databaseSlice';
 import { Schema } from '../../../models/database/CmsModels';
@@ -84,29 +84,13 @@ const SchemasList: FC<Props> = ({
             <Skeleton />
           </Typography>
         ) : (
-          <ListItem
-            button
+          <ListItemButton
+            sx={{ borderRadius: '8px' }}
             key={`endpoint-${schema._id}`}
-            sx={{
-              '&.MuiListItem-root:hover': {
-                background: 'grey.600',
-                borderRadius: '4px',
-              },
-              '&.Mui-selected': {
-                background: 'grey.700',
-                borderRadius: '4px',
-                color: '#ffffff',
-              },
-              '&.Mui-selected:hover': {
-                background: 'grey.800',
-                borderRadius: '4px',
-                color: '#ffffff',
-              },
-            }}
             onClick={() => handleListItemSelect(schema.name)}
             selected={actualSchema?._id === schema?._id}>
             <ListItemText primary={schema.name} />
-          </ListItem>
+          </ListItemButton>
         )}
       </div>
     );
