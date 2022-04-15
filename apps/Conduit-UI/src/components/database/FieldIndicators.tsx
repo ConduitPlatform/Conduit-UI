@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import React, { FC } from 'react';
 import styled from '@emotion/styled';
 
-const CustomizedTypography = styled(Typography)(({ theme }) => ({
+const CustomizedTypography = styled(Typography)(() => ({
   height: 25,
   width: 25,
   marginRight: 5,
