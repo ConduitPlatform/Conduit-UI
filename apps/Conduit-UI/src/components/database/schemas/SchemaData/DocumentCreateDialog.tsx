@@ -4,10 +4,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { Schema } from '../../../models/database/CmsModels';
+import { Schema } from '../../../../models/database/CmsModels';
 import { set, cloneDeep } from 'lodash';
 
-import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
+import TreeFieldGenerator from '../../tree-components/tree-document-creation/TreeFieldGenerator';
 
 interface Props {
   open: boolean;

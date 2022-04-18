@@ -11,7 +11,7 @@ import {
 } from '../../redux/slices/emailsSlice';
 import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
 import { Button, TextField, IconButton, InputAdornment, Tooltip, Box } from '@mui/material';
-import TabPanel from '../../components/emails/TabPanel';
+import TabPanel from '../../components/emails/EmailDrawerContent';
 import { CallMissedOutgoing, DeleteTwoTone, AddCircleOutline } from '@mui/icons-material';
 import Sync from '@mui/icons-material/Sync';
 import SearchIcon from '@mui/icons-material/Search';

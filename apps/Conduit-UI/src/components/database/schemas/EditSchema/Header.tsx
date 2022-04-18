@@ -3,10 +3,10 @@ import { Box, Typography, Button, Input, Checkbox } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
-import { clearSelectedSchema } from '../../redux/slices/databaseSlice';
+import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
+import { enqueueInfoNotification } from '../../../../utils/useNotifier';
+import { ModifyOptions, Permissions, Schema } from '../../../../models/database/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 
 export const headerHeight = 64;

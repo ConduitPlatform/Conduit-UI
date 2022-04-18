@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import React, { FC } from 'react';
-import { createDocumentArray } from '../schemas/SchemaDataUtils';
+import { createDocumentArray } from '../schemas/SchemaData/SchemaDataUtils';
 import TreeElement from './TreeElement';
 import { Schema } from '../../../models/database/CmsModels';
 import { TreeView } from '@mui/lab';

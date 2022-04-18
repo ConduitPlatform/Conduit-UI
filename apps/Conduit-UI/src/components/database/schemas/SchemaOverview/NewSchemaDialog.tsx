@@ -8,8 +8,8 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import { useAppDispatch } from '../../redux/store';
-import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { useAppDispatch } from '../../../../redux/store';
+import { enqueueInfoNotification } from '../../../../utils/useNotifier';
 import { useRouter } from 'next/router';
 import CloseIcon from '@mui/icons-material/Close';
 import Link from 'next/link';

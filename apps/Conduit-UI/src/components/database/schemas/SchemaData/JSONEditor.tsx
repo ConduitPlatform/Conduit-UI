@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useState } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
-import { localeEn } from '../../../models/JSONEditorAjrmLocale';
+import { localeEn } from '../../../../models/JSONEditorAjrmLocale';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
-import { useAppDispatch } from '../../../redux/store';
-import { Schema } from '../../../models/database/CmsModels';
-import { asyncEditSchemaDocument } from '../../../redux/slices/databaseSlice';
-import { enqueueErrorNotification } from '../../../utils/useNotifier';
+import { useAppDispatch } from '../../../../redux/store';
+import { Schema } from '../../../../models/database/CmsModels';
+import { asyncEditSchemaDocument } from '../../../../redux/slices/databaseSlice';
+import { enqueueErrorNotification } from '../../../../utils/useNotifier';
 import { Box, styled } from '@mui/material';
 
 const StyledDocActions = styled(DocumentActions)(() => ({

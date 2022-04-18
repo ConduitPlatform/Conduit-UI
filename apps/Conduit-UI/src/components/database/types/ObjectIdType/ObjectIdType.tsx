@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import CodeIcon from '@mui/icons-material/Code';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import FieldIndicators from '../../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import Grid from '@mui/material/Grid';
 import { IObjectData } from '../../../../models/database/BuildTypesModels';
 import { CustomIcon } from '../SimpleType/SimpleType';

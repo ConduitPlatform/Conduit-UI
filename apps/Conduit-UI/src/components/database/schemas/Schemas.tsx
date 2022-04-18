@@ -8,13 +8,13 @@ import {
   asyncGetSchemaOwners,
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import SchemaDataCard from './SchemaDataCard';
+import SchemaDataCard from './SchemaData/SchemaDataCard';
 import { ConfirmationDialog } from 'ui-components';
-import SchemaDataHeader from './SchemaDataHeader';
+import SchemaDataHeader from './SchemaData/SchemaDataHeader';
 import useParseQuery from './useParseQuery';
-import DocumentCreateDialog from './DocumentCreateDialog';
-import SchemaDataPlaceholder from './SchemaDataPlaceholder';
-import JSONEditor from './JSONEditor';
+import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
+import SchemaDataPlaceholder from './SchemaData/SchemaDataPlaceholder';
+import JSONEditor from './SchemaData/JSONEditor';
 import { Grid, InputAdornment, TextField, Typography, Button, Tooltip } from '@mui/material';
 import { Archive, Check, Search } from '@mui/icons-material';
 import useDebounce from '../../../hooks/useDebounce';
@@ -23,8 +23,8 @@ import { Schema } from '../../../models/database/CmsModels';
 import SchemasList from './SchemasList';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SchemaTabs } from './SchemaTabs';
-import { SchemaOverview } from './SchemaOverview';
-import NewSchemaDialog from '../NewSchemaDialog';
+import { SchemaOverview } from './SchemaOverview/SchemaOverview';
+import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
 import { ConduitMultiSelect } from 'ui-components';
 
 const TabPanel: FC = ({ children }) => {

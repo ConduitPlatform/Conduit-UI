@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import EnumType from '../types/EnumType/EnumType';
+import EnumType from '../../types/EnumType/EnumType';
 import { BoxProps } from '@mui/material/Box/Box';
-import GroupTypeViewer from './GroupTypeViewer';
-import RelationTypeViewer from '../types/RelationType/RelationTypeViewer';
-import BooleanTypeViewer from '../types/BooleanType/BooleanTypeViewer';
-import ObjectIdTypeViewer from '../types/ObjectIdType/ObjectIdTypeViewer';
-import SimpleTypeViewer from '../types/SimpleType/SimpleTypeViewer';
+import GroupTypeViewer from '../GroupTypeViewer';
+import RelationTypeViewer from '../../types/RelationType/RelationTypeViewer';
+import BooleanTypeViewer from '../../types/BooleanType/BooleanTypeViewer';
+import ObjectIdTypeViewer from '../../types/ObjectIdType/ObjectIdTypeViewer';
+import SimpleTypeViewer from '../../types/SimpleType/SimpleTypeViewer';
 import { Grid } from '@mui/material';
 
 interface Props extends BoxProps {

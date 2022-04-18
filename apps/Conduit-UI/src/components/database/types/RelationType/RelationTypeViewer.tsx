@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
-import FieldIndicators from '../../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../../models/database/BuildTypesModels';

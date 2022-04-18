@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import CodeIcon from '@mui/icons-material/Code';
-import FieldIndicators from '../../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import Grid from '@mui/material/Grid';
 import { IObjectData } from '../../../../models/database/BuildTypesModels';
 import { CustomIcon } from '../SimpleType/SimpleType';

@@ -1,18 +1,21 @@
 import React, { FC, useState } from 'react';
 import { Grid, Box, Button } from '@mui/material';
-import { Schema } from '../../../models/database/CmsModels';
+import { Schema } from '../../../../models/database/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
-import { ExtractSchemaInfo } from '../../../utils/ExtractSchemaInfo';
-import { localeEn } from '../../../models/JSONEditorAjrmLocale';
+import { ExtractSchemaInfo } from '../../../../utils/ExtractSchemaInfo';
+import { localeEn } from '../../../../models/JSONEditorAjrmLocale';
 import { useRouter } from 'next/router';
-import { useAppDispatch } from '../../../redux/store';
-import SchemaActionsDialog, { actions } from '../SchemaActionsDialog';
-import { asyncDeleteSelectedSchemas, asyncToggleSchema } from '../../../redux/slices/databaseSlice';
+import { useAppDispatch } from '../../../../redux/store';
+import SchemaActionsDialog, { actions } from './SchemaActionsDialog';
+import {
+  asyncDeleteSelectedSchemas,
+  asyncToggleSchema,
+} from '../../../../redux/slices/databaseSlice';
 import SchemaViewer from './SchemaViewer';
-import { getSchemaFieldsWithExtra } from '../../../utils/type-functions';
+import { getSchemaFieldsWithExtra } from '../../../../utils/type-functions';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { SideDrawerWrapper } from 'ui-components';
-import Data from '../../../assets/svgs/data.svg';
+import Data from '../../../../assets/svgs/data.svg';
 import Image from 'next/image';
 
 interface Props {

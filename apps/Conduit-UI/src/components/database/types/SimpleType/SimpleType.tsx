@@ -5,7 +5,7 @@ import NumberIcon from '@mui/icons-material/Filter7';
 import DateIcon from '@mui/icons-material/DateRange';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import FieldIndicators from '../../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import Grid from '@mui/material/Grid';
 import { ISimpleDataTypes } from '../../../../models/database/BuildTypesModels';
 import { Icon, styled } from '@mui/material';

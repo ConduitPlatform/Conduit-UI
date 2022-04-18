@@ -19,6 +19,7 @@ import HomePageCard from "./components/HomePageCard";
 import TableActionsContainer from "./components/TableActionsContainer";
 import TableContainer from "./components/TableContainer";
 import ExtractDrawerInfo from "./components/ExtractDrawerInfo";
+import FieldIndicators from "./components/FieldIndicators";
 
 export {
   ConduitMultiSelect,
@@ -42,4 +43,5 @@ export {
   TableActionsContainer,
   TableContainer,
   ExtractDrawerInfo,
+  FieldIndicators,
 };

@@ -7,7 +7,7 @@ import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
 import React, { FC } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import FieldIndicators from '../../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import { BooleanGroupType } from '../BooleanType/BooleanType';
 import { EnumGroupType } from '../EnumType/EnumType';
 import { ObjectIdGroupType } from '../ObjectIdType/ObjectIdType';

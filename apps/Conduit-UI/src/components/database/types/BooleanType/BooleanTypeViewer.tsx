@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
-import FieldIndicators from '../../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import Grid from '@mui/material/Grid';
 import { IBooleanData } from '../../../../models/database/BuildTypesModels';
 

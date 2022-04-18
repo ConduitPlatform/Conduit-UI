@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { isArray } from 'lodash';
-import { Schema } from '../../models/database/CmsModels';
-import { SchemaUI } from './CmsModels';
+import { Schema } from '../../../../models/database/CmsModels';
+import { SchemaUI } from '../../../../models/database/CmsModels';
 
 interface Props {
   open: boolean;

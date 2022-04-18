@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
 import Drawer from '@mui/material/Drawer';
-import SimpleForm from './types/SimpleType/SimpleForm';
-import BooleanForm from './types/BooleanType/BooleanForm';
-import GroupForm from './types/GroupType/GroupForm';
+import SimpleForm from '../../types/SimpleType/SimpleForm';
+import BooleanForm from '../../types/BooleanType/BooleanForm';
+import GroupForm from '../../types/GroupType/GroupForm';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import EnumForm from './types/EnumType/EnumForm';
-import ObjectIdForm from './types/ObjectIdType/ObjectIdForm';
-import RelationForm from './types/RelationType/RelationForm';
-import { IDrawerData } from '../../models/database/BuildTypesModels';
+import EnumForm from '../../types/EnumType/EnumForm';
+import ObjectIdForm from '../../types/ObjectIdType/ObjectIdForm';
+import RelationForm from '../../types/RelationType/RelationForm';
+import { IDrawerData } from '../../../../models/database/BuildTypesModels';
 
 interface Props {
   // drawerData: IDrawerData;

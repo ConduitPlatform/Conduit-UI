@@ -3,16 +3,16 @@ import Card, { CardProps } from '@mui/material/Card';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { CardContent } from '@mui/material';
-import { Schema } from '../../../models/database/CmsModels';
+import { Schema } from '../../../../models/database/CmsModels';
 import {
   asyncEditSchemaDocument,
   asyncGetSchemaDocument,
-} from '../../../redux/slices/databaseSlice';
-import { useAppDispatch } from '../../../redux/store';
+} from '../../../../redux/slices/databaseSlice';
+import { useAppDispatch } from '../../../../redux/store';
 import { DocumentActions, EditDocumentActions, ExpandableArrow } from './SchemaDataCardActions';
 import { cloneDeep, set } from 'lodash';
-import EditDocumentTree from '../tree-components/EditDocumentTree';
-import TreeFieldGenerator from '../tree-components/tree-document-creation/TreeFieldGenerator';
+import EditDocumentTree from '../../tree-components/EditDocumentTree';
+import TreeFieldGenerator from '../../tree-components/tree-document-creation/TreeFieldGenerator';
 
 const useStyles = makeStyles((theme) => ({
   root: {

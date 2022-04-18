@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import React, { FC } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import GroupIcon from '@mui/icons-material/PlaylistAdd';
-import FieldIndicators from '../FieldIndicators';
+import { FieldIndicators } from 'ui-components';
 import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';

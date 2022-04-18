@@ -22,6 +22,21 @@ export interface Schema {
   updatedAt: string;
 }
 
+export interface SchemaUI {
+  createdAt: string;
+  name: string;
+  updatedAt: string;
+  _id: string;
+  modelOptions: {
+    conduit: {
+      cms: {
+        authentication: boolean;
+        crudOperations: boolean;
+      };
+    };
+  };
+}
+
 export interface EditableSchemaFields {
   name: string;
   authentication: boolean;

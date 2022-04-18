@@ -12,7 +12,7 @@ import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { ConfirmationDialog, TableActionsContainer, TableContainer } from 'ui-components';
 import FormReplies from '../../components/forms/FormReplies';
-import ViewEditForm from '../../components/forms/ViewEditForm';
+import ViewEditForm from '../../components/forms/FormDrawerContent';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
 import useDebounce from '../../hooks/useDebounce';
 import { FormsModel, FormsUI } from '../../models/forms/FormsModels';

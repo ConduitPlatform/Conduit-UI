@@ -9,11 +9,11 @@ import {
   Grid,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ModifyOptions, Permissions, Schema } from '../../models/database/CmsModels';
+import { ModifyOptions, Permissions, Schema } from '../../../../models/database/CmsModels';
 import { DoneOutline } from '@mui/icons-material';
 import { useForm, FormProvider } from 'react-hook-form';
-import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
-import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
+import { FormInputSelect } from '../../../common/FormComponents/FormInputSelect';
+import { FormInputCheckBox } from '../../../common/FormComponents/FormInputCheckbox';
 
 interface Props {
   permissions: Permissions;
