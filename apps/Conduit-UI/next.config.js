@@ -9,7 +9,7 @@ module.exports = (phase) => {
 
   const env = {
     CONDUIT_URL: (() => {
-      return 'https://conduit-core.dev.quintessential.gr';
+      return process.env.CONDUIT_URL;
     })(),
     MASTER_KEY: (() => {
       return process.env.MASTER_KEY || 'M4ST3RK3Y';
