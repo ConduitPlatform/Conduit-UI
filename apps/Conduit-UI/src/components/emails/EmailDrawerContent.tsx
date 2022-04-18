@@ -17,7 +17,7 @@ interface Props {
   setCreate: (value: boolean) => void;
 }
 
-const TabPanel: React.FC<Props> = ({
+const EmailDrawerContent: React.FC<Props> = ({
   handleCreate,
   handleSave,
   template,
@@ -70,4 +70,4 @@ const TabPanel: React.FC<Props> = ({
   );
 };
 
-export default TabPanel;
+export default EmailDrawerContent;

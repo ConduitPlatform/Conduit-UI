@@ -24,7 +24,7 @@ const defaultValues = {
   password: '',
 };
 
-const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
+const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
   const methods = useForm<NewUserInputs>({ defaultValues: defaultValues });
 
   const onSubmit = (data: { password: string; email: string }) => {
@@ -103,4 +103,4 @@ const NewUserModal: React.FC<Props> = ({ handleNewUserDispatch }) => {
   );
 };
 
-export default NewUserModal;
+export default AddUserDrawer;

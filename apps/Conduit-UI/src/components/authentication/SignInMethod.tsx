@@ -26,13 +26,7 @@ interface Props {
   accProps: SignInTypes;
 }
 
-const ReusableAccordion: React.FC<Props> = ({
-  setAccProps,
-  name,
-  handleData,
-  configData,
-  accProps,
-}) => {
+const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configData, accProps }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleCancel = () => {
@@ -283,4 +277,4 @@ const ReusableAccordion: React.FC<Props> = ({
   );
 };
 
-export default ReusableAccordion;
+export default SignInMethod;

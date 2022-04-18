@@ -6,14 +6,14 @@ import {
   IAuthenticationConfig,
   SignInTypes,
 } from '../../models/authentication/AuthModels';
-import ReusableAccordion from './ReusableAccordion';
+import ReusableAccordion from './SignInMethod';
 
 interface Props {
   configData: IAuthenticationConfig;
   handleData: (type: SocialNameTypes, data: SignInTypes) => void;
 }
 
-const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => {
+const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) => {
   const [local, setLocal] = useState<SignInTypes>({
     enabled: false,
     sendVerificationEmail: false,
@@ -330,4 +330,4 @@ const AuthAccordion: React.FC<Props> = ({ configData, handleData, ...rest }) => 
   );
 };
 
-export default AuthAccordion;
+export default SignInContainer;

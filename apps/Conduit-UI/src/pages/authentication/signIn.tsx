@@ -7,7 +7,7 @@ import {
 } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
-import AuthAccordion from '../../components/authentication/AuthAccordion';
+import AuthAccordion from '../../components/authentication/SignInContainer';
 
 const SignIn = () => {
   const dispatch = useAppDispatch();

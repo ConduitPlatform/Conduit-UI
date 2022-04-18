@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import NewUserModal from '../../components/authentication/AddUserDrawerContent';
+import NewUserModal from '../../components/authentication/AddUserDrawer';
 import AuthUsers from '../../components/authentication/AuthUsers';
 import SearchFilter from '../../components/authentication/SearchFilter';
 import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';

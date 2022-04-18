@@ -16,7 +16,7 @@ interface Props {
   setCreate: (value: boolean) => void;
 }
 
-const ViewEditForm: React.FC<Props> = ({
+const FormDrawerContent: React.FC<Props> = ({
   handleCreate,
   handleSave,
   form,
@@ -78,4 +78,4 @@ const ViewEditForm: React.FC<Props> = ({
   );
 };
 
-export default ViewEditForm;
+export default FormDrawerContent;
