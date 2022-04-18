@@ -27,5 +27,5 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/components/authentication/SignInContainertsx" ]
+]
 }

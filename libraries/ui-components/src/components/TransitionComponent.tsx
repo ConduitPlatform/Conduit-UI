@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { animated, useSpring } from 'react-spring';
 
-const TransitionComponent = (props) => {
+const TransitionComponent = (props: any) => {
   const style = useSpring({
     from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
     to: {
