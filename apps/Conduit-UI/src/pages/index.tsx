@@ -13,6 +13,13 @@ import { SwaggerModal, HomePageCard } from 'ui-components';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
+import getConfig from 'next/config';
+
+const {
+  publicRuntimeConfig: { CONDUIT_URL },
+} = getConfig();
+
+export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
 const Home = () => {
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
@@ -43,7 +50,7 @@ const Home = () => {
           </Button>
           <a
             style={{ textDecoration: 'none' }}
-            href={`${process.env.CONDUIT_URL}/graphql`}
+            href={`${CONDUIT_API}/graphql`}
             target="_blank"
             rel="noreferrer">
             <Button
@@ -58,7 +65,7 @@ const Home = () => {
             </Button>
           </a>
           <a
-            href="https://getconduit.dev/docs/"
+            href="https://getconduit.dev/docs/overview/intro"
             target="_blank"
             rel="noreferrer"
             style={{ textDecoration: 'none' }}>
@@ -127,7 +134,7 @@ const Home = () => {
             setOpen={setSwaggerModal}
             swagger="App"
             title="App"
-            baseUrl={`${process.env.CONDUIT_URL}`}
+            baseUrl={`${CONDUIT_API}`}
           />
         </Container>
       </div>
