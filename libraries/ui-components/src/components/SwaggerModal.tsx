@@ -120,8 +120,8 @@ const SwaggerModal: FC<Props> = ({
               style={{ textDecoration: "none" }}
               href={
                 !swagger
-                  ? `${process.env.CONDUIT_URL}/admin/swagger/`
-                  : `${process.env.CONDUIT_URL}/admin/swagger/#/${swagger}`
+                  ? `${baseUrl}/admin/swagger/`
+                  : `${baseUrl}/admin/swagger/#/${swagger}`
               }
               target="_blank"
               rel="noreferrer"
