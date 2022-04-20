@@ -15,7 +15,7 @@ import {
 } from '../../redux/slices/storageSlice';
 import StorageCreateDrawer from './StorageCreateDrawer';
 import StorageAddDrawer from './StorageAddDrawer';
-import { ConfirmationDialog } from 'ui-components';
+import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import { CreateFormSelected, ICreateForm, IStorageFile } from '../../models/storage/StorageModels';
 
 const StorageFiles = () => {

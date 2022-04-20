@@ -8,7 +8,7 @@ import { IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
-import { ConfigContainer, ConfigSaveSection } from 'ui-components';
+import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
 
 const FormsConfig: React.FC = () => {
   const dispatch = useAppDispatch();

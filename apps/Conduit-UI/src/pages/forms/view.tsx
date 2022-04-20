@@ -10,7 +10,11 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { AddCircleOutline, DeleteTwoTone } from '@mui/icons-material';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { ConfirmationDialog, TableActionsContainer, TableContainer } from 'ui-components';
+import {
+  ConfirmationDialog,
+  TableActionsContainer,
+  TableContainer,
+} from '@conduitplatform/ui-components';
 import FormReplies from '../../components/forms/FormReplies';
 import ViewEditForm from '../../components/forms/FormDrawerContent';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
@@ -23,7 +27,7 @@ import {
   asyncGetForms,
 } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { SideDrawerWrapper, DataTable } from 'ui-components';
+import { SideDrawerWrapper, DataTable } from '@conduitplatform/ui-components';
 
 const Create = () => {
   const dispatch = useAppDispatch();

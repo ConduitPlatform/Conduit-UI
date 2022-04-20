@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import { CustomDatepicker } from 'ui-components';
+import { CustomDatepicker } from '@conduitplatform/ui-components';
 import { Box, IconButton, Input, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { DeleteForeverRounded } from '@mui/icons-material';

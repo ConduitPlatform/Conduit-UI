@@ -10,7 +10,7 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
-import { ConfigContainer, ConfigSaveSection } from 'ui-components';
+import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
 
 const SmsConfig: React.FC = () => {
   const dispatch = useAppDispatch();

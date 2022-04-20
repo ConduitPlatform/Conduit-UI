@@ -1,5 +1,5 @@
 import React from 'react';
-import { SharedLayout } from 'ui-components';
+import { SharedLayout } from '@conduitplatform/ui-components';
 import { Notifications } from '@mui/icons-material';
 
 const NotificationLayout: React.FC = ({ children }) => {

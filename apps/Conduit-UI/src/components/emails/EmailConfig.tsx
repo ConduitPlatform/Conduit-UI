@@ -11,7 +11,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
-import { ConfigContainer, ConfigSaveSection } from 'ui-components';
+import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
 
 const EmailConfig: React.FC = () => {
   const dispatch = useAppDispatch();

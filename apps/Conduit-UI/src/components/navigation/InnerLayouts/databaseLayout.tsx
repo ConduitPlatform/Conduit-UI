@@ -1,5 +1,5 @@
 import React from 'react';
-import { SharedLayout } from 'ui-components';
+import { SharedLayout } from '@conduitplatform/ui-components';
 import { Toc } from '@mui/icons-material';
 
 const DatabaseLayout: React.FC = ({ children }) => {

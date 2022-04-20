@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
-import { FieldIndicators } from 'ui-components';
+import { FieldIndicators } from '@conduitplatform/ui-components';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import SelectIcon from '@mui/icons-material/FormatListBulleted';

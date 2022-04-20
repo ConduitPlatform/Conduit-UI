@@ -1,5 +1,5 @@
 import React from 'react';
-import { SharedLayout } from 'ui-components';
+import { SharedLayout } from '@conduitplatform/ui-components';
 import { Sms } from '@mui/icons-material';
 
 const SMSLayout: React.FC = ({ children }) => {

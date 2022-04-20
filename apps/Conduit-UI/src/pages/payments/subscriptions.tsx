@@ -6,7 +6,12 @@ import useDebounce from '../../hooks/useDebounce';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import { asyncGetSubscriptions } from '../../redux/slices/paymentsSlice';
 import { Subscription } from '../../models/payments/PaymentsModels';
-import { SideDrawerWrapper, DataTable, TableContainer, TableActionsContainer } from 'ui-components';
+import {
+  SideDrawerWrapper,
+  DataTable,
+  TableContainer,
+  TableActionsContainer,
+} from '@conduitplatform/ui-components';
 import ViewSubscription from '../../components/payments/ViewSubscription';
 
 const Subscriptions = () => {

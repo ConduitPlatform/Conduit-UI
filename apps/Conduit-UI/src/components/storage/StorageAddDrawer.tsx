@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Button, Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { SideDrawerWrapper, Dropzone } from 'ui-components';
+import { SideDrawerWrapper, Dropzone } from '@conduitplatform/ui-components';
 import { IContainer, IStorageFile } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';

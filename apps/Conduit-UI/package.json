@@ -9,11 +9,8 @@
     "ts:watch": "yarn ts --watch",
     "build": "next build",
     "start": "next start -p 8080",
-    "build:docker": "docker build -t ghcr.io/conduitplatform/conduit-admin:latest -f ./Dockerfile ../../ && docker push ghcr.io/conduitplatform/conduit-admin:latest",
     "clean": "rm -rf public/ .next/",
     "next-lint": "next lint",
-    "prepare": "husky install",
-    "release": "standard-version",
     "lint": "tsc --noEmit && eslint --ext .js,.ts,.tsx ./"
   },
   "dependencies": {
@@ -57,12 +54,10 @@
     "swr": "^0.5.7",
     "unimported": "^1.19.1",
     "uuid": "^8.3.2",
-    "ui-components": "1.0.0"
+    "@conduitplatform/ui-components": "1.0.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
-    "@commitlint/cli": "^16.1.0",
-    "@commitlint/config-conventional": "^16.0.0",
     "@types/js-cookie": "^2.2.7",
     "@types/lodash": "^4.14.177",
     "@types/node": "^16.7.3",
@@ -79,26 +74,18 @@
     "@types/uuid": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
     "eslint-config-next": "11.1.2",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^7.0.2",
     "lint-staged": "^12.1.2",
     "prettier": "^2.4.1",
     "pretty-quick": "^3.1.1",
-    "standard-version": "^9.3.0",
     "typescript": "^4.4.2"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": "prettier --write"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }

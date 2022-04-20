@@ -4,7 +4,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import React, { FC } from 'react';
-import { FieldIndicators } from 'ui-components';
+import { FieldIndicators } from '@conduitplatform/ui-components';
 import {
   IGroupChildContentData,
   IGroupChildData,

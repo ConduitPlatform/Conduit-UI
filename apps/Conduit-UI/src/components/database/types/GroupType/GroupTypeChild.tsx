@@ -8,7 +8,7 @@ import { CustomIcon, SimpleGroupType } from '../SimpleType/SimpleType';
 import { BooleanGroupType } from '../BooleanType/BooleanType';
 import Tooltip from '@mui/material/Tooltip';
 import GroupIcon from '@mui/icons-material/PlaylistAdd';
-import { FieldIndicators } from 'ui-components';
+import { FieldIndicators } from '@conduitplatform/ui-components';
 import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../../models/database/BuildTypesModels';
 import { GroupItemIcon } from './GroupType';

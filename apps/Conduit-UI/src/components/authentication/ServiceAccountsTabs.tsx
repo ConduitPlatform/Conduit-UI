@@ -21,7 +21,7 @@ import {
   refreshServiceAccount,
 } from '../../http/SettingsRequests';
 import moment from 'moment';
-import { ConfirmationDialog } from 'ui-components';
+import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateServiceAccount from './CreateServiceAccount';

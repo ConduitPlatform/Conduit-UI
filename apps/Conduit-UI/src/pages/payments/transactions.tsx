@@ -14,7 +14,7 @@ import {
   ConfirmationDialog,
   TableContainer,
   TableActionsContainer,
-} from 'ui-components';
+} from '@conduitplatform/ui-components';
 
 const Transactions = () => {
   const dispatch = useAppDispatch();

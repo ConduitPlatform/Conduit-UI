@@ -4,7 +4,7 @@ import Image from 'next/dist/client/image';
 import FormsImage from '../../assets/svgs/forms.svg';
 import { FormsModel } from '../../models/forms/FormsModels';
 import EditableForm from './EditableForm';
-import { ExtractDrawerInfo } from 'ui-components';
+import { ExtractDrawerInfo } from '@conduitplatform/ui-components';
 
 interface Props {
   handleCreate: (formsState: FormsModel) => void;
