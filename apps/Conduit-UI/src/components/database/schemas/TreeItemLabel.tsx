@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Input, Typography } from '@mui/material';
 import { AccountTree } from '@mui/icons-material';
 import makeStyles from '@mui/styles/makeStyles';
-import { CustomDatepicker } from 'ui-components';
+import { CustomDatepicker } from '@conduitplatform/ui-components';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 

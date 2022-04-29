@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useState } from 'react';
 import { Button, Grid, TextField } from '@mui/material';
-import { SideDrawerWrapper } from 'ui-components';
+import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import TableDialog from '../common/TableDialog';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
-import { SelectedElements } from 'ui-components';
+import { SelectedElements } from '@conduitplatform/ui-components';
 import { Pagination, Search } from '../../models/http/HttpModels';
 
 interface ICreateChatRoom {

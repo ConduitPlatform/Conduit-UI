@@ -15,7 +15,7 @@ import {
 } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
-import { ConfirmationDialog, TableContainer } from 'ui-components';
+import { ConfirmationDialog, TableContainer } from '@conduitplatform/ui-components';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
 import EditUserDialog from '../../components/authentication/EditUserDialog';
 import {
@@ -29,7 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import { AddCircle } from '@mui/icons-material';
 import { isString } from 'lodash';
-import { SideDrawerWrapper, TableActionsContainer } from 'ui-components';
+import { SideDrawerWrapper, TableActionsContainer } from '@conduitplatform/ui-components';
 
 const Users = () => {
   const dispatch = useAppDispatch();

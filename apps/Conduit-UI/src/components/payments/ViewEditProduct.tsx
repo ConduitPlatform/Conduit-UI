@@ -5,7 +5,7 @@ import React from 'react';
 import { Button, Paper } from '@mui/material';
 import { Product } from '../../models/payments/PaymentsModels';
 import ProductForm from './Forms/ProductForm';
-import { ExtractDrawerInfo } from 'ui-components';
+import { ExtractDrawerInfo } from '@conduitplatform/ui-components';
 
 interface Props {
   handleCreate: (product: Product) => void;

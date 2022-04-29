@@ -10,7 +10,7 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { ConfirmationDialog } from 'ui-components';
+import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SideList from './Sidelist';
 import SaveSection from './SaveSection';

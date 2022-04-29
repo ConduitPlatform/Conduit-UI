@@ -1,9 +1,11 @@
 {
-  "name": "root",
+  "name": "conduit-ui",
+  "version": "0.12.2",
+  "private": true,
   "scripts": {
-    "lerna:clean": "lerna clean",
-    "lerna:build": "lerna run build",
-    "lerna:build:lib": "lerna run build --scope=ui-components"
+    "build:docker": "docker build -t ghcr.io/conduitplatform/conduit-admin:latest . && docker push ghcr.io/conduitplatform/conduit-admin:latest",
+    "prepare": "husky install",
+    "release": "standard-version"
   },
   "resolutions": {
     "@types/react": "^17.0.19",
@@ -13,9 +15,18 @@
     "apps/*",
     "libraries/*"
   ],
-  "private": true,
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "standard-version": "^9.3.0",
+    "husky": "^7.0.2",
+    "cz-conventional-changelog": "^3.3.0",
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }

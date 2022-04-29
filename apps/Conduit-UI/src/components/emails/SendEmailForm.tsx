@@ -10,7 +10,7 @@ import TemplateEditor from './TemplateEditor';
 import { asyncGetEmailTemplates, asyncSendEmail } from '../../redux/slices/emailsSlice';
 import { Pagination, Search } from '../../models/http/HttpModels';
 import TableDialog from '../common/TableDialog';
-import { SelectedElements } from 'ui-components';
+import { SelectedElements } from '@conduitplatform/ui-components';
 import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
 import { emailRegExp } from '../../utils/validations';
 

@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import { EmailTemplateType } from '../../models/emails/EmailModels';
-import { ExtractDrawerInfo } from 'ui-components';
+import { ExtractDrawerInfo } from '@conduitplatform/ui-components';
 import { Button, Paper } from '@mui/material';
 import TemplateForm from './TemplateForm';
 

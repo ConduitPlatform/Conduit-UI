@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { Button, Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { SideDrawerWrapper } from 'ui-components';
+import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import { CreateFormSelected, IContainer, ICreateForm } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';

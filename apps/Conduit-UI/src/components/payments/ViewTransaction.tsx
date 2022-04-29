@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import Image from 'next/dist/client/image';
 import TransactionImage from '../../assets/svgs/transaction.svg';
 import { Transaction } from '../../models/payments/PaymentsModels';
-import { ExtractDrawerInfo } from 'ui-components';
+import { ExtractDrawerInfo } from '@conduitplatform/ui-components';
 
 interface Props {
   transaction: Transaction;

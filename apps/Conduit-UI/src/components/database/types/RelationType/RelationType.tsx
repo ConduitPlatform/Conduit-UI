@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import { FieldIndicators } from 'ui-components';
+import { FieldIndicators } from '@conduitplatform/ui-components';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../../models/database/BuildTypesModels';

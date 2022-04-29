@@ -3,7 +3,7 @@ import { Home } from '@mui/icons-material';
 import { getModuleIcon, getModuleName, handleModuleNavigation } from './moduleUtils';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { ModuleItem } from 'ui-components';
+import { ModuleItem } from '@conduitplatform/ui-components';
 import Link from 'next/link';
 
 interface IModule {

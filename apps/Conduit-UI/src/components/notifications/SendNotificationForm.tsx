@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
 import TableDialog from '../common/TableDialog';
-import { SelectedElements } from 'ui-components';
+import { SelectedElements } from '@conduitplatform/ui-components';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { NotificationData } from '../../models/notifications/NotificationModels';
 import { Pagination, Search } from '../../models/http/HttpModels';

@@ -10,7 +10,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveStorageConfig } from '../../redux/slices/storageSlice';
-import { ConfigSaveSection, ConfigContainer } from 'ui-components';
+import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
 
 const StorageConfig: React.FC = () => {
   const dispatch = useAppDispatch();

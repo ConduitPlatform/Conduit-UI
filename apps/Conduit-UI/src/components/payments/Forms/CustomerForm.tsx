@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { AuthUser, AuthUserUI } from '../../../models/authentication/AuthModels';
 import { asyncGetAuthUserData } from '../../../redux/slices/authenticationSlice';
 import TableDialog from '../../common/TableDialog';
-import { SelectedElements } from 'ui-components';
+import { SelectedElements } from '@conduitplatform/ui-components';
 import { camelCase, startCase } from 'lodash';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 

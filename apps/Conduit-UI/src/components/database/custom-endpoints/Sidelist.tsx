@@ -26,7 +26,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useRouter } from 'next/router';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
-import { ConduitMultiSelect } from 'ui-components';
+import { ConduitMultiSelect } from '@conduitplatform/ui-components';
 
 interface Props {
   setEditMode: (edit: boolean) => void;

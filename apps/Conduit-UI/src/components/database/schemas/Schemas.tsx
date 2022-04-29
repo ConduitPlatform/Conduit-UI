@@ -9,7 +9,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaData/SchemaDataCard';
-import { ConfirmationDialog } from 'ui-components';
+import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import SchemaDataHeader from './SchemaData/SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
@@ -25,7 +25,7 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview/SchemaOverview';
 import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
-import { ConduitMultiSelect } from 'ui-components';
+import { ConduitMultiSelect } from '@conduitplatform/ui-components';
 
 const TabPanel: FC = ({ children }) => {
   return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;

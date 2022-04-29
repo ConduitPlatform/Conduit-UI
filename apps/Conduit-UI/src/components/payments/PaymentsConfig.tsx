@@ -8,7 +8,7 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdatePaymentConfig } from '../../redux/slices/paymentsSlice';
-import { ConfigSaveSection, ConfigContainer } from 'ui-components';
+import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
 
 interface FormProps {
   active: boolean;

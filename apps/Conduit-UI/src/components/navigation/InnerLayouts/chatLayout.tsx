@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toc } from '@mui/icons-material';
-import { SharedLayout } from 'ui-components';
+import { SharedLayout } from '@conduitplatform/ui-components';
 
 const ChatLayout: React.FC = ({ children }) => {
   const pathNames = ['/chat/rooms', '/chat/config'];

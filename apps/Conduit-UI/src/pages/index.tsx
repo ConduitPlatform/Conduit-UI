@@ -9,7 +9,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
 import SecretIcon from '@mui/icons-material/VpnKey';
 import Description from '@mui/icons-material/Description';
-import { SwaggerModal, HomePageCard } from 'ui-components';
+import { SwaggerModal, HomePageCard } from '@conduitplatform/ui-components';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';

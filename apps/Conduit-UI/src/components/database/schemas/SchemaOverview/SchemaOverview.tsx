@@ -14,7 +14,7 @@ import {
 import SchemaViewer from './SchemaViewer';
 import { getSchemaFieldsWithExtra } from '../../../../utils/type-functions';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { SideDrawerWrapper } from 'ui-components';
+import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import Data from '../../../../assets/svgs/data.svg';
 import Image from 'next/image';
 

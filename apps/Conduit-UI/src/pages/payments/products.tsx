@@ -2,7 +2,13 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { EmailUI } from '../../models/emails/EmailModels';
 import { Button, TextField, IconButton, InputAdornment, Tooltip, Box } from '@mui/material';
-import { SideDrawerWrapper, DataTable, TableContainer, TableActionsContainer } from 'ui-components';
+import {
+  ConfirmationDialog,
+  SideDrawerWrapper,
+  DataTable,
+  TableContainer,
+  TableActionsContainer,
+} from '@conduitplatform/ui-components';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import { DeleteTwoTone } from '@mui/icons-material';
@@ -16,7 +22,6 @@ import {
 } from '../../redux/slices/paymentsSlice';
 import { Product, reccuringEnum } from '../../models/payments/PaymentsModels';
 import ViewEditProduct from '../../components/payments/ViewEditProduct';
-import { ConfirmationDialog } from 'ui-components';
 
 const Products = () => {
   const dispatch = useAppDispatch();

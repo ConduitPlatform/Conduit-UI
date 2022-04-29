@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import { DataTable } from 'ui-components';
+import { DataTable } from '@conduitplatform/ui-components';
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Paginator } from 'ui-components';
+import { Paginator } from '@conduitplatform/ui-components';
 import {
   ContainerDataProps,
   IStorageContainerData,
@@ -13,7 +13,7 @@ import {
 } from '../../models/storage/StorageModels';
 import { asyncSetSelectedStorageFile } from '../../redux/slices/storageSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { StorageDownloadDialog } from 'ui-components';
+import { StorageDownloadDialog } from '@conduitplatform/ui-components';
 
 interface IContainerTable {
   icon: JSX.Element;

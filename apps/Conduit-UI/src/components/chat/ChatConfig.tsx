@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { ConfigSaveSection, ConfigContainer } from 'ui-components';
+import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
 
 const ChatConfig: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
-import { ModuleItem } from 'ui-components';
+import { ModuleItem } from '@conduitplatform/ui-components';
 import Link from 'next/link';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import Image from 'next/image';

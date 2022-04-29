@@ -8,7 +8,7 @@ import { useAppDispatch } from '../../redux/store';
 import { Customer } from '../../models/payments/PaymentsModels';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import CustomerForm from './Forms/CustomerForm';
-import { ExtractDrawerInfo } from 'ui-components';
+import { ExtractDrawerInfo } from '@conduitplatform/ui-components';
 
 interface Props {
   handleCreate: (customer: Customer) => void;

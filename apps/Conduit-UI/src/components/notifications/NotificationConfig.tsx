@@ -10,7 +10,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
-import { ConfigSaveSection, ConfigContainer } from 'ui-components';
+import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
 
 const NotificationConfig: FC = () => {
   const dispatch = useAppDispatch();
