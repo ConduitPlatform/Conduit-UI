@@ -7,6 +7,7 @@ import {
   Notifications,
   Payment,
   People,
+  Security,
   Settings,
   Sms,
   Toc,
@@ -33,6 +34,8 @@ export const getModuleIcon = (moduleName: string) => {
       return <FormatAlignLeft color={'inherit'} />;
     case 'payments':
       return <Payment color={'inherit'} />;
+    case 'security':
+      return <Security color={'inherit'} />;
     case 'database':
       return <Toc color={'inherit'} />;
     default:
@@ -65,6 +68,8 @@ export const handleModuleNavigation = (moduleName: string) => {
       return '/payments/customers';
     case 'sms':
       return '/sms/send';
+    case 'security':
+      return '/security/clients';
     case 'chat':
       return '/chat/rooms';
     default:

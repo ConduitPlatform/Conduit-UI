@@ -6,10 +6,18 @@ import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '../../redux/store';
-import { Box, DialogActions, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
 import ClientPlatformEnum from '../../models/ClientPlatformEnum';
-import { IPlatformTypes } from '../../models/settings/SettingsModels';
-import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/settingsSlice';
+import { IPlatformTypes } from '../../models/security/SecurityModels';
+import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
 import { enqueueSuccessNotification } from '../../utils/useNotifier';
 
 interface Props {
@@ -17,12 +25,13 @@ interface Props {
   handleClose: () => void;
 }
 
-const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
+const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
   const dispatch = useAppDispatch();
   const [platform, setPlatform] = useState<IPlatformTypes>('WEB');
+  const [domain, setDomain] = useState<string>('*');
 
   const handleGenerateNew = () => {
-    dispatch(asyncGenerateNewClient(platform));
+    dispatch(asyncGenerateNewClient({ platform, domain }));
     setTimeout(() => {
       dispatch(asyncGetAvailableClients());
     }, 140);
@@ -66,6 +75,17 @@ const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
               <MenuItem value={ClientPlatformEnum.MACOS}>MACOS</MenuItem>
               <MenuItem value={ClientPlatformEnum.WINDOWS}>WINDOWS</MenuItem>
             </Select>
+            {platform === ClientPlatformEnum.WEB && (
+              <>
+                <TextField
+                  size="small"
+                  id="domain-field"
+                  label="Domain"
+                  margin={'normal'}
+                  value={domain}
+                  onChange={(event: any) => setDomain(event.target.value)}></TextField>
+              </>
+            )}
           </FormControl>
         </Box>
       </DialogContent>
@@ -83,4 +103,4 @@ const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
   );
 };
 
-export default SecretsDialog;
+export default ClientsDialog;
