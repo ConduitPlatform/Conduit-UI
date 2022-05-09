@@ -18,7 +18,8 @@ import {
 import ClientPlatformEnum from '../../models/ClientPlatformEnum';
 import { IPlatformTypes } from '../../models/security/SecurityModels';
 import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
-import { enqueueSuccessNotification } from '../../utils/useNotifier';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { getErrorData } from '../../utils/error-handler';
 
 interface Props {
   open: boolean;
@@ -31,11 +32,15 @@ const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
   const [domain, setDomain] = useState<string>('*');
 
   const handleGenerateNew = () => {
+    if (platform === 'WEB' && (!domain || domain.length === 0)) {
+      dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
+      return;
+    }
     dispatch(asyncGenerateNewClient({ platform, domain }));
     setTimeout(() => {
       dispatch(asyncGetAvailableClients());
     }, 140);
-    dispatch(enqueueSuccessNotification('New cliend secret created!'));
+    dispatch(enqueueSuccessNotification('New client secret created!'));
     handleClose();
   };
 
