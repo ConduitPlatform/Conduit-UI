@@ -24,7 +24,7 @@
     "no-console": "warn",
     "react/prop-types": 0,
     "import/first": "error",
-    "max-len": ["error", 110],
+    "max-len": ["error", 130],
     "no-case-declarations": 0,
     "no-use-before-define": "off",
     "react-hooks/exhaustive-deps": "warn",
