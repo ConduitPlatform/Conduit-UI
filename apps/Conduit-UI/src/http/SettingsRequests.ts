@@ -1,18 +1,5 @@
 import axios from 'axios';
 import { CONDUIT_API } from './requestsConfig';
-import { IPlatformTypes } from '../models/settings/SettingsModels';
-
-export const getAvailableClientsRequest = () => {
-  return axios.get(`${CONDUIT_API}/admin/security/client`);
-};
-
-export const generateNewClientRequest = (platform: IPlatformTypes) => {
-  return axios.post(`${CONDUIT_API}/admin/security/client`, { platform });
-};
-
-export const deleteClientRequest = (_id: string) => {
-  return axios.delete(`${CONDUIT_API}/admin/security/client/${_id}`);
-};
 
 export const getAdminModulesRequest = () => {
   return axios.get(`${CONDUIT_API}/admin/config/modules`);

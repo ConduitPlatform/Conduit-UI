@@ -1,0 +1,140 @@
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { setAppLoading } from './appSlice';
+import { getErrorData } from '../../utils/error-handler';
+import { enqueueErrorNotification } from '../../utils/useNotifier';
+import { IClient, IPlatformTypes, ISecurityConfig } from '../../models/security/SecurityModels';
+import {
+  deleteClientRequest,
+  generateNewClientRequest,
+  getAvailableClientsRequest,
+  getSecurityConfig,
+  putSecurityConfig,
+} from '../../http/SecurityRequests';
+
+interface ISecuritySlice {
+  data: {
+    availableClients: IClient[];
+    config: ISecurityConfig;
+  };
+}
+
+const initialState: ISecuritySlice = {
+  data: {
+    config: {
+      clientValidation: {
+        enabled: false,
+      },
+    },
+    availableClients: [],
+  },
+};
+
+export const asyncGetAvailableClients = createAsyncThunk(
+  'security/getClients',
+  async (arg, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const {
+        data: { clients },
+      } = await getAvailableClientsRequest();
+      thunkAPI.dispatch(setAppLoading(false));
+      return clients;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGenerateNewClient = createAsyncThunk(
+  'security/generateClient',
+  async (clientData: { platform: IPlatformTypes; domain?: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await generateNewClientRequest(clientData.platform, clientData.domain);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteClient = createAsyncThunk(
+  'security/deleteClient',
+  async (_id: string, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await deleteClientRequest(_id);
+      thunkAPI.dispatch(setAppLoading(false));
+      return _id;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetSecurityConfig = createAsyncThunk(
+  'security/getConfig',
+  async (arg, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const {
+        data: { config },
+      } = await getSecurityConfig();
+      thunkAPI.dispatch(setAppLoading(false));
+      return config;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncPutSecurityConfig = createAsyncThunk(
+  'security/putConfig',
+  async (params: ISecurityConfig, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await putSecurityConfig(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      // return config;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+const settingsSlice = createSlice({
+  name: 'security',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(asyncGetSecurityConfig.fulfilled, (state, action) => {
+      state.data.config = action.payload;
+    });
+    builder.addCase(asyncGetAvailableClients.fulfilled, (state, action) => {
+      state.data.availableClients = action.payload;
+    });
+    builder.addCase(asyncGenerateNewClient.fulfilled, (state, action) => {
+      state.data.availableClients.push(action.payload);
+    });
+    builder.addCase(asyncDeleteClient.fulfilled, (state, action) => {
+      const allClients = state.data.availableClients;
+      const clientIndex = allClients.findIndex((c) => c._id === action.payload);
+      if (clientIndex !== -1) {
+        allClients.splice(clientIndex, 1);
+      }
+    });
+  },
+});
+
+export default settingsSlice.reducer;

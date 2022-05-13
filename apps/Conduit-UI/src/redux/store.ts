@@ -6,6 +6,7 @@ import storageSlice from './slices/storageSlice';
 import settingsSlice from './slices/settingsSlice';
 import emailsSlice from './slices/emailsSlice';
 import databaseSlice from './slices/databaseSlice';
+import securitySlice from './slices/securitySlice';
 import customEndpointsSlice from './slices/customEndpointsSlice';
 import smsSlice from './slices/smsSlice';
 import { useMemo } from 'react';
@@ -30,6 +31,7 @@ export const makeStore = (preloadedState: any) =>
       paymentsSlice,
       storageSlice,
       settingsSlice,
+      securitySlice,
       emailsSlice,
       smsSlice,
       chatSlice,

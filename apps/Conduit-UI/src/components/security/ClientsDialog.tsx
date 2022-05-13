@@ -6,27 +6,42 @@ import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '../../redux/store';
-import { Box, DialogActions, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from '@mui/material';
 import ClientPlatformEnum from '../../models/ClientPlatformEnum';
-import { IPlatformTypes } from '../../models/settings/SettingsModels';
-import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/settingsSlice';
-import { enqueueSuccessNotification } from '../../utils/useNotifier';
+import { IPlatformTypes } from '../../models/security/SecurityModels';
+import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { getErrorData } from '../../utils/error-handler';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
 }
 
-const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
+const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
   const dispatch = useAppDispatch();
   const [platform, setPlatform] = useState<IPlatformTypes>('WEB');
+  const [domain, setDomain] = useState<string>('*');
 
   const handleGenerateNew = () => {
-    dispatch(asyncGenerateNewClient(platform));
+    if (platform === 'WEB' && (!domain || domain.length === 0)) {
+      dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
+      return;
+    }
+    dispatch(asyncGenerateNewClient({ platform, domain }));
     setTimeout(() => {
       dispatch(asyncGetAvailableClients());
     }, 140);
-    dispatch(enqueueSuccessNotification('New cliend secret created!'));
+    dispatch(enqueueSuccessNotification('New client secret created!'));
     handleClose();
   };
 
@@ -57,7 +72,7 @@ const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
               id="demo-simple-select"
               label="Platform"
               value={platform}
-              onChange={(event: any) => setPlatform(event.target.value)}>
+              onChange={(event: SelectChangeEvent<any>) => setPlatform(event.target.value)}>
               <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
               <MenuItem value={ClientPlatformEnum.ANDROID}>ANDROID</MenuItem>
               <MenuItem value={ClientPlatformEnum.IOS}>IOS</MenuItem>
@@ -66,6 +81,19 @@ const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
               <MenuItem value={ClientPlatformEnum.MACOS}>MACOS</MenuItem>
               <MenuItem value={ClientPlatformEnum.WINDOWS}>WINDOWS</MenuItem>
             </Select>
+            {platform === ClientPlatformEnum.WEB && (
+              <>
+                <TextField
+                  size="small"
+                  id="domain-field"
+                  label="Domain"
+                  margin={'normal'}
+                  value={domain}
+                  onChange={(event: React.ChangeEvent<{ value: string }>) =>
+                    setDomain(event.target.value)
+                  }></TextField>
+              </>
+            )}
           </FormControl>
         </Box>
       </DialogContent>
@@ -83,4 +111,4 @@ const SecretsDialog: React.FC<Props> = ({ open, handleClose }) => {
   );
 };
 
-export default SecretsDialog;
+export default ClientsDialog;

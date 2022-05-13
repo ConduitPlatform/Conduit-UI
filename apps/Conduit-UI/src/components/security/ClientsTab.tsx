@@ -16,13 +16,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { IClient } from '../../models/settings/SettingsModels';
-import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/settingsSlice';
+import { IClient } from '../../models/security/SecurityModels';
+import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
 import { useAppSelector } from '../../redux/store';
-import SecretsDialog from './SecretsDialog';
+import SecretsDialog from './ClientsDialog';
 import { Add } from '@mui/icons-material';
 
-const SecretsTab: React.FC = () => {
+const ClientsTab: React.FC = () => {
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -30,7 +30,7 @@ const SecretsTab: React.FC = () => {
     dispatch(asyncGetAvailableClients());
   }, [dispatch]);
 
-  const { availableClients } = useAppSelector((state) => state.settingsSlice.data);
+  const { availableClients } = useAppSelector((state) => state.securitySlice.data);
 
   const handleDeletion = (_id: string) => {
     dispatch(asyncDeleteClient(_id));
@@ -53,16 +53,20 @@ const SecretsTab: React.FC = () => {
           <TableContainer sx={{ display: 'flex', justifyContent: 'center', maxHeight: '69vh' }}>
             <Table stickyHeader>
               <TableHead>
-                <TableRow>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Client ID</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
-                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
-                </TableRow>
+                <TableCell sx={{ backgroundColor: 'background.paper' }}>Client ID</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
+                  Platform
+                </TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
+                  Domain
+                </TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                <TableCell sx={{ backgroundColor: 'background.paper' }} />
               </TableHead>
               <TableBody>
-                {availableClients.map((client: IClient, index: number) => (
+                {availableClients?.map((client: IClient, index: number) => (
                   <TableRow key={index}>
                     <TableCell>
                       <Typography variant={'caption'}>{client.clientId}</Typography>
@@ -70,18 +74,23 @@ const SecretsTab: React.FC = () => {
                     <TableCell>
                       <Box sx={{ maxWidth: 500 }}>
                         <span style={{ overflowWrap: 'break-word' }}>
-                          {client.clientSecret ? client.clientSecret : 'This is a secret'}
+                          {client.clientSecret ? client.clientSecret : '****'}
                         </span>
                       </Box>
                     </TableCell>
                     <TableCell colSpan={2}>
                       <Typography variant={'caption'}>{client.platform}</Typography>
                     </TableCell>
+                    <TableCell colSpan={2}>
+                      <Typography variant={'caption'}>{client.domain || 'N/A'}</Typography>
+                    </TableCell>
                     <TableCell>
                       <IconButton onClick={() => handleDeletion(client._id)} size="large">
                         <DeleteIcon color="error" />
                       </IconButton>
                     </TableCell>
+                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
                   </TableRow>
                 ))}
               </TableBody>
@@ -94,7 +103,7 @@ const SecretsTab: React.FC = () => {
   );
 };
 
-export default SecretsTab;
+export default ClientsTab;
 
 //TODO We don't get an _id from the server for each new client we create
 // so as a workaround we have to refetch-all client in
