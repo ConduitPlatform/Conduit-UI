@@ -13,6 +13,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
 } from '@mui/material';
 import ClientPlatformEnum from '../../models/ClientPlatformEnum';
@@ -71,7 +72,7 @@ const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
               id="demo-simple-select"
               label="Platform"
               value={platform}
-              onChange={(event: any) => setPlatform(event.target.value)}>
+              onChange={(event: SelectChangeEvent<any>) => setPlatform(event.target.value)}>
               <MenuItem value={ClientPlatformEnum.WEB}>WEB</MenuItem>
               <MenuItem value={ClientPlatformEnum.ANDROID}>ANDROID</MenuItem>
               <MenuItem value={ClientPlatformEnum.IOS}>IOS</MenuItem>
@@ -88,7 +89,9 @@ const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
                   label="Domain"
                   margin={'normal'}
                   value={domain}
-                  onChange={(event: any) => setDomain(event.target.value)}></TextField>
+                  onChange={(event: React.ChangeEvent<{ value: string }>) =>
+                    setDomain(event.target.value)
+                  }></TextField>
               </>
             )}
           </FormControl>
