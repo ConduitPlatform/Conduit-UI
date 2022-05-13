@@ -34,6 +34,10 @@ const initialState: IAuthenticationSlice = {
     },
     config: {
       active: false,
+      clients: {
+        multipleUserSessions: false,
+        multipleClientLogins: true,
+      },
       phoneAuthentication: {
         enabled: false,
       },
@@ -101,6 +105,18 @@ const initialState: IAuthenticationSlice = {
         clientId: '',
         redirect_uri: '',
         clientSecret: '',
+      },
+      setCookies: {
+        enabled: false,
+        options: {
+          httpOnly: false,
+          secure: false,
+          signed: false,
+          maxAge: 900000,
+          domain: '',
+          path: '',
+          sameSite: 'Lax',
+        },
       },
       twofa: { enabled: false },
     },

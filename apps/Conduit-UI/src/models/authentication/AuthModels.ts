@@ -62,6 +62,16 @@ export interface SettingsStateTypes {
   showSecret?: boolean;
 }
 
+export interface CookieOptions {
+  httpOnly: boolean;
+  secure: boolean;
+  signed: boolean;
+  maxAge: number;
+  domain: string;
+  path: string;
+  sameSite: string;
+}
+
 export interface IAuthenticationConfig {
   active: boolean;
   generateRefreshToken: boolean;
@@ -72,6 +82,8 @@ export interface IAuthenticationConfig {
   twofa: { enabled: boolean };
   service: { enabled: boolean };
   phoneAuthentication: { enabled: boolean };
+  clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };
+  setCookies: { enabled: boolean; options: CookieOptions };
   facebook: SignInTypes;
   google: SignInTypes;
   local: SignInTypes;
