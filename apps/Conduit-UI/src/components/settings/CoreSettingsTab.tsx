@@ -5,6 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
+import { useAppSelector } from '../../redux/store';
 
 interface CoreSettings {
   selectedEnum: string;
@@ -25,8 +26,10 @@ const initialStates = {
 const CoreSettingsTab: React.FC = () => {
   // const dispatch = useDispatch();
   const methods = useForm<CoreSettings>({ defaultValues: initialStates });
-
+  const coreSettings = useAppSelector((state) => state.settingsSlice.coreSettings);
   const { reset } = methods;
+
+  console.log(coreSettings);
 
   const onSaveClick = (data: CoreSettings) => {
     // const data = {

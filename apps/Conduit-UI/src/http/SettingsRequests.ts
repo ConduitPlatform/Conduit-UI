@@ -17,6 +17,14 @@ export const createServiceAccount = (name: string) => {
   return axios.post(`${CONDUIT_API}/admin/authentication/services`, { name });
 };
 
+export const getCoreSettings = () => {
+  return axios.get(`${CONDUIT_API}/admin/config/core`);
+};
+
+export const putCoreSettings = () => {
+  return axios.put(`${CONDUIT_API}/admin/config/core`);
+};
+
 export const refreshServiceAccount = (serviceId: string) => {
   return axios.get(`${CONDUIT_API}/admin/authentication/services/${serviceId}/token`);
 };
