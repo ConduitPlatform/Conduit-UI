@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Cloud } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const StorageLayout: React.FC = ({ children }) => {
   const pathNames = ['/storage/files', '/storage/config'];
@@ -11,7 +12,7 @@ const StorageLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Storage'}
       labels={labels}
@@ -19,7 +20,7 @@ const StorageLayout: React.FC = ({ children }) => {
       swagger={'storage'}
       icon={<Cloud />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

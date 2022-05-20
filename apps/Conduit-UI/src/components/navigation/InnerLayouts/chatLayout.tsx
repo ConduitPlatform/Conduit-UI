@@ -1,6 +1,7 @@
 import React from 'react';
 import { Toc } from '@mui/icons-material';
 import { SharedLayout } from '@conduitplatform/ui-components';
+import StyledLayout from './styledLayout';
 
 const ChatLayout: React.FC = ({ children }) => {
   const pathNames = ['/chat/rooms', '/chat/config'];
@@ -10,7 +11,7 @@ const ChatLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Chat'}
       labels={labels}
@@ -18,7 +19,7 @@ const ChatLayout: React.FC = ({ children }) => {
       swagger={'chat'}
       icon={<Toc />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

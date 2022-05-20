@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Payment } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const PaymentsLayout: React.FC = ({ children }) => {
   const pathNames = [
@@ -20,7 +21,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Payments'}
       labels={labels}
@@ -28,7 +29,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
       swagger={'payments'}
       icon={<Payment />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

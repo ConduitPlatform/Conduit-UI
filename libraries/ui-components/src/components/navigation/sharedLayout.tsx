@@ -8,6 +8,8 @@ interface Props {
   pathNames: string[];
   swagger: string;
   icon: JSX.Element;
+  swaggerIcon: JSX.Element;
+  graphQLIcon: JSX.Element;
   labels: { name: string; id: string }[];
   title: string;
   baseUrl: string;
@@ -18,6 +20,8 @@ const SharedLayout: React.FC<Props> = ({
   pathNames,
   swagger,
   icon,
+  swaggerIcon,
+  graphQLIcon,
   labels,
   title,
   baseUrl,
@@ -41,6 +45,7 @@ const SharedLayout: React.FC<Props> = ({
           {title !== "Settings" && (
             <>
               <Button
+                startIcon={swaggerIcon}
                 color="secondary"
                 sx={{ textDecoration: "none", ml: 8 }}
                 variant="outlined"
@@ -54,7 +59,11 @@ const SharedLayout: React.FC<Props> = ({
                 target="_blank"
                 rel="noreferrer"
               >
-                <Button color="secondary" variant="outlined">
+                <Button
+                  startIcon={graphQLIcon}
+                  color="secondary"
+                  variant="outlined"
+                >
                   GraphQL
                 </Button>
               </a>

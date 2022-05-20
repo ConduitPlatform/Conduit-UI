@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Toc } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const DatabaseLayout: React.FC = ({ children }) => {
   const pathNames = ['/database/schemas', '/database/custom', '/database/settings'];
@@ -11,7 +12,7 @@ const DatabaseLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Database'}
       labels={labels}
@@ -19,7 +20,7 @@ const DatabaseLayout: React.FC = ({ children }) => {
       swagger={'cms'}
       icon={<Toc />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

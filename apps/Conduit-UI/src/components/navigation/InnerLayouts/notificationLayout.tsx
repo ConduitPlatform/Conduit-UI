@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Notifications } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const NotificationLayout: React.FC = ({ children }) => {
   const pathNames = ['/push-notifications/send', '/push-notifications/config'];
@@ -11,7 +12,7 @@ const NotificationLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Push Notifications'}
       labels={labels}
@@ -19,7 +20,7 @@ const NotificationLayout: React.FC = ({ children }) => {
       swagger={'pushNotifications'}
       icon={<Notifications />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 
