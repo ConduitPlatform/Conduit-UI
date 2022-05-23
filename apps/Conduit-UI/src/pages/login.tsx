@@ -43,13 +43,13 @@ const Login: React.FC = () => {
   return (
     <Container maxWidth="xl">
       <Grid container sx={{ height: '100vh' }}>
-        <Grid container item xs={7} sx={{ background: '#262840', p: 4 }}>
+        <Grid container item xs={8} sx={{ background: '#262840', p: 4 }}>
           <LoginIllustration />
         </Grid>
         <Grid
           container
           item
-          xs={5}
+          xs={4}
           sx={{
             flexDirection: 'column',
             alignItems: 'center',

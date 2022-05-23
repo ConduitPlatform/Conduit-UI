@@ -23,7 +23,7 @@ export const getCoreSettings = () => {
 };
 
 export const putCoreSettings = (data: ICoreSettings) => {
-  return axios.put(`${CONDUIT_API}/admin/config/core`, data);
+  return axios.put(`${CONDUIT_API}/admin/config/core`, { config: { ...data } });
 };
 
 export const refreshServiceAccount = (serviceId: string) => {
