@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ICoreSettings } from '../models/settings/SettingsModels';
 import { CONDUIT_API } from './requestsConfig';
 
 export const getAdminModulesRequest = () => {
@@ -21,8 +22,8 @@ export const getCoreSettings = () => {
   return axios.get(`${CONDUIT_API}/admin/config/core`);
 };
 
-export const putCoreSettings = () => {
-  return axios.put(`${CONDUIT_API}/admin/config/core`);
+export const putCoreSettings = (data: ICoreSettings) => {
+  return axios.put(`${CONDUIT_API}/admin/config/core`, data);
 };
 
 export const refreshServiceAccount = (serviceId: string) => {

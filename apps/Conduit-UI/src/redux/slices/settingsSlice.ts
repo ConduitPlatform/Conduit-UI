@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ICoreSettings, INewAdminUser } from '../../models/settings/SettingsModels';
-import { getCoreSettings, postNewAdminUser } from '../../http/SettingsRequests';
+import { getCoreSettings, postNewAdminUser, putCoreSettings } from '../../http/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
@@ -53,10 +53,10 @@ export const asyncGetCoreSettings = createAsyncThunk('settings/getCore', async (
 
 export const asyncUpdateCoreSettings = createAsyncThunk(
   'settings/putCore',
-  async (args, thunkAPI) => {
+  async (args: ICoreSettings, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getCoreSettings();
+      const { data } = await putCoreSettings(args);
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
