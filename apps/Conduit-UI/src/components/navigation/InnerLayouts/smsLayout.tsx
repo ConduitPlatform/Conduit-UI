@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Sms } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const SMSLayout: React.FC = ({ children }) => {
   const pathNames = ['/sms/send', '/sms/config'];
@@ -11,7 +12,7 @@ const SMSLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'SMS'}
       labels={labels}
@@ -19,7 +20,7 @@ const SMSLayout: React.FC = ({ children }) => {
       swagger={'sms'}
       icon={<Sms />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

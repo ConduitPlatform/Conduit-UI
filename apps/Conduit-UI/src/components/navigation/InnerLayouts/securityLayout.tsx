@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Security } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const SecurityLayout: React.FC = ({ children }) => {
   const pathNames = ['/security/clients', '/security/config'];
@@ -11,7 +12,7 @@ const SecurityLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Security'}
       labels={labels}
@@ -19,7 +20,7 @@ const SecurityLayout: React.FC = ({ children }) => {
       swagger={'security'}
       icon={<Security />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

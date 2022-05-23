@@ -216,7 +216,7 @@ const Schemas: FC = () => {
       return <SchemaDataPlaceholder onCreateDocument={onCreateDocument} />;
 
     return (
-      <Typography sx={{ marginTop: 64 }} variant={'h6'} align={'center'}>
+      <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
         No selected Schema
       </Typography>
     );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Email } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const EmailsLayout: React.FC = ({ children }) => {
   const pathNames = ['/email/templates', '/email/send', '/email/config'];
@@ -12,7 +13,7 @@ const EmailsLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Email'}
       labels={labels}
@@ -20,7 +21,7 @@ const EmailsLayout: React.FC = ({ children }) => {
       swagger={'email'}
       icon={<Email />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

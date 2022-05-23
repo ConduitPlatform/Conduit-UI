@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ICoreSettings } from '../models/settings/SettingsModels';
 import { CONDUIT_API } from './requestsConfig';
 
 export const getAdminModulesRequest = () => {
@@ -15,6 +16,14 @@ export const deleteServiceAccounts = (_id: string) => {
 
 export const createServiceAccount = (name: string) => {
   return axios.post(`${CONDUIT_API}/admin/authentication/services`, { name });
+};
+
+export const getCoreSettings = () => {
+  return axios.get(`${CONDUIT_API}/admin/config/core`);
+};
+
+export const putCoreSettings = (data: ICoreSettings) => {
+  return axios.put(`${CONDUIT_API}/admin/config/core`, { config: { ...data } });
 };
 
 export const refreshServiceAccount = (serviceId: string) => {

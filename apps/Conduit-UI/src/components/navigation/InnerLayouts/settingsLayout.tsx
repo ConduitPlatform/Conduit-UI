@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Settings } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const SettingsLayout: React.FC = ({ children }) => {
   const pathNames = ['/settings/clientsdk', '/settings/core', '/settings/createuser'];
@@ -11,7 +12,7 @@ const SettingsLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Settings'}
       labels={labels}
@@ -19,7 +20,7 @@ const SettingsLayout: React.FC = ({ children }) => {
       swagger={'settings'}
       icon={<Settings />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 

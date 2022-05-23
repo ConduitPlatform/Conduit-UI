@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { People } from '@mui/icons-material';
+import StyledLayout from './styledLayout';
 
 const AuthenticationLayout: React.FC = ({ children }) => {
   const pathNames = [
@@ -17,7 +18,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
   ];
 
   return (
-    <SharedLayout
+    <StyledLayout
       baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Authentication'}
       labels={labels}
@@ -25,7 +26,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
       swagger={'authentication'}
       icon={<People />}>
       {children}
-    </SharedLayout>
+    </StyledLayout>
   );
 };
 
