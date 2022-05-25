@@ -4,7 +4,14 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import { Box, ListItemButton, ListItemText, Typography } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import { Skeleton } from '@mui/material';
 import {
   asyncAddIntroSpectionSchemas,
@@ -18,9 +25,17 @@ interface Props {
   handleListItemSelect: (endpoint: any) => void;
   search: string;
   actualSchema?: Schema;
+  selectedSchemas: Schema[];
+  setSelectedSchemas: (selectedSchemas: Schema[]) => void;
 }
 
-const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, actualSchema }) => {
+const IntrospectionSchemasList: FC<Props> = ({
+  handleListItemSelect,
+  search,
+  actualSchema,
+  selectedSchemas,
+  setSelectedSchemas,
+}) => {
   const dispatch = useAppDispatch();
 
   const infiniteLoaderRef = useRef<any>(null);
@@ -65,6 +80,23 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
     debouncedGetApiItems(schemaDocuments.length, limit);
   };
 
+  const handleSelect = (schema: Schema) => {
+    const newSelectedSchemas = [...selectedSchemas];
+
+    const schemaExists = selectedSchemas.find(
+      (selectedSchema, index) => selectedSchema._id === schema._id
+    );
+
+    if (!schemaExists) {
+      newSelectedSchemas.push(schema);
+    } else {
+      const index = newSelectedSchemas.findIndex((schemaToBeFound) => schemaToBeFound === schema);
+      newSelectedSchemas.splice(index, 1);
+    }
+
+    setSelectedSchemas(newSelectedSchemas);
+  };
+
   const SchemaRow = ({ index, style }: ListChildComponentProps) => {
     const schema = schemaDocuments[index];
 
@@ -75,20 +107,31 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
             <Skeleton />
           </Typography>
         ) : (
-          <ListItemButton
-            sx={{
-              borderRadius: '10px',
-              '&.MuiListItemButton-root': {
-                '&.Mui-selected': {
-                  background: 'secondary',
+          <Box display="flex" alignItems="center">
+            <ListItemIcon>
+              <Checkbox
+                edge="start"
+                checked={selectedSchemas?.includes(schema)}
+                onChange={() => handleSelect(schema)}
+                tabIndex={-1}
+                disableRipple
+              />
+            </ListItemIcon>
+            <ListItemButton
+              sx={{
+                borderRadius: '10px',
+                '&.MuiListItemButton-root': {
+                  '&.Mui-selected': {
+                    background: 'secondary',
+                  },
                 },
-              },
-            }}
-            key={`endpoint-${schema._id}`}
-            onClick={() => handleListItemSelect(schema.name)}
-            selected={actualSchema?._id === schema?._id}>
-            <ListItemText primary={schema.name} />
-          </ListItemButton>
+              }}
+              key={`endpoint-${schema._id}`}
+              onClick={() => handleListItemSelect(schema.name)}
+              selected={actualSchema?._id === schema?._id}>
+              <ListItemText primary={schema.name} />
+            </ListItemButton>
+          </Box>
         )}
       </div>
     );
