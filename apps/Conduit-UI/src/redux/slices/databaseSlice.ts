@@ -27,9 +27,12 @@ import { EndpointTypes, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import { Pagination, Search } from '../../models/http/HttpModels';
+import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 import { set } from 'lodash';
-import { getIntrospectionSchemas } from '../../http/IntrospectionRequests';
+import {
+  finalizeIntrospectedSchemas,
+  getIntrospectionSchemas,
+} from '../../http/IntrospectionRequests';
 
 export interface IDatabaseSlice {
   data: {
@@ -568,6 +571,42 @@ export const asyncAddIntroSpectionSchemas = createAsyncThunk(
     }
   }
 );
+
+export const asyncFinalizeIntrospectedSchemas = createAsyncThunk(
+  'database/finalizeIntrospection',
+  async (params: Schema[], thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await finalizeIntrospectedSchemas(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        results: data.schemas as Schema[],
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+// export const asyncPostIntrospection = createAsyncThunk(
+//   'database/postIntrospection',
+//   async (params: Pagination & Search, thunkAPI) => {
+//     thunkAPI.dispatch(setAppLoading(true));
+//     try {
+//       const { data } = await postIntrospection(params);
+//       thunkAPI.dispatch(setAppLoading(false));
+//       return {
+//         results: data.schemas as Schema[],
+//       };
+//     } catch (error) {
+//       thunkAPI.dispatch(setAppLoading(false));
+//       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+//       throw error;
+//     }
+//   }
+// );
 
 const databaseSlice = createSlice({
   name: 'database',

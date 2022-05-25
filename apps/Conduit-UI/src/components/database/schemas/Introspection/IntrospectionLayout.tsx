@@ -22,8 +22,6 @@ const IntrospectionLayout: FC = () => {
   const [schemaName, setSchemaName] = useState('');
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
 
-  console.log('intro:', schemas);
-
   useEffect(() => {
     setSchemaName((schemaModel as string) ?? '');
   }, [schemaModel]);
