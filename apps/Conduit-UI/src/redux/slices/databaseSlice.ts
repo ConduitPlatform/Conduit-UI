@@ -539,7 +539,10 @@ export const asyncGetIntrospectionSchemas = createAsyncThunk(
 
       thunkAPI.dispatch(setAppLoading(false));
 
-      return data.schemas;
+      return {
+        results: data.schemas as Schema[],
+        documentsCount: data.count as number,
+      };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -657,7 +660,8 @@ const databaseSlice = createSlice({
       state.data.schemasWithEndpoints = action.payload;
     });
     builder.addCase(asyncGetIntrospectionSchemas.fulfilled, (state, action) => {
-      state.data.introspectionSchemas = action.payload;
+      state.data.introspectionSchemas.schemaDocuments = action.payload.results;
+      state.data.introspectionSchemas.schemasCount = action.payload.documentsCount;
     });
     builder.addCase(asyncAddIntroSpectionSchemas.fulfilled, (state, action) => {
       state.data.introspectionSchemas.schemaDocuments = [

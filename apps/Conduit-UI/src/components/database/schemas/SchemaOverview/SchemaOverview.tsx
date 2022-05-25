@@ -20,9 +20,10 @@ import Image from 'next/image';
 
 interface Props {
   schema: Schema;
+  introspection?: boolean;
 }
 
-export const SchemaOverview: FC<Props> = ({ schema }) => {
+export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
@@ -141,14 +142,21 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           </Button>
         </Box>
         <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => goToSchemaEndpoints(schema.name)}>
-            Custom Endpoints
-          </Button>
-          {extractButtonsLeft()}
-          {extractButtonsRight()}
+          {!introspection ? (
+            <>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => goToSchemaEndpoints(schema.name)}>
+                Custom Endpoints
+              </Button>
+
+              {extractButtonsLeft()}
+              {extractButtonsRight()}
+            </>
+          ) : (
+            <Button>Enable</Button>
+          )}
         </Box>
       </Box>
       <Grid container spacing={3}>

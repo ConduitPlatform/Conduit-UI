@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../../redux/store';
+import { useAppSelector } from '../../../../redux/store';
 import { Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
@@ -12,14 +12,17 @@ import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 
 const IntrospectionLayout: FC = () => {
-  const dispatch = useAppDispatch();
   const router = useRouter();
-  const { schemaModel, schemaDocumentId } = router.query;
-  const { schemaDocuments: schemas } = useAppSelector((state) => state.databaseSlice.data.schemas);
+  const { schemaModel } = router.query;
+  const { schemaDocuments: schemas } = useAppSelector(
+    (state) => state.databaseSlice.data.introspectionSchemas
+  );
   const [schemaSearch, setSchemaSearch] = useState<string>('');
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
   const [schemaName, setSchemaName] = useState('');
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
+
+  console.log('intro:', schemas);
 
   useEffect(() => {
     setSchemaName((schemaModel as string) ?? '');
@@ -88,7 +91,7 @@ const IntrospectionLayout: FC = () => {
             marginBottom: '0',
           }}>
           {actualSchema ? (
-            <SchemaOverview schema={actualSchema} />
+            <SchemaOverview schema={actualSchema} introspection />
           ) : (
             <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
               No selected Schema

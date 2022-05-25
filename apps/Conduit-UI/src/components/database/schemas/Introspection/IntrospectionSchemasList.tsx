@@ -27,7 +27,7 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
   const hasMountedRef = useRef(false);
 
   const { schemaDocuments, schemasCount } = useAppSelector(
-    (state) => state.databaseSlice.data.schemas
+    (state) => state.databaseSlice.data.introspectionSchemas
   );
 
   const isItemLoaded = (index: number) => !!schemaDocuments[index];
