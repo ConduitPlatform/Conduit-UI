@@ -29,10 +29,15 @@ import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
+import { getIntrospectionSchemas } from '../../http/IntrospectionRequests';
 
 export interface IDatabaseSlice {
   data: {
     schemas: {
+      schemaDocuments: Schema[];
+      schemasCount: number;
+    };
+    introspectionSchemas: {
       schemaDocuments: Schema[];
       schemasCount: number;
     };
@@ -63,6 +68,10 @@ export interface IDatabaseSlice {
 const initialState: IDatabaseSlice = {
   data: {
     schemas: {
+      schemaDocuments: [],
+      schemasCount: 0,
+    },
+    introspectionSchemas: {
       schemaDocuments: [],
       schemasCount: 0,
     },
@@ -521,6 +530,42 @@ const findSchemaById = (_id: string, schemaDocuments: Schema[]) => {
   return found ? found : null;
 };
 
+export const asyncGetIntrospectionSchemas = createAsyncThunk(
+  'database/getIntrospectionSchemas',
+  async (params: Pagination & Search, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getIntrospectionSchemas(params);
+
+      thunkAPI.dispatch(setAppLoading(false));
+
+      return data.schemas;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncAddIntroSpectionSchemas = createAsyncThunk(
+  'database/addIntrospectionSchemas',
+  async (params: Pagination & Search, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getIntrospectionSchemas(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        results: data.schemas as Schema[],
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 const databaseSlice = createSlice({
   name: 'database',
   initialState,
@@ -610,6 +655,15 @@ const databaseSlice = createSlice({
     });
     builder.addCase(asyncGetSchemasWithEndpoints.fulfilled, (state, action) => {
       state.data.schemasWithEndpoints = action.payload;
+    });
+    builder.addCase(asyncGetIntrospectionSchemas.fulfilled, (state, action) => {
+      state.data.introspectionSchemas = action.payload;
+    });
+    builder.addCase(asyncAddIntroSpectionSchemas.fulfilled, (state, action) => {
+      state.data.introspectionSchemas.schemaDocuments = [
+        ...state.data.introspectionSchemas.schemaDocuments,
+        ...action.payload.results,
+      ];
     });
   },
 });

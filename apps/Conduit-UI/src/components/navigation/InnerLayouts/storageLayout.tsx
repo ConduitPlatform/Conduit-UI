@@ -1,5 +1,4 @@
 import React from 'react';
-import { SharedLayout } from '@conduitplatform/ui-components';
 import { Cloud } from '@mui/icons-material';
 import StyledLayout from './styledLayout';
 
