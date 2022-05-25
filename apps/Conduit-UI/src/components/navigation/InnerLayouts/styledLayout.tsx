@@ -6,7 +6,7 @@ import Swagger from '../../../assets/svgs/swagger.svg';
 import { Icon } from '@mui/material';
 import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
-import PacmanLoader from 'react-spinners/HashLoader';
+import ScaleLoader from 'react-spinners/ScaleLoader';
 
 interface Props {
   baseUrl: string;
@@ -37,7 +37,15 @@ const StyledLayout: FC<Props> = ({
       pathNames={pathNames}
       swagger={swagger}
       icon={icon}
-      loader={<PacmanLoader speedMultiplier={2} color={'#07D9C4'} loading={loading} size={16} />}
+      loader={
+        <ScaleLoader
+          speedMultiplier={3}
+          color={'#07D9C4'}
+          loading={loading}
+          height={21}
+          width={4}
+        />
+      }
       swaggerIcon={
         <Icon sx={{ display: 'flex', alignContent: 'center' }}>
           <Image src={Swagger} alt="swagger" />
