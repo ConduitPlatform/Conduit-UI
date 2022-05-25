@@ -1,9 +1,10 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
 import { Box } from '@mui/material';
+import IntrospectionLayout from '../../components/database/schemas/Introspection/IntrospectionLayout';
 
 const Introspection = () => {
-  return <Box>IntroSpection</Box>;
+  return <IntrospectionLayout />;
 };
 
 Introspection.getLayout = function getLayout(page: ReactElement) {

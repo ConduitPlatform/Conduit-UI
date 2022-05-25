@@ -17,18 +17,10 @@ const timeoutAmount = 750;
 interface Props {
   handleListItemSelect: (endpoint: any) => void;
   search: string;
-  owners: string[];
-  enabled: boolean;
   actualSchema?: Schema;
 }
 
-const SchemasList: FC<Props> = ({
-  handleListItemSelect,
-  search,
-  owners,
-  enabled,
-  actualSchema,
-}) => {
+const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, actualSchema }) => {
   const dispatch = useAppDispatch();
 
   const infiniteLoaderRef = useRef<any>(null);
@@ -50,19 +42,15 @@ const SchemasList: FC<Props> = ({
       skip: 0,
       limit: 25,
       search: search,
-      owner: owners,
-      enabled: enabled,
     };
     dispatch(asyncGetIntrospectionSchemas(params));
-  }, [dispatch, search, owners, enabled]);
+  }, [dispatch, search]);
 
   const addSchemas = (skip: number, limit: number) => {
     const params = {
       skip: skip,
       limit: limit,
       search: search,
-      owner: owners,
-      enabled: enabled,
     };
     dispatch(asyncAddIntroSpectionSchemas(params));
   };
@@ -145,4 +133,4 @@ const SchemasList: FC<Props> = ({
   );
 };
 
-export default SchemasList;
+export default IntrospectionSchemasList;
