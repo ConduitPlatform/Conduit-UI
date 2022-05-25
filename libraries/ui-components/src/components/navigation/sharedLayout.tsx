@@ -13,6 +13,7 @@ interface Props {
   labels: { name: string; id: string }[];
   title: string;
   baseUrl: string;
+  loader: JSX.Element;
 }
 
 const SharedLayout: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const SharedLayout: React.FC<Props> = ({
   labels,
   title,
   baseUrl,
+  loader,
 }) => {
   const router = useRouter();
   const [value, setValue] = useState(0);
@@ -40,36 +42,39 @@ const SharedLayout: React.FC<Props> = ({
   return (
     <Box sx={{ height: "100vh", p: 4 }}>
       <Box sx={{ mb: 2 }}>
-        <Typography sx={{ mt: 2 }} variant={"h4"}>
-          {title}
-          {title !== "Settings" && (
-            <>
-              <Button
-                startIcon={swaggerIcon}
-                color="secondary"
-                sx={{ textDecoration: "none", ml: 8 }}
-                variant="outlined"
-                onClick={() => setSwaggerOpen(true)}
-              >
-                SWAGGER
-              </Button>
-              <a
-                style={{ textDecoration: "none", paddingLeft: 10 }}
-                href={`${baseUrl}/graphql`}
-                target="_blank"
-                rel="noreferrer"
-              >
+        <Box display="flex" alignItems="center">
+          <Typography variant={"h4"}>{title}</Typography>
+          <Box display="flex" gap={3} alignItems="center">
+            {title !== "Settings" && (
+              <Box>
                 <Button
-                  startIcon={graphQLIcon}
+                  startIcon={swaggerIcon}
                   color="secondary"
+                  sx={{ textDecoration: "none", ml: 8 }}
                   variant="outlined"
+                  onClick={() => setSwaggerOpen(true)}
                 >
-                  GraphQL
+                  SWAGGER
                 </Button>
-              </a>
-            </>
-          )}
-        </Typography>
+                <a
+                  style={{ textDecoration: "none", paddingLeft: 10 }}
+                  href={`${baseUrl}/graphql`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Button
+                    startIcon={graphQLIcon}
+                    color="secondary"
+                    variant="outlined"
+                  >
+                    GraphQL
+                  </Button>
+                </a>
+              </Box>
+            )}
+            {loader}
+          </Box>
+        </Box>
         <Tabs value={value} indicatorColor="secondary" sx={{ mt: 2 }}>
           {labels.map((label: { name: string; id: string }, index: number) => {
             return (
