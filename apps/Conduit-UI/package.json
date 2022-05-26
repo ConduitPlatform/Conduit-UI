@@ -14,6 +14,7 @@
     "lint": "tsc --noEmit && eslint --ext .js,.ts,.tsx ./"
   },
   "dependencies": {
+    "@conduitplatform/ui-components": "1.0.0",
     "@date-io/moment": "1.x",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
@@ -44,6 +45,7 @@
     "react-json-editor-ajrm": "^2.5.13",
     "react-redux": "^7.2.0",
     "react-simple-code-editor": "^0.11.0",
+    "react-spinners": "^0.12.0",
     "react-spring": "^9.4.3",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
@@ -53,8 +55,7 @@
     "redux-thunk": "^2.4.1",
     "swr": "^0.5.7",
     "unimported": "^1.19.1",
-    "uuid": "^8.3.2",
-    "@conduitplatform/ui-components": "1.0.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
