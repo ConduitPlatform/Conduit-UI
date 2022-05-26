@@ -21,8 +21,6 @@ const IntrospectionLayout: FC = () => {
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
   const [schemaName, setSchemaName] = useState('');
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
-  const [selectedSchemas, setSelectedSchemas] = useState<Schema[]>([]);
-
   useEffect(() => {
     setSchemaName((schemaModel as string) ?? '');
   }, [schemaModel]);
@@ -77,8 +75,6 @@ const IntrospectionLayout: FC = () => {
               handleListItemSelect={handleChange}
               search={debouncedSchemaSearch}
               actualSchema={actualSchema}
-              selectedSchemas={selectedSchemas}
-              setSelectedSchemas={setSelectedSchemas}
             />
           </Box>
         </Box>
