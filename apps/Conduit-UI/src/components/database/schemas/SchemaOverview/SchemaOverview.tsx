@@ -202,7 +202,7 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
         title="Schema information"
         open={infoDrawer}
         closeDrawer={() => setInfoDrawer(false)}>
-        <Box padding={3}>{ExtractSchemaInfo(schema)}</Box>
+        <Box padding={3}>{ExtractSchemaInfo(schema, introspection)}</Box>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Image src={Data} width="200px" height="200px" alt="addUser" />
         </Box>

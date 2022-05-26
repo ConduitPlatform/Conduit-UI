@@ -14,7 +14,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Schema } from '../models/database/CmsModels';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-export const ExtractSchemaInfo = (schema: Schema) => {
+export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
   const permissions = schema?.modelOptions?.conduit?.permissions;
   const cms = schema?.modelOptions?.conduit?.cms;
   const [open, setOpen] = useState(true);
@@ -123,7 +123,9 @@ export const ExtractSchemaInfo = (schema: Schema) => {
         <ListItemIcon>
           <PersonIcon />
         </ListItemIcon>
-        <ListItemText primary="Schema Owner" secondary={schema.ownerModule.toUpperCase()} />
+        {!introspection && (
+          <ListItemText primary="Schema Owner" secondary={schema.ownerModule.toUpperCase()} />
+        )}
       </ListItem>
     </List>
   );

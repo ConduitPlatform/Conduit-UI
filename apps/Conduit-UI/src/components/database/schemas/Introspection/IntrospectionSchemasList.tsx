@@ -38,19 +38,21 @@ const IntrospectionSchemasList: FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const infiniteLoaderRef = useRef<any>(null);
+  const loaderRef = useRef<any>(null);
   const hasMountedRef = useRef(false);
 
   const { schemaDocuments, schemasCount } = useAppSelector(
     (state) => state.databaseSlice.data.introspectionSchemas
   );
 
+  console.log(schemaDocuments);
+
   const isItemLoaded = (index: number) => !!schemaDocuments[index];
 
   useEffect(() => {
-    if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache();
-      infiniteLoaderRef.current._listRef.scrollTo(0);
+    if (loaderRef.current && hasMountedRef.current) {
+      loaderRef.current.resetloadMoreItemsCache();
+      loaderRef.current._listRef.scrollTo(0);
     }
     hasMountedRef.current = true;
     const params = {
@@ -151,7 +153,7 @@ const IntrospectionSchemasList: FC<Props> = ({
         }
         return (
           <InfiniteLoader
-            ref={infiniteLoaderRef}
+            ref={loaderRef}
             isItemLoaded={isItemLoaded}
             itemCount={schemasCount}
             loadMoreItems={loadMoreItems}
