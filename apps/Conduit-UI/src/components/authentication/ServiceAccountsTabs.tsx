@@ -116,7 +116,7 @@ const ServiceAccountsTabs = () => {
 
   return (
     <>
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ paddingBottom: '20px' }}>
         <Paper sx={{ p: 4, borderRadius: 8 }}>
           <Box display="flex" justifyContent="space-between">
             <Box>
