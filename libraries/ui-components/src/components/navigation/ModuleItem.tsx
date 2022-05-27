@@ -2,7 +2,7 @@ import React, { forwardRef } from "react";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import makeStyles from "@mui/styles/makeStyles";
-import { ListItem, styled, Theme } from "@mui/material";
+import {ListItem, styled, Theme} from "@mui/material";
 import clsx from "clsx";
 
 const StyledAtag = styled("a")(() => ({
@@ -13,10 +13,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   listItem: {
     minHeight: theme.spacing(3),
     borderRadius: theme.spacing(0.5),
-    margin: theme.spacing(1, 0),
+    margin: theme.spacing(1),
     color: theme.palette.primary.contrastText,
     borderWidth: 1,
-    padding: theme.spacing(1.6),
+    padding: theme.spacing(1),
     "&:hover": {
       borderWidth: 1,
     },
@@ -36,22 +36,25 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderWidth: 1,
       },
     },
+    width:"auto",
   },
 }));
 
 interface Props {
-  title: string;
+  title: string | null;
   icon: React.ReactElement;
   href?: string;
   onClick?: () => void;
   className?: string;
   selected?: boolean;
   disabled?: boolean;
+  hideTitle?:boolean;
+  fontSize?: number;
 }
 
 const ModuleItem = forwardRef<HTMLAnchorElement, Props>(
   (
-    { selected, title, icon, onClick, className, href, disabled, ...rest },
+    { selected, title, icon, onClick, className, href, disabled, hideTitle,fontSize, ...rest },
     ref
   ) => {
     const classes = useStyles();
@@ -64,20 +67,24 @@ const ModuleItem = forwardRef<HTMLAnchorElement, Props>(
           selected={selected}
           {...rest}
         >
-          <ListItemIcon sx={{ minWidth: 35, marginRight: 1, color: "inherit" }}>
+          <ListItemIcon sx={{ minWidth: 25, color: "inherit"}}>
             {icon}
           </ListItemIcon>
-          <ListItemText
-            primary={title}
-            sx={{
-              "&	.MuiListItemText-primary": {
-                color: "inherit",
-                textTransform: "capitalize",
-                fontWeight: "bold",
-                fontSize: 12,
-              },
-            }}
-          />
+          {hideTitle ? null :
+              <ListItemText
+                  primary={title}
+                  sx={{
+                    "&	.MuiListItemText-primary": {
+                      color: "inherit",
+                      textTransform: "capitalize",
+                      fontWeight: "bold",
+                      fontSize: fontSize ?? 12,
+                      marginLeft: 1,
+                    },
+                  }}
+                  primaryTypographyProps={{noWrap:true}}
+              />
+          }
         </ListItem>
       </StyledAtag>
     );

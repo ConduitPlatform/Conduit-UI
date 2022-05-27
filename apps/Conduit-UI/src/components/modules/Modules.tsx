@@ -16,9 +16,16 @@ interface Props {
   itemSelected?: string;
   homeEnabled?: boolean;
   disabled?: boolean;
+  smallScreen?: boolean;
 }
 
-const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled }) => {
+const Modules: React.FC<Props> = ({
+  modules,
+  homeEnabled,
+  itemSelected,
+  disabled,
+  smallScreen,
+}) => {
   const dispatch = useAppDispatch();
 
   const handleDisabledClick = () => {
@@ -39,7 +46,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
           <ModuleItem
             selected={itemSelected === ''}
             icon={<Home color={'inherit'} />}
-            title="home"
+            title={smallScreen ? null : 'home'}
           />
         </Link>
       ) : (
@@ -54,7 +61,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
               return (
                 <ModuleItem
                   icon={getModuleIcon(module.moduleName)}
-                  title={getModuleName(module.moduleName)}
+                  title={smallScreen ? null : getModuleName(module.moduleName)}
                   onClick={() => handleDisabledClick()}
                   key={index}
                   disabled={disabled}
@@ -67,7 +74,7 @@ const Modules: React.FC<Props> = ({ modules, homeEnabled, itemSelected, disabled
               <ModuleItem
                 selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}
-                title={getModuleName(module.moduleName)}
+                title={smallScreen ? null : getModuleName(module.moduleName)}
               />
             </Link>
           );
