@@ -99,48 +99,52 @@ const SchemaViewer: FC<Props> = ({
                   </Typography>
                 </Grid>
                 {handleItemContent(item, index)}
-                {editable && !item.isArray && (
-                  <Grid container item xs={3} justifyContent="flex-end">
-                    <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                      <Tooltip title="Selected field">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={item.select}
-                              onChange={() => handleChangeField(item.name, 'select')}
-                              size="small"
-                            />
-                          }
-                          label="S"
-                        />
-                      </Tooltip>
-                      <Tooltip title="Unique field">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={item.unique}
-                              onChange={() => handleChangeField(item.name, 'unique')}
-                              size="small"
-                            />
-                          }
-                          label="U"
-                        />
-                      </Tooltip>
-                      <Tooltip title="Required field">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={item.required}
-                              size="small"
-                              onChange={() => handleChangeField(item.name, 'required')}
-                            />
-                          }
-                          label="R"
-                        />
-                      </Tooltip>
-                    </FormGroup>
-                  </Grid>
-                )}
+                {editable &&
+                  !item.isArray &&
+                  item.name !== '_id' &&
+                  item.name !== 'createdAt' &&
+                  item.name !== 'updatedAt' && (
+                    <Grid container item xs={3} justifyContent="flex-end">
+                      <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                        <Tooltip title="Selected field">
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={item.select}
+                                onChange={() => handleChangeField(item.name, 'select')}
+                                size="small"
+                              />
+                            }
+                            label="S"
+                          />
+                        </Tooltip>
+                        <Tooltip title="Unique field">
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={item.unique}
+                                onChange={() => handleChangeField(item.name, 'unique')}
+                                size="small"
+                              />
+                            }
+                            label="U"
+                          />
+                        </Tooltip>
+                        <Tooltip title="Required field">
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={item.required}
+                                size="small"
+                                onChange={() => handleChangeField(item.name, 'required')}
+                              />
+                            }
+                            label="R"
+                          />
+                        </Tooltip>
+                      </FormGroup>
+                    </Grid>
+                  )}
               </Grid>
             </Box>
           ))}

@@ -17,7 +17,7 @@ import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 import { RelationGroupTypeViewer } from '../types/RelationType/RelationTypeViewer';
 import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-import { Schema } from '../../../models/database/CmsModels';
+import { type } from 'os';
 
 interface IProps {
   item: IGroupData;
@@ -84,34 +84,32 @@ const GroupTypeViewer: FC<IProps> = ({
       });
   };
 
-  console.log(schemaToEdit);
   const handleEditGrpItem = (
     groupItem: any,
     item: any,
     typeOf: 'select' | 'unique' | 'required'
   ) => {
     const foundGroup = schemaToEdit?.fields[item];
-    const foundItem = foundGroup?.type[0][groupItem];
-    const foundItems = foundGroup?.type;
 
-    // console.log({ ...foundItems[groupItem], [typeOf]: foundItem });
+    const foundItem = foundGroup?.type[groupItem];
 
-    // // // console.log(foundItems[groupItem].required);
-    // // const modifiedItems = {
-    // //   ...foundItems,
-    // //   [groupItem]: { ...foundItems[groupItem], [typeOf]: !foundItems[groupItem][typeOf] },
-    // // };
-
-    // // console.log('modified', modifiedItems);
-
-    // // if (schemaToEdit?.fields[item] && foundItem !== undefined)
-    // //   console.log({
-    // //     ...schemaToEdit,
-    // //     fields: {
-    // //       ...schemaToEdit?.fields,
-    // //       [item]: { ...foundItem, type: foundItem },
-    // //     },
-    // //   });
+    if (schemaToEdit?.fields[item] && foundItem !== undefined)
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit?.fields,
+          [item]: {
+            ...schemaToEdit?.fields[item],
+            type: {
+              ...schemaToEdit.fields[item].type,
+              [groupItem]: {
+                ...schemaToEdit.fields[item].type[groupItem],
+                [typeOf]: !schemaToEdit?.fields[item]?.type[groupItem][typeOf],
+              },
+            },
+          },
+        },
+      });
   };
 
   return (
@@ -185,27 +183,58 @@ const GroupTypeViewer: FC<IProps> = ({
                       </Typography>
                     </Grid>
                     {handleGroupContent(groupItem, index)}
-                    {editable && !groupItem.isArray && (
-                      <Grid item container xs={3} alignItems="center" justifyContent={'flex-end'}>
-                        <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                          <Tooltip title="Selected field">
-                            <FormControlLabel control={<Checkbox size="small" />} label="S" />
-                          </Tooltip>
-                          <Tooltip title="Unique field">
-                            <FormControlLabel control={<Checkbox size="small" />} label="U" />
-                          </Tooltip>
-                          <Tooltip title="Required field">
-                            <FormControlLabel
-                              onChange={() =>
-                                handleEditGrpItem(groupItem.name, item.name, 'required')
-                              }
-                              control={<Checkbox size="small" />}
-                              label="R"
-                            />
-                          </Tooltip>
-                        </FormGroup>
-                      </Grid>
-                    )}
+                    {editable &&
+                      !groupItem.isArray &&
+                      groupItem.name !== '_id' &&
+                      groupItem.name !== 'createdAt' &&
+                      groupItem.name !== 'updatedAt' && (
+                        <Grid item container xs={3} alignItems="center" justifyContent={'flex-end'}>
+                          <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                            <Tooltip title="Selected field">
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={groupItem.select}
+                                    onChange={() =>
+                                      handleEditGrpItem(groupItem.name, item.name, 'select')
+                                    }
+                                    size="small"
+                                  />
+                                }
+                                label="S"
+                              />
+                            </Tooltip>
+                            <Tooltip title="Unique field">
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={groupItem.unique}
+                                    onChange={() =>
+                                      handleEditGrpItem(groupItem.name, item.name, 'unique')
+                                    }
+                                    size="small"
+                                  />
+                                }
+                                label="U"
+                              />
+                            </Tooltip>
+                            <Tooltip title="Required field">
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={groupItem.required}
+                                    onChange={() =>
+                                      handleEditGrpItem(groupItem.name, item.name, 'required')
+                                    }
+                                    size="small"
+                                  />
+                                }
+                                label="R"
+                              />
+                            </Tooltip>
+                          </FormGroup>
+                        </Grid>
+                      )}
                   </Grid>
                 </Box>
               </Box>
