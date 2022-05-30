@@ -133,7 +133,11 @@ const GroupTypeViewer: FC<IProps> = ({
               <Tooltip title="Selected field">
                 <FormControlLabel
                   control={
-                    <Checkbox size="small" onChange={() => handleEditGrp(item.name, 'select')} />
+                    <Checkbox
+                      size="small"
+                      checked={item.select}
+                      onChange={() => handleEditGrp(item.name, 'select')}
+                    />
                   }
                   label="S"
                 />
@@ -141,7 +145,11 @@ const GroupTypeViewer: FC<IProps> = ({
               <Tooltip title="Required field">
                 <FormControlLabel
                   control={
-                    <Checkbox size="small" onChange={() => handleEditGrp(item.name, 'required')} />
+                    <Checkbox
+                      checked={item.required}
+                      size="small"
+                      onChange={() => handleEditGrp(item.name, 'required')}
+                    />
                   }
                   label="R"
                 />

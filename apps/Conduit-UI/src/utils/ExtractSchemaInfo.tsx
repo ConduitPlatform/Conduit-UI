@@ -124,7 +124,7 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <PersonIcon />
         </ListItemIcon>
         {!introspection && (
-          <ListItemText primary="Schema Owner" secondary={schema.ownerModule.toUpperCase()} />
+          <ListItemText primary="Schema Owner" secondary={schema?.ownerModule?.toUpperCase()} />
         )}
       </ListItem>
     </List>

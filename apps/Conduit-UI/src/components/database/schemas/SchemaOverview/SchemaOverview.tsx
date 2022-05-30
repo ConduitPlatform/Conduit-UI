@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Grid, Box, Button } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
@@ -21,9 +21,10 @@ import Image from 'next/image';
 interface Props {
   schema: Schema;
   introspection?: boolean;
+  setIntrospectionModal?: (introspectionModal: boolean) => void;
 }
 
-export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
+export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospectionModal }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
@@ -36,11 +37,6 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [objectView, setObjectView] = useState(true);
   const [infoDrawer, setInfoDrawer] = useState(false);
-  const [schemaToEdit, setSchemaToEdit] = useState(schema);
-
-  useEffect(() => {
-    setSchemaToEdit(schema);
-  }, [schema]);
 
   const handleEditClick = (id: string) => {
     router.push({
@@ -59,8 +55,6 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
 
     setOpenDialog(false);
   };
-
-  console.log(schema);
 
   const handleToggleSchema = () => {
     dispatch(asyncToggleSchema(selectedSchemaForAction.data._id));
@@ -128,7 +122,7 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
     );
   };
 
-  const formattedFields = getSchemaFieldsWithExtra(schemaToEdit.fields);
+  const formattedFields = getSchemaFieldsWithExtra(schema.fields);
 
   const goToSchemaEndpoints = (name: string) => {
     router.push(`/database/custom?schema=${name}`, undefined, { shallow: true });
@@ -162,7 +156,14 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
               {extractButtonsRight()}
             </>
           ) : (
-            <Button>Enable</Button>
+            setIntrospectionModal && (
+              <Button
+                color="secondary"
+                variant="contained"
+                onClick={() => setIntrospectionModal(true)}>
+                Introspect
+              </Button>
+            )
           )}
         </Box>
       </Box>
@@ -178,14 +179,7 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection }) => {
             }}>
             {objectView ? (
               Object.keys({ newTypeFields: formattedFields }).map((dataKey, i) => (
-                <SchemaViewer
-                  editable={introspection}
-                  dataKey={dataKey}
-                  data={{ newTypeFields: formattedFields }}
-                  schemaToEdit={schemaToEdit}
-                  setSchemaToEdit={setSchemaToEdit}
-                  key={i}
-                />
+                <SchemaViewer dataKey={dataKey} data={{ newTypeFields: formattedFields }} key={i} />
               ))
             ) : (
               <JSONInput

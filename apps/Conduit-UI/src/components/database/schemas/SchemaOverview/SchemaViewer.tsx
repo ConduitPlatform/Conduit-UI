@@ -10,7 +10,6 @@ import ObjectIdTypeViewer from '../../types/ObjectIdType/ObjectIdTypeViewer';
 import SimpleTypeViewer from '../../types/SimpleType/SimpleTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup, Grid, Tooltip } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
-import { object } from 'prop-types';
 
 interface Props extends BoxProps {
   dataKey: any;
@@ -103,7 +102,8 @@ const SchemaViewer: FC<Props> = ({
                   !item.isArray &&
                   item.name !== '_id' &&
                   item.name !== 'createdAt' &&
-                  item.name !== 'updatedAt' && (
+                  item.name !== 'updatedAt' &&
+                  item.type !== 'Group' && (
                     <Grid container item xs={3} justifyContent="flex-end">
                       <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                         <Tooltip title="Selected field">

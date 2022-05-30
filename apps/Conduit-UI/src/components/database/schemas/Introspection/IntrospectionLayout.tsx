@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../../../../redux/store';
-import { Grid, InputAdornment, TextField, Typography } from '@mui/material';
+import { Grid, InputAdornment, Modal, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -10,6 +10,7 @@ import { Schema } from '../../../../models/database/CmsModels';
 import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 
 import IntrospectionSchemasList from './IntrospectionSchemasList';
+import IntrospectionModal from './IntrospectionModal';
 
 const IntrospectionLayout: FC = () => {
   const router = useRouter();
@@ -21,6 +22,7 @@ const IntrospectionLayout: FC = () => {
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
   const [schemaName, setSchemaName] = useState('');
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
+  const [introspectionModal, setIntrospectionModal] = useState<boolean>(false);
   useEffect(() => {
     setSchemaName((schemaModel as string) ?? '');
   }, [schemaModel]);
@@ -90,7 +92,11 @@ const IntrospectionLayout: FC = () => {
             marginBottom: '0',
           }}>
           {actualSchema ? (
-            <SchemaOverview schema={actualSchema} introspection />
+            <SchemaOverview
+              schema={actualSchema}
+              introspection
+              setIntrospectionModal={setIntrospectionModal}
+            />
           ) : (
             <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
               No selected Schema
@@ -98,6 +104,13 @@ const IntrospectionLayout: FC = () => {
           )}
         </Box>
       </Box>
+      {actualSchema && (
+        <IntrospectionModal
+          open={introspectionModal}
+          setOpen={setIntrospectionModal}
+          schema={actualSchema}
+        />
+      )}
     </Container>
   );
 };
