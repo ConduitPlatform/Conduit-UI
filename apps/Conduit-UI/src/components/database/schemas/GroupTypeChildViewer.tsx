@@ -7,14 +7,16 @@ import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
+import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 
 interface IProps {
   item: IGroupChildData;
   groupIndex: number;
   itemIndex: number;
+  editable?: boolean;
 }
 
-const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest }) => {
+const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, editable, ...rest }) => {
   const handleGroupContent = (item: any) => {
     switch (item.type) {
       case 'Text':
@@ -33,7 +35,7 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
   return (
     <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
-        <Grid container item xs={6} alignItems={'center'}>
+        <Grid container item xs={editable ? 3 : 6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Group field'}>
               <GroupIcon
@@ -54,6 +56,25 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
             <FieldIndicators item={item} />
           </Box>
         </Grid>
+        {editable && (
+          <Grid container item xs={4} justifyContent={'flex-end'}>
+            <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+              <Tooltip title="Selected field">
+                <FormControlLabel control={<Checkbox size="small" />} label="S" />
+              </Tooltip>
+              <Tooltip title="Unique field">
+                <FormControlLabel control={<Checkbox size="small" />} label="U" />
+              </Tooltip>
+              <Tooltip title="Required field">
+                <FormControlLabel
+                  onChange={() => console.log(item)}
+                  control={<Checkbox size="small" />}
+                  label="R"
+                />
+              </Tooltip>
+            </FormGroup>
+          </Grid>
+        )}
       </Grid>
       <Box
         sx={{
@@ -68,10 +89,29 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, ...rest
           item.content.map((groupItem, index) => {
             return (
               <Grid container sx={{ padding: 2 }} key={index}>
-                <Grid item xs={6}>
+                <Grid item xs={editable ? 3 : 6}>
                   {groupItem.name}
                 </Grid>
                 {handleGroupContent(groupItem)}
+                {editable && !groupItem.isArray && (
+                  <Grid item container xs={3} justifyContent={'flex-end'}>
+                    <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                      <Tooltip title="Selected field">
+                        <FormControlLabel control={<Checkbox size="small" />} label="S" />
+                      </Tooltip>
+                      <Tooltip title="Unique field">
+                        <FormControlLabel control={<Checkbox size="small" />} label="U" />
+                      </Tooltip>
+                      <Tooltip title="Required field">
+                        <FormControlLabel
+                          onChange={() => console.log(groupItem)}
+                          control={<Checkbox size="small" />}
+                          label="R"
+                        />
+                      </Tooltip>
+                    </FormGroup>
+                  </Grid>
+                )}
               </Grid>
             );
           })}

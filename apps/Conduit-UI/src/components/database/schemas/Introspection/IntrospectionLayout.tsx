@@ -37,6 +37,8 @@ const IntrospectionLayout: FC = () => {
     router.push(`/database/introspection?schemaModel=${value}`, undefined, { shallow: true });
   };
 
+  console.log(schemas);
+
   return (
     <Container maxWidth={'xl'}>
       <Box
