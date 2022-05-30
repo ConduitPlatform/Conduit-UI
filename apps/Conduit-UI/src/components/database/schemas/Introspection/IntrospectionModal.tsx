@@ -45,6 +45,7 @@ const IntrospectionModal: FC<Props> = ({ open, setOpen, schema }) => {
       <DialogTitle>
         <Typography>Introspection for schema: {schema.name}</Typography>
         <IconButton
+          disableRipple
           onClick={() => setOpen(false)}
           sx={{ position: 'absolute', right: '2%', top: '1%', color: 'gray' }}
           size="large">
@@ -63,7 +64,7 @@ const IntrospectionModal: FC<Props> = ({ open, setOpen, schema }) => {
           />
         ))}
       </DialogContent>
-      <DialogActions sx={{ px: 4 }}>
+      <DialogActions sx={{ px: 4, py: 2 }}>
         <Button onClick={handleFinalizeSchema} variant="contained" color="secondary">
           finalize schema
         </Button>

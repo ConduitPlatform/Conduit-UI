@@ -18,6 +18,7 @@ import { RelationGroupTypeViewer } from '../types/RelationType/RelationTypeViewe
 import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { type } from 'os';
+import { isArray } from 'lodash';
 
 interface IProps {
   item: IGroupData;
@@ -84,6 +85,8 @@ const GroupTypeViewer: FC<IProps> = ({
       });
   };
 
+  console.log(schemaToEdit);
+
   const handleEditGrpItem = (
     groupItem: any,
     item: any,
@@ -93,7 +96,26 @@ const GroupTypeViewer: FC<IProps> = ({
 
     const foundItem = foundGroup?.type[groupItem];
 
-    if (schemaToEdit?.fields[item] && foundItem !== undefined)
+    if (isArray(foundGroup.type)) {
+      const modifiedItemGrp = {
+        ...schemaToEdit?.fields[item].type[0],
+        [groupItem]: {
+          ...schemaToEdit.fields[item].type[0][groupItem],
+          [typeOf]: !schemaToEdit.fields[item].type[0][groupItem][typeOf],
+        },
+      };
+
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit.fields,
+          [item]: {
+            ...schemaToEdit?.fields[item],
+            type: [modifiedItemGrp],
+          },
+        },
+      });
+    } else if (schemaToEdit?.fields[item] && foundItem !== undefined)
       setSchemaToEdit({
         ...schemaToEdit,
         fields: {
