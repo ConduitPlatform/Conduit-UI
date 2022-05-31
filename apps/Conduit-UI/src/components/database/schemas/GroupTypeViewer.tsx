@@ -36,7 +36,11 @@ const GroupTypeViewer: FC<IProps> = ({
   setSchemaToEdit,
   ...rest
 }) => {
-  const handleGroupContent = (item: IGroupChildContentData | IGroupChildData, index: number) => {
+  const handleGroupContent = (
+    item: IGroupChildContentData | IGroupChildData,
+    index: number,
+    parent: string
+  ) => {
     switch (item.type) {
       case 'Text':
         return item.isEnum ? (
@@ -63,8 +67,11 @@ const GroupTypeViewer: FC<IProps> = ({
           <GroupTypeChildViewer
             editable={editable}
             item={item}
+            parent={parent}
             groupIndex={groupIndex}
             itemIndex={index}
+            schemaToEdit={schemaToEdit}
+            setSchemaToEdit={setSchemaToEdit}
           />
         );
       default:
@@ -84,8 +91,6 @@ const GroupTypeViewer: FC<IProps> = ({
         },
       });
   };
-
-  console.log(schemaToEdit);
 
   const handleEditGrpItem = (
     groupItem: any,
@@ -212,7 +217,7 @@ const GroupTypeViewer: FC<IProps> = ({
                         {groupItem.name}
                       </Typography>
                     </Grid>
-                    {handleGroupContent(groupItem, index)}
+                    {handleGroupContent(groupItem, index, item.name)}
                     {editable &&
                       !groupItem.isArray &&
                       groupItem.name !== '_id' &&

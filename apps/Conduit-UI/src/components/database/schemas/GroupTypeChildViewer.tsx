@@ -8,15 +8,28 @@ import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { isArray } from 'lodash';
 
 interface IProps {
   item: IGroupChildData;
   groupIndex: number;
   itemIndex: number;
   editable?: boolean;
+  parent: string;
+  schemaToEdit?: any;
+  setSchemaToEdit?: any;
 }
 
-const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, editable, ...rest }) => {
+const GroupTypeChildViewer: FC<IProps> = ({
+  item,
+  groupIndex,
+  itemIndex,
+  parent,
+  editable,
+  schemaToEdit,
+  setSchemaToEdit,
+  ...rest
+}) => {
   const handleGroupContent = (item: any) => {
     switch (item.type) {
       case 'Text':
@@ -29,6 +42,106 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, editabl
         return <BooleanGroupTypeViewer item={item} />;
       default:
         return null;
+    }
+  };
+
+  const handleEditSubGroup = (item: any, type: 'select' | 'unique' | 'required') => {
+    const foundGroupType = schemaToEdit?.fields[parent].type;
+
+    if (isArray(foundGroupType)) {
+      const modifiedItemGrp = {
+        ...schemaToEdit?.fields[parent].type[0],
+        [item]: {
+          ...schemaToEdit.fields[parent].type[0][item],
+          [type]: !schemaToEdit.fields[parent].type[0][item][type],
+        },
+      };
+
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit.fields,
+          [parent]: {
+            ...schemaToEdit?.fields[parent],
+            type: [modifiedItemGrp],
+          },
+        },
+      });
+    } else {
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit?.fields,
+          [parent]: {
+            ...schemaToEdit?.fields[parent],
+            type: {
+              ...schemaToEdit.fields[parent].type,
+              [item]: {
+                ...schemaToEdit.fields[parent].type[item],
+                [type]: !schemaToEdit?.fields[parent]?.type[item][type],
+              },
+            },
+          },
+        },
+      });
+    }
+  };
+
+  const handleEditGrpItem = (
+    groupItem: any,
+    item: any,
+    typeOf: 'select' | 'unique' | 'required'
+  ) => {
+    const foundGroup = schemaToEdit?.fields[item];
+    const foundGroupType = schemaToEdit?.fields[parent].type;
+
+    const foundItem = foundGroup?.type[groupItem];
+
+    console.log(groupItem, item);
+
+    if (isArray(foundGroupType)) {
+      console.log('hello there');
+      // const modifiedItemGrp = {
+      //   ...schemaToEdit?.fields[item].type[0],
+      //   [groupItem]: {
+      //     ...schemaToEdit.fields[item].type[0][groupItem],
+      //     [typeOf]: !schemaToEdit.fields[item].type[0][groupItem][typeOf],
+      //   },
+      // };
+
+      // setSchemaToEdit({
+      //   ...schemaToEdit,
+      //   fields: {
+      //     ...schemaToEdit.fields,
+      //     [item]: {
+      //       ...schemaToEdit?.fields[item],
+      //       type: [modifiedItemGrp],
+      //     },
+      //   },
+      // });
+    } else {
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit?.fields,
+          [parent]: {
+            ...schemaToEdit?.fields[parent],
+            type: {
+              ...schemaToEdit.fields[parent].type,
+              [item]: {
+                ...schemaToEdit.fields[parent].type[item],
+                type: {
+                  ...schemaToEdit?.fields[parent]?.type[item].type,
+                  [groupItem]: {
+                    ...schemaToEdit?.fields[parent]?.type[item].type[groupItem],
+                    [typeOf]: !schemaToEdit?.fields[parent]?.type[item].type[groupItem][typeOf],
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
     }
   };
 
@@ -60,15 +173,36 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, editabl
           <Grid container item xs={4} justifyContent={'flex-end'}>
             <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
               <Tooltip title="Selected field">
-                <FormControlLabel control={<Checkbox size="small" />} label="S" />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      checked={item.select}
+                      onChange={() => handleEditSubGroup(item.name, 'select')}
+                    />
+                  }
+                  label="S"
+                />
               </Tooltip>
               <Tooltip title="Unique field">
-                <FormControlLabel control={<Checkbox size="small" />} label="U" />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      onChange={() => handleEditSubGroup(item.name, 'unique')}
+                    />
+                  }
+                  label="U"
+                />
               </Tooltip>
               <Tooltip title="Required field">
                 <FormControlLabel
-                  onChange={() => console.log(item)}
-                  control={<Checkbox size="small" />}
+                  control={
+                    <Checkbox
+                      onChange={() => handleEditSubGroup(item.name, 'required')}
+                      size="small"
+                    />
+                  }
                   label="R"
                 />
               </Tooltip>
@@ -93,19 +227,48 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, editabl
                   {groupItem.name}
                 </Grid>
                 {handleGroupContent(groupItem)}
-                {editable && !groupItem.isArray && (
+                {editable && (
                   <Grid item container xs={3} justifyContent={'flex-end'}>
                     <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                       <Tooltip title="Selected field">
-                        <FormControlLabel control={<Checkbox size="small" />} label="S" />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              onChange={() =>
+                                handleEditGrpItem(groupItem.name, item.name, 'select')
+                              }
+                              checked={groupItem.select}
+                              size="small"
+                            />
+                          }
+                          label="S"
+                        />
                       </Tooltip>
                       <Tooltip title="Unique field">
-                        <FormControlLabel control={<Checkbox size="small" />} label="U" />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              onChange={() =>
+                                handleEditGrpItem(groupItem.name, item.name, 'unique')
+                              }
+                              checked={groupItem.unique}
+                              size="small"
+                            />
+                          }
+                          label="U"
+                        />
                       </Tooltip>
                       <Tooltip title="Required field">
                         <FormControlLabel
-                          onChange={() => console.log(groupItem)}
-                          control={<Checkbox size="small" />}
+                          control={
+                            <Checkbox
+                              onChange={() =>
+                                handleEditGrpItem(groupItem.name, item.name, 'required')
+                              }
+                              checked={groupItem.required}
+                              size="small"
+                            />
+                          }
                           label="R"
                         />
                       </Tooltip>
