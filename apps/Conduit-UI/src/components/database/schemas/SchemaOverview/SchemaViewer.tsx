@@ -56,7 +56,7 @@ const SchemaViewer: FC<Props> = ({
     }
   };
 
-  const handleChangeField = (item: any, type: 'select' | 'unique' | 'required') => {
+  const handleChangeField = (item: string, type: 'select' | 'unique' | 'required') => {
     const foundItem = schemaToEdit?.fields[item];
 
     if (schemaToEdit?.fields[item] && foundItem !== undefined)

@@ -72,7 +72,7 @@ const IntrospectionLayout: FC = () => {
               </Grid>
             </Grid>
           </Box>
-          <Box height="70vh" width="auto">
+          <Box pt={2} height="70vh" width="auto">
             <IntrospectionSchemasList
               handleListItemSelect={handleChange}
               search={debouncedSchemaSearch}

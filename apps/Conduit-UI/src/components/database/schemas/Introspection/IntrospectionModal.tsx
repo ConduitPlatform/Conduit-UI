@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, { FC, useEffect, useState } from 'react';
+import { Schema } from '../../../../models/database/CmsModels';
 import { asyncFinalizeIntrospectedSchemas } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch } from '../../../../redux/store';
 import { getSchemaFieldsWithExtra } from '../../../../utils/type-functions';
@@ -17,7 +18,7 @@ import SchemaViewer from '../SchemaOverview/SchemaViewer';
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
-  schema: any;
+  schema: Schema;
 }
 
 const IntrospectionModal: FC<Props> = ({ open, setOpen, schema }) => {

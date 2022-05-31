@@ -17,14 +17,14 @@ import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 import { RelationGroupTypeViewer } from '../types/RelationType/RelationTypeViewer';
 import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-import { type } from 'os';
 import { isArray } from 'lodash';
+import { Schema } from '../../../models/database/CmsModels';
 
 interface IProps {
   item: IGroupData;
   groupIndex: number;
   editable?: boolean;
-  schemaToEdit?: any;
+  schemaToEdit?: Schema;
   setSchemaToEdit?: any;
 }
 
@@ -79,7 +79,7 @@ const GroupTypeViewer: FC<IProps> = ({
     }
   };
 
-  const handleEditGrp = (item: any, type: 'select' | 'unique' | 'required') => {
+  const handleEditGrp = (item: string, type: 'select' | 'unique' | 'required') => {
     const foundItem = schemaToEdit?.fields[item];
 
     if (schemaToEdit?.fields[item] && foundItem !== undefined)
@@ -93,15 +93,15 @@ const GroupTypeViewer: FC<IProps> = ({
   };
 
   const handleEditGrpItem = (
-    groupItem: any,
-    item: any,
+    groupItem: string,
+    item: string,
     typeOf: 'select' | 'unique' | 'required'
   ) => {
     const foundGroup = schemaToEdit?.fields[item];
 
     const foundItem = foundGroup?.type[groupItem];
 
-    if (isArray(foundGroup.type)) {
+    if (isArray(foundGroup.type) && schemaToEdit) {
       const modifiedItemGrp = {
         ...schemaToEdit?.fields[item].type[0],
         [groupItem]: {

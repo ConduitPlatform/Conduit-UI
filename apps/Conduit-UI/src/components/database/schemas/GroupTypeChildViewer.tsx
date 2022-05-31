@@ -9,6 +9,7 @@ import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { isArray } from 'lodash';
+import { Schema } from '../../../models/database/CmsModels';
 
 interface IProps {
   item: IGroupChildData;
@@ -16,7 +17,7 @@ interface IProps {
   itemIndex: number;
   editable?: boolean;
   parent: string;
-  schemaToEdit?: any;
+  schemaToEdit?: Schema;
   setSchemaToEdit?: any;
 }
 
@@ -45,107 +46,110 @@ const GroupTypeChildViewer: FC<IProps> = ({
     }
   };
 
-  const handleEditSubGroup = (item: any, type: 'select' | 'unique' | 'required') => {
+  const handleEditSubGroup = (item: string, type: 'select' | 'unique' | 'required') => {
     const foundGroupType = schemaToEdit?.fields[parent].type;
-
-    if (isArray(foundGroupType)) {
-      const modifiedItemGrp = {
-        ...schemaToEdit?.fields[parent].type[0],
-        [item]: {
-          ...schemaToEdit.fields[parent].type[0][item],
-          [type]: !schemaToEdit.fields[parent].type[0][item][type],
-        },
-      };
-
-      setSchemaToEdit({
-        ...schemaToEdit,
-        fields: {
-          ...schemaToEdit.fields,
-          [parent]: {
-            ...schemaToEdit?.fields[parent],
-            type: [modifiedItemGrp],
+    if (schemaToEdit) {
+      if (isArray(foundGroupType)) {
+        const modifiedItemGrp = {
+          ...schemaToEdit?.fields[parent].type[0],
+          [item]: {
+            ...schemaToEdit.fields[parent].type[0][item],
+            [type]: !schemaToEdit.fields[parent].type[0][item][type],
           },
-        },
-      });
-    } else {
-      setSchemaToEdit({
-        ...schemaToEdit,
-        fields: {
-          ...schemaToEdit?.fields,
-          [parent]: {
-            ...schemaToEdit?.fields[parent],
-            type: {
-              ...schemaToEdit.fields[parent].type,
-              [item]: {
-                ...schemaToEdit.fields[parent].type[item],
-                [type]: !schemaToEdit?.fields[parent]?.type[item][type],
+        };
+
+        setSchemaToEdit({
+          ...schemaToEdit,
+          fields: {
+            ...schemaToEdit.fields,
+            [parent]: {
+              ...schemaToEdit?.fields[parent],
+              type: [modifiedItemGrp],
+            },
+          },
+        });
+      } else {
+        setSchemaToEdit({
+          ...schemaToEdit,
+          fields: {
+            ...schemaToEdit?.fields,
+            [parent]: {
+              ...schemaToEdit?.fields[parent],
+              type: {
+                ...schemaToEdit.fields[parent].type,
+                [item]: {
+                  ...schemaToEdit.fields[parent].type[item],
+                  [type]: !schemaToEdit?.fields[parent]?.type[item][type],
+                },
               },
             },
           },
-        },
-      });
+        });
+      }
     }
   };
 
   const handleEditGrpItem = (
-    groupItem: any,
-    item: any,
+    groupItem: string,
+    item: string,
     typeOf: 'select' | 'unique' | 'required'
   ) => {
     const foundGroup = schemaToEdit?.fields[item];
     const foundGroupType = schemaToEdit?.fields[parent].type;
 
-    if (isArray(foundGroupType)) {
-      setSchemaToEdit({
-        ...schemaToEdit,
-        fields: {
-          ...schemaToEdit.fields,
-          [parent]: {
-            ...schemaToEdit?.fields[parent],
-            type: [
-              {
-                ...schemaToEdit?.fields[parent].type[0],
-                [item]: {
-                  ...schemaToEdit?.fields[parent].type[0][item],
-                  type: [
-                    {
-                      ...schemaToEdit?.fields[parent].type[0][item].type[0],
-                      [groupItem]: {
-                        ...schemaToEdit?.fields[parent].type[0][item].type[0][groupItem],
-                        [typeOf]:
-                          !schemaToEdit?.fields[parent].type[0][item].type[0][groupItem][typeOf],
+    if (schemaToEdit) {
+      if (isArray(foundGroupType)) {
+        setSchemaToEdit({
+          ...schemaToEdit,
+          fields: {
+            ...schemaToEdit.fields,
+            [parent]: {
+              ...schemaToEdit?.fields[parent],
+              type: [
+                {
+                  ...schemaToEdit?.fields[parent].type[0],
+                  [item]: {
+                    ...schemaToEdit?.fields[parent].type[0][item],
+                    type: [
+                      {
+                        ...schemaToEdit?.fields[parent].type[0][item].type[0],
+                        [groupItem]: {
+                          ...schemaToEdit?.fields[parent].type[0][item].type[0][groupItem],
+                          [typeOf]:
+                            !schemaToEdit?.fields[parent].type[0][item].type[0][groupItem][typeOf],
+                        },
                       },
-                    },
-                  ],
+                    ],
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
-      });
-    } else {
-      setSchemaToEdit({
-        ...schemaToEdit,
-        fields: {
-          ...schemaToEdit?.fields,
-          [parent]: {
-            ...schemaToEdit?.fields[parent],
-            type: {
-              ...schemaToEdit.fields[parent].type,
-              [item]: {
-                ...schemaToEdit.fields[parent].type[item],
-                type: {
-                  ...schemaToEdit?.fields[parent]?.type[item].type,
-                  [groupItem]: {
-                    ...schemaToEdit?.fields[parent]?.type[item].type[groupItem],
-                    [typeOf]: !schemaToEdit?.fields[parent]?.type[item].type[groupItem][typeOf],
+        });
+      } else {
+        setSchemaToEdit({
+          ...schemaToEdit,
+          fields: {
+            ...schemaToEdit?.fields,
+            [parent]: {
+              ...schemaToEdit?.fields[parent],
+              type: {
+                ...schemaToEdit.fields[parent].type,
+                [item]: {
+                  ...schemaToEdit.fields[parent].type[item],
+                  type: {
+                    ...schemaToEdit?.fields[parent]?.type[item].type,
+                    [groupItem]: {
+                      ...schemaToEdit?.fields[parent]?.type[item].type[groupItem],
+                      [typeOf]: !schemaToEdit?.fields[parent]?.type[item].type[groupItem][typeOf],
+                    },
                   },
                 },
               },
             },
           },
-        },
-      });
+        });
+      }
     }
   };
 
