@@ -3,9 +3,12 @@ import { AuthUser, IAuthenticationConfig } from '../../models/authentication/Aut
 import {
   blockUnblockUsers,
   blockUser,
+  changePassword,
   createNewUsers,
+  deleteAdmin,
   deleteUsers,
   editUser,
+  getAdmins,
   getAuthenticationConfig,
   getAuthUsersDataReq,
   putAuthenticationConfig,
@@ -22,6 +25,10 @@ interface IAuthenticationSlice {
       users: AuthUser[];
       count: number;
     };
+    authAdmins: {
+      admins: AuthUser[];
+      count: number;
+    };
     config: IAuthenticationConfig;
   };
 }
@@ -30,6 +37,10 @@ const initialState: IAuthenticationSlice = {
   data: {
     authUsers: {
       users: [],
+      count: 0,
+    },
+    authAdmins: {
+      admins: [],
       count: 0,
     },
     config: {
@@ -267,6 +278,55 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Authentication config successfully updated`));
       return config;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetAdmins = createAsyncThunk(
+  'authentication/getAdmins',
+  async (body: any, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getAdmins();
+
+      console.log(data);
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteAdmin = createAsyncThunk(
+  'authentication/deleteAdmin',
+  async (params: { id: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await deleteAdmin(params.id);
+
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncChangePassword = createAsyncThunk(
+  'authentication/changePassword',
+  async (params: { newPassword: string; oldPassword: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await changePassword(params.newPassword, params.oldPassword);
+
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
