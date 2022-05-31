@@ -18,7 +18,7 @@ interface IProps {
   editable?: boolean;
   parent: string;
   schemaToEdit?: Schema;
-  setSchemaToEdit?: any;
+  setSchemaToEdit?: (schemaToEdit: Schema) => void;
 }
 
 const GroupTypeChildViewer: FC<IProps> = ({
@@ -48,7 +48,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
 
   const handleEditSubGroup = (item: string, type: 'select' | 'unique' | 'required') => {
     const foundGroupType = schemaToEdit?.fields[parent].type;
-    if (schemaToEdit) {
+    if (schemaToEdit && setSchemaToEdit) {
       if (isArray(foundGroupType)) {
         const modifiedItemGrp = {
           ...schemaToEdit?.fields[parent].type[0],
@@ -94,10 +94,9 @@ const GroupTypeChildViewer: FC<IProps> = ({
     item: string,
     typeOf: 'select' | 'unique' | 'required'
   ) => {
-    const foundGroup = schemaToEdit?.fields[item];
     const foundGroupType = schemaToEdit?.fields[parent].type;
 
-    if (schemaToEdit) {
+    if (schemaToEdit && setSchemaToEdit) {
       if (isArray(foundGroupType)) {
         setSchemaToEdit({
           ...schemaToEdit,

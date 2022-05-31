@@ -25,7 +25,7 @@ interface IProps {
   groupIndex: number;
   editable?: boolean;
   schemaToEdit?: Schema;
-  setSchemaToEdit?: any;
+  setSchemaToEdit?: (schemaToEdit: Schema) => void;
 }
 
 const GroupTypeViewer: FC<IProps> = ({
@@ -82,7 +82,7 @@ const GroupTypeViewer: FC<IProps> = ({
   const handleEditGrp = (item: string, type: 'select' | 'unique' | 'required') => {
     const foundItem = schemaToEdit?.fields[item];
 
-    if (schemaToEdit?.fields[item] && foundItem !== undefined)
+    if (schemaToEdit?.fields[item] && foundItem !== undefined && setSchemaToEdit)
       setSchemaToEdit({
         ...schemaToEdit,
         fields: {
@@ -101,7 +101,7 @@ const GroupTypeViewer: FC<IProps> = ({
 
     const foundItem = foundGroup?.type[groupItem];
 
-    if (isArray(foundGroup.type) && schemaToEdit) {
+    if (isArray(foundGroup.type) && schemaToEdit && setSchemaToEdit) {
       const modifiedItemGrp = {
         ...schemaToEdit?.fields[item].type[0],
         [groupItem]: {
@@ -120,7 +120,7 @@ const GroupTypeViewer: FC<IProps> = ({
           },
         },
       });
-    } else if (schemaToEdit?.fields[item] && foundItem !== undefined)
+    } else if (schemaToEdit?.fields[item] && foundItem !== undefined && setSchemaToEdit)
       setSchemaToEdit({
         ...schemaToEdit,
         fields: {

@@ -16,7 +16,7 @@ interface Props extends BoxProps {
   data: any;
   editable?: boolean;
   schemaToEdit?: Schema;
-  setSchemaToEdit?: any;
+  setSchemaToEdit?: (schemaToEdit: Schema) => void;
 }
 
 const SchemaViewer: FC<Props> = ({
@@ -59,7 +59,7 @@ const SchemaViewer: FC<Props> = ({
   const handleChangeField = (item: string, type: 'select' | 'unique' | 'required') => {
     const foundItem = schemaToEdit?.fields[item];
 
-    if (schemaToEdit?.fields[item] && foundItem !== undefined)
+    if (schemaToEdit?.fields[item] && foundItem !== undefined && setSchemaToEdit)
       setSchemaToEdit({
         ...schemaToEdit,
         fields: {

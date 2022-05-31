@@ -15,7 +15,7 @@ import { Schema } from '../../../../models/database/CmsModels';
 const timeoutAmount = 750;
 
 interface Props {
-  handleListItemSelect: (endpoint: any) => void;
+  handleListItemSelect: (endpoint: string) => void;
   search: string;
   actualSchema?: Schema;
 }
