@@ -87,6 +87,8 @@ const GroupTypeChildViewer: FC<IProps> = ({
     }
   };
 
+  console.log(schemaToEdit);
+
   const handleEditGrpItem = (
     groupItem: any,
     item: any,
@@ -97,28 +99,35 @@ const GroupTypeChildViewer: FC<IProps> = ({
 
     const foundItem = foundGroup?.type[groupItem];
 
-    console.log(groupItem, item);
-
     if (isArray(foundGroupType)) {
-      console.log('hello there');
-      // const modifiedItemGrp = {
-      //   ...schemaToEdit?.fields[item].type[0],
-      //   [groupItem]: {
-      //     ...schemaToEdit.fields[item].type[0][groupItem],
-      //     [typeOf]: !schemaToEdit.fields[item].type[0][groupItem][typeOf],
-      //   },
-      // };
-
-      // setSchemaToEdit({
-      //   ...schemaToEdit,
-      //   fields: {
-      //     ...schemaToEdit.fields,
-      //     [item]: {
-      //       ...schemaToEdit?.fields[item],
-      //       type: [modifiedItemGrp],
-      //     },
-      //   },
-      // });
+      console.log('here');
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit.fields,
+          [parent]: {
+            ...schemaToEdit?.fields[parent],
+            type: [
+              {
+                ...schemaToEdit?.fields[parent].type[0],
+                [item]: {
+                  ...schemaToEdit?.fields[parent].type[0][item],
+                  type: [
+                    {
+                      ...schemaToEdit?.fields[parent].type[0][item].type[0],
+                      [groupItem]: {
+                        ...schemaToEdit?.fields[parent].type[0][item].type[0][groupItem],
+                        [typeOf]:
+                          !schemaToEdit?.fields[parent].type[0][item].type[0][groupItem][typeOf],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      });
     } else {
       setSchemaToEdit({
         ...schemaToEdit,
