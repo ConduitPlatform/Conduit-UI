@@ -1,12 +1,17 @@
 import React from 'react';
-import { SharedLayout } from '@conduitplatform/ui-components';
 import { Toc } from '@mui/icons-material';
 import StyledLayout from './styledLayout';
 
 const DatabaseLayout: React.FC = ({ children }) => {
-  const pathNames = ['/database/schemas', '/database/custom', '/database/settings'];
+  const pathNames = [
+    '/database/schemas',
+    '/database/introspection',
+    '/database/custom',
+    '/database/settings',
+  ];
   const labels = [
     { name: 'schemas', id: 'schemas' },
+    { name: 'introspection', id: 'introspection' },
     { name: 'custom endpoints', id: 'custom' },
     { name: 'settings', id: 'settings' },
   ];
