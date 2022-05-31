@@ -41,8 +41,8 @@ export const unblockUser = (id: string) => {
   return axios.post(`${CONDUIT_API}/admin/authentication/users/${id}/unblock`);
 };
 
-export const getAdmins = () => {
-  return axios.get(`${CONDUIT_API}/admin/admins`);
+export const getAdmins = (params: Pagination) => {
+  return axios.get(`${CONDUIT_API}/admin/admins`, { params });
 };
 
 export const deleteAdmin = (id: string) => {

@@ -288,10 +288,10 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
 
 export const asyncGetAdmins = createAsyncThunk(
   'authentication/getAdmins',
-  async (body: any, thunkAPI) => {
+  async (params: Pagination, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getAdmins();
+      const { data } = await getAdmins(params);
 
       console.log(data);
       thunkAPI.dispatch(setAppLoading(false));
@@ -305,11 +305,11 @@ export const asyncGetAdmins = createAsyncThunk(
 
 export const asyncDeleteAdmin = createAsyncThunk(
   'authentication/deleteAdmin',
-  async (params: { id: string }, thunkAPI) => {
+  async (params: { id: string; getAdmins: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await deleteAdmin(params.id);
-
+      params.getAdmins();
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
