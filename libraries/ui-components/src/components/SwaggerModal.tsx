@@ -65,21 +65,21 @@ const SwaggerModal: FC<Props> = ({
       onClose={handleClose}
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
-      sx={{ padding: 10 }}
+      sx={{ padding: 10, overflowY: 'unset' }}
     >
       <DialogTitle id="alert-dialog-slide-title">
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h6">{title} Swagger </Typography>
           <IconButton
             onClick={handleClose}
-            sx={{ position: "absolute", left: "90%", top: "1%", color: "gray" }}
+            sx={{ position: "absolute", right: "1%", top: "1%", color: "gray" }}
             size="large"
           >
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent sx={{ minWidth: "500px" }}>
+      <DialogContent sx={{ minWidth: "400px" }}>
         <DialogContentText>
           Swagger is used to describe and document RESTful APIs.
         </DialogContentText>
