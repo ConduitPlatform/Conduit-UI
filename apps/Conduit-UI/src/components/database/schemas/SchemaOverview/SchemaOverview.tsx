@@ -20,9 +20,11 @@ import Image from 'next/image';
 
 interface Props {
   schema: Schema;
+  introspection?: boolean;
+  setIntrospectionModal?: (introspectionModal: boolean) => void;
 }
 
-export const SchemaOverview: FC<Props> = ({ schema }) => {
+export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospectionModal }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
@@ -120,14 +122,28 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
           </Button>
         </Box>
         <Box display="flex" justifyContent="flex-end" gap={2} pr={3} pt={2}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => goToSchemaEndpoints(schema.name)}>
-            Custom Endpoints
-          </Button>
-          {extractButtonsLeft()}
-          {extractButtonsRight()}
+          {!introspection ? (
+            <>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => goToSchemaEndpoints(schema.name)}>
+                Custom Endpoints
+              </Button>
+
+              {extractButtonsLeft()}
+              {extractButtonsRight()}
+            </>
+          ) : (
+            setIntrospectionModal && (
+              <Button
+                color="secondary"
+                variant="contained"
+                onClick={() => setIntrospectionModal(true)}>
+                Introspect
+              </Button>
+            )
+          )}
         </Box>
       </Box>
       <Grid container spacing={3}>
@@ -173,7 +189,7 @@ export const SchemaOverview: FC<Props> = ({ schema }) => {
         title="Schema information"
         open={infoDrawer}
         closeDrawer={() => setInfoDrawer(false)}>
-        <Box padding={3}>{ExtractSchemaInfo(schema)}</Box>
+        <Box padding={3}>{ExtractSchemaInfo(schema, introspection)}</Box>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Image src={Data} width="200px" height="200px" alt="addUser" />
         </Box>

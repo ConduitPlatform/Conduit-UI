@@ -16,19 +16,31 @@ import { ObjectIdGroupTypeViewer } from '../types/ObjectIdType/ObjectIdTypeViewe
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
 import { RelationGroupTypeViewer } from '../types/RelationType/RelationTypeViewer';
 import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
+import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { isArray } from 'lodash';
+import { Schema } from '../../../models/database/CmsModels';
 
 interface IProps {
   item: IGroupData;
   groupIndex: number;
+  editable?: boolean;
+  schemaToEdit?: Schema;
+  setSchemaToEdit?: (schemaToEdit: Schema) => void;
 }
 
 const GroupTypeViewer: FC<IProps> = ({
   item,
   groupIndex,
-
+  editable,
+  schemaToEdit,
+  setSchemaToEdit,
   ...rest
 }) => {
-  const handleGroupContent = (item: IGroupChildContentData | IGroupChildData, index: number) => {
+  const handleGroupContent = (
+    item: IGroupChildContentData | IGroupChildData,
+    index: number,
+    parent: string
+  ) => {
     switch (item.type) {
       case 'Text':
         return item.isEnum ? (
@@ -51,16 +63,86 @@ const GroupTypeViewer: FC<IProps> = ({
       case 'Relation':
         return <RelationGroupTypeViewer item={item} />;
       case 'Group':
-        return <GroupTypeChildViewer item={item} groupIndex={groupIndex} itemIndex={index} />;
+        return (
+          <GroupTypeChildViewer
+            editable={editable}
+            item={item}
+            parent={parent}
+            groupIndex={groupIndex}
+            itemIndex={index}
+            schemaToEdit={schemaToEdit}
+            setSchemaToEdit={setSchemaToEdit}
+          />
+        );
       default:
         return null;
     }
   };
 
+  const handleEditGrp = (item: string, type: 'select' | 'unique' | 'required') => {
+    const foundItem = schemaToEdit?.fields[item];
+
+    if (schemaToEdit?.fields[item] && foundItem !== undefined && setSchemaToEdit)
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit?.fields,
+          [item]: { ...foundItem, [type]: !foundItem[type] },
+        },
+      });
+  };
+
+  const handleEditGrpItem = (
+    groupItem: string,
+    item: string,
+    typeOf: 'select' | 'unique' | 'required'
+  ) => {
+    const foundGroup = schemaToEdit?.fields[item];
+
+    const foundItem = foundGroup?.type[groupItem];
+
+    if (isArray(foundGroup.type) && schemaToEdit && setSchemaToEdit) {
+      const modifiedItemGrp = {
+        ...schemaToEdit?.fields[item].type[0],
+        [groupItem]: {
+          ...schemaToEdit.fields[item].type[0][groupItem],
+          [typeOf]: !schemaToEdit.fields[item].type[0][groupItem][typeOf],
+        },
+      };
+
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit.fields,
+          [item]: {
+            ...schemaToEdit?.fields[item],
+            type: [modifiedItemGrp],
+          },
+        },
+      });
+    } else if (schemaToEdit?.fields[item] && foundItem !== undefined && setSchemaToEdit)
+      setSchemaToEdit({
+        ...schemaToEdit,
+        fields: {
+          ...schemaToEdit?.fields,
+          [item]: {
+            ...schemaToEdit?.fields[item],
+            type: {
+              ...schemaToEdit.fields[item].type,
+              [groupItem]: {
+                ...schemaToEdit.fields[item].type[groupItem],
+                [typeOf]: !schemaToEdit?.fields[item]?.type[groupItem][typeOf],
+              },
+            },
+          },
+        },
+      });
+  };
+
   return (
     <Box sx={{ width: '100%' }} {...rest}>
       <Grid container>
-        <Grid container item xs={6} alignItems={'center'}>
+        <Grid container item xs={editable ? 3 : 6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Tooltip title={'Group field'}>
               <GroupIcon sx={{ opacity: 0.6 }} />
@@ -72,6 +154,36 @@ const GroupTypeViewer: FC<IProps> = ({
             <FieldIndicators item={item} />
           </Box>
         </Grid>
+        {editable && (
+          <Grid container item xs={4} alignItems="center" justifyContent={'flex-end'}>
+            <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+              <Tooltip title="Selected field">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      checked={item.select}
+                      onChange={() => handleEditGrp(item.name, 'select')}
+                    />
+                  }
+                  label="S"
+                />
+              </Tooltip>
+              <Tooltip title="Required field">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={item.required}
+                      size="small"
+                      onChange={() => handleEditGrp(item.name, 'required')}
+                    />
+                  }
+                  label="R"
+                />
+              </Tooltip>
+            </FormGroup>
+          </Grid>
+        )}
       </Grid>
 
       <Box
@@ -99,13 +211,65 @@ const GroupTypeViewer: FC<IProps> = ({
                 }}>
                 <Box width={'99%'}></Box>
                 <Box display={'flex'} flexDirection={'column'} width={'99%'} mb={2}>
-                  <Grid container>
-                    <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={editable ? 3 : 6}>
                       <Typography variant={'body2'} sx={{ marginRight: 8 }}>
                         {groupItem.name}
                       </Typography>
                     </Grid>
-                    {handleGroupContent(groupItem, index)}
+                    {handleGroupContent(groupItem, index, item.name)}
+                    {editable &&
+                      !groupItem.isArray &&
+                      groupItem.name !== '_id' &&
+                      groupItem.name !== 'createdAt' &&
+                      groupItem.name !== 'updatedAt' && (
+                        <Grid item container xs={3} alignItems="center" justifyContent={'flex-end'}>
+                          <FormGroup sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                            <Tooltip title="Selected field">
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={groupItem.select}
+                                    onChange={() =>
+                                      handleEditGrpItem(groupItem.name, item.name, 'select')
+                                    }
+                                    size="small"
+                                  />
+                                }
+                                label="S"
+                              />
+                            </Tooltip>
+                            <Tooltip title="Unique field">
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={groupItem.unique}
+                                    onChange={() =>
+                                      handleEditGrpItem(groupItem.name, item.name, 'unique')
+                                    }
+                                    size="small"
+                                  />
+                                }
+                                label="U"
+                              />
+                            </Tooltip>
+                            <Tooltip title="Required field">
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={groupItem.required}
+                                    onChange={() =>
+                                      handleEditGrpItem(groupItem.name, item.name, 'required')
+                                    }
+                                    size="small"
+                                  />
+                                }
+                                label="R"
+                              />
+                            </Tooltip>
+                          </FormGroup>
+                        </Grid>
+                      )}
                   </Grid>
                 </Box>
               </Box>
