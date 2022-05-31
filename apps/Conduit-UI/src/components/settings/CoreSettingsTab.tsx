@@ -60,16 +60,27 @@ const CoreSettingsTab: React.FC = () => {
                   <FormInputText name="port" label="Port" />
                 </Grid>
               </Grid>
-              <Grid item xs={12} sx={{ marginTop: 4 }}>
-                <Typography variant={'h6'}>Transport section</Typography>
-              </Grid>
-              <Grid item xs={12} container alignItems={'center'}>
-                <Typography variant={'subtitle1'}>Toggle Rest:</Typography>
-                <FormInputSwitch name="transports.rest.enabled" />
-              </Grid>
-              <Grid item xs={12} container alignItems={'center'}>
-                <Typography variant={'subtitle1'}>Toggle GraphQL:</Typography>
-                <FormInputSwitch name="transports.graphql.enabled" />
+
+              <Grid container item spacing={1} alignItems={'center'}>
+                <Grid item xs={12} sx={{ marginTop: 4 }}>
+                  <Typography variant={'h6'}>Transport section</Typography>
+                </Grid>
+                <Grid item xs={12} container alignItems={'center'}>
+                  <Grid item xs={8} sm={4}>
+                    <Typography variant={'subtitle1'}>Toggle Rest:</Typography>
+                  </Grid>
+                  <Grid item xs={4} sm={8}>
+                    <FormInputSwitch name="transports.rest.enabled" />
+                  </Grid>
+                </Grid>
+                <Grid item xs={12} container alignItems={'center'}>
+                  <Grid item xs={8} sm={4}>
+                    <Typography variant={'subtitle1'}>Toggle GraphQL:</Typography>
+                  </Grid>
+                  <Grid item xs={4} sm={8}>
+                    <FormInputSwitch name="transports.graphql.enabled" />
+                  </Grid>
+                </Grid>
               </Grid>
               <Grid item xs={12} sx={{ marginTop: 4, display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
