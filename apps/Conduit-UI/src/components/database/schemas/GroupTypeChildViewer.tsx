@@ -87,8 +87,6 @@ const GroupTypeChildViewer: FC<IProps> = ({
     }
   };
 
-  console.log(schemaToEdit);
-
   const handleEditGrpItem = (
     groupItem: any,
     item: any,
@@ -97,10 +95,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
     const foundGroup = schemaToEdit?.fields[item];
     const foundGroupType = schemaToEdit?.fields[parent].type;
 
-    const foundItem = foundGroup?.type[groupItem];
-
     if (isArray(foundGroupType)) {
-      console.log('here');
       setSchemaToEdit({
         ...schemaToEdit,
         fields: {
