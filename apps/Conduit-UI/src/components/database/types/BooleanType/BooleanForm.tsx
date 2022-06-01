@@ -22,7 +22,16 @@ interface IProps {
     placeholderFalse: string;
     isArray: boolean;
     placeholderTrue: string;
-    type: 'Text' | 'Number' | 'Date' | 'Boolean' | 'Enum' | 'ObjectId' | 'Group' | 'Relation';
+    type:
+      | 'Text'
+      | 'Number'
+      | 'Date'
+      | 'Boolean'
+      | 'Enum'
+      | 'ObjectId'
+      | 'Group'
+      | 'Relation'
+      | 'JSON';
     required: boolean;
   }) => void;
   onClose: MouseEventHandler;

@@ -122,7 +122,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     { title: 'Name' },
     { title: 'Authenticated' },
     { title: 'CRUD' },
-    { title: 'Enabled' },
+    { title: 'Create' },
     { title: 'Created at' },
     { title: 'Updated at' },
   ];
@@ -131,8 +131,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
-      authentication: d.modelOptions.conduit.cms.authentication,
-      crudOperations: d.modelOptions.conduit.cms.crudOperations,
+      crudOperations: d.modelOptions.conduit.cms.crudOperations.create.enabled,
       enabled: d.modelOptions.conduit.cms.enabled,
       createdAt: d.createdAt,
       updatedAt: d.updatedAt,
