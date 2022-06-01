@@ -1,12 +1,21 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { asyncDeleteAdmin, asyncGetAdmins } from '../../redux/slices/settingsSlice';
+import {
+  asyncCreateAdminUser,
+  asyncDeleteAdmin,
+  asyncGetAdmins,
+} from '../../redux/slices/settingsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { ConfirmationDialog, DataTable, TableContainer } from '@conduitplatform/ui-components';
-import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
-import { handleDeleteDescription, handleDeleteTitle } from '../../utils/userDialog';
+import {
+  ConfirmationDialog,
+  DataTable,
+  SideDrawerWrapper,
+  TableContainer,
+} from '@conduitplatform/ui-components';
 import { TableActionsContainer } from '@conduitplatform/ui-components';
 import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
-import CreateNewUserTab from '../../components/settings/CreateNewUserTab';
+import CreateNewUserModal from '../../components/settings/CreateNewAdminUserTab';
+import { Button } from '@mui/material';
+import { IAdmin, INewAdminUser } from '../../models/settings/SettingsModels';
 
 const Admins = () => {
   const dispatch = useAppDispatch();
@@ -14,17 +23,14 @@ const Admins = () => {
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
   const [limit, setLimit] = useState<number>(25);
-  const [selectedAdmin, setSelectedAdmin] = useState<AuthUser>({
-    active: false,
+  const [selectedAdmin, setSelectedAdmin] = useState<IAdmin>({
     createdAt: '',
     email: '',
-    isVerified: false,
-    phoneNumber: '',
+    username: '',
     updatedAt: '',
     _id: '',
   });
-  const [createAdminDialog, setCreateAdminDialog] = useState<boolean>(false);
-
+  const [drawer, setDrawer] = useState<boolean>(false);
   const [openDeleteUser, setOpenDeleteUser] = useState<{ open: boolean; multiple: boolean }>({
     open: false,
     multiple: false,
@@ -50,8 +56,8 @@ const Admins = () => {
     }
   };
 
-  const handleAction = (action: { title: string; type: string }, data: AuthUserUI) => {
-    const currentUser = admins.find((user) => user._id === data._id) as AuthUser;
+  const handleAction = (action: { title: string; type: string }, data: IAdmin) => {
+    const currentUser = admins.find((admin) => admin._id === data._id) as IAdmin;
     if (action.type === 'delete') {
       setOpenDeleteUser({
         open: true,
@@ -86,19 +92,15 @@ const Admins = () => {
 
   const headers = [
     { title: '_id', sort: '_id' },
-    { title: 'Email', sort: 'email' },
-    { title: 'Active', sort: 'active' },
-    { title: 'Verified', sort: 'isVerified' },
+    { title: 'username', sort: 'username' },
     { title: 'Registered At', sort: 'createdAt' },
   ];
 
-  const formatData = (admins: AuthUser[]) => {
+  const formatData = (admins: IAdmin[]) => {
     return admins.map((u) => {
       return {
         _id: u._id,
-        Email: u.email ? u.email : 'N/A',
-        Active: u.active,
-        Verified: u.isVerified,
+        username: u.username,
         'Registered At': u.createdAt,
       };
     });
@@ -111,9 +113,26 @@ const Admins = () => {
 
   const actions = [toDelete];
 
+  const handleDeleteTitle = (multiple: boolean, admin: IAdmin) => {
+    return `Delete admin ${admin.username}`;
+  };
+
+  const handleDeleteDescription = (multiple: boolean, admin: IAdmin) => {
+    return `Are you sure you want to delete ${admin.username}?`;
+  };
+
+  const handleAddNewUser = (values: INewAdminUser) => {
+    dispatch(asyncCreateAdminUser({ values: values, getAdmins: getAdminsCallback }));
+    setDrawer(false);
+  };
+
   return (
     <div>
-      <TableActionsContainer />
+      <TableActionsContainer>
+        <Button color="secondary" variant="contained" onClick={() => setDrawer(true)}>
+          Create
+        </Button>
+      </TableActionsContainer>
       <TableContainer
         handlePageChange={handlePageChange}
         limit={limit}
@@ -126,6 +145,7 @@ const Admins = () => {
           dsData={formatData(admins)}
           actions={actions}
           handleAction={handleAction}
+          selectable={false}
         />
       </TableContainer>
       <ConfirmationDialog
@@ -136,7 +156,15 @@ const Admins = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
-      <CreateNewUserTab open={createAdminDialog} setOpen={setCreateAdminDialog} />
+      <SideDrawerWrapper
+        open={drawer}
+        maxWidth={550}
+        title="Create new admin user"
+        closeDrawer={() => {
+          setDrawer(false);
+        }}>
+        <CreateNewUserModal handeAddNewUser={handleAddNewUser} />
+      </SideDrawerWrapper>
     </div>
   );
 };

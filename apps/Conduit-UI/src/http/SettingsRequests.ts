@@ -40,11 +40,11 @@ export const getAdmins = (params: Pagination) => {
 };
 
 export const deleteAdmin = (id: string) => {
-  return axios.delete(`${CONDUIT_API}/admin/${id}`);
+  return axios.delete(`${CONDUIT_API}/admin/admins/${id}`);
 };
 
 export const changePassword = (oldPassword: string, newPassword: string) => {
-  return axios.delete(`${CONDUIT_API}/admin/admin/change-password`, {
+  return axios.put(`${CONDUIT_API}/admin/admin/change-password`, {
     data: { oldPassword: oldPassword, newPassword: newPassword },
   });
 };

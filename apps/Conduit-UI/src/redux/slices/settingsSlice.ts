@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ICoreSettings, INewAdminUser } from '../../models/settings/SettingsModels';
+import { IAdmin, ICoreSettings, INewAdminUser } from '../../models/settings/SettingsModels';
 import {
   changePassword,
   deleteAdmin,
@@ -12,12 +12,11 @@ import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination } from '../../models/http/HttpModels';
-import { AuthUser } from '../../models/authentication/AuthModels';
 
 interface ISettingsSlice {
   data: {
     authAdmins: {
-      admins: AuthUser[];
+      admins: IAdmin[];
       count: number;
     };
   };
@@ -45,8 +44,9 @@ export const asyncGetAdmins = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdmins(params);
-      console.log(data);
+
       thunkAPI.dispatch(setAppLoading(false));
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -61,6 +61,7 @@ export const asyncDeleteAdmin = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await deleteAdmin(params.id);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted admin!`));
       params.getAdmins();
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
@@ -89,15 +90,17 @@ export const asyncChangePassword = createAsyncThunk(
 
 export const asyncCreateAdminUser = createAsyncThunk(
   'settings/createAdminUser',
-  async (values: INewAdminUser, thunkAPI) => {
+  async (params: { values: INewAdminUser; getAdmins: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const body = {
-        username: values.username,
-        password: values.password,
+        username: params.values.username,
+        password: params.values.password,
       };
+
       await postNewAdminUser(body);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created user ${body.username}!`));
+      params.getAdmins();
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -144,6 +147,10 @@ const settingsSlice = createSlice({
     });
     builder.addCase(asyncUpdateCoreSettings.fulfilled, (state, action) => {
       state.coreSettings = action.payload;
+    });
+    builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
+      state.data.authAdmins.admins = action.payload.result.admins;
+      state.data.authAdmins.count = action.payload.result.count;
     });
   },
 });

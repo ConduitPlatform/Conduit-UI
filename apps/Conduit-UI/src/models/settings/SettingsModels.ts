@@ -16,3 +16,17 @@ export interface ICoreSettings {
   transports: { rest: { enabled: boolean }; graphql: { enabled: boolean } };
   port: number;
 }
+
+export interface IAdmin {
+  createdAt: string;
+  email: string;
+  username: string;
+  updatedAt: string;
+  _id: string;
+}
+
+export interface AuthUserUI {
+  _id: string;
+  username: string;
+  'Registered At': string;
+}

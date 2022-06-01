@@ -1,50 +1,50 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
-import { IPasswordChange } from '../../models/settings/SettingsModels';
+import { INewAdminUser } from '../../models/settings/SettingsModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { useDispatch } from 'react-redux';
 import { FormProvider, useForm } from 'react-hook-form';
 import PasswordStrengthMeter from '../common/FormComponents/PasswordStrengthMeter';
-import { asyncChangePassword } from '../../redux/slices/settingsSlice';
 
-const ChangePasswordTab: React.FC = () => {
-  const dispatch = useDispatch();
-  const methods = useForm<IPasswordChange>({
-    defaultValues: { oldPassword: '', newPassword: '', confirmPassword: '' },
+interface Props {
+  handeAddNewUser: (user: INewAdminUser) => void;
+}
+
+const CreateNewAdminUserTab: FC<Props> = ({ handeAddNewUser }) => {
+  const methods = useForm<INewAdminUser>({
+    defaultValues: { username: '', password: '', confirmPassword: '' },
   });
 
   const { reset } = methods;
 
-  const handleChangePassword = (values: IPasswordChange) => {
-    dispatch(asyncChangePassword(values));
+  const handleRegister = (values: INewAdminUser) => {
+    handeAddNewUser(values);
     reset();
   };
-  const passwordValue = methods.watch('newPassword');
+  const passwordValue = methods.watch('password');
 
   return (
     <Container maxWidth="md">
       <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Paper sx={{ padding: 6, borderRadius: 7 }}>
-          <Grid item xs={12}>
-            <Typography textAlign="center" variant={'h5'} mb={2}>
-              Change your password
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
+        <Paper elevation={0} sx={{ padding: 7, borderRadius: 7 }}>
+          <Grid item xs={12} pt={10}>
             <Box display="flex" justifyContent="center">
               <FormProvider {...methods}>
-                <form onSubmit={methods.handleSubmit(handleChangePassword)}>
+                <form onSubmit={methods.handleSubmit(handleRegister)}>
                   <FormInputText
-                    name="oldPassword"
+                    name="username"
                     rules={{
-                      required: 'Your old password is required',
+                      required: 'Username is required',
+                      minLength: {
+                        value: 5,
+                        message: 'Username should be 5 characters or longer',
+                      },
                     }}
-                    label="Old password"
+                    label="Username"
                   />
                   <Box mt={2}>
                     <FormInputText
                       typeOfInput="password"
-                      name="newPassword"
+                      name="password"
                       rules={{
                         required: 'Password is required',
                         minLength: {
@@ -52,7 +52,7 @@ const ChangePasswordTab: React.FC = () => {
                           message: 'Password should be 5 characters or longer',
                         },
                       }}
-                      label="New password"
+                      label="Password"
                     />
                   </Box>
                   <Box mt={2}>
@@ -63,12 +63,12 @@ const ChangePasswordTab: React.FC = () => {
                         required: 'Password must be confirmed',
                         validate: {
                           matchesPreviousPassword: (value) => {
-                            const { newPassword } = methods.getValues();
-                            return newPassword === value || 'Passwords should match!';
+                            const { password } = methods.getValues();
+                            return password === value || 'Passwords should match!';
                           },
                         },
                       }}
-                      label="Confirm new password"
+                      label="Confirm password"
                     />
                   </Box>
                   <Box my={2}>
@@ -92,4 +92,4 @@ const ChangePasswordTab: React.FC = () => {
   );
 };
 
-export default ChangePasswordTab;
+export default CreateNewAdminUserTab;
