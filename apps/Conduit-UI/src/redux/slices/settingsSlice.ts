@@ -1,17 +1,35 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ICoreSettings, INewAdminUser } from '../../models/settings/SettingsModels';
-import { getCoreSettings, postNewAdminUser, putCoreSettings } from '../../http/SettingsRequests';
+import { IAdmin, ICoreSettings, INewAdminUser } from '../../models/settings/SettingsModels';
+import {
+  changePassword,
+  deleteAdmin,
+  getAdmins,
+  getCoreSettings,
+  postNewAdminUser,
+  putCoreSettings,
+} from '../../http/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { Pagination } from '../../models/http/HttpModels';
 
 interface ISettingsSlice {
-  data: any;
+  data: {
+    authAdmins: {
+      admins: IAdmin[];
+      count: number;
+    };
+  };
   coreSettings: ICoreSettings;
 }
 
 const initialState: ISettingsSlice = {
-  data: {},
+  data: {
+    authAdmins: {
+      admins: [],
+      count: 0,
+    },
+  },
   coreSettings: {
     env: '',
     hostUrl: '',
@@ -19,17 +37,70 @@ const initialState: ISettingsSlice = {
     port: 8080,
   },
 };
+
+export const asyncGetAdmins = createAsyncThunk(
+  'authentication/getAdmins',
+  async (params: Pagination, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getAdmins(params);
+
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteAdmin = createAsyncThunk(
+  'authentication/deleteAdmin',
+  async (params: { id: string; getAdmins: any }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await deleteAdmin(params.id);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted admin!`));
+      params.getAdmins();
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncChangePassword = createAsyncThunk(
+  'authentication/changePassword',
+  async (params: { newPassword: string; oldPassword: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await changePassword(params.newPassword, params.oldPassword);
+
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncCreateAdminUser = createAsyncThunk(
   'settings/createAdminUser',
-  async (values: INewAdminUser, thunkAPI) => {
+  async (params: { values: INewAdminUser; getAdmins: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const body = {
-        username: values.username,
-        password: values.password,
+        username: params.values.username,
+        password: params.values.password,
       };
+
       await postNewAdminUser(body);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created user ${body.username}!`));
+      params.getAdmins();
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -75,7 +146,11 @@ const settingsSlice = createSlice({
       state.coreSettings = action.payload.config;
     });
     builder.addCase(asyncUpdateCoreSettings.fulfilled, (state, action) => {
-      state.data.coreSettings = action.payload;
+      state.coreSettings = action.payload;
+    });
+    builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
+      state.data.authAdmins.admins = action.payload.result.admins;
+      state.data.authAdmins.count = action.payload.result.count;
     });
   },
 });
