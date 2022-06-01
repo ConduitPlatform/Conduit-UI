@@ -8,14 +8,12 @@ const SettingsLayout: React.FC = ({ children }) => {
     '/settings/core',
     '/settings/admins',
     '/settings/password',
-    '/settings/createuser',
   ];
   const labels = [
     { name: 'clients SDK', id: 'clientsdk' },
     { name: 'core', id: 'core' },
-    { name: 'admins', id: 'admins' },
+    { name: 'admin section', id: 'admins' },
     { name: 'change password', id: 'password' },
-    { name: 'create User', id: 'createuser' },
   ];
 
   return (

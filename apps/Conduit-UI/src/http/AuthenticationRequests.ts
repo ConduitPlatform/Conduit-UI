@@ -41,20 +41,6 @@ export const unblockUser = (id: string) => {
   return axios.post(`${CONDUIT_API}/admin/authentication/users/${id}/unblock`);
 };
 
-export const getAdmins = (params: Pagination) => {
-  return axios.get(`${CONDUIT_API}/admin/admins`, { params });
-};
-
-export const deleteAdmin = (id: string) => {
-  return axios.delete(`${CONDUIT_API}/admin/${id}`);
-};
-
-export const changePassword = (oldPassword: string, newPassword: string) => {
-  return axios.delete(`${CONDUIT_API}/admin/admin/change-password`, {
-    data: { oldPassword: oldPassword, newPassword: newPassword },
-  });
-};
-
 export const getAuthenticationConfig = () =>
   axios.get(`${CONDUIT_API}/admin/config/authentication`);
 

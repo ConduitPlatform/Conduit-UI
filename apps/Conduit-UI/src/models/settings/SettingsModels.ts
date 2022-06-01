@@ -4,6 +4,12 @@ export interface INewAdminUser {
   confirmPassword: string;
 }
 
+export interface IPasswordChange {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface ICoreSettings {
   env: string;
   hostUrl: string;

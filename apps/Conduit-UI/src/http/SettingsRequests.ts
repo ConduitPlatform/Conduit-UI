@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Pagination } from '../models/http/HttpModels';
 import { ICoreSettings } from '../models/settings/SettingsModels';
 import { CONDUIT_API } from './requestsConfig';
 
@@ -31,5 +32,19 @@ export const refreshServiceAccount = (serviceId: string) => {
 };
 
 export const postNewAdminUser = (endpointData: { username: string; password: string }) => {
-  return axios.post(`${CONDUIT_API}/admin/create`, endpointData);
+  return axios.post(`${CONDUIT_API}/admin/admins`, endpointData);
+};
+
+export const getAdmins = (params: Pagination) => {
+  return axios.get(`${CONDUIT_API}/admin/admins`, { params });
+};
+
+export const deleteAdmin = (id: string) => {
+  return axios.delete(`${CONDUIT_API}/admin/${id}`);
+};
+
+export const changePassword = (oldPassword: string, newPassword: string) => {
+  return axios.delete(`${CONDUIT_API}/admin/admin/change-password`, {
+    data: { oldPassword: oldPassword, newPassword: newPassword },
+  });
 };

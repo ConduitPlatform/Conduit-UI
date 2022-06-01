@@ -1,15 +1,16 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { asyncDeleteAdmin, asyncGetAdmins } from '../../redux/slices/authenticationSlice';
+import { asyncDeleteAdmin, asyncGetAdmins } from '../../redux/slices/settingsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ConfirmationDialog, DataTable, TableContainer } from '@conduitplatform/ui-components';
 import { AuthUser, AuthUserUI } from '../../models/authentication/AuthModels';
 import { handleDeleteDescription, handleDeleteTitle } from '../../utils/userDialog';
 import { TableActionsContainer } from '@conduitplatform/ui-components';
 import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
+import CreateNewUserTab from '../../components/settings/CreateNewUserTab';
 
 const Admins = () => {
   const dispatch = useAppDispatch();
-  const { admins, count } = useAppSelector((state) => state.authenticationSlice.data.authAdmins);
+  const { admins, count } = useAppSelector((state) => state.settingsSlice.data.authAdmins);
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
   const [limit, setLimit] = useState<number>(25);
@@ -22,6 +23,7 @@ const Admins = () => {
     updatedAt: '',
     _id: '',
   });
+  const [createAdminDialog, setCreateAdminDialog] = useState<boolean>(false);
 
   const [openDeleteUser, setOpenDeleteUser] = useState<{ open: boolean; multiple: boolean }>({
     open: false,
@@ -134,6 +136,7 @@ const Admins = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
+      <CreateNewUserTab open={createAdminDialog} setOpen={setCreateAdminDialog} />
     </div>
   );
 };
