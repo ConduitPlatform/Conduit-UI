@@ -70,8 +70,6 @@ const Schemas: FC = () => {
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
 
-  console.log(schemas);
-
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());
   }, [dispatch]);

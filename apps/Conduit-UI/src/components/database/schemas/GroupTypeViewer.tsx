@@ -19,6 +19,7 @@ import { EnumGroupTypeViewer } from '../types/EnumType/EnumTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { isArray } from 'lodash';
 import { Schema } from '../../../models/database/CmsModels';
+import { JSONGroupTypeViewer } from '../types/JSONType/JSONTypeViewer';
 
 interface IProps {
   item: IGroupData;
@@ -62,6 +63,8 @@ const GroupTypeViewer: FC<IProps> = ({
         return <BooleanGroupTypeViewer item={item} />;
       case 'Relation':
         return <RelationGroupTypeViewer item={item} />;
+      case 'JSON':
+        return <JSONGroupTypeViewer item={item} />;
       case 'Group':
         return (
           <GroupTypeChildViewer

@@ -41,7 +41,17 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 resetServerContext();
 
-const items = ['Text', 'Number', 'Date', 'Boolean', 'Enum', 'ObjectId', 'Group', 'Relation'];
+const items = [
+  'Text',
+  'Number',
+  'Date',
+  'Boolean',
+  'Enum',
+  'ObjectId',
+  'Group',
+  'Relation',
+  'JSON',
+];
 
 const BuildTypes: React.FC = () => {
   const router = useRouter();

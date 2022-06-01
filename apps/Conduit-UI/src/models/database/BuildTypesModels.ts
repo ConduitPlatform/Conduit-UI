@@ -6,7 +6,8 @@ export type IDrawerTypes =
   | 'Enum'
   | 'ObjectId'
   | 'Group'
-  | 'Relation';
+  | 'Relation'
+  | 'JSON';
 
 export interface IDrawerData {
   destination: {
@@ -60,6 +61,15 @@ export interface IObjectData {
   unique: boolean;
 }
 
+export interface IJSONData {
+  name: string;
+  default: any;
+  required: boolean;
+  select: boolean;
+  type: 'JSON';
+  unique: boolean;
+}
+
 export interface IRelationData {
   isArray: boolean;
   model: string;
@@ -86,7 +96,8 @@ export type IGroupChildContentData =
   | IBooleanData
   | IEnumData
   | IRelationData
-  | IObjectData;
+  | IObjectData
+  | IJSONData;
 
 export interface IGroupChildData {
   content: IGroupChildContentData;

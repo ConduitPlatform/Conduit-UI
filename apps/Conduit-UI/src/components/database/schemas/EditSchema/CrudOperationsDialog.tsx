@@ -36,8 +36,6 @@ const CrudOperationsDialog: React.FC<Props> = ({
     }, [crudOperations]),
   });
 
-  console.log(crudOperations);
-
   useEffect(() => {
     methods.reset(crudOperations);
   }, [methods, crudOperations]);
@@ -84,7 +82,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container alignItems="center" spacing={2}>
-                <Grid item sm={6}>
+                <Grid item sm={6} p={2}>
                   <Typography>Create:</Typography>
                   <FormInputCheckBox
                     name="create.enabled"
@@ -97,7 +95,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
                     disabled={isDisabled()}
                   />
                 </Grid>
-                <Grid item sm={6}>
+                <Grid item sm={6} p={2}>
                   <Typography>Delete:</Typography>
                   <FormInputCheckBox
                     name="delete.enabled"
@@ -110,7 +108,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
                     disabled={isDisabled()}
                   />
                 </Grid>
-                <Grid item sm={6}>
+                <Grid item sm={6} p={2}>
                   <Typography>Read:</Typography>
                   <FormInputCheckBox name="read.enabled" label="enabled" disabled={isDisabled()} />
                   <FormInputCheckBox
@@ -119,7 +117,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
                     disabled={isDisabled()}
                   />
                 </Grid>
-                <Grid item sm={6}>
+                <Grid item sm={6} p={2}>
                   <Typography>Update:</Typography>
                   <FormInputCheckBox
                     name="update.enabled"

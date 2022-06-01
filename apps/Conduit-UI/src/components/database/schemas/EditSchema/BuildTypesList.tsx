@@ -11,6 +11,7 @@ import SelectIcon from '@mui/icons-material/FormatListBulleted';
 import BooleanIcon from '@mui/icons-material/ToggleOn';
 import DateIcon from '@mui/icons-material/DateRange';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
+import { IntegrationInstructionsRounded } from '@mui/icons-material';
 
 interface Props {
   item: any; //todo fix this
@@ -27,7 +28,16 @@ interface Props {
 
 const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
   const handleIcon = (
-    item: 'Text' | 'Number' | 'Date' | 'Boolean' | 'Enum' | 'ObjectId' | 'Group' | 'Relation'
+    item:
+      | 'Text'
+      | 'Number'
+      | 'Date'
+      | 'Boolean'
+      | 'Enum'
+      | 'ObjectId'
+      | 'Group'
+      | 'Relation'
+      | 'JSON'
   ) => {
     switch (item) {
       case 'Text':
@@ -46,6 +56,8 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
         return <SettingsEthernetIcon />;
       case 'Relation':
         return <DeviceHubIcon />;
+      case 'JSON':
+        return <IntegrationInstructionsRounded />;
       default:
         return <TextIcon />;
     }
