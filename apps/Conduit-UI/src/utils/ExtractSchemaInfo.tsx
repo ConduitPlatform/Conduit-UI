@@ -40,10 +40,6 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
                 <ListItemIcon>
                   <PeopleIcon />
                 </ListItemIcon>
-                <ListItemText
-                  primary="Authentication"
-                  secondary={cms.authentication ? 'Enabled' : 'Disabled'}
-                />
               </ListItem>
               <ListItem sx={{ pl: 3 }}>
                 <ListItemIcon>

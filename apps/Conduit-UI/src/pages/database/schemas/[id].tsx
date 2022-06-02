@@ -27,7 +27,12 @@ import {
   clearSelectedSchema,
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { ModifyOptions, Permissions, Schema } from '../../../models/database/CmsModels';
+import {
+  ICrudOperations,
+  ModifyOptions,
+  Permissions,
+  Schema,
+} from '../../../models/database/CmsModels';
 import { Chip, Typography } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -36,7 +41,17 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 resetServerContext();
 
-const items = ['Text', 'Number', 'Date', 'Boolean', 'Enum', 'ObjectId', 'Group', 'Relation'];
+const items = [
+  'Text',
+  'Number',
+  'Date',
+  'Boolean',
+  'Enum',
+  'ObjectId',
+  'Group',
+  'Relation',
+  'JSON',
+];
 
 const BuildTypes: React.FC = () => {
   const router = useRouter();
@@ -44,13 +59,20 @@ const BuildTypes: React.FC = () => {
   const { id } = router.query;
   resetServerContext();
 
+  const initialCrudOperations = {
+    create: { enabled: false, authenticated: false },
+    read: { enabled: false, authenticated: false },
+    delete: { enabled: false, authenticated: false },
+    update: { enabled: false, authenticated: false },
+  };
+
   const { data } = useAppSelector((state) => state.databaseSlice);
   const [editableFields, setEditableFields] = useState<any>({ newTypeFields: [] });
   const [nonEditableFields, setNonEditableFields] = useState<any[]>([]);
   const [selectedSchema, setSelectedSchema] = useState<Schema>();
   const [schemaName, setSchemaName] = useState<string>('');
   const [authentication, setAuthentication] = useState(false);
-  const [crudOperations, setCrudOperations] = useState(false);
+  const [crudOperations, setCrudOperations] = useState<ICrudOperations>(initialCrudOperations);
   const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
     extendable: true,
     canCreate: true,
@@ -87,17 +109,8 @@ const BuildTypes: React.FC = () => {
     if (selectedSchema) {
       setReadOnly(true);
     }
-    if (!selectedSchema) {
-      setCrudOperations(true);
-    }
     if (data && selectedSchema && selectedSchema.ownerModule === 'database') {
       setSchemaName(selectedSchema.name);
-      if (
-        selectedSchema.modelOptions.conduit.cms.authentication !== null &&
-        selectedSchema.modelOptions.conduit.cms.authentication !== undefined
-      ) {
-        setAuthentication(selectedSchema.modelOptions.conduit.cms.authentication);
-      }
       if (
         selectedSchema.modelOptions.conduit.cms.crudOperations !== null &&
         selectedSchema.modelOptions.conduit.cms.crudOperations !== undefined
@@ -120,7 +133,7 @@ const BuildTypes: React.FC = () => {
     ) {
       setSchemaName(selectedSchema.name);
       setAuthentication(false);
-      setCrudOperations(false);
+      setCrudOperations(initialCrudOperations);
       setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
       const extensionSchemas = selectedSchema.extensions.map((ext) => ({
         [ext.ownerModule]: getSchemaFieldsWithExtra(ext.fields),
@@ -131,7 +144,7 @@ const BuildTypes: React.FC = () => {
     } else if (data && selectedSchema && selectedSchema.ownerModule !== 'database') {
       setSchemaName(selectedSchema.name);
       setAuthentication(false);
-      setCrudOperations(false);
+      setCrudOperations(initialCrudOperations);
       setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
       if (
         selectedSchema.extensions &&
@@ -412,12 +425,7 @@ const BuildTypes: React.FC = () => {
     });
   };
 
-  const handleSave = (
-    name: string,
-    authenticate: boolean,
-    allowCrud: boolean,
-    permissions: Permissions
-  ) => {
+  const handleSave = (name: string, crudOperations: ICrudOperations, permissions: Permissions) => {
     if (
       selectedSchema &&
       selectedSchema?.ownerModule !== 'database' &&
@@ -432,8 +440,7 @@ const BuildTypes: React.FC = () => {
         const { _id } = selectedSchema;
         const editableSchemaFields = prepareFields(editableFields.newTypeFields);
         const editableSchema = {
-          authentication: authenticate,
-          crudOperations: allowCrud,
+          crudOperations: crudOperations,
           permissions,
           fields: { ...editableSchemaFields },
         };
@@ -443,8 +450,7 @@ const BuildTypes: React.FC = () => {
         const newSchemaFields = prepareFields(editableFields.newTypeFields);
         const newSchema = {
           name: name,
-          authentication: authenticate,
-          crudOperations: allowCrud,
+          crudOperations: crudOperations,
           permissions,
           fields: newSchemaFields,
         };

@@ -1,4 +1,3 @@
-import React, { FC, MouseEventHandler, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -7,39 +6,37 @@ import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { IBooleanData, IDrawerData } from '../../../../models/database/BuildTypesModels';
-import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
+import React, { FC, useState } from 'react';
+import { IDrawerData, ISimpleData } from '../../../../models/database/BuildTypesModels';
+import { styled } from '@mui/material';
+import JSONInput from 'react-json-editor-ajrm';
+import { localeEn } from '../../../../models/JSONEditorAjrmLocale';
+
+export const StyledForm = styled('form')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(2),
+}));
+
+export const InfoTypography = styled(Typography)(({ theme }) => ({
+  width: '100%',
+  fontSize: 14,
+  marginBottom: theme.spacing(3),
+  opacity: '0.5',
+}));
 
 interface IProps {
   drawerData: IDrawerData;
   readOnly: boolean;
-  onSubmit: (booleanData: {
-    //todo add IBooleanData
-    default: boolean;
-    select: boolean;
-    unique: boolean;
-    name: string;
-    placeholderFalse: string;
-    isArray: boolean;
-    placeholderTrue: string;
-    type:
-      | 'Text'
-      | 'Number'
-      | 'Date'
-      | 'Boolean'
-      | 'Enum'
-      | 'ObjectId'
-      | 'Group'
-      | 'Relation'
-      | 'JSON';
-    required: boolean;
-  }) => void;
-  onClose: MouseEventHandler;
-  selectedItem: IBooleanData;
+  onSubmit: (data: any) => void;
+  onClose: () => void;
+  selectedItem: ISimpleData;
   disabledProps: boolean;
 }
 
-const BooleanForm: FC<IProps> = ({
+const JSONForm: FC<IProps> = ({
   drawerData,
   readOnly,
   onSubmit,
@@ -48,59 +45,43 @@ const BooleanForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
-  const [booleanData, setBooleanData] = useState({
+  const [jsonData, setJsonData] = useState({
     name: selectedItem ? selectedItem.name : '',
-    placeholderFalse: selectedItem ? selectedItem.placeholderFalse : '',
-    placeholderTrue: selectedItem ? selectedItem.placeholderTrue : '',
+    default: selectedItem ? selectedItem.default : '',
     type: selectedItem ? selectedItem.type : drawerData.type,
-    default: selectedItem ? selectedItem.default : false,
     unique: selectedItem ? selectedItem.unique : false,
     select: selectedItem ? selectedItem.select : true,
     required: selectedItem ? selectedItem.required : false,
     isArray: selectedItem ? selectedItem.isArray : false,
-    // id: '',
   });
 
   const handleFieldName = (event: { target: { value: string } }) => {
-    // const slug = slugify(event.target.value);
-    setBooleanData({
-      ...booleanData,
-      name: event.target.value.split(' ').join(''),
-      // id: slug,
-    });
+    setJsonData({ ...jsonData, name: event.target.value.split(' ').join('') });
   };
 
-  const handleFalsePlaceholder = (event: { target: { value: string } }) => {
-    setBooleanData({ ...booleanData, placeholderFalse: event.target.value });
-  };
-
-  const handleTruePlaceholder = (event: { target: { value: string } }) => {
-    setBooleanData({ ...booleanData, placeholderTrue: event.target.value });
-  };
-
-  const handleFieldDefault = () => {
-    setBooleanData({ ...booleanData, default: !booleanData.default });
+  const handleFieldDefault = (changedText: any) => {
+    setJsonData({ ...jsonData, default: changedText.jsObject });
   };
 
   const handleFieldUnique = () => {
-    setBooleanData({ ...booleanData, unique: !booleanData.unique });
+    setJsonData({ ...jsonData, unique: !jsonData.unique });
   };
 
   const handleFieldRequired = () => {
-    setBooleanData({ ...booleanData, required: !booleanData.required });
+    setJsonData({ ...jsonData, required: !jsonData.required });
   };
 
   const handleFieldSelect = () => {
-    setBooleanData({ ...booleanData, select: !booleanData.select });
+    setJsonData({ ...jsonData, select: !jsonData.select });
   };
 
   const handleFieldIsArray = () => {
-    setBooleanData({ ...booleanData, isArray: !booleanData.isArray });
+    setJsonData({ ...jsonData, isArray: !jsonData.isArray });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    onSubmit(booleanData);
     event.preventDefault();
+    onSubmit(jsonData);
   };
 
   return (
@@ -109,7 +90,7 @@ const BooleanForm: FC<IProps> = ({
         id="Field Name"
         label="Field Name"
         onChange={handleFieldName}
-        value={booleanData.name}
+        value={jsonData.name}
         variant="outlined"
         sx={{ mb: 1 }}
         fullWidth
@@ -117,60 +98,22 @@ const BooleanForm: FC<IProps> = ({
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
-        helperText={'This is the name of the field in the schema model'}
+        helperText={'It will appear in the entry editor'}
       />
-      <TextField
-        id="False Placeholder"
-        label="False Placeholder"
-        onChange={handleFalsePlaceholder}
-        placeholder={'false'}
-        value={booleanData.placeholderFalse}
-        variant="outlined"
-        sx={{ mb: 1 }}
-        fullWidth
-        required
-        helperText={'Placeholder to appear in the editor'}
-      />
-      <TextField
-        id="True Placeholder"
-        label="True Placeholder"
-        onChange={handleTruePlaceholder}
-        placeholder={'true'}
-        value={booleanData.placeholderTrue}
-        variant="outlined"
-        sx={{ mb: 1 }}
-        fullWidth
-        required
-        helperText={'Placeholder to appear in the editor'}
-      />
+      <Box width="100%" mb={2}>
+        <Typography variant="caption">Value</Typography>
+        <JSONInput
+          id="default"
+          placeholder={
+            typeof jsonData.default === 'object' ? jsonData.default : { placeholder: '123' }
+          }
+          locale={localeEn}
+          onChange={handleFieldDefault}
+          height="fit-content"
+          width="100%"
+        />
+      </Box>
       <Box width={'100%'}>
-        <Grid container>
-          <Grid item xs={12}>
-            <Box
-              width={'100%'}
-              display={'inline-flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}>
-              <Typography variant={'button'} sx={{ width: '100%' }}>
-                Default Value
-              </Typography>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={booleanData.default}
-                    onChange={handleFieldDefault}
-                    color="primary"
-                  />
-                }
-                label={booleanData.default ? 'True' : 'False'}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <InfoTypography variant={'subtitle1'}>The default value of the field</InfoTypography>
-          </Grid>
-        </Grid>
-
         <Grid container>
           <Grid item xs={12}>
             <Box
@@ -185,7 +128,7 @@ const BooleanForm: FC<IProps> = ({
                 control={
                   <Switch
                     disabled={disabledProps}
-                    checked={booleanData.unique}
+                    checked={jsonData.unique}
                     onChange={handleFieldUnique}
                     color="primary"
                   />
@@ -195,9 +138,11 @@ const BooleanForm: FC<IProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <InfoTypography variant={'subtitle1'}>
+            <Typography
+              variant={'subtitle1'}
+              sx={{ width: '100%', fontSize: 14, marginBottom: 3, opacity: '0.5' }}>
               {"If active, this field's value must be unique"}
-            </InfoTypography>
+            </Typography>
           </Grid>
         </Grid>
 
@@ -215,7 +160,7 @@ const BooleanForm: FC<IProps> = ({
                 control={
                   <Switch
                     disabled={disabledProps}
-                    checked={booleanData.required}
+                    checked={jsonData.required}
                     onChange={handleFieldRequired}
                     color="primary"
                   />
@@ -243,11 +188,7 @@ const BooleanForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Switch
-                    checked={booleanData.select}
-                    onChange={handleFieldSelect}
-                    color="primary"
-                  />
+                  <Switch checked={jsonData.select} onChange={handleFieldSelect} color="primary" />
                 }
                 label=""
               />
@@ -273,7 +214,7 @@ const BooleanForm: FC<IProps> = ({
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={booleanData.isArray}
+                    checked={jsonData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"
                   />
@@ -289,8 +230,9 @@ const BooleanForm: FC<IProps> = ({
           </Grid>
         </Grid>
       </Box>
+
       <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
+        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 3 }}>
           OK
         </Button>
         <Button variant="contained" onClick={onClose}>
@@ -301,4 +243,4 @@ const BooleanForm: FC<IProps> = ({
   );
 };
 
-export default BooleanForm;
+export default JSONForm;

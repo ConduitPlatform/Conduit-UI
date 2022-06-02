@@ -20,6 +20,7 @@ import {
   IGroupData,
 } from '../../../../models/database/BuildTypesModels';
 import { Icon, styled } from '@mui/material';
+import { JSONGroupType } from '../JSONType/JSONType';
 
 interface IProps {
   item: IGroupData;
@@ -64,6 +65,8 @@ const GroupType: FC<IProps> = ({
         return <BooleanGroupType item={item} />;
       case 'Relation':
         return <RelationGroupType item={item} />;
+      case 'JSON':
+        return <JSONGroupType item={item} />;
       case 'Group':
         return (
           <GroupGroupType

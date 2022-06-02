@@ -223,6 +223,8 @@ const typeTransformer = (type) => {
       return 'Relation';
     case 'Enum':
       return 'Enum';
+    case 'JSON':
+      return 'JSON';
     default:
       return '';
   }

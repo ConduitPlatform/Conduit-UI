@@ -120,22 +120,20 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const headers = [
     { title: '_id' },
     { title: 'Name' },
-    { title: 'Authenticated' },
-    { title: 'CRUD' },
-    { title: 'Enabled' },
-    { title: 'Created at' },
-    { title: 'Updated at' },
+    { title: 'Can read' },
+    { title: 'Can update' },
+    { title: 'Can update' },
+    { title: 'Can delete' },
   ];
 
   const formatSchemas = (schemasToFormat: Schema[]) => {
     return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
-      authentication: d.modelOptions.conduit.cms.authentication,
-      crudOperations: d.modelOptions.conduit.cms.crudOperations,
-      enabled: d.modelOptions.conduit.cms.enabled,
-      createdAt: d.createdAt,
-      updatedAt: d.updatedAt,
+      get: d.modelOptions.conduit.cms.crudOperations.read.enabled,
+      post: d.modelOptions.conduit.cms.crudOperations.create.enabled,
+      update: d.modelOptions.conduit.cms.crudOperations.update.enabled,
+      delete: d.modelOptions.conduit.cms.crudOperations.delete.enabled,
     }));
   };
 

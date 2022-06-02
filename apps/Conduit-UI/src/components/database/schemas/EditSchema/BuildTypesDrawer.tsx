@@ -10,6 +10,7 @@ import EnumForm from '../../types/EnumType/EnumForm';
 import ObjectIdForm from '../../types/ObjectIdType/ObjectIdForm';
 import RelationForm from '../../types/RelationType/RelationForm';
 import { IDrawerData } from '../../../../models/database/BuildTypesModels';
+import JSONForm from '../../types/JSONType/JSONForm';
 
 interface Props {
   // drawerData: IDrawerData;
@@ -116,6 +117,17 @@ const BuildTypesDrawer: FC<Props> = ({
       case 'Relation':
         return (
           <RelationForm
+            disabledProps={disabledProps}
+            readOnly={readOnly}
+            onSubmit={onSubmit}
+            drawerData={drawerData}
+            onClose={onClose}
+            selectedItem={selectedItem}
+          />
+        );
+      case 'JSON':
+        return (
+          <JSONForm
             disabledProps={disabledProps}
             readOnly={readOnly}
             onSubmit={onSubmit}

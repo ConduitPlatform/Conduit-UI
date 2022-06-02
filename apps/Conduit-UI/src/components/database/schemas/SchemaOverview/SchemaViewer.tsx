@@ -10,6 +10,7 @@ import ObjectIdTypeViewer from '../../types/ObjectIdType/ObjectIdTypeViewer';
 import SimpleTypeViewer from '../../types/SimpleType/SimpleTypeViewer';
 import { Checkbox, FormControlLabel, FormGroup, Grid, Tooltip } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
+import JSONTypeViewer from '../../types/JSONType/JSONTypeViewer';
 
 interface Props extends BoxProps {
   dataKey: any;
@@ -41,6 +42,8 @@ const SchemaViewer: FC<Props> = ({
         return <BooleanTypeViewer item={item} />;
       case 'Relation':
         return <RelationTypeViewer item={item} />;
+      case 'JSON':
+        return <JSONTypeViewer item={item} />;
       case 'Group':
         return (
           <GroupTypeViewer
