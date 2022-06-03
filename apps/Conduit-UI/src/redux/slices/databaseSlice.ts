@@ -48,8 +48,8 @@ export interface IDatabaseSlice {
       schemaDocuments: Schema[];
       schemasCount: number;
     };
-    schemaToEdit: Schema;
-    introspectionSchemaToEdit: Schema;
+    schemaToEdit: Schema | null;
+    introspectionSchemaToEdit: Schema | null;
     dialogSchemas: {
       schemas: Schema[];
       schemasCount: number;
@@ -74,47 +74,18 @@ export interface IDatabaseSlice {
   };
 }
 
-const initialSchema = {
-  _id: '',
-  modelOptions: {
-    conduit: {
-      cms: {
-        enabled: false,
-        crudOperations: {
-          create: { enabled: false, authenticated: false },
-          read: { enabled: false, authenticated: false },
-          delete: { enabled: false, authenticated: false },
-          update: { enabled: false, authenticated: false },
-        },
-      },
-      permissions: {
-        extendable: true,
-        canCreate: true,
-        canModify: ModifyOptions.Everything,
-        canDelete: true,
-      },
-    },
-  },
-  name: '',
-  ownerModule: '',
-  extensions: [],
-  fields: {},
-  createdAt: '',
-  updatedAt: '',
-};
-
 const initialState: IDatabaseSlice = {
   data: {
     schemas: {
       schemaDocuments: [],
       schemasCount: 0,
     },
-    schemaToEdit: initialSchema,
+    schemaToEdit: null,
     introspectionSchemas: {
       schemaDocuments: [],
       schemasCount: 0,
     },
-    introspectionSchemaToEdit: initialSchema,
+    introspectionSchemaToEdit: null,
     dialogSchemas: {
       schemas: [],
       schemasCount: 0,
@@ -164,7 +135,7 @@ export const asyncGetSchemaById = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getSchemaByIdRequest(params.id);
-      console.log(data);
+
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -704,7 +675,10 @@ const databaseSlice = createSlice({
       );
     },
     clearSelectedSchema(state) {
-      state.data.selectedSchema = null;
+      state.data.schemaToEdit = null;
+    },
+    clearIntrospectionSchema(state) {
+      state.data.introspectionSchemaToEdit = null;
     },
     clearEndpoints(state) {
       state.data.customEndpoints.endpoints = [];
@@ -803,5 +777,10 @@ const databaseSlice = createSlice({
 });
 
 export default databaseSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema, setEndpointsSearch, setEndpointsOperation } =
-  databaseSlice.actions;
+export const {
+  setSelectedSchema,
+  clearSelectedSchema,
+  clearIntrospectionSchema,
+  setEndpointsSearch,
+  setEndpointsOperation,
+} = databaseSlice.actions;

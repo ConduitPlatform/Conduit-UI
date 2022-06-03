@@ -13,6 +13,7 @@ import {
 } from '../../../../models/database/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';
+import { useRouter } from 'next/router';
 
 export const headerHeight = 64;
 
@@ -39,6 +40,7 @@ const Header: FC<Props> = ({
   ...rest
 }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [schemaName, setSchemaName] = useState(name);
   const [schemaCrudOperations, setSchemaCrudOperations] = useState<ICrudOperations>({
@@ -81,6 +83,9 @@ const Header: FC<Props> = ({
 
   const handleBackButtonClick = () => {
     dispatch(clearSelectedSchema());
+    if (introspection) {
+      router.push({ pathname: '/database/introspection' });
+    } else router.push({ pathname: '/database/schemas' });
   };
 
   return (
@@ -101,7 +106,7 @@ const Header: FC<Props> = ({
       }}
       {...rest}>
       <Box display={'flex'} alignItems={'center'}>
-        <Link href="/database/schemas">
+        <Box>
           {/* TODO call dispatch clear cms */}
           <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
             <Box
@@ -120,7 +125,7 @@ const Header: FC<Props> = ({
               />
             </Box>
           </a>
-        </Link>
+        </Box>
         <Input
           sx={{
             height: 5,

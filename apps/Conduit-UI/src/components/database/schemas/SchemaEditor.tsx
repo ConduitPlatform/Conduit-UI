@@ -23,9 +23,9 @@ import {
   asyncCreateNewSchema,
   asyncEditSchema,
   asyncGetIntrospectionSchemaById,
-  asyncGetIntrospectionSchemas,
   asyncGetSchemaById,
   asyncModifyExtension,
+  clearIntrospectionSchema,
   clearSelectedSchema,
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
@@ -64,7 +64,6 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const dispatch = useAppDispatch();
   const { id } = router.query;
   resetServerContext();
-  console.log(id);
 
   const initialCrudOperations = {
     create: { enabled: false, authenticated: false },
@@ -109,16 +108,15 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     if (introspection && id) {
       dispatch(asyncGetIntrospectionSchemaById({ id }));
     }
-  }, [dispatch, introspection, id]);
+  }, [dispatch, introspection, introspectionSchemaToEdit, id]);
 
   useEffect(() => {
-    if (schemaToEdit) {
+    if (schemaToEdit && !introspection) {
       setSelectedSchema(schemaToEdit);
-    }
-    if (introspectionSchemaToEdit && introspection) {
+    } else if (introspectionSchemaToEdit && introspection) {
       setSelectedSchema(introspectionSchemaToEdit);
     }
-  }, [id, introspection, introspectionSchemaToEdit, schemaToEdit]);
+  }, [introspection, introspectionSchemaToEdit, schemaToEdit]);
 
   useEffect(() => {
     if (selectedSchema) {
@@ -473,8 +471,13 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         dispatch(asyncCreateNewSchema(newSchema));
       }
     }
-    dispatch(clearSelectedSchema());
-    router.push({ pathname: '/database/schemas' });
+    if (!introspection) {
+      dispatch(clearSelectedSchema());
+      router.push({ pathname: '/database/schemas' });
+    } else {
+      dispatch(clearIntrospectionSchema());
+      router.push({ pathname: '/database/introspection' });
+    }
   };
 
   const extractEditableTitle = () => {
