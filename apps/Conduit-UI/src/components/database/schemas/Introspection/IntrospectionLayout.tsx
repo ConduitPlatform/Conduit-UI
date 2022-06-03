@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../../../../redux/store';
-import { Grid, InputAdornment, Modal, TextField, Typography } from '@mui/material';
+import { Button, Grid, InputAdornment, Modal, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -78,6 +78,11 @@ const IntrospectionLayout: FC = () => {
               search={debouncedSchemaSearch}
               actualSchema={actualSchema}
             />
+          </Box>
+          <Box padding="10px">
+            <Button fullWidth variant="contained" color="secondary">
+              Introspect Schemas
+            </Button>
           </Box>
         </Box>
         <Box
