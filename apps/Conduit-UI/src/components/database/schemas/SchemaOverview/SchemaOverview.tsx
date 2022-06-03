@@ -44,6 +44,12 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
     });
   };
 
+  const handleFinalization = (id: string) => {
+    router.push({
+      pathname: `introspection/${id}`,
+    });
+  };
+
   const handleDeleteSchema = (deleteData: boolean) => {
     dispatch(
       asyncDeleteSelectedSchemas({
@@ -160,8 +166,8 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
               <Button
                 color="secondary"
                 variant="contained"
-                onClick={() => setIntrospectionModal(true)}>
-                Introspect
+                onClick={() => handleFinalization(schema._id)}>
+                Import Schema
               </Button>
             )
           )}

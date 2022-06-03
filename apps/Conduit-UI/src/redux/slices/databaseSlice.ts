@@ -10,6 +10,7 @@ import {
   toggleSchemaByIdRequest,
   setSchemaExtension,
   getSchemaOwners,
+  getSchemaByIdRequest,
 } from '../../http/DatabaseRequests';
 import {
   createSchemaDocumentRequest,
@@ -23,14 +24,15 @@ import {
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
 } from '../../http/CustomEndpointsRequests';
-import { EndpointTypes, Schema } from '../../models/database/CmsModels';
+import { EndpointTypes, ModifyOptions, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import { Pagination, Search, Sort } from '../../models/http/HttpModels';
+import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 import {
   finalizeIntrospectedSchemas,
+  getIntrospectionSchemaById,
   getIntrospectionSchemas,
   introspect,
   introspectionStatus,
@@ -46,6 +48,8 @@ export interface IDatabaseSlice {
       schemaDocuments: Schema[];
       schemasCount: number;
     };
+    schemaToEdit: Schema;
+    introspectionSchemaToEdit: Schema;
     dialogSchemas: {
       schemas: Schema[];
       schemasCount: number;
@@ -70,16 +74,47 @@ export interface IDatabaseSlice {
   };
 }
 
+const initialSchema = {
+  _id: '',
+  modelOptions: {
+    conduit: {
+      cms: {
+        enabled: false,
+        crudOperations: {
+          create: { enabled: false, authenticated: false },
+          read: { enabled: false, authenticated: false },
+          delete: { enabled: false, authenticated: false },
+          update: { enabled: false, authenticated: false },
+        },
+      },
+      permissions: {
+        extendable: true,
+        canCreate: true,
+        canModify: ModifyOptions.Everything,
+        canDelete: true,
+      },
+    },
+  },
+  name: '',
+  ownerModule: '',
+  extensions: [],
+  fields: {},
+  createdAt: '',
+  updatedAt: '',
+};
+
 const initialState: IDatabaseSlice = {
   data: {
     schemas: {
       schemaDocuments: [],
       schemasCount: 0,
     },
+    schemaToEdit: initialSchema,
     introspectionSchemas: {
       schemaDocuments: [],
       schemasCount: 0,
     },
+    introspectionSchemaToEdit: initialSchema,
     dialogSchemas: {
       schemas: [],
       schemasCount: 0,
@@ -115,6 +150,23 @@ export const asyncGetSchemas = createAsyncThunk(
         results: data.schemas as Schema[],
         documentsCount: data.count as number,
       };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetSchemaById = createAsyncThunk(
+  'database/getSchemaById',
+  async (params: { id: string | string[] }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getSchemaByIdRequest(params.id);
+      console.log(data);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -556,6 +608,22 @@ export const asyncGetIntrospectionSchemas = createAsyncThunk(
   }
 );
 
+export const asyncGetIntrospectionSchemaById = createAsyncThunk(
+  'database/getIntrospectionSchemaById',
+  async (params: { id: string | string[] }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getIntrospectionSchemaById(params.id);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncAddIntroSpectionSchemas = createAsyncThunk(
   'database/addIntrospectionSchemas',
   async (params: Pagination & Search, thunkAPI) => {
@@ -659,6 +727,9 @@ const databaseSlice = createSlice({
         ...action.payload.results,
       ];
     });
+    builder.addCase(asyncGetSchemaById.fulfilled, (state, action) => {
+      state.data.schemaToEdit = action.payload;
+    });
     builder.addCase(asyncGetSchemasDialog.fulfilled, (state, action) => {
       state.data.dialogSchemas.schemas = action.payload.dialogResults;
       state.data.dialogSchemas.schemasCount = action.payload.dialogDocumentsCount;
@@ -718,6 +789,9 @@ const databaseSlice = createSlice({
     builder.addCase(asyncGetIntrospectionSchemas.fulfilled, (state, action) => {
       state.data.introspectionSchemas.schemaDocuments = action.payload.results;
       state.data.introspectionSchemas.schemasCount = action.payload.documentsCount;
+    });
+    builder.addCase(asyncGetIntrospectionSchemaById.fulfilled, (state, action) => {
+      state.data.introspectionSchemaToEdit = action.payload;
     });
     builder.addCase(asyncAddIntroSpectionSchemas.fulfilled, (state, action) => {
       state.data.introspectionSchemas.schemaDocuments = [

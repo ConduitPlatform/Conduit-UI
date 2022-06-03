@@ -24,6 +24,7 @@ interface Props {
   permissions: Permissions;
   readOnly: boolean;
   handleSave: (name: string, crud: ICrudOperations, permissions: Permissions) => void;
+  introspection?: boolean;
 }
 
 const Header: FC<Props> = ({
@@ -34,6 +35,7 @@ const Header: FC<Props> = ({
   permissions,
   readOnly,
   handleSave,
+  introspection,
   ...rest
 }) => {
   const dispatch = useDispatch();
@@ -150,7 +152,7 @@ const Header: FC<Props> = ({
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button sx={{ margin: 2, color: 'common.white' }} onClick={() => handleData()}>
           <SaveIcon />
-          <Typography>Save</Typography>
+          <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
         </Button>
       </Box>
       <PermissionsDialog

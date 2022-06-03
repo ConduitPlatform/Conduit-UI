@@ -7,6 +7,10 @@ export const getIntrospectionSchemas = (params: Pagination & Search & Sort) => {
   return axios.get(`${CONDUIT_API}/admin/database/introspection/schemas`, { params });
 };
 
+export const getIntrospectionSchemaById = (id: string | string[]) => {
+  return axios.get(`${CONDUIT_API}/admin/database/introspection/schemas/${id}`);
+};
+
 export const finalizeIntrospectedSchemas = (schemas: Schema[]) => {
   return axios.post(`${CONDUIT_API}/admin/database/introspection/schemas/finalize`, {
     schemas: schemas,

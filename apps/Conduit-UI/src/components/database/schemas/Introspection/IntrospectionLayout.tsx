@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../../../../redux/store';
-import { Button, Grid, InputAdornment, Modal, TextField, Typography } from '@mui/material';
+import { Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -38,6 +38,8 @@ const IntrospectionLayout: FC = () => {
   const handleChange = (value: string) => {
     router.push(`/database/introspection?schemaModel=${value}`, undefined, { shallow: true });
   };
+
+  console.log(schemas);
 
   return (
     <Container maxWidth={'xl'}>
