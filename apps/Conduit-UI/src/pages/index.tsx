@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
@@ -14,6 +14,8 @@ import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import getConfig from 'next/config';
+import { useAppDispatch } from '../redux/store';
+import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
 
 const {
   publicRuntimeConfig: { CONDUIT_URL },
@@ -22,7 +24,12 @@ const {
 export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
 const Home = () => {
+  const dispatch = useAppDispatch();
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    dispatch(asyncGetIntrospectionStatus());
+  }, [dispatch]);
 
   return (
     <>

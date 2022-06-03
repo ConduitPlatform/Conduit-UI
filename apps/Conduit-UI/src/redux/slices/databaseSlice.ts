@@ -27,7 +27,11 @@ import {
 import { EndpointTypes, ModifyOptions, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import {
+  enqueueErrorNotification,
+  enqueueInfoNotification,
+  enqueueSuccessNotification,
+} from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 import {
@@ -653,9 +657,15 @@ export const asyncGetIntrospectionStatus = createAsyncThunk(
     try {
       const { data } = await introspectionStatus();
       thunkAPI.dispatch(setAppLoading(false));
-      return {
-        results: data.schemas as Schema[],
-      };
+      if (data.foreignSchemaCount !== 0) {
+        thunkAPI.dispatch(
+          enqueueInfoNotification(
+            `${data.foreignSchemaCount} foreign schemas found! Would you like to introspect them?`
+          )
+        );
+      }
+
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

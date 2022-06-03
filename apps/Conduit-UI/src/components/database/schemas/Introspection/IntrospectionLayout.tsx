@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
-import { useAppSelector } from '../../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
@@ -11,8 +11,10 @@ import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
+import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
 
 const IntrospectionLayout: FC = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const { schemaModel } = router.query;
   const { schemaDocuments: schemas } = useAppSelector(
@@ -39,7 +41,9 @@ const IntrospectionLayout: FC = () => {
     router.push(`/database/introspection?schemaModel=${value}`, undefined, { shallow: true });
   };
 
-  console.log(schemas);
+  const handleIntrospectSchemas = () => {
+    dispatch(asyncIntrospect());
+  };
 
   return (
     <Container maxWidth={'xl'}>
@@ -82,7 +86,11 @@ const IntrospectionLayout: FC = () => {
             />
           </Box>
           <Box padding="10px">
-            <Button fullWidth variant="contained" color="secondary">
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => handleIntrospectSchemas()}>
               Introspect Schemas
             </Button>
           </Box>
