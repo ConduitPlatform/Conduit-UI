@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import React, { FC, useEffect, useState } from 'react';
 import { Schema } from '../../../../models/database/CmsModels';
-import { asyncFinalizeIntrospectedSchemas } from '../../../../redux/slices/databaseSlice';
+import { asyncFinalizeIntrospectedSchema } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch } from '../../../../redux/store';
 import { getSchemaFieldsWithExtra } from '../../../../utils/type-functions';
 import SchemaViewer from '../SchemaOverview/SchemaViewer';
@@ -32,7 +32,7 @@ const IntrospectionModal: FC<Props> = ({ open, setOpen, schema }) => {
   const formattedFields = getSchemaFieldsWithExtra(schemaToEdit.fields);
 
   const handleFinalizeSchema = () => {
-    dispatch(asyncFinalizeIntrospectedSchemas([schemaToEdit]));
+    dispatch(asyncFinalizeIntrospectedSchema([schemaToEdit]));
     setOpen(false);
   };
 

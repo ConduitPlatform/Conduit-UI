@@ -32,6 +32,8 @@ import { set } from 'lodash';
 import {
   finalizeIntrospectedSchemas,
   getIntrospectionSchemas,
+  introspect,
+  introspectionStatus,
 } from '../../http/IntrospectionRequests';
 
 export interface IDatabaseSlice {
@@ -572,7 +574,7 @@ export const asyncAddIntroSpectionSchemas = createAsyncThunk(
   }
 );
 
-export const asyncFinalizeIntrospectedSchemas = createAsyncThunk(
+export const asyncFinalizeIntrospectedSchema = createAsyncThunk(
   'database/finalizeIntrospection',
   async (params: Schema[], thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
@@ -590,23 +592,38 @@ export const asyncFinalizeIntrospectedSchemas = createAsyncThunk(
   }
 );
 
-// export const asyncPostIntrospection = createAsyncThunk(
-//   'database/postIntrospection',
-//   async (params: Pagination & Search, thunkAPI) => {
-//     thunkAPI.dispatch(setAppLoading(true));
-//     try {
-//       const { data } = await postIntrospection(params);
-//       thunkAPI.dispatch(setAppLoading(false));
-//       return {
-//         results: data.schemas as Schema[],
-//       };
-//     } catch (error) {
-//       thunkAPI.dispatch(setAppLoading(false));
-//       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-//       throw error;
-//     }
-//   }
-// );
+export const asyncIntrospect = createAsyncThunk('database/introspect', async (params, thunkAPI) => {
+  thunkAPI.dispatch(setAppLoading(true));
+  try {
+    const { data } = await introspect();
+    thunkAPI.dispatch(setAppLoading(false));
+    return {
+      results: data.schemas as Schema[],
+    };
+  } catch (error) {
+    thunkAPI.dispatch(setAppLoading(false));
+    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+    throw error;
+  }
+});
+
+export const asyncGetIntrospectionStatus = createAsyncThunk(
+  'database/intospectionStatus',
+  async (params, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await introspectionStatus();
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        results: data.schemas as Schema[],
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
 
 const databaseSlice = createSlice({
   name: 'database',

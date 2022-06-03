@@ -13,6 +13,10 @@ export const finalizeIntrospectedSchemas = (schemas: Schema[]) => {
   });
 };
 
-// export const postIntrospection = () => {
-//   return axios.post(`${CONDUIT_API}/admin/database/introspection`);
-// };
+export const introspectionStatus = () => {
+  return axios.get(`${CONDUIT_API}/admin/database/introspection`);
+};
+
+export const introspect = () => {
+  return axios.post(`${CONDUIT_API}/admin/database/introspection`);
+};
