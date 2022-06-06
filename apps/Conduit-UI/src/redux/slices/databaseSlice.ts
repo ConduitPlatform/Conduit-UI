@@ -619,7 +619,7 @@ export const asyncAddIntroSpectionSchemas = createAsyncThunk(
 
 export const asyncFinalizeIntrospectedSchema = createAsyncThunk(
   'database/finalizeIntrospection',
-  async (params: Schema[], thunkAPI) => {
+  async (params: any[], thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await finalizeIntrospectedSchemas(params);

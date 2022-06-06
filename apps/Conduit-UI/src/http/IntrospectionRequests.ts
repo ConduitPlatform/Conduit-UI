@@ -11,7 +11,7 @@ export const getIntrospectionSchemaById = (id: string | string[]) => {
   return axios.get(`${CONDUIT_API}/admin/database/introspection/schemas/${id}`);
 };
 
-export const finalizeIntrospectedSchemas = (schemas: Schema[]) => {
+export const finalizeIntrospectedSchemas = (schemas: any[]) => {
   return axios.post(`${CONDUIT_API}/admin/database/introspection/schemas/finalize`, {
     schemas: schemas,
   });

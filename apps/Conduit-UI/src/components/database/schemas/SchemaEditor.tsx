@@ -22,6 +22,7 @@ import { useRouter } from 'next/router';
 import {
   asyncCreateNewSchema,
   asyncEditSchema,
+  asyncFinalizeIntrospectedSchema,
   asyncGetIntrospectionSchemaById,
   asyncGetSchemaById,
   asyncModifyExtension,
@@ -108,7 +109,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     if (introspection && id) {
       dispatch(asyncGetIntrospectionSchemaById({ id }));
     }
-  }, [dispatch, introspection, introspectionSchemaToEdit, id]);
+  }, [dispatch, introspection, id]);
 
   useEffect(() => {
     if (schemaToEdit && !introspection) {
@@ -122,7 +123,18 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     if (selectedSchema) {
       setReadOnly(true);
     }
-    if (schemaToEdit && selectedSchema && selectedSchema.ownerModule === 'database') {
+    if (introspection && selectedSchema) {
+      setCrudOperations(initialCrudOperations);
+      setSchemaPermissions({
+        extendable: false,
+        canCreate: false,
+        canModify: ModifyOptions.Nothing,
+        canDelete: false,
+      });
+      const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
+      setSchemaName(selectedSchema.name);
+      setEditableFields({ newTypeFields: formattedFields });
+    } else if (schemaToEdit && selectedSchema && selectedSchema.ownerModule === 'database') {
       setSchemaName(selectedSchema.name);
       if (
         selectedSchema.modelOptions.conduit.cms.crudOperations !== null &&
@@ -439,7 +451,22 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   };
 
   const handleSave = (name: string, crudOperations: ICrudOperations, permissions: Permissions) => {
-    if (
+    if (introspection && selectedSchema) {
+      const newSchemaFields = prepareFields(editableFields.newTypeFields);
+      const newSchema = {
+        ...selectedSchema,
+        modelOptions: {
+          ...selectedSchema.modelOptions,
+          conduit: {
+            cms: { crudOperations: crudOperations, enabled: true },
+            permissions: permissions,
+          },
+        },
+        fields: newSchemaFields,
+      };
+
+      dispatch(asyncFinalizeIntrospectedSchema([newSchema]));
+    } else if (
       selectedSchema &&
       selectedSchema?.ownerModule !== 'database' &&
       selectedSchema.modelOptions.conduit.permissions.extendable
@@ -502,7 +529,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   };
 
   const showEditableFields = () => {
-    if (selectedSchema?.ownerModule === 'database' || !selectedSchema) {
+    if (selectedSchema?.ownerModule === 'database' || !selectedSchema || introspection) {
       return true;
     } else if (selectedSchema.modelOptions.conduit.permissions.extendable) {
       return true;

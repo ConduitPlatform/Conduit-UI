@@ -69,9 +69,6 @@ const Schemas: FC = () => {
   const [newSchemaDialog, setNewSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
-  const { schemaToEdit } = useAppSelector((state) => state.databaseSlice.data);
-
-  console.log(schemaToEdit);
 
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());

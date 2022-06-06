@@ -162,6 +162,7 @@ const Header: FC<Props> = ({
       </Box>
       <PermissionsDialog
         open={permissionsDialog}
+        introspection={introspection}
         permissions={schemaPermissions}
         setPermissions={setSchemaPermissions}
         handleClose={() => setPermissionsDialog(false)}
@@ -169,6 +170,7 @@ const Header: FC<Props> = ({
       />
       <CrudOperationsDialog
         open={crudOperationsDialog}
+        introspection={introspection}
         crudOperations={schemaCrudOperations}
         setCrudOperations={setSchemaCrudOperations}
         handleClose={() => setCrudOperationsDialog(false)}

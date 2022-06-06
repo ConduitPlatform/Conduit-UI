@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import { FormInputCheckBox } from '../../../common/FormComponents/FormInputCheck
 
 interface Props {
   permissions: Permissions;
+  introspection?: boolean;
   setPermissions: (permissions: Permissions) => void;
   open: boolean;
   selectedSchema?: Schema;
@@ -29,8 +30,9 @@ const options = [
   { label: 'ExtensionOnly', value: ModifyOptions.ExtensionOnly },
 ];
 
-const PermissionsDialog: React.FC<Props> = ({
+const PermissionsDialog: FC<Props> = ({
   open,
+  introspection,
   handleClose,
   permissions,
   selectedSchema,
@@ -59,7 +61,7 @@ const PermissionsDialog: React.FC<Props> = ({
   };
 
   const isDisabled = () => {
-    if (selectedSchema && selectedSchema.ownerModule !== 'database') {
+    if (selectedSchema && selectedSchema.ownerModule !== 'database' && !introspection) {
       return true;
     } else return false;
   };

@@ -17,6 +17,7 @@ import { FormInputCheckBox } from '../../../common/FormComponents/FormInputCheck
 
 interface Props {
   crudOperations: ICrudOperations;
+  introspection?: boolean;
   setCrudOperations: (crudOperations: ICrudOperations) => void;
   open: boolean;
   selectedSchema?: Schema;
@@ -25,6 +26,7 @@ interface Props {
 
 const CrudOperationsDialog: React.FC<Props> = ({
   open,
+  introspection,
   handleClose,
   crudOperations,
   selectedSchema,
@@ -53,7 +55,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
   };
 
   const isDisabled = () => {
-    if (selectedSchema && selectedSchema.ownerModule !== 'database') {
+    if (selectedSchema && selectedSchema.ownerModule !== 'database' && !introspection) {
       return true;
     } else return false;
   };
