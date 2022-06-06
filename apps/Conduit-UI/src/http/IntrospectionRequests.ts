@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Schema } from '../models/database/CmsModels';
 import { Pagination, Search, Sort } from '../models/http/HttpModels';
 import { CONDUIT_API } from './requestsConfig';
 

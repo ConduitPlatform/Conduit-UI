@@ -24,7 +24,7 @@ import {
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
 } from '../../http/CustomEndpointsRequests';
-import { EndpointTypes, ModifyOptions, Schema } from '../../models/database/CmsModels';
+import { EndpointTypes, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import {
