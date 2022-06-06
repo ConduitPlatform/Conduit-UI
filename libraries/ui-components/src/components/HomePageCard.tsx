@@ -30,10 +30,10 @@ const CustomizedCard = styled(Card)(() => ({
 interface Props {
   icon: any;
   title: string;
-  description: string;
+  descriptionContent: JSX.Element;
 }
 
-const HomePageCard: FC<Props> = ({ icon, title, description }) => {
+const HomePageCard: FC<Props> = ({ icon, title, descriptionContent }) => {
   return (
     <CustomizedCard>
       <BoxWithIconText>
@@ -41,7 +41,7 @@ const HomePageCard: FC<Props> = ({ icon, title, description }) => {
         <Typography> &nbsp; {title}</Typography>
       </BoxWithIconText>
       <CustomizedDivider />
-      <Typography variant="subtitle2">{description}</Typography>
+      {descriptionContent}
     </CustomizedCard>
   );
 };

@@ -24,7 +24,7 @@ import {
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
 } from '../../http/CustomEndpointsRequests';
-import { EndpointTypes, Schema } from '../../models/database/CmsModels';
+import { EndpointTypes, IntrospectionStatus, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import {
@@ -75,6 +75,7 @@ export interface IDatabaseSlice {
     count: number;
     config: any;
     selectedSchema: Schema | null;
+    introspectionStatus: IntrospectionStatus;
   };
 }
 
@@ -111,6 +112,12 @@ const initialState: IDatabaseSlice = {
     count: 0,
     config: null,
     selectedSchema: null,
+    introspectionStatus: {
+      foreignSchemaCount: 0,
+      foreignSchemas: [],
+      importedSchemaCount: 0,
+      importedSchemas: [],
+    },
   },
 };
 
@@ -657,14 +664,6 @@ export const asyncGetIntrospectionStatus = createAsyncThunk(
     try {
       const { data } = await introspectionStatus();
       thunkAPI.dispatch(setAppLoading(false));
-      if (data.foreignSchemaCount !== 0) {
-        thunkAPI.dispatch(
-          enqueueInfoNotification(
-            `${data.foreignSchemaCount} foreign schemas found! Would you like to introspect them?`
-          )
-        );
-      }
-
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -776,6 +775,9 @@ const databaseSlice = createSlice({
     });
     builder.addCase(asyncGetIntrospectionSchemaById.fulfilled, (state, action) => {
       state.data.introspectionSchemaToEdit = action.payload;
+    });
+    builder.addCase(asyncGetIntrospectionStatus.fulfilled, (state, action) => {
+      state.data.introspectionStatus = action.payload;
     });
     builder.addCase(asyncAddIntroSpectionSchemas.fulfilled, (state, action) => {
       state.data.introspectionSchemas.schemaDocuments = [
