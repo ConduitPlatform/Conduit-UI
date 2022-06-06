@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import { Container, Grid, Button, Link, Icon } from '@mui/material';
+import { Container, Grid, Button, Link, Icon, Chip, Divider } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
@@ -14,8 +14,9 @@ import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import getConfig from 'next/config';
-import { useAppDispatch } from '../redux/store';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
+import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 
 const {
   publicRuntimeConfig: { CONDUIT_URL },
@@ -27,9 +28,12 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
 
+  const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
   useEffect(() => {
     dispatch(asyncGetIntrospectionStatus());
   }, [dispatch]);
+
+  console.log(introspectionStatus);
 
   return (
     <>
@@ -102,7 +106,11 @@ const Home = () => {
                 <HomePageCard
                   icon={<SecretIcon />}
                   title="set up an auth method"
-                  description="Easily login with the method of your choice!"
+                  descriptionContent={
+                    <Typography variant="subtitle2">
+                      Easily login with the method of your choice!
+                    </Typography>
+                  }
                 />
               </Link>
             </Grid>
@@ -111,8 +119,11 @@ const Home = () => {
                 <HomePageCard
                   icon={<SchemaIcon />}
                   title="create a schema"
-                  description={
-                    'Create your schema with a user friendly UI and start editing you documents right away!'
+                  descriptionContent={
+                    <Typography variant="subtitle2">
+                      Create your schema with a user friendly UI and start editing you documents
+                      right away!
+                    </Typography>
                   }
                 />
               </Link>
@@ -122,7 +133,11 @@ const Home = () => {
                 <HomePageCard
                   icon={<EmailIcon />}
                   title="set up email provider"
-                  description="Select your preferred provider and start mailing!"
+                  descriptionContent={
+                    <Typography variant="subtitle2">
+                      Select your preferred provider and start mailing!
+                    </Typography>
+                  }
                 />
               </Link>
             </Grid>
@@ -131,7 +146,42 @@ const Home = () => {
                 <HomePageCard
                   icon={<LockIcon />}
                   title="set up client secrets"
-                  description="Set up your client secret across multiple platforms!"
+                  descriptionContent={
+                    <Typography variant="subtitle2">
+                      Set up your client secret across multiple platforms!
+                    </Typography>
+                  }
+                />
+              </Link>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Link
+                style={{ textDecoration: 'none', cursor: 'pointer' }}
+                href="/database/introspection">
+                <HomePageCard
+                  icon={<ScreenSearchDesktopRounded />}
+                  title="introspection"
+                  descriptionContent={
+                    <Box display="flex" gap={2}>
+                      <Box display="flex" flexDirection="row">
+                        <Typography>
+                          Foreign Schemas:
+                          <Typography color="error">
+                            {introspectionStatus.foreignSchemaCount}
+                          </Typography>
+                        </Typography>
+                      </Box>
+                      <Divider orientation="vertical" />
+                      <Box display="flex" flexDirection="row">
+                        <Typography>
+                          Imported Schemas:
+                          <Typography color="secondary">
+                            {introspectionStatus.importedSchemaCount}{' '}
+                          </Typography>
+                        </Typography>
+                      </Box>
+                    </Box>
+                  }
                 />
               </Link>
             </Grid>

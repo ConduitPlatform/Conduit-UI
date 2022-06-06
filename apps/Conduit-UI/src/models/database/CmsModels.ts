@@ -118,3 +118,10 @@ export interface CMSDocuments {
   _id: string;
   name: string;
 }
+
+export interface IntrospectionStatus {
+  foreignSchemas: string[];
+  foreignSchemaCount: number;
+  importedSchemas: string[];
+  importedSchemaCount: number;
+}
