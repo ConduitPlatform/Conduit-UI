@@ -87,7 +87,12 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
             key={`endpoint-${schema._id}`}
             onClick={() => handleListItemSelect(schema.name)}
             selected={actualSchema?._id === schema?._id}>
-            <ListItemText primary={schema.name} />
+            <ListItemText
+              primary={schema.name}
+              primaryTypographyProps={{
+                style: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' },
+              }}
+            />
           </ListItemButton>
         )}
       </div>

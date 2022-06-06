@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
-import { useAppSelector } from '../../../../redux/store';
-import { Grid, InputAdornment, Modal, TextField, Typography } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../../../../redux/store';
+import { Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -11,8 +11,10 @@ import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
+import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
 
 const IntrospectionLayout: FC = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const { schemaModel } = router.query;
   const { schemaDocuments: schemas } = useAppSelector(
@@ -37,6 +39,10 @@ const IntrospectionLayout: FC = () => {
 
   const handleChange = (value: string) => {
     router.push(`/database/introspection?schemaModel=${value}`, undefined, { shallow: true });
+  };
+
+  const handleIntrospectSchemas = () => {
+    dispatch(asyncIntrospect());
   };
 
   return (
@@ -78,6 +84,15 @@ const IntrospectionLayout: FC = () => {
               search={debouncedSchemaSearch}
               actualSchema={actualSchema}
             />
+          </Box>
+          <Box padding="10px">
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => handleIntrospectSchemas()}>
+              Introspect Schemas
+            </Button>
           </Box>
         </Box>
         <Box

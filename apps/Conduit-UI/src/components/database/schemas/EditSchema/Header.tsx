@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Box, Typography, Button, Input } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
-import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
 import { enqueueInfoNotification } from '../../../../utils/useNotifier';
@@ -13,6 +12,7 @@ import {
 } from '../../../../models/database/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';
+import { useRouter } from 'next/router';
 
 export const headerHeight = 64;
 
@@ -24,6 +24,7 @@ interface Props {
   permissions: Permissions;
   readOnly: boolean;
   handleSave: (name: string, crud: ICrudOperations, permissions: Permissions) => void;
+  introspection?: boolean;
 }
 
 const Header: FC<Props> = ({
@@ -34,9 +35,11 @@ const Header: FC<Props> = ({
   permissions,
   readOnly,
   handleSave,
+  introspection,
   ...rest
 }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [schemaName, setSchemaName] = useState(name);
   const [schemaCrudOperations, setSchemaCrudOperations] = useState<ICrudOperations>({
@@ -79,6 +82,9 @@ const Header: FC<Props> = ({
 
   const handleBackButtonClick = () => {
     dispatch(clearSelectedSchema());
+    if (introspection) {
+      router.push({ pathname: '/database/introspection' });
+    } else router.push({ pathname: '/database/schemas' });
   };
 
   return (
@@ -99,7 +105,7 @@ const Header: FC<Props> = ({
       }}
       {...rest}>
       <Box display={'flex'} alignItems={'center'}>
-        <Link href="/database/schemas">
+        <Box>
           {/* TODO call dispatch clear cms */}
           <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
             <Box
@@ -118,7 +124,7 @@ const Header: FC<Props> = ({
               />
             </Box>
           </a>
-        </Link>
+        </Box>
         <Input
           sx={{
             height: 5,
@@ -150,11 +156,12 @@ const Header: FC<Props> = ({
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button sx={{ margin: 2, color: 'common.white' }} onClick={() => handleData()}>
           <SaveIcon />
-          <Typography>Save</Typography>
+          <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
         </Button>
       </Box>
       <PermissionsDialog
         open={permissionsDialog}
+        introspection={introspection}
         permissions={schemaPermissions}
         setPermissions={setSchemaPermissions}
         handleClose={() => setPermissionsDialog(false)}
@@ -162,6 +169,7 @@ const Header: FC<Props> = ({
       />
       <CrudOperationsDialog
         open={crudOperationsDialog}
+        introspection={introspection}
         crudOperations={schemaCrudOperations}
         setCrudOperations={setSchemaCrudOperations}
         handleClose={() => setCrudOperationsDialog(false)}
