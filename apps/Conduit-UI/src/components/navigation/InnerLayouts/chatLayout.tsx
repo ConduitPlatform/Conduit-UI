@@ -1,6 +1,7 @@
 import React from 'react';
 import { Toc } from '@mui/icons-material';
 import { SharedLayout } from '@conduitplatform/ui-components';
+import { CONDUIT_API } from '../../../http/requestsConfig';
 
 const ChatLayout: React.FC = ({ children }) => {
   const pathNames = ['/chat/rooms', '/chat/config'];
@@ -11,7 +12,7 @@ const ChatLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
+      baseUrl={CONDUIT_API}
       title={'Chat'}
       labels={labels}
       pathNames={pathNames}

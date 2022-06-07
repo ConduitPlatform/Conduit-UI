@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Toc } from '@mui/icons-material';
+import { CONDUIT_API } from '../../../http/requestsConfig';
 
 const DatabaseLayout: React.FC = ({ children }) => {
   const pathNames = ['/database/schemas', '/database/custom', '/database/settings'];
@@ -12,7 +13,7 @@ const DatabaseLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
+      baseUrl={CONDUIT_API}
       title={'Database'}
       labels={labels}
       pathNames={pathNames}

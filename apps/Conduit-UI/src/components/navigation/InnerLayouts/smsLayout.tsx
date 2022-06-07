@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Sms } from '@mui/icons-material';
+import { CONDUIT_API } from '../../../http/requestsConfig';
 
 const SMSLayout: React.FC = ({ children }) => {
   const pathNames = ['/sms/send', '/sms/config'];
@@ -12,7 +13,7 @@ const SMSLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
+      baseUrl={CONDUIT_API}
       title={'SMS'}
       labels={labels}
       pathNames={pathNames}

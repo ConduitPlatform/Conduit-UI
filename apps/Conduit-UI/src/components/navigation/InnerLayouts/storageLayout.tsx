@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Cloud } from '@mui/icons-material';
+import { CONDUIT_API } from '../../../http/requestsConfig';
 
 const StorageLayout: React.FC = ({ children }) => {
   const pathNames = ['/storage/files', '/storage/config'];
@@ -12,7 +13,7 @@ const StorageLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
+      baseUrl={CONDUIT_API}
       title={'Storage'}
       labels={labels}
       pathNames={pathNames}
