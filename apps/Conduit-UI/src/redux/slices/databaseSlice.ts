@@ -142,16 +142,15 @@ export const asyncGetSchemas = createAsyncThunk(
 
 export const asyncGetSchemaById = createAsyncThunk(
   'database/getSchemaById',
-  async (params: { id: string | string[] }, thunkAPI) => {
+  async (params: { id: string | string[]; noError?: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getSchemaByIdRequest(params.id);
-
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      if (!params.noError) thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
   }

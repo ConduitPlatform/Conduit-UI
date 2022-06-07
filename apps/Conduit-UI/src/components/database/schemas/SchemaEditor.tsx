@@ -102,7 +102,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
-    if (!introspection && id) dispatch(asyncGetSchemaById({ id }));
+    if (!introspection && id) dispatch(asyncGetSchemaById({ id, noError: true }));
   }, [dispatch, introspection, id]);
 
   useEffect(() => {
