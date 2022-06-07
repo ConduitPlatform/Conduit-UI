@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { Payment } from '@mui/icons-material';
+import { CONDUIT_API } from '../../../http/requestsConfig';
 
 const PaymentsLayout: React.FC = ({ children }) => {
   const pathNames = [
@@ -21,7 +22,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
+      baseUrl={CONDUIT_API}
       title={'Payments'}
       labels={labels}
       pathNames={pathNames}

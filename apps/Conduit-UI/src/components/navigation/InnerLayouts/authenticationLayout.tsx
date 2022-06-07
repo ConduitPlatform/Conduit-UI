@@ -1,6 +1,7 @@
 import React from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { People } from '@mui/icons-material';
+import { CONDUIT_API } from '../../../http/requestsConfig';
 
 const AuthenticationLayout: React.FC = ({ children }) => {
   const pathNames = [
@@ -18,7 +19,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
 
   return (
     <SharedLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
+      baseUrl={CONDUIT_API}
       title={'Authentication'}
       labels={labels}
       pathNames={pathNames}
