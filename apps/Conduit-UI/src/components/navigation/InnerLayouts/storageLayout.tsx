@@ -12,7 +12,6 @@ const StorageLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Storage'}
       labels={labels}
       pathNames={pathNames}

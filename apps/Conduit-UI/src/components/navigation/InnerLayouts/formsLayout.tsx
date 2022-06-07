@@ -12,7 +12,6 @@ const FormsLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Forms'}
       labels={labels}
       pathNames={pathNames}

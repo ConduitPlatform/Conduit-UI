@@ -18,7 +18,6 @@ const SettingsLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Settings'}
       labels={labels}
       pathNames={pathNames}

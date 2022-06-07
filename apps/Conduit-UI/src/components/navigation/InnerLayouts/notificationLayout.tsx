@@ -12,7 +12,6 @@ const NotificationLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Push Notifications'}
       labels={labels}
       pathNames={pathNames}

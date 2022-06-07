@@ -11,7 +11,6 @@ const ChatLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Chat'}
       labels={labels}
       pathNames={pathNames}

@@ -12,7 +12,6 @@ const SMSLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'SMS'}
       labels={labels}
       pathNames={pathNames}

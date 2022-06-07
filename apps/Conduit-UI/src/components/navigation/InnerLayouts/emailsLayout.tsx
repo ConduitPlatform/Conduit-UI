@@ -13,7 +13,6 @@ const EmailsLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Email'}
       labels={labels}
       pathNames={pathNames}
