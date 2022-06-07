@@ -33,7 +33,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
     <Paper
       sx={{
         width: smallScreen ? 60 : 200,
-        display: 'fixed',
+        display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
