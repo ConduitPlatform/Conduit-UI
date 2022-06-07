@@ -12,7 +12,6 @@ const SecurityLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Security'}
       labels={labels}
       pathNames={pathNames}
