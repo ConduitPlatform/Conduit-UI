@@ -2,9 +2,11 @@ import { Box, Card, Divider, styled, Typography } from "@mui/material";
 import React, { FC } from "react";
 
 const BoxWithIconText = styled(Box)(() => ({
-  display: "flex",
-  alignItems: "center",
-  flexWrap: "wrap",
+  display: 'flex',
+  flex: 1,
+  alignItems: 'center',
+  flexWrap: 'nowrap',
+  overflow: 'hidden'
 }));
 
 const CustomizedDivider = styled(Divider)(({ theme }) => ({
@@ -13,16 +15,16 @@ const CustomizedDivider = styled(Divider)(({ theme }) => ({
 }));
 
 const CustomizedCard = styled(Card)(() => ({
-  borderRadius: 8,
-  backgroundColor: "common.white",
+  display: 'flex',
   flex: 1,
-  display: "flex",
-  flexDirection: "column",
+  borderRadius: 8,
+  backgroundColor: 'common.white',
+  flexDirection: 'column',
   padding: 20,
-  "&:hover": {
+  '&:hover': {
     boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
   },
-  "&:focus": {
+  '&:focus': {
     boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
   },
 }));
@@ -31,17 +33,19 @@ interface Props {
   icon: any;
   title: string;
   description: string;
+  titleProps: object | undefined;
+  subtitleProps: object | undefined;
 }
 
-const HomePageCard: FC<Props> = ({ icon, title, description }) => {
+const HomePageCard: FC<Props> = ({ icon, title, description,titleProps,subtitleProps }) => {
   return (
     <CustomizedCard>
       <BoxWithIconText>
         {icon}
-        <Typography> &nbsp; {title}</Typography>
+        <Typography {...titleProps}> &nbsp; {title}</Typography>
       </BoxWithIconText>
       <CustomizedDivider />
-      <Typography variant="subtitle2">{description}</Typography>
+      <Typography variant="subtitle2" {...subtitleProps}>{description}</Typography>
     </CustomizedCard>
   );
 };
