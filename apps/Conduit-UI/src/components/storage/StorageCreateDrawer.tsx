@@ -85,7 +85,7 @@ const StorageCreateDrawer: FC<Props> = ({
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(handleSave)}>
           <Grid container spacing={2}>
-            <Grid item sm={12}>
+            <Grid item width={'100%'}>
               <FormInputText
                 name="name"
                 label="Name"
@@ -102,11 +102,13 @@ const StorageCreateDrawer: FC<Props> = ({
                 <FormInputSelect options={extractContainers()} label="Container" name="container" />
               </Grid>
             )}
-            <Grid item sm={12}>
-              <Typography variant="subtitle1">Is Public</Typography>
+            <Grid item sm={12} display={'flex'} alignItems={'center'} whiteSpace={'nowrap'}>
+              <Typography variant="subtitle1" mr={2}>
+                Is Public
+              </Typography>
               <FormInputSwitch name="isPublic" />
             </Grid>
-            <Grid container item>
+            <Grid container item mt={2}>
               <Grid item sx={{ mr: 2 }}>
                 <Button variant="outlined" onClick={() => handleCancel()}>
                   Cancel
