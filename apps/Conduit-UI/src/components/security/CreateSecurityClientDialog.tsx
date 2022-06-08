@@ -16,8 +16,7 @@ import {
   SelectChangeEvent,
   TextField,
 } from '@mui/material';
-import ClientPlatformEnum from '../../models/ClientPlatformEnum';
-import { IPlatformTypes } from '../../models/security/SecurityModels';
+import ClientPlatformEnum from '../../models/security/SecurityModels';
 import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { getErrorData } from '../../utils/error-handler';
@@ -27,9 +26,9 @@ interface Props {
   handleClose: () => void;
 }
 
-const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
+const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
   const dispatch = useAppDispatch();
-  const [platform, setPlatform] = useState<IPlatformTypes>('WEB');
+  const [platform, setPlatform] = useState<ClientPlatformEnum>(ClientPlatformEnum.WEB);
   const [domain, setDomain] = useState<string>('*');
 
   const handleGenerateNew = () => {
@@ -98,17 +97,14 @@ const ClientsDialog: React.FC<Props> = ({ open, handleClose }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button
-          variant={'contained'}
-          color={'primary'}
-          size="small"
-          fullWidth
-          onClick={handleGenerateNew}>
-          Generate new Client
-        </Button>
+        <Box width="100%" px={6} pb={2}>
+          <Button variant={'contained'} color={'primary'} fullWidth onClick={handleGenerateNew}>
+            Generate new Client
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default ClientsDialog;
+export default CreateSecurityClientDialog;

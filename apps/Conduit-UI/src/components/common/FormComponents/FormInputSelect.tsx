@@ -22,7 +22,7 @@ export const FormInputSelect: React.FC<FormSelectProps> = ({
   textFieldProps,
 }) => {
   const generateSingleOptions = () => {
-    return options.map((option: { label: string; value: string }) => {
+    return options.map((option: { label: string; value: any }) => {
       return (
         <MenuItem key={option.value} value={option.value}>
           {option.label}

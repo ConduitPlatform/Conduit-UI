@@ -9,6 +9,7 @@ import {
   getAvailableClientsRequest,
   getSecurityConfig,
   putSecurityConfig,
+  updateSecurityClient,
 } from '../../http/SecurityRequests';
 
 interface ISecuritySlice {
@@ -39,6 +40,21 @@ export const asyncGetAvailableClients = createAsyncThunk(
       } = await getAvailableClientsRequest();
       thunkAPI.dispatch(setAppLoading(false));
       return clients;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncUpdateClient = createAsyncThunk(
+  'security/deleteClient',
+  async (args: { _id: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await updateSecurityClient(args._id);
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Grid, Container, Button, Paper } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -20,6 +20,10 @@ const CoreSettingsTab: React.FC = () => {
   });
 
   const { reset } = methods;
+
+  useEffect(() => {
+    methods.reset(client);
+  }, [methods, client]);
 
   const onSaveClick = (data: ICoreSettings) => {
     dispatch(asyncUpdateCoreSettings(data));

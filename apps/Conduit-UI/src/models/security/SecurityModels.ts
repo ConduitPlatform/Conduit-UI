@@ -3,14 +3,23 @@ export interface IClient {
   clientId: string;
   clientSecret: string;
   domain: string;
-  platform: IPlatformTypes;
+  platform: ClientPlatformEnum;
   notes: string;
   alias: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type IPlatformTypes = 'WEB' | 'ANDROID' | 'IOS' | 'IPADOS' | 'WINDOWS' | 'MACOS' | 'LINUX';
+enum ClientPlatformEnum {
+  WEB = 'WEB',
+  ANDROID = 'ANDROID',
+  IOS = 'IOS',
+  IPADOS = 'IPADOS',
+  WINDOWS = 'WINDOWS',
+  MACOS = 'MACOS',
+  LINUX = 'LINUX',
+}
+export default ClientPlatformEnum;
 
 export interface ISecurityConfig {
   clientValidation: {
