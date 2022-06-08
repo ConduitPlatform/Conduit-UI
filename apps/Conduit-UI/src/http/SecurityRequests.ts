@@ -10,6 +10,10 @@ export const generateNewClientRequest = (platform: IPlatformTypes, domain?: stri
   return axios.post(`${CONDUIT_API}/admin/security/client`, { platform, domain });
 };
 
+export const updateSecurityClient = (_id: string) => {
+  return axios.put(`${CONDUIT_API}/admin/config/security/${_id}`);
+};
+
 export const deleteClientRequest = (_id: string) => {
   return axios.delete(`${CONDUIT_API}/admin/security/client/${_id}`);
 };

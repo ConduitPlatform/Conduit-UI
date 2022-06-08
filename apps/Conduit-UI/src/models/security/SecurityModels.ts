@@ -4,6 +4,8 @@ export interface IClient {
   clientSecret: string;
   domain: string;
   platform: IPlatformTypes;
+  notes: string;
+  alias: string;
   createdAt: string;
   updatedAt: string;
 }
