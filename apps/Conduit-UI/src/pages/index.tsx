@@ -107,7 +107,7 @@ const Home = () => {
         </Box>
         <Container maxWidth="md">
           <Grid container spacing={6}>
-            <Grid item xs={12} md={6} overflow={'hidden'}>
+            <Grid item xs={12} md={6}>
               <Link
                 sx={{ textDecoration: 'none', cursor: 'pointer' }}
                 href="/authentication/signIn">
