@@ -86,39 +86,45 @@ const AuthenticationConfig: React.FC = () => {
                       />
                     </Grid>
                   ))}
-                  <Grid item xs={6}>
-                    <Box
-                      width={'100%'}
-                      display={'inline-flex'}
-                      justifyContent={'space-between'}
-                      alignItems={'center'}>
-                      <Typography variant={'subtitle1'}>Generate Refresh Tokens</Typography>
-                      <FormInputSwitch name={'generateRefreshToken'} disabled={!edit} />
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box
-                      width={'100%'}
-                      display={'inline-flex'}
-                      justifyContent={'space-between'}
-                      alignItems={'center'}>
-                      <Typography variant={'subtitle1'}>
-                        Multiple User Sessions per Client
-                      </Typography>
-                      <FormInputSwitch name={'clients.multipleUserSessions'} disabled={!edit} />
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box
-                      width={'100%'}
-                      display={'inline-flex'}
-                      justifyContent={'space-between'}
-                      alignItems={'center'}>
-                      <Typography variant={'subtitle1'}>
-                        User can be logged in to multiple Clients
-                      </Typography>
-                      <FormInputSwitch name={'clients.multipleClientLogins'} disabled={!edit} />
-                    </Box>
+                  <Grid item>
+                    <Grid display={'flex'} flex={1}>
+                      <Box
+                        width={'100%'}
+                        display={'inline-flex'}
+                        justifyContent={'space-between'}
+                        alignItems={'center'}>
+                        <Typography variant={'subtitle1'} mr={1}>
+                          Generate Refresh Tokens
+                        </Typography>
+                        <FormInputSwitch name={'generateRefreshToken'} disabled={!edit} />
+                      </Box>
+                    </Grid>
+                    <Divider sx={{ mb: 1, mt: 1 }} />
+                    <Grid item>
+                      <Box
+                        width={'100%'}
+                        display={'inline-flex'}
+                        justifyContent={'space-between'}
+                        alignItems={'center'}>
+                        <Typography variant={'subtitle1'} mr={1}>
+                          Multiple User Sessions per Client
+                        </Typography>
+                        <FormInputSwitch name={'clients.multipleUserSessions'} disabled={!edit} />
+                      </Box>
+                    </Grid>
+                    <Divider sx={{ mb: 1, mt: 1 }} />
+                    <Grid item>
+                      <Box
+                        width={'100%'}
+                        display={'inline-flex'}
+                        justifyContent={'space-between'}
+                        alignItems={'center'}>
+                        <Typography variant={'subtitle1'} mr={1}>
+                          User can be logged in to multiple Clients
+                        </Typography>
+                        <FormInputSwitch name={'clients.multipleClientLogins'} disabled={!edit} />
+                      </Box>
+                    </Grid>
                   </Grid>
                 </>
               )}
