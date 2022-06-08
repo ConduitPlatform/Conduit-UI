@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Typography, Tabs, Tab, Icon } from "@mui/material";
+import {Box, Button, Typography, Tabs, Tab, useTheme, useMediaQuery} from "@mui/material";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import SwaggerModal from "../SwaggerModal";
@@ -31,6 +31,8 @@ const SharedLayout: React.FC<Props> = ({
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
+  const theme= useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     const index = pathNames.findIndex(
@@ -44,17 +46,19 @@ const SharedLayout: React.FC<Props> = ({
       <Box sx={{ mb: 2 }}>
         <Box display="flex" alignItems="center">
           <Typography variant={"h4"}>{title}</Typography>
-          <Box display="flex" gap={3} alignItems="center">
+          <Box display="flex" alignItems="center">
             {title !== "Settings" && (
-              <Box>
+              <Box whiteSpace={'nowrap'}>
                 <Button
-                  startIcon={swaggerIcon}
                   color="secondary"
                   sx={{ textDecoration: "none", ml: 8 }}
                   variant="outlined"
                   onClick={() => setSwaggerOpen(true)}
                 >
-                  SWAGGER
+                  {swaggerIcon}
+                  <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                    {smallScreen ? null : 'SWAGGER'}
+                  </Typography>
                 </Button>
                 <a
                   style={{ textDecoration: "none", paddingLeft: 10 }}
@@ -63,11 +67,12 @@ const SharedLayout: React.FC<Props> = ({
                   rel="noreferrer"
                 >
                   <Button
-                    startIcon={graphQLIcon}
                     color="secondary"
-                    variant="outlined"
-                  >
-                    GraphQL
+                    variant="outlined">
+                    {graphQLIcon}
+                    <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                      {smallScreen ? null : 'GraphQL'}
+                    </Typography>
                   </Button>
                 </a>
               </Box>
