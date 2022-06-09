@@ -71,7 +71,7 @@ export const asyncUpdateClient = createAsyncThunk(
 export const asyncGenerateNewClient = createAsyncThunk(
   'security/generateClient',
   async (
-    clientData: { platform: ClientPlatformEnum; domain?: string; notes?: string; alias: string },
+    clientData: { platform: ClientPlatformEnum; domain?: string; notes?: string; alias?: string },
     thunkAPI
   ) => {
     thunkAPI.dispatch(setAppLoading(true));
