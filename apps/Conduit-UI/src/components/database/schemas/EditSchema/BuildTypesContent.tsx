@@ -15,6 +15,7 @@ import RelationType from '../../types/RelationType/RelationType';
 import Button from '@mui/material/Button';
 import { BoxProps } from '@mui/material/Box/Box';
 import { styled } from '@mui/material';
+import JSONType from '../../types/JSONType/JSONType';
 
 const CustomizedButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
@@ -67,6 +68,8 @@ const BuildTypesContent: FC<Props> = ({
         return <BooleanType item={item} />;
       case 'Relation':
         return <RelationType item={item} />;
+      case 'JSON':
+        return <JSONType item={item} />;
       case 'Group':
         return (
           <GroupType

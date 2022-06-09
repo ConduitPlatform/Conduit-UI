@@ -8,8 +8,9 @@ import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
+import { CONDUIT_API } from '../../../http/requestsConfig';
+
 interface Props {
-  baseUrl: string;
   title: string;
   labels: { name: string; id: string }[];
   pathNames: string[];
@@ -18,20 +19,12 @@ interface Props {
   children: any;
 }
 
-const StyledLayout: FC<Props> = ({
-  baseUrl,
-  title,
-  labels,
-  pathNames,
-  swagger,
-  icon,
-  children,
-}) => {
+const StyledLayout: FC<Props> = ({ title, labels, pathNames, swagger, icon, children }) => {
   const { loading } = useAppSelector((state) => state.appSlice);
 
   return (
     <SharedLayout
-      baseUrl={baseUrl}
+      baseUrl={CONDUIT_API}
       title={title}
       labels={labels}
       pathNames={pathNames}

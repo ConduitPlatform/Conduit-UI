@@ -1,14 +1,15 @@
-import React from 'react';
-import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
+import React, { FC } from 'react';
+import { Box, Button, Container, Grid, Paper } from '@mui/material';
 import { INewAdminUser } from '../../models/settings/SettingsModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { useDispatch } from 'react-redux';
-import { asyncCreateAdminUser } from '../../redux/slices/settingsSlice';
 import { FormProvider, useForm } from 'react-hook-form';
 import PasswordStrengthMeter from '../common/FormComponents/PasswordStrengthMeter';
 
-const CreateNewUserTab: React.FC = () => {
-  const dispatch = useDispatch();
+interface Props {
+  handeAddNewUser: (user: INewAdminUser) => void;
+}
+
+const CreateNewAdminUserTab: FC<Props> = ({ handeAddNewUser }) => {
   const methods = useForm<INewAdminUser>({
     defaultValues: { username: '', password: '', confirmPassword: '' },
   });
@@ -16,7 +17,7 @@ const CreateNewUserTab: React.FC = () => {
   const { reset } = methods;
 
   const handleRegister = (values: INewAdminUser) => {
-    dispatch(asyncCreateAdminUser(values));
+    handeAddNewUser(values);
     reset();
   };
   const passwordValue = methods.watch('password');
@@ -24,13 +25,8 @@ const CreateNewUserTab: React.FC = () => {
   return (
     <Container maxWidth="md">
       <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Paper sx={{ padding: 3, borderRadius: 7 }}>
-          <Grid item xs={12}>
-            <Typography textAlign="center" variant={'h5'} mb={2}>
-              Create New User
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
+        <Paper elevation={0} sx={{ padding: 7, borderRadius: 7 }}>
+          <Grid item xs={12} pt={10}>
             <Box display="flex" justifyContent="center">
               <FormProvider {...methods}>
                 <form onSubmit={methods.handleSubmit(handleRegister)}>
@@ -38,7 +34,10 @@ const CreateNewUserTab: React.FC = () => {
                     name="username"
                     rules={{
                       required: 'Username is required',
-                      minLength: { value: 5, message: 'Username should be 5 characters or longer' },
+                      minLength: {
+                        value: 5,
+                        message: 'Username should be 5 characters or longer',
+                      },
                     }}
                     label="Username"
                   />
@@ -93,4 +92,4 @@ const CreateNewUserTab: React.FC = () => {
   );
 };
 
-export default CreateNewUserTab;
+export default CreateNewAdminUserTab;

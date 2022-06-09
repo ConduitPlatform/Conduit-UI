@@ -1,24 +1,30 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input, Checkbox } from '@mui/material';
+import { Box, Typography, Button, Input } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
-import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { enqueueInfoNotification } from '../../../../utils/useNotifier';
-import { ModifyOptions, Permissions, Schema } from '../../../../models/database/CmsModels';
+import {
+  ICrudOperations,
+  ModifyOptions,
+  Permissions,
+  Schema,
+} from '../../../../models/database/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
+import CrudOperationsDialog from './CrudOperationsDialog';
+import { useRouter } from 'next/router';
 
 export const headerHeight = 64;
 
 interface Props {
   name: string;
   authentication: boolean;
-  crudOperations: boolean;
+  crudOperations: ICrudOperations;
   selectedSchema?: Schema;
   permissions: Permissions;
   readOnly: boolean;
-  handleSave: (name: string, readOnly: boolean, crud: boolean, permissions: Permissions) => void;
+  handleSave: (name: string, crud: ICrudOperations, permissions: Permissions) => void;
+  introspection?: boolean;
 }
 
 const Header: FC<Props> = ({
@@ -29,26 +35,30 @@ const Header: FC<Props> = ({
   permissions,
   readOnly,
   handleSave,
+  introspection,
   ...rest
 }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [schemaName, setSchemaName] = useState(name);
-  const [schemaAuthentication, setSchemaAuthentication] = useState(false);
-  const [schemaCrudOperations, setSchemaCrudOperations] = useState(false);
+  const [schemaCrudOperations, setSchemaCrudOperations] = useState<ICrudOperations>({
+    create: { enabled: false, authenticated: false },
+    read: { enabled: false, authenticated: false },
+    delete: { enabled: false, authenticated: false },
+    update: { enabled: false, authenticated: false },
+  });
   const [schemaPermissions, setSchemaPermissions] = useState<Permissions>({
     extendable: false,
     canCreate: false,
     canModify: ModifyOptions.Everything,
     canDelete: false,
   });
-  const [dialog, setDialog] = useState(false);
+  const [permissionsDialog, setPermissionsDialog] = useState<boolean>(false);
+  const [crudOperationsDialog, setCrudOperationsDialog] = useState<boolean>(false);
 
   useEffect(() => {
     setSchemaName(name);
-    if (authentication !== null && authentication !== undefined) {
-      setSchemaAuthentication(authentication);
-    }
     if (crudOperations !== null && crudOperations !== undefined) {
       setSchemaCrudOperations(crudOperations);
     }
@@ -67,17 +77,14 @@ const Header: FC<Props> = ({
   };
 
   const handleData = () => {
-    handleSave(schemaName, schemaAuthentication, schemaCrudOperations, schemaPermissions);
+    handleSave(schemaName, schemaCrudOperations, schemaPermissions);
   };
 
   const handleBackButtonClick = () => {
     dispatch(clearSelectedSchema());
-  };
-
-  const isDisabled = () => {
-    if (selectedSchema && selectedSchema.ownerModule !== 'database') {
-      return true;
-    } else return false;
+    if (introspection) {
+      router.push({ pathname: '/database/introspection' });
+    } else router.push({ pathname: '/database/schemas' });
   };
 
   return (
@@ -98,7 +105,7 @@ const Header: FC<Props> = ({
       }}
       {...rest}>
       <Box display={'flex'} alignItems={'center'}>
-        <Link href="/database/schemas">
+        <Box>
           {/* TODO call dispatch clear cms */}
           <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
             <Box
@@ -117,7 +124,7 @@ const Header: FC<Props> = ({
               />
             </Box>
           </a>
-        </Link>
+        </Box>
         <Input
           sx={{
             height: 5,
@@ -137,61 +144,35 @@ const Header: FC<Props> = ({
           value={schemaName}
           readOnly={readOnly}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              size="small"
-              sx={{
-                color: '#FFFFFF',
-                '&.Mui-checked': {
-                  color: '#FFFFFF',
-                },
-              }}
-              checked={schemaAuthentication}
-              disabled={isDisabled()}
-              onChange={(event) => {
-                setSchemaAuthentication(event.target.checked);
-              }}
-              name="authentication"
-            />
-          }
-          label={<Typography variant="caption">Authentication required</Typography>}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              size="small"
-              sx={{
-                color: '#FFFFFF',
-                '&.Mui-checked': {
-                  color: '#FFFFFF',
-                },
-              }}
-              checked={schemaCrudOperations}
-              disabled={isDisabled()}
-              onChange={(event) => {
-                setSchemaCrudOperations(event.target.checked);
-              }}
-              name="crudOperations"
-            />
-          }
-          label={<Typography variant="caption">Allow Crud Operations</Typography>}
-        />
-        <Button variant="outlined" onClick={() => setDialog(true)}>
-          Permissions
-        </Button>
+        <Box display="flex" gap={4}>
+          <Button variant="outlined" onClick={() => setCrudOperationsDialog(true)}>
+            Crud operations
+          </Button>
+          <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
+            Permissions
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button sx={{ margin: 2, color: 'common.white' }} onClick={() => handleData()}>
           <SaveIcon />
-          <Typography>Save</Typography>
+          <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
         </Button>
       </Box>
       <PermissionsDialog
-        open={dialog}
+        open={permissionsDialog}
+        introspection={introspection}
         permissions={schemaPermissions}
         setPermissions={setSchemaPermissions}
-        handleClose={() => setDialog(false)}
+        handleClose={() => setPermissionsDialog(false)}
+        selectedSchema={selectedSchema}
+      />
+      <CrudOperationsDialog
+        open={crudOperationsDialog}
+        introspection={introspection}
+        crudOperations={schemaCrudOperations}
+        setCrudOperations={setSchemaCrudOperations}
+        handleClose={() => setCrudOperationsDialog(false)}
         selectedSchema={selectedSchema}
       />
     </Box>

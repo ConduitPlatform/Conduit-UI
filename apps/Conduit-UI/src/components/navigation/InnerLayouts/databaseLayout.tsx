@@ -18,7 +18,6 @@ const DatabaseLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      baseUrl={`${process.env.CONDUIT_URL}`}
       title={'Database'}
       labels={labels}
       pathNames={pathNames}

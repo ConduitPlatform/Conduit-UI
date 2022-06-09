@@ -17,17 +17,32 @@ import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { IClient } from '../../models/security/SecurityModels';
+import ClientPlatformEnum, { IClient } from '../../models/security/SecurityModels';
 import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
 import { useAppSelector } from '../../redux/store';
-import SecretsDialog from './ClientsDialog';
-import { Add } from '@mui/icons-material';
+import CreateSecurityClientDialog from './CreateSecurityClientDialog';
+import { Add, Update } from '@mui/icons-material';
+import UpdateSecurityClientDialog from './UpdateSecurityClientDialog';
+
+const emptyClient = {
+  _id: '',
+  clientId: '',
+  clientSecret: '',
+  domain: '',
+  platform: ClientPlatformEnum.WEB,
+  notes: '',
+  alias: '',
+  createdAt: '',
+  updatedAt: '',
+};
 
 const ClientsTab: React.FC = () => {
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [updateDialog, setUpdateDialog] = useState<boolean>(false);
+  const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
 
   useEffect(() => {
     dispatch(asyncGetAvailableClients());
@@ -41,6 +56,16 @@ const ClientsTab: React.FC = () => {
 
   const handleClose = () => {
     setOpenDialog(false);
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setUpdateDialog(false);
+    setSelectedClient(emptyClient);
+  };
+
+  const handleOpenUpdateDialog = (client: IClient) => {
+    setSelectedClient(client);
+    setUpdateDialog(true);
   };
 
   return (
@@ -63,9 +88,12 @@ const ClientsTab: React.FC = () => {
                   }}>
                   Client ID
                 </TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }}>Alias</TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }}>Domain</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                <TableCell sx={{ backgroundColor: 'background.paper' }} />
                 <TableCell sx={{ backgroundColor: 'background.paper' }} />
               </TableHead>
               <TableBody>
@@ -74,6 +102,10 @@ const ClientsTab: React.FC = () => {
                     <TableCell
                       sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <Typography variant={'caption'}>{client.clientId}</Typography>
+                    </TableCell>
+                    <TableCell
+                      sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <Typography variant={'caption'}>{client.alias || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell sx={{ maxWidth: '40px' }}>
                       <Box>
@@ -89,10 +121,17 @@ const ClientsTab: React.FC = () => {
                       sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <Typography variant={'caption'}>{client.domain || 'N/A'}</Typography>
                     </TableCell>
-                    <TableCell sx={{ display: 'flex' }}>
-                      <IconButton onClick={() => handleDeletion(client._id)} size="large">
-                        <DeleteIcon color="error" />
-                      </IconButton>
+                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                    <TableCell>
+                      <Box display="flex" gap={1}>
+                        <IconButton onClick={() => handleDeletion(client._id)} size="large">
+                          <DeleteIcon color="error" />
+                        </IconButton>
+                        <IconButton onClick={() => handleOpenUpdateDialog(client)} size="large">
+                          <Update color="secondary" />
+                        </IconButton>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -101,7 +140,12 @@ const ClientsTab: React.FC = () => {
           </TableContainer>
         </Box>
       </Paper>
-      <SecretsDialog open={openDialog} handleClose={handleClose} />
+      <CreateSecurityClientDialog open={openDialog} handleClose={handleClose} />
+      <UpdateSecurityClientDialog
+        open={updateDialog}
+        handleClose={handleCloseUpdateDialog}
+        client={selectedClient}
+      />
     </Container>
   );
 };

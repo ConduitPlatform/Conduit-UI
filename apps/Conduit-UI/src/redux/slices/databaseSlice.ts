@@ -10,6 +10,7 @@ import {
   toggleSchemaByIdRequest,
   setSchemaExtension,
   getSchemaOwners,
+  getSchemaByIdRequest,
 } from '../../http/DatabaseRequests';
 import {
   createSchemaDocumentRequest,
@@ -23,15 +24,22 @@ import {
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
 } from '../../http/CustomEndpointsRequests';
-import { EndpointTypes, Schema } from '../../models/database/CmsModels';
+import { EndpointTypes, IntrospectionStatus, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import { Pagination, Search, Sort } from '../../models/http/HttpModels';
+import {
+  enqueueErrorNotification,
+  enqueueInfoNotification,
+  enqueueSuccessNotification,
+} from '../../utils/useNotifier';
+import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 import {
   finalizeIntrospectedSchemas,
+  getIntrospectionSchemaById,
   getIntrospectionSchemas,
+  introspect,
+  introspectionStatus,
 } from '../../http/IntrospectionRequests';
 
 export interface IDatabaseSlice {
@@ -44,6 +52,8 @@ export interface IDatabaseSlice {
       schemaDocuments: Schema[];
       schemasCount: number;
     };
+    schemaToEdit: Schema | null;
+    introspectionSchemaToEdit: Schema | null;
     dialogSchemas: {
       schemas: Schema[];
       schemasCount: number;
@@ -65,6 +75,7 @@ export interface IDatabaseSlice {
     count: number;
     config: any;
     selectedSchema: Schema | null;
+    introspectionStatus: IntrospectionStatus;
   };
 }
 
@@ -74,10 +85,12 @@ const initialState: IDatabaseSlice = {
       schemaDocuments: [],
       schemasCount: 0,
     },
+    schemaToEdit: null,
     introspectionSchemas: {
       schemaDocuments: [],
       schemasCount: 0,
     },
+    introspectionSchemaToEdit: null,
     dialogSchemas: {
       schemas: [],
       schemasCount: 0,
@@ -99,6 +112,12 @@ const initialState: IDatabaseSlice = {
     count: 0,
     config: null,
     selectedSchema: null,
+    introspectionStatus: {
+      foreignSchemaCount: 0,
+      foreignSchemas: [],
+      importedSchemaCount: 0,
+      importedSchemas: [],
+    },
   },
 };
 
@@ -116,6 +135,22 @@ export const asyncGetSchemas = createAsyncThunk(
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetSchemaById = createAsyncThunk(
+  'database/getSchemaById',
+  async (params: { id: string | string[]; noError?: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getSchemaByIdRequest(params.id);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      if (!params.noError) thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
   }
@@ -554,6 +589,22 @@ export const asyncGetIntrospectionSchemas = createAsyncThunk(
   }
 );
 
+export const asyncGetIntrospectionSchemaById = createAsyncThunk(
+  'database/getIntrospectionSchemaById',
+  async (params: { id: string | string[] }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getIntrospectionSchemaById(params.id);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncAddIntroSpectionSchemas = createAsyncThunk(
   'database/addIntrospectionSchemas',
   async (params: Pagination & Search, thunkAPI) => {
@@ -572,9 +623,9 @@ export const asyncAddIntroSpectionSchemas = createAsyncThunk(
   }
 );
 
-export const asyncFinalizeIntrospectedSchemas = createAsyncThunk(
+export const asyncFinalizeIntrospectedSchema = createAsyncThunk(
   'database/finalizeIntrospection',
-  async (params: Schema[], thunkAPI) => {
+  async (params: any[], thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await finalizeIntrospectedSchemas(params);
@@ -590,23 +641,36 @@ export const asyncFinalizeIntrospectedSchemas = createAsyncThunk(
   }
 );
 
-// export const asyncPostIntrospection = createAsyncThunk(
-//   'database/postIntrospection',
-//   async (params: Pagination & Search, thunkAPI) => {
-//     thunkAPI.dispatch(setAppLoading(true));
-//     try {
-//       const { data } = await postIntrospection(params);
-//       thunkAPI.dispatch(setAppLoading(false));
-//       return {
-//         results: data.schemas as Schema[],
-//       };
-//     } catch (error) {
-//       thunkAPI.dispatch(setAppLoading(false));
-//       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-//       throw error;
-//     }
-//   }
-// );
+export const asyncIntrospect = createAsyncThunk('database/introspect', async (params, thunkAPI) => {
+  thunkAPI.dispatch(setAppLoading(true));
+  try {
+    const { data } = await introspect();
+    thunkAPI.dispatch(setAppLoading(false));
+    return {
+      results: data.schemas as Schema[],
+    };
+  } catch (error) {
+    thunkAPI.dispatch(setAppLoading(false));
+    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+    throw error;
+  }
+});
+
+export const asyncGetIntrospectionStatus = createAsyncThunk(
+  'database/intospectionStatus',
+  async (params, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await introspectionStatus();
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
 
 const databaseSlice = createSlice({
   name: 'database',
@@ -619,7 +683,10 @@ const databaseSlice = createSlice({
       );
     },
     clearSelectedSchema(state) {
-      state.data.selectedSchema = null;
+      state.data.schemaToEdit = null;
+    },
+    clearIntrospectionSchema(state) {
+      state.data.introspectionSchemaToEdit = null;
     },
     clearEndpoints(state) {
       state.data.customEndpoints.endpoints = [];
@@ -641,6 +708,9 @@ const databaseSlice = createSlice({
         ...state.data.schemas.schemaDocuments,
         ...action.payload.results,
       ];
+    });
+    builder.addCase(asyncGetSchemaById.fulfilled, (state, action) => {
+      state.data.schemaToEdit = action.payload;
     });
     builder.addCase(asyncGetSchemasDialog.fulfilled, (state, action) => {
       state.data.dialogSchemas.schemas = action.payload.dialogResults;
@@ -702,6 +772,12 @@ const databaseSlice = createSlice({
       state.data.introspectionSchemas.schemaDocuments = action.payload.results;
       state.data.introspectionSchemas.schemasCount = action.payload.documentsCount;
     });
+    builder.addCase(asyncGetIntrospectionSchemaById.fulfilled, (state, action) => {
+      state.data.introspectionSchemaToEdit = action.payload;
+    });
+    builder.addCase(asyncGetIntrospectionStatus.fulfilled, (state, action) => {
+      state.data.introspectionStatus = action.payload;
+    });
     builder.addCase(asyncAddIntroSpectionSchemas.fulfilled, (state, action) => {
       state.data.introspectionSchemas.schemaDocuments = [
         ...state.data.introspectionSchemas.schemaDocuments,
@@ -712,5 +788,10 @@ const databaseSlice = createSlice({
 });
 
 export default databaseSlice.reducer;
-export const { setSelectedSchema, clearSelectedSchema, setEndpointsSearch, setEndpointsOperation } =
-  databaseSlice.actions;
+export const {
+  setSelectedSchema,
+  clearSelectedSchema,
+  clearIntrospectionSchema,
+  setEndpointsSearch,
+  setEndpointsOperation,
+} = databaseSlice.actions;

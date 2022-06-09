@@ -8,8 +8,7 @@ export interface Schema {
     conduit: {
       cms: {
         enabled: boolean;
-        authentication: boolean;
-        crudOperations: boolean;
+        crudOperations: ICrudOperations;
       };
       permissions: Permissions;
     };
@@ -20,6 +19,13 @@ export interface Schema {
   fields: any;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ICrudOperations {
+  create: { enabled: boolean; authenticated: boolean };
+  read: { enabled: boolean; authenticated: boolean };
+  update: { enabled: boolean; authenticated: boolean };
+  delete: { enabled: boolean; authenticated: boolean };
 }
 
 export interface SchemaUI {
@@ -111,4 +117,11 @@ export interface SchemaFields {
 export interface CMSDocuments {
   _id: string;
   name: string;
+}
+
+export interface IntrospectionStatus {
+  foreignSchemas: string[];
+  foreignSchemaCount: number;
+  importedSchemas: string[];
+  importedSchemaCount: number;
 }

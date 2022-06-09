@@ -25,7 +25,11 @@ export const Layout: React.FC = ({ children, ...rest }) => {
       setItemSelected(splitUri);
     }
 
-    if (router.pathname === '/login' || router.pathname === '/database/schemas/[id]') {
+    if (
+      router.pathname === '/login' ||
+      router.pathname === '/database/schemas/[id]' ||
+      router.pathname === '/database/introspection/[id]'
+    ) {
       setMenuDisabled(true);
       return;
     }

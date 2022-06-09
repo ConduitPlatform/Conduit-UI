@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,51 +7,45 @@ import {
   Button,
   Container,
   Grid,
+  Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ModifyOptions, Permissions, Schema } from '../../../../models/database/CmsModels';
+import { ICrudOperations, Schema } from '../../../../models/database/CmsModels';
 import { DoneOutline } from '@mui/icons-material';
 import { useForm, FormProvider } from 'react-hook-form';
-import { FormInputSelect } from '../../../common/FormComponents/FormInputSelect';
 import { FormInputCheckBox } from '../../../common/FormComponents/FormInputCheckbox';
 
 interface Props {
-  permissions: Permissions;
+  crudOperations: ICrudOperations;
   introspection?: boolean;
-  setPermissions: (permissions: Permissions) => void;
+  setCrudOperations: (crudOperations: ICrudOperations) => void;
   open: boolean;
   selectedSchema?: Schema;
   handleClose: () => void;
 }
 
-const options = [
-  { label: 'Everything', value: ModifyOptions.Everything },
-  { label: 'Nothing', value: ModifyOptions.Nothing },
-  { label: 'ExtensionOnly', value: ModifyOptions.ExtensionOnly },
-];
-
-const PermissionsDialog: FC<Props> = ({
+const CrudOperationsDialog: React.FC<Props> = ({
   open,
   introspection,
   handleClose,
-  permissions,
+  crudOperations,
   selectedSchema,
-  setPermissions,
+  setCrudOperations,
 }) => {
-  const methods = useForm<Permissions>({
+  const methods = useForm<ICrudOperations>({
     defaultValues: useMemo(() => {
-      return permissions;
-    }, [permissions]),
+      return crudOperations;
+    }, [crudOperations]),
   });
 
   useEffect(() => {
-    methods.reset(permissions);
-  }, [methods, permissions]);
+    methods.reset(crudOperations);
+  }, [methods, crudOperations]);
 
   const { handleSubmit, reset } = methods;
 
-  const onSubmit = (data: Permissions) => {
-    setPermissions({ ...data });
+  const onSubmit = (data: ICrudOperations) => {
+    setCrudOperations({ ...data });
     handleClose();
   };
 
@@ -69,7 +63,7 @@ const PermissionsDialog: FC<Props> = ({
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
-        Permissions
+        CRUD operations
         <IconButton
           onClick={handleCloseDialog}
           sx={{ position: 'absolute', left: '92%', top: '1%', color: 'gray' }}
@@ -90,30 +84,55 @@ const PermissionsDialog: FC<Props> = ({
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container alignItems="center" spacing={2}>
-                <Grid item sm={6}>
+                <Grid item sm={6} p={2}>
+                  <Typography>Create:</Typography>
                   <FormInputCheckBox
-                    name="extendable"
-                    label="Is extendable"
+                    name="create.enabled"
+                    label="enabled"
+                    disabled={isDisabled()}
+                  />
+                  <FormInputCheckBox
+                    name="create.authenticated"
+                    label="authenticated"
                     disabled={isDisabled()}
                   />
                 </Grid>
-                <Grid item sm={6}>
-                  <FormInputCheckBox name="canCreate" label="Can create" disabled={isDisabled()} />
-                </Grid>
-                <Grid item sm={6}>
-                  <FormInputCheckBox name="canDelete" label="Can delete" disabled={isDisabled()} />
-                </Grid>
-                <Grid item sm={6}>
-                  <FormInputSelect
+                <Grid item sm={6} p={2}>
+                  <Typography>Delete:</Typography>
+                  <FormInputCheckBox
+                    name="delete.enabled"
+                    label="enabled"
                     disabled={isDisabled()}
-                    label={'Can modify'}
-                    name="canModify"
-                    options={options.map((option) => ({
-                      label: option.label,
-                      value: option.value,
-                    }))}
+                  />
+                  <FormInputCheckBox
+                    name="delete.authenticated"
+                    label="authenticated"
+                    disabled={isDisabled()}
                   />
                 </Grid>
+                <Grid item sm={6} p={2}>
+                  <Typography>Read:</Typography>
+                  <FormInputCheckBox name="read.enabled" label="enabled" disabled={isDisabled()} />
+                  <FormInputCheckBox
+                    name="read.authenticated"
+                    label="authenticated"
+                    disabled={isDisabled()}
+                  />
+                </Grid>
+                <Grid item sm={6} p={2}>
+                  <Typography>Update:</Typography>
+                  <FormInputCheckBox
+                    name="update.enabled"
+                    label="enabled"
+                    disabled={isDisabled()}
+                  />
+                  <FormInputCheckBox
+                    name="update.authenticated"
+                    label="authenticated"
+                    disabled={isDisabled()}
+                  />
+                </Grid>
+
                 <Grid item sm={12}>
                   <Button
                     disabled={isDisabled()}
@@ -135,4 +154,4 @@ const PermissionsDialog: FC<Props> = ({
   );
 };
 
-export default PermissionsDialog;
+export default CrudOperationsDialog;

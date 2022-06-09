@@ -6,8 +6,8 @@ export const getSchemasRequest = (
   params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] }
 ) => axios.get(`${CONDUIT_API}/admin/database/schemas`, { params });
 
-export const getSchemaByIdRequest = (_id: string) =>
-  axios.get(`${CONDUIT_API}/admin/database/schemas${_id}`);
+export const getSchemaByIdRequest = (_id: string | string[]) =>
+  axios.get(`${CONDUIT_API}/admin/database/schemas/${_id}`);
 
 export const postSchemaRequest = (data: any) =>
   axios.post(`${CONDUIT_API}/admin/database/schemas`, { ...data });

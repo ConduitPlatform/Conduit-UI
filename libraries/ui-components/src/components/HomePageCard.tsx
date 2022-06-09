@@ -1,13 +1,16 @@
 import { Box, Card, Divider, styled, Typography } from "@mui/material";
 import React, { FC } from "react";
-import {homePageFontSizeSubtitles, homePageFontSizeTitles} from "@conduitplatform/conduit-ui/src/theme";
+import {
+  homePageFontSizeSubtitles,
+  homePageFontSizeTitles,
+} from "@conduitplatform/conduit-ui/src/theme";
 
 const BoxWithIconText = styled(Box)(() => ({
-  display: 'flex',
+  display: "flex",
   flex: 1,
-  alignItems: 'center',
-  flexWrap: 'nowrap',
-  overflow: 'hidden'
+  alignItems: "center",
+  flexWrap: "nowrap",
+  overflow: "hidden",
 }));
 
 const CustomizedDivider = styled(Divider)(({ theme }) => ({
@@ -16,16 +19,16 @@ const CustomizedDivider = styled(Divider)(({ theme }) => ({
 }));
 
 const CustomizedCard = styled(Card)(() => ({
-  display: 'flex',
+  display: "flex",
   flex: 1,
   borderRadius: 8,
-  backgroundColor: 'common.white',
-  flexDirection: 'column',
+  backgroundColor: "common.white",
+  flexDirection: "column",
   padding: 20,
-  '&:hover': {
+  "&:hover": {
     boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
   },
-  '&:focus': {
+  "&:focus": {
     boxShadow: `0px 3px 12px rgba(138, 138, 138, 0.25)`,
   },
 }));
@@ -33,18 +36,21 @@ const CustomizedCard = styled(Card)(() => ({
 interface Props {
   icon: any;
   title: string;
-  description: string;
+  descriptionContent: JSX.Element;
 }
 
-const HomePageCard: FC<Props> = ({ icon, title, description }) => {
+const HomePageCard: FC<Props> = ({ icon, title, descriptionContent }) => {
   return (
     <CustomizedCard>
       <BoxWithIconText>
         {icon}
-        <Typography noWrap sx={{fontSize:homePageFontSizeTitles}}> &nbsp; {title}</Typography>
+        <Typography noWrap sx={{ fontSize: homePageFontSizeTitles }}>
+          {" "}
+          &nbsp; {title}
+        </Typography>
       </BoxWithIconText>
       <CustomizedDivider />
-      <Typography variant="subtitle2"  sx={{height: '40px',fontSize:homePageFontSizeSubtitles, mb: 1}}>{description}</Typography>
+      {descriptionContent}
     </CustomizedCard>
   );
 };
