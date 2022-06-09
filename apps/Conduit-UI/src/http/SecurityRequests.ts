@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { CONDUIT_API } from './requestsConfig';
-import ClientPlatformEnum, { IClient, ISecurityConfig } from '../models/security/SecurityModels';
+import ClientPlatformEnum, {
+  ISecurityConfig,
+  IUpdateClient,
+} from '../models/security/SecurityModels';
 
 export const getAvailableClientsRequest = () => {
   return axios.get(`${CONDUIT_API}/admin/security/client`);
@@ -15,8 +18,8 @@ export const generateNewClientRequest = (
   return axios.post(`${CONDUIT_API}/admin/security/client`, { platform, domain, notes, alias });
 };
 
-export const updateSecurityClient = (_id: string, data: IClient) => {
-  return axios.put(`${CONDUIT_API}/admin/config/security/${_id}`, { data });
+export const updateSecurityClient = (_id: string, data: IUpdateClient) => {
+  return axios.put(`${CONDUIT_API}/admin/security/client/${_id}`, { ...data });
 };
 
 export const deleteClientRequest = (_id: string) => {

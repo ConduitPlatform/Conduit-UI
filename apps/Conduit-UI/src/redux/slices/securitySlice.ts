@@ -2,7 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import ClientPlatformEnum, { IClient, ISecurityConfig } from '../../models/security/SecurityModels';
+import ClientPlatformEnum, {
+  IClient,
+  ISecurityConfig,
+  IUpdateClient,
+} from '../../models/security/SecurityModels';
 import {
   deleteClientRequest,
   generateNewClientRequest,
@@ -50,7 +54,7 @@ export const asyncGetAvailableClients = createAsyncThunk(
 
 export const asyncUpdateClient = createAsyncThunk(
   'security/deleteClient',
-  async (args: { _id: string; data: IClient }, thunkAPI) => {
+  async (args: { _id: string; data: IUpdateClient }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await updateSecurityClient(args._id, args.data);

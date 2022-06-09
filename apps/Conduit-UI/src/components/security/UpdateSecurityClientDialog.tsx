@@ -34,16 +34,28 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
     methods.reset(client);
   }, [methods, client]);
 
-  const showDomain = () => {
-    return methods.getValues('platform') === 'WEB';
-  };
+  const isWeb = methods.watch('platform') === 'WEB';
 
   const onSubmit = (data: IClient) => {
-    if (data.platform === 'WEB' && (!data.domain || data.domain.length === 0)) {
+    if (isWeb && (!data.domain || data.domain.length === 0)) {
       dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
       return;
     }
-    dispatch(asyncUpdateClient({ _id: data._id, data }));
+    if (isWeb) {
+      const formattedData = {
+        alias: data.alias,
+        notes: data.notes,
+        domain: data.domain,
+      };
+      dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
+    } else {
+      const formattedData = {
+        alias: data.alias,
+        notes: data.notes,
+      };
+      dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
+    }
+
     setTimeout(() => {
       dispatch(asyncGetAvailableClients());
     }, 140);
@@ -63,9 +75,9 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
       <DialogContent>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Box display="flex" flexDirection="column" gap={3} width="560px">
+            <Box display="flex" flexDirection="column" gap={3} width="560px" p={3}>
               <FormInputText name={'alias'} label={'Alias'} />
-              {showDomain() && <FormInputText name={'domain'} label={'domain'} disabled />}
+              {isWeb && <FormInputText name={'domain'} label={'domain'} />}
               <FormInputText name={'notes'} label={'Notes'} />
               <FormInputSelect
                 options={platforms.map((platform) => ({
@@ -74,6 +86,7 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
                 }))}
                 name="platform"
                 label="Platform"
+                disabled
               />
             </Box>
             <Box width="100%" px={6} py={2}>

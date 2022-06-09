@@ -78,15 +78,15 @@ const ClientsTab: React.FC = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableCell sx={{ backgroundColor: 'background.paper' }}>Client ID</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
+                  Alias
+                </TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
                   Platform
                 </TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
                   Domain
-                </TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
-                  Alias
                 </TableCell>
 
                 <TableCell sx={{ backgroundColor: 'background.paper' }} />
@@ -98,6 +98,9 @@ const ClientsTab: React.FC = () => {
                   <TableRow key={index}>
                     <TableCell>
                       <Typography variant={'caption'}>{client.clientId}</Typography>
+                    </TableCell>
+                    <TableCell colSpan={2}>
+                      <Typography variant={'caption'}>{client.alias || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell>
                       <Box sx={{ maxWidth: 500 }}>
@@ -111,9 +114,6 @@ const ClientsTab: React.FC = () => {
                     </TableCell>
                     <TableCell colSpan={2}>
                       <Typography variant={'caption'}>{client.domain || 'N/A'}</Typography>
-                    </TableCell>
-                    <TableCell colSpan={2}>
-                      <Typography variant={'caption'}>{client.alias || 'N/A'}</Typography>
                     </TableCell>
 
                     <TableCell sx={{ backgroundColor: 'background.paper' }} />

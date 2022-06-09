@@ -10,6 +10,12 @@ export interface IClient {
   updatedAt: string;
 }
 
+export interface IUpdateClient {
+  domain?: string;
+  notes: string;
+  alias: string;
+}
+
 export interface ICreateClient {
   domain: string;
   platform: ClientPlatformEnum;

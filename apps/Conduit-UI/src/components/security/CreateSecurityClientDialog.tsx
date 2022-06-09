@@ -61,7 +61,7 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
       <DialogContent>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Box display="flex" flexDirection="column" gap={3} width="560px">
+            <Box display="flex" flexDirection="column" gap={3} width="560px" p={3}>
               <FormInputSelect
                 options={platforms.map((platform) => ({
                   label: platform.label,
