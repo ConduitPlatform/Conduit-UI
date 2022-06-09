@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Paper } from '@mui/material';
 import { INewAdminUser } from '../../models/settings/SettingsModels';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormProvider, useForm } from 'react-hook-form';

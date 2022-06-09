@@ -1,14 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { IClient, IPlatformTypes, ISecurityConfig } from '../../models/security/SecurityModels';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import ClientPlatformEnum, {
+  IClient,
+  ISecurityConfig,
+  IUpdateClient,
+} from '../../models/security/SecurityModels';
 import {
   deleteClientRequest,
   generateNewClientRequest,
   getAvailableClientsRequest,
   getSecurityConfig,
   putSecurityConfig,
+  updateSecurityClient,
 } from '../../http/SecurityRequests';
 
 interface ISecuritySlice {
@@ -47,12 +52,37 @@ export const asyncGetAvailableClients = createAsyncThunk(
   }
 );
 
-export const asyncGenerateNewClient = createAsyncThunk(
-  'security/generateClient',
-  async (clientData: { platform: IPlatformTypes; domain?: string }, thunkAPI) => {
+export const asyncUpdateClient = createAsyncThunk(
+  'security/deleteClient',
+  async (args: { _id: string; data: IUpdateClient }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await generateNewClientRequest(clientData.platform, clientData.domain);
+      await updateSecurityClient(args._id, args.data);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully updated client!`));
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGenerateNewClient = createAsyncThunk(
+  'security/generateClient',
+  async (
+    clientData: { platform: ClientPlatformEnum; domain?: string; notes?: string; alias: string },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await generateNewClientRequest(
+        clientData.platform,
+        clientData.domain,
+        clientData.notes,
+        clientData.alias
+      );
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created client!`));
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
