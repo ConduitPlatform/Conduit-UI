@@ -22,8 +22,8 @@ const CoreSettingsTab: React.FC = () => {
   const { reset } = methods;
 
   useEffect(() => {
-    methods.reset(client);
-  }, [methods, client]);
+    methods.reset(coreSettings);
+  }, [methods, coreSettings]);
 
   const onSaveClick = (data: ICoreSettings) => {
     dispatch(asyncUpdateCoreSettings(data));
