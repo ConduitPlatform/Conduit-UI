@@ -140,9 +140,10 @@ const ServiceAccountsTabs = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ backgroundColor: 'background.paper' }}>Name</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Token</TableCell>
                   <TableCell sx={{ backgroundColor: 'background.paper' }}>Active</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Created At</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper', whiteSpace: 'nowrap' }}>
+                    Created At
+                  </TableCell>
                   <TableCell sx={{ backgroundColor: 'background.paper' }} />
                 </TableRow>
               </TableHead>
@@ -151,11 +152,6 @@ const ServiceAccountsTabs = () => {
                   <TableRow key={index}>
                     <TableCell>
                       <Typography variant={'caption'}>{service.name}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant={'caption'}>
-                        {Array(service.hashedToken.length + 1).join('*')}
-                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant={'caption'}>

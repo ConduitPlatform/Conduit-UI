@@ -1,5 +1,6 @@
 import { Box, Card, Divider, styled, Typography } from "@mui/material";
 import React, { FC } from "react";
+import {homePageFontSizeSubtitles, homePageFontSizeTitles} from "@conduitplatform/conduit-ui/src/theme";
 
 const BoxWithIconText = styled(Box)(() => ({
   display: 'flex',
@@ -33,19 +34,17 @@ interface Props {
   icon: any;
   title: string;
   description: string;
-  titleProps: object | undefined;
-  subtitleProps: object | undefined;
 }
 
-const HomePageCard: FC<Props> = ({ icon, title, description,titleProps,subtitleProps }) => {
+const HomePageCard: FC<Props> = ({ icon, title, description }) => {
   return (
     <CustomizedCard>
       <BoxWithIconText>
         {icon}
-        <Typography {...titleProps}> &nbsp; {title}</Typography>
+        <Typography noWrap sx={{fontSize:homePageFontSizeTitles}}> &nbsp; {title}</Typography>
       </BoxWithIconText>
       <CustomizedDivider />
-      <Typography variant="subtitle2" {...subtitleProps}>{description}</Typography>
+      <Typography variant="subtitle2"  sx={{height: '40px',fontSize:homePageFontSizeSubtitles, mb: 1}}>{description}</Typography>
     </CustomizedCard>
   );
 };

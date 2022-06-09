@@ -14,11 +14,7 @@ import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import getConfig from 'next/config';
-import {
-  homePageFontSizeHeader,
-  homePageFontSizeSubtitles,
-  homePageFontSizeTitles,
-} from '../theme';
+import { homePageFontSizeHeader } from '../theme';
 
 const {
   publicRuntimeConfig: { CONDUIT_URL },
@@ -112,15 +108,6 @@ const Home = () => {
                 sx={{ textDecoration: 'none', cursor: 'pointer' }}
                 href="/authentication/signIn">
                 <HomePageCard
-                  subtitleProps={{
-                    height: '40px',
-                    fontSize: homePageFontSizeSubtitles,
-                    mb: '8px',
-                  }}
-                  titleProps={{
-                    noWrap: true,
-                    fontSize: homePageFontSizeTitles,
-                  }}
                   icon={<SecretIcon />}
                   title="set up an auth method"
                   description="Easily login with the method of your choice!"
@@ -130,12 +117,6 @@ const Home = () => {
             <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/database/schemas">
                 <HomePageCard
-                  subtitleProps={{
-                    height: '40px',
-                    fontSize: homePageFontSizeSubtitles,
-                    mb: '8px',
-                  }}
-                  titleProps={{ noWrap: true, fontSize: homePageFontSizeTitles }}
                   icon={<SchemaIcon />}
                   title="create a schema"
                   description={
@@ -148,8 +129,6 @@ const Home = () => {
             <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/email/config">
                 <HomePageCard
-                  subtitleProps={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: '8px' }}
-                  titleProps={{ noWrap: true, fontSize: homePageFontSizeTitles }}
                   icon={<EmailIcon />}
                   title="set up email provider"
                   description="Select your preferred provider and start mailing!"
@@ -159,8 +138,6 @@ const Home = () => {
             <Grid item xs={12} md={6}>
               <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/settings/secrets">
                 <HomePageCard
-                  subtitleProps={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: '8px' }}
-                  titleProps={{ noWrap: true, fontSize: homePageFontSizeTitles }}
                   icon={<LockIcon />}
                   title="set up client secrets"
                   description="Set up your client secret across multiple platforms!"

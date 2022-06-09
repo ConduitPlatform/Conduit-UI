@@ -136,6 +136,7 @@ const TableDialog: React.FC<Props> = ({
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
         <TextField
+          sx={{ mb: 1 }}
           margin="dense"
           size="small"
           variant="outlined"
