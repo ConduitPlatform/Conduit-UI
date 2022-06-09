@@ -1,8 +1,9 @@
-import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import moment from 'moment';
 import Box from '@mui/material/Box';
 import React, { FC } from 'react';
 import { IChatRoom } from '../../models/chat/ChatModels';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Props {
   data: IChatRoom;
@@ -13,6 +14,12 @@ interface Props {
 const ChatInfoDialog: FC<Props> = ({ data, open, onClose }) => {
   return (
     <Dialog onClose={onClose} open={open} fullWidth maxWidth="xs">
+      <IconButton
+        onClick={onClose}
+        sx={{ position: 'absolute', left: '90%', top: '1%', color: 'gray' }}
+        size="medium">
+        <CloseIcon />
+      </IconButton>
       <DialogTitle>Info</DialogTitle>
       <DialogContent>
         <Typography variant="body1" sx={{ mb: 1 }}>

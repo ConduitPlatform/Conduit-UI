@@ -102,8 +102,8 @@ const DataTable: React.FC<Props> = ({
     <TableContainer
       sx={
         !inner
-          ? { maxHeight: '70vh' }
-          : { maxHeight: '70vh', backgroundColor: 'background.default' }
+          ? { maxHeight: '65vh' }
+          : { maxHeight: '65vh', backgroundColor: 'background.default' }
       }
       component={Paper}
       {...rest}>
@@ -123,7 +123,7 @@ const DataTable: React.FC<Props> = ({
               )}
             </TableCell>
             {headers.map((header: any, idx: number) => (
-              <TableCell sx={{ backgroundColor: 'secondary.dark' }} key={idx}>
+              <TableCell sx={{ backgroundColor: 'secondary.dark', whiteSpace:'nowrap' }} key={idx}>
                 {header.sort && sort ? (
                   <TableSortLabel
                     active={sort?.index === header.sort}

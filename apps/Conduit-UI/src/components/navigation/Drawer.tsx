@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paper } from '@mui/material';
+import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 import { ExitToApp, Security, Settings } from '@mui/icons-material';
@@ -19,6 +19,8 @@ interface Props {
 const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 
@@ -28,8 +30,22 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   };
 
   return (
-    <Paper sx={{ minWidth: 224, display: 'flex', flexDirection: 'column' }} elevation={2} {...rest}>
-      <ListItem sx={{ alignItems: 'center', justifyContent: 'center', mt: 4 }}>
+    <Paper
+      sx={{
+        width: smallScreen ? 60 : 200,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+      elevation={2}
+      {...rest}>
+      <ListItem
+        sx={{
+          width: smallScreen ? 60 : 200,
+          alignItems: 'center',
+          justifyContent: 'center',
+          mt: 4,
+        }}>
         <Image src={ConduitLogo} alt="conduit-logo" />
       </ListItem>
       <Box
@@ -39,21 +55,27 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           flexDirection: 'column',
           justifyContent: 'space-between',
           mt: 4,
+          padding: 0,
         }}>
         <List component="nav">
-          <Modules modules={enabledModules} homeEnabled itemSelected={itemSelected} />
+          <Modules
+            modules={enabledModules}
+            homeEnabled
+            itemSelected={itemSelected}
+            smallScreen={smallScreen}
+          />
           <Link href="/security/clients" passHref>
             <ModuleItem
               selected={itemSelected === 'security'}
               icon={<Security color={'inherit'} />}
-              title="Security"
+              title={smallScreen ? null : 'Security'}
             />
           </Link>
           <Link href="/settings/clientsdk" passHref>
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}
-              title="Settings"
+              title={smallScreen ? null : 'Settings'}
             />
           </Link>
           {disabledModules.length > 0 ? (
@@ -64,10 +86,10 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             <></>
           )}
         </List>
-        <Box sx={{ margin: 0, paddingLeft: 1 }}>
+        <Box sx={{ margin: 0, paddingLeft: 0 }}>
           <ModuleItem
             icon={<ExitToApp color={'inherit'} />}
-            title="Log out"
+            title={smallScreen ? null : 'Log out'}
             onClick={() => handleLogout()}
           />
         </Box>

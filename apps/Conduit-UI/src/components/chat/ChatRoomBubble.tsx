@@ -81,7 +81,9 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
             padding: 1,
             maxWidth: '80%',
           }}>
-          <Typography variant="body2">{data?.message}</Typography>
+          <Typography variant="body2" noWrap>
+            {data?.message}
+          </Typography>
         </Box>
       </Tooltip>
     </div>

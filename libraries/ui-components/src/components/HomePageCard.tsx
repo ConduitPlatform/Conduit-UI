@@ -1,10 +1,16 @@
 import { Box, Card, Divider, styled, Typography } from "@mui/material";
 import React, { FC } from "react";
+import {
+  homePageFontSizeSubtitles,
+  homePageFontSizeTitles,
+} from "@conduitplatform/conduit-ui/src/theme";
 
 const BoxWithIconText = styled(Box)(() => ({
   display: "flex",
+  flex: 1,
   alignItems: "center",
-  flexWrap: "wrap",
+  flexWrap: "nowrap",
+  overflow: "hidden",
 }));
 
 const CustomizedDivider = styled(Divider)(({ theme }) => ({
@@ -13,10 +19,10 @@ const CustomizedDivider = styled(Divider)(({ theme }) => ({
 }));
 
 const CustomizedCard = styled(Card)(() => ({
+  display: "flex",
+  flex: 1,
   borderRadius: 8,
   backgroundColor: "common.white",
-  flex: 1,
-  display: "flex",
   flexDirection: "column",
   padding: 20,
   "&:hover": {
@@ -38,7 +44,10 @@ const HomePageCard: FC<Props> = ({ icon, title, descriptionContent }) => {
     <CustomizedCard>
       <BoxWithIconText>
         {icon}
-        <Typography> &nbsp; {title}</Typography>
+        <Typography noWrap sx={{ fontSize: homePageFontSizeTitles }}>
+          {" "}
+          &nbsp; {title}
+        </Typography>
       </BoxWithIconText>
       <CustomizedDivider />
       {descriptionContent}

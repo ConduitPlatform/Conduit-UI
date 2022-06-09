@@ -233,7 +233,6 @@ const Users = () => {
           <ButtonGroup size="small" variant="contained" color="primary" sx={{ mr: 1 }}>
             <IconButton
               aria-label="block"
-              color="primary"
               onClick={() =>
                 setOpenBlockUI({
                   open: true,
@@ -247,7 +246,6 @@ const Users = () => {
             </IconButton>
             <IconButton
               aria-label="delete"
-              color="primary"
               onClick={() =>
                 setOpenDeleteUser({
                   open: true,
@@ -262,6 +260,7 @@ const Users = () => {
           </ButtonGroup>
         )}
         <Button
+          sx={{ whiteSpace: 'nowrap', ml: 1 }}
           color="primary"
           variant="contained"
           endIcon={<AddCircle />}

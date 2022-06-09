@@ -49,12 +49,10 @@ const ChatConfig: React.FC = () => {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Grid container>
             <Box
-              sx={{
-                width: '100%',
-                display: 'inline-flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
+              width={'100%'}
+              display={'inline-flex'}
+              justifyContent={'space-between'}
+              alignItems={'center'}>
               <Typography variant={'h6'}>Activate Chat Module</Typography>
               <FormInputSwitch name={'active'} disabled={!edit} />
             </Box>
@@ -64,24 +62,20 @@ const ChatConfig: React.FC = () => {
                 <>
                   <Grid item xs={12}>
                     <Box
-                      sx={{
-                        width: '50%',
-                        display: 'inline-flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}>
+                      width={'50%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
                       <Typography variant={'subtitle1'}>Allow Message Edit</Typography>
                       <FormInputSwitch name={'allowMessageEdit'} disabled={!edit} />
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
                     <Box
-                      sx={{
-                        width: '50%',
-                        display: 'inline-flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}>
+                      width={'50%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
                       <Typography variant={'subtitle1'}>Allow Message Delete</Typography>
                       <FormInputSwitch name={'allowMessageDelete'} disabled={!edit} />
                     </Box>

@@ -69,42 +69,21 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
   };
 
   const extractButtonsLeft = () => {
-    if (schema.modelOptions.conduit.cms && !schema.modelOptions.conduit.cms.enabled) {
+    const enabled = schema.modelOptions.conduit.cms.enabled;
+    if (schema.modelOptions.conduit.cms) {
       return (
         <Button
           onClick={() => {
-            setSelectedSchemaForAction({ data: schema, action: 'delete' });
+            setSelectedSchemaForAction({ data: schema, action: enabled ? 'archive' : 'delete' });
             setOpenDialog(true);
           }}
+          disabled={enabled ? schema.ownerModule !== 'database' : undefined}
           variant="outlined"
-          color="error">
-          Delete
+          color={enabled ? 'warning' : 'error'}>
+          {enabled ? 'Archive' : 'Delete'}
         </Button>
       );
     }
-
-    if (schema.modelOptions.conduit.cms && schema.modelOptions.conduit.cms.enabled)
-      <Button
-        onClick={() => {
-          setSelectedSchemaForAction({ data: schema, action: 'delete' });
-          setOpenDialog(true);
-        }}
-        variant="outlined"
-        color="error">
-        Delete
-      </Button>;
-    return (
-      <Button
-        onClick={() => {
-          setSelectedSchemaForAction({ data: schema, action: 'archive' });
-          setOpenDialog(true);
-        }}
-        disabled={schema.ownerModule !== 'database'}
-        color="warning"
-        variant="outlined">
-        Archive
-      </Button>
-    );
   };
 
   const extractButtonsRight = () => {

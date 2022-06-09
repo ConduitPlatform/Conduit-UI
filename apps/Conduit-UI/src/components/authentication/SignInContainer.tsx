@@ -298,7 +298,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
   }, [phoneAuthentication, configData, handleData]);
 
   return (
-    <Box sx={{ width: '100%' }} {...rest}>
+    <Box sx={{ width: '100%', paddingBottom: '20px' }} {...rest}>
       <Box
         display={'flex'}
         alignItems={'center'}

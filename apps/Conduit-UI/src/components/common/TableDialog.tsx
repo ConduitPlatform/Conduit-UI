@@ -120,8 +120,7 @@ const TableDialog: React.FC<Props> = ({
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-      sx={{ position: 'relative' }}>
+      aria-describedby="alert-dialog-description">
       <IconButton
         aria-label="Close"
         sx={{
@@ -137,6 +136,7 @@ const TableDialog: React.FC<Props> = ({
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
         <TextField
+          sx={{ mb: 1 }}
           margin="dense"
           size="small"
           variant="outlined"

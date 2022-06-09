@@ -9,6 +9,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -37,6 +39,8 @@ const emptyClient = {
 const ClientsTab: React.FC = () => {
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [updateDialog, setUpdateDialog] = useState<boolean>(false);
   const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
 
@@ -69,26 +73,25 @@ const ClientsTab: React.FC = () => {
       <Paper sx={{ p: 4, borderRadius: 8 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant={'h6'}>Available Security Clients</Typography>
-          <Button startIcon={<Add />} variant="outlined" onClick={() => setOpenDialog(true)}>
-            Generate
+          <Button variant="outlined" onClick={() => setOpenDialog(true)}>
+            {<Add />}
+            {smallScreen ? undefined : <Typography>Generate</Typography>}
           </Button>
         </Box>
         <Box display="flex" justifyContent="center" mt={2}>
-          <TableContainer sx={{ display: 'flex', justifyContent: 'center', maxHeight: '69vh' }}>
+          <TableContainer sx={{ maxHeight: '69vh' }}>
             <Table stickyHeader>
               <TableHead>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Client ID</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
-                  Alias
+                <TableCell
+                  sx={{
+                    backgroundColor: 'background.paper',
+                  }}>
+                  Client ID
                 </TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }}>Alias</TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
-                  Platform
-                </TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }} colSpan={2}>
-                  Domain
-                </TableCell>
-
+                <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper' }}>Domain</TableCell>
                 <TableCell sx={{ backgroundColor: 'background.paper' }} />
                 <TableCell sx={{ backgroundColor: 'background.paper' }} />
                 <TableCell sx={{ backgroundColor: 'background.paper' }} />
@@ -96,26 +99,29 @@ const ClientsTab: React.FC = () => {
               <TableBody>
                 {availableClients?.map((client: IClient, index: number) => (
                   <TableRow key={index}>
-                    <TableCell>
+                    <TableCell
+                      sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <Typography variant={'caption'}>{client.clientId}</Typography>
                     </TableCell>
-                    <TableCell colSpan={2}>
+                    <TableCell
+                      sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <Typography variant={'caption'}>{client.alias || 'N/A'}</Typography>
                     </TableCell>
-                    <TableCell>
-                      <Box sx={{ maxWidth: 500 }}>
+                    <TableCell sx={{ maxWidth: '40px' }}>
+                      <Box>
                         <span style={{ overflowWrap: 'break-word' }}>
                           {client.clientSecret ? client.clientSecret : '****'}
                         </span>
                       </Box>
                     </TableCell>
-                    <TableCell colSpan={2}>
+                    <TableCell sx={{ maxWidth: '20px' }}>
                       <Typography variant={'caption'}>{client.platform}</Typography>
                     </TableCell>
-                    <TableCell colSpan={2}>
+                    <TableCell
+                      sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <Typography variant={'caption'}>{client.domain || 'N/A'}</Typography>
                     </TableCell>
-
+                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
                     <TableCell sx={{ backgroundColor: 'background.paper' }} />
                     <TableCell>
                       <Box display="flex" gap={1}>
@@ -127,7 +133,6 @@ const ClientsTab: React.FC = () => {
                         </IconButton>
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
                   </TableRow>
                 ))}
               </TableBody>

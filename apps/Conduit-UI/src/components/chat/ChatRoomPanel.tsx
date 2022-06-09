@@ -77,16 +77,17 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
           borderRadius: 2,
         }}
         elevation={6}>
-        <Typography>{panelData.name}</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {selected.length > 0 && (
+        <Typography sx={{ display: 'flex', flex: 1 }}>{panelData.name}</Typography>
+        <Box>
+          {selected.length > 0 ? (
             <IconButton sx={{ padding: 1 }} onClick={() => onDeletePress()} size="large">
               <DeleteIcon />
             </IconButton>
+          ) : (
+            <IconButton sx={{ padding: 1 }} onClick={() => handleOpenModal()} size="large">
+              <InfoOutlined />
+            </IconButton>
           )}
-          <IconButton sx={{ padding: 1 }} onClick={() => handleOpenModal()} size="large">
-            <InfoOutlined />
-          </IconButton>
         </Box>
         {selected.length > 0 && (
           <Box
@@ -94,16 +95,12 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
               backgroundColor: 'gray',
               borderRadius: 3,
               padding: 1,
-              position: 'absolute',
-              top: 8,
-              right: 2,
-              zIndex: 1,
             }}>
-            <Typography>{selected.length}selected</Typography>
+            <Typography>{selected.length} selected</Typography>
           </Box>
         )}
       </Paper>
-      <Box sx={{ flex: 1, pt: 2, pl: 2, pb: 2 }}>
+      <Box sx={{ flex: 1, pt: 2, pl: 2 }}>
         <ChatRoomMessages
           roomId={panelData._id}
           selectedPanel={selectedPanel}

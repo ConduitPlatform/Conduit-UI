@@ -105,7 +105,6 @@ const ChatRooms: React.FC = () => {
           <Button
             variant="contained"
             fullWidth
-            sx={{ margin: 1, p: 0.5 }}
             color="primary"
             startIcon={<AddCircleOutline />}
             onClick={() => setDrawerOpen(true)}>

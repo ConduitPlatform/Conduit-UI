@@ -21,6 +21,7 @@ import TableContainer from "./components/TableContainer";
 import ExtractDrawerInfo from "./components/ExtractDrawerInfo";
 import FieldIndicators from "./components/FieldIndicators";
 import StyledTreeItem from "./components/StyledTreeItem";
+import LinkComponent from "./components/LinkComponent";
 
 export {
   ConduitMultiSelect,
@@ -46,4 +47,5 @@ export {
   ExtractDrawerInfo,
   FieldIndicators,
   StyledTreeItem,
+  LinkComponent,
 };
