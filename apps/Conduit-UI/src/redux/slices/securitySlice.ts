@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { IClient, IPlatformTypes, ISecurityConfig } from '../../models/security/SecurityModels';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import ClientPlatformEnum, { IClient, ISecurityConfig } from '../../models/security/SecurityModels';
 import {
   deleteClientRequest,
   generateNewClientRequest,
@@ -50,10 +50,11 @@ export const asyncGetAvailableClients = createAsyncThunk(
 
 export const asyncUpdateClient = createAsyncThunk(
   'security/deleteClient',
-  async (args: { _id: string }, thunkAPI) => {
+  async (args: { _id: string; data: IClient }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await updateSecurityClient(args._id);
+      await updateSecurityClient(args._id, args.data);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully updated client!`));
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -65,10 +66,19 @@ export const asyncUpdateClient = createAsyncThunk(
 
 export const asyncGenerateNewClient = createAsyncThunk(
   'security/generateClient',
-  async (clientData: { platform: IPlatformTypes; domain?: string }, thunkAPI) => {
+  async (
+    clientData: { platform: ClientPlatformEnum; domain?: string; notes?: string; alias: string },
+    thunkAPI
+  ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await generateNewClientRequest(clientData.platform, clientData.domain);
+      const { data } = await generateNewClientRequest(
+        clientData.platform,
+        clientData.domain,
+        clientData.notes,
+        clientData.alias
+      );
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created client!`));
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {

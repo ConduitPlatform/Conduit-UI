@@ -10,6 +10,13 @@ export interface IClient {
   updatedAt: string;
 }
 
+export interface ICreateClient {
+  domain: string;
+  platform: ClientPlatformEnum;
+  notes: string;
+  alias: string;
+}
+
 enum ClientPlatformEnum {
   WEB = 'WEB',
   ANDROID = 'ANDROID',

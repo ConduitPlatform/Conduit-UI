@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogContent';
@@ -7,12 +7,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '../../redux/store';
 import { Box } from '@mui/material';
-
-import ClientPlatformEnum, { IClient } from '../../models/security/SecurityModels';
-
+import { IClient } from '../../models/security/SecurityModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
+import { asyncGetAvailableClients, asyncUpdateClient } from '../../redux/slices/securitySlice';
+import { platforms } from '../../utils/platforms';
+import { enqueueErrorNotification } from '../../utils/useNotifier';
 
 interface Props {
   open: boolean;
@@ -33,22 +34,20 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
     methods.reset(client);
   }, [methods, client]);
 
-  const platforms = [
-    { label: 'WEB', value: ClientPlatformEnum.WEB },
-    { label: 'ANDROID', value: ClientPlatformEnum.ANDROID },
-    { label: 'IOS', value: ClientPlatformEnum.IOS },
-    { label: 'IPADOS', value: ClientPlatformEnum.IPADOS },
-    { label: 'LINUX', value: ClientPlatformEnum.LINUX },
-    { label: 'MACOS', value: ClientPlatformEnum.MACOS },
-    { label: 'WINDOWS', value: ClientPlatformEnum.WINDOWS },
-  ];
-
   const showDomain = () => {
-    return methods.getValues('platform') === 'WINDOWS';
+    return methods.getValues('platform') === 'WEB';
   };
 
   const onSubmit = (data: IClient) => {
-    console.log(data);
+    if (data.platform === 'WEB' && (!data.domain || data.domain.length === 0)) {
+      dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
+      return;
+    }
+    dispatch(asyncUpdateClient({ _id: data._id, data }));
+    setTimeout(() => {
+      dispatch(asyncGetAvailableClients());
+    }, 140);
+    handleClose();
   };
 
   return (
@@ -65,10 +64,9 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Box display="flex" flexDirection="column" gap={3} width="560px">
-              <FormInputText name={'clientId'} label={'Client ID'} />
+              <FormInputText name={'alias'} label={'Alias'} />
               {showDomain() && <FormInputText name={'domain'} label={'domain'} disabled />}
               <FormInputText name={'notes'} label={'Notes'} />
-              <FormInputText name={'alias'} label={'Alias'} />
               <FormInputSelect
                 options={platforms.map((platform) => ({
                   label: platform.label,
@@ -80,7 +78,7 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
             </Box>
             <Box width="100%" px={6} py={2}>
               <Button variant={'contained'} type="submit" color={'primary'} fullWidth>
-                Generate new Client
+                Update Client
               </Button>
             </Box>
           </form>
@@ -91,17 +89,3 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
 };
 
 export default UpdateSecurityClientDialog;
-
-// {platform === ClientPlatformEnum.windows && (
-//     <>
-//       <TextField
-//         size="small"
-//         id="domain-field"
-//         label="Domain"
-//         margin={'normal'}
-//         value={domain}
-//         onChange={(event: React.ChangeEvent<{ value: string }>) =>
-//           setDomain(event.target.value)
-//         }></TextField>
-//     </>
-//   )}
