@@ -45,8 +45,6 @@ const Home = () => {
     dispatch(asyncGetIntrospectionStatus());
   }, [dispatch]);
 
-  console.log(introspectionStatus);
-
   return (
     <>
       <Head>
