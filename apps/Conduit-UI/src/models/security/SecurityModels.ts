@@ -4,23 +4,23 @@ export interface IClient {
   clientSecret: string;
   domain: string;
   platform: ClientPlatformEnum;
-  notes: string;
-  alias: string;
+  notes?: string;
+  alias?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface IUpdateClient {
   domain?: string;
-  notes: string;
-  alias: string;
+  notes?: string;
+  alias?: string;
 }
 
 export interface ICreateClient {
   domain: string;
   platform: ClientPlatformEnum;
-  notes: string;
-  alias: string;
+  notes?: string;
+  alias?: string;
 }
 
 enum ClientPlatformEnum {
