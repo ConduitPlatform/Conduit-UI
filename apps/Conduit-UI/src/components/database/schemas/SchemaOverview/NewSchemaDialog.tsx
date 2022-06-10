@@ -12,7 +12,7 @@ import { useAppDispatch } from '../../../../redux/store';
 import { enqueueInfoNotification } from '../../../../utils/useNotifier';
 import { useRouter } from 'next/router';
 import CloseIcon from '@mui/icons-material/Close';
-import Link from 'next/link';
+import { LinkComponent } from '@conduitplatform/ui-components';
 
 interface Props {
   open: boolean;
@@ -72,18 +72,16 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
           </Box>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
-          <Link href={`schemas/${typeName}`}>
-            <a style={{ textDecoration: 'none' }}>
-              <Button
-                onClick={handleAddType}
-                color="primary"
-                sx={{ mb: 3 }}
-                variant="contained"
-                disabled={typeName === ''}>
-                Create new Schema
-              </Button>
-            </a>
-          </Link>
+          <LinkComponent href={`schemas/${typeName}`} underline={'none'}>
+            <Button
+              onClick={handleAddType}
+              color="primary"
+              sx={{ mb: 3 }}
+              variant="contained"
+              disabled={typeName === ''}>
+              Create new Schema
+            </Button>
+          </LinkComponent>
         </DialogActions>
       </Box>
       <Button onClick={handleCloseClick} sx={{ position: 'absolute', top: 8, right: 2 }}>

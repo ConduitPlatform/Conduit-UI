@@ -116,7 +116,7 @@ const ServiceAccountsTabs = () => {
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ paddingBottom: '20px' }}>
+      <Container maxWidth="lg">
         <Paper sx={{ p: 4, borderRadius: 8 }}>
           <Box display="flex" justifyContent="space-between">
             <Box>
@@ -135,7 +135,7 @@ const ServiceAccountsTabs = () => {
               </Button>
             </Box>
           </Box>
-          <TableContainer sx={{ maxHeight: '70vh', mt: 1 }}>
+          <TableContainer sx={{ maxHeight: '65vh', mt: 1 }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
