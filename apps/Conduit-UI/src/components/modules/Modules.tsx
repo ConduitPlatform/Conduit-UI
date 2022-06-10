@@ -16,7 +16,7 @@ interface Props {
   itemSelected?: string;
   homeEnabled?: boolean;
   disabled?: boolean;
-  smallScreen?: boolean;
+  smallScreen: boolean;
 }
 
 const Modules: React.FC<Props> = ({

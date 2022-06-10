@@ -82,19 +82,21 @@ const ClientsTab: React.FC = () => {
           <TableContainer sx={{ maxHeight: '69vh' }}>
             <Table stickyHeader>
               <TableHead>
-                <TableCell
-                  sx={{
-                    backgroundColor: 'background.paper',
-                  }}>
-                  Client ID
-                </TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Alias</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Domain</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }} />
-                <TableCell sx={{ backgroundColor: 'background.paper' }} />
-                <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      backgroundColor: 'background.paper',
+                    }}>
+                    Client ID
+                  </TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Alias</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Client Secret</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Domain</TableCell>
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                </TableRow>
               </TableHead>
               <TableBody>
                 {availableClients?.map((client: IClient, index: number) => (

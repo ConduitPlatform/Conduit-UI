@@ -2,7 +2,7 @@ import React  from "react";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import makeStyles from "@mui/styles/makeStyles";
-import {ListItem, Theme, Tooltip} from "@mui/material";
+import {ListItemButton, Theme, Tooltip} from "@mui/material";
 import clsx from "clsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -57,12 +57,11 @@ const ModuleItem: React.FC<Props> = ({ selected, title, icon, onClick, className
 
     return (
         <Tooltip title={smallScreen ? capitalize(title) : ""} placement={'right'}>
-        <ListItem
+        <ListItemButton
           disabled={disabled}
-          button
           className={clsx(classes.listItem, className)}
           selected={selected}
-          {...rest}
+          onClick={onClick}
         >
           <ListItemIcon sx={{ minWidth: 25, color: "inherit"}}>
             {icon}
@@ -82,7 +81,7 @@ const ModuleItem: React.FC<Props> = ({ selected, title, icon, onClick, className
                   primaryTypographyProps={{noWrap:true}}
               />
           }
-        </ListItem>
+        </ListItemButton>
         </Tooltip>
     );
   };

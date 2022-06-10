@@ -27,7 +27,7 @@ const Login: React.FC = () => {
   const router = useRouter();
 
   const methods = useForm<ILoginValues>({
-    defaultValues: { username: '', password: '' },
+    defaultValues: { username: '', password: '', remember: false },
   });
 
   useEffect(() => {
