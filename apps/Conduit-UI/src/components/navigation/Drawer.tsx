@@ -82,13 +82,18 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           </LinkComponent>
           {disabledModules.length > 0 ? (
             <>
-              <Modules modules={disabledModules} itemSelected={itemSelected} disabled />
+              <Modules
+                modules={disabledModules}
+                itemSelected={itemSelected}
+                disabled
+                smallScreen={smallScreen}
+              />
             </>
           ) : (
             <></>
           )}
         </List>
-        <Box sx={{ margin: 0, paddingLeft: 0 }}>
+        <Box sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}>
           <ModuleItem
             icon={<ExitToApp color={'inherit'} />}
             title={'Log out'}
