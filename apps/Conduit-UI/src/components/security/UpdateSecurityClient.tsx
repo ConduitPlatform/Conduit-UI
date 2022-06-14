@@ -93,7 +93,7 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
         </form>
       </FormProvider>
       <Box textAlign="center" mt={12}>
-        <Image src={Security} width="300px" height="300px" />
+        <Image src={Security} alt="security_icon" width="300px" height="300px" />
       </Box>
     </Box>
   );

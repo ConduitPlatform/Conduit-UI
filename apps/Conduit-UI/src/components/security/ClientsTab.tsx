@@ -22,8 +22,8 @@ import ClientPlatformEnum, { IClient } from '../../models/security/SecurityModel
 import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
 import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
-import { Add, CopyAllOutlined, Edit, Update } from '@mui/icons-material';
-import UpdateSecurityClientDialog from './UpdateSecurityClientDialog';
+import { Add, CopyAllOutlined, Edit } from '@mui/icons-material';
+import UpdateSecurityClientDialog from './UpdateSecurityClient';
 import { enqueueSuccessNotification } from '../../utils/useNotifier';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 
@@ -122,7 +122,12 @@ const ClientsTab: React.FC = () => {
                       <Typography variant={'caption'}>{client.domain || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell
-                      sx={{ maxWidth: '40px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      sx={{
+                        whiteSpace: 'nowrap',
+                        maxWidth: '100px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
                       <Typography variant={'caption'}>{client.notes || 'N/A'}</Typography>
                     </TableCell>
 
@@ -130,18 +135,18 @@ const ClientsTab: React.FC = () => {
                       <Box display="flex" justifyContent="flex-end" gap={1}>
                         {client.clientSecret && (
                           <Tooltip title="Copy secret to clipboard">
-                            <IconButton onClick={() => handleCopyToClipboard(client)} size="large">
+                            <IconButton onClick={() => handleCopyToClipboard(client)}>
                               <CopyAllOutlined color="secondary" />
                             </IconButton>
                           </Tooltip>
                         )}
                         <Tooltip title="Delete security client">
-                          <IconButton onClick={() => handleDeletion(client._id)} size="large">
+                          <IconButton onClick={() => handleDeletion(client._id)}>
                             <DeleteIcon color="error" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Edit security client">
-                          <IconButton onClick={() => handleOpenUpdateDialog(client)} size="large">
+                          <IconButton onClick={() => handleOpenUpdateDialog(client)}>
                             <Edit color="secondary" />
                           </IconButton>
                         </Tooltip>
