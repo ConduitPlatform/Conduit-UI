@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.13.0-rc.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.0-rc.0...v0.13.0-rc.1) (2022-06-14)
+
+
+### Features
+
+* **storage:** support aliyun oss config ([#87](https://github.com/ConduitPlatform/Conduit-UI/issues/87)) ([dccb367](https://github.com/ConduitPlatform/Conduit-UI/commit/dccb367ec0293537165d968142468a88a9910d9a))
+
+
+### Bug Fixes
+
+* **alias:** now an optional property updating client ([#85](https://github.com/ConduitPlatform/Conduit-UI/issues/85)) ([1c611ec](https://github.com/ConduitPlatform/Conduit-UI/commit/1c611ecacf6f847de8859c494b670dfe6a9f8d9f))
+* **build:** defaults provider to local on  storage initialization ([#88](https://github.com/ConduitPlatform/Conduit-UI/issues/88)) ([abd42b4](https://github.com/ConduitPlatform/Conduit-UI/commit/abd42b48334255080e8ebc115ef4b4a343355fc8))
+
 ## [0.13.0-rc.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.12.3...v0.13.0-rc.0) (2022-06-07)
 
 
