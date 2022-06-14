@@ -1,27 +1,24 @@
 import React, { useMemo, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '../../redux/store';
 import { Box } from '@mui/material';
 import { IClient } from '../../models/security/SecurityModels';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { asyncGetAvailableClients, asyncUpdateClient } from '../../redux/slices/securitySlice';
 import { platforms } from '../../utils/platforms';
+import Security from '../../assets/svgs/security.svg';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
+import TemplateEditor from '../emails/TemplateEditor';
+import Image from 'next/image';
 
 interface Props {
-  open: boolean;
   handleClose: () => void;
   client: IClient;
 }
 
-const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client }) => {
+const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<IClient>({
@@ -63,42 +60,43 @@ const UpdateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, client
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="simple-dialog-title">
-        Update Client {client?.clientId}
-        <IconButton
-          onClick={handleClose}
-          sx={{ position: 'absolute', left: '92%', top: '1%', color: 'gray' }}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <Box display="flex" flexDirection="column" gap={3} width="560px" p={3}>
-              <FormInputText name={'alias'} label={'Alias'} />
-              {isWeb && <FormInputText name={'domain'} label={'domain'} />}
-              <FormInputText name={'notes'} label={'Notes'} />
-              <FormInputSelect
-                options={platforms.map((platform) => ({
-                  label: platform.label,
-                  value: platform.value,
-                }))}
-                name="platform"
-                label="Platform"
-                disabled
-              />
-            </Box>
-            <Box width="100%" px={6} py={2}>
-              <Button variant={'contained'} type="submit" color={'primary'} fullWidth>
-                Update Client
-              </Button>
-            </Box>
-          </form>
-        </FormProvider>
-      </DialogContent>
-    </Dialog>
+    <Box>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Box display="flex" flexDirection="column" gap={3} p={3}>
+            <FormInputText name={'alias'} label={'Alias'} />
+            {isWeb && <FormInputText name={'domain'} label={'domain'} />}
+            <Controller
+              name="notes"
+              defaultValue=""
+              render={({ field: { onChange, value } }) => (
+                <TemplateEditor value={value} setValue={onChange} />
+              )}
+              rules={{ required: 'Template body required' }}
+            />
+            <FormInputSelect
+              options={platforms.map((platform) => ({
+                label: platform.label,
+                value: platform.value,
+              }))}
+              name="platform"
+              label="Platform"
+              disabled
+            />
+          </Box>
+
+          <Box p={3}>
+            <Button variant={'contained'} type="submit" color={'secondary'} fullWidth>
+              Update Client
+            </Button>
+          </Box>
+        </form>
+      </FormProvider>
+      <Box textAlign="center" mt={12}>
+        <Image src={Security} width="300px" height="300px" />
+      </Box>
+    </Box>
   );
 };
 
-export default UpdateSecurityClientDialog;
+export default UpdateSecurityClient;
