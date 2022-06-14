@@ -51,7 +51,7 @@ const initialState: IStorageSlice = {
   data: {
     config: {
       active: false,
-      provider: '',
+      provider: 'local',
       storagePath: '',
       allowContainerCreation: true,
       defaultContainer: '',
