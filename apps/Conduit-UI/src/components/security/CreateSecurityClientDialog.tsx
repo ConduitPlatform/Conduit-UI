@@ -41,7 +41,7 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
     dispatch(
       asyncGenerateNewClient({
         platform: data.platform,
-        domain: data.domain,
+        domain: data.platform === 'WEB' ? data.domain : undefined,
         notes: data.notes,
         alias: data.alias,
       })

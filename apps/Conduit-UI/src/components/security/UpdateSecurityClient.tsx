@@ -43,14 +43,14 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
     }
     if (isWeb) {
       const formattedData = {
-        alias: data.alias,
+        alias: data.alias !== '' ? data.alias : undefined,
         notes: data.notes,
         domain: data.domain,
       };
       dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
     } else {
       const formattedData = {
-        alias: data.alias,
+        alias: data.alias !== '' ? data.alias : undefined,
         notes: data.notes,
       };
       dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
