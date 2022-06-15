@@ -36,6 +36,8 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
 
   const foundAlias = (value: string) => availableClients.some((client) => client.alias === value);
 
+  const existingAlias = (value: string) => value === client?.alias;
+
   const onSubmit = (data: IClient) => {
     if (isWeb && (!data.domain || data.domain.length === 0)) {
       dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
@@ -54,6 +56,7 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
         notes: data.notes,
       };
       dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
+      dispatch(asyncGetAvailableClients());
     }
 
     setTimeout(() => {
@@ -71,7 +74,8 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
               name={'alias'}
               label={'Alias'}
               rules={{
-                validate: (value) => !foundAlias(value) || 'Alias already exists',
+                validate: (value) =>
+                  !foundAlias(value) || existingAlias(value) || 'Alias already exists',
               }}
             />
             {isWeb && <FormInputText name={'domain'} label={'domain'} />}
