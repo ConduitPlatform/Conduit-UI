@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogContent';
@@ -28,6 +28,10 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
   });
 
   const isWeb = methods.watch('platform') === 'WEB';
+
+  useEffect(() => {
+    methods.reset({ platform: ClientPlatformEnum.WEB, domain: '*', alias: '', notes: '' });
+  }, [methods, open]);
 
   const onSubmit = (data: ICreateClient) => {
     if (data.platform === 'WEB' && (!data.domain || data.domain.length === 0)) {
