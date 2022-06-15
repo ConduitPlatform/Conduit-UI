@@ -16,9 +16,10 @@ import Image from 'next/image';
 interface Props {
   handleClose: () => void;
   client: IClient;
+  availableClients: IClient[];
 }
 
-const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
+const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableClients }) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<IClient>({
@@ -32,6 +33,8 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
   }, [methods, client]);
 
   const isWeb = methods.watch('platform') === 'WEB';
+
+  const foundAlias = (value: string) => availableClients.some((client) => client.alias === value);
 
   const onSubmit = (data: IClient) => {
     if (isWeb && (!data.domain || data.domain.length === 0)) {
@@ -64,7 +67,13 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Box display="flex" flexDirection="column" gap={3} p={3}>
-            <FormInputText name={'alias'} label={'Alias'} />
+            <FormInputText
+              name={'alias'}
+              label={'Alias'}
+              rules={{
+                validate: (value) => !foundAlias(value) || 'Alias already exists',
+              }}
+            />
             {isWeb && <FormInputText name={'domain'} label={'domain'} />}
             <Controller
               name="notes"

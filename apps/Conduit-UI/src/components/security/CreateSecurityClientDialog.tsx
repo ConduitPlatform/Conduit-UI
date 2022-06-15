@@ -13,7 +13,7 @@ import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { platforms } from '../../utils/platforms';
+import { createPlatforms } from '../../utils/platforms';
 
 interface Props {
   open: boolean;
@@ -67,7 +67,7 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Box display="flex" flexDirection="column" gap={3} width="560px" p={3}>
               <FormInputSelect
-                options={platforms.map((platform) => ({
+                options={createPlatforms.map((platform) => ({
                   label: platform.label,
                   value: platform.value,
                 }))}

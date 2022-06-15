@@ -23,7 +23,7 @@ import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/
 import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
 import { Add, CopyAllOutlined, Edit } from '@mui/icons-material';
-import UpdateSecurityClientDialog from './UpdateSecurityClient';
+import UpdateSecurityClient from './UpdateSecurityClient';
 import { enqueueSuccessNotification } from '../../utils/useNotifier';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 
@@ -165,7 +165,11 @@ const ClientsTab: React.FC = () => {
         title={`Edit client ${selectedClient._id}`}
         closeDrawer={() => handleCloseUpdateDialog()}
         width={750}>
-        <UpdateSecurityClientDialog handleClose={handleCloseUpdateDialog} client={selectedClient} />
+        <UpdateSecurityClient
+          availableClients={availableClients}
+          handleClose={handleCloseUpdateDialog}
+          client={selectedClient}
+        />
       </SideDrawerWrapper>
     </Container>
   );
