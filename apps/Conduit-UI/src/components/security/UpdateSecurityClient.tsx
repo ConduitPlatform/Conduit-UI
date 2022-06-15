@@ -16,9 +16,10 @@ import Image from 'next/image';
 interface Props {
   handleClose: () => void;
   client: IClient;
+  availableClients: IClient[];
 }
 
-const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
+const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableClients }) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<IClient>({
@@ -33,6 +34,10 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
 
   const isWeb = methods.watch('platform') === 'WEB';
 
+  const foundAlias = (value: string) => availableClients.some((client) => client.alias === value);
+
+  const existingAlias = (value: string) => value === client?.alias;
+
   const onSubmit = (data: IClient) => {
     if (isWeb && (!data.domain || data.domain.length === 0)) {
       dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
@@ -40,17 +45,18 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
     }
     if (isWeb) {
       const formattedData = {
-        alias: data.alias,
+        alias: data.alias !== '' ? data.alias : undefined,
         notes: data.notes,
         domain: data.domain,
       };
       dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
     } else {
       const formattedData = {
-        alias: data.alias,
+        alias: data.alias !== '' ? data.alias : undefined,
         notes: data.notes,
       };
       dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
+      dispatch(asyncGetAvailableClients());
     }
 
     setTimeout(() => {
@@ -64,7 +70,14 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client }) => {
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Box display="flex" flexDirection="column" gap={3} p={3}>
-            <FormInputText name={'alias'} label={'Alias'} />
+            <FormInputText
+              name={'alias'}
+              label={'Alias'}
+              rules={{
+                validate: (value) =>
+                  !foundAlias(value) || existingAlias(value) || 'Alias already exists',
+              }}
+            />
             {isWeb && <FormInputText name={'domain'} label={'domain'} />}
             <Controller
               name="notes"
