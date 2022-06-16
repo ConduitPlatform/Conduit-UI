@@ -19,13 +19,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ClientPlatformEnum, { IClient } from '../../models/security/SecurityModels';
-import { asyncDeleteClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
+import {
+  asyncDeleteClient,
+  asyncGetAvailableClients,
+  clearClientSecret,
+} from '../../redux/slices/securitySlice';
 import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
 import { Add, CopyAllOutlined, Edit } from '@mui/icons-material';
 import UpdateSecurityClient from './UpdateSecurityClient';
 import { enqueueSuccessNotification } from '../../utils/useNotifier';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
+import ClientSecretDialog from './ClientSecretDialog';
 
 const emptyClient = {
   _id: '',
@@ -45,6 +50,7 @@ const ClientsTab: React.FC = () => {
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [updateDialog, setUpdateDialog] = useState<boolean>(false);
+  const [secretDialog, setSecretDialog] = useState<boolean>(false);
   const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
 
   useEffect(() => {
@@ -61,9 +67,22 @@ const ClientsTab: React.FC = () => {
     setOpenDialog(false);
   };
 
+  const handleSuccessfullClientCreation = () => {
+    setOpenDialog(false);
+
+    setTimeout(() => {
+      setSecretDialog(true);
+    }, 1500);
+  };
+
   const handleCloseUpdateDialog = () => {
     setUpdateDialog(false);
     setSelectedClient(emptyClient);
+  };
+
+  const handleCloseSecretDialog = () => {
+    setSecretDialog(false);
+    dispatch(clearClientSecret());
   };
 
   const handleCopyToClipboard = (info: IClient) => {
@@ -133,13 +152,6 @@ const ClientsTab: React.FC = () => {
 
                     <TableCell>
                       <Box display="flex" justifyContent="flex-end" gap={1}>
-                        {client.clientSecret && (
-                          <Tooltip title="Copy secret to clipboard">
-                            <IconButton onClick={() => handleCopyToClipboard(client)}>
-                              <CopyAllOutlined color="secondary" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
                         <Tooltip title="Delete security client">
                           <IconButton onClick={() => handleDeletion(client._id)}>
                             <DeleteIcon color="error" />
@@ -159,7 +171,12 @@ const ClientsTab: React.FC = () => {
           </TableContainer>
         </Box>
       </Paper>
-      <CreateSecurityClientDialog open={openDialog} handleClose={handleClose} />
+      <CreateSecurityClientDialog
+        open={openDialog}
+        handleClose={handleClose}
+        handleSuccess={handleSuccessfullClientCreation}
+      />
+      <ClientSecretDialog open={secretDialog} handleClose={handleCloseSecretDialog} />
       <SideDrawerWrapper
         open={updateDialog}
         title={`Edit client ${selectedClient._id}`}

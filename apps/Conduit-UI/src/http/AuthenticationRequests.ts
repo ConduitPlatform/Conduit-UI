@@ -3,8 +3,9 @@ import { CONDUIT_API } from './requestsConfig';
 import { AuthUser } from '../models/authentication/AuthModels';
 import { Pagination, Search } from '../models/http/HttpModels';
 
-export const getAuthUsersDataReq = (params: Pagination & Search & { provider: string }) =>
-  axios.get(`${CONDUIT_API}/admin/authentication/users`, { params });
+export const getAuthUsersDataReq = (
+  params: Pagination & Search & { provider: string } & { sort?: string }
+) => axios.get(`${CONDUIT_API}/admin/authentication/users`, { params });
 
 export const createNewUsers = (values: { email: string; password: string }) =>
   axios.post(`${CONDUIT_API}/admin/authentication/users`, {

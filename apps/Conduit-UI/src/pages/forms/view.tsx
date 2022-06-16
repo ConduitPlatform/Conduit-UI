@@ -28,6 +28,7 @@ import {
 } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { SideDrawerWrapper, DataTable } from '@conduitplatform/ui-components';
+import { prepareSort } from '../../utils/prepareSort';
 
 const Create = () => {
   const dispatch = useAppDispatch();
@@ -61,8 +62,8 @@ const Create = () => {
   const { forms, count } = useAppSelector((state) => state.formsSlice.data);
 
   useEffect(() => {
-    dispatch(asyncGetForms({ skip, limit, search: debouncedSearch }));
-  }, [dispatch, skip, limit, debouncedSearch]);
+    dispatch(asyncGetForms({ skip, limit, search: debouncedSearch, sort: prepareSort(sort) }));
+  }, [dispatch, skip, limit, debouncedSearch, sort]);
 
   const getFormsCallback = useCallback(() => {
     dispatch(asyncGetForms({ skip, limit, search: debouncedSearch }));

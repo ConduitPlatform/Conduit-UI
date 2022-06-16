@@ -125,7 +125,7 @@ const initialState: IAuthenticationSlice = {
 
 export const asyncGetAuthUserData = createAsyncThunk(
   'authentication/getUserData',
-  async (params: Pagination & Search & { provider: string }, thunkAPI) => {
+  async (params: Pagination & Search & { provider: string } & { sort?: string }, thunkAPI) => {
     try {
       const { data } = await getAuthUsersDataReq(params);
       return data;
