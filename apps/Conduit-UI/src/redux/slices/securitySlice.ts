@@ -16,6 +16,7 @@ import {
   updateSecurityClient,
 } from '../../http/SecurityRequests';
 import { string } from 'prop-types';
+import { Sort } from '../../models/http/HttpModels';
 
 interface ISecuritySlice {
   data: {
@@ -39,12 +40,12 @@ const initialState: ISecuritySlice = {
 
 export const asyncGetAvailableClients = createAsyncThunk(
   'security/getClients',
-  async (arg, thunkAPI) => {
+  async (args: Sort, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { clients },
-      } = await getAvailableClientsRequest();
+      } = await getAvailableClientsRequest(args);
       thunkAPI.dispatch(setAppLoading(false));
       return clients;
     } catch (error) {

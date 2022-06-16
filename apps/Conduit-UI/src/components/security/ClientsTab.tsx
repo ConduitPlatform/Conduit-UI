@@ -9,6 +9,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
   Tooltip,
   useMediaQuery,
   useTheme,
@@ -26,11 +27,11 @@ import {
 } from '../../redux/slices/securitySlice';
 import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
-import { Add, CopyAllOutlined, Edit } from '@mui/icons-material';
+import { Add, Edit, KeyboardArrowDown } from '@mui/icons-material';
 import UpdateSecurityClient from './UpdateSecurityClient';
-import { enqueueSuccessNotification } from '../../utils/useNotifier';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import ClientSecretDialog from './ClientSecretDialog';
+import { prepareSort } from '../../utils/prepareSort';
 
 const emptyClient = {
   _id: '',
@@ -51,11 +52,15 @@ const ClientsTab: React.FC = () => {
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [updateDialog, setUpdateDialog] = useState<boolean>(false);
   const [secretDialog, setSecretDialog] = useState<boolean>(false);
+  const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
+    asc: false,
+    index: null,
+  });
   const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
 
   useEffect(() => {
-    dispatch(asyncGetAvailableClients());
-  }, [dispatch]);
+    dispatch(asyncGetAvailableClients({ sort: prepareSort(sort) }));
+  }, [dispatch, sort]);
 
   const { availableClients } = useAppSelector((state) => state.securitySlice.data);
 
@@ -85,14 +90,34 @@ const ClientsTab: React.FC = () => {
     dispatch(clearClientSecret());
   };
 
-  const handleCopyToClipboard = (info: IClient) => {
-    navigator.clipboard.writeText(info.clientSecret);
-    dispatch(enqueueSuccessNotification(`Client secret copied to clipboard!`));
-  };
-
   const handleOpenUpdateDialog = (client: IClient) => {
     setSelectedClient(client);
     setUpdateDialog(true);
+  };
+
+  const headCells = [
+    { label: 'Client ID', sort: 'clientId' },
+    { label: 'Alias', sort: 'alias' },
+    { label: 'Platform', sort: 'platform' },
+    { label: 'Domain', sort: 'domain' },
+    { label: 'Notes', sort: 'notes' },
+  ];
+
+  const onSelectedField = (index: string) => {
+    if (setSort !== undefined)
+      setSort((prevState: { asc: boolean; index: string | null }) => {
+        if (prevState.index === index) {
+          return { asc: !prevState.asc, index: index };
+        }
+        return { asc: prevState.asc, index: index };
+      });
+  };
+
+  const handleDirection = (dir: boolean) => {
+    if (dir) {
+      return 'asc';
+    }
+    return 'desc';
   };
 
   return (
@@ -109,16 +134,17 @@ const ClientsTab: React.FC = () => {
           <TableContainer sx={{ maxHeight: '69vh' }}>
             <Table stickyHeader>
               <TableHead>
-                <TableCell
-                  sx={{
-                    backgroundColor: 'background.paper',
-                  }}>
-                  Client ID
-                </TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Alias</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Platform</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Domain</TableCell>
-                <TableCell sx={{ backgroundColor: 'background.paper' }}>Notes</TableCell>
+                {headCells.map((headCell) => (
+                  <TableCell sx={{ backgroundColor: 'background.paper' }} key={headCell.sort}>
+                    <TableSortLabel
+                      IconComponent={KeyboardArrowDown}
+                      active={sort?.index === headCell.sort}
+                      direction={handleDirection(sort?.asc)}
+                      onClick={() => onSelectedField(headCell.sort)}>
+                      <Typography variant="body2">{headCell.label}</Typography>
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
                 <TableCell sx={{ backgroundColor: 'background.paper' }} />
               </TableHead>
               <TableBody>
