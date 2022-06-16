@@ -71,7 +71,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
               title={smallScreen ? null : 'Security'}
             />
           </Link>
-          <Link href="/settings/clientsdk" passHref>
+          <Link href="/settings/core" passHref>
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}
