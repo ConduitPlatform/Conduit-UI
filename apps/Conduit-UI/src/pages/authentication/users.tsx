@@ -28,7 +28,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import { AddCircle } from '@mui/icons-material';
-import { isString, sortBy } from 'lodash';
+import { isString } from 'lodash';
 import { SideDrawerWrapper, TableActionsContainer } from '@conduitplatform/ui-components';
 import { prepareSort } from '../../utils/prepareSort';
 

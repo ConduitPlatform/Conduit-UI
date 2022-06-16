@@ -1,5 +1,4 @@
 import Typography from '@mui/material/Typography';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import React, { useEffect, useState } from 'react';
 import {
@@ -8,10 +7,8 @@ import {
   createServiceAccount,
   refreshServiceAccount,
 } from '../../http/SettingsRequests';
-import moment from 'moment';
 import { ConfirmationDialog, DataTable } from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
 import { Box } from '@mui/material';

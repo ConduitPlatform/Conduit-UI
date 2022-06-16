@@ -5,7 +5,7 @@ import DialogTitle from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useAppDispatch } from '../../redux/store';
 import { Box } from '@mui/material';
 import ClientPlatformEnum, { ICreateClient } from '../../models/security/SecurityModels';
 import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
@@ -47,6 +47,10 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, handle
         alias: data.alias,
       })
     );
+
+    setTimeout(() => {
+      dispatch(asyncGetAvailableClients({}));
+    }, 140);
 
     handleSuccess();
   };
