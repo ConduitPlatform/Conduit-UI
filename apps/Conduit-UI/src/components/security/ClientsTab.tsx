@@ -125,7 +125,7 @@ const ClientsTab: React.FC = () => {
       <Paper sx={{ p: 4, borderRadius: 8 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant={'h6'}>Available Security Clients</Typography>
-          <Button variant="outlined" onClick={() => setOpenDialog(true)}>
+          <Button variant="contained" onClick={() => setOpenDialog(true)}>
             {<Add />}
             {smallScreen ? undefined : <Typography>Generate</Typography>}
           </Button>
