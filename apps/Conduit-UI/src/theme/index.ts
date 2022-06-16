@@ -3,7 +3,7 @@ import ArrowDropDownRounded from '@mui/icons-material/ArrowDropDownRounded';
 
 const primary = '#5B44F2';
 const secondary = '#07D9C4';
-const error = '#DC004E';
+const error = '#ef476f';
 const warning = '#E265AB';
 const disabled = '#808080';
 
