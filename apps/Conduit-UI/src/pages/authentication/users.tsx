@@ -30,6 +30,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import { AddCircle } from '@mui/icons-material';
 import { isString } from 'lodash';
 import { SideDrawerWrapper, TableActionsContainer } from '@conduitplatform/ui-components';
+import { prepareSort } from '../../utils/prepareSort';
 
 const Users = () => {
   const dispatch = useAppDispatch();
@@ -79,8 +80,16 @@ const Users = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(asyncGetAuthUserData({ skip, limit, search: debouncedSearch, provider: filter }));
-  }, [dispatch, filter, limit, skip, debouncedSearch]);
+    dispatch(
+      asyncGetAuthUserData({
+        skip,
+        limit,
+        search: debouncedSearch,
+        provider: filter,
+        sort: prepareSort(sort),
+      })
+    );
+  }, [dispatch, filter, limit, skip, debouncedSearch, sort]);
 
   useEffect(() => {
     setSkip(0);

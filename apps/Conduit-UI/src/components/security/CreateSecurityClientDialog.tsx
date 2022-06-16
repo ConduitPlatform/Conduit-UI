@@ -18,9 +18,10 @@ import { createPlatforms } from '../../utils/platforms';
 interface Props {
   open: boolean;
   handleClose: () => void;
+  handleSuccess: () => void;
 }
 
-const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
+const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, handleSuccess }) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<ICreateClient>({
@@ -46,10 +47,12 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
         alias: data.alias,
       })
     );
+
     setTimeout(() => {
-      dispatch(asyncGetAvailableClients());
+      dispatch(asyncGetAvailableClients({}));
     }, 140);
-    handleClose();
+
+    handleSuccess();
   };
 
   return (

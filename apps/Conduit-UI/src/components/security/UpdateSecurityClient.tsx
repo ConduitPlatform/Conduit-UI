@@ -56,11 +56,10 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
         notes: data.notes,
       };
       dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
-      dispatch(asyncGetAvailableClients());
     }
 
     setTimeout(() => {
-      dispatch(asyncGetAvailableClients());
+      dispatch(asyncGetAvailableClients({}));
     }, 140);
     handleClose();
   };

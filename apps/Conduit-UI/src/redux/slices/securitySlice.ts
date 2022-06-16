@@ -15,10 +15,12 @@ import {
   putSecurityConfig,
   updateSecurityClient,
 } from '../../http/SecurityRequests';
+import { Sort } from '../../models/http/HttpModels';
 
 interface ISecuritySlice {
   data: {
     availableClients: IClient[];
+    clientSecret: string;
     config: ISecurityConfig;
   };
 }
@@ -30,18 +32,19 @@ const initialState: ISecuritySlice = {
         enabled: false,
       },
     },
+    clientSecret: '',
     availableClients: [],
   },
 };
 
 export const asyncGetAvailableClients = createAsyncThunk(
   'security/getClients',
-  async (arg, thunkAPI) => {
+  async (args: Sort, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { clients },
-      } = await getAvailableClientsRequest();
+      } = await getAvailableClientsRequest(args);
       thunkAPI.dispatch(setAppLoading(false));
       return clients;
     } catch (error) {
@@ -83,6 +86,7 @@ export const asyncGenerateNewClient = createAsyncThunk(
         clientData.alias
       );
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created client!`));
+
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -146,7 +150,11 @@ export const asyncPutSecurityConfig = createAsyncThunk(
 const settingsSlice = createSlice({
   name: 'security',
   initialState,
-  reducers: {},
+  reducers: {
+    clearClientSecret: (state) => {
+      state.data.clientSecret = '';
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(asyncGetSecurityConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
@@ -156,6 +164,7 @@ const settingsSlice = createSlice({
     });
     builder.addCase(asyncGenerateNewClient.fulfilled, (state, action) => {
       state.data.availableClients.push(action.payload);
+      state.data.clientSecret = action.payload.clientSecret;
     });
     builder.addCase(asyncDeleteClient.fulfilled, (state, action) => {
       const allClients = state.data.availableClients;
@@ -166,5 +175,7 @@ const settingsSlice = createSlice({
     });
   },
 });
+
+export const { clearClientSecret } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

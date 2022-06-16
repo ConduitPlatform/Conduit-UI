@@ -4,9 +4,10 @@ import ClientPlatformEnum, {
   ISecurityConfig,
   IUpdateClient,
 } from '../models/security/SecurityModels';
+import { Sort } from '../models/http/HttpModels';
 
-export const getAvailableClientsRequest = () => {
-  return axios.get(`${CONDUIT_API}/admin/security/client`);
+export const getAvailableClientsRequest = (params: Sort) => {
+  return axios.get(`${CONDUIT_API}/admin/security/client`, { params });
 };
 
 export const generateNewClientRequest = (

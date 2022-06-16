@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Table,
   TableBody,
@@ -9,10 +9,10 @@ import {
   TableSortLabel,
   Checkbox,
   TableRowProps,
-} from '@mui/material';
-import Paper, { PaperProps } from '@mui/material/Paper';
-import { IndeterminateCheckBox } from '@mui/icons-material';
-import DataTableRows from './DataTableRows';
+} from "@mui/material";
+import Paper, { PaperProps } from "@mui/material/Paper";
+import { IndeterminateCheckBox, KeyboardArrowDown } from "@mui/icons-material";
+import DataTableRows from "./DataTableRows";
 
 type Action = {
   title: string;
@@ -73,8 +73,8 @@ const DataTable: React.FC<Props> = ({
   };
 
   const getHeaderValues = (value: string) => {
-    if (value === 'icon') {
-      return '';
+    if (value === "icon") {
+      return "";
     }
     return value;
   };
@@ -93,42 +93,55 @@ const DataTable: React.FC<Props> = ({
 
   const handleDirection = (dir: boolean) => {
     if (dir) {
-      return 'asc';
+      return "asc";
     }
-    return 'desc';
+    return "desc";
   };
 
   return (
     <TableContainer
       sx={
         !inner
-          ? { maxHeight: '65vh' }
-          : { maxHeight: '65vh', backgroundColor: 'background.default' }
+          ? { maxHeight: "65vh" }
+          : { maxHeight: "65vh", backgroundColor: "background.default" }
       }
       component={Paper}
-      {...rest}>
+      {...rest}
+    >
       <Table size="small" stickyHeader sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ backgroundColor: 'secondary.dark' }} align="left" padding="none">
+            <TableCell
+              sx={{ backgroundColor: "secondary.dark" }}
+              align="left"
+              padding="none"
+            >
               {!collapsible && selectable && (
                 <Checkbox
                   color="primary"
                   disabled={disableMultiSelect}
                   onChange={onMenuItemSelectAll}
                   checked={selectedItems?.length === dsData.length}
-                  indeterminate={selectedItems?.length > 0 && selectedItems?.length < dsData.length}
+                  indeterminate={
+                    selectedItems?.length > 0 &&
+                    selectedItems?.length < dsData.length
+                  }
                   indeterminateIcon={<IndeterminateCheckBox color="primary" />}
                 />
               )}
             </TableCell>
             {headers.map((header: any, idx: number) => (
-              <TableCell sx={{ backgroundColor: 'secondary.dark', whiteSpace:'nowrap' }} key={idx}>
+              <TableCell
+                sx={{ backgroundColor: "secondary.dark", whiteSpace: "nowrap" }}
+                key={idx}
+              >
                 {header.sort && sort ? (
                   <TableSortLabel
+                    IconComponent={KeyboardArrowDown}
                     active={sort?.index === header.sort}
                     direction={handleDirection(sort?.asc)}
-                    onClick={() => onSelectedField(header.sort)}>
+                    onClick={() => onSelectedField(header.sort)}
+                  >
                     {getHeaderValues(header.title)}
                   </TableSortLabel>
                 ) : (
@@ -136,13 +149,18 @@ const DataTable: React.FC<Props> = ({
                 )}
               </TableCell>
             ))}
-            {actions && <TableCell sx={{ backgroundColor: 'secondary.dark' }} />}
+            {actions && (
+              <TableCell sx={{ backgroundColor: "secondary.dark" }} />
+            )}
           </TableRow>
         </TableHead>
         {dsData.length < 1 && placeholder ? (
           <TableBody>
             <TableRow>
-              <TableCell colSpan={headers.length + 3} sx={{ textAlign: 'center' }}>
+              <TableCell
+                colSpan={headers.length + 3}
+                sx={{ textAlign: "center" }}
+              >
                 {placeholder}
               </TableCell>
             </TableRow>
