@@ -7,7 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '../../redux/store';
 import { Box } from '@mui/material';
-import ClientPlatformEnum, { ICreateClient } from '../../models/security/SecurityModels';
+import ClientPlatformEnum, { IClient, ICreateClient } from '../../models/security/SecurityModels';
 import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -19,9 +19,15 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   handleSuccess: () => void;
+  availableClients: IClient[];
 }
 
-const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, handleSuccess }) => {
+const CreateSecurityClientDialog: React.FC<Props> = ({
+  open,
+  handleClose,
+  handleSuccess,
+  availableClients,
+}) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<ICreateClient>({
@@ -34,17 +40,20 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, handle
     methods.reset({ platform: ClientPlatformEnum.WEB, domain: '*', alias: '', notes: '' });
   }, [methods, open]);
 
+  const foundAlias = (value: string) => availableClients.some((client) => client.alias === value);
+
   const onSubmit = (data: ICreateClient) => {
     if (data.platform === 'WEB' && (!data.domain || data.domain.length === 0)) {
       dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
       return;
     }
+
     dispatch(
       asyncGenerateNewClient({
         platform: data.platform,
         domain: data.platform === 'WEB' ? data.domain : undefined,
-        notes: data.notes,
-        alias: data.alias,
+        notes: data.notes !== '' ? data.notes : undefined,
+        alias: data.alias !== '' ? data.alias : undefined,
       })
     );
 
@@ -78,7 +87,13 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, handle
                 label="Platform"
               />
               {isWeb && <FormInputText name={'domain'} label={'Domain'} />}
-              <FormInputText name={'alias'} label={'Alias'} />
+              <FormInputText
+                name={'alias'}
+                label={'Alias'}
+                rules={{
+                  validate: (value) => !foundAlias(value) || value === '' || 'Alias already exists',
+                }}
+              />
               <FormInputText name={'notes'} label={'Notes'} />
             </Box>
             <Box width="100%" px={6} py={2}>

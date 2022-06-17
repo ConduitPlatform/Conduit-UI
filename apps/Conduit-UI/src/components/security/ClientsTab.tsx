@@ -199,6 +199,7 @@ const ClientsTab: React.FC = () => {
       </Paper>
       <CreateSecurityClientDialog
         open={openDialog}
+        availableClients={availableClients}
         handleClose={handleClose}
         handleSuccess={handleSuccessfullClientCreation}
       />
