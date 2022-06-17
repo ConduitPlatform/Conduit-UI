@@ -91,7 +91,7 @@ const CreateSecurityClientDialog: React.FC<Props> = ({
                 name={'alias'}
                 label={'Alias'}
                 rules={{
-                  validate: (value) => !foundAlias(value) || 'Alias already exists',
+                  validate: (value) => !foundAlias(value) || value === '' || 'Alias already exists',
                 }}
               />
               <FormInputText name={'notes'} label={'Notes'} />
