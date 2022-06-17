@@ -156,7 +156,7 @@ const Home = () => {
               </LinkComponent>
             </Grid>
             <Grid item xs={12} md={6}>
-              <LinkComponent href="/settings/secrets" underline={'none'}>
+              <LinkComponent href="/security/clients" underline={'none'}>
                 <HomePageCard
                   icon={<LockIcon />}
                   title="set up client secrets"
