@@ -2,13 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.13.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.0-rc.1...v0.13.0) (2022-06-17)
-
-
-### Features
-
-* **Security:** better way to preview your security client notes, cop… ([#89](https://github.com/ConduitPlatform/Conduit-UI/issues/89)) ([c5c6f6f](https://github.com/ConduitPlatform/Conduit-UI/commit/c5c6f6fb9c44b86b4788ab6388184876d094e395))
-
 ## [0.13.0-rc.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.0-rc.0...v0.13.0-rc.1) (2022-06-14)
 
 
