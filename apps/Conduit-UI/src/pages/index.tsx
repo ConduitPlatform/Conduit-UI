@@ -3,16 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import {
-  Container,
-  Grid,
-  Button,
-  Link,
-  Icon,
-  useTheme,
-  useMediaQuery,
-  Divider,
-} from '@mui/material';
+import { Container, Grid, Button, Icon, useTheme, useMediaQuery, Divider } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
@@ -23,10 +14,11 @@ import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import getConfig from 'next/config';
-import { homePageFontSizeHeader } from '../theme';
+import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../theme';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
+import { LinkComponent } from '@conduitplatform/ui-components';
 
 const {
   publicRuntimeConfig: { CONDUIT_URL },
@@ -96,11 +88,7 @@ const Home = () => {
           </a>
         </Box>
 
-        <Box
-          display={'flex'}
-          alignItems={'center'}
-          flex={1}
-          sx={{ marginBottom: { md: 20, sm: 5, xs: 5 } }}>
+        <Box display={'flex'} alignItems={'center'} flex={1} sx={{ marginBottom: 5 }}>
           <Typography
             variant={'h4'}
             sx={{
@@ -108,8 +96,7 @@ const Home = () => {
               justifyContent: 'center',
               flex: 1,
               fontSize: homePageFontSizeHeader,
-            }}
-            noWrap>
+            }}>
             Welcome to C
             <Slide timeout={1000} in direction={'down'}>
               <Typography variant={'h4'} component={'span'} role="img" aria-label="okhand">
@@ -119,94 +106,107 @@ const Home = () => {
             nduit!
           </Typography>
         </Box>
-        <Container maxWidth="md">
+        <Container maxWidth="md" sx={{ marginBottom: 4 }}>
           <Grid container spacing={6}>
             <Grid item xs={12} md={6}>
-              <Link
-                sx={{ textDecoration: 'none', cursor: 'pointer' }}
-                href="/authentication/signIn">
+              <LinkComponent href="/authentication/signIn" underline={'none'}>
                 <HomePageCard
                   icon={<SecretIcon />}
                   title="set up an auth method"
                   descriptionContent={
-                    <Typography variant="subtitle2">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
                       Easily login with the method of your choice!
                     </Typography>
                   }
                 />
-              </Link>
+              </LinkComponent>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/database/schemas">
+              <LinkComponent href="/database/schemas" underline={'none'}>
                 <HomePageCard
                   icon={<SchemaIcon />}
                   title="create a schema"
                   descriptionContent={
-                    <Typography variant="subtitle2">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
                       Create your schema with a user friendly UI and start editing you documents
                       right away!
                     </Typography>
                   }
                 />
-              </Link>
+              </LinkComponent>
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/email/config">
+              <LinkComponent href="/email/config" underline={'none'}>
                 <HomePageCard
                   icon={<EmailIcon />}
                   title="set up email provider"
                   descriptionContent={
-                    <Typography variant="subtitle2">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
                       Select your preferred provider and start mailing!
                     </Typography>
                   }
                 />
-              </Link>
+              </LinkComponent>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/settings/secrets">
+              <LinkComponent href="/settings/secrets" underline={'none'}>
                 <HomePageCard
                   icon={<LockIcon />}
                   title="set up client secrets"
                   descriptionContent={
-                    <Typography variant="subtitle2">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
                       Set up your client secret across multiple platforms!
                     </Typography>
                   }
                 />
-              </Link>
+              </LinkComponent>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Link
-                style={{ textDecoration: 'none', cursor: 'pointer' }}
-                href="/database/introspection">
+              <LinkComponent href="/database/introspection" underline={'none'}>
                 <HomePageCard
                   icon={<ScreenSearchDesktopRounded />}
                   title="introspection"
                   descriptionContent={
-                    <Box display="flex" gap={2}>
-                      <Box display="flex" flexDirection="row">
-                        <Typography>
+                    <Box
+                      display="flex"
+                      justifyContent={'space-around'}
+                      sx={{ height: '40px', mb: 1 }}>
+                      <Box display="flex" flexDirection={'row'} alignItems={'center'}>
+                        <Typography sx={{ fontSize: homePageFontSizeSubtitles }}>
                           Foreign Schemas:
-                          <Typography color="error">
-                            {introspectionStatus.foreignSchemaCount}
-                          </Typography>
+                        </Typography>
+                        <Typography
+                          color="error"
+                          ml={1}
+                          sx={{ fontSize: homePageFontSizeSubtitles }}>
+                          {introspectionStatus.foreignSchemaCount}
                         </Typography>
                       </Box>
-                      <Divider orientation="vertical" />
-                      <Box display="flex" flexDirection="row">
-                        <Typography>
+                      <Divider orientation="vertical" sx={{ marginX: 2 }} />
+                      <Box display="flex" flexDirection={'row'} alignItems={'center'}>
+                        <Typography sx={{ fontSize: homePageFontSizeSubtitles }}>
                           Imported Schemas:
-                          <Typography color="secondary">
-                            {introspectionStatus.importedSchemaCount}{' '}
-                          </Typography>
+                        </Typography>
+                        <Typography
+                          color="secondary"
+                          ml={1}
+                          sx={{ fontSize: homePageFontSizeSubtitles }}>
+                          {introspectionStatus.importedSchemaCount}
                         </Typography>
                       </Box>
                     </Box>
                   }
                 />
-              </Link>
+              </LinkComponent>
             </Grid>
           </Grid>
           <SwaggerModal

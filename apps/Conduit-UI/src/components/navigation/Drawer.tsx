@@ -8,9 +8,9 @@ import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import { ModuleItem } from '@conduitplatform/ui-components';
-import Link from 'next/link';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import Image from 'next/image';
+import { LinkComponent } from '@conduitplatform/ui-components';
 
 interface Props {
   itemSelected?: string;
@@ -64,33 +64,41 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             itemSelected={itemSelected}
             smallScreen={smallScreen}
           />
-          <Link href="/security/clients" passHref>
+          <LinkComponent href="/security/clients" underline={'none'}>
             <ModuleItem
               selected={itemSelected === 'security'}
               icon={<Security color={'inherit'} />}
-              title={smallScreen ? null : 'Security'}
+              title={'Security'}
+              smallScreen={smallScreen}
             />
-          </Link>
-          <Link href="/settings/core" passHref>
+          </LinkComponent>
+          <LinkComponent href="/settings/core" underline={'none'}>
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}
-              title={smallScreen ? null : 'Settings'}
+              title={'Settings'}
+              smallScreen={smallScreen}
             />
-          </Link>
+          </LinkComponent>
           {disabledModules.length > 0 ? (
             <>
-              <Modules modules={disabledModules} itemSelected={itemSelected} disabled />
+              <Modules
+                modules={disabledModules}
+                itemSelected={itemSelected}
+                disabled
+                smallScreen={smallScreen}
+              />
             </>
           ) : (
             <></>
           )}
         </List>
-        <Box sx={{ margin: 0, paddingLeft: 0 }}>
+        <Box sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}>
           <ModuleItem
             icon={<ExitToApp color={'inherit'} />}
-            title={smallScreen ? null : 'Log out'}
+            title={'Log out'}
             onClick={() => handleLogout()}
+            smallScreen={smallScreen}
           />
         </Box>
       </Box>
