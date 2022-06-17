@@ -1,13 +1,9 @@
-import React, { forwardRef } from "react";
+import React  from "react";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import makeStyles from "@mui/styles/makeStyles";
-import {ListItem, styled, Theme} from "@mui/material";
+import {ListItem, Theme, Tooltip} from "@mui/material";
 import clsx from "clsx";
-
-const StyledAtag = styled("a")(() => ({
-  textDecoration: "none",
-}));
 
 const useStyles = makeStyles((theme: Theme) => ({
   listItem: {
@@ -41,36 +37,36 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  title: string | null;
+  title: string;
   icon: React.ReactElement;
-  href?: string;
   onClick?: () => void;
   className?: string;
   selected?: boolean;
   disabled?: boolean;
-  hideTitle?:boolean;
   fontSize?: number;
+  smallScreen: boolean;
 }
 
-const ModuleItem = forwardRef<HTMLAnchorElement, Props>(
-  (
-    { selected, title, icon, onClick, className, href, disabled, hideTitle,fontSize, ...rest },
-    ref
+const ModuleItem: React.FC<Props> = ({ selected, title, icon, onClick, className, disabled,fontSize,smallScreen, ...rest }
   ) => {
     const classes = useStyles();
+
+    const capitalize = (title: string) => {
+      return title.charAt(0).toUpperCase() + title.slice(1)
+    }
+
     return (
-      <StyledAtag href={href} onClick={onClick} ref={ref}>
+        <Tooltip title={smallScreen ? capitalize(title) : ""} placement={'right'}>
         <ListItem
           disabled={disabled}
-          button
           className={clsx(classes.listItem, className)}
           selected={selected}
-          {...rest}
-        >
+          onClick={onClick}
+          {...rest}>
           <ListItemIcon sx={{ minWidth: 25, color: "inherit"}}>
             {icon}
           </ListItemIcon>
-          {hideTitle ? null :
+          {smallScreen ? null :
               <ListItemText
                   primary={title}
                   sx={{
@@ -86,10 +82,9 @@ const ModuleItem = forwardRef<HTMLAnchorElement, Props>(
               />
           }
         </ListItem>
-      </StyledAtag>
+        </Tooltip>
     );
-  }
-);
+  };
 
 ModuleItem.displayName = "CustomListItem";
 

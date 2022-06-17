@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {Box, Button, Typography, Tabs, Tab, useTheme, useMediaQuery} from "@mui/material";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import SwaggerModal from "../SwaggerModal";
+import LinkComponent from "../LinkComponent";
 
 interface Props {
   pathNames: string[];
@@ -80,10 +80,10 @@ const SharedLayout: React.FC<Props> = ({
             {loader}
           </Box>
         </Box>
-        <Tabs value={value} indicatorColor="secondary" sx={{ mt: 2 }}>
+        <Tabs value={value} indicatorColor="secondary" sx={{ mt: 2 }} >
           {labels.map((label: { name: string; id: string }, index: number) => {
             return (
-              <Link href={pathNames[index]} passHref key={index}>
+              <LinkComponent href={pathNames[index]} key={index} underline={'none'} color={'#FFFFFF'}>
                 <Tab
                   label={label.name}
                   id={label.id}
@@ -102,7 +102,7 @@ const SharedLayout: React.FC<Props> = ({
                         }
                   }
                 />
-              </Link>
+              </LinkComponent>
             );
           })}
         </Tabs>

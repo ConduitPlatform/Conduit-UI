@@ -52,6 +52,7 @@ const CoreSettingsTab: React.FC = () => {
               </Grid>
               <Grid item spacing={2} xs={12} sx={{ marginTop: 3 }} container wrap={'nowrap'}>
                 <Grid
+                  container
                   item
                   xs={12}
                   sm={8}
@@ -60,7 +61,7 @@ const CoreSettingsTab: React.FC = () => {
                   sx={{ marginRight: 4 }}>
                   <FormInputText name="hostUrl" label="URL" />
                 </Grid>
-                <Grid item xs={12} sm={4} alignItems={'center'} wrap={'nowrap'}>
+                <Grid item xs={12} sm={4} alignItems={'center'} wrap={'nowrap'} container>
                   <FormInputText name="port" label="Port" />
                 </Grid>
               </Grid>

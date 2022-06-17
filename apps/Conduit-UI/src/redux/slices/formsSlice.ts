@@ -12,7 +12,7 @@ import {
   updateFormsConfig,
 } from '../../http/FormsRequests';
 import { FormReplies, IFormsConfig, FormsModel } from '../../models/forms/FormsModels';
-import { Pagination, Search } from '../../models/http/HttpModels';
+import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
 export type FormsState = {
   data: {
@@ -34,7 +34,7 @@ const initialState: FormsState = {
 
 export const asyncGetForms = createAsyncThunk(
   'forms/get',
-  async (params: Pagination & Search, thunkAPI) => {
+  async (params: Pagination & Search & Sort, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getForms(params);

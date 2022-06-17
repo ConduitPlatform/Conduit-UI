@@ -4,7 +4,7 @@ import { getModuleIcon, getModuleName, handleModuleNavigation } from './moduleUt
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { ModuleItem } from '@conduitplatform/ui-components';
-import Link from 'next/link';
+import { LinkComponent } from '@conduitplatform/ui-components';
 
 interface IModule {
   moduleName: string;
@@ -16,7 +16,7 @@ interface Props {
   itemSelected?: string;
   homeEnabled?: boolean;
   disabled?: boolean;
-  smallScreen?: boolean;
+  smallScreen: boolean;
 }
 
 const Modules: React.FC<Props> = ({
@@ -42,13 +42,14 @@ const Modules: React.FC<Props> = ({
   return (
     <>
       {homeEnabled ? (
-        <Link href="/" passHref>
+        <LinkComponent href="/" underline={'none'}>
           <ModuleItem
             selected={itemSelected === ''}
             icon={<Home color={'inherit'} />}
-            title={smallScreen ? null : 'home'}
+            title={'home'}
+            smallScreen={smallScreen}
           />
-        </Link>
+        </LinkComponent>
       ) : (
         <></>
       )}
@@ -61,22 +62,24 @@ const Modules: React.FC<Props> = ({
               return (
                 <ModuleItem
                   icon={getModuleIcon(module.moduleName)}
-                  title={smallScreen ? null : getModuleName(module.moduleName)}
+                  title={getModuleName(module.moduleName)}
                   onClick={() => handleDisabledClick()}
                   key={index}
                   disabled={disabled}
+                  smallScreen={smallScreen}
                 />
               );
           }
           const currentUrl = handleModuleNavigation(module.moduleName);
           return (
-            <Link href={currentUrl} passHref key={index}>
+            <LinkComponent href={currentUrl} key={index} underline={'none'}>
               <ModuleItem
                 selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}
-                title={smallScreen ? null : getModuleName(module.moduleName)}
+                title={getModuleName(module.moduleName)}
+                smallScreen={smallScreen}
               />
-            </Link>
+            </LinkComponent>
           );
         })}
     </>
