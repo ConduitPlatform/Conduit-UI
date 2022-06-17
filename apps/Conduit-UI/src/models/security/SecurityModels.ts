@@ -31,6 +31,7 @@ enum ClientPlatformEnum {
   WINDOWS = 'WINDOWS',
   MACOS = 'MACOS',
   LINUX = 'LINUX',
+  CLI = 'CLI',
 }
 export default ClientPlatformEnum;
 

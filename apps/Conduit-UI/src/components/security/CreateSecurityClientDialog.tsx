@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogContent';
@@ -13,14 +13,15 @@ import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { platforms } from '../../utils/platforms';
+import { createPlatforms } from '../../utils/platforms';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
+  handleSuccess: () => void;
 }
 
-const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
+const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose, handleSuccess }) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<ICreateClient>({
@@ -28,6 +29,10 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
   });
 
   const isWeb = methods.watch('platform') === 'WEB';
+
+  useEffect(() => {
+    methods.reset({ platform: ClientPlatformEnum.WEB, domain: '*', alias: '', notes: '' });
+  }, [methods, open]);
 
   const onSubmit = (data: ICreateClient) => {
     if (data.platform === 'WEB' && (!data.domain || data.domain.length === 0)) {
@@ -37,15 +42,17 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
     dispatch(
       asyncGenerateNewClient({
         platform: data.platform,
-        domain: data.domain,
+        domain: data.platform === 'WEB' ? data.domain : undefined,
         notes: data.notes,
         alias: data.alias,
       })
     );
+
     setTimeout(() => {
-      dispatch(asyncGetAvailableClients());
+      dispatch(asyncGetAvailableClients({}));
     }, 140);
-    handleClose();
+
+    handleSuccess();
   };
 
   return (
@@ -63,7 +70,7 @@ const CreateSecurityClientDialog: React.FC<Props> = ({ open, handleClose }) => {
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Box display="flex" flexDirection="column" gap={3} width="560px" p={3}>
               <FormInputSelect
-                options={platforms.map((platform) => ({
+                options={createPlatforms.map((platform) => ({
                   label: platform.label,
                   value: platform.value,
                 }))}

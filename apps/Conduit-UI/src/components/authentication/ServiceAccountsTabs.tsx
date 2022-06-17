@@ -1,17 +1,4 @@
-import {
-  Box,
-  Container,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
 import Typography from '@mui/material/Typography';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import React, { useEffect, useState } from 'react';
 import {
@@ -20,12 +7,18 @@ import {
   createServiceAccount,
   refreshServiceAccount,
 } from '../../http/SettingsRequests';
-import moment from 'moment';
-import { ConfirmationDialog } from '@conduitplatform/ui-components';
+import { ConfirmationDialog, DataTable } from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
+import { Box } from '@mui/material';
+
+interface ServiceAccountsUI {
+  _id: string;
+  name: string;
+  active: string;
+  updatedAt: string;
+}
 
 const ServiceAccountsTabs = () => {
   const [name, setName] = useState<string>('');
@@ -38,6 +31,10 @@ const ServiceAccountsTabs = () => {
     token: '',
   });
   const [serviceAccounts, setServiceAccounts] = useState<ServiceAccount[]>([]);
+  const [sort, setSort] = useState<{ asc: boolean; index: string | null }>({
+    asc: false,
+    index: null,
+  });
 
   const fetchServiceAccounts = async () => {
     try {
@@ -114,70 +111,77 @@ const ServiceAccountsTabs = () => {
     }
   };
 
+  const toDelete = {
+    title: 'Delete',
+    type: 'delete',
+  };
+
+  const toRefresh = {
+    title: 'Refresh',
+    type: 'sync',
+  };
+
+  const handleAction = (action: { title: string; type: string }, data: ServiceAccountsUI) => {
+    const currentServiceAccount = serviceAccounts?.find((account) => account.name === data.name);
+    if (currentServiceAccount !== undefined) {
+      if (action.type === 'delete') {
+        handleDeleteClick(currentServiceAccount._id);
+        return;
+      }
+      if (action.type === 'sync') {
+        handleRefresh(currentServiceAccount._id);
+      }
+    }
+  };
+
+  const actions = [toDelete, toRefresh];
+
+  const headers = [
+    { title: '_id', sort: '_id' },
+    { title: 'Name', sort: 'name' },
+    { title: 'Active', sort: 'active' },
+    { title: 'Created at', sort: 'createdAt' },
+  ];
+
+  const formatData = (data: ServiceAccount[]) => {
+    return data.map((u) => {
+      return {
+        _id: u._id,
+        name: u.name,
+        Active: u.active,
+        CreatedAt: u.createdAt,
+      };
+    });
+  };
+
   return (
     <>
-      <Container maxWidth="lg">
-        <Paper sx={{ p: 4, borderRadius: 8 }}>
-          <Box display="flex" justifyContent="space-between">
-            <Box>
-              <Typography variant={'h6'}>All available Service Accounts</Typography>
-              <Typography variant={'subtitle1'}>
-                Create, delete, refresh your Service Accounts
-              </Typography>
-            </Box>
-            <Box>
-              <Button
-                variant={'contained'}
-                color={'primary'}
-                sx={{ width: 170 }}
-                onClick={handleGenerateNew}>
-                Generate new Service Account
-              </Button>
-            </Box>
-          </Box>
-          <TableContainer sx={{ maxHeight: '65vh', mt: 1 }}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Name</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }}>Active</TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper', whiteSpace: 'nowrap' }}>
-                    Created At
-                  </TableCell>
-                  <TableCell sx={{ backgroundColor: 'background.paper' }} />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {serviceAccounts.map((service, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Typography variant={'caption'}>{service.name}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant={'caption'}>
-                        {service.active ? 'TRUE' : 'FALSE'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant={'caption'}>
-                        {moment(service.createdAt).format('DD/MM/YYYY')}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ minWidth: 150, display: 'flex', justifyContent: 'flex-end' }}>
-                      <IconButton onClick={() => handleDeleteClick(service._id)} size="large">
-                        <DeleteIcon color="error" />
-                      </IconButton>
-                      <IconButton onClick={() => handleRefresh(service._id)} size="large">
-                        <RefreshIcon color="secondary" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Container>
+      <Box py={3} display="flex" justifyContent="space-between">
+        <Box>
+          <Typography variant={'h6'}>All available Service Accounts</Typography>
+          <Typography variant={'subtitle1'}>
+            Create, delete, refresh your Service Accounts
+          </Typography>
+        </Box>
+        <Box>
+          <Button
+            variant={'contained'}
+            color={'primary'}
+            sx={{ width: 170 }}
+            onClick={handleGenerateNew}>
+            Generate new Service Account
+          </Button>
+        </Box>
+      </Box>
+      <DataTable
+        selectable={false}
+        sort={sort}
+        setSort={setSort}
+        headers={headers}
+        dsData={formatData(serviceAccounts)}
+        actions={actions}
+        handleAction={handleAction}
+      />
       <ConfirmationDialog
         open={confirmation}
         handleClose={handleCloseConfirmation}

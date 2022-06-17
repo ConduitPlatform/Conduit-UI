@@ -1,6 +1,6 @@
 export interface IStorageConfig {
   active: boolean;
-  provider: string;
+  provider: ProviderType;
   storagePath: string;
   allowContainerCreation: boolean;
   defaultContainer: string;
@@ -17,10 +17,20 @@ export interface IStorageConfig {
     secretAccessKey: string;
     accountId: string;
   };
+  aliyun: {
+    region: string;
+    accessKeyId: string;
+    accessKeySecret: string;
+  };
   local: {
     storagePath: string;
   };
 }
+
+export type ProviderType = keyof Omit<
+  IStorageConfig,
+  'active' | 'provider' | 'storagePath' | 'allowContainerCreation' | 'defaultContainer'
+>;
 
 export interface IStorageFileData {
   container: string;

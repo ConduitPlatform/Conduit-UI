@@ -26,6 +26,7 @@ import {
   TableActionsContainer,
   TableContainer,
 } from '@conduitplatform/ui-components';
+import { prepareSort } from '../../utils/prepareSort';
 
 const Templates = () => {
   const dispatch = useAppDispatch();
@@ -59,8 +60,10 @@ const Templates = () => {
   const debouncedSearch: string = useDebounce(search, 500);
 
   useEffect(() => {
-    dispatch(asyncGetEmailTemplates({ skip, limit, search: debouncedSearch }));
-  }, [dispatch, limit, skip, debouncedSearch]);
+    dispatch(
+      asyncGetEmailTemplates({ skip, limit, search: debouncedSearch, sort: prepareSort(sort) })
+    );
+  }, [dispatch, limit, skip, debouncedSearch, sort]);
 
   useEffect(() => {
     setSkip(0);
