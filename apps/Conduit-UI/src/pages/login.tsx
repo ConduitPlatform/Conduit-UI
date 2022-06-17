@@ -47,89 +47,87 @@ const Login: React.FC = () => {
       maxWidth={false}
       sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}
       disableGutters>
-      <>
-        {smallScreen ? null : (
-          <Grid
-            container
-            item
-            sx={{
-              background: '#1c1d30',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            maxWidth={'md'}>
-            <LoginIllustration width={'90%'} />
-          </Grid>
-        )}
+      {smallScreen ? null : (
         <Grid
           container
           item
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          marginX={2}>
-          <Fade timeout={1200} in>
-            <Grid container display={'flex'} alignItems={'center'} justifyContent={'center'}>
-              <Box marginBottom={5} display={'flex'}>
-                <Image src={ConduitLogo} alt="conduit-logo" width={300} height={80} priority />
-              </Box>
-              <Grid
-                container
-                item
-                flexDirection={'column'}
-                alignItems={'center'}
-                justifyContent={'center'}
-                sx={{
-                  background: 'background.paper',
-                }}>
-                <Typography variant="h6">Sign in</Typography>
-                <Container maxWidth="xs">
-                  <FormProvider {...methods}>
-                    <form onSubmit={methods.handleSubmit(handleLogin)}>
-                      <Box mt={2}>
-                        <FormInputText
-                          name="username"
-                          rules={{
-                            required: 'Username is required',
-                          }}
-                          label="Username"
-                        />
-                      </Box>
-                      <Box mt={2}>
-                        <FormInputText
-                          typeOfInput="password"
-                          name="password"
-                          rules={{
-                            required: 'Password is required',
-                          }}
-                          label="Password"
-                        />
-                      </Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                        }}>
-                        <FormInputCheckBox name="remember" label="Remember me" />
-                      </Box>
-                      <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        disabled={loading}
-                        sx={{ whiteSpace: 'nowrap' }}>
-                        Sign In
-                      </Button>
-                    </form>
-                  </FormProvider>
-                </Container>
-              </Grid>
-            </Grid>
-          </Fade>
+          sx={{
+            background: '#1c1d30',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          maxWidth={'md'}>
+          <LoginIllustration width={'90%'} />
         </Grid>
-      </>
+      )}
+      <Grid
+        container
+        item
+        display={'flex'}
+        flexDirection={'column'}
+        justifyContent={'center'}
+        alignItems={'center'}
+        marginX={2}>
+        <Fade timeout={1200} in>
+          <Grid container display={'flex'} alignItems={'center'} justifyContent={'center'}>
+            <Box marginBottom={5} display={'flex'}>
+              <Image src={ConduitLogo} alt="conduit-logo" width={300} height={80} priority />
+            </Box>
+            <Grid
+              container
+              item
+              flexDirection={'column'}
+              alignItems={'center'}
+              justifyContent={'center'}
+              sx={{
+                background: 'background.paper',
+              }}>
+              <Typography variant="h6">Sign in</Typography>
+              <Container maxWidth="xs">
+                <FormProvider {...methods}>
+                  <form onSubmit={methods.handleSubmit(handleLogin)}>
+                    <Box mt={2}>
+                      <FormInputText
+                        name="username"
+                        rules={{
+                          required: 'Username is required',
+                        }}
+                        label="Username"
+                      />
+                    </Box>
+                    <Box mt={2}>
+                      <FormInputText
+                        typeOfInput="password"
+                        name="password"
+                        rules={{
+                          required: 'Password is required',
+                        }}
+                        label="Password"
+                      />
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                      }}>
+                      <FormInputCheckBox name="remember" label="Remember me" />
+                    </Box>
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      disabled={loading}
+                      sx={{ whiteSpace: 'nowrap' }}>
+                      Sign In
+                    </Button>
+                  </form>
+                </FormProvider>
+              </Container>
+            </Grid>
+          </Grid>
+        </Fade>
+      </Grid>
     </Container>
   );
 };

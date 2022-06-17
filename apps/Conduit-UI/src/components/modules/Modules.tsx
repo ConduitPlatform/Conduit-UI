@@ -42,7 +42,7 @@ const Modules: React.FC<Props> = ({
   return (
     <>
       {homeEnabled ? (
-        <LinkComponent href="/" underline={'none'}>
+        <LinkComponent href="/">
           <ModuleItem
             selected={itemSelected === ''}
             icon={<Home color={'inherit'} />}
@@ -72,7 +72,7 @@ const Modules: React.FC<Props> = ({
           }
           const currentUrl = handleModuleNavigation(module.moduleName);
           return (
-            <LinkComponent href={currentUrl} key={index} underline={'none'}>
+            <LinkComponent href={currentUrl} key={index}>
               <ModuleItem
                 selected={itemSelected === module.moduleName}
                 icon={getModuleIcon(module.moduleName)}

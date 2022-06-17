@@ -64,7 +64,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             itemSelected={itemSelected}
             smallScreen={smallScreen}
           />
-          <LinkComponent href="/security/clients" underline={'none'}>
+          <LinkComponent href="/security/clients">
             <ModuleItem
               selected={itemSelected === 'security'}
               icon={<Security color={'inherit'} />}
@@ -72,7 +72,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
               smallScreen={smallScreen}
             />
           </LinkComponent>
-          <LinkComponent href="/settings/core" underline={'none'}>
+          <LinkComponent href="/settings/core">
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}
