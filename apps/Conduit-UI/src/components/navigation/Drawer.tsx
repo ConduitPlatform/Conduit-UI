@@ -72,7 +72,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
               smallScreen={smallScreen}
             />
           </LinkComponent>
-          <LinkComponent href="/settings/clientsdk" underline={'none'}>
+          <LinkComponent href="/settings/core" underline={'none'}>
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}
