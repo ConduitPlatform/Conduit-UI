@@ -165,7 +165,7 @@ const Home = () => {
               </Link>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/settings/secrets">
+              <Link style={{ textDecoration: 'none', cursor: 'pointer' }} href="/security/clients">
                 <HomePageCard
                   icon={<LockIcon />}
                   title="set up client secrets"
