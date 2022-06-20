@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   asyncCreateSchemaDocument,
@@ -254,7 +253,7 @@ const Schemas: FC = () => {
   };
 
   return (
-    <Container maxWidth={'xl'}>
+    <Grid container>
       <Box
         sx={{
           height: '80vh',
@@ -366,7 +365,7 @@ const Schemas: FC = () => {
         />
       )}
       <NewSchemaDialog open={newSchemaDialog} handleClose={() => setNewSchemaDialog(false)} />
-    </Container>
+    </Grid>
   );
 };
 

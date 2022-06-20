@@ -6,7 +6,7 @@ const ConfigContainer: FC = ({ children }) => {
     <Container maxWidth="md">
       <Paper sx={{ padding: 4, color: "text.secondary", borderRadius: 7 }}>
         {children}
-      </Paper>{" "}
+      </Paper>
     </Container>
   );
 };

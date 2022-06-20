@@ -60,12 +60,10 @@ const ChatRooms: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-        <Box />
-      </Box>
-      <Paper sx={{ display: 'flex', height: '80vh', padding: 1, borderRadius: 4 }}>
+      <Paper sx={{ display: 'flex', height: '80vh', padding: 2, borderRadius: 4 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: 220 }}>
           <TextField
+            size={'small'}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',

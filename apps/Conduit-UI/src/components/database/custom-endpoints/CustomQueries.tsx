@@ -319,8 +319,8 @@ const CustomQueries: FC = () => {
   };
 
   return (
-    <Box sx={{ ml: 4, mr: 4, overflow: ' hidden ' }}>
-      <Grid container spacing={2} sx={{ background: 'rgba(0, 0, 0, 0.05)', borderRadius: 7, p: 3 }}>
+    <Box sx={{ overflow: 'hidden', borderRadius: 4, height: '80vh' }}>
+      <Grid container spacing={2} sx={{ background: 'rgba(0, 0, 0, 0.05)', p: 2 }}>
         <Grid item xs={3}>
           <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
         </Grid>

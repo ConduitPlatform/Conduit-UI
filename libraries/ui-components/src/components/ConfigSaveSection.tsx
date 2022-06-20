@@ -11,7 +11,7 @@ const ConfigSaveSection: FC<Props> = ({ edit, setEdit, handleCancel }) => {
   return (
     <>
       {edit && (
-        <Grid item container xs={12} sx={{ justifyContent: 'flex-end', padding: 1 }}>
+        <Grid item container xs={12} sx={{ justifyContent: 'flex-end' }}>
           <Button onClick={() => handleCancel()} sx={{ marginRight: 2 }} color={'primary'}>
             Cancel
           </Button>

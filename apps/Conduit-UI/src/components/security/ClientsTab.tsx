@@ -1,6 +1,6 @@
 import {
   Button,
-  Container,
+  Grid,
   IconButton,
   Paper,
   Table,
@@ -121,7 +121,7 @@ const ClientsTab: React.FC = () => {
   };
 
   return (
-    <Container>
+    <Grid>
       <Paper sx={{ p: 4, borderRadius: 8 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant={'h6'}>Available Security Clients</Typography>
@@ -215,7 +215,7 @@ const ClientsTab: React.FC = () => {
           client={selectedClient}
         />
       </SideDrawerWrapper>
-    </Container>
+    </Grid>
   );
 };
 

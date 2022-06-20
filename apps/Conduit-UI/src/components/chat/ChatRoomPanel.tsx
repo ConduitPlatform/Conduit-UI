@@ -67,7 +67,7 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Paper
         sx={{
-          padding: 1,
+          paddingX: 1,
           backgroundColor: 'secondary.dark',
           marginLeft: 1,
           display: 'flex',
@@ -93,10 +93,10 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
           <Box
             sx={{
               backgroundColor: 'gray',
-              borderRadius: 3,
-              padding: 1,
+              borderRadius: 2,
+              padding: '4px',
             }}>
-            <Typography>{selected.length} selected</Typography>
+            <Typography variant={'subtitle2'}>{selected.length} selected</Typography>
           </Box>
         )}
       </Paper>

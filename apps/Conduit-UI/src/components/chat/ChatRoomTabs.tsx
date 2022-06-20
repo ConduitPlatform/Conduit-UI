@@ -146,7 +146,7 @@ const ChatRoomTabs: FC<Props> = ({
                 <CustomizedList
                   height={height}
                   itemCount={chatRoomCount}
-                  itemSize={56}
+                  itemSize={40}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
                   itemData={itemData}

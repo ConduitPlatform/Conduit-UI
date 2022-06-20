@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import React, { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
@@ -46,7 +45,7 @@ const IntrospectionLayout: FC = () => {
   };
 
   return (
-    <Container maxWidth={'xl'}>
+    <Grid container>
       <Box
         sx={{
           height: '80vh',
@@ -124,7 +123,7 @@ const IntrospectionLayout: FC = () => {
           schema={actualSchema}
         />
       )}
-    </Container>
+    </Grid>
   );
 };
 

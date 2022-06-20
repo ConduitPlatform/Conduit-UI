@@ -11,11 +11,11 @@ import {
   SideDrawerWrapper,
   TableContainer,
 } from '@conduitplatform/ui-components';
-import { TableActionsContainer } from '@conduitplatform/ui-components';
 import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
 import CreateNewUserModal from '../../components/settings/CreateNewAdminUserTab';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { IAdmin, INewAdminUser } from '../../models/settings/SettingsModels';
+import { Add } from '@mui/icons-material';
 
 const Admins = () => {
   const dispatch = useAppDispatch();
@@ -128,11 +128,16 @@ const Admins = () => {
 
   return (
     <div>
-      <TableActionsContainer>
-        <Button color="secondary" variant="contained" onClick={() => setDrawer(true)}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={() => setDrawer(true)}
+          endIcon={<Add />}>
           Create
         </Button>
-      </TableActionsContainer>
+      </Box>
+
       <TableContainer
         handlePageChange={handlePageChange}
         limit={limit}
