@@ -13,6 +13,7 @@ import {
 import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';
 import { useRouter } from 'next/router';
+import ReturnDialog from './ReturnDialog';
 
 export const headerHeight = 64;
 
@@ -25,6 +26,8 @@ interface Props {
   readOnly: boolean;
   handleSave: (name: string, crud: ICrudOperations, permissions: Permissions) => void;
   introspection?: boolean;
+  editableFields?: { newTypeFields: [] };
+  modified: boolean;
 }
 
 const Header: FC<Props> = ({
@@ -36,6 +39,8 @@ const Header: FC<Props> = ({
   readOnly,
   handleSave,
   introspection,
+  editableFields,
+  modified,
   ...rest
 }) => {
   const dispatch = useDispatch();
@@ -56,6 +61,7 @@ const Header: FC<Props> = ({
   });
   const [permissionsDialog, setPermissionsDialog] = useState<boolean>(false);
   const [crudOperationsDialog, setCrudOperationsDialog] = useState<boolean>(false);
+  const [returnDialog, setReturnDialog] = useState<boolean>(false);
 
   useEffect(() => {
     setSchemaName(name);
@@ -87,6 +93,14 @@ const Header: FC<Props> = ({
     } else router.push({ pathname: '/database/schemas' });
   };
 
+  const handleReturnButton = () => {
+    if (modified) {
+      setReturnDialog(true);
+    } else {
+      handleBackButtonClick();
+    }
+  };
+
   return (
     <Box
       boxShadow={3}
@@ -107,7 +121,7 @@ const Header: FC<Props> = ({
       <Box display={'flex'} alignItems={'center'}>
         <Box>
           {/* TODO call dispatch clear cms */}
-          <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
+          <a style={{ textDecoration: 'none' }} onClick={() => handleReturnButton()}>
             <Box
               sx={{
                 height: 80,
@@ -154,7 +168,10 @@ const Header: FC<Props> = ({
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button sx={{ margin: 2, color: 'common.white' }} onClick={() => handleData()}>
+        <Button
+          sx={{ margin: 2, color: 'common.white' }}
+          onClick={() => handleData()}
+          disabled={!editableFields?.newTypeFields.length}>
           <SaveIcon />
           <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
         </Button>
@@ -174,6 +191,12 @@ const Header: FC<Props> = ({
         setCrudOperations={setSchemaCrudOperations}
         handleClose={() => setCrudOperationsDialog(false)}
         selectedSchema={selectedSchema}
+      />
+      <ReturnDialog
+        open={returnDialog}
+        setOpen={setReturnDialog}
+        name={name}
+        introspection={introspection}
       />
     </Box>
   );

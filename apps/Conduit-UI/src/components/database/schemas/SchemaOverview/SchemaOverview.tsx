@@ -69,7 +69,7 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
   };
 
   const extractButtonsLeft = () => {
-    const enabled = schema.modelOptions.conduit.cms.enabled;
+    const enabled = schema.modelOptions.conduit?.cms?.enabled;
     if (schema.modelOptions.conduit.cms) {
       return (
         <Button
