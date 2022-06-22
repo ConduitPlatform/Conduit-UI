@@ -76,6 +76,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const { schemaToEdit } = useAppSelector((state) => state.databaseSlice.data);
   const { introspectionSchemaToEdit } = useAppSelector((state) => state.databaseSlice.data);
   const [editableFields, setEditableFields] = useState<any>({ newTypeFields: [] });
+  const [modified, setModified] = useState<boolean>(false);
   const [nonEditableFields, setNonEditableFields] = useState<any[]>([]);
   const [selectedSchema, setSelectedSchema] = useState<Schema>();
   const [schemaName, setSchemaName] = useState<string>('');
@@ -149,6 +150,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
       }
       const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
+
       setEditableFields({ newTypeFields: formattedFields });
     } else if (
       schemaToEdit &&
@@ -379,6 +381,8 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
       });
     }
 
+    setModified(true);
+
     handleDrawerClose();
   };
 
@@ -394,12 +398,14 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   };
 
   const handleDelete = (index: number) => {
+    setModified(true);
     setEditableFields({
       newTypeFields: deleteItem(editableFields.newTypeFields, index),
     });
   };
 
   const handleGroupDrawer = (item: any, index: number, groupIndex: number) => {
+    setModified(true);
     setSelectedProps({ item: item, index: index, type: 'group' });
     setDrawerData({
       ...drawerData,
@@ -415,6 +421,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   };
 
   const handleGroupDelete = (index: number, groupIndex: number) => {
+    setModified(true);
     const deleted: any = Array.from(editableFields.newTypeFields);
     deleted[groupIndex].content.splice(index, 1);
     setEditableFields({
@@ -428,6 +435,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     groupIndex: number,
     itemIndex: number
   ) => {
+    setModified(true);
     setSelectedProps({ item: item, index: index, type: 'group-child' });
     setDrawerData({
       ...drawerData,
@@ -443,6 +451,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   };
 
   const handleGroupInGroupDelete = (index: number, groupIndex: number, itemIndex: number) => {
+    setModified(true);
     const deleted: any = Array.from(editableFields.newTypeFields);
     deleted[groupIndex].content[itemIndex].content.splice(index, 1);
     setEditableFields({
@@ -557,6 +566,8 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         readOnly={readOnly}
         handleSave={handleSave}
         selectedSchema={selectedSchema}
+        editableFields={editableFields}
+        modified={modified}
       />
 
       <Box sx={{ marginTop: '60px', padding: '20px' }}>
