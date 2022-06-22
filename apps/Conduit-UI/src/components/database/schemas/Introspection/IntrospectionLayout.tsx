@@ -96,12 +96,12 @@ const IntrospectionLayout: FC = () => {
         </Box>
         <Box
           sx={{
-            display: 'flex',
-            flexGrow: 1,
-            flexDirection: 'column',
             width: '100%',
-            paddingBottom: '0',
-            marginBottom: '0',
+            paddingBottom: 2,
+            marginBottom: 4,
+            overflow: 'hidden',
+            borderRadius: 4,
+            mr: 4,
           }}>
           {actualSchema ? (
             <SchemaOverview

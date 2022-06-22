@@ -123,7 +123,7 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
                 <List
                   height={height}
                   itemCount={schemasCount}
-                  itemSize={50}
+                  itemSize={56}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
                   width={width}>

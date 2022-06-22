@@ -112,7 +112,7 @@ const Home = () => {
               <LinkComponent href="/authentication/signIn" underline={'none'}>
                 <HomePageCard
                   icon={<SecretIcon />}
-                  title="set up an auth method"
+                  title="Set up an auth method"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -127,7 +127,7 @@ const Home = () => {
               <LinkComponent href="/database/schemas" underline={'none'}>
                 <HomePageCard
                   icon={<SchemaIcon />}
-                  title="create a schema"
+                  title="Create a schema"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -144,7 +144,7 @@ const Home = () => {
               <LinkComponent href="/email/config" underline={'none'}>
                 <HomePageCard
                   icon={<EmailIcon />}
-                  title="set up email provider"
+                  title="Set up email provider"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -159,7 +159,7 @@ const Home = () => {
               <LinkComponent href="/security/clients" underline={'none'}>
                 <HomePageCard
                   icon={<LockIcon />}
-                  title="set up client secrets"
+                  title="Set up client secrets"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -174,7 +174,7 @@ const Home = () => {
               <LinkComponent href="/database/introspection" underline={'none'}>
                 <HomePageCard
                   icon={<ScreenSearchDesktopRounded />}
-                  title="introspection"
+                  title="Introspection"
                   descriptionContent={
                     <Box
                       display="flex"

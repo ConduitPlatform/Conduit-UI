@@ -95,14 +95,14 @@ const InputsSection: FC<Props> = ({ editMode }) => {
   };
 
   return (
-    <>
-      <Grid item xs={6}>
+    <Grid container pl={2} mt={2}>
+      <Grid>
         <Typography>
           <strong>Inputs</strong>
         </Typography>
       </Grid>
 
-      <Grid item xs={12} sx={{ padding: '0' }}>
+      <Grid item xs={12}>
         <Divider />
       </Grid>
       <EndpointInputs
@@ -123,7 +123,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
           Add input
         </Button>
       </Grid>
-    </>
+    </Grid>
   );
 };
 export default InputsSection;
