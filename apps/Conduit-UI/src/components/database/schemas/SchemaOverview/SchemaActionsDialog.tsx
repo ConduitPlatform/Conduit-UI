@@ -231,7 +231,7 @@ const SchemaActionsDialog: FC<Props> = ({
       </DialogContent>
       <DialogContent>{createDialogInfo(selectedSchema.action)}</DialogContent>
       <DialogActions>
-        <Button onClick={() => handleClose()} variant="contained" sx={{ textTransform: 'none' }}>
+        <Button onClick={() => handleClose()} variant="outlined" sx={{ textTransform: 'none' }}>
           Cancel
         </Button>
         <Button

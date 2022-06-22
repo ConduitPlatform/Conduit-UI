@@ -233,7 +233,7 @@ const RelationForm: FC<IProps> = ({
         <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
           OK
         </Button>
-        <Button variant="contained" onClick={onClose}>
+        <Button variant="outlined" onClick={onClose}>
           CANCEL
         </Button>
       </Box>

@@ -63,7 +63,7 @@ export const EditDocumentActions: FC<EditDocumentActionsProps> = ({
   if (!edit) return <></>;
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 2 }} {...rest}>
-      <Button variant={'contained'} sx={{ marginRight: 1 }} onClick={handleCancel}>
+      <Button sx={{ marginRight: 1 }} onClick={handleCancel} variant="outlined">
         Cancel
       </Button>
       <Button color="primary" variant={'contained'} onClick={handleSave}>

@@ -260,7 +260,11 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
             })}
           </Box>
           <Box alignSelf={'flex-end'}>
-            <Button onClick={() => handleCancel()} style={{ marginRight: 16 }} color={'primary'}>
+            <Button
+              onClick={() => handleCancel()}
+              style={{ marginRight: 16 }}
+              color={'primary'}
+              variant="outlined">
               Cancel
             </Button>
             <Button

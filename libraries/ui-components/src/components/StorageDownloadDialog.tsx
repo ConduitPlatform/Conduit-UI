@@ -68,7 +68,7 @@ const StorageDownloadDialog: FC<DownloadDialogProps & DialogProps> = ({
         ) : undefined}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose} variant="outlined">Cancel</Button>
         <Button
           variant={"outlined"}
           color={"secondary"}

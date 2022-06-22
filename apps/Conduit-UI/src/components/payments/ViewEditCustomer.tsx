@@ -72,7 +72,7 @@ const ViewEditCustomer: React.FC<Props> = ({
           {!edit && (
             <Button
               disabled
-              variant="contained"
+              variant="outlined"
               color="primary"
               startIcon={<Cancel />}
               onClick={() => setEdit(true)}>

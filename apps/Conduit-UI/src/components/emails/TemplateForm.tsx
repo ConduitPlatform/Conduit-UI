@@ -61,7 +61,7 @@ const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" color="primary" type="submit">
+              <Button variant="outlined" color="primary" type="submit">
                 Save
               </Button>
             </Grid>
