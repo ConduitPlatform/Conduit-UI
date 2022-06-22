@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
+import { Box, Typography, Button, Input, TextField } from '@mui/material';
+import { ArrowBack as ArrowBackIcon, ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
 import { enqueueInfoNotification } from '../../../../utils/useNotifier';
@@ -132,48 +132,43 @@ const Header: FC<Props> = ({
                 marginRight: 3,
                 cursor: 'pointer',
               }}>
-              <ArrowBackIcon
+              <ArrowBackIos
                 onClick={() => clearSelectedSchema}
                 sx={{ height: 30, width: 30, color: 'common.white' }}
               />
             </Box>
           </a>
         </Box>
-        <Input
-          sx={{
-            height: 5,
-            padding: 1,
-            marginRight: 3,
-            '&:hover': {
-              border: '1px solid',
-              borderColor: 'rgba(255,255,255,0.5)',
-            },
-            borderBottom: '1px solid rgba(255,255,255,0.5)',
-            color: 'common.white',
-          }}
-          id="data-name"
-          placeholder={'Schema name'}
-          onChange={(event) => handleDataName(event.target.value)}
-          disableUnderline
-          value={schemaName}
-          readOnly={readOnly}
-        />
-        <Box display="flex" gap={4}>
-          <Button variant="outlined" onClick={() => setCrudOperationsDialog(true)}>
-            Crud operations
-          </Button>
-          <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
-            Permissions
-          </Button>
+        <Box display="flex" gap={4} alignItems="center">
+          <TextField
+            id="data-name"
+            size="small"
+            placeholder={'Schema name'}
+            onChange={(event) => handleDataName(event.target.value)}
+            value={schemaName}
+            disabled={readOnly}
+          />
+          <Box display="flex" gap={4}>
+            <Button variant="outlined" onClick={() => setCrudOperationsDialog(true)}>
+              Crud operations
+            </Button>
+            <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
+              Permissions
+            </Button>
+          </Box>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button
-          sx={{ margin: 2, color: 'common.white' }}
+          sx={{ margin: 2 }}
+          color="secondary"
+          variant="outlined"
           onClick={() => handleData()}
           disabled={!editableFields?.newTypeFields.length}>
-          <SaveIcon />
-          <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
+          <Box display="flex" gap={1} alignItems="center">
+            <SaveIcon />
+            <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
+          </Box>
         </Button>
       </Box>
       <PermissionsDialog
