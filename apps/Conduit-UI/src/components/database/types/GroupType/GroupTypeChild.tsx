@@ -103,11 +103,13 @@ const GroupGroupType: FC<IProps> = ({
                             <Box display={'flex'}>
                               <GroupItemIcon>
                                 <DeleteIcon
+                                  color="error"
                                   onClick={() => handleGroupDelete(index, groupIndex, itemIndex)}
                                 />
                               </GroupItemIcon>
                               <GroupItemIcon>
                                 <SettingsIcon
+                                  color="primary"
                                   onClick={() =>
                                     handleGroupDrawer(groupItem, index, groupIndex, itemIndex)
                                   }
