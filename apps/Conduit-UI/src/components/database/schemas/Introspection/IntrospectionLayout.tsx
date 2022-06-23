@@ -10,8 +10,11 @@ import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
-import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
 import InfiniteScrollLayout from '../../../InfiniteScrollLayout';
+import {
+  asyncGetIntrospectionSchemas,
+  asyncIntrospect,
+} from '../../../../redux/slices/databaseSlice';
 
 const IntrospectionLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -41,8 +44,18 @@ const IntrospectionLayout: FC = () => {
     router.push(`/database/introspection?schemaModel=${value}`, undefined, { shallow: true });
   };
 
+  const refetchSchemas = () => {
+    const params = {
+      skip: 0,
+      limit: 25,
+      search: debouncedSchemaSearch,
+    };
+    dispatch(asyncGetIntrospectionSchemas(params));
+  };
+
   const handleIntrospectSchemas = () => {
     dispatch(asyncIntrospect());
+    refetchSchemas();
   };
 
   return (

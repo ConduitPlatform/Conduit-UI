@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Save as SaveIcon } from '@mui/icons-material';
+import { Box, Typography, Button, Input, TextField } from '@mui/material';
+import { ArrowBack as ArrowBackIcon, ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
 import { enqueueInfoNotification } from '../../../../utils/useNotifier';
@@ -13,6 +13,7 @@ import {
 import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';
 import { useRouter } from 'next/router';
+import ReturnDialog from './ReturnDialog';
 
 export const headerHeight = 64;
 
@@ -25,6 +26,8 @@ interface Props {
   readOnly: boolean;
   handleSave: (name: string, crud: ICrudOperations, permissions: Permissions) => void;
   introspection?: boolean;
+  editableFields?: { newTypeFields: [] };
+  modified: boolean;
 }
 
 const Header: FC<Props> = ({
@@ -36,6 +39,8 @@ const Header: FC<Props> = ({
   readOnly,
   handleSave,
   introspection,
+  editableFields,
+  modified,
   ...rest
 }) => {
   const dispatch = useDispatch();
@@ -56,6 +61,7 @@ const Header: FC<Props> = ({
   });
   const [permissionsDialog, setPermissionsDialog] = useState<boolean>(false);
   const [crudOperationsDialog, setCrudOperationsDialog] = useState<boolean>(false);
+  const [returnDialog, setReturnDialog] = useState<boolean>(false);
 
   useEffect(() => {
     setSchemaName(name);
@@ -87,6 +93,14 @@ const Header: FC<Props> = ({
     } else router.push({ pathname: '/database/schemas' });
   };
 
+  const handleReturnButton = () => {
+    if (modified) {
+      setReturnDialog(true);
+    } else {
+      handleBackButtonClick();
+    }
+  };
+
   return (
     <Box
       boxShadow={3}
@@ -107,7 +121,7 @@ const Header: FC<Props> = ({
       <Box display={'flex'} alignItems={'center'}>
         <Box>
           {/* TODO call dispatch clear cms */}
-          <a style={{ textDecoration: 'none' }} onClick={handleBackButtonClick}>
+          <a style={{ textDecoration: 'none' }} onClick={() => handleReturnButton()}>
             <Box
               sx={{
                 height: 80,
@@ -118,45 +132,43 @@ const Header: FC<Props> = ({
                 marginRight: 3,
                 cursor: 'pointer',
               }}>
-              <ArrowBackIcon
+              <ArrowBackIos
                 onClick={() => clearSelectedSchema}
                 sx={{ height: 30, width: 30, color: 'common.white' }}
               />
             </Box>
           </a>
         </Box>
-        <Input
-          sx={{
-            height: 5,
-            padding: 1,
-            marginRight: 3,
-            '&:hover': {
-              border: '1px solid',
-              borderColor: 'rgba(255,255,255,0.5)',
-            },
-            borderBottom: '1px solid rgba(255,255,255,0.5)',
-            color: 'common.white',
-          }}
-          id="data-name"
-          placeholder={'Schema name'}
-          onChange={(event) => handleDataName(event.target.value)}
-          disableUnderline
-          value={schemaName}
-          readOnly={readOnly}
-        />
-        <Box display="flex" gap={4}>
-          <Button variant="outlined" onClick={() => setCrudOperationsDialog(true)}>
-            Crud operations
-          </Button>
-          <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
-            Permissions
-          </Button>
+        <Box display="flex" gap={4} alignItems="center">
+          <TextField
+            id="data-name"
+            size="small"
+            placeholder={'Schema name'}
+            onChange={(event) => handleDataName(event.target.value)}
+            value={schemaName}
+            disabled={readOnly}
+          />
+          <Box display="flex" gap={4}>
+            <Button variant="outlined" onClick={() => setCrudOperationsDialog(true)}>
+              Crud operations
+            </Button>
+            <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
+              Permissions
+            </Button>
+          </Box>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button sx={{ margin: 2, color: 'common.white' }} onClick={() => handleData()}>
-          <SaveIcon />
-          <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
+        <Button
+          sx={{ margin: 2 }}
+          color="secondary"
+          variant="outlined"
+          onClick={() => handleData()}
+          disabled={!editableFields?.newTypeFields.length}>
+          <Box display="flex" gap={1} alignItems="center">
+            <SaveIcon />
+            <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>
+          </Box>
         </Button>
       </Box>
       <PermissionsDialog
@@ -174,6 +186,12 @@ const Header: FC<Props> = ({
         setCrudOperations={setSchemaCrudOperations}
         handleClose={() => setCrudOperationsDialog(false)}
         selectedSchema={selectedSchema}
+      />
+      <ReturnDialog
+        open={returnDialog}
+        setOpen={setReturnDialog}
+        name={name}
+        introspection={introspection}
       />
     </Box>
   );
