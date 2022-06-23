@@ -644,11 +644,16 @@ export const asyncFinalizeIntrospectedSchema = createAsyncThunk(
 export const asyncIntrospect = createAsyncThunk('database/introspect', async (params, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
-    const { data } = await introspect();
-    thunkAPI.dispatch(setAppLoading(false));
-    return {
-      results: data.schemas as Schema[],
+    await introspect();
+
+    const params = {
+      skip: 0,
+      limit: 25,
+      search: '',
     };
+
+    thunkAPI.dispatch(asyncGetIntrospectionSchemas(params));
+    thunkAPI.dispatch(setAppLoading(false));
   } catch (error) {
     thunkAPI.dispatch(setAppLoading(false));
     thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

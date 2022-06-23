@@ -44,18 +44,8 @@ const IntrospectionLayout: FC = () => {
     router.push(`/database/introspection?schemaModel=${value}`, undefined, { shallow: true });
   };
 
-  const refetchSchemas = () => {
-    const params = {
-      skip: 0,
-      limit: 25,
-      search: debouncedSchemaSearch,
-    };
-    dispatch(asyncGetIntrospectionSchemas(params));
-  };
-
   const handleIntrospectSchemas = () => {
     dispatch(asyncIntrospect());
-    refetchSchemas();
   };
 
   return (
