@@ -21,9 +21,10 @@ interface Props {
   loaderRef: any;
   isItemLoaded: (index: number) => boolean;
   loadMoreItems: (startIndex: number, stopIndex: number) => void;
-  handleListItemSelect: (endpoint: string) => void;
+  handleListItemSelect: (endpoint: any) => void;
   selectedEndpoint?: Schema;
   badge?: boolean;
+  isEndpoint?: boolean;
 }
 
 const InfiniteScrollList: FC<Props> = ({
@@ -35,9 +36,11 @@ const InfiniteScrollList: FC<Props> = ({
   handleListItemSelect,
   selectedEndpoint,
   badge,
+  isEndpoint,
 }) => {
   const ListRow = ({ index, style }: ListChildComponentProps) => {
     const listItem = listItems[index];
+    console.log(typeof listItem);
 
     const getBadgeColor = (endpointForBadge: any) => {
       switch (endpointForBadge.operation) {
@@ -71,7 +74,7 @@ const InfiniteScrollList: FC<Props> = ({
               },
             }}
             key={`endpoint-${listItem._id}`}
-            onClick={() => handleListItemSelect(listItem.name)}
+            onClick={() => handleListItemSelect(isEndpoint ? listItem : listItem.name)}
             selected={selectedEndpoint?._id === listItem?._id}>
             {badge ? (
               <ListItemIcon>

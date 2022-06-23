@@ -73,6 +73,7 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, sel
       listItems={endpoints}
       handleListItemSelect={handleListItemSelect}
       selectedEndpoint={selectedEndpoint}
+      isEndpoint
     />
   );
 };

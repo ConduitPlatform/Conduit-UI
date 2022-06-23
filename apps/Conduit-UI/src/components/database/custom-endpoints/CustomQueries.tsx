@@ -342,11 +342,7 @@ const CustomQueries: FC = () => {
     } else {
       return (
         <Box>
-          <Grid
-            container
-            sx={{ maxHeight: '72vh', overflowY: 'auto', alignItems: 'center', pt: 1 }}
-            spacing={2}
-            alignItems="flex-end">
+          <Grid container sx={{ alignItems: 'center', pt: 2 }} spacing={2} alignItems="flex-end">
             <Grid item xs={5}>
               <TextField
                 size="small"
@@ -435,6 +431,7 @@ const CustomQueries: FC = () => {
             </Grid>
             <Grid item sm={12}>
               <ConduitMultiSelect
+                formControlProps={{ fullWidth: true }}
                 handleChange={handleFilterChange}
                 label="Schemas"
                 options={schemasWithEndpoints}

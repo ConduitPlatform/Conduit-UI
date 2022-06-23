@@ -147,7 +147,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             size="small"
             label={'Select Operation'}
             variant="outlined"
-            sx={{ minWidth: 180 }}
+            sx={{ minWidth: 170 }}
             value={endpoint.operation}
             disabled={!editMode}
             onChange={handleOperationChange}>
