@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.13.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.0...v0.13.1) (2022-06-23)
+
+
+### Bug Fixes
+
+* **introspection:** loading ([#98](https://github.com/ConduitPlatform/Conduit-UI/issues/98)) ([dc96e54](https://github.com/ConduitPlatform/Conduit-UI/commit/dc96e547b4a245ca3857e9f4970a10a4f8d25050))
+* **SchemaEditor:** confirmation dialog on exit, save is not possible … ([#97](https://github.com/ConduitPlatform/Conduit-UI/issues/97)) ([fefc614](https://github.com/ConduitPlatform/Conduit-UI/commit/fefc614983cf9af4b03324662e5abb99ba583371))
+
 ## [0.13.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.0-rc.1...v0.13.0) (2022-06-17)
 
 
