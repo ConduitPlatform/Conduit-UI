@@ -277,7 +277,7 @@ const Schemas: FC = () => {
                   }}
                 />
               </Grid>
-              <Grid container item spacing={2} justifyContent={'space-between'}>
+              <Grid container item columnSpacing={9}>
                 <Grid item xs={3}>
                   <Box display="flex">
                     <ToggleButtonGroup
@@ -301,6 +301,7 @@ const Schemas: FC = () => {
                 {enabled && (
                   <Grid item xs={9}>
                     <ConduitMultiSelect
+                      formControlProps={{ fullWidth: true }}
                       handleChange={handleFilterChange}
                       label="Owner"
                       options={schemaOwners}
