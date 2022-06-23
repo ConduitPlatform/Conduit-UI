@@ -11,10 +11,7 @@ import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
-import {
-  asyncGetIntrospectionSchemas,
-  asyncIntrospect,
-} from '../../../../redux/slices/databaseSlice';
+import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
 
 const IntrospectionLayout: FC = () => {
   const dispatch = useAppDispatch();
