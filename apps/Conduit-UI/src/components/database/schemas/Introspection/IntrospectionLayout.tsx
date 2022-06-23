@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import React, { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import { Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
+import { Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -11,6 +11,7 @@ import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
 import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
+import InfiniteScrollLayout from '../../../InfiniteScrollLayout';
 
 const IntrospectionLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -45,85 +46,68 @@ const IntrospectionLayout: FC = () => {
   };
 
   return (
-    <Grid container>
-      <Box
-        sx={{
-          height: '80vh',
-          flexGrow: 1,
-          borderRadius: 4,
-          backgroundColor: 'rgba(0,0,0,0.05)',
-          display: 'flex',
-        }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 3 }}>
-          <Box>
-            <Grid sx={{ minWidth: '300px' }} spacing={1} container>
-              <Grid item xs={12}>
-                <TextField
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                  name="Search"
-                  value={schemaSearch}
-                  onChange={(e) => setSchemaSearch(e.target.value)}
-                  label="Find schema"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          <Box pt={2} height="70vh" width="auto">
-            <IntrospectionSchemasList
-              handleListItemSelect={handleChange}
-              search={debouncedSchemaSearch}
-              actualSchema={actualSchema}
-            />
-          </Box>
-          <Box padding="10px">
-            <Button
+    <InfiniteScrollLayout
+      listActions={
+        <Grid container item display={'flex'}>
+          <Grid item xs={12}>
+            <TextField
+              size="small"
+              variant="outlined"
               fullWidth
-              variant="contained"
-              color="secondary"
-              onClick={() => handleIntrospectSchemas()}>
-              Introspect Schemas
-            </Button>
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            width: '100%',
-            paddingBottom: 2,
-            marginBottom: 4,
-            overflow: 'hidden',
-            borderRadius: 4,
-            mr: 4,
-          }}>
-          {actualSchema ? (
-            <SchemaOverview
-              schema={actualSchema}
-              introspection
-              setIntrospectionModal={setIntrospectionModal}
+              name="Search"
+              value={schemaSearch}
+              onChange={(e) => setSchemaSearch(e.target.value)}
+              label="Find schema"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
             />
-          ) : (
-            <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
-              No selected Schema
-            </Typography>
-          )}
-        </Box>
-      </Box>
-      {actualSchema && (
-        <IntrospectionModal
-          open={introspectionModal}
-          setOpen={setIntrospectionModal}
-          schema={actualSchema}
+          </Grid>
+        </Grid>
+      }
+      list={
+        <IntrospectionSchemasList
+          handleListItemSelect={handleChange}
+          search={debouncedSchemaSearch}
+          actualSchema={actualSchema}
         />
-      )}
-    </Grid>
+      }
+      buttonText={'Introspect Schemas'}
+      infoComponent={
+        <>
+          <Box
+            sx={{
+              width: '100%',
+              overflow: 'hidden',
+              borderRadius: 4,
+            }}>
+            {actualSchema ? (
+              <SchemaOverview
+                schema={actualSchema}
+                introspection
+                setIntrospectionModal={setIntrospectionModal}
+              />
+            ) : (
+              <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
+                No selected Schema
+              </Typography>
+            )}
+          </Box>
+          {actualSchema && (
+            <IntrospectionModal
+              open={introspectionModal}
+              setOpen={setIntrospectionModal}
+              schema={actualSchema}
+            />
+          )}
+        </>
+      }
+      buttonClick={() => handleIntrospectSchemas()}
+    />
   );
 };
 

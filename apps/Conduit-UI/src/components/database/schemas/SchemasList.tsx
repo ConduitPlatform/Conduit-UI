@@ -1,13 +1,9 @@
 import React, { FC, useEffect, useRef } from 'react';
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { Box, ListItemButton, ListItemText, Typography } from '@mui/material';
-import { Skeleton } from '@mui/material';
 import { asyncAddSchemas, asyncGetSchemas } from '../../../redux/slices/databaseSlice';
 import { Schema } from '../../../models/database/CmsModels';
+import InfiniteScrollList from '../custom-endpoints/InfiniteScrollList';
 
 const timeoutAmount = 750;
 
@@ -74,76 +70,16 @@ const SchemasList: FC<Props> = ({
     debouncedGetApiItems(schemaDocuments.length, limit);
   };
 
-  const SchemaRow = ({ index, style }: ListChildComponentProps) => {
-    const schema = schemaDocuments[index];
-
-    return (
-      <div style={style}>
-        {!schema ? (
-          <Typography variant="h2">
-            <Skeleton />
-          </Typography>
-        ) : (
-          <ListItemButton
-            sx={{
-              borderRadius: '10px',
-              '&.MuiListItemButton-root': {
-                '&.Mui-selected': {
-                  background: 'secondary',
-                },
-              },
-            }}
-            key={`endpoint-${schema._id}`}
-            onClick={() => handleListItemSelect(schema.name)}
-            selected={actualSchema?._id === schema?._id}>
-            <ListItemText
-              primary={schema.name}
-              primaryTypographyProps={{
-                style: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' },
-              }}
-            />
-          </ListItemButton>
-        )}
-      </div>
-    );
-  };
-
   return (
-    <AutoSizer>
-      {({ height, width }) => {
-        if (!schemasCount) {
-          return (
-            <Box width={width}>
-              <Typography sx={{ textAlign: 'center', marginTop: '100px' }}>
-                No schemas available
-              </Typography>
-            </Box>
-          );
-        }
-        return (
-          <InfiniteLoader
-            ref={infiniteLoaderRef}
-            isItemLoaded={isItemLoaded}
-            itemCount={schemasCount}
-            loadMoreItems={loadMoreItems}
-            threshold={4}>
-            {({ onItemsRendered, ref }) => {
-              return (
-                <List
-                  height={height}
-                  itemCount={schemasCount}
-                  itemSize={50}
-                  onItemsRendered={onItemsRendered}
-                  ref={ref}
-                  width={width}>
-                  {SchemaRow}
-                </List>
-              );
-            }}
-          </InfiniteLoader>
-        );
-      }}
-    </AutoSizer>
+    <InfiniteScrollList
+      count={schemasCount}
+      loadMoreItems={loadMoreItems}
+      loaderRef={infiniteLoaderRef}
+      isItemLoaded={isItemLoaded}
+      listItems={schemaDocuments}
+      handleListItemSelect={handleListItemSelect}
+      selectedEndpoint={actualSchema}
+    />
   );
 };
 
