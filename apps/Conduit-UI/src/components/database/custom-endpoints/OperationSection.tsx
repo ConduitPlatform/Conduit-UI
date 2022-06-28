@@ -140,27 +140,28 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   return (
     <>
       <Grid item container spacing={2} xs={12} wrap={'nowrap'} justifyContent={'space-between'}>
-        <Grid item sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <TextField
-            select
-            fullWidth
-            size="small"
-            label={'Select Operation'}
-            variant="outlined"
-            sx={{ minWidth: 170 }}
-            value={endpoint.operation}
-            disabled={!editMode}
-            onChange={handleOperationChange}>
-            <MenuItem aria-label="None" value="" />
-            <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
-            <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
-            <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
-            <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
-            <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
-          </TextField>
-        </Grid>
-        <CustomizedGrid item>
-          <Grid item sm={12}>
+        <Grid item container sx={{ alignItems: 'center', flex: 1 }} spacing={2}>
+          <Grid item container sx={{ flex: 0 }}>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label={'Select Operation'}
+              variant="outlined"
+              sx={{ minWidth: 170 }}
+              value={endpoint.operation}
+              disabled={!editMode}
+              onChange={handleOperationChange}>
+              <MenuItem aria-label="None" value="" />
+              <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
+              <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
+              <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
+              <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
+              <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item sx={{ flex: 1 }}>
             <Button
               size="small"
               variant="contained"
@@ -171,7 +172,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
               {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
             </Button>
           </Grid>
-        </CustomizedGrid>
+        </Grid>
+
         <Grid container item spacing={2} sx={{ flex: 1, pr: 1 }} justifyContent={'flex-end'}>
           <Grid item>
             <FormControlLabel

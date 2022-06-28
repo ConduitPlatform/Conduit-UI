@@ -127,36 +127,37 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
             Schema Info
           </Button>
         </Box>
-        <Box
-          display="flex"
-          justifyContent="flex-end"
-          gap={2}
-          pr={3}
-          pt={2}
-          sx={{ minWidth: 280, flex: 1 }}>
-          {!introspection ? (
-            <>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => goToSchemaEndpoints(schema.name)}>
-                Custom Endpoints
-              </Button>
 
-              {extractButtonsLeft()}
-              {extractButtonsRight()}
-            </>
-          ) : (
-            setIntrospectionModal && (
+        {!introspection ? (
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            gap={2}
+            pr={3}
+            pt={2}
+            sx={{ minWidth: 280, flex: 1 }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => goToSchemaEndpoints(schema.name)}>
+              Custom Endpoints
+            </Button>
+
+            {extractButtonsLeft()}
+            {extractButtonsRight()}
+          </Box>
+        ) : (
+          <Box pr={3} pt={2}>
+            {setIntrospectionModal && (
               <Button
                 color="secondary"
                 variant="contained"
                 onClick={() => handleFinalization(schema._id)}>
                 Import Schema
               </Button>
-            )
-          )}
-        </Box>
+            )}
+          </Box>
+        )}
       </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} sx={{ padding: '20px', mt: 2 }}>

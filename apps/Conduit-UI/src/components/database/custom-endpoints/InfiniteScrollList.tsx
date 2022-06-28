@@ -61,12 +61,13 @@ const InfiniteScrollList: FC<Props> = ({
       <div style={style}>
         {!listItem ? (
           <Typography variant="h2">
-            <Skeleton />
+            <Skeleton sx={{ marginRight: '8px' }} />
           </Typography>
         ) : (
           <ListItemButton
             sx={{
               '&.MuiListItemButton-root': {
+                marginRight: '8px',
                 '&.Mui-selected': {
                   background: 'secondary',
                 },

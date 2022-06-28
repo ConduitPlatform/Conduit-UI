@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import { ModuleItem } from '@conduitplatform/ui-components';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
+import ConduitLogoMini from '../../assets/svgs/conduitLogoMini.svg';
 import Image from 'next/image';
 import { LinkComponent } from '@conduitplatform/ui-components';
 
@@ -20,7 +21,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const smallScreen = useMediaQuery(theme.breakpoints.down(980));
 
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 
@@ -46,7 +47,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           justifyContent: 'center',
           mt: 4,
         }}>
-        <Image src={ConduitLogo} alt="conduit-logo" />
+        <Image src={smallScreen ? ConduitLogoMini : ConduitLogo} alt="conduit-logo" />
       </ListItem>
       <Box
         sx={{
