@@ -28,9 +28,9 @@ interface ISecuritySlice {
 const initialState: ISecuritySlice = {
   data: {
     config: {
-      clientValidation: {
-        enabled: false,
-      },
+      hostUrl: '',
+      transports: { rest: false, graphql: false, sockets: false },
+      security: { clientValidation: false },
     },
     clientSecret: '',
     availableClients: [],

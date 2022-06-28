@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/router";
 import SwaggerModal from "../SwaggerModal";
 import LinkComponent from "../LinkComponent";
+import GraphQLModal from "../GraphQLModal";
 
 interface Props {
   pathNames: string[];
@@ -39,6 +40,7 @@ const SharedLayout: React.FC<Props> = ({
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
+  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -68,19 +70,13 @@ const SharedLayout: React.FC<Props> = ({
                     {smallScreen ? null : "SWAGGER"}
                   </Typography>
                 </Button>
-                <a
-                  style={{ textDecoration: "none", paddingLeft: 10 }}
-                  href={`${baseUrl}/graphql`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Button color="secondary" variant="outlined">
+                  <Button color="secondary" variant="outlined" onClick={() => setGraphQLOpen(true)} sx={{ ml: 2 }}
+                  >
                     {graphQLIcon}
                     <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
                       {smallScreen ? null : "GraphQL"}
                     </Typography>
                   </Button>
-                </a>
               </Box>
             )}
             <Box px={3}>{loader}</Box>
@@ -123,6 +119,14 @@ const SharedLayout: React.FC<Props> = ({
           title={title}
           icon={icon}
           swagger={swagger}
+          baseUrl={baseUrl}
+        />
+        <GraphQLModal
+          open={graphQLOpen}
+          setOpen={setGraphQLOpen}
+          title={title}
+          icon={icon}
+          graphQl={'graphQL'}
           baseUrl={baseUrl}
         />
       </Box>

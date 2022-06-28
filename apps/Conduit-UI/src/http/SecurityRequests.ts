@@ -7,7 +7,7 @@ import ClientPlatformEnum, {
 import { Sort } from '../models/http/HttpModels';
 
 export const getAvailableClientsRequest = (params: Sort) => {
-  return axios.get(`${CONDUIT_API}/admin/security/client`, { params });
+  return axios.get(`${CONDUIT_API}/admin/router/client`, { params });
 };
 
 export const generateNewClientRequest = (
@@ -16,22 +16,22 @@ export const generateNewClientRequest = (
   notes?: string,
   alias?: string
 ) => {
-  return axios.post(`${CONDUIT_API}/admin/security/client`, { platform, domain, notes, alias });
+  return axios.post(`${CONDUIT_API}/admin/router/client`, { platform, domain, notes, alias });
 };
 
 export const updateSecurityClient = (_id: string, data: IUpdateClient) => {
-  return axios.put(`${CONDUIT_API}/admin/security/client/${_id}`, { ...data });
+  return axios.put(`${CONDUIT_API}/admin/router/client/${_id}`, { ...data });
 };
 
 export const deleteClientRequest = (_id: string) => {
-  return axios.delete(`${CONDUIT_API}/admin/security/client/${_id}`);
+  return axios.delete(`${CONDUIT_API}/admin/router/client/${_id}`);
 };
 
 export const getSecurityConfig = () => {
-  return axios.get(`${CONDUIT_API}/admin/config/security`);
+  return axios.get(`${CONDUIT_API}/admin/config/router`);
 };
 
 export const putSecurityConfig = (data: ISecurityConfig) =>
-  axios.put(`${CONDUIT_API}/admin/config/security`, {
+  axios.put(`${CONDUIT_API}/admin/config/router`, {
     config: { ...data },
   });

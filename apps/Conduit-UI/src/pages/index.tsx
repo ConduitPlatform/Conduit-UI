@@ -9,7 +9,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
 import SecretIcon from '@mui/icons-material/VpnKey';
 import Description from '@mui/icons-material/Description';
-import { SwaggerModal, HomePageCard } from '@conduitplatform/ui-components';
+import { SwaggerModal, GraphQLModal, HomePageCard } from '@conduitplatform/ui-components';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
@@ -29,6 +29,7 @@ export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUI
 const Home = () => {
   const dispatch = useAppDispatch();
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
+  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -58,20 +59,15 @@ const Home = () => {
               {smallScreen ? null : 'SWAGGER'}
             </Typography>
           </Button>
-          <a
-            style={{ textDecoration: 'none' }}
-            href={`${CONDUIT_API}/graphql`}
-            target="_blank"
-            rel="noreferrer">
-            <Button color="secondary" variant="outlined">
-              <Icon sx={{ display: 'flex', alignContent: 'center' }}>
-                <Image src={GraphQL} alt="swagger" />
-              </Icon>
-              <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-                {smallScreen ? null : 'GraphQL'}
-              </Typography>
-            </Button>
-          </a>
+
+          <Button color="secondary" variant="outlined" onClick={() => setGraphQLOpen(true)}>
+            <Icon sx={{ display: 'flex', alignContent: 'center' }}>
+              <Image src={GraphQL} alt="graphQL" />
+            </Icon>
+            <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+              {smallScreen ? null : 'GraphQL'}
+            </Typography>
+          </Button>
           <a
             href="https://getconduit.dev/docs/overview/intro"
             target="_blank"
@@ -213,6 +209,13 @@ const Home = () => {
             open={swaggerModal}
             setOpen={setSwaggerModal}
             swagger="App"
+            title="App"
+            baseUrl={`${CONDUIT_API}`}
+          />
+          <GraphQLModal
+            open={graphQLOpen}
+            setOpen={setGraphQLOpen}
+            graphQl="App"
             title="App"
             baseUrl={`${CONDUIT_API}`}
           />

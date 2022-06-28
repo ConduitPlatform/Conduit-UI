@@ -143,7 +143,7 @@ const StorageTable: FC<Props> = ({
       dispatch(asyncSetSelectedStorageFile(file));
       return;
     }
-    //to be replaced with next dynamic routing
+    //to be replaced with next dynamic router
     const splitPath = path.split('/');
     if (index === splitPath.length - 1) return;
     if (index && splitPath.length - index >= 2) {

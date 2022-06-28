@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import { ExitToApp, Security, Settings } from '@mui/icons-material';
+import { AltRoute, ExitToApp, Settings } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -64,11 +64,11 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             itemSelected={itemSelected}
             smallScreen={smallScreen}
           />
-          <LinkComponent href="/security/clients">
+          <LinkComponent href="/router/settings">
             <ModuleItem
-              selected={itemSelected === 'security'}
-              icon={<Security color={'inherit'} />}
-              title={'Security'}
+              selected={itemSelected === 'router'}
+              icon={<AltRoute color={'inherit'} />}
+              title={'Router'}
               smallScreen={smallScreen}
             />
           </LinkComponent>

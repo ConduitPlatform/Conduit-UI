@@ -13,7 +13,7 @@ export interface IPasswordChange {
 export interface ICoreSettings {
   env: string;
   hostUrl: string;
-  transports: { rest: { enabled: boolean }; graphql: { enabled: boolean } };
+  transports: { rest: { enabled: boolean }; graphql: { enabled: boolean }; sockets: boolean };
   port: number;
 }
 

@@ -33,7 +33,7 @@ const initialState: ISettingsSlice = {
   coreSettings: {
     env: '',
     hostUrl: '',
-    transports: { rest: { enabled: false }, graphql: { enabled: false } },
+    transports: { rest: { enabled: false }, graphql: { enabled: false }, sockets: false },
     port: 8080,
   },
 };

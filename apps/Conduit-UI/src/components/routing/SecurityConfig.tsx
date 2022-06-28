@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConfigContainer } from '@conduitplatform/ui-components';
 import { asyncPutSecurityConfig } from '../../redux/slices/securitySlice';
 import { ISecurityConfig } from '../../models/security/SecurityModels';
 
@@ -15,13 +14,10 @@ const SecurityConfig: React.FC = () => {
 
   const { config } = useAppSelector((state) => state.securitySlice.data);
 
-  const [edit, setEdit] = useState<boolean>(false);
   const methods = useForm<ISecurityConfig>({
     defaultValues: useMemo(() => {
       return {
-        clientValidation: {
-          enabled: config.clientValidation.enabled,
-        },
+        security: { clientValidation: config.security?.clientValidation },
       };
     }, [config]),
   });
@@ -32,33 +28,30 @@ const SecurityConfig: React.FC = () => {
     reset(config);
   }, [config, reset]);
 
-  const handleCancel = () => {
-    setEdit(!edit);
-    reset();
-  };
-
-  const onSubmit = (data: ISecurityConfig) => {
-    setEdit(false);
-    dispatch(asyncPutSecurityConfig(data));
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (config.security) {
+      config['security']['clientValidation'] = event.target.checked;
+      dispatch(asyncPutSecurityConfig(config));
+    }
   };
 
   return (
     <ConfigContainer>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <form>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <Box
                 width={'100%'}
                 display={'inline-flex'}
                 justifyContent={'space-between'}
                 alignItems={'center'}>
-                <Typography variant={'subtitle1'}>Require Client ID/Secret validation</Typography>
-                <FormInputSwitch name={'clientValidation.enabled'} disabled={!edit} />
+                <Typography variant={'h6'} color={'#FFFFFF'}>
+                  Require Client ID/Secret validation
+                </Typography>
+                <FormInputSwitch name={'clientValidation'} switchProps={{ onChange }} />
               </Box>
             </Grid>
-            <Divider sx={{ mt: 1, mb: 1, width: '100%' }} />
-            <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
           </Grid>
         </form>
       </FormProvider>
