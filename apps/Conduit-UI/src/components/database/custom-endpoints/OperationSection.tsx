@@ -139,8 +139,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
 
   return (
     <>
-      <Grid item container spacing={6} xs={12}>
-        <Grid item xs={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Grid item container spacing={2} xs={12} wrap={'nowrap'} justifyContent={'space-between'}>
+        <Grid item sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TextField
             select
             fullWidth
@@ -159,7 +159,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
           </TextField>
         </Grid>
-        <CustomizedGrid item xs={3}>
+        <CustomizedGrid item>
           <Grid item sm={12}>
             <Button
               size="small"
@@ -172,57 +172,57 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             </Button>
           </Grid>
         </CustomizedGrid>
-        <CustomizedGrid item xs={endpoint.operation === OperationsEnum.GET ? 2 : 3}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                disabled={!editMode}
-                color={'primary'}
-                checked={endpoint.authentication}
-                onChange={handleAuthenticationChange}
-                name="authentication"
-              />
-            }
-            label="Authenticated"
-          />
-        </CustomizedGrid>
-        {endpoint.operation === OperationsEnum.GET ? (
-          <>
-            <CustomizedGrid item xs={2}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    disabled={!editMode}
-                    color={'primary'}
-                    checked={endpoint.paginated}
-                    onChange={handlePaginatedChange}
-                    name="paginated"
-                  />
-                }
-                label="Paginated"
-              />
-            </CustomizedGrid>
-            <CustomizedGrid item xs={2}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                    color={'primary'}
-                    checked={endpoint.sorted}
-                    onChange={handleSortedChange}
-                    name="sorted"
-                  />
-                }
-                label="Sorted"
-              />
-            </CustomizedGrid>
-          </>
-        ) : (
-          <Grid item xs={4} />
-        )}
+        <Grid container item spacing={2} sx={{ flex: 1, pr: 1 }} justifyContent={'flex-end'}>
+          <Grid item>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  disabled={!editMode}
+                  color={'primary'}
+                  checked={endpoint.authentication}
+                  onChange={handleAuthenticationChange}
+                  name="authentication"
+                />
+              }
+              label="Authenticated"
+            />
+          </Grid>
+          {endpoint.operation === OperationsEnum.GET && (
+            <>
+              <Grid item sx={{ flex: 0 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      disabled={!editMode}
+                      color={'primary'}
+                      checked={endpoint.paginated}
+                      onChange={handlePaginatedChange}
+                      name="paginated"
+                    />
+                  }
+                  label="Paginated"
+                />
+              </Grid>
+              <Grid item sx={{ flex: 0 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                      color={'primary'}
+                      checked={endpoint.sorted}
+                      onChange={handleSortedChange}
+                      name="sorted"
+                    />
+                  }
+                  label="Sorted"
+                />
+              </Grid>
+            </>
+          )}
+        </Grid>
       </Grid>
       {editMode && (
         <TableDialog

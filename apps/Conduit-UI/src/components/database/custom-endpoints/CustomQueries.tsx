@@ -343,34 +343,36 @@ const CustomQueries: FC = () => {
       return (
         <Box>
           <Grid container sx={{ alignItems: 'center', pt: 2 }} spacing={2} alignItems="flex-end">
-            <Grid item xs={5}>
-              <TextField
-                size="small"
-                disabled={!editMode}
-                fullWidth
-                variant={'outlined'}
-                label={'Name'}
-                value={endpoint.name}
-                onChange={handleNameChange}
-              />
+            <Grid item container xs={12} justifyContent={'space-between'} wrap={'nowrap'}>
+              <Grid item sx={{ flex: 1, maxWidth: 360 }}>
+                <TextField
+                  size="small"
+                  disabled={!editMode}
+                  fullWidth
+                  variant={'outlined'}
+                  label={'Name'}
+                  value={endpoint.name}
+                  onChange={handleNameChange}
+                />
+              </Grid>
+              <Grid item>
+                {!editMode && (
+                  <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
+                    <Delete color="error" />
+                  </IconButton>
+                )}
+                {!editMode && (
+                  <IconButton
+                    color="secondary"
+                    aria-label="edit"
+                    onClick={handleEditClick}
+                    size="large">
+                    <Edit />
+                  </IconButton>
+                )}
+              </Grid>
             </Grid>
-            <Grid item xs={2} />
-            <Grid item xs={5} sx={{ textAlign: 'end' }}>
-              {!editMode && (
-                <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
-                  <Delete color="error" />
-                </IconButton>
-              )}
-              {!editMode && (
-                <IconButton
-                  color="secondary"
-                  aria-label="edit"
-                  onClick={handleEditClick}
-                  size="large">
-                  <Edit />
-                </IconButton>
-              )}
-            </Grid>
+
             <OperationSection
               schemas={schemaDocuments}
               editMode={editMode}
