@@ -69,7 +69,8 @@ const InfiniteScrollList: FC<Props> = ({
               '&.MuiListItemButton-root': {
                 marginRight: '8px',
                 '&.Mui-selected': {
-                  background: 'secondary',
+                  background: '#202030',
+                  boxShadow: 'inset 0px 0px 1px #07D9C4',
                 },
                 borderRadius: '10px',
               },

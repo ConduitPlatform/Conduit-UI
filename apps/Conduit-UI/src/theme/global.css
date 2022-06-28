@@ -1,13 +1,13 @@
 
 /* width */
 body *::-webkit-scrollbar {
-    width: 8px !important;
-    height: 8px !important;
+    width: 6px !important;
+    height: 6px !important;
 }
 
 /* Track */
 body *::-webkit-scrollbar-track {
-    background: none;
+    background: #202030;
     border-radius: 99px !important;
 }
 
