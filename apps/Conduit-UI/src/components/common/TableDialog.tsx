@@ -127,7 +127,7 @@ const TableDialog: React.FC<Props> = ({
           position: 'absolute',
           right: '8px',
           top: '8px',
-          color: 'secondary',
+          color: 'primary',
         }}
         onClick={handleClose}
         size="large">
@@ -174,13 +174,13 @@ const TableDialog: React.FC<Props> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" variant="outlined">
           Cancel
         </Button>
         <Button
           disabled={selectedElements.length < 1}
           onClick={() => handleAction()}
-          color="secondary"
+          color="primary"
           variant="contained"
           autoFocus>
           {buttonText}

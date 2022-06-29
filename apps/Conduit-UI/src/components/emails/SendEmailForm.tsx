@@ -125,7 +125,7 @@ const SendEmailForm: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ padding: 3, color: 'text.secondary', borderRadius: 7 }} elevation={1}>
+      <Paper sx={{ padding: 3, color: 'text.primary', borderRadius: 7 }} elevation={1}>
         <Typography variant={'h6'} mb={2} sx={{ display: 'flex', alignItems: 'center' }}>
           <MailOutline fontSize={'small'} sx={{ mr: 2 }} /> Compose your email
         </Typography>

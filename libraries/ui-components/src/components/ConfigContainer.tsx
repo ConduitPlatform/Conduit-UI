@@ -4,9 +4,9 @@ import React, { FC } from "react";
 const ConfigContainer: FC = ({ children }) => {
   return (
     <Container maxWidth="md">
-      <Paper sx={{ padding: 4, color: "text.secondary", borderRadius: 7 }}>
+      <Paper sx={{ padding: 4, color: "text.primary", borderRadius: 7 }}>
         {children}
-      </Paper>{" "}
+      </Paper>
     </Container>
   );
 };

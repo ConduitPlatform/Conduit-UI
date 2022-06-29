@@ -528,7 +528,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     if (editableFields.newTypeFields.length > 0) {
       return (
         <Chip
-          color="secondary"
+          color="primary"
           variant="outlined"
           sx={{ marginLeft: '30px', cursor: 'pointer' }}
           label={`Fields: ${editableFields.newTypeFields.length}`}
@@ -584,7 +584,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
                         {Object.keys(ext).toString().toUpperCase()}
                       </Typography>
                       <Chip
-                        color="secondary"
+                        color="primary"
                         sx={{ marginLeft: '30px', cursor: 'pointer' }}
                         label="READ ONLY"
                       />

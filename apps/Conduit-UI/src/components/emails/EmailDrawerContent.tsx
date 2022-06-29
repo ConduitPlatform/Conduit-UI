@@ -43,7 +43,7 @@ const EmailDrawerContent: React.FC<Props> = ({
           elevation={0}
           sx={{
             padding: 2,
-            color: 'text.secondary',
+            color: 'text.primary',
             mt: 2,
           }}>
           <Grid container spacing={2} justifyContent="space-around">

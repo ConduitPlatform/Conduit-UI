@@ -110,7 +110,7 @@ const StorageCreateDrawer: FC<Props> = ({
             </Grid>
             <Grid container item mt={2}>
               <Grid item sx={{ mr: 2 }}>
-                <Button variant="outlined" onClick={() => handleCancel()}>
+                <Button onClick={() => handleCancel()} variant="outlined">
                   Cancel
                 </Button>
               </Grid>

@@ -66,7 +66,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
   const chipsToDisplay = (values: Subscription) => {
     return Object.entries(values).map(
       ([key, value]) =>
-        key !== 'transactions' && <Chip color="secondary" label={`${key}: ${value}`} />
+        key !== 'transactions' && <Chip color="primary" label={`${key}: ${value}`} />
     );
   };
 
@@ -85,7 +85,7 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
           elevation={0}
           sx={{
             p: 2,
-            color: 'text.secondary',
+            color: 'text.primary',
             mt: 2,
           }}>
           <Typography sx={{ marginBottom: '25px' }}>Transactions: </Typography>

@@ -43,7 +43,7 @@ const CreateServiceAccount: React.FC<Props> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" variant="outlined">
           Cancel
         </Button>
         <Button onClick={handleCreate} color="primary" disabled={!name}>

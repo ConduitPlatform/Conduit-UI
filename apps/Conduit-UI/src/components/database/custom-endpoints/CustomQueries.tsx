@@ -1,6 +1,17 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Box, Grid, IconButton, TextField, Typography } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import {
+  Box,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { Delete, Edit, Search } from '@mui/icons-material';
 import {
   findFieldsWithTypes,
   getAvailableFieldsOfSchema,
@@ -10,15 +21,15 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { ConfirmationDialog } from '@conduitplatform/ui-components';
+import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
-import SideList from './Sidelist';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
 import AssignmentsSection from './AssignmentsSection';
 import InputsSection from './InputsSection';
 import { v4 as uuidv4 } from 'uuid';
 import {
+  endpointCleanSlate,
   setEndpointData,
   setSchemaFields,
   setSelectedEndPoint,
@@ -28,8 +39,16 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import {
   asyncCreateCustomEndpoints,
   asyncDeleteCustomEndpoints,
+  asyncGetSchemasWithEndpoints,
   asyncUpdateCustomEndpoints,
+  setEndpointsOperation,
+  setEndpointsSearch,
 } from '../../../redux/slices/databaseSlice';
+import InfiniteScrollLayout from '../../InfiniteScrollLayout';
+import { useRouter } from 'next/router';
+import useDebounce from '../../../hooks/useDebounce';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
+import EndpointsList from './EndpointsList';
 
 const CustomQueries: FC = () => {
   const dispatch = useAppDispatch();
@@ -42,6 +61,57 @@ const CustomQueries: FC = () => {
     schemas: { schemaDocuments },
   } = useAppSelector((state) => state.databaseSlice.data);
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
+  const router = useRouter();
+  const { schema } = router.query;
+  const [search, setSearch] = useState('');
+  const [schemas, setSchemas] = useState<string[]>([]);
+  const debouncedSearch = useDebounce(search, 500);
+  const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
+
+  useEffect(() => {
+    dispatch(setEndpointsSearch(debouncedSearch));
+  }, [debouncedSearch, dispatch]);
+
+  useEffect(() => {
+    dispatch(asyncGetSchemasWithEndpoints());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (schema) {
+      const isFound = schemasWithEndpoints.some((element) => {
+        if (element.name === schema) {
+          return true;
+        }
+      });
+      if (!isFound) {
+        router.replace('/database/custom', undefined, { shallow: true });
+        dispatch(
+          enqueueInfoNotification('Selected schema has no available endpoints!', 'duplicate')
+        );
+      } else {
+        setSchemas([`${schema}`]);
+      }
+    }
+  }, [schema, dispatch, router, schemasWithEndpoints]);
+
+  const handleListItemSelect = (endpoint: any) => {
+    dispatch(setSelectedEndPoint(endpoint));
+    dispatch(setEndpointData({ ...endpoint }));
+    setCreateMode(false);
+  };
+
+  const handleAddNewEndpoint = () => {
+    dispatch(endpointCleanSlate());
+    setEditMode(true);
+    setCreateMode(true);
+  };
+
+  const handleFilterChange = (event: any) => {
+    setSchemas(event.target.value);
+    if (schema) {
+      router.replace('/database/custom', undefined, { shallow: true });
+    }
+  };
 
   const initializeData = useCallback(() => {
     if (selectedEndpoint) {
@@ -272,39 +342,37 @@ const CustomQueries: FC = () => {
     } else {
       return (
         <Box>
-          <Grid
-            container
-            sx={{ maxHeight: '72vh', overflowY: 'auto', alignItems: 'center', paddingTop: '3px' }}
-            spacing={2}
-            alignItems="flex-end">
-            <Grid item xs={5}>
-              <TextField
-                size="small"
-                disabled={!editMode}
-                fullWidth
-                variant={'outlined'}
-                label={'Name'}
-                value={endpoint.name}
-                onChange={handleNameChange}
-              />
+          <Grid container sx={{ alignItems: 'center', pt: 2 }} spacing={2} alignItems="flex-end">
+            <Grid item container xs={12} justifyContent={'space-between'} wrap={'nowrap'}>
+              <Grid item sx={{ flex: 1, maxWidth: 360 }}>
+                <TextField
+                  size="small"
+                  disabled={!editMode}
+                  fullWidth
+                  variant={'outlined'}
+                  label={'Name'}
+                  value={endpoint.name}
+                  onChange={handleNameChange}
+                />
+              </Grid>
+              <Grid item>
+                {!editMode && (
+                  <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
+                    <Delete color="error" />
+                  </IconButton>
+                )}
+                {!editMode && (
+                  <IconButton
+                    color="primary"
+                    aria-label="edit"
+                    onClick={handleEditClick}
+                    size="large">
+                    <Edit />
+                  </IconButton>
+                )}
+              </Grid>
             </Grid>
-            <Grid item xs={2} />
-            <Grid item xs={5} sx={{ textAlign: 'end' }}>
-              {!editMode && (
-                <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
-                  <Delete color="error" />
-                </IconButton>
-              )}
-              {!editMode && (
-                <IconButton
-                  color="secondary"
-                  aria-label="edit"
-                  onClick={handleEditClick}
-                  size="large">
-                  <Edit />
-                </IconButton>
-              )}
-            </Grid>
+
             <OperationSection
               schemas={schemaDocuments}
               editMode={editMode}
@@ -319,15 +387,74 @@ const CustomQueries: FC = () => {
   };
 
   return (
-    <Box sx={{ ml: 4, mr: 4, overflow: ' hidden ' }}>
-      <Grid container spacing={2} sx={{ background: 'rgba(0, 0, 0, 0.05)', borderRadius: 7, p: 3 }}>
-        <Grid item xs={3}>
-          <SideList setEditMode={setEditMode} setCreateMode={setCreateMode} filters={filters} />
-        </Grid>
-        <Grid item xs={9}>
-          {renderMainContent()}
-        </Grid>
-      </Grid>
+    <>
+      <InfiniteScrollLayout
+        listActions={
+          <Grid spacing={2} container item>
+            <Grid item sm={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                name="Search"
+                size="small"
+                label="Find endpoint"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item sm={6}>
+              <FormControl size="small" fullWidth variant="outlined" sx={{ minWidth: 120 }}>
+                <InputLabel id="operation">Operation</InputLabel>
+                <Select
+                  sx={{ borderRadius: 2 }}
+                  label="Provider"
+                  labelId="operation"
+                  value={filters.operation}
+                  onChange={(event) => {
+                    dispatch(setEndpointsOperation(event.target.value as number));
+                  }}>
+                  <MenuItem value={-2}>
+                    <em>All</em>
+                  </MenuItem>
+                  <MenuItem value={0}>GET</MenuItem>
+                  <MenuItem value={1}>POST</MenuItem>
+                  <MenuItem value={2}>PUT</MenuItem>
+                  <MenuItem value={3}>DELETE</MenuItem>
+                  <MenuItem value={4}>PATCH</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item sm={12}>
+              <ConduitMultiSelect
+                formControlProps={{ fullWidth: true }}
+                handleChange={handleFilterChange}
+                label="Schemas"
+                options={schemasWithEndpoints}
+                values={schemas}
+                sortBy="name"
+              />
+            </Grid>
+          </Grid>
+        }
+        list={
+          <EndpointsList
+            handleListItemSelect={handleListItemSelect}
+            search={filters.search}
+            operation={filters.operation}
+            selectedSchemas={schemas}
+          />
+        }
+        infoComponent={renderMainContent()}
+        buttonText={'create endpoint'}
+        buttonClick={handleAddNewEndpoint}
+      />
       <ConfirmationDialog
         buttonText={'Delete'}
         open={confirmationOpen}
@@ -337,7 +464,7 @@ const CustomQueries: FC = () => {
         handleClose={handleConfirmationDialogClose}
         buttonAction={handleDeleteConfirmed}
       />
-    </Box>
+    </>
   );
 };
 

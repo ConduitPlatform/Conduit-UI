@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   asyncCreateSchemaDocument,
@@ -15,7 +14,7 @@ import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaData/SchemaDataPlaceholder';
 import JSONEditor from './SchemaData/JSONEditor';
-import { Grid, InputAdornment, TextField, Typography, Button, Tooltip } from '@mui/material';
+import { Grid, InputAdornment, TextField, Typography, Tooltip } from '@mui/material';
 import { Archive, Check, Search } from '@mui/icons-material';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
@@ -26,6 +25,7 @@ import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview/SchemaOverview';
 import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
 import { ConduitMultiSelect } from '@conduitplatform/ui-components';
+import InfiniteScrollLayout from '../../InfiniteScrollLayout';
 
 const TabPanel: FC = ({ children }) => {
   return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
@@ -254,18 +254,11 @@ const Schemas: FC = () => {
   };
 
   return (
-    <Container maxWidth={'xl'}>
-      <Box
-        sx={{
-          height: '80vh',
-          flexGrow: 1,
-          borderRadius: 4,
-          backgroundColor: 'rgba(0,0,0,0.05)',
-          display: 'flex',
-        }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: 3 }}>
+    <>
+      <InfiniteScrollLayout
+        listActions={
           <Box>
-            <Grid sx={{ minWidth: '300px' }} spacing={1} container>
+            <Grid spacing={2} container item>
               <Grid item xs={12}>
                 <TextField
                   size="small"
@@ -284,7 +277,7 @@ const Schemas: FC = () => {
                   }}
                 />
               </Grid>
-              <Grid container item spacing={2} sx={{ pb: '10px' }}>
+              <Grid container item columnSpacing={9}>
                 <Grid item xs={3}>
                   <Box display="flex">
                     <ToggleButtonGroup
@@ -308,6 +301,7 @@ const Schemas: FC = () => {
                 {enabled && (
                   <Grid item xs={9}>
                     <ConduitMultiSelect
+                      formControlProps={{ fullWidth: true }}
                       handleChange={handleFilterChange}
                       label="Owner"
                       options={schemaOwners}
@@ -318,36 +312,32 @@ const Schemas: FC = () => {
               </Grid>
             </Grid>
           </Box>
-
-          <Box height="70vh" width="auto">
-            <SchemasList
-              handleListItemSelect={handleChange}
-              enabled={enabled}
-              search={debouncedSchemaSearch}
-              owners={owners}
-              actualSchema={actualSchema}
-            />
+        }
+        list={
+          <SchemasList
+            handleListItemSelect={handleChange}
+            enabled={enabled}
+            search={debouncedSchemaSearch}
+            owners={owners}
+            actualSchema={actualSchema}
+          />
+        }
+        buttonText={'Create schema'}
+        infoComponent={
+          <Box
+            sx={{
+              display: 'flex',
+              flexGrow: 1,
+              flexDirection: 'column',
+              width: '100%',
+            }}>
+            <SchemaTabs handleChange={handleTabChange} value={selectedTab} />
+            {prepareNavigation()}
+            {prepareCardContainer()}
           </Box>
-          <Box padding="10px">
-            <Button fullWidth variant="contained" color="secondary" onClick={handleAddSchema}>
-              Create schema
-            </Button>
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexGrow: 1,
-            flexDirection: 'column',
-            width: '100%',
-            paddingBottom: '0',
-            marginBottom: '0',
-          }}>
-          <SchemaTabs handleChange={handleTabChange} value={selectedTab} />
-          {prepareNavigation()}
-          {prepareCardContainer()}
-        </Box>
-      </Box>
+        }
+        buttonClick={handleAddSchema}
+      />
       <ConfirmationDialog
         buttonText="Delete"
         open={deleteDocumentDialog}
@@ -366,7 +356,7 @@ const Schemas: FC = () => {
         />
       )}
       <NewSchemaDialog open={newSchemaDialog} handleClose={() => setNewSchemaDialog(false)} />
-    </Container>
+    </>
   );
 };
 

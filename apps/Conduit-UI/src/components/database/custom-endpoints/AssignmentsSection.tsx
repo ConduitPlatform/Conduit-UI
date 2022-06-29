@@ -55,7 +55,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
               schemaFields.length <= endpoint.assignments.length)
           }
           variant="text"
-          color={'secondary'}
+          color={'primary'}
           sx={{ margin: 1, textTransform: 'none' }}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddAssignment}>

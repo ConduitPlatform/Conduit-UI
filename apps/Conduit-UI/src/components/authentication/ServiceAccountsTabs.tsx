@@ -156,7 +156,7 @@ const ServiceAccountsTabs = () => {
 
   return (
     <>
-      <Box py={3} display="flex" justifyContent="space-between">
+      <Box pb={3} display="flex" justifyContent="space-between">
         <Box>
           <Typography variant={'h6'}>All available Service Accounts</Typography>
           <Typography variant={'subtitle1'}>

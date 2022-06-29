@@ -248,6 +248,7 @@ const Create = () => {
     <div>
       <TableActionsContainer>
         <TextField
+          disabled={!forms?.length}
           size="small"
           variant="outlined"
           name="Search"

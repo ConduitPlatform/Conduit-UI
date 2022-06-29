@@ -106,7 +106,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
           container
           spacing={2}
           justifyContent="space-around"
-          sx={{ p: 2, color: 'text.secondary', mt: 2 }}>
+          sx={{ p: 2, color: 'text.primary', mt: 2 }}>
           <Grid item xs={12}>
             <Typography variant="subtitle2">Template name:</Typography>
             <Typography variant="body2">{selectedTemplate.name}</Typography>

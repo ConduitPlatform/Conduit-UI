@@ -108,7 +108,7 @@ const CreateChatRoomDrawer: FC<Props> = ({ open, handleCreateChatRoom, closeDraw
           </Grid>
           <Grid container item>
             <Grid item sx={{ mr: 2 }}>
-              <Button variant="outlined" onClick={() => handleCancel()}>
+              <Button onClick={() => handleCancel()} variant="outlined">
                 Cancel
               </Button>
             </Grid>

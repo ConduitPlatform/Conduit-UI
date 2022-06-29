@@ -1,8 +1,9 @@
 import { createTheme } from '@mui/material/styles';
 import ArrowDropDownRounded from '@mui/icons-material/ArrowDropDownRounded';
 
-const primary = '#5B44F2';
-const secondary = '#07D9C4';
+const primary = '#07D9C4';
+const secondary = '#5B44F2';
+
 const error = '#ef476f';
 const warning = '#E265AB';
 const disabled = '#808080';
@@ -16,7 +17,7 @@ const theme = createTheme({
     },
     secondary: {
       main: secondary,
-      contrastText: '#000',
+      contrastText: '#F2F2F2',
     },
     error: {
       main: error,
@@ -46,7 +47,7 @@ const theme = createTheme({
     },
     MuiTextField: {
       styleOverrides: {
-        root: { '& .MuiInputBase-root': { borderRadius: 10, color: 'secondary' } },
+        root: { '& .MuiInputBase-root': { borderRadius: 10, color: 'primary' } },
       },
     },
     MuiSelect: {
@@ -68,7 +69,7 @@ const theme = createTheme({
           width: 45,
           height: 20,
           padding: 0,
-          color: secondary,
+          color: primary,
           '& .MuiSwitch-switchBase': {
             '&.Mui-checked': {
               transform: 'translateX(20px)',
@@ -113,32 +114,7 @@ const theme = createTheme({
     },
 
     MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          scrollbarColor: '#6b6b6b #2b2b2b',
-          '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
-            backgroundColor: '#2b2b2b',
-          },
-          '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
-            borderRadius: 8,
-            backgroundColor: '#6b6b6b',
-            minHeight: 24,
-            border: '2px solid #2b2b2b',
-          },
-          '&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus': {
-            backgroundColor: '#959595',
-          },
-          '&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active': {
-            backgroundColor: '#959595',
-          },
-          '&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover': {
-            backgroundColor: '#959595',
-          },
-          '&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner': {
-            backgroundColor: '#2b2b2b',
-          },
-        },
-      },
+      // styleOverrides: {},
     },
   },
 });

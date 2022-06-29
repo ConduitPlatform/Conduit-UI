@@ -65,7 +65,7 @@ const TreeItemContent: FC<Props> = ({
           <Grid item>
             <Button
               variant="text"
-              color={'secondary'}
+              color={'primary'}
               startIcon={<AddCircleOutline />}
               disabled={!editMode}
               onClick={handleAddNode}>
@@ -75,7 +75,7 @@ const TreeItemContent: FC<Props> = ({
           <Grid item>
             <Button
               variant="text"
-              color={'secondary'}
+              color={'primary'}
               startIcon={<RemoveCircleOutline />}
               disabled={!editMode}
               onClick={handleRemoveNode}>
@@ -85,7 +85,7 @@ const TreeItemContent: FC<Props> = ({
           <Grid item>
             <Button
               variant="text"
-              color={'secondary'}
+              color={'primary'}
               startIcon={<AddCircleOutline />}
               disabled={!editMode}
               onClick={handleAddQuery}>

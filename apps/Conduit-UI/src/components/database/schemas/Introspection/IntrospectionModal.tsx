@@ -66,7 +66,7 @@ const IntrospectionModal: FC<Props> = ({ open, setOpen, schema }) => {
         ))}
       </DialogContent>
       <DialogActions sx={{ px: 4, py: 2 }}>
-        <Button onClick={handleFinalizeSchema} variant="contained" color="secondary">
+        <Button onClick={handleFinalizeSchema} variant="contained" color="primary">
           finalize schema
         </Button>
       </DialogActions>

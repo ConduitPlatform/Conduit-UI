@@ -58,7 +58,7 @@ const SharedLayout: React.FC<Props> = ({
             {title !== "Settings" && (
               <Box whiteSpace={"nowrap"}>
                 <Button
-                  color="secondary"
+                  color="primary"
                   sx={{ textDecoration: "none", ml: 8 }}
                   variant="outlined"
                   onClick={() => setSwaggerOpen(true)}
@@ -74,7 +74,7 @@ const SharedLayout: React.FC<Props> = ({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Button color="secondary" variant="outlined">
+                  <Button color="primary" variant="outlined">
                     {graphQLIcon}
                     <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
                       {smallScreen ? null : "GraphQL"}
@@ -86,7 +86,7 @@ const SharedLayout: React.FC<Props> = ({
             <Box px={3}>{loader}</Box>
           </Box>
         </Box>
-        <Tabs value={value} indicatorColor="secondary" sx={{ mt: 2 }}>
+        <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
           {labels.map((label: { name: string; id: string }, index: number) => {
             return (
               <LinkComponent

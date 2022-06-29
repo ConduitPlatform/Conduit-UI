@@ -161,7 +161,7 @@ const Header: FC<Props> = ({
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button
           sx={{ margin: 2 }}
-          color="secondary"
+          color="primary"
           variant="outlined"
           onClick={() => handleData()}
           disabled={!editableFields?.newTypeFields.length}>

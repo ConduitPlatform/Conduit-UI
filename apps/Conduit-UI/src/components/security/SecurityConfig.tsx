@@ -46,11 +46,11 @@ const SecurityConfig: React.FC = () => {
     <ConfigContainer>
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <Grid container spacing={2}>
+          <Grid spacing={2}>
             <Grid item xs={6}>
               <Box
                 width={'100%'}
-                display={'inline-flex'}
+                display={'flex'}
                 justifyContent={'space-between'}
                 alignItems={'center'}>
                 <Typography variant={'subtitle1'}>Require Client ID/Secret validation</Typography>

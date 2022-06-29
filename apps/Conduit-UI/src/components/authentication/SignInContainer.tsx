@@ -303,7 +303,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
         display={'flex'}
         alignItems={'center'}
         sx={{
-          backgroundColor: 'secondary.main',
+          backgroundColor: 'primary.main',
           height: 38,
           color: '#000',
           borderTopLeftRadius: 4,
