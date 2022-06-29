@@ -12,7 +12,6 @@ import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
 import InfiniteScrollLayout from '../../../InfiniteScrollLayout';
 import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
-import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
 
 const IntrospectionLayout: FC = () => {
   const dispatch = useAppDispatch();
