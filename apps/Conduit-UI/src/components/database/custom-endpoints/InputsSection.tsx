@@ -116,7 +116,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         <Button
           disabled={!editMode || maxInputs()}
           variant="text"
-          color={'secondary'}
+          color={'primary'}
           sx={{ margin: 1, textTransform: 'none' }}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddInput}>

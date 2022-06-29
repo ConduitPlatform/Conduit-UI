@@ -185,7 +185,7 @@ const ClientsTab: React.FC = () => {
                         </Tooltip>
                         <Tooltip title="Edit security client">
                           <IconButton onClick={() => handleOpenUpdateDialog(client)}>
-                            <Edit color="secondary" />
+                            <Edit color="primary" />
                           </IconButton>
                         </Tooltip>
                       </Box>

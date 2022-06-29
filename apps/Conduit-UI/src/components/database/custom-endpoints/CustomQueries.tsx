@@ -363,7 +363,7 @@ const CustomQueries: FC = () => {
                 )}
                 {!editMode && (
                   <IconButton
-                    color="secondary"
+                    color="primary"
                     aria-label="edit"
                     onClick={handleEditClick}
                     size="large">

@@ -95,13 +95,13 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
             setOpenDialog(true);
           }}
           variant="contained"
-          color="secondary">
+          color="primary">
           Enable
         </Button>
       );
     }
     return (
-      <Button variant="contained" color="secondary" onClick={() => handleEditClick(schema._id)}>
+      <Button variant="contained" color="primary" onClick={() => handleEditClick(schema._id)}>
         {schema.ownerModule === 'database' ? 'Edit' : 'Extend'}
       </Button>
     );
@@ -150,7 +150,7 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
           <Box pr={3} pt={2}>
             {setIntrospectionModal && (
               <Button
-                color="secondary"
+                color="primary"
                 variant="contained"
                 onClick={() => handleFinalization(schema._id)}>
                 Import Schema

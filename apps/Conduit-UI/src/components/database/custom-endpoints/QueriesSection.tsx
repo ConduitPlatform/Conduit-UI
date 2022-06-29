@@ -163,7 +163,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
         <Button
           disabled={!editMode}
           variant="text"
-          color={'secondary'}
+          color={'primary'}
           sx={{ margin: 1, textTransform: 'none' }}
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleAddParentNode}>

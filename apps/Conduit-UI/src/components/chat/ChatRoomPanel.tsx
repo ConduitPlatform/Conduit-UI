@@ -68,7 +68,7 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
       <Paper
         sx={{
           paddingX: 1,
-          backgroundColor: 'secondary.dark',
+          backgroundColor: 'primary.dark',
           marginLeft: 1,
           display: 'flex',
           justifyContent: 'space-between',

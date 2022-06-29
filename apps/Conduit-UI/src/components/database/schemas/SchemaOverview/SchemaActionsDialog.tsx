@@ -134,13 +134,13 @@ const SchemaActionsDialog: FC<Props> = ({
         return 'success.main';
       }
       case 'archive': {
-        return 'secondary.main';
+        return 'primary.main';
       }
       case 'enableMany': {
         return 'success.main';
       }
       case 'archiveMany': {
-        return 'secondary.main';
+        return 'primary.main';
       }
       case 'delete': {
         return 'error.main';
@@ -212,7 +212,7 @@ const SchemaActionsDialog: FC<Props> = ({
             },
           }}>
           {selectedSchema.data.map((schema: Schema | SchemaUI, index: number) => (
-            <Chip color="secondary" key={index} label={schema.name} />
+            <Chip color="primary" key={index} label={schema.name} />
           ))}
         </Box>
       );

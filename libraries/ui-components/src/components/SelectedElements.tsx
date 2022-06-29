@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
-import { Box, Button, Chip, Grid, Typography } from '@mui/material';
-import { AddCircle } from '@mui/icons-material';
-import { BoxProps } from '@mui/material/Box/Box';
+import React, { FC } from "react";
+import { Box, Button, Chip, Grid, Typography } from "@mui/material";
+import { AddCircle } from "@mui/icons-material";
+import { BoxProps } from "@mui/material/Box/Box";
 
 interface Props extends BoxProps {
   disabled?: boolean;
@@ -28,30 +28,32 @@ const SelectedElements: FC<Props> = ({
           disabled={disabled}
           sx={{ marginBottom: 1 }}
           variant="contained"
-          color="secondary"
+          color="primary"
           endIcon={<AddCircle />}
-          onClick={() => handleButtonAction()}>
+          onClick={() => handleButtonAction()}
+        >
           {buttonText}
         </Button>
       </Grid>
       {selectedElements && selectedElements.length > 0 && (
         <>
-          <Grid sx={{ textAlign: 'center' }} item xs={12}>
-            <Typography sx={{ textAlign: 'center' }} variant="caption">
+          <Grid sx={{ textAlign: "center" }} item xs={12}>
+            <Typography sx={{ textAlign: "center" }} variant="caption">
               {header}:
             </Typography>
           </Grid>
           <Grid
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              '& > *': {
+              display: "flex",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              "& > *": {
                 margin: 0.5,
               },
             }}
             item
-            xs={12}>
+            xs={12}
+          >
             {selectedElements.map((element, index) => (
               <Chip
                 key={index}

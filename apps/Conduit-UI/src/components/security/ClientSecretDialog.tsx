@@ -43,7 +43,7 @@ const ClientSecretDialog: FC<Props> = ({ open, handleClose }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" color="secondary" onClick={() => handleClose()}>
+        <Button variant="outlined" color="primary" onClick={() => handleClose()}>
           I COPIED THE SECRET
         </Button>
       </DialogActions>

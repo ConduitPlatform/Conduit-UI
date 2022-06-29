@@ -114,7 +114,7 @@ const SchemaDataHeader: FC<Props> = ({
           error={isSearchError()}
         />
         <Box sx={{ display: 'flex', gap: 2, pt: 1 }}>
-          <Button disabled={disabled} color="secondary" size={'small'} onClick={() => onRefresh()}>
+          <Button disabled={disabled} color="primary" size={'small'} onClick={() => onRefresh()}>
             <Refresh />
             Refresh
           </Button>

@@ -110,7 +110,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           <Grid item sm={6}>
             <FormInputSelect name="currency" options={currencies} label="Currency" />
           </Grid>
-          <Paper sx={{ p: 2, marginTop: 2, color: 'text.secondary', width: '100%' }}>
+          <Paper sx={{ p: 2, marginTop: 2, color: 'text.primary', width: '100%' }}>
             <Grid item container sm={12}>
               <Grid item sm={11}>
                 <Typography>Is subscription:</Typography>

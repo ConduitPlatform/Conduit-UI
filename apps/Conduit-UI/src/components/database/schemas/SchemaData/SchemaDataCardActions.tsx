@@ -19,7 +19,7 @@ export const ExpandableArrow: FC<ExpandableArrowProps> = ({
 
   return (
     <IconButton size={'small'} onClick={handleExpandAll}>
-      <KeyboardArrowDown color={'secondary'} className={className} />
+      <KeyboardArrowDown color={'primary'} className={className} />
     </IconButton>
   );
 };
@@ -35,7 +35,7 @@ export const DocumentActions: FC<DocumentActionsProps> = ({ onEdit, onDelete, ed
   return (
     <Box {...rest}>
       <Tooltip title="Edit document">
-        <IconButton sx={{ mr: 1 }} size={'small'} onClick={onEdit} color={'secondary'}>
+        <IconButton sx={{ mr: 1 }} size={'small'} onClick={onEdit} color={'primary'}>
           <EditOutlined sx={{ height: 22, width: 22 }} />
         </IconButton>
       </Tooltip>

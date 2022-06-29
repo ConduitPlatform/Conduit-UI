@@ -165,7 +165,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
             <Button
               size="small"
               variant="contained"
-              color="secondary"
+              color="primary"
               disabled={!editMode}
               endIcon={editMode && <Loop />}
               onClick={() => setDrawer(true)}>

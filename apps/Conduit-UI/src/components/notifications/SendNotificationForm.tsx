@@ -72,7 +72,7 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ p: 2, color: 'text.secondary', borderRadius: 8 }} elevation={5}>
+      <Paper sx={{ p: 2, color: 'text.primary', borderRadius: 8 }} elevation={5}>
         <Typography variant={'h6'} sx={{ mb: 4 }}>
           <NotificationsOutlined fontSize={'small'} style={{ marginBottom: '-2px' }} /> Push
           notifications

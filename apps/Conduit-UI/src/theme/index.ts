@@ -2,15 +2,11 @@ import { createTheme } from '@mui/material/styles';
 import ArrowDropDownRounded from '@mui/icons-material/ArrowDropDownRounded';
 
 const primary = '#07D9C4';
-// const primary = '#5B44F2';
-//
-const secondary = '#07D9C4';
+const secondary = '#5B44F2';
 
 const error = '#ef476f';
 const warning = '#E265AB';
 const disabled = '#808080';
-
-//TODO: change secondary to primary everywhere
 
 const theme = createTheme({
   palette: {
@@ -21,7 +17,7 @@ const theme = createTheme({
     },
     secondary: {
       main: secondary,
-      contrastText: '#000',
+      contrastText: '#F2F2F2',
     },
     error: {
       main: error,
@@ -51,7 +47,7 @@ const theme = createTheme({
     },
     MuiTextField: {
       styleOverrides: {
-        root: { '& .MuiInputBase-root': { borderRadius: 10, color: 'secondary' } },
+        root: { '& .MuiInputBase-root': { borderRadius: 10, color: 'primary' } },
       },
     },
     MuiSelect: {
@@ -73,7 +69,7 @@ const theme = createTheme({
           width: 45,
           height: 20,
           padding: 0,
-          color: secondary,
+          color: primary,
           '& .MuiSwitch-switchBase': {
             '&.Mui-checked': {
               transform: 'translateX(20px)',

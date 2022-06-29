@@ -98,7 +98,7 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
           </Box>
 
           <Box p={3}>
-            <Button variant={'contained'} type="submit" color={'secondary'} fullWidth>
+            <Button variant={'contained'} type="submit" color={'primary'} fullWidth>
               Update Client
             </Button>
           </Box>

@@ -44,7 +44,7 @@ const ViewEditProduct: React.FC<Props> = ({
           elevation={0}
           sx={{
             p: 2,
-            color: 'text.secondary',
+            color: 'text.primary',
             mt: 2,
           }}>
           <Grid container spacing={2} justifyContent="space-around">

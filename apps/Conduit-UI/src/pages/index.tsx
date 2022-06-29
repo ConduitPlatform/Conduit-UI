@@ -50,7 +50,7 @@ const Home = () => {
           alignItems={'flex-end'}
           flex={1}
           sx={{ marginBottom: '20px', gap: 2 }}>
-          <Button color="secondary" variant="outlined" onClick={() => setSwaggerModal(true)}>
+          <Button color="primary" variant="outlined" onClick={() => setSwaggerModal(true)}>
             <Icon sx={{ display: 'flex', alignContent: 'center' }}>
               <Image src={Swagger} alt="swagger" />
             </Icon>
@@ -63,7 +63,7 @@ const Home = () => {
             href={`${CONDUIT_API}/graphql`}
             target="_blank"
             rel="noreferrer">
-            <Button color="secondary" variant="outlined">
+            <Button color="primary" variant="outlined">
               <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                 <Image src={GraphQL} alt="swagger" />
               </Icon>
@@ -77,7 +77,7 @@ const Home = () => {
             target="_blank"
             rel="noreferrer"
             style={{ textDecoration: 'none' }}>
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" color="primary">
               <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                 <Description />
               </Icon>
@@ -197,7 +197,7 @@ const Home = () => {
                           Imported Schemas:
                         </Typography>
                         <Typography
-                          color="secondary"
+                          color="primary"
                           ml={1}
                           sx={{ fontSize: homePageFontSizeSubtitles }}>
                           {introspectionStatus.importedSchemaCount}

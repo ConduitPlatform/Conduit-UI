@@ -93,7 +93,7 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
             variant={'subtitle2'}
             sx={
               accProps.enabled
-                ? { flex: 1, color: 'secondary.main' }
+                ? { flex: 1, color: 'primary.main' }
                 : { flex: 1, color: 'primary.main' }
             }>
             {accProps.enabled ? 'Enabled' : 'Disabled'}

@@ -60,7 +60,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
                     return (
                       <Grid key={value} item xs={12}>
                         <TextField
-                          sx={{ width: '100%', '& .Mui-disabled': { color: 'secondary.main' } }}
+                          sx={{ width: '100%', '& .Mui-disabled': { color: 'primary.main' } }}
                           disabled
                           color="primary"
                           id="outlined-disabled"
