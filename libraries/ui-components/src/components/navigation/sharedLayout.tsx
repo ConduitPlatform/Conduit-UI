@@ -83,7 +83,7 @@ const SharedLayout: React.FC<Props> = ({
                 </a>
               </Box>
             )}
-            {loader}
+            <Box px={3}>{loader}</Box>
           </Box>
         </Box>
         <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
