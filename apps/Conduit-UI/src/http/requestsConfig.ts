@@ -6,14 +6,20 @@ import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
 import Router from 'next/router';
 
 const {
-  publicRuntimeConfig: { CONDUIT_URL, MASTER_KEY },
+  publicRuntimeConfig: { CONDUIT_URL },
 } = getConfig();
 
 export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
-export const config = {
-  masterkey: process.env.IS_DEV ? process.env.MASTER_KEY : MASTER_KEY,
-};
+/**
+ * We no longer include the masterkey in our requests
+ * since we are targeting the proxy server instead which
+ * will add it itself.
+ * */
+
+// export const config = {
+//   masterkey: process.env.IS_DEV ? process.env.MASTER_KEY : MASTER_KEY,
+// };
 
 const _axios = axios.create({
   baseURL: '', //localhost
@@ -21,7 +27,7 @@ const _axios = axios.create({
 });
 
 const JWT_CONFIG = (token: string) => ({
-  ...config,
+  // ...config,
   Authorization: `JWT ${token}`,
 });
 
