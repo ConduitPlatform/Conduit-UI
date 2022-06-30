@@ -1,21 +1,20 @@
-import axios from 'axios';
-import { CONDUIT_API } from './requestsConfig';
-import { IChatConfig } from '../models/chat/ChatModels';
+import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
+import { IChatConfig } from '../../models/chat/ChatModels';
 
-export const getChatConfig = () => axios.get(`${CONDUIT_API}/admin/config/chat`);
+export const getChatConfig = () => getRequest(`/admin/config/chat`);
 
 export const putChatConfig = (params: IChatConfig) =>
-  axios.put(`${CONDUIT_API}/admin/config/chat`, {
+  putRequest(`/admin/config/chat`, {
     config: { ...params },
   });
 
 export const createChatRoom = (params: { name: string; participants: string[] }) =>
-  axios.post(`${CONDUIT_API}/admin/chat/room`, {
+  postRequest(`/admin/chat/room`, {
     ...params,
   });
 
 export const getChatRooms = (params: { skip: number; limit: number; search?: string }) =>
-  axios.get(`${CONDUIT_API}/admin/chat/rooms`, {
+  getRequest(`/admin/chat/rooms`, {
     params: {
       populate: 'participants',
       ...params,
@@ -28,7 +27,7 @@ export const getChatMessages = (params: {
   senderId?: string;
   roomId?: string;
 }) =>
-  axios.get(`${CONDUIT_API}/admin/chat/messages`, {
+  getRequest(`/admin/chat/messages`, {
     params: {
       populate: 'senderUser',
       ...params,
@@ -36,7 +35,7 @@ export const getChatMessages = (params: {
   });
 
 export const deleteChatRooms = (params: { ids: string[] }) =>
-  axios.delete(`${CONDUIT_API}/admin/chat/rooms`, { params: { ...params.ids } });
+  deleteRequest(`/admin/chat/rooms`, { params: { ...params.ids } });
 
 export const deleteChatMessages = (params: { ids: string[] }) =>
-  axios.delete(`${CONDUIT_API}/admin/chat/messages`, { params: { ...params.ids } });
+  deleteRequest(`/admin/chat/messages`, { params: { ...params.ids } });

@@ -6,7 +6,7 @@ import {
   deleteServiceAccounts,
   createServiceAccount,
   refreshServiceAccount,
-} from '../../http/SettingsRequests';
+} from '../../http/requests/SettingsRequests';
 import { ConfirmationDialog, DataTable } from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
 import CreateServiceAccount from './CreateServiceAccount';

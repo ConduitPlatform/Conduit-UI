@@ -15,12 +15,17 @@ export const config = {
   masterkey: process.env.IS_DEV ? process.env.MASTER_KEY : MASTER_KEY,
 };
 
+const _axios = axios.create({
+  baseURL: '', //localhost
+  timeoutErrorMessage: 'Request took long to complete, times up!',
+});
+
 const JWT_CONFIG = (token: string) => ({
   ...config,
   Authorization: `JWT ${token}`,
 });
 
-axios.interceptors.request.use(
+_axios.interceptors.request.use(
   (config) => {
     const reduxStore = getCurrentStore();
     const token = reduxStore.getState().appAuthSlice.data.token;
@@ -39,7 +44,7 @@ axios.interceptors.request.use(
   }
 );
 
-axios.interceptors.response.use(
+_axios.interceptors.response.use(
   (config) => {
     return config;
   },
@@ -54,3 +59,28 @@ axios.interceptors.response.use(
     return Promise.reject(error.response);
   }
 );
+
+/**
+ * All the functions bellow use localhost/api/endpoint path which
+ * target the proxy server
+ * */
+
+export const postRequest = (endpoint: string, body?: any, config?: any): Promise<any> => {
+  return _axios.post('/api' + endpoint, { ...body }, { ...config });
+};
+
+export const putRequest = (endpoint: string, body?: any): Promise<any> => {
+  return _axios.put('/api' + endpoint, { ...body });
+};
+
+export const patchRequest = (endpoint: string, body?: any): Promise<any> => {
+  return _axios.patch('/api' + endpoint, { ...body });
+};
+
+export const getRequest = (endpoint: string, params?: any): Promise<any> => {
+  return _axios.get('/api' + endpoint, { params });
+};
+
+export const deleteRequest = (endpoint: string, params?: any): Promise<any> => {
+  return _axios.delete('/api' + endpoint, { params });
+};

@@ -20,7 +20,7 @@ import {
   getStorageFolders,
   getStorageSettings,
   putStorageSettings,
-} from '../../http/StorageRequests';
+} from '../../http/requests/StorageRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';

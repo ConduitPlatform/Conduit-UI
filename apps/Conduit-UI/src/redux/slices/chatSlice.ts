@@ -9,7 +9,7 @@ import {
   getChatMessages,
   getChatRooms,
   putChatConfig,
-} from '../../http/ChatRequests';
+} from '../../http/requests/ChatRequests';
 import { IChatConfig, IChatMessage, IChatRoom } from '../../models/chat/ChatModels';
 
 interface IChatSlice {

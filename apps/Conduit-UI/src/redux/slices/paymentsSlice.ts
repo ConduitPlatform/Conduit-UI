@@ -16,7 +16,7 @@ import {
   putCustomerRequest,
   putPaymentSettingsRequest,
   patchProductRequest,
-} from '../../http/PaymentsRequests';
+} from '../../http/requests/PaymentsRequests';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import {
   Customer,
