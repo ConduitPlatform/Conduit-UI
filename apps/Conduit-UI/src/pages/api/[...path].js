@@ -1,23 +1,24 @@
 import { proxy } from '../../server/proxy';
 
-import Cookies from 'cookies';
+// import Cookies from 'cookies';
 
 export default (req, res) => {
   return new Promise((resolve, reject) => {
     // removes the api prefix from url
     req.url = req.url.replace(/^\/api/, '');
+    // req.headers.masterkey = 'M4ST3RK3Y';
 
-    console.log('Path.js');
+    // console.log('Path.js', req.headers);
 
-    const cookies = new Cookies(req, res);
-    const authorization = cookies.get('authorization');
+    // const cookies = new Cookies(req, res);
+    // const authorization = cookies.get('authorization');
 
     // don't forwards the cookies to the target server
-    req.headers.cookie = '';
+    // req.headers.cookie = '';
 
-    if (authorization) {
-      req.headers.authorization = authorization;
-    }
+    // if (authorization) {
+    //   req.headers.authorization = authorization;
+    // }
 
     /**
      * if an error occurs in the proxy, we will reject the promise.
