@@ -36,7 +36,7 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
   };
   const longPressEvent = useLongPress(handleLongPress, handlePress, defaultOptions);
 
-  const stringToColour = function (str: string) {
+  const stringToColour = function (str = 'Quint') {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -66,7 +66,7 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
               alignItems: 'center',
             }}>
             <Typography sx={{ textTransform: 'capitalize' }}>
-              {data.senderUser.email.charAt(0)}
+              {data?.senderUser?.email?.charAt(0)}
             </Typography>
           </Box>
         </Tooltip>
