@@ -10,7 +10,7 @@ import {
   sendEmailRequest,
   syncExternalTemplates,
   uploadTemplateRequest,
-} from '../../http/EmailRequests';
+} from '../../http/requests/EmailRequests';
 import {
   EmailTemplateType,
   EmailData,

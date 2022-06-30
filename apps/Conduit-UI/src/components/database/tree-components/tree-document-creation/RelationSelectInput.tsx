@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { getDocumentsByNameRequest } from '../../../../http/DatabaseRequests';
+import { getDocumentsByNameRequest } from '../../../../http/requests/DatabaseRequests';
 import { Box, CircularProgress, IconButton, Select, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import { RemoveRedEye } from '@mui/icons-material';

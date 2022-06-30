@@ -7,7 +7,7 @@ import {
   sendNotification,
   getNotificationConfig,
   putNotificationConfig,
-} from '../../http/NotificationsRequests';
+} from '../../http/requests/NotificationsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';

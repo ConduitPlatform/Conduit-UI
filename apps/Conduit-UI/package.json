@@ -3,7 +3,7 @@
   "version": "0.12.2",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8080",
+    "dev": "NODE_OPTIONS='--inspect' next dev -p 8080",
     "dev:ts": "yarn dev & yarn ts:watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
@@ -26,6 +26,8 @@
     "@types/react-json-editor-ajrm": "^2.5.3",
     "axios": "^0.26.0",
     "clsx": "^1.1.0",
+    "cookies": "^0.8.0",
+    "http-proxy": "^1.18.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
     "memoize-one": "^6.0.0",

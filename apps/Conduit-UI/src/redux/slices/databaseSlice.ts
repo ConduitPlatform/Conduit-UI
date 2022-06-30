@@ -11,19 +11,19 @@ import {
   setSchemaExtension,
   getSchemaOwners,
   getSchemaByIdRequest,
-} from '../../http/DatabaseRequests';
+} from '../../http/requests/DatabaseRequests';
 import {
   createSchemaDocumentRequest,
   deleteSchemaDocumentRequest,
   editSchemaDocumentRequest,
-} from '../../http/SchemasRequests';
+} from '../../http/requests/SchemasRequests';
 import {
   createCustomEndpointsRequest,
   deleteCustomEndpointsRequest,
   editCustomEndpointsRequest,
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
-} from '../../http/CustomEndpointsRequests';
+} from '../../http/requests/CustomEndpointsRequests';
 import { EndpointTypes, IntrospectionStatus, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -40,7 +40,7 @@ import {
   getIntrospectionSchemas,
   introspect,
   introspectionStatus,
-} from '../../http/IntrospectionRequests';
+} from '../../http/requests/IntrospectionRequests';
 
 export interface IDatabaseSlice {
   data: {
