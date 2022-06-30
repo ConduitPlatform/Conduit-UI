@@ -29,32 +29,29 @@ const SecurityConfig: React.FC = () => {
   }, [config, reset]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newData = [...config];
     if (config.security) {
-      config['security']['clientValidation'] = event.target.checked;
-      dispatch(asyncPutSecurityConfig(config));
+      newData['security']['clientValidation'] = event.target.checked;
+      dispatch(asyncPutSecurityConfig(newData));
     }
   };
 
   return (
     <ConfigContainer>
-      <FormProvider {...methods}>
-        <form>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
-                <Typography variant={'h6'} color={'#FFFFFF'}>
-                  Require Client ID/Secret validation
-                </Typography>
-                <FormInputSwitch name={'clientValidation'} switchProps={{ onChange }} />
-              </Box>
-            </Grid>
-          </Grid>
-        </form>
-      </FormProvider>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Box
+            width={'100%'}
+            display={'flex'}
+            justifyContent={'space-between'}
+            alignItems={'center'}>
+            <Typography variant={'h6'} color={'#FFFFFF'}>
+              Require Client ID/Secret validation
+            </Typography>
+            <FormInputSwitch name={'clientValidation'} switchProps={{ onChange }} />
+          </Box>
+        </Grid>
+      </Grid>
     </ConfigContainer>
   );
 };

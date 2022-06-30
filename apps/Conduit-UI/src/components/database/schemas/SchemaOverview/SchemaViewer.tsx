@@ -76,9 +76,9 @@ const SchemaViewer: FC<Props> = ({
     <Box {...rest}>
       <Box
         sx={{
-          maxHeight: '70vh',
+          maxHeight: '65vh',
           border: '1px',
-          padding: 5,
+          padding: 4,
           minHeight: 65,
           borderRadius: '4px',
         }}>

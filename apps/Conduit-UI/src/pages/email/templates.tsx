@@ -291,7 +291,7 @@ const Templates = () => {
           </IconButton>
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             onClick={() => handleImportTemplate()}
             startIcon={<CallMissedOutgoing />}>
             Import Template

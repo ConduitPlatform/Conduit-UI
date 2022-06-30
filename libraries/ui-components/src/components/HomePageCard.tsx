@@ -14,7 +14,7 @@ const BoxWithIconText = styled(Box)(() => ({
 }));
 
 const CustomizedDivider = styled(Divider)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.primary.main,
   marginBottom: "10px",
 }));
 

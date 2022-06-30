@@ -51,7 +51,7 @@ const DocumentCreateDialog: FC<Props> = ({ open, handleClose, handleCreate, sche
           <TreeFieldGenerator schema={schema} onChange={onChange} fieldValues={fieldValues} />
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleClose}>
+          <Button onClick={handleClose} variant="outlined">
             Cancel
           </Button>
           <Button type={'submit'} variant="contained" color="primary" autoFocus>

@@ -112,7 +112,7 @@ const DataTable: React.FC<Props> = ({
         <TableHead>
           <TableRow>
             <TableCell
-              sx={{ backgroundColor: "secondary.dark" }}
+              sx={{ backgroundColor: "primary.dark" }}
               align="left"
               padding="none"
             >
@@ -132,7 +132,7 @@ const DataTable: React.FC<Props> = ({
             </TableCell>
             {headers.map((header: any, idx: number) => (
               <TableCell
-                sx={{ backgroundColor: "secondary.dark", whiteSpace: "nowrap" }}
+                sx={{ backgroundColor: "primary.dark", whiteSpace: "nowrap" }}
                 key={idx}
               >
                 {header.sort && sort ? (
@@ -149,9 +149,7 @@ const DataTable: React.FC<Props> = ({
                 )}
               </TableCell>
             ))}
-            {actions && (
-              <TableCell sx={{ backgroundColor: "secondary.dark" }} />
-            )}
+            {actions && <TableCell sx={{ backgroundColor: "primary.dark" }} />}
           </TableRow>
         </TableHead>
         {dsData.length < 1 && placeholder ? (

@@ -63,7 +63,7 @@ const AuthenticationConfig: React.FC = () => {
   return (
     <ConfigContainer>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} style={{}}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Grid container>
             <Box
               width={'100%'}

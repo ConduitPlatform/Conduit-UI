@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   rootEditable: {
-    borderColor: theme.palette.secondary.main,
+    borderColor: theme.palette.primary.main,
   },
   arrow: {
     position: 'absolute',

@@ -21,7 +21,7 @@ const SaveSection: FC<Props> = ({
   return (
     <Grid container justifyContent="flex-end" spacing={1} sx={{ pt: 4 }}>
       <Grid item xs={3} md={1}>
-        <Button variant="contained" color="secondary" onClick={handleCancelClick}>
+        <Button onClick={handleCancelClick} variant="outlined">
           Cancel
         </Button>
       </Grid>

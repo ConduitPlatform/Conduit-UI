@@ -113,7 +113,7 @@ const CoreSettingsTab: React.FC = () => {
                   sx={{ marginRight: 4 }}
                   placeholder={'Cancel'}
                   onClick={() => reset()}
-                  variant={'contained'}>
+                  variant="outlined">
                   Cancel
                 </Button>
                 <Button placeholder={'Save'} variant={'contained'} color={'primary'} type="submit">

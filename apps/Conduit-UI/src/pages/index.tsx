@@ -51,7 +51,7 @@ const Home = () => {
           alignItems={'flex-end'}
           flex={1}
           sx={{ marginBottom: '20px', gap: 2 }}>
-          <Button color="secondary" variant="outlined" onClick={() => setSwaggerModal(true)}>
+          <Button color="primary" variant="outlined" onClick={() => setSwaggerModal(true)}>
             <Icon sx={{ display: 'flex', alignContent: 'center' }}>
               <Image src={Swagger} alt="swagger" />
             </Icon>
@@ -60,7 +60,7 @@ const Home = () => {
             </Typography>
           </Button>
 
-          <Button color="secondary" variant="outlined" onClick={() => setGraphQLOpen(true)}>
+          <Button color="primary" variant="outlined" onClick={() => setGraphQLOpen(true)}>
             <Icon sx={{ display: 'flex', alignContent: 'center' }}>
               <Image src={GraphQL} alt="graphQL" />
             </Icon>
@@ -73,7 +73,7 @@ const Home = () => {
             target="_blank"
             rel="noreferrer"
             style={{ textDecoration: 'none' }}>
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" color="primary">
               <Icon sx={{ display: 'flex', alignContent: 'center' }}>
                 <Description />
               </Icon>
@@ -108,7 +108,7 @@ const Home = () => {
               <LinkComponent href="/authentication/signIn" underline={'none'}>
                 <HomePageCard
                   icon={<SecretIcon />}
-                  title="set up an auth method"
+                  title="Set up an auth method"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -123,7 +123,7 @@ const Home = () => {
               <LinkComponent href="/database/schemas" underline={'none'}>
                 <HomePageCard
                   icon={<SchemaIcon />}
-                  title="create a schema"
+                  title="Create a schema"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -140,7 +140,7 @@ const Home = () => {
               <LinkComponent href="/email/config" underline={'none'}>
                 <HomePageCard
                   icon={<EmailIcon />}
-                  title="set up email provider"
+                  title="Set up email provider"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -155,7 +155,7 @@ const Home = () => {
               <LinkComponent href="/security/clients" underline={'none'}>
                 <HomePageCard
                   icon={<LockIcon />}
-                  title="set up client secrets"
+                  title="Set up client secrets"
                   descriptionContent={
                     <Typography
                       variant="subtitle2"
@@ -170,7 +170,7 @@ const Home = () => {
               <LinkComponent href="/database/introspection" underline={'none'}>
                 <HomePageCard
                   icon={<ScreenSearchDesktopRounded />}
-                  title="introspection"
+                  title="Introspection"
                   descriptionContent={
                     <Box
                       display="flex"
@@ -193,7 +193,7 @@ const Home = () => {
                           Imported Schemas:
                         </Typography>
                         <Typography
-                          color="secondary"
+                          color="primary"
                           ml={1}
                           sx={{ fontSize: homePageFontSizeSubtitles }}>
                           {introspectionStatus.importedSchemaCount}

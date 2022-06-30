@@ -34,7 +34,7 @@ const ConfirmationDialog: React.FC<Props> = ({
         <DialogContentText id="alert-dialog-description">{description}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" variant="outlined">
           Cancel
         </Button>
         <Button onClick={buttonAction} color="primary" autoFocus>

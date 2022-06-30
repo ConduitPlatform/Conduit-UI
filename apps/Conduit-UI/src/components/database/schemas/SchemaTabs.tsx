@@ -12,9 +12,9 @@ export const SchemaTabs: FC<Props> = ({ value, handleChange }) => {
       sx={{ width: '100%' }}
       value={value}
       onChange={handleChange}
-      indicatorColor="secondary"
+      indicatorColor="primary"
       variant="fullWidth"
-      textColor="secondary">
+      textColor="primary">
       <Tab label="Overview" />
       <Tab label="Data" />
     </Tabs>
