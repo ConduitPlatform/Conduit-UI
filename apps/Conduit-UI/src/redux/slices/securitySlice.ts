@@ -136,9 +136,11 @@ export const asyncPutSecurityConfig = createAsyncThunk(
   async (params: ISecurityConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await putSecurityConfig(params);
+      const {
+        data: { config },
+      } = await putSecurityConfig(params);
       thunkAPI.dispatch(setAppLoading(false));
-      // return config;
+      return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -157,6 +159,9 @@ const settingsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetSecurityConfig.fulfilled, (state, action) => {
+      state.data.config = action.payload;
+    });
+    builder.addCase(asyncPutSecurityConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
     });
     builder.addCase(asyncGetAvailableClients.fulfilled, (state, action) => {

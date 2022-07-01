@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import ClientsTable from '../../components/routing/ClientsTable';
+import SecurityTab from '../../components/routing/SecurityTab';
 import RouterLayout from '../../components/navigation/InnerLayouts/routerLayout';
 
 const SecurityClients = () => {
-  return <ClientsTable />;
+  return <SecurityTab />;
 };
 
 SecurityClients.getLayout = function getLayout(page: ReactElement) {

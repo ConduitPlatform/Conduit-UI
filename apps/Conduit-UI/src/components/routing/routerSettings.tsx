@@ -8,7 +8,7 @@ import { ISecurityConfig } from '../../models/security/SecurityModels';
 import { asyncPutSecurityConfig } from '../../redux/slices/securitySlice';
 import { ConfigSaveSection } from '@conduitplatform/ui-components';
 
-const RoutingSettings: React.FC = () => {
+const RouterSettings: React.FC = () => {
   const dispatch = useAppDispatch();
   const { config } = useAppSelector((state) => state.securitySlice.data);
   const [edit, setEdit] = useState(false);
@@ -27,8 +27,8 @@ const RoutingSettings: React.FC = () => {
 
   const onSaveClick = (data: ISecurityConfig) => {
     setEdit(false);
-    // const finalData = { ...data, security: { clientValidation: true } };
-    dispatch(asyncPutSecurityConfig(data));
+    const finalData = { ...data, security: { clientValidation: true } };
+    dispatch(asyncPutSecurityConfig(finalData));
   };
 
   const handleCancel = () => {
@@ -58,7 +58,7 @@ const RoutingSettings: React.FC = () => {
                     alignItems={'center'}
                     wrap={'nowrap'}
                     sx={{ marginRight: 4 }}>
-                    <FormInputText name="hostUrl" label="Host URL" />
+                    <FormInputText name="hostUrl" label="Host URL" disabled={!edit} />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} sx={{ marginTop: 3 }}>
@@ -69,7 +69,7 @@ const RoutingSettings: React.FC = () => {
                     <Typography variant={'subtitle1'}>REST:</Typography>
                   </Grid>
                   <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.rest" />
+                    <FormInputSwitch name="transports.rest" disabled={!edit} />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
@@ -77,7 +77,7 @@ const RoutingSettings: React.FC = () => {
                     <Typography variant={'subtitle1'}>GraphQL:</Typography>
                   </Grid>
                   <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.graphql" />
+                    <FormInputSwitch name="transports.graphql" disabled={!edit} />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
@@ -85,7 +85,7 @@ const RoutingSettings: React.FC = () => {
                     <Typography variant={'subtitle1'}>WebSockets:</Typography>
                   </Grid>
                   <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.sockets" />
+                    <FormInputSwitch name="transports.sockets" disabled={!edit} />
                   </Grid>
                 </Grid>
               </Grid>
@@ -98,4 +98,4 @@ const RoutingSettings: React.FC = () => {
   );
 };
 
-export default RoutingSettings;
+export default RouterSettings;

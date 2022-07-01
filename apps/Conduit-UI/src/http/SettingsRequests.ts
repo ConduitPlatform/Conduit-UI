@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Pagination } from '../models/http/HttpModels';
-import { ICoreSettings } from '../models/settings/SettingsModels';
+import { IAdminSettings, ICoreSettings } from '../models/settings/SettingsModels';
 import { CONDUIT_API } from './requestsConfig';
 
 export const getAdminModulesRequest = () => {
@@ -21,6 +21,14 @@ export const createServiceAccount = (name: string) => {
 
 export const getCoreSettings = () => {
   return axios.get(`${CONDUIT_API}/admin/config/core`);
+};
+
+export const getAdminSettings = () => {
+  return axios.get(`${CONDUIT_API}/admin/config/admin`);
+};
+
+export const putAdminSettings = (data: IAdminSettings) => {
+  return axios.put(`${CONDUIT_API}/admin/config/admin`, { config: { ...data } });
 };
 
 export const putCoreSettings = (data: ICoreSettings) => {
