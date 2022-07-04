@@ -17,6 +17,7 @@ const EmailsLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'email'}
+      graphQL={'email'}
       icon={<Email />}>
       {children}
     </StyledLayout>

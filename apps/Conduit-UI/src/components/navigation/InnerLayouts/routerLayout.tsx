@@ -15,6 +15,7 @@ const RouterLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'router'}
+      graphQL={'router'}
       icon={<AltRoute />}>
       {children}
     </StyledLayout>

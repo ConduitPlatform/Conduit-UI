@@ -12,10 +12,13 @@ import { useRouter } from "next/router";
 import SwaggerModal from "../SwaggerModal";
 import LinkComponent from "../LinkComponent";
 import GraphQLModal from "../GraphQLModal";
+import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
+import {ISecurityConfig} from "@conduitplatform/conduit-ui/src/models/security/SecurityModels";
 
 interface Props {
   pathNames: string[];
-  swagger: string;
+  swagger?: string;
+  graphQL?: string;
   icon: JSX.Element;
   swaggerIcon: JSX.Element;
   graphQLIcon: JSX.Element;
@@ -23,12 +26,18 @@ interface Props {
   title: string;
   baseUrl: string;
   loader: JSX.Element;
+  transportsAdmin: IAdminSettings['transports'];
+  transportsRouter: ISecurityConfig['transports'];
+  noSwagger: boolean;
+  noGraphQL: boolean;
+
 }
 
 const SharedLayout: React.FC<Props> = ({
   children,
   pathNames,
   swagger,
+  graphQL,
   icon,
   swaggerIcon,
   graphQLIcon,
@@ -36,7 +45,12 @@ const SharedLayout: React.FC<Props> = ({
   title,
   baseUrl,
   loader,
+  transportsAdmin,
+   transportsRouter,
+   noSwagger,
+   noGraphQL
 }) => {
+
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
@@ -59,6 +73,7 @@ const SharedLayout: React.FC<Props> = ({
           <Box display="flex" alignItems="center">
             {title !== "Settings" && (
               <Box whiteSpace={"nowrap"}>
+                {noSwagger ? null :
                 <Button
                   color="primary"
                   sx={{ textDecoration: "none", ml: 8 }}
@@ -70,6 +85,8 @@ const SharedLayout: React.FC<Props> = ({
                     {smallScreen ? null : "SWAGGER"}
                   </Typography>
                 </Button>
+                }
+                {noGraphQL ? null :
                   <Button color="primary" variant="outlined" onClick={() => setGraphQLOpen(true)} sx={{ ml: 2 }}
                   >
                     {graphQLIcon}
@@ -77,6 +94,7 @@ const SharedLayout: React.FC<Props> = ({
                       {smallScreen ? null : "GraphQL"}
                     </Typography>
                   </Button>
+                }
               </Box>
             )}
             <Box px={3}>{loader}</Box>
@@ -120,14 +138,18 @@ const SharedLayout: React.FC<Props> = ({
           icon={icon}
           swagger={swagger}
           baseUrl={baseUrl}
+          transportsAdmin={transportsAdmin}
+          transportsRouter={transportsRouter}
         />
         <GraphQLModal
           open={graphQLOpen}
           setOpen={setGraphQLOpen}
           title={title}
           icon={icon}
-          graphQl={'graphQL'}
+          graphQl={graphQL}
           baseUrl={baseUrl}
+          transportsAdmin={transportsAdmin}
+          transportsRouter={transportsRouter}
         />
       </Box>
       <Box>{children}</Box>

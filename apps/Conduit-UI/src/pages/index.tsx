@@ -34,6 +34,11 @@ const Home = () => {
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
+  const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
+  const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
+  const noSwagger = !transportsRouter.rest && !transportsAdmin.rest;
+  const noGraphQL = !transportsRouter.graphql && !transportsAdmin.graphql;
+
   useEffect(() => {
     dispatch(asyncGetIntrospectionStatus());
   }, [dispatch]);
@@ -51,23 +56,26 @@ const Home = () => {
           alignItems={'flex-end'}
           flex={1}
           sx={{ marginBottom: '20px', gap: 2 }}>
-          <Button color="primary" variant="outlined" onClick={() => setSwaggerModal(true)}>
-            <Icon sx={{ display: 'flex', alignContent: 'center' }}>
-              <Image src={Swagger} alt="swagger" />
-            </Icon>
-            <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-              {smallScreen ? null : 'SWAGGER'}
-            </Typography>
-          </Button>
-
-          <Button color="primary" variant="outlined" onClick={() => setGraphQLOpen(true)}>
-            <Icon sx={{ display: 'flex', alignContent: 'center' }}>
-              <Image src={GraphQL} alt="graphQL" />
-            </Icon>
-            <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-              {smallScreen ? null : 'GraphQL'}
-            </Typography>
-          </Button>
+          {noSwagger ? null : (
+            <Button color="primary" variant="outlined" onClick={() => setSwaggerModal(true)}>
+              <Icon sx={{ display: 'flex', alignContent: 'center' }}>
+                <Image src={Swagger} alt="swagger" />
+              </Icon>
+              <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                {smallScreen ? null : 'SWAGGER'}
+              </Typography>
+            </Button>
+          )}
+          {noGraphQL ? null : (
+            <Button color="primary" variant="outlined" onClick={() => setGraphQLOpen(true)}>
+              <Icon sx={{ display: 'flex', alignContent: 'center' }}>
+                <Image src={GraphQL} alt="graphQL" />
+              </Icon>
+              <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                {smallScreen ? null : 'GraphQL'}
+              </Typography>
+            </Button>
+          )}
           <a
             href="https://getconduit.dev/docs/overview/intro"
             target="_blank"
@@ -211,6 +219,8 @@ const Home = () => {
             swagger="App"
             title="App"
             baseUrl={`${CONDUIT_API}`}
+            transportsAdmin={transportsAdmin}
+            transportsRouter={transportsRouter}
           />
           <GraphQLModal
             open={graphQLOpen}
@@ -218,6 +228,8 @@ const Home = () => {
             graphQl="App"
             title="App"
             baseUrl={`${CONDUIT_API}`}
+            transportsAdmin={transportsAdmin}
+            transportsRouter={transportsRouter}
           />
         </Container>
       </div>

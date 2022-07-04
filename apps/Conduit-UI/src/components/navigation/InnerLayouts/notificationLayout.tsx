@@ -16,6 +16,7 @@ const NotificationLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'pushNotifications'}
+      graphQL={'pushNotifications'}
       icon={<Notifications />}>
       {children}
     </StyledLayout>

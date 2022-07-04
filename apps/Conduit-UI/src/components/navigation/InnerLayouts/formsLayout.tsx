@@ -16,6 +16,7 @@ const FormsLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'forms'}
+      graphQL={'forms'}
       icon={<FormatAlignLeft />}>
       {children}
     </StyledLayout>

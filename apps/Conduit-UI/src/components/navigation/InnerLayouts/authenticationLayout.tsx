@@ -22,6 +22,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'authentication'}
+      graphQL={'authentication'}
       icon={<People />}>
       {children}
     </StyledLayout>

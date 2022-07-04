@@ -15,6 +15,7 @@ const ChatLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'chat'}
+      graphQL={'chat'}
       icon={<Toc />}>
       {children}
     </StyledLayout>

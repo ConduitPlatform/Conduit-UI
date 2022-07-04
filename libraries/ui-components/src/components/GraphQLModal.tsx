@@ -5,17 +5,20 @@ import DialogContent from '@mui/material/DialogContent';
 import CloseIcon from '@mui/icons-material/Close';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, DialogContentText, IconButton, Typography } from '@mui/material';
+import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
+import {ISecurityConfig} from "@conduitplatform/conduit-ui/src/models/security/SecurityModels";
 
 interface Props {
   title: string;
   open: boolean;
   setOpen: (open: boolean) => void;
-  icon?: JSX.Element;
-  graphQl: string;
+  graphQl?: string;
   baseUrl?: string;
+  transportsAdmin:  IAdminSettings['transports'];
+  transportsRouter: ISecurityConfig['transports'];
 }
 
-const GraphQLModal: FC<Props> = ({ open, setOpen, title, icon, graphQl, baseUrl }) => {
+const GraphQLModal: FC<Props> = ({ open, setOpen, title, graphQl, baseUrl, transportsAdmin, transportsRouter }) => {
   const handleClose = () => {
     setOpen(false);
   };
@@ -44,8 +47,9 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, title, icon, graphQl, baseUrl 
           GraphQL is used to describe and document RESTful APIs.
         </DialogContentText>
         <Box padding={5} display="flex" flexDirection={'column'} sx={{ gap: 5 }}>
+          {transportsRouter?.graphql ?
           <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
-            <Typography>Go to {title} App GraphQL: </Typography>
+            <Typography>Go to {title} {title.toLowerCase() != 'app' ? 'App' : ''} GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
               href={!graphQl ? `${baseUrl}/graphQL/` : `${baseUrl}/graphQL/#/${graphQl}`}
@@ -54,6 +58,8 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, title, icon, graphQl, baseUrl 
               <Button variant="outlined">graphQL</Button>
             </a>
           </Box>
+              :null}
+          {transportsAdmin?.graphql ?
           <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
             <Typography>Go to {title} Admin GraphQL: </Typography>
             <a
@@ -66,6 +72,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, title, icon, graphQl, baseUrl 
               <Button variant="outlined">GraphQL</Button>
             </a>
           </Box>
+              :null}
         </Box>
       </DialogContent>
     </Dialog>

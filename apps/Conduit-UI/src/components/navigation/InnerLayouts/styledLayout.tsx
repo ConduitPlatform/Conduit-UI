@@ -14,13 +14,26 @@ interface Props {
   title: string;
   labels: { name: string; id: string }[];
   pathNames: string[];
-  swagger: string;
+  swagger?: string;
+  graphQL?: string;
   icon: JSX.Element;
   children: any;
 }
 
-const StyledLayout: FC<Props> = ({ title, labels, pathNames, swagger, icon, children }) => {
+const StyledLayout: FC<Props> = ({
+  title,
+  labels,
+  pathNames,
+  swagger,
+  graphQL,
+  icon,
+  children,
+}) => {
   const { loading } = useAppSelector((state) => state.appSlice);
+  const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
+  const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
+  const noSwagger = !transportsRouter.rest && !transportsAdmin.rest;
+  const noGraphQL = !transportsRouter.graphql && !transportsAdmin.graphql;
 
   return (
     <SharedLayout
@@ -29,7 +42,12 @@ const StyledLayout: FC<Props> = ({ title, labels, pathNames, swagger, icon, chil
       labels={labels}
       pathNames={pathNames}
       swagger={swagger}
+      graphQL={graphQL}
       icon={icon}
+      transportsAdmin={transportsAdmin}
+      transportsRouter={transportsRouter}
+      noSwagger={noSwagger}
+      noGraphQL={noGraphQL}
       loader={
         <ScaleLoader
           speedMultiplier={3}

@@ -7,7 +7,7 @@ import ClientPlatformEnum, {
 import { Sort } from '../models/http/HttpModels';
 
 export const getAvailableClientsRequest = (params: Sort) => {
-  return axios.get(`${CONDUIT_API}/admin/router/client`, { params });
+  return axios.get(`${CONDUIT_API}/admin/router/security/client`, { params });
 };
 
 export const generateNewClientRequest = (

@@ -16,6 +16,7 @@ const StorageLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'storage'}
+      graphQL={'storage'}
       icon={<Cloud />}>
       {children}
     </StyledLayout>
