@@ -141,18 +141,20 @@ const SecurityTab: React.FC = () => {
               <TableContainer sx={{ maxHeight: '49vh' }}>
                 <Table stickyHeader>
                   <TableHead>
-                    {headCells.map((headCell) => (
-                      <TableCell sx={{ backgroundColor: 'background.paper' }} key={headCell.sort}>
-                        <TableSortLabel
-                          IconComponent={KeyboardArrowDown}
-                          active={sort?.index === headCell.sort}
-                          direction={handleDirection(sort?.asc)}
-                          onClick={() => onSelectedField(headCell.sort)}>
-                          <Typography variant="body2">{headCell.label}</Typography>
-                        </TableSortLabel>
-                      </TableCell>
-                    ))}
-                    <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                    <TableRow>
+                      {headCells.map((headCell) => (
+                        <TableCell sx={{ backgroundColor: 'background.paper' }} key={headCell.sort}>
+                          <TableSortLabel
+                            IconComponent={KeyboardArrowDown}
+                            active={sort?.index === headCell.sort}
+                            direction={handleDirection(sort?.asc)}
+                            onClick={() => onSelectedField(headCell.sort)}>
+                            <Typography variant="body2">{headCell.label}</Typography>
+                          </TableSortLabel>
+                        </TableCell>
+                      ))}
+                      <TableCell sx={{ backgroundColor: 'background.paper' }} />
+                    </TableRow>
                   </TableHead>
                   <TableBody>
                     {availableClients?.map((client: IClient, index: number) => (

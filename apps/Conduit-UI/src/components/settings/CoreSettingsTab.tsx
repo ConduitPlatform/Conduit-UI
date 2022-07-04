@@ -33,9 +33,9 @@ const selectOptions = [
 const CoreSettingsTab: React.FC = () => {
   const dispatch = useAppDispatch();
   const { coreSettings, adminSettings } = useAppSelector((state) => state.settingsSlice);
-  const [editEnv, setEditEnv] = useState(false);
-  const [edit, setEdit] = useState(false);
-  const [env, setEnv] = useState('');
+  const [editEnv, setEditEnv] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
+  const [env, setEnv] = useState<string>('');
 
   const methods = useForm<IAdminSettings>({
     defaultValues: useMemo(() => {
@@ -64,8 +64,16 @@ const CoreSettingsTab: React.FC = () => {
   };
 
   const onSaveClick = (data: IAdminSettings) => {
+    const finalData = {
+      ...data,
+      auth: {
+        ...data.auth,
+        hashRounds: parseInt(data.auth.hashRounds.toString()),
+        tokenExpirationTime: parseInt(data.auth.tokenExpirationTime.toString()),
+      },
+    };
     setEdit(false);
-    dispatch(asyncUpdateAdminSettings(data));
+    dispatch(asyncUpdateAdminSettings(finalData));
   };
 
   const onSaveClickEnv = () => {
@@ -163,7 +171,7 @@ const CoreSettingsTab: React.FC = () => {
                   <Grid item>
                     <FormInputText name="auth.hashRounds" disabled={!edit} typeOfInput={'number'} />
                   </Grid>
-                </Grid>{' '}
+                </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
                   <Grid item xs={8} sm={4}>
                     <Typography variant={'subtitle1'}>Token Expiration Time:</Typography>
@@ -175,13 +183,13 @@ const CoreSettingsTab: React.FC = () => {
                       typeOfInput={'number'}
                     />
                   </Grid>
-                </Grid>{' '}
+                </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
                   <Grid item xs={8} sm={4}>
                     <Typography variant={'subtitle1'}>Token Secret:</Typography>
                   </Grid>
                   <Grid item>
-                    <FormInputText name="auth.tokenSecret" disabled={!edit} typeOfInput={'text'} />
+                    <FormInputText name="auth.tokenSecret" disabled={!edit} />
                   </Grid>
                 </Grid>
               </Grid>

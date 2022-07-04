@@ -199,7 +199,7 @@ const settingsSlice = createSlice({
       state.coreSettings = action.payload;
     });
     builder.addCase(asyncUpdateAdminSettings.fulfilled, (state, action) => {
-      state.adminSettings = action.payload;
+      state.adminSettings = action.payload.config;
     });
     builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
       state.data.authAdmins.admins = action.payload.result.admins;
