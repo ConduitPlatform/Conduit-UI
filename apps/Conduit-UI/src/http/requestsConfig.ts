@@ -1,15 +1,8 @@
 import axios from 'axios';
-import getConfig from 'next/config';
 import { getCurrentStore } from '../redux/store';
 import { asyncLogout } from '../redux/slices/appAuthSlice';
 import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
 import Router from 'next/router';
-
-const {
-  publicRuntimeConfig: { CONDUIT_URL },
-} = getConfig();
-
-export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
 /**
  * We no longer include the masterkey in our requests

@@ -8,8 +8,6 @@ import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
-import { CONDUIT_API } from '../../../http/requestsConfig';
-
 interface Props {
   title: string;
   labels: { name: string; id: string }[];
@@ -24,7 +22,7 @@ const StyledLayout: FC<Props> = ({ title, labels, pathNames, swagger, icon, chil
 
   return (
     <SharedLayout
-      baseUrl={CONDUIT_API}
+      baseUrl={'/api'}
       title={title}
       labels={labels}
       pathNames={pathNames}

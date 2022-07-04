@@ -20,12 +20,6 @@ import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { LinkComponent } from '@conduitplatform/ui-components';
 
-const {
-  publicRuntimeConfig: { CONDUIT_URL },
-} = getConfig();
-
-export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
-
 const Home = () => {
   const dispatch = useAppDispatch();
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
@@ -60,7 +54,7 @@ const Home = () => {
           </Button>
           <a
             style={{ textDecoration: 'none' }}
-            href={`${CONDUIT_API}/graphql`}
+            href={`/api/graphql`}
             target="_blank"
             rel="noreferrer">
             <Button color="primary" variant="outlined">
@@ -214,7 +208,7 @@ const Home = () => {
             setOpen={setSwaggerModal}
             swagger="App"
             title="App"
-            baseUrl={`${CONDUIT_API}`}
+            baseUrl={`/api`}
           />
         </Container>
       </div>

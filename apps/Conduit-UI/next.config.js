@@ -8,17 +8,11 @@ module.exports = (phase) => {
   const isProd = phase === PHASE_PRODUCTION_BUILD;
 
   const env = {
-    CONDUIT_URL: (() => {
-      return process.env.CONDUIT_URL;
-    })(),
-    MASTER_KEY: (() => {
-      return process.env.MASTER_KEY || 'M4ST3RK3Y';
-    })(),
     IS_DEV: isDev,
     IS_PROD: isProd,
   };
 
-  const publicRuntimeConfig = {
+  const serverRuntimeConfig = {
     // Will only be available on the server side
     CONDUIT_URL: process.env.CONDUIT_URL,
     MASTER_KEY: process.env.MASTER_KEY,
@@ -83,5 +77,10 @@ module.exports = (phase) => {
     ignoreDuringBuilds: false,
   };
 
-  return { env, publicRuntimeConfig, redirects, eslint };
+  return {
+    env,
+    serverRuntimeConfig,
+    redirects,
+    eslint,
+  };
 };
