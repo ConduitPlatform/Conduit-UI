@@ -13,7 +13,7 @@ const theme = createTheme({
     mode: 'dark',
     primary: {
       main: primary,
-      contrastText: '#F2F2F2',
+      contrastText: '#202030',
     },
     secondary: {
       main: secondary,
