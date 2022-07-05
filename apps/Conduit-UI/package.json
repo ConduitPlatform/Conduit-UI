@@ -5,13 +5,16 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev -p 8080",
     "dev:ts": "yarn dev & yarn ts:watch",
+    "dev:ui": "yarn build:ui & yarn dev",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
     "build": "next build",
+    "prebuild": "yarn build:ui",
     "start": "next start -p 8080",
     "clean": "rm -rf public/ .next/",
     "next-lint": "next lint",
-    "lint": "tsc --noEmit && eslint --ext .js,.ts,.tsx ./"
+    "lint": "tsc --noEmit && eslint --ext .js,.ts,.tsx ./",
+    "build:ui": "yarn workspace @conduitplatform/ui-components build"
   },
   "dependencies": {
     "@conduitplatform/ui-components": "1.0.0",
