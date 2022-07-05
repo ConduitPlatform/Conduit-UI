@@ -49,7 +49,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, title, graphQl, baseUrl, trans
         <Box padding={5} display="flex" flexDirection={'column'} sx={{ gap: 5 }}>
           {transportsRouter?.graphql ?
           <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
-            <Typography>Go to {title} {title.toLowerCase() != 'app' ? 'App' : ''} GraphQL: </Typography>
+            <Typography>Go to App GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
               href={!graphQl ? `${baseUrl}/graphQL/` : `${baseUrl}/graphQL/#/${graphQl}`}
@@ -61,7 +61,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, title, graphQl, baseUrl, trans
               :null}
           {transportsAdmin?.graphql ?
           <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ gap: 5 }}>
-            <Typography>Go to {title} Admin GraphQL: </Typography>
+            <Typography>Go to Admin GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
               href={

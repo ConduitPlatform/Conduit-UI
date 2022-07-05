@@ -5,6 +5,8 @@ import { asyncGetAdminModules } from '../../redux/slices/appAuthSlice';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import useNotifier from '../../utils/useNotifier';
+import { asyncGetSecurityConfig } from '../../redux/slices/securitySlice';
+import { asyncGetAdminSettings } from '../../redux/slices/settingsSlice';
 
 export const Layout: React.FC = ({ children, ...rest }) => {
   useNotifier();
@@ -39,6 +41,8 @@ export const Layout: React.FC = ({ children, ...rest }) => {
   useEffect(() => {
     if (token) {
       dispatch(asyncGetAdminModules());
+      dispatch(asyncGetSecurityConfig());
+      dispatch(asyncGetAdminSettings());
     }
   }, [dispatch, token]);
 

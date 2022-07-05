@@ -100,7 +100,7 @@ const SwaggerModal: FC<Props> = ({
             alignItems="center"
             sx={{ gap: 5 }}
           >
-            <Typography>Go to {title} {title.toLowerCase() != 'app' ? 'App' : ''} Swagger: </Typography>
+            <Typography>Go to App Swagger: </Typography>
             <a
               style={{ textDecoration: "none" }}
               href={
@@ -122,7 +122,7 @@ const SwaggerModal: FC<Props> = ({
             alignItems="center"
             sx={{ gap: 5 }}
           >
-            <Typography>Go to {title} Admin Swagger: </Typography>
+            <Typography>Go to Admin Swagger: </Typography>
             <a
               style={{ textDecoration: "none" }}
               href={

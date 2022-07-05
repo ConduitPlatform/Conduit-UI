@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
@@ -41,8 +41,14 @@ const Home = () => {
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
-  const noSwagger = !transportsRouter.rest && !transportsAdmin.rest;
-  const noGraphQL = !transportsRouter.graphql && !transportsAdmin.graphql;
+
+  const noSwagger = useMemo(() => {
+    return !transportsRouter.rest && !transportsAdmin.rest;
+  }, [transportsAdmin.rest, transportsRouter.rest]);
+
+  const noGraphQL = useMemo(() => {
+    return !transportsRouter.graphql && !transportsAdmin.graphql;
+  }, [transportsAdmin.graphql, transportsRouter.graphql]);
 
   useEffect(() => {
     dispatch(asyncGetIntrospectionStatus());

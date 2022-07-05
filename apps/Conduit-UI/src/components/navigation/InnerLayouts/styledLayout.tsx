@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { FC } from 'react';
 import GraphQL from '../../../assets/svgs/graphQL.svg';
@@ -32,8 +32,14 @@ const StyledLayout: FC<Props> = ({
   const { loading } = useAppSelector((state) => state.appSlice);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
-  const noSwagger = !transportsRouter.rest && !transportsAdmin.rest;
-  const noGraphQL = !transportsRouter.graphql && !transportsAdmin.graphql;
+
+  const noSwagger = useMemo(() => {
+    return !transportsRouter.rest && !transportsAdmin.rest;
+  }, [transportsAdmin.rest, transportsRouter.rest]);
+
+  const noGraphQL = useMemo(() => {
+    return !transportsRouter.graphql && !transportsAdmin.graphql;
+  }, [transportsAdmin.graphql, transportsRouter.graphql]);
 
   return (
     <SharedLayout
