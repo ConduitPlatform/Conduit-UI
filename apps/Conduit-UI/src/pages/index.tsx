@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
@@ -9,7 +9,12 @@ import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
 import SecretIcon from '@mui/icons-material/VpnKey';
 import Description from '@mui/icons-material/Description';
-import { SwaggerModal, GraphQLModal, HomePageCard } from '@conduitplatform/ui-components';
+import {
+  SwaggerModal,
+  GraphQLModal,
+  HomePageCard,
+  LinkComponent,
+} from '@conduitplatform/ui-components';
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
@@ -18,7 +23,6 @@ import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../theme';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
-import { LinkComponent } from '@conduitplatform/ui-components';
 
 const {
   publicRuntimeConfig: { CONDUIT_URL },
@@ -36,12 +40,20 @@ const Home = () => {
   const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
+  const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
   const noSwagger = !transportsRouter.rest && !transportsAdmin.rest;
   const noGraphQL = !transportsRouter.graphql && !transportsAdmin.graphql;
 
   useEffect(() => {
     dispatch(asyncGetIntrospectionStatus());
   }, [dispatch]);
+
+  const isEnabled = useCallback(
+    (str: string) => {
+      return enabledModules.find((item) => item.moduleName === str);
+    },
+    [enabledModules]
+  );
 
   return (
     <>
@@ -112,106 +124,115 @@ const Home = () => {
         </Box>
         <Container maxWidth="md" sx={{ marginBottom: 4 }}>
           <Grid container spacing={6}>
-            <Grid item xs={12} md={6}>
-              <LinkComponent href="/authentication/signIn" underline={'none'}>
-                <HomePageCard
-                  icon={<SecretIcon />}
-                  title="Set up an auth method"
-                  descriptionContent={
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
-                      Easily login with the method of your choice!
-                    </Typography>
-                  }
-                />
-              </LinkComponent>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <LinkComponent href="/database/schemas" underline={'none'}>
-                <HomePageCard
-                  icon={<SchemaIcon />}
-                  title="Create a schema"
-                  descriptionContent={
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
-                      Create your schema with a user friendly UI and start editing you documents
-                      right away!
-                    </Typography>
-                  }
-                />
-              </LinkComponent>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <LinkComponent href="/email/config" underline={'none'}>
-                <HomePageCard
-                  icon={<EmailIcon />}
-                  title="Set up email provider"
-                  descriptionContent={
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
-                      Select your preferred provider and start mailing!
-                    </Typography>
-                  }
-                />
-              </LinkComponent>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <LinkComponent href="/security/clients" underline={'none'}>
-                <HomePageCard
-                  icon={<LockIcon />}
-                  title="Set up client secrets"
-                  descriptionContent={
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
-                      Set up your client secret across multiple platforms!
-                    </Typography>
-                  }
-                />
-              </LinkComponent>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <LinkComponent href="/database/introspection" underline={'none'}>
-                <HomePageCard
-                  icon={<ScreenSearchDesktopRounded />}
-                  title="Introspection"
-                  descriptionContent={
-                    <Box
-                      display="flex"
-                      justifyContent={'space-around'}
-                      sx={{ height: '40px', mb: 1 }}>
-                      <Box display="flex" flexDirection={'row'} alignItems={'center'}>
-                        <Typography sx={{ fontSize: homePageFontSizeSubtitles }}>
-                          Foreign Schemas:
-                        </Typography>
-                        <Typography
-                          color="error"
-                          ml={1}
-                          sx={{ fontSize: homePageFontSizeSubtitles }}>
-                          {introspectionStatus.foreignSchemaCount}
-                        </Typography>
+            {isEnabled('authentication') ? (
+              <Grid item xs={12} md={6}>
+                <LinkComponent href="/authentication/signIn" underline={'none'}>
+                  <HomePageCard
+                    icon={<SecretIcon />}
+                    title="Set up an authentication method"
+                    descriptionContent={
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
+                        Easily login with the method of your choice!
+                      </Typography>
+                    }
+                  />
+                </LinkComponent>
+              </Grid>
+            ) : null}
+            {isEnabled('database') ? (
+              <Grid item xs={12} md={6}>
+                <LinkComponent href="/database/schemas" underline={'none'}>
+                  <HomePageCard
+                    icon={<SchemaIcon />}
+                    title="Create a schema"
+                    descriptionContent={
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
+                        Create your schema with a user friendly UI and start editing you documents
+                        right away!
+                      </Typography>
+                    }
+                  />
+                </LinkComponent>
+              </Grid>
+            ) : null}
+            {isEnabled('email') ? (
+              <Grid item xs={12} md={6}>
+                <LinkComponent href="/email/config" underline={'none'}>
+                  <HomePageCard
+                    icon={<EmailIcon />}
+                    title="Set up email provider"
+                    descriptionContent={
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
+                        Select your preferred provider and start mailing!
+                      </Typography>
+                    }
+                  />
+                </LinkComponent>
+              </Grid>
+            ) : null}
+            {isEnabled('router') ? (
+              <Grid item xs={12} md={6}>
+                <LinkComponent href="/router/security" underline={'none'}>
+                  <HomePageCard
+                    icon={<LockIcon />}
+                    title="Set up client secrets"
+                    descriptionContent={
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ height: '40px', fontSize: homePageFontSizeSubtitles, mb: 1 }}>
+                        Set up your client secret across multiple platforms!
+                      </Typography>
+                    }
+                  />
+                </LinkComponent>
+              </Grid>
+            ) : null}
+            {isEnabled('database') ? (
+              <Grid item xs={12} md={6}>
+                <LinkComponent href="/database/introspection" underline={'none'}>
+                  <HomePageCard
+                    icon={<ScreenSearchDesktopRounded />}
+                    title="Introspection"
+                    descriptionContent={
+                      <Box
+                        display="flex"
+                        justifyContent={'space-around'}
+                        sx={{ height: '40px', mb: 1 }}>
+                        <Box display="flex" flexDirection={'row'} alignItems={'center'}>
+                          <Typography sx={{ fontSize: homePageFontSizeSubtitles }}>
+                            Foreign Schemas:
+                          </Typography>
+                          <Typography
+                            color="error"
+                            ml={1}
+                            sx={{ fontSize: homePageFontSizeSubtitles }}>
+                            {introspectionStatus.foreignSchemaCount}
+                          </Typography>
+                        </Box>
+                        <Divider orientation="vertical" sx={{ marginX: 2 }} />
+                        <Box display="flex" flexDirection={'row'} alignItems={'center'}>
+                          <Typography sx={{ fontSize: homePageFontSizeSubtitles }}>
+                            Imported Schemas:
+                          </Typography>
+                          <Typography
+                            color="primary"
+                            ml={1}
+                            sx={{ fontSize: homePageFontSizeSubtitles }}>
+                            {introspectionStatus.importedSchemaCount}
+                          </Typography>
+                        </Box>
                       </Box>
-                      <Divider orientation="vertical" sx={{ marginX: 2 }} />
-                      <Box display="flex" flexDirection={'row'} alignItems={'center'}>
-                        <Typography sx={{ fontSize: homePageFontSizeSubtitles }}>
-                          Imported Schemas:
-                        </Typography>
-                        <Typography
-                          color="primary"
-                          ml={1}
-                          sx={{ fontSize: homePageFontSizeSubtitles }}>
-                          {introspectionStatus.importedSchemaCount}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  }
-                />
-              </LinkComponent>
-            </Grid>
+                    }
+                  />
+                </LinkComponent>
+              </Grid>
+            ) : null}
           </Grid>
           <SwaggerModal
             open={swaggerModal}

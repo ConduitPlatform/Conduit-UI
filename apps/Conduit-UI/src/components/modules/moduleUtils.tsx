@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  AltRoute,
   Chat,
   Cloud,
   Email,
@@ -7,7 +8,6 @@ import {
   Notifications,
   Payment,
   People,
-  Security,
   Settings,
   Sms,
   Toc,
@@ -34,8 +34,8 @@ export const getModuleIcon = (moduleName: string) => {
       return <FormatAlignLeft color={'inherit'} />;
     case 'payments':
       return <Payment color={'inherit'} />;
-    case 'security':
-      return <Security color={'inherit'} />;
+    case 'router':
+      return <AltRoute color={'inherit'} />;
     case 'database':
       return <Toc color={'inherit'} />;
     default:
@@ -45,6 +45,7 @@ export const getModuleIcon = (moduleName: string) => {
 
 export const getModuleName = (moduleName: string) => {
   if (moduleName === 'pushNotifications') return 'Push Notifications';
+  if (moduleName === 'sms') return 'SMS';
   return moduleName;
 };
 
@@ -59,7 +60,7 @@ export const handleModuleNavigation = (moduleName: string) => {
     case 'storage':
       return '/storage/files';
     case 'settings':
-      return '/settings/clientsdk';
+      return '/settings/settings';
     case 'pushNotifications':
       return '/push-notifications/send';
     case 'forms':
@@ -68,8 +69,8 @@ export const handleModuleNavigation = (moduleName: string) => {
       return '/payments/customers';
     case 'sms':
       return '/sms/send';
-    case 'security':
-      return '/security/clients';
+    case 'router':
+      return '/router/settings';
     case 'chat':
       return '/chat/rooms';
     default:

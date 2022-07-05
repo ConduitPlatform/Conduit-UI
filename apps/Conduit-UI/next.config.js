@@ -48,12 +48,17 @@ module.exports = (phase) => {
       },
       {
         source: '/settings',
-        destination: '/settings/clientsdk',
+        destination: '/settings/settings',
         permanent: true,
       },
       {
         source: '/push-notifications',
         destination: '/push-notifications/send',
+        permanent: true,
+      },
+      {
+        source: '/router',
+        destination: '/router/settings',
         permanent: true,
       },
       {

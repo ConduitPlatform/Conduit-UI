@@ -2,16 +2,15 @@ import React from 'react';
 import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import { AltRoute, ExitToApp, Settings } from '@mui/icons-material';
+import { ExitToApp, Settings } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
-import { ModuleItem } from '@conduitplatform/ui-components';
+import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import ConduitLogoMini from '../../assets/svgs/conduitLogoMini.svg';
 import Image from 'next/image';
-import { LinkComponent } from '@conduitplatform/ui-components';
 
 interface Props {
   itemSelected?: string;
@@ -65,15 +64,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             itemSelected={itemSelected}
             smallScreen={smallScreen}
           />
-          <LinkComponent href="/router/settings">
-            <ModuleItem
-              selected={itemSelected === 'router'}
-              icon={<AltRoute color={'inherit'} />}
-              title={'Router'}
-              smallScreen={smallScreen}
-            />
-          </LinkComponent>
-          <LinkComponent href="/settings/core">
+          <LinkComponent href="/settings/settings">
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}

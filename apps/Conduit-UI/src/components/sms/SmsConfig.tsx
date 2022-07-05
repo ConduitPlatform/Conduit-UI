@@ -88,7 +88,7 @@ const SmsConfig: React.FC = () => {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid container item xs={12} justifyContent="space-between">
-              <Typography variant={'h6'}>Sms Settings Module</Typography>
+              <Typography variant={'h6'}>Activate SMS Module</Typography>
               <FormInputSwitch name={'active'} />
             </Grid>
             {isActive && (
