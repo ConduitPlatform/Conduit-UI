@@ -70,7 +70,6 @@ const InfiniteScrollList: FC<Props> = ({
                 marginRight: '8px',
                 '&.Mui-selected': {
                   background: '#202030',
-                  boxShadow: 'inset 0px 0px 1px #07D9C4',
                 },
                 borderRadius: '10px',
               },

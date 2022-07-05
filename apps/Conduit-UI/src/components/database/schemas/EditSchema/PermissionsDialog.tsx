@@ -7,10 +7,13 @@ import {
   Button,
   Container,
   Grid,
+  Box,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ModifyOptions, Permissions, Schema } from '../../../../models/database/CmsModels';
-import { DoneOutline } from '@mui/icons-material';
+import { DoneOutline, InfoOutlined } from '@mui/icons-material';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormInputSelect } from '../../../common/FormComponents/FormInputSelect';
 import { FormInputCheckBox } from '../../../common/FormComponents/FormInputCheckbox';
@@ -27,7 +30,7 @@ interface Props {
 const options = [
   { label: 'Everything', value: ModifyOptions.Everything },
   { label: 'Nothing', value: ModifyOptions.Nothing },
-  { label: 'ExtensionOnly', value: ModifyOptions.ExtensionOnly },
+  { label: 'Extensions Only', value: ModifyOptions.ExtensionOnly },
 ];
 
 const PermissionsDialog: FC<Props> = ({
@@ -69,7 +72,7 @@ const PermissionsDialog: FC<Props> = ({
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle id="simple-dialog-title">
-        Permissions
+        Extension Permissions
         <IconButton
           onClick={handleCloseDialog}
           sx={{ position: 'absolute', left: '92%', top: '1%', color: 'gray' }}
@@ -89,30 +92,51 @@ const PermissionsDialog: FC<Props> = ({
           maxWidth="sm">
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Grid container alignItems="center" spacing={2}>
+              <Grid container alignItems="center" columnSpacing={5} rowSpacing={2}>
                 <Grid item sm={6}>
-                  <FormInputCheckBox
-                    name="extendable"
-                    label="Is extendable"
-                    disabled={isDisabled()}
-                  />
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <FormInputCheckBox
+                      name="extendable"
+                      label="Extendable"
+                      disabled={isDisabled()}
+                    />
+                    <Tooltip title="Allows the schema to be extended by modules">
+                      <InfoOutlined />
+                    </Tooltip>
+                  </Box>
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputCheckBox name="canCreate" label="Can create" disabled={isDisabled()} />
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <FormInputCheckBox name="canCreate" label="Create" disabled={isDisabled()} />
+                    <Tooltip title="Allows the creation of schema entries by extension schemas">
+                      <InfoOutlined />
+                    </Tooltip>
+                  </Box>
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputCheckBox name="canDelete" label="Can delete" disabled={isDisabled()} />
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <FormInputCheckBox name="canDelete" label="Delete" disabled={isDisabled()} />
+                    <Tooltip title="Allows the deletion of schema entries by extension schemas">
+                      <InfoOutlined />
+                    </Tooltip>
+                  </Box>
                 </Grid>
                 <Grid item sm={6}>
-                  <FormInputSelect
-                    disabled={isDisabled()}
-                    label={'Can modify'}
-                    name="canModify"
-                    options={options.map((option) => ({
-                      label: option.label,
-                      value: option.value,
-                    }))}
-                  />
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <FormInputSelect
+                      textFieldProps={{ sx: { maxWidth: '200px' } }}
+                      disabled={isDisabled()}
+                      label={'Modify'}
+                      name="canModify"
+                      options={options.map((option) => ({
+                        label: option.label,
+                        value: option.value,
+                      }))}
+                    />
+                    <Tooltip title="Allows the modification of target schema entry fields by extension schemas">
+                      <InfoOutlined />
+                    </Tooltip>
+                  </Box>
                 </Grid>
                 <Grid item sm={12}>
                   <Button

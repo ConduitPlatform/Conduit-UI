@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { List, ListItemIcon, ListItemText, ListItem, Collapse } from '@mui/material';
+import { List, ListItemIcon, ListItemText, ListItem, Collapse, Tooltip } from '@mui/material';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -76,7 +76,9 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <ExtensionIcon />
           </ListItemIcon>
-          <ListItemText primary="Schema can be extended" />
+          <Tooltip title="Allows the schema to be extended by modules">
+            <ListItemText primary="Extendable" />
+          </Tooltip>
         </ListItem>
       )}
       {permissions?.canCreate && (
@@ -84,7 +86,9 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <AddIcon />
           </ListItemIcon>
-          <ListItemText primary="Schema can create" />
+          <Tooltip title="Allows the creation of schema entries by extension schemas">
+            <ListItemText primary="Create" />
+          </Tooltip>
         </ListItem>
       )}
       {permissions?.canModify && (
@@ -92,7 +96,9 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
-          <ListItemText primary="Schema can be modified" />
+          <Tooltip title="Allows the modification of target schema entry fields by extension schemas">
+            <ListItemText primary="Modify" />
+          </Tooltip>
         </ListItem>
       )}
       {permissions?.canDelete && (
@@ -100,7 +106,9 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <DeleteIcon />
           </ListItemIcon>
-          <ListItemText primary="Schema can be deleted" />
+          <Tooltip title="Allows the deletion of schema entries by extension schemas">
+            <ListItemText primary="Delete" />
+          </Tooltip>
         </ListItem>
       )}
       <ListItem>
