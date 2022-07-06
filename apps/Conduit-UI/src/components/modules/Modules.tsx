@@ -134,17 +134,6 @@ const Modules: React.FC<Props> = ({
                 />
               );
           }
-          // const currentUrl = handleModuleNavigation(module.moduleName);
-          // return (
-          //   <LinkComponent href={currentUrl} key={index}>
-          //     <ModuleItem
-          //       selected={itemSelected === module.moduleName}
-          //       icon={getModuleIcon(module.moduleName)}
-          //       title={getModuleName(module.moduleName)}
-          //       smallScreen={smallScreen}
-          //     />
-          //   </LinkComponent>
-          // );
           return moduleItem(module.moduleName, index);
         })}
     </>

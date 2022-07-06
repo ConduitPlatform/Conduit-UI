@@ -22,8 +22,8 @@ const DatabaseLayout: React.FC = ({ children }) => {
       title={'Database'}
       labels={labels}
       pathNames={pathNames}
-      swagger={'database'}
-      graphQL={'database'}
+      swagger={'cms'}
+      graphQL={'cms'}
       icon={<Toc />}>
       {children}
     </StyledLayout>
