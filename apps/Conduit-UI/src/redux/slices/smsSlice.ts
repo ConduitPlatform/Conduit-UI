@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { getSmsConfig, putSmsConfig, sendSmsRequest } from '../../http/SmsRequests';
+import { getSmsConfig, putSmsConfig, sendSmsRequest } from '../../http/requests/SmsRequests';
 import { ISendSms, ISmsConfig, ISmsProviders } from '../../models/sms/SmsModels';
 
 interface ISmsSlice {

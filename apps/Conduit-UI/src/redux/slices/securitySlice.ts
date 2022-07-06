@@ -14,7 +14,7 @@ import {
   getSecurityConfig,
   putSecurityConfig,
   updateSecurityClient,
-} from '../../http/SecurityRequests';
+} from '../../http/requests/SecurityRequests';
 import { Sort } from '../../models/http/HttpModels';
 
 interface ISecuritySlice {

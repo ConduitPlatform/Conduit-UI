@@ -10,7 +10,7 @@ import {
   getAuthUsersDataReq,
   putAuthenticationConfig,
   unblockUser,
-} from '../../http/AuthenticationRequests';
+} from '../../http/requests/AuthenticationRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';

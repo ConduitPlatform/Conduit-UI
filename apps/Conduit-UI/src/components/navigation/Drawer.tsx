@@ -25,8 +25,8 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 
   const handleLogout = async () => {
-    dispatch(asyncLogout());
     await router.replace('/login');
+    dispatch(asyncLogout());
   };
 
   return (

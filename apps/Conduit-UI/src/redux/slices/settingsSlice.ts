@@ -14,7 +14,7 @@ import {
   postNewAdminUser,
   putAdminSettings,
   putCoreSettings,
-} from '../../http/SettingsRequests';
+} from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';

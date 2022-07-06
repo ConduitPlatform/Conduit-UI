@@ -24,12 +24,6 @@ import { useAppDispatch, useAppSelector } from '../redux/store';
 import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 
-const {
-  publicRuntimeConfig: { CONDUIT_URL },
-} = getConfig();
-
-export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
-
 const Home = () => {
   const dispatch = useAppDispatch();
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
@@ -245,7 +239,7 @@ const Home = () => {
             setOpen={setSwaggerModal}
             swagger="App"
             title="App"
-            baseUrl={`${CONDUIT_API}`}
+            baseUrl={`/api`}
             transportsAdmin={transportsAdmin}
             transportsRouter={transportsRouter}
           />

@@ -10,7 +10,7 @@ import {
   getFormsConfig,
   updateForm,
   updateFormsConfig,
-} from '../../http/FormsRequests';
+} from '../../http/requests/FormsRequests';
 import { FormReplies, IFormsConfig, FormsModel } from '../../models/forms/FormsModels';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 

@@ -153,7 +153,7 @@ const Header: FC<Props> = ({
               Crud operations
             </Button>
             <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
-              Permissions
+              Extensions
             </Button>
           </Box>
         </Box>
