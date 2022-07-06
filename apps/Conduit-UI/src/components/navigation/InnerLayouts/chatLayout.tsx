@@ -1,8 +1,10 @@
 import React from 'react';
 import { Toc } from '@mui/icons-material';
 import StyledLayout from './styledLayout';
+import { useAppSelector } from '../../../redux/store';
 
 const ChatLayout: React.FC = ({ children }) => {
+  const configActive = useAppSelector((state) => state.chatSlice.config.active);
   const pathNames = ['/chat/rooms', '/chat/config'];
   const labels = [
     { name: 'Rooms', id: 'rooms' },
@@ -16,7 +18,8 @@ const ChatLayout: React.FC = ({ children }) => {
       pathNames={pathNames}
       swagger={'chat'}
       graphQL={'chat'}
-      icon={<Toc />}>
+      icon={<Toc />}
+      configActive={configActive}>
       {children}
     </StyledLayout>
   );

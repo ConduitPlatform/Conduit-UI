@@ -11,6 +11,7 @@ const RouterLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
+      configActive={true}
       title={'Router'}
       labels={labels}
       pathNames={pathNames}

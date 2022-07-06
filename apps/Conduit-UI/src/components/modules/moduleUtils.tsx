@@ -48,32 +48,3 @@ export const getModuleName = (moduleName: string) => {
   if (moduleName === 'sms') return 'SMS';
   return moduleName;
 };
-
-export const handleModuleNavigation = (moduleName: string) => {
-  switch (moduleName) {
-    case 'authentication':
-      return '/authentication/users';
-    case 'email':
-      return '/email/templates';
-    case 'database':
-      return '/database/schemas';
-    case 'storage':
-      return '/storage/files';
-    case 'settings':
-      return '/settings/settings';
-    case 'pushNotifications':
-      return '/push-notifications/send';
-    case 'forms':
-      return '/forms/view';
-    case 'payments':
-      return '/payments/customers';
-    case 'sms':
-      return '/sms/send';
-    case 'router':
-      return '/router/settings';
-    case 'chat':
-      return '/chat/rooms';
-    default:
-      return `/${moduleName}`;
-  }
-};

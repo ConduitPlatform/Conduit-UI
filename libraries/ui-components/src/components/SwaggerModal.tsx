@@ -12,6 +12,7 @@ import {ISecurityConfig} from "@conduitplatform/conduit-ui/src/models/security/S
 interface Props {
   title: string;
   open: boolean;
+  icon?: JSX.Element;
   setOpen: (open: boolean) => void;
   swagger?: string;
   baseUrl: string;
@@ -23,6 +24,7 @@ const SwaggerModal: FC<Props> = ({
   open,
   setOpen,
   title,
+    icon,
   swagger,
   baseUrl,
   transportsAdmin,
@@ -72,11 +74,14 @@ const SwaggerModal: FC<Props> = ({
       sx={{ padding: 10, overflowY: 'unset' }}
     >
       <DialogTitle id="alert-dialog-slide-title">
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h6">{title} Swagger </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems={'center'}>
+          <Box display="flex" alignItems={'center'}>
+            {icon}
+            <Typography variant="h6" sx={{ml: icon ? 1 : 0}}>{title} Swagger</Typography>
+          </Box>
           <IconButton
             onClick={handleClose}
-            sx={{ position: "absolute", right: "1%", top: "1%", color: "gray" }}
+            sx={{color: "gray"}}
             size="large"
           >
             <CloseIcon />

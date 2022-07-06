@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Button,
@@ -30,6 +30,7 @@ interface Props {
   transportsRouter: ISecurityConfig['transports'];
   noSwagger: boolean;
   noGraphQL: boolean;
+  configActive?: boolean;
 
 }
 
@@ -48,7 +49,8 @@ const SharedLayout: React.FC<Props> = ({
   transportsAdmin,
    transportsRouter,
    noSwagger,
-   noGraphQL
+   noGraphQL,
+   configActive
 }) => {
 
   const router = useRouter();
@@ -59,6 +61,10 @@ const SharedLayout: React.FC<Props> = ({
   const smallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
+    if(!configActive){
+      setValue(labels.length-1);
+      return;
+    }
     const index = pathNames.findIndex(
       (pathname: string) => pathname === router.pathname
     );
@@ -102,14 +108,17 @@ const SharedLayout: React.FC<Props> = ({
         </Box>
         <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
           {labels.map((label: { name: string; id: string }, index: number) => {
+            const disabled = !configActive ? index < labels.length - 1 : false;
             return (
               <LinkComponent
                 href={pathNames[index]}
                 key={index}
                 underline={"none"}
                 color={"#FFFFFF"}
+                disabled={disabled}
               >
                 <Tab
+                  disabled={disabled}
                   label={label.name}
                   id={label.id}
                   sx={

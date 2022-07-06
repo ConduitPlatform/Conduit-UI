@@ -12,13 +12,14 @@ interface Props {
   title: string;
   open: boolean;
   setOpen: (open: boolean) => void;
+  icon?: JSX.Element;
   graphQl?: string;
   baseUrl?: string;
   transportsAdmin:  IAdminSettings['transports'];
   transportsRouter: ISecurityConfig['transports'];
 }
 
-const GraphQLModal: FC<Props> = ({ open, setOpen, title, graphQl, baseUrl, transportsAdmin, transportsRouter }) => {
+const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl, transportsAdmin, transportsRouter }) => {
   const handleClose = () => {
     setOpen(false);
   };
@@ -32,11 +33,14 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, title, graphQl, baseUrl, trans
       aria-describedby="alert-dialog-slide-description"
       sx={{ padding: 10, overflowY: 'unset' }}>
       <DialogTitle id="alert-dialog-slide-title">
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h6">{title} GraphQL </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems={'center'}>
+          <Box display="flex" alignItems={'center'}>
+            {icon}
+            <Typography variant="h6" sx={{ml: icon ? 1 : 0}}>{title} GraphQL</Typography>
+          </Box>
           <IconButton
             onClick={handleClose}
-            sx={{ position: 'absolute', right: '1%', top: '1%', color: 'gray' }}
+            sx={{ color: 'gray' }}
             size="large">
             <CloseIcon />
           </IconButton>

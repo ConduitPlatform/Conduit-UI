@@ -87,7 +87,7 @@ const SmsConfig: React.FC = () => {
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            <Grid container item xs={12} justifyContent="space-between">
+            <Grid container item xs={12} justifyContent="space-between" alignItems={'center'}>
               <Typography variant={'h6'}>Activate SMS Module</Typography>
               <FormInputSwitch name={'active'} />
             </Grid>
@@ -134,9 +134,12 @@ const SmsConfig: React.FC = () => {
                     <Grid item xs={12}>
                       <Typography variant="subtitle1">Verify:</Typography>
                     </Grid>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <Typography>Active</Typography>
-                      <FormInputSwitch name={'twilio.verify.active'} />
+                      <FormInputSwitch
+                        name={'twilio.verify.active'}
+                        switchProps={{ sx: { ml: 1 } }}
+                      />
                     </Box>
                     <FormInputText
                       name={'twilio.verify.serviceSid'}

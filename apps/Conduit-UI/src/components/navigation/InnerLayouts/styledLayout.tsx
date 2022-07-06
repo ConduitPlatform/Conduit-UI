@@ -17,7 +17,7 @@ interface Props {
   swagger?: string;
   graphQL?: string;
   icon: JSX.Element;
-  children: any;
+  configActive?: boolean;
 }
 
 const StyledLayout: FC<Props> = ({
@@ -27,6 +27,7 @@ const StyledLayout: FC<Props> = ({
   swagger,
   graphQL,
   icon,
+  configActive,
   children,
 }) => {
   const { loading } = useAppSelector((state) => state.appSlice);
@@ -54,6 +55,7 @@ const StyledLayout: FC<Props> = ({
       transportsRouter={transportsRouter}
       noSwagger={noSwagger}
       noGraphQL={noGraphQL}
+      configActive={configActive}
       loader={
         <ScaleLoader
           speedMultiplier={3}
