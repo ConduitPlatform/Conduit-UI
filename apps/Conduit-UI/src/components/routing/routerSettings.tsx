@@ -4,16 +4,16 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { ISecurityConfig } from '../../models/security/SecurityModels';
-import { asyncPutSecurityConfig } from '../../redux/slices/securitySlice';
+import { IRouterConfig } from '../../models/router/RouterModels';
+import { asyncPutRouterConfig } from '../../redux/slices/routerSlice';
 import { ConfigSaveSection } from '@conduitplatform/ui-components';
 
 const RouterSettings: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { config } = useAppSelector((state) => state.securitySlice.data);
+  const { config } = useAppSelector((state) => state.routerSlice.data);
   const [edit, setEdit] = useState(false);
 
-  const methods = useForm<ISecurityConfig>({
+  const methods = useForm<IRouterConfig>({
     defaultValues: useMemo(() => {
       return config;
     }, [config]),
@@ -25,10 +25,10 @@ const RouterSettings: React.FC = () => {
     methods.reset(config);
   }, [methods, config]);
 
-  const onSaveClick = (data: ISecurityConfig) => {
+  const onSaveClick = (data: IRouterConfig) => {
     setEdit(false);
     const finalData = { ...data, security: { clientValidation: true } };
-    dispatch(asyncPutSecurityConfig(finalData));
+    dispatch(asyncPutRouterConfig(finalData));
   };
 
   const handleCancel = () => {

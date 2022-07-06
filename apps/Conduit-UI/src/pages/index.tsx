@@ -18,7 +18,6 @@ import {
 import GraphQL from '../assets/svgs/graphQL.svg';
 import Swagger from '../assets/svgs/swagger.svg';
 import Image from 'next/image';
-import getConfig from 'next/config';
 import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../theme';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
@@ -33,7 +32,7 @@ const Home = () => {
 
   const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
-  const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
+  const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
 
   const noSwagger = useMemo(() => {

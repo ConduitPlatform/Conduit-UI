@@ -2,13 +2,13 @@ import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import RouterLayout from '../../components/navigation/InnerLayouts/routerLayout';
 import RouterSettings from '../../components/routing/routerSettings';
-import { asyncGetSecurityConfig } from '../../redux/slices/securitySlice';
+import { asyncGetRouterConfig } from '../../redux/slices/routerSlice';
 
 const Settings = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetSecurityConfig());
+    dispatch(asyncGetRouterConfig());
   }, [dispatch]);
 
   return <RouterSettings />;

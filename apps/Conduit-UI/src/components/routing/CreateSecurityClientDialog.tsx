@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '../../redux/store';
 import { Box } from '@mui/material';
 import ClientPlatformEnum, { IClient, ICreateClient } from '../../models/security/SecurityModels';
-import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/securitySlice';
+import { asyncGenerateNewClient, asyncGetAvailableClients } from '../../redux/slices/routerSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';

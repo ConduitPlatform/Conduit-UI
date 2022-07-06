@@ -30,7 +30,7 @@ const StyledLayout: FC<Props> = ({
 }) => {
   const { loading } = useAppSelector((state) => state.appSlice);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
-  const transportsRouter = useAppSelector((state) => state.securitySlice?.data?.config?.transports);
+  const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;

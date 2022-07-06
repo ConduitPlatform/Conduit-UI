@@ -22,7 +22,7 @@ interface Props {
 
 const ClientSecretDialog: FC<Props> = ({ open, handleClose }) => {
   const dispatch = useDispatch();
-  const { clientSecret } = useAppSelector((state) => state.securitySlice.data);
+  const { clientSecret } = useAppSelector((state) => state.routerSlice.data);
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(clientSecret);

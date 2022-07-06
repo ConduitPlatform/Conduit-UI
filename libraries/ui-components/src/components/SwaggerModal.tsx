@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Box, DialogContentText, IconButton, Typography } from "@mui/material";
 import axios from "axios";
 import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
-import {ISecurityConfig} from "@conduitplatform/conduit-ui/src/models/security/SecurityModels";
+import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
 
 interface Props {
   title: string;
@@ -17,7 +17,7 @@ interface Props {
   swagger?: string;
   baseUrl: string;
   transportsAdmin: IAdminSettings['transports'];
-  transportsRouter: ISecurityConfig['transports'];
+  transportsRouter: IRouterConfig['transports'];
 }
 
 const SwaggerModal: FC<Props> = ({

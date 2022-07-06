@@ -1,8 +1,7 @@
 import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
-import ClientPlatformEnum, {
-  ISecurityConfig,
-  IUpdateClient,
-} from '../../models/security/SecurityModels';
+import ClientPlatformEnum, { IUpdateClient } from '../../models/security/SecurityModels';
+import { IRouterConfig } from '../../models/router/RouterModels';
+
 import { Sort } from '../../models/http/HttpModels';
 
 export const getAvailableClientsRequest = (params: Sort) => {
@@ -26,11 +25,11 @@ export const deleteClientRequest = (_id: string) => {
   return deleteRequest(`/admin/router/client/${_id}`);
 };
 
-export const getSecurityConfig = () => {
+export const getRouterConfig = () => {
   return getRequest(`/admin/config/router`);
 };
 
-export const putSecurityConfig = (data: ISecurityConfig) => {
+export const putRouterConfig = (data: IRouterConfig) => {
   return putRequest(`/admin/config/router`, {
     config: { ...data },
   });

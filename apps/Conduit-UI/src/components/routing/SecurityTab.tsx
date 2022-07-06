@@ -24,7 +24,7 @@ import {
   asyncDeleteClient,
   asyncGetAvailableClients,
   clearClientSecret,
-} from '../../redux/slices/securitySlice';
+} from '../../redux/slices/routerSlice';
 import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
 import { Add, Edit, KeyboardArrowDown } from '@mui/icons-material';
@@ -58,7 +58,7 @@ const SecurityTab: React.FC = () => {
     index: null,
   });
   const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
-  const { config } = useAppSelector((state) => state.securitySlice.data);
+  const { config } = useAppSelector((state) => state.routerSlice.data);
 
   useEffect(() => {
     if (config.security.clientValidation) {
@@ -66,7 +66,7 @@ const SecurityTab: React.FC = () => {
     }
   }, [config.security.clientValidation, dispatch, sort]);
 
-  const { availableClients } = useAppSelector((state) => state.securitySlice.data);
+  const { availableClients } = useAppSelector((state) => state.routerSlice.data);
 
   const handleDeletion = (_id: string) => {
     dispatch(asyncDeleteClient(_id));

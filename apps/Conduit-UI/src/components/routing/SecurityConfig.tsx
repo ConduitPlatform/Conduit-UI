@@ -4,18 +4,18 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ConfigContainer } from '@conduitplatform/ui-components';
-import { asyncPutSecurityConfig } from '../../redux/slices/securitySlice';
+import { asyncPutRouterConfig } from '../../redux/slices/routerSlice';
 import { Switch } from '@mui/material';
 
 const SecurityConfig: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const { config } = useAppSelector((state) => state.securitySlice.data);
+  const { config } = useAppSelector((state) => state.routerSlice.data);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newData = { ...config, security: { clientValidation: event.target.checked } };
     if (config.security) {
-      dispatch(asyncPutSecurityConfig(newData));
+      dispatch(asyncPutRouterConfig(newData));
     }
   };
 

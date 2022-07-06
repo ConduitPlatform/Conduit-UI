@@ -2,30 +2,27 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
-import ClientPlatformEnum, {
-  IClient,
-  ISecurityConfig,
-  IUpdateClient,
-} from '../../models/security/SecurityModels';
+import ClientPlatformEnum, { IClient, IUpdateClient } from '../../models/security/SecurityModels';
+import { IRouterConfig } from '../../models/router/RouterModels';
 import {
   deleteClientRequest,
   generateNewClientRequest,
   getAvailableClientsRequest,
-  getSecurityConfig,
-  putSecurityConfig,
+  getRouterConfig,
+  putRouterConfig,
   updateSecurityClient,
 } from '../../http/requests/SecurityRequests';
 import { Sort } from '../../models/http/HttpModels';
 
-interface ISecuritySlice {
+interface IRouterSlice {
   data: {
     availableClients: IClient[];
     clientSecret: string;
-    config: ISecurityConfig;
+    config: IRouterConfig;
   };
 }
 
-const initialState: ISecuritySlice = {
+const initialState: IRouterSlice = {
   data: {
     config: {
       hostUrl: '',
@@ -113,14 +110,14 @@ export const asyncDeleteClient = createAsyncThunk(
   }
 );
 
-export const asyncGetSecurityConfig = createAsyncThunk(
+export const asyncGetRouterConfig = createAsyncThunk(
   'security/getConfig',
   async (arg, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
-      } = await getSecurityConfig();
+      } = await getRouterConfig();
       thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
@@ -131,14 +128,14 @@ export const asyncGetSecurityConfig = createAsyncThunk(
   }
 );
 
-export const asyncPutSecurityConfig = createAsyncThunk(
+export const asyncPutRouterConfig = createAsyncThunk(
   'security/putConfig',
-  async (params: ISecurityConfig, thunkAPI) => {
+  async (params: IRouterConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
-      } = await putSecurityConfig(params);
+      } = await putRouterConfig(params);
       thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
@@ -149,7 +146,7 @@ export const asyncPutSecurityConfig = createAsyncThunk(
   }
 );
 
-const settingsSlice = createSlice({
+const routerSlice = createSlice({
   name: 'security',
   initialState,
   reducers: {
@@ -158,10 +155,10 @@ const settingsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(asyncGetSecurityConfig.fulfilled, (state, action) => {
+    builder.addCase(asyncGetRouterConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
     });
-    builder.addCase(asyncPutSecurityConfig.fulfilled, (state, action) => {
+    builder.addCase(asyncPutRouterConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
     });
     builder.addCase(asyncGetAvailableClients.fulfilled, (state, action) => {
@@ -181,6 +178,6 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { clearClientSecret } = settingsSlice.actions;
+export const { clearClientSecret } = routerSlice.actions;
 
-export default settingsSlice.reducer;
+export default routerSlice.reducer;

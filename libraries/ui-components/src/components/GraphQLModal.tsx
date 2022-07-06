@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, DialogContentText, IconButton, Typography } from '@mui/material';
 import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
-import {ISecurityConfig} from "@conduitplatform/conduit-ui/src/models/security/SecurityModels";
+import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
 
 interface Props {
   title: string;
@@ -16,7 +16,7 @@ interface Props {
   graphQl?: string;
   baseUrl?: string;
   transportsAdmin:  IAdminSettings['transports'];
-  transportsRouter: ISecurityConfig['transports'];
+  transportsRouter: IRouterConfig['transports'];
 }
 
 const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl, transportsAdmin, transportsRouter }) => {

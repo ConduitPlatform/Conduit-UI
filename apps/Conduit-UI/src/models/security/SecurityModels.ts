@@ -34,9 +34,3 @@ enum ClientPlatformEnum {
   CLI = 'CLI',
 }
 export default ClientPlatformEnum;
-
-export interface ISecurityConfig {
-  hostUrl: string;
-  transports: { rest: boolean; graphql: boolean; sockets: boolean };
-  security: { clientValidation: boolean };
-}

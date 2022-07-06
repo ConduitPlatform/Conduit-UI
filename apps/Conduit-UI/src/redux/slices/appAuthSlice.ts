@@ -15,7 +15,7 @@ import { asyncGetChatConfig } from './chatSlice';
 import { asyncGetFormsConfig } from './formsSlice';
 import { asyncGetPaymentConfig } from './paymentsSlice';
 import { asyncGetSmsConfig } from './smsSlice';
-import { asyncGetSecurityConfig } from './securitySlice';
+import { asyncGetRouterConfig } from './routerSlice';
 import { asyncGetAdminSettings } from './settingsSlice';
 
 export type AppAuthState = {
@@ -87,7 +87,7 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
   thunkAPI.dispatch(setAppLoading(true));
   try {
     thunkAPI.dispatch(asyncGetAdminSettings());
-    thunkAPI.dispatch(asyncGetSecurityConfig());
+    thunkAPI.dispatch(asyncGetRouterConfig());
     const resultAction = await thunkAPI.dispatch(asyncGetAdminModules());
     const originalPromiseResult = unwrapResult(resultAction);
     originalPromiseResult.enabledModules.forEach((item) => {
@@ -114,7 +114,7 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
           thunkAPI.dispatch(asyncGetPaymentConfig());
           break;
         case 'router':
-          thunkAPI.dispatch(asyncGetSecurityConfig);
+          thunkAPI.dispatch(asyncGetRouterConfig);
           break;
         case 'sms':
           thunkAPI.dispatch(asyncGetSmsConfig());

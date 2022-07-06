@@ -13,7 +13,7 @@ import SwaggerModal from "../SwaggerModal";
 import LinkComponent from "../LinkComponent";
 import GraphQLModal from "../GraphQLModal";
 import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
-import {ISecurityConfig} from "@conduitplatform/conduit-ui/src/models/security/SecurityModels";
+import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
 
 interface Props {
   pathNames: string[];
@@ -27,7 +27,7 @@ interface Props {
   baseUrl: string;
   loader: JSX.Element;
   transportsAdmin: IAdminSettings['transports'];
-  transportsRouter: ISecurityConfig['transports'];
+  transportsRouter: IRouterConfig['transports'];
   noSwagger: boolean;
   noGraphQL: boolean;
   configActive?: boolean;

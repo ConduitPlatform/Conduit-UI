@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
-import { asyncGetSecurityConfig } from '../../redux/slices/securitySlice';
+import { asyncGetRouterConfig } from '../../redux/slices/routerSlice';
 import SecurityConfig from '../../components/routing/SecurityConfig';
 import RouterLayout from '../../components/navigation/InnerLayouts/routerLayout';
 
@@ -8,7 +8,7 @@ const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetSecurityConfig());
+    dispatch(asyncGetRouterConfig());
   }, [dispatch]);
 
   return <SecurityConfig />;
