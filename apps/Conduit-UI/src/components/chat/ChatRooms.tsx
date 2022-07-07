@@ -60,7 +60,14 @@ const ChatRooms: React.FC = () => {
 
   return (
     <>
-      <Paper sx={{ display: 'flex', height: '80vh', padding: 2, borderRadius: 4 }}>
+      <Paper
+        sx={{
+          display: 'flex',
+          height: '80vh',
+          padding: 2,
+          borderRadius: 4,
+          backgroundColor: 'rgba(0,0,0,0.05)',
+        }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: 220 }}>
           <TextField
             size={'small'}
@@ -101,6 +108,7 @@ const ChatRooms: React.FC = () => {
             />
           </Box>
           <Button
+            sx={{ whiteSpace: 'nowrap', mt: 1 }}
             variant="contained"
             fullWidth
             color="primary"
