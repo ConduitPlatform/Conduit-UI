@@ -18,7 +18,6 @@ interface Props {
   baseUrl: string;
   transportsAdmin: IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
-  adminUrl?: string;
 }
 
 const SwaggerModal: FC<Props> = ({
@@ -29,8 +28,7 @@ const SwaggerModal: FC<Props> = ({
   swagger,
   baseUrl,
   transportsAdmin,
-   transportsRouter,
-   adminUrl
+   transportsRouter
 }) => {
   const handleClose = () => {
     setOpen(false);
@@ -134,8 +132,8 @@ const SwaggerModal: FC<Props> = ({
               style={{ textDecoration: "none" }}
               href={
                 !swagger
-                  ? `${adminUrl}/admin/swagger/`
-                  : `${adminUrl}/admin/swagger/#/${swagger}`
+                  ? `${baseUrl}/admin/swagger/`
+                  : `${baseUrl}/admin/swagger/#/${swagger}`
               }
               target="_blank"
               rel="noreferrer"
