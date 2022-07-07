@@ -87,7 +87,6 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
   thunkAPI.dispatch(setAppLoading(true));
   try {
     thunkAPI.dispatch(asyncGetAdminSettings());
-    thunkAPI.dispatch(asyncGetRouterConfig());
     const resultAction = await thunkAPI.dispatch(asyncGetAdminModules());
     const originalPromiseResult = unwrapResult(resultAction);
     originalPromiseResult.enabledModules.forEach((item) => {
@@ -114,7 +113,7 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
           thunkAPI.dispatch(asyncGetPaymentConfig());
           break;
         case 'router':
-          thunkAPI.dispatch(asyncGetRouterConfig);
+          thunkAPI.dispatch(asyncGetRouterConfig());
           break;
         case 'sms':
           thunkAPI.dispatch(asyncGetSmsConfig());
