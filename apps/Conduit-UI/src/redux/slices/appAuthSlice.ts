@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, unwrapResult } from '@reduxjs/toolkit';
 import { removeCookie, setCookie } from '../../utils/cookie';
 import { IModule } from '../../models/appAuth';
 import { asyncGetNotificationConfig, clearNotificationPageStore } from './notificationsSlice';
-import { clearStoragePageStore } from './storageSlice';
+import { asyncGetStorageConfig, clearStoragePageStore } from './storageSlice';
 import { getAdminModulesRequest } from '../../http/requests/SettingsRequests';
 import { loginRequest } from '../../http/requests/AppAuthRequests';
 import { clearAppNotifications, setAppLoading } from './appSlice';
@@ -17,6 +17,7 @@ import { asyncGetPaymentConfig } from './paymentsSlice';
 import { asyncGetSmsConfig } from './smsSlice';
 import { asyncGetRouterConfig } from './routerSlice';
 import { asyncGetAdminSettings } from './settingsSlice';
+import Router from 'next/router';
 
 export type AppAuthState = {
   data: {
@@ -101,7 +102,7 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
           thunkAPI.dispatch(asyncGetEmailConfig());
           break;
         case 'storage':
-          thunkAPI.dispatch(asyncGetAuthenticationConfig());
+          thunkAPI.dispatch(asyncGetStorageConfig());
           break;
         case 'pushNotifications':
           thunkAPI.dispatch(asyncGetNotificationConfig());
@@ -153,6 +154,7 @@ const appAuthSlice = createSlice({
       state.data.token = '';
       state.data.enabledModules = [];
       state.data.disabledModules = [];
+      Router.replace('/login').catch(console.log);
     });
   },
 });

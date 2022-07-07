@@ -22,6 +22,13 @@ import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../theme';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { asyncGetIntrospectionStatus } from '../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
+import getConfig from 'next/config';
+
+const {
+  publicRuntimeConfig: { CONDUIT_URL },
+} = getConfig();
+
+export const CONDUIT_API = process.env.IS_DEV ? process.env.NEXT_PUBLIC_CONDUIT_URL : CONDUIT_URL;
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -34,6 +41,7 @@ const Home = () => {
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
+  const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
@@ -238,7 +246,8 @@ const Home = () => {
             setOpen={setSwaggerModal}
             swagger="App"
             title="App"
-            baseUrl={`/api`}
+            baseUrl={SERVICE_API}
+            adminUrl={CONDUIT_API}
             transportsAdmin={transportsAdmin}
             transportsRouter={transportsRouter}
           />
@@ -247,7 +256,8 @@ const Home = () => {
             setOpen={setGraphQLOpen}
             graphQl="App"
             title="App"
-            baseUrl={`/api`}
+            baseUrl={SERVICE_API}
+            adminUrl={CONDUIT_API}
             transportsAdmin={transportsAdmin}
             transportsRouter={transportsRouter}
           />

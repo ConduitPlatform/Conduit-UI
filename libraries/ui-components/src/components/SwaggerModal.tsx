@@ -15,7 +15,8 @@ interface Props {
   icon?: JSX.Element;
   setOpen: (open: boolean) => void;
   swagger?: string;
-  baseUrl: string;
+  baseUrl?: string;
+  adminUrl?: string;
   transportsAdmin: IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
 }
@@ -24,9 +25,10 @@ const SwaggerModal: FC<Props> = ({
   open,
   setOpen,
   title,
-    icon,
+  icon,
   swagger,
   baseUrl,
+  adminUrl,
   transportsAdmin,
    transportsRouter
 }) => {
@@ -53,7 +55,7 @@ const SwaggerModal: FC<Props> = ({
     const link = document.createElement("a");
     link.download = "conduitAdminSwagger.json";
     axios
-      .get(`${baseUrl}/admin/swagger.json`, {
+      .get(`${adminUrl}/admin/swagger.json`, {
         responseType: "blob",
       })
       .then((res) => {
@@ -132,8 +134,8 @@ const SwaggerModal: FC<Props> = ({
               style={{ textDecoration: "none" }}
               href={
                 !swagger
-                  ? `${baseUrl}/admin/swagger/`
-                  : `${baseUrl}/admin/swagger/#/${swagger}`
+                  ? `${adminUrl}/admin/swagger/`
+                  : `${adminUrl}/admin/swagger/#/${swagger}`
               }
               target="_blank"
               rel="noreferrer"

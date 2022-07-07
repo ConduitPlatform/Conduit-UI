@@ -15,11 +15,12 @@ interface Props {
   icon?: JSX.Element;
   graphQl?: string;
   baseUrl?: string;
+  adminUrl?: string;
   transportsAdmin:  IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
 }
 
-const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl, transportsAdmin, transportsRouter }) => {
+const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl, adminUrl, transportsAdmin, transportsRouter }) => {
   const handleClose = () => {
     setOpen(false);
   };
@@ -69,7 +70,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl,
             <a
               style={{ textDecoration: 'none' }}
               href={
-                !graphQl ? `${baseUrl}/admin/graphQL/` : `${baseUrl}/admin/graphQL/#/${graphQl}`
+                !graphQl ? `${adminUrl}/admin/graphQL/` : `${adminUrl}/admin/graphQL/#/${graphQl}`
               }
               target="_blank"
               rel="noreferrer">

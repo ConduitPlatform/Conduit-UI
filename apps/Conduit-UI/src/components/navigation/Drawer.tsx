@@ -3,7 +3,6 @@ import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 import { ExitToApp, Settings } from '@mui/icons-material';
-import { useRouter } from 'next/router';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
@@ -18,14 +17,12 @@ interface Props {
 
 const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down(980));
 
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 
   const handleLogout = async () => {
-    await router.replace('/login');
     dispatch(asyncLogout());
   };
 
