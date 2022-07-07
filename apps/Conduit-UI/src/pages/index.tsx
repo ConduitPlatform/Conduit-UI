@@ -247,7 +247,7 @@ const Home = () => {
             setOpen={setGraphQLOpen}
             graphQl="App"
             title="App"
-            baseUrl={`${CONDUIT_API}`}
+            baseUrl={`/api`}
             transportsAdmin={transportsAdmin}
             transportsRouter={transportsRouter}
           />
