@@ -6,7 +6,7 @@ import { IClient } from '../../models/security/SecurityModels';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
-import { asyncGetAvailableClients, asyncUpdateClient } from '../../redux/slices/securitySlice';
+import { asyncGetAvailableClients, asyncUpdateClient } from '../../redux/slices/routerSlice';
 import { platforms } from '../../utils/platforms';
 import Security from '../../assets/svgs/security.svg';
 import { enqueueErrorNotification } from '../../utils/useNotifier';

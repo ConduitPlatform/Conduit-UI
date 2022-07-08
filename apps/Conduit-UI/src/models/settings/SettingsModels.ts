@@ -10,11 +10,18 @@ export interface IPasswordChange {
   confirmPassword: string;
 }
 
+export interface IAdminSettings {
+  auth: {
+    tokenSecret: string;
+    hashRounds: number;
+    tokenExpirationTime: number;
+  };
+  hostUrl: string;
+  transports: { rest: boolean; graphql: boolean; sockets: boolean };
+}
+
 export interface ICoreSettings {
   env: string;
-  hostUrl: string;
-  transports: { rest: { enabled: boolean }; graphql: { enabled: boolean } };
-  port: number;
 }
 
 export interface IAdmin {

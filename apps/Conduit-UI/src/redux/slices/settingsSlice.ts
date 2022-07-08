@@ -1,11 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { IAdmin, ICoreSettings, INewAdminUser } from '../../models/settings/SettingsModels';
+import {
+  IAdmin,
+  IAdminSettings,
+  ICoreSettings,
+  INewAdminUser,
+} from '../../models/settings/SettingsModels';
 import {
   changePassword,
   deleteAdmin,
   getAdmins,
+  getAdminSettings,
   getCoreSettings,
   postNewAdminUser,
+  putAdminSettings,
   putCoreSettings,
 } from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
@@ -21,6 +28,7 @@ interface ISettingsSlice {
     };
   };
   coreSettings: ICoreSettings;
+  adminSettings: IAdminSettings;
 }
 
 const initialState: ISettingsSlice = {
@@ -32,9 +40,15 @@ const initialState: ISettingsSlice = {
   },
   coreSettings: {
     env: '',
+  },
+  adminSettings: {
+    auth: {
+      tokenSecret: '',
+      hashRounds: 11,
+      tokenExpirationTime: 72000,
+    },
     hostUrl: '',
-    transports: { rest: { enabled: false }, graphql: { enabled: false } },
-    port: 8080,
+    transports: { rest: true, graphql: false, sockets: false },
   },
 };
 
@@ -122,12 +136,45 @@ export const asyncGetCoreSettings = createAsyncThunk('settings/getCore', async (
   }
 });
 
+export const asyncGetAdminSettings = createAsyncThunk(
+  'settings/getAdmin',
+  async (args, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getAdminSettings();
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncUpdateAdminSettings = createAsyncThunk(
+  'settings/putAdmin',
+  async (args: IAdminSettings, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await putAdminSettings(args);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncUpdateCoreSettings = createAsyncThunk(
   'settings/putCore',
   async (args: ICoreSettings, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await putCoreSettings(args);
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -145,8 +192,14 @@ const settingsSlice = createSlice({
     builder.addCase(asyncGetCoreSettings.fulfilled, (state, action) => {
       state.coreSettings = action.payload.config;
     });
+    builder.addCase(asyncGetAdminSettings.fulfilled, (state, action) => {
+      state.adminSettings = action.payload.config;
+    });
     builder.addCase(asyncUpdateCoreSettings.fulfilled, (state, action) => {
       state.coreSettings = action.payload;
+    });
+    builder.addCase(asyncUpdateAdminSettings.fulfilled, (state, action) => {
+      state.adminSettings = action.payload.config;
     });
     builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
       state.data.authAdmins.admins = action.payload.result.admins;

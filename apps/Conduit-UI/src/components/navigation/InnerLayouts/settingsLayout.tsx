@@ -3,9 +3,9 @@ import { Settings } from '@mui/icons-material';
 import StyledLayout from './styledLayout';
 
 const SettingsLayout: React.FC = ({ children }) => {
-  const pathNames = ['/settings/core', '/settings/admins', '/settings/password'];
+  const pathNames = ['/settings/settings', '/settings/admins', '/settings/password'];
   const labels = [
-    { name: 'core', id: 'core' },
+    { name: 'settings', id: 'settings' },
     { name: 'admin users', id: 'admins' },
     { name: 'change password', id: 'password' },
   ];
@@ -15,8 +15,8 @@ const SettingsLayout: React.FC = ({ children }) => {
       title={'Settings'}
       labels={labels}
       pathNames={pathNames}
-      swagger={'settings'}
-      icon={<Settings />}>
+      icon={<Settings />}
+      configActive={true}>
       {children}
     </StyledLayout>
   );

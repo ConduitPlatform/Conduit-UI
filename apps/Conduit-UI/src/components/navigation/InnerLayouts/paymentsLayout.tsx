@@ -25,6 +25,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'payments'}
+      graphQL={'payments'}
       icon={<Payment />}>
       {children}
     </StyledLayout>

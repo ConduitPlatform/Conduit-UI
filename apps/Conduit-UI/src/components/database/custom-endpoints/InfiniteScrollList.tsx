@@ -40,7 +40,6 @@ const InfiniteScrollList: FC<Props> = ({
 }) => {
   const ListRow = ({ index, style }: ListChildComponentProps) => {
     const listItem = listItems[index];
-    console.log(typeof listItem);
 
     const getBadgeColor = (endpointForBadge: any) => {
       switch (endpointForBadge.operation) {

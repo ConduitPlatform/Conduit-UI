@@ -5,7 +5,7 @@ import { TextFieldProps } from '@mui/material/TextField/TextField';
 
 interface FormInputTextProps {
   name: string;
-  label: string;
+  label?: string;
   rows?: number;
   disabled?: boolean;
   typeOfInput?: string;

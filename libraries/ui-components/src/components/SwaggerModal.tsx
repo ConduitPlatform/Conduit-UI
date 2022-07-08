@@ -6,14 +6,19 @@ import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, DialogContentText, IconButton, Typography } from "@mui/material";
 import axios from "axios";
+import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
+import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
 
 interface Props {
   title: string;
   open: boolean;
-  setOpen: (open: boolean) => void;
   icon?: JSX.Element;
-  swagger: string;
-  baseUrl: string;
+  setOpen: (open: boolean) => void;
+  swagger?: string;
+  baseUrl?: string;
+  adminUrl?: string;
+  transportsAdmin: IAdminSettings['transports'];
+  transportsRouter: IRouterConfig['transports'];
 }
 
 const SwaggerModal: FC<Props> = ({
@@ -23,6 +28,9 @@ const SwaggerModal: FC<Props> = ({
   icon,
   swagger,
   baseUrl,
+  adminUrl,
+  transportsAdmin,
+   transportsRouter
 }) => {
   const handleClose = () => {
     setOpen(false);
@@ -47,7 +55,7 @@ const SwaggerModal: FC<Props> = ({
     const link = document.createElement("a");
     link.download = "conduitAdminSwagger.json";
     axios
-      .get(`${baseUrl}/admin/swagger.json`, {
+      .get(`${adminUrl}/admin/swagger.json`, {
         responseType: "blob",
       })
       .then((res) => {
@@ -68,11 +76,14 @@ const SwaggerModal: FC<Props> = ({
       sx={{ padding: 10, overflowY: 'unset' }}
     >
       <DialogTitle id="alert-dialog-slide-title">
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h6">{title} Swagger </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems={'center'}>
+          <Box display="flex" alignItems={'center'}>
+            {icon}
+            <Typography variant="h6" sx={{ml: icon ? 1 : 0}}>{title} Swagger</Typography>
+          </Box>
           <IconButton
             onClick={handleClose}
-            sx={{ position: "absolute", right: "1%", top: "1%", color: "gray" }}
+            sx={{color: "gray"}}
             size="large"
           >
             <CloseIcon />
@@ -89,13 +100,14 @@ const SwaggerModal: FC<Props> = ({
           flexDirection={"column"}
           sx={{ gap: 5 }}
         >
+          {transportsRouter?.rest ?
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
             sx={{ gap: 5 }}
           >
-            <Typography>Go to {title} Swagger: </Typography>
+            <Typography>Go to App Swagger: </Typography>
             <a
               style={{ textDecoration: "none" }}
               href={
@@ -109,19 +121,21 @@ const SwaggerModal: FC<Props> = ({
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
+              :null}
+          {transportsAdmin?.rest ?
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
             sx={{ gap: 5 }}
           >
-            <Typography>Go to {title} Admin Swagger: </Typography>
+            <Typography>Go to Admin Swagger: </Typography>
             <a
               style={{ textDecoration: "none" }}
               href={
                 !swagger
-                  ? `${baseUrl}/admin/swagger/`
-                  : `${baseUrl}/admin/swagger/#/${swagger}`
+                  ? `${adminUrl}/admin/swagger/`
+                  : `${adminUrl}/admin/swagger/#/${swagger}`
               }
               target="_blank"
               rel="noreferrer"
@@ -129,6 +143,8 @@ const SwaggerModal: FC<Props> = ({
               <Button variant="outlined">Swagger</Button>
             </a>
           </Box>
+              : null}
+          {transportsRouter?.rest ?
           <Box
             display="flex"
             alignItems="center"
@@ -140,7 +156,9 @@ const SwaggerModal: FC<Props> = ({
               Download Json
             </Button>
           </Box>
-          <Box
+              :null}
+          {transportsAdmin?.rest ?
+              <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
@@ -151,6 +169,7 @@ const SwaggerModal: FC<Props> = ({
               Download Json
             </Button>
           </Box>
+              :null}
         </Box>
       </DialogContent>
     </Dialog>

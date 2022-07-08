@@ -1,12 +1,11 @@
 import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
-import ClientPlatformEnum, {
-  ISecurityConfig,
-  IUpdateClient,
-} from '../../models/security/SecurityModels';
+import ClientPlatformEnum, { IUpdateClient } from '../../models/security/SecurityModels';
+import { IRouterConfig } from '../../models/router/RouterModels';
+
 import { Sort } from '../../models/http/HttpModels';
 
 export const getAvailableClientsRequest = (params: Sort) => {
-  return getRequest(`/admin/security/client`, { params });
+  return getRequest(`/admin/router/security/client`, { params });
 };
 
 export const generateNewClientRequest = (
@@ -15,22 +14,23 @@ export const generateNewClientRequest = (
   notes?: string,
   alias?: string
 ) => {
-  return postRequest(`/admin/security/client`, { platform, domain, notes, alias });
+  return postRequest(`/admin/router/client`, { platform, domain, notes, alias });
 };
 
 export const updateSecurityClient = (_id: string, data: IUpdateClient) => {
-  return putRequest(`/admin/security/client/${_id}`, { ...data });
+  return putRequest(`/admin/router/client/${_id}`, { ...data });
 };
 
 export const deleteClientRequest = (_id: string) => {
-  return deleteRequest(`/admin/security/client/${_id}`);
+  return deleteRequest(`/admin/router/client/${_id}`);
 };
 
-export const getSecurityConfig = () => {
-  return getRequest(`/admin/config/security`);
+export const getRouterConfig = () => {
+  return getRequest(`/admin/config/router`);
 };
 
-export const putSecurityConfig = (data: ISecurityConfig) =>
-  putRequest(`/admin/config/security`, {
+export const putRouterConfig = (data: IRouterConfig) => {
+  return putRequest(`/admin/config/router`, {
     config: { ...data },
   });
+};

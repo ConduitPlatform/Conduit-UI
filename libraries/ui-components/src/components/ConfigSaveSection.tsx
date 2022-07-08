@@ -21,7 +21,7 @@ const ConfigSaveSection: FC<Props> = ({ edit, setEdit, handleCancel }) => {
         </Grid>
       )}
       {!edit && (
-        <Grid item container xs={12} sx={{ justifyContent: 'flex-end', padding: 1 }}>
+        <Grid item container xs={12} sx={{ justifyContent: 'flex-end' }}>
           <Button onClick={() => setEdit(true)} color={'primary'}>
             Edit
           </Button>

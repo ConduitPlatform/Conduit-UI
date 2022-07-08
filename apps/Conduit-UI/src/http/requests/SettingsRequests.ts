@@ -1,5 +1,5 @@
 import { Pagination } from '../../models/http/HttpModels';
-import { ICoreSettings } from '../../models/settings/SettingsModels';
+import { IAdminSettings, ICoreSettings } from '../../models/settings/SettingsModels';
 import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
 
 export const getAdminModulesRequest = () => {
@@ -20,6 +20,14 @@ export const createServiceAccount = (name: string) => {
 
 export const getCoreSettings = () => {
   return getRequest(`/admin/config/core`);
+};
+
+export const getAdminSettings = () => {
+  return getRequest(`/admin/config/admin`);
+};
+
+export const putAdminSettings = (data: IAdminSettings) => {
+  return putRequest(`/admin/config/admin`, { config: { ...data } });
 };
 
 export const putCoreSettings = (data: ICoreSettings) => {

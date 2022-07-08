@@ -1,21 +1,21 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
-import { asyncGetSecurityConfig } from '../../redux/slices/securitySlice';
-import SecurityConfig from '../../components/security/SecurityConfig';
-import SecurityLayout from '../../components/navigation/InnerLayouts/securityLayout';
+import { asyncGetRouterConfig } from '../../redux/slices/routerSlice';
+import SecurityConfig from '../../components/routing/SecurityConfig';
+import RouterLayout from '../../components/navigation/InnerLayouts/routerLayout';
 
 const Config = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetSecurityConfig());
+    dispatch(asyncGetRouterConfig());
   }, [dispatch]);
 
   return <SecurityConfig />;
 };
 
 Config.getLayout = function getLayout(page: ReactElement) {
-  return <SecurityLayout>{page}</SecurityLayout>;
+  return <RouterLayout>{page}</RouterLayout>;
 };
 
 export default Config;

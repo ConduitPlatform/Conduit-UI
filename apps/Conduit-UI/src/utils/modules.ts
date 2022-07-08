@@ -10,6 +10,7 @@ const modules = [
   'chat',
   'payments',
   'database',
+  'router',
 ];
 
 export const getDisabledModules = (payloadModules: string[]) => {

@@ -13,11 +13,14 @@ interface NextLinkComposedProps
         Omit<NextLinkProps, 'href' | 'as' | 'onClick' | 'onMouseEnter'> {
     to: NextLinkProps['href'];
     linkAs?: NextLinkProps['as'];
+    disabled?: boolean;
 }
 
 export const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComposedProps>(
     function NextLinkComposed(props, ref) {
-        const { to, linkAs, replace, scroll, shallow, prefetch, locale, children, ...other } = props;
+        const { to, linkAs, replace, scroll, shallow, prefetch, locale, children, disabled, ...other } = props;
+
+        if(disabled) return <>{children}</>;
 
         return (
             <NextLink
@@ -44,6 +47,7 @@ export type LinkProps = {
     href: NextLinkProps['href'];
     linkAs?: NextLinkProps['as']; // Useful when the as prop is shallow by styled().
     noLinkStyle?: boolean;
+    disabled?: boolean;
 } & Omit<NextLinkComposedProps, 'to' | 'linkAs' | 'href'> &
     Omit<MuiLinkProps, 'href'>;
 
@@ -63,6 +67,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
         role, // Link don't have roles.
         scroll,
         shallow,
+        disabled,
         ...other
     } = props;
 
@@ -87,7 +92,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
     const nextjsProps = { to: href, linkAs, replace, scroll, shallow, prefetch, locale };
 
     if (noLinkStyle) {
-        return <NextLinkComposed className={className} ref={ref} {...nextjsProps} {...other} />;
+        return <NextLinkComposed className={className} ref={ref} disabled={disabled} {...nextjsProps} {...other} />;
     }
 
     return (
@@ -95,6 +100,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
             component={NextLinkComposed}
             className={className}
             ref={ref}
+            disabled={disabled}
             {...nextjsProps}
             {...other}
         />

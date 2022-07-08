@@ -2,7 +2,6 @@ import axios from 'axios';
 import { getCurrentStore } from '../redux/store';
 import { asyncLogout } from '../redux/slices/appAuthSlice';
 import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
-import Router from 'next/router';
 
 /**
  * We no longer include the masterkey in our requests
@@ -52,7 +51,6 @@ _axios.interceptors.response.use(
       const reduxStore = getCurrentStore();
       if (reduxStore) {
         reduxStore.dispatch(asyncLogout());
-        Router.replace('/login');
       }
     }
     return Promise.reject(error.response);

@@ -34,9 +34,3 @@ enum ClientPlatformEnum {
   CLI = 'CLI',
 }
 export default ClientPlatformEnum;
-
-export interface ISecurityConfig {
-  clientValidation: {
-    enabled: boolean;
-  };
-}

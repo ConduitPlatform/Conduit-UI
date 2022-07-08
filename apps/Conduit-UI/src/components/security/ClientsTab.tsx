@@ -24,13 +24,13 @@ import {
   asyncDeleteClient,
   asyncGetAvailableClients,
   clearClientSecret,
-} from '../../redux/slices/securitySlice';
+} from '../../redux/slices/routerSlice';
 import { useAppSelector } from '../../redux/store';
-import CreateSecurityClientDialog from './CreateSecurityClientDialog';
+import CreateSecurityClientDialog from '../routing/CreateSecurityClientDialog';
 import { Add, Edit, KeyboardArrowDown } from '@mui/icons-material';
-import UpdateSecurityClient from './UpdateSecurityClient';
+import UpdateSecurityClient from '../routing/UpdateSecurityClient';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
-import ClientSecretDialog from './ClientSecretDialog';
+import ClientSecretDialog from '../routing/ClientSecretDialog';
 import { prepareSort } from '../../utils/prepareSort';
 
 const emptyClient = {
@@ -62,7 +62,7 @@ const ClientsTab: React.FC = () => {
     dispatch(asyncGetAvailableClients({ sort: prepareSort(sort) }));
   }, [dispatch, sort]);
 
-  const { availableClients } = useAppSelector((state) => state.securitySlice.data);
+  const { availableClients } = useAppSelector((state) => state.routerSlice.data);
 
   const handleDeletion = (_id: string) => {
     dispatch(asyncDeleteClient(_id));

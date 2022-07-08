@@ -1,8 +1,10 @@
 import React from 'react';
 import { Sms } from '@mui/icons-material';
 import StyledLayout from './styledLayout';
+import { useAppSelector } from '../../../redux/store';
 
 const SMSLayout: React.FC = ({ children }) => {
+  const configActive = useAppSelector((state) => state.smsSlice.data.config.active);
   const pathNames = ['/sms/send', '/sms/config'];
 
   const labels = [
@@ -12,10 +14,12 @@ const SMSLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
+      configActive={configActive}
       title={'SMS'}
       labels={labels}
       pathNames={pathNames}
       swagger={'sms'}
+      graphQL={'sms'}
       icon={<Sms />}>
       {children}
     </StyledLayout>
