@@ -64,7 +64,7 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
       <Paper
         sx={{
           paddingX: 1,
@@ -75,9 +75,17 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
           alignItems: 'center',
           position: 'relative',
           borderRadius: 2,
+          overflow: 'hidden',
         }}
         elevation={6}>
-        <Typography sx={{ display: 'flex', flex: 1 }}>{panelData.name}</Typography>
+        <Typography
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+          {panelData.name}
+        </Typography>
+
         <Box>
           {selected.length > 0 ? (
             <IconButton sx={{ padding: 1 }} onClick={() => onDeletePress()} size="large">

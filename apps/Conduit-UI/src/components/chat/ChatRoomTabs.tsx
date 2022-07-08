@@ -11,9 +11,9 @@ import { IChatRoom } from '../../models/chat/ChatModels';
 import ChatRoomTab, { ChatRoomTabSkeleton } from './ChatRoomTab';
 import { styled, Typography } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   tabSelected: {
-    backgroundColor: `${theme.palette.grey[700]}80`,
+    background: '#202030',
   },
 }));
 
@@ -146,7 +146,7 @@ const ChatRoomTabs: FC<Props> = ({
                 <CustomizedList
                   height={height}
                   itemCount={chatRoomCount}
-                  itemSize={40}
+                  itemSize={56}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
                   itemData={itemData}

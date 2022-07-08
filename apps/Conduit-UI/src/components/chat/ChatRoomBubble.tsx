@@ -7,6 +7,7 @@ import { Tooltip } from '@mui/material';
 import moment from 'moment';
 import useLongPress from '../../hooks/useLongPress';
 import { Skeleton } from '@mui/material';
+import { useAppSelector } from '../../redux/store';
 
 const classes = {
   root: {
@@ -22,6 +23,10 @@ interface Props {
 }
 
 const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...rest }) => {
+  const users = useAppSelector((state) => state.authenticationSlice.data.authUsers.users);
+
+  const user = users.find((item) => data.senderUser === item._id);
+
   const handleLongPress = () => {
     onLongPress(data._id);
   };
@@ -52,22 +57,20 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
   return (
     <div className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
       <Box sx={{ alignSelf: 'flex-end' }}>
-        <Tooltip title={data.senderUser.email} placement="left">
+        <Tooltip title={user?.email ?? ''} placement="left" key={user?.email}>
           <Box
             sx={{
               height: 35,
               width: 35,
               borderRadius: '50%',
-              backgroundColor: stringToColour(data.senderUser.email),
+              backgroundColor: stringToColour(user?.email),
               marginRight: 2,
               cursor: 'pointer',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Typography sx={{ textTransform: 'capitalize' }}>
-              {data?.senderUser?.email?.charAt(0)}
-            </Typography>
+            <Typography sx={{ textTransform: 'capitalize' }}>{user?.email?.charAt(0)}</Typography>
           </Box>
         </Tooltip>
       </Box>

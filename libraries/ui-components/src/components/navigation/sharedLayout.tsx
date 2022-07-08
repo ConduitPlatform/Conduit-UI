@@ -24,15 +24,17 @@ interface Props {
   graphQLIcon: JSX.Element;
   labels: { name: string; id: string }[];
   title: string;
-  baseUrl: string;
   loader: JSX.Element;
   transportsAdmin: IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
   noSwagger: boolean;
   noGraphQL: boolean;
   configActive?: boolean;
-
+  SERVICE_API?: string;
+  CONDUIT_API?: string;
 }
+
+
 
 const SharedLayout: React.FC<Props> = ({
   children,
@@ -44,15 +46,15 @@ const SharedLayout: React.FC<Props> = ({
   graphQLIcon,
   labels,
   title,
-  baseUrl,
   loader,
   transportsAdmin,
-   transportsRouter,
-   noSwagger,
-   noGraphQL,
-   configActive
+  transportsRouter,
+  noSwagger,
+  noGraphQL,
+  configActive,
+  SERVICE_API,
+  CONDUIT_API
 }) => {
-
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
@@ -146,7 +148,8 @@ const SharedLayout: React.FC<Props> = ({
           title={title}
           icon={icon}
           swagger={swagger}
-          baseUrl={baseUrl}
+          baseUrl={SERVICE_API}
+          adminUrl={CONDUIT_API}
           transportsAdmin={transportsAdmin}
           transportsRouter={transportsRouter}
         />
@@ -156,7 +159,8 @@ const SharedLayout: React.FC<Props> = ({
           title={title}
           icon={icon}
           graphQl={graphQL}
-          baseUrl={baseUrl}
+          baseUrl={SERVICE_API}
+          adminUrl={CONDUIT_API}
           transportsAdmin={transportsAdmin}
           transportsRouter={transportsRouter}
         />

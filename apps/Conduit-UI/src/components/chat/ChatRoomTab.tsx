@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     borderRadius: 8,
     padding: theme.spacing(1),
+    overflow: 'hidden',
   },
 }));
 
@@ -35,7 +36,9 @@ const ChatRoomTab: FC<Props> = ({ data, className, onPress, onLongPress, ...rest
 
   return (
     <Box className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
-      <Typography variant="body2">{data?.name}</Typography>
+      <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {data?.name}
+      </Typography>
     </Box>
   );
 };
