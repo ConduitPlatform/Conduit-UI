@@ -20,7 +20,7 @@ export interface IChatMessage {
   message: string;
   readBy: string[];
   room: string;
-  senderUser: AuthUser;
+  senderUser: string;
   updatedAt: string;
   __v: number;
   _id: string;

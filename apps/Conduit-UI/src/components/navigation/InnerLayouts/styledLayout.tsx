@@ -7,6 +7,13 @@ import { Icon } from '@mui/material';
 import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
+import getConfig from 'next/config';
+
+const {
+  publicRuntimeConfig: { CONDUIT_URL },
+} = getConfig();
+
+const CONDUIT_API = process.env.IS_DEV ? process.env.NEXT_PUBLIC_CONDUIT_URL : CONDUIT_URL;
 
 interface Props {
   title: string;
@@ -31,6 +38,7 @@ const StyledLayout: FC<Props> = ({
   const { loading } = useAppSelector((state) => state.appSlice);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
+  const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
@@ -42,7 +50,6 @@ const StyledLayout: FC<Props> = ({
 
   return (
     <SharedLayout
-      baseUrl={'/api'}
       title={title}
       labels={labels}
       pathNames={pathNames}
@@ -54,6 +61,8 @@ const StyledLayout: FC<Props> = ({
       noSwagger={noSwagger}
       noGraphQL={noGraphQL}
       configActive={configActive}
+      SERVICE_API={SERVICE_API}
+      CONDUIT_API={CONDUIT_API}
       loader={
         <ScaleLoader
           speedMultiplier={3}
