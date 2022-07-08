@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CustomDrawer from './Drawer';
 import { useRouter } from 'next/router';
 import { asyncInitialData } from '../../redux/slices/appAuthSlice';
@@ -16,6 +16,7 @@ export const Layout: React.FC = ({ children, ...rest }) => {
   const [menuDisabled, setMenuDisabled] = useState<boolean>(false);
   const [itemSelected, setItemSelected] = useState<string>('');
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const getInitial = useRef(false);
 
   useEffect(() => {
     const splitUri = router.pathname.split('/')[1];
@@ -37,10 +38,13 @@ export const Layout: React.FC = ({ children, ...rest }) => {
   }, [router.pathname]);
 
   useEffect(() => {
-    if (token) {
+    if (!getInitial.current && token) {
       dispatch(asyncInitialData());
+      getInitial.current = true;
+    } else if (getInitial.current && !token) {
+      getInitial.current = false;
     }
-  }, [dispatch, token]);
+  }, [dispatch]);
 
   return (
     <Box display="flex" {...rest}>
