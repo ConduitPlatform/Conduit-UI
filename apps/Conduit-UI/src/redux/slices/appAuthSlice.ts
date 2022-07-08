@@ -1,16 +1,23 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, unwrapResult } from '@reduxjs/toolkit';
 import { removeCookie, setCookie } from '../../utils/cookie';
 import { IModule } from '../../models/appAuth';
-import { clearNotificationPageStore } from './notificationsSlice';
-import { clearStoragePageStore } from './storageSlice';
+import { asyncGetNotificationConfig, clearNotificationPageStore } from './notificationsSlice';
+import { asyncGetStorageConfig, clearStoragePageStore } from './storageSlice';
 import { getAdminModulesRequest } from '../../http/requests/SettingsRequests';
 import { loginRequest } from '../../http/requests/AppAuthRequests';
 import { clearAppNotifications, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { clearEmailPageStore } from './emailsSlice';
-import { clearAuthenticationPageStore } from './authenticationSlice';
+import { asyncGetEmailConfig, clearEmailPageStore } from './emailsSlice';
+import { asyncGetAuthenticationConfig, clearAuthenticationPageStore } from './authenticationSlice';
 import { enqueueErrorNotification, enqueueInfoNotification } from '../../utils/useNotifier';
 import { getDisabledModules, getSortedModules } from '../../utils/modules';
+import { asyncGetChatConfig } from './chatSlice';
+import { asyncGetFormsConfig } from './formsSlice';
+import { asyncGetPaymentConfig } from './paymentsSlice';
+import { asyncGetSmsConfig } from './smsSlice';
+import { asyncGetRouterConfig } from './routerSlice';
+import { asyncGetAdminSettings } from './settingsSlice';
+import Router from 'next/router';
 
 export type AppAuthState = {
   data: {
@@ -63,8 +70,12 @@ export const asyncGetAdminModules = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdminModulesRequest();
+      const sortedModules = getSortedModules(data.modules);
+      const enabledModules = sortedModules;
+      const payloadModules = sortedModules.map((module: IModule) => module.moduleName);
+      const disabledModules = getDisabledModules(payloadModules);
       thunkAPI.dispatch(setAppLoading(false));
-      return data;
+      return { enabledModules, disabledModules };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -72,6 +83,54 @@ export const asyncGetAdminModules = createAsyncThunk(
     }
   }
 );
+
+export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (arg, thunkAPI) => {
+  thunkAPI.dispatch(setAppLoading(true));
+  try {
+    thunkAPI.dispatch(asyncGetAdminSettings());
+    const resultAction = await thunkAPI.dispatch(asyncGetAdminModules());
+    const originalPromiseResult = unwrapResult(resultAction);
+    originalPromiseResult.enabledModules.forEach((item) => {
+      switch (item.moduleName) {
+        case 'authentication':
+          thunkAPI.dispatch(asyncGetAuthenticationConfig());
+          break;
+        case 'chat':
+          thunkAPI.dispatch(asyncGetChatConfig());
+          break;
+        case 'email':
+          thunkAPI.dispatch(asyncGetEmailConfig());
+          break;
+        case 'storage':
+          thunkAPI.dispatch(asyncGetStorageConfig());
+          break;
+        case 'pushNotifications':
+          thunkAPI.dispatch(asyncGetNotificationConfig());
+          break;
+        case 'forms':
+          thunkAPI.dispatch(asyncGetFormsConfig());
+          break;
+        case 'payments':
+          thunkAPI.dispatch(asyncGetPaymentConfig());
+          break;
+        case 'router':
+          thunkAPI.dispatch(asyncGetRouterConfig());
+          break;
+        case 'sms':
+          thunkAPI.dispatch(asyncGetSmsConfig());
+          break;
+        default:
+          break;
+      }
+    });
+    thunkAPI.dispatch(setAppLoading(false));
+    return originalPromiseResult;
+  } catch (error) {
+    thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+    thunkAPI.dispatch(setAppLoading(false));
+    throw error;
+  }
+});
 
 const appAuthSlice = createSlice({
   name: 'appAuth',
@@ -87,16 +146,15 @@ const appAuthSlice = createSlice({
       state.data.token = action.payload.data.token;
     });
     builder.addCase(asyncGetAdminModules.fulfilled, (state, action) => {
-      const sortedModules = getSortedModules(action.payload.modules);
-      state.data.enabledModules = sortedModules;
-      const payloadModules = sortedModules.map((module: IModule) => module.moduleName);
-      state.data.disabledModules = getDisabledModules(payloadModules);
+      state.data.enabledModules = action.payload.enabledModules;
+      state.data.disabledModules = action.payload.disabledModules;
     });
     builder.addCase(asyncLogout.fulfilled, (state) => {
       removeCookie('JWT');
       state.data.token = '';
       state.data.enabledModules = [];
       state.data.disabledModules = [];
+      Router.replace('/login').catch(console.log);
     });
   },
 });

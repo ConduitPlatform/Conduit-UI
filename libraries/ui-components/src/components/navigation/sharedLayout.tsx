@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Button,
@@ -11,10 +11,14 @@ import {
 import { useRouter } from "next/router";
 import SwaggerModal from "../SwaggerModal";
 import LinkComponent from "../LinkComponent";
+import GraphQLModal from "../GraphQLModal";
+import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
+import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
 
 interface Props {
   pathNames: string[];
-  swagger: string;
+  swagger?: string;
+  graphQL?: string;
   icon: JSX.Element;
   swaggerIcon: JSX.Element;
   graphQLIcon: JSX.Element;
@@ -22,12 +26,19 @@ interface Props {
   title: string;
   baseUrl: string;
   loader: JSX.Element;
+  transportsAdmin: IAdminSettings['transports'];
+  transportsRouter: IRouterConfig['transports'];
+  noSwagger: boolean;
+  noGraphQL: boolean;
+  configActive?: boolean;
+
 }
 
 const SharedLayout: React.FC<Props> = ({
   children,
   pathNames,
   swagger,
+  graphQL,
   icon,
   swaggerIcon,
   graphQLIcon,
@@ -35,14 +46,25 @@ const SharedLayout: React.FC<Props> = ({
   title,
   baseUrl,
   loader,
+  transportsAdmin,
+   transportsRouter,
+   noSwagger,
+   noGraphQL,
+   configActive
 }) => {
+
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
+  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
+    if(!configActive){
+      setValue(labels.length-1);
+      return;
+    }
     const index = pathNames.findIndex(
       (pathname: string) => pathname === router.pathname
     );
@@ -57,6 +79,7 @@ const SharedLayout: React.FC<Props> = ({
           <Box display="flex" alignItems="center">
             {title !== "Settings" && (
               <Box whiteSpace={"nowrap"}>
+                {noSwagger ? null :
                 <Button
                   color="primary"
                   sx={{ textDecoration: "none", ml: 8 }}
@@ -68,19 +91,16 @@ const SharedLayout: React.FC<Props> = ({
                     {smallScreen ? null : "SWAGGER"}
                   </Typography>
                 </Button>
-                <a
-                  style={{ textDecoration: "none", paddingLeft: 10 }}
-                  href={`${baseUrl}/graphql`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Button color="primary" variant="outlined">
+                }
+                {noGraphQL ? null :
+                  <Button color="primary" variant="outlined" onClick={() => setGraphQLOpen(true)} sx={{ ml: 2 }}
+                  >
                     {graphQLIcon}
                     <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
                       {smallScreen ? null : "GraphQL"}
                     </Typography>
                   </Button>
-                </a>
+                }
               </Box>
             )}
             <Box px={3}>{loader}</Box>
@@ -88,14 +108,17 @@ const SharedLayout: React.FC<Props> = ({
         </Box>
         <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
           {labels.map((label: { name: string; id: string }, index: number) => {
+            const disabled = !configActive ? index < labels.length - 1 : false;
             return (
               <LinkComponent
                 href={pathNames[index]}
                 key={index}
                 underline={"none"}
                 color={"#FFFFFF"}
+                disabled={disabled}
               >
                 <Tab
+                  disabled={disabled}
                   label={label.name}
                   id={label.id}
                   sx={
@@ -124,6 +147,18 @@ const SharedLayout: React.FC<Props> = ({
           icon={icon}
           swagger={swagger}
           baseUrl={baseUrl}
+          transportsAdmin={transportsAdmin}
+          transportsRouter={transportsRouter}
+        />
+        <GraphQLModal
+          open={graphQLOpen}
+          setOpen={setGraphQLOpen}
+          title={title}
+          icon={icon}
+          graphQl={graphQL}
+          baseUrl={baseUrl}
+          transportsAdmin={transportsAdmin}
+          transportsRouter={transportsRouter}
         />
       </Box>
       <Box>{children}</Box>

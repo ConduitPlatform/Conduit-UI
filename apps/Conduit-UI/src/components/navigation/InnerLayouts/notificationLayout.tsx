@@ -1,8 +1,10 @@
 import React from 'react';
 import { Notifications } from '@mui/icons-material';
 import StyledLayout from './styledLayout';
+import { useAppSelector } from '../../../redux/store';
 
 const NotificationLayout: React.FC = ({ children }) => {
+  const configActive = useAppSelector((state) => state.notificationsSlice.data.config.active);
   const pathNames = ['/push-notifications/send', '/push-notifications/config'];
 
   const labels = [
@@ -12,10 +14,12 @@ const NotificationLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
+      configActive={configActive}
       title={'Push Notifications'}
       labels={labels}
       pathNames={pathNames}
       swagger={'pushNotifications'}
+      graphQL={'pushNotifications'}
       icon={<Notifications />}>
       {children}
     </StyledLayout>

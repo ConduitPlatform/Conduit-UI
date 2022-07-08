@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SharedLayout } from '@conduitplatform/ui-components';
 import { FC } from 'react';
 import GraphQL from '../../../assets/svgs/graphQL.svg';
@@ -12,13 +12,33 @@ interface Props {
   title: string;
   labels: { name: string; id: string }[];
   pathNames: string[];
-  swagger: string;
+  swagger?: string;
+  graphQL?: string;
   icon: JSX.Element;
-  children: any;
+  configActive?: boolean;
 }
 
-const StyledLayout: FC<Props> = ({ title, labels, pathNames, swagger, icon, children }) => {
+const StyledLayout: FC<Props> = ({
+  title,
+  labels,
+  pathNames,
+  swagger,
+  graphQL,
+  icon,
+  configActive,
+  children,
+}) => {
   const { loading } = useAppSelector((state) => state.appSlice);
+  const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
+  const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
+
+  const noSwagger = useMemo(() => {
+    return !transportsRouter.rest && !transportsAdmin.rest;
+  }, [transportsAdmin.rest, transportsRouter.rest]);
+
+  const noGraphQL = useMemo(() => {
+    return !transportsRouter.graphql && !transportsAdmin.graphql;
+  }, [transportsAdmin.graphql, transportsRouter.graphql]);
 
   return (
     <SharedLayout
@@ -27,7 +47,13 @@ const StyledLayout: FC<Props> = ({ title, labels, pathNames, swagger, icon, chil
       labels={labels}
       pathNames={pathNames}
       swagger={swagger}
+      graphQL={graphQL}
       icon={icon}
+      transportsAdmin={transportsAdmin}
+      transportsRouter={transportsRouter}
+      noSwagger={noSwagger}
+      noGraphQL={noGraphQL}
+      configActive={configActive}
       loader={
         <ScaleLoader
           speedMultiplier={3}

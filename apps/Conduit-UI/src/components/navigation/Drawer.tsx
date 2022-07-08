@@ -2,16 +2,14 @@ import React from 'react';
 import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import { ExitToApp, Security, Settings } from '@mui/icons-material';
-import { useRouter } from 'next/router';
+import { ExitToApp, Settings } from '@mui/icons-material';
 import { asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
-import { ModuleItem } from '@conduitplatform/ui-components';
+import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import ConduitLogoMini from '../../assets/svgs/conduitLogoMini.svg';
 import Image from 'next/image';
-import { LinkComponent } from '@conduitplatform/ui-components';
 
 interface Props {
   itemSelected?: string;
@@ -19,14 +17,12 @@ interface Props {
 
 const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down(980));
 
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 
   const handleLogout = async () => {
-    await router.replace('/login');
     dispatch(asyncLogout());
   };
 
@@ -65,15 +61,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             itemSelected={itemSelected}
             smallScreen={smallScreen}
           />
-          <LinkComponent href="/security/clients">
-            <ModuleItem
-              selected={itemSelected === 'security'}
-              icon={<Security color={'inherit'} />}
-              title={'Security'}
-              smallScreen={smallScreen}
-            />
-          </LinkComponent>
-          <LinkComponent href="/settings/core">
+          <LinkComponent href="/settings/settings">
             <ModuleItem
               selected={itemSelected === 'settings'}
               icon={<Settings color={'inherit'} />}

@@ -9,7 +9,6 @@ import {
   Grid,
   Box,
   Tooltip,
-  Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ModifyOptions, Permissions, Schema } from '../../../../models/database/CmsModels';

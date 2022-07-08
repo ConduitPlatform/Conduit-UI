@@ -104,7 +104,7 @@ const NotificationConfig: FC = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}>
-              <Typography variant={'h6'}>Activate Push-notifications Module</Typography>
+              <Typography variant={'h6'}>Activate Push Notifications Module</Typography>
               <FormInputSwitch name={'active'} disabled={!edit} />
             </Box>
             <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
