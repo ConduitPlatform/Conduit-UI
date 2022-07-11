@@ -25,10 +25,8 @@ import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import getConfig from 'next/config';
 
 const {
-  publicRuntimeConfig: { CONDUIT_URL },
+  publicRuntimeConfig: { CONDUIT_URL: CONDUIT_API },
 } = getConfig();
-
-export const CONDUIT_API = process.env.IS_DEV ? process.env.NEXT_PUBLIC_CONDUIT_URL : CONDUIT_URL;
 
 const Home = () => {
   const dispatch = useAppDispatch();

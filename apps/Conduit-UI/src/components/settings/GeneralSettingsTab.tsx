@@ -30,7 +30,7 @@ const selectOptions = [
   { value: 'test', label: 'test' },
 ];
 
-const CoreSettingsTab: React.FC = () => {
+const GeneralSettingsTab: React.FC = () => {
   const dispatch = useAppDispatch();
   const { coreSettings, adminSettings } = useAppSelector((state) => state.settingsSlice);
   const [editEnv, setEditEnv] = useState<boolean>(false);
@@ -121,13 +121,11 @@ const CoreSettingsTab: React.FC = () => {
           <Divider sx={{ marginY: 2 }} />
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSaveClick)}>
-              <Typography variant={'h6'} sx={{ mb: 1, mt: 3 }}>
-                Administrative Routing
-              </Typography>
+              <Typography variant={'h6'}>Administrative Routing</Typography>
               <Grid item xs={12} sx={{ marginY: 2 }} container wrap={'nowrap'}>
                 <FormInputText name="hostUrl" label="URL" disabled={!edit} />
               </Grid>
-              <Grid container item spacing={1} alignItems={'center'} mb={1}>
+              <Grid container item alignItems={'center'} mb={1}>
                 <Grid item xs={12} container alignItems={'center'}>
                   <Grid item xs={8} sm={4}>
                     <Typography variant={'subtitle1'}>REST:</Typography>
@@ -164,12 +162,23 @@ const CoreSettingsTab: React.FC = () => {
                     <FormInputSwitch name="transports.sockets" disabled={!edit} />
                   </Grid>
                 </Grid>
+                <Typography variant={'h6'} sx={{ mt: 3 }}>
+                  Administrative Settings
+                </Typography>
                 <Grid item xs={12} container alignItems={'center'}>
                   <Grid item xs={8} sm={4}>
                     <Typography variant={'subtitle1'}>Hash Rounds:</Typography>
                   </Grid>
                   <Grid item>
-                    <FormInputText name="auth.hashRounds" disabled={!edit} typeOfInput={'number'} />
+                    <FormInputText
+                      name="auth.hashRounds"
+                      disabled={!edit}
+                      typeOfInput={'number'}
+                      textFieldProps={{
+                        margin: 'dense',
+                        size: 'small',
+                      }}
+                    />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
@@ -181,6 +190,10 @@ const CoreSettingsTab: React.FC = () => {
                       name="auth.tokenExpirationTime"
                       disabled={!edit}
                       typeOfInput={'number'}
+                      textFieldProps={{
+                        margin: 'dense',
+                        size: 'small',
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -189,7 +202,14 @@ const CoreSettingsTab: React.FC = () => {
                     <Typography variant={'subtitle1'}>Token Secret:</Typography>
                   </Grid>
                   <Grid item>
-                    <FormInputText name="auth.tokenSecret" disabled={!edit} />
+                    <FormInputText
+                      name="auth.tokenSecret"
+                      disabled={!edit}
+                      textFieldProps={{
+                        margin: 'dense',
+                        size: 'small',
+                      }}
+                    />
                   </Grid>
                 </Grid>
               </Grid>
@@ -202,4 +222,4 @@ const CoreSettingsTab: React.FC = () => {
   );
 };
 
-export default CoreSettingsTab;
+export default GeneralSettingsTab;

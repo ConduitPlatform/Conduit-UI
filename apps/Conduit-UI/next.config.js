@@ -12,9 +12,11 @@ module.exports = (phase) => {
     IS_PROD: isProd,
   };
 
-  const serverRuntimeConfig = {
-    // Will only be available on the server side
+  const publicRuntimeConfig = {
     CONDUIT_URL: process.env.CONDUIT_URL,
+  };
+
+  const serverRuntimeConfig = {
     MASTER_KEY: process.env.MASTER_KEY,
   };
 
@@ -84,6 +86,7 @@ module.exports = (phase) => {
 
   return {
     env,
+    publicRuntimeConfig,
     serverRuntimeConfig,
     redirects,
     eslint,
