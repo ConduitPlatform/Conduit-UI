@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from 'react';
 import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
-import CoreSettingsTab from '../../components/settings/CoreSettingsTab';
+import GeneralSettingsTab from '../../components/settings/GeneralSettingsTab';
 import { asyncGetAdminSettings, asyncGetCoreSettings } from '../../redux/slices/settingsSlice';
 import { useAppDispatch } from '../../redux/store';
 
@@ -12,7 +12,7 @@ const CoreSettings = () => {
     dispatch(asyncGetAdminSettings());
   }, [dispatch]);
 
-  return <CoreSettingsTab />;
+  return <GeneralSettingsTab />;
 };
 
 CoreSettings.getLayout = function getLayout(page: ReactElement) {
