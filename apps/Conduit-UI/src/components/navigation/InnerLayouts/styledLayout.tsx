@@ -10,10 +10,8 @@ import ScaleLoader from 'react-spinners/ScaleLoader';
 import getConfig from 'next/config';
 
 const {
-  publicRuntimeConfig: { CONDUIT_URL },
+  publicRuntimeConfig: { CONDUIT_URL: CONDUIT_API },
 } = getConfig();
-
-const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
 interface Props {
   title: string;
