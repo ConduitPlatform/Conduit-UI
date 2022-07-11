@@ -13,7 +13,7 @@ const {
   publicRuntimeConfig: { CONDUIT_URL },
 } = getConfig();
 
-const CONDUIT_API = process.env.IS_DEV ? process.env.NEXT_PUBLIC_CONDUIT_URL : CONDUIT_URL;
+const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
 interface Props {
   title: string;

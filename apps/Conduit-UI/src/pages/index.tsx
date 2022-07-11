@@ -28,7 +28,7 @@ const {
   publicRuntimeConfig: { CONDUIT_URL },
 } = getConfig();
 
-export const CONDUIT_API = process.env.IS_DEV ? process.env.NEXT_PUBLIC_CONDUIT_URL : CONDUIT_URL;
+export const CONDUIT_API = process.env.IS_DEV ? process.env.CONDUIT_URL : CONDUIT_URL;
 
 const Home = () => {
   const dispatch = useAppDispatch();
