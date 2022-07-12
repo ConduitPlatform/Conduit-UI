@@ -1,6 +1,13 @@
 import React, { ReactElement } from 'react';
-import Schemas from '../../../components/database/schemas/Schemas';
 import DatabaseLayout from '../../../components/navigation/InnerLayouts/databaseLayout';
+import dynamic from 'next/dynamic';
+import ScaleLoader from 'react-spinners/ScaleLoader';
+
+const Schemas = dynamic(() => import('../../../components/database/schemas/Schemas'), {
+  loading: () => (
+    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
+  ),
+});
 
 const SchemasPage = () => {
   return <Schemas />;
