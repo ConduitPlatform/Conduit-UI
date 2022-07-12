@@ -32,7 +32,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
         width: smallScreen ? 60 : 200,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'left',
       }}
       elevation={2}
       {...rest}>
@@ -52,7 +52,6 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           flexDirection: 'column',
           justifyContent: 'space-between',
           mt: 4,
-          padding: 0,
         }}>
         <List component="nav">
           <Modules

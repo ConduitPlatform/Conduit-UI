@@ -5,7 +5,7 @@ import StyledLayout from './styledLayout';
 const SettingsLayout: React.FC = ({ children }) => {
   const pathNames = ['/settings/settings', '/settings/admins', '/settings/password'];
   const labels = [
-    { name: 'settings', id: 'settings' },
+    { name: 'general', id: 'settings' },
     { name: 'admin users', id: 'admins' },
     { name: 'change password', id: 'password' },
   ];

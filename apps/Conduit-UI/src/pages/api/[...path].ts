@@ -1,9 +1,10 @@
 import { proxy } from '../../server/proxy';
+import http from 'http';
 
-export default (req, res) => {
+const path = (req: http.IncomingMessage, res: http.ServerResponse) => {
   return new Promise((resolve, reject) => {
     // removes the api prefix from url
-    req.url = req.url.replace(/^\/api/, '');
+    req.url = req.url?.replace(/^\/api/, '');
 
     // add masterkey since the initial req does not include
     // it for security measures
@@ -29,6 +30,7 @@ export default (req, res) => {
     proxy.web(req, res);
   });
 };
+export default path;
 
 export const config = {
   api: {
