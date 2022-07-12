@@ -99,9 +99,7 @@ const Home: React.FC = () => {
             rel="noreferrer"
             style={{ textDecoration: 'none' }}>
             <Button variant="contained" color="primary">
-              <Icon sx={{ display: 'flex', alignContent: 'center' }}>
-                <Description sx={{ width: 24, height: 24 }} />
-              </Icon>
+              <Description width={24} height={24} />
               <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
                 {smallScreen ? null : 'DOCUMENTATION'}
               </Typography>
@@ -133,7 +131,7 @@ const Home: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <LinkComponent href="/authentication/signIn" underline={'none'}>
                   <HomePageCard
-                    icon={<SecretIcon />}
+                    icon={<SecretIcon width={24} height={24} />}
                     title="Set up an authentication method"
                     descriptionContent={
                       <Typography
@@ -150,7 +148,7 @@ const Home: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <LinkComponent href="/database/schemas" underline={'none'}>
                   <HomePageCard
-                    icon={<SchemaIcon />}
+                    icon={<SchemaIcon width={24} height={24} />}
                     title="Create a schema"
                     descriptionContent={
                       <Typography
@@ -168,7 +166,7 @@ const Home: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <LinkComponent href="/email/config" underline={'none'}>
                   <HomePageCard
-                    icon={<EmailIcon />}
+                    icon={<EmailIcon width={24} height={24} />}
                     title="Set up email provider"
                     descriptionContent={
                       <Typography
@@ -185,7 +183,7 @@ const Home: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <LinkComponent href="/router/security" underline={'none'}>
                   <HomePageCard
-                    icon={<LockIcon />}
+                    icon={<LockIcon width={24} height={24} />}
                     title="Set up client secrets"
                     descriptionContent={
                       <Typography
@@ -202,7 +200,7 @@ const Home: React.FC = () => {
               <Grid item xs={12} md={6}>
                 <LinkComponent href="/database/introspection" underline={'none'}>
                   <HomePageCard
-                    icon={<ScreenSearchDesktopRounded />}
+                    icon={<ScreenSearchDesktopRounded width={24} height={24} />}
                     title="Introspection"
                     descriptionContent={
                       <Box

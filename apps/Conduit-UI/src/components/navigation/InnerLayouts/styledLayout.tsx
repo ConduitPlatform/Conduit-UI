@@ -71,12 +71,12 @@ const StyledLayout: FC<Props> = ({
         />
       }
       swaggerIcon={
-        <Icon sx={{ display: 'flex', alignContent: 'center' }}>
+        <Icon sx={{ display: 'flex', alignContent: 'center', width: 24, height: 24 }}>
           <Image src={Swagger} alt="swagger" />
         </Icon>
       }
       graphQLIcon={
-        <Icon sx={{ display: 'flex', alignContent: 'center' }}>
+        <Icon sx={{ display: 'flex', alignContent: 'center', width: 24, height: 24 }}>
           <Image src={GraphQL} alt="graphQL" />
         </Icon>
       }>

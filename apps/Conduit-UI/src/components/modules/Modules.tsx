@@ -109,7 +109,7 @@ const Modules: React.FC<Props> = ({
         <LinkComponent href="/">
           <ModuleItem
             selected={itemSelected === ''}
-            icon={<Home color={'inherit'} />}
+            icon={<Home color={'inherit'} width={24} height={24} />}
             title={'home'}
             smallScreen={smallScreen}
           />
