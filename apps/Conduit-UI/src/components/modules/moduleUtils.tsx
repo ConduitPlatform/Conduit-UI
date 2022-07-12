@@ -17,29 +17,29 @@ import {
 export const getModuleIcon = (moduleName: string) => {
   switch (moduleName) {
     case 'authentication':
-      return <People color={'inherit'} />;
+      return <People color={'inherit'} width={24} height={24} />;
     case 'pushNotifications':
-      return <Notifications color={'inherit'} />;
+      return <Notifications color={'inherit'} width={24} height={24} />;
     case 'sms':
-      return <Sms color={'inherit'} />;
+      return <Sms color={'inherit'} width={24} height={24} />;
     case 'email':
-      return <Email color={'inherit'} />;
+      return <Email color={'inherit'} width={24} height={24} />;
     case 'storage':
-      return <Cloud color={'inherit'} />;
+      return <Cloud color={'inherit'} width={24} height={24} />;
     case 'settings':
-      return <Settings color={'inherit'} />;
+      return <Settings color={'inherit'} width={24} height={24} />;
     case 'chat':
-      return <Chat color={'inherit'} />;
+      return <Chat color={'inherit'} width={24} height={24} />;
     case 'forms':
-      return <FormatAlignLeft color={'inherit'} />;
+      return <FormatAlignLeft color={'inherit'} width={24} height={24} />;
     case 'payments':
-      return <Payment color={'inherit'} />;
+      return <Payment color={'inherit'} width={24} height={24} />;
     case 'router':
-      return <AltRoute color={'inherit'} />;
+      return <AltRoute color={'inherit'} width={24} height={24} />;
     case 'database':
-      return <Toc color={'inherit'} />;
+      return <Toc color={'inherit'} width={24} height={24} />;
     default:
-      return <ViewModule color={'inherit'} />;
+      return <ViewModule color={'inherit'} width={24} height={24} />;
   }
 };
 
