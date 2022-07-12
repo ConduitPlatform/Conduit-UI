@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect } from 'react';
 import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
-import GeneralSettingsTab from '../../components/settings/GeneralSettingsTab';
 import { asyncGetAdminSettings, asyncGetCoreSettings } from '../../redux/slices/settingsSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
