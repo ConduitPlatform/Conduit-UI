@@ -6,7 +6,6 @@ import App from 'next/app';
 import { Provider } from 'react-redux';
 import Head from 'next/head';
 import { initializeStore, useStore } from '../redux/store';
-import { Layout } from '../components/navigation/Layout';
 import { setToken } from '../redux/slices/appAuthSlice';
 import { getCookie } from '../utils/cookie';
 import { NextPage } from 'next';
@@ -14,6 +13,14 @@ import theme from '../theme';
 import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import Snackbar from '../components/navigation/Snackbar';
 import './../theme/global.css';
+import dynamic from 'next/dynamic';
+import ScaleLoader from 'react-spinners/ScaleLoader';
+
+const Layout = dynamic(() => import('../components/navigation/Layout'), {
+  loading: () => (
+    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
+  ),
+});
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
