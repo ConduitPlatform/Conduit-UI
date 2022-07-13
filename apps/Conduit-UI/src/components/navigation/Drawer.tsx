@@ -63,7 +63,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           <LinkComponent href="/settings/settings">
             <ModuleItem
               selected={itemSelected === 'settings'}
-              icon={<Settings color={'inherit'} />}
+              icon={<Settings color={'inherit'} width={24} height={24} />}
               title={'Settings'}
               smallScreen={smallScreen}
             />
@@ -83,7 +83,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
         </List>
         <Box sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}>
           <ModuleItem
-            icon={<ExitToApp color={'inherit'} />}
+            icon={<ExitToApp color={'inherit'} width={24} height={24} />}
             title={'Log out'}
             onClick={() => handleLogout()}
             smallScreen={smallScreen}

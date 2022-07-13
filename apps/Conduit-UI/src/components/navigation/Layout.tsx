@@ -6,7 +6,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import useNotifier from '../../utils/useNotifier';
 
-export const Layout: React.FC = ({ children, ...rest }) => {
+const Layout: React.FC = ({ children, ...rest }) => {
   useNotifier();
 
   const router = useRouter();
@@ -64,3 +64,5 @@ export const Layout: React.FC = ({ children, ...rest }) => {
     </Box>
   );
 };
+
+export default Layout;
