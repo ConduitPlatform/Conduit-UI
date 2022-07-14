@@ -48,7 +48,7 @@ const Layout: React.FC = ({ children, ...rest }) => {
 
   return (
     <Box display="flex" {...rest}>
-      {!menuDisabled ? <CustomDrawer itemSelected={itemSelected} /> : <></>}
+      {!menuDisabled && getInitial.current ? <CustomDrawer itemSelected={itemSelected} /> : <></>}
       <Box
         sx={{
           overflowY: 'auto',

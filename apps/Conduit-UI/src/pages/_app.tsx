@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import type { AppContext, AppProps } from 'next/app';
@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 import createEmotionCache from '../createEmotionCache';
 import { CacheProvider, EmotionCache } from '@emotion/react';
+import { NextPage } from 'next';
 
 const Layout = dynamic(() => import('../components/navigation/Layout'), {
   loading: () => (
@@ -30,11 +31,16 @@ declare module '@mui/styles/defaultTheme' {
 
 const clientSideEmotionCache = createEmotionCache();
 
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
+  Component: NextPageWithLayout;
 }
 
-const ConduitApp = (props: any) => {
+const ConduitApp = (props: MyAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   const reduxStore = useStore(pageProps.initialReduxState);
@@ -46,7 +52,7 @@ const ConduitApp = (props: any) => {
     }
   }, []);
 
-  const getLayout = Component.getLayout || ((page: any) => page);
+  const getLayout = Component.getLayout || ((page: ReactElement) => page);
 
   const formOptions = (optionsString: SnackbarMessage) => {
     if (optionsString == undefined) return {};
