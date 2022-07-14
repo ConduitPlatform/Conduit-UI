@@ -8,13 +8,15 @@ import Head from 'next/head';
 import { initializeStore, useStore } from '../redux/store';
 import { setToken } from '../redux/slices/appAuthSlice';
 import { getCookie } from '../utils/cookie';
-import { NextPage } from 'next';
 import theme from '../theme';
 import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import Snackbar from '../components/navigation/Snackbar';
 import './../theme/global.css';
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
+import createEmotionCache from '../createEmotionCache';
+import { CacheProvider, EmotionCache } from '@emotion/react';
+import { NextPage } from 'next';
 
 const Layout = dynamic(() => import('../components/navigation/Layout'), {
   loading: () => (
@@ -27,15 +29,20 @@ declare module '@mui/styles/defaultTheme' {
   interface DefaultTheme extends Theme {}
 }
 
+const clientSideEmotionCache = createEmotionCache();
+
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 
-type AppPropsWithLayout = AppProps & {
+interface MyAppProps extends AppProps {
+  emotionCache?: EmotionCache;
   Component: NextPageWithLayout;
-};
+}
 
-const ConduitApp = ({ Component, pageProps }: AppPropsWithLayout) => {
+const ConduitApp = (props: MyAppProps) => {
+  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
   const reduxStore = useStore(pageProps.initialReduxState);
 
   useEffect(() => {
@@ -45,7 +52,7 @@ const ConduitApp = ({ Component, pageProps }: AppPropsWithLayout) => {
     }
   }, []);
 
-  const getLayout = Component.getLayout || ((page: any) => page);
+  const getLayout = Component.getLayout || ((page: ReactElement) => page);
 
   const formOptions = (optionsString: SnackbarMessage) => {
     if (optionsString == undefined) return {};
@@ -53,14 +60,14 @@ const ConduitApp = ({ Component, pageProps }: AppPropsWithLayout) => {
   };
 
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
         <title>Conduit - App</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <Provider store={reduxStore}>
-        <StyledEngineProvider injectFirst>
+        <StyledEngineProvider>
           <ThemeProvider theme={theme}>
             <SnackbarProvider
               preventDuplicate={true}
@@ -75,7 +82,7 @@ const ConduitApp = ({ Component, pageProps }: AppPropsWithLayout) => {
           </ThemeProvider>
         </StyledEngineProvider>
       </Provider>
-    </>
+    </CacheProvider>
   );
 };
 
