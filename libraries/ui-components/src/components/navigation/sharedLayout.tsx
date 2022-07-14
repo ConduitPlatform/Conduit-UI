@@ -18,7 +18,6 @@ import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/Route
 interface Props {
   pathNames: string[];
   swagger?: string;
-  graphQL?: string;
   icon: JSX.Element;
   swaggerIcon: JSX.Element;
   graphQLIcon: JSX.Element;
@@ -40,7 +39,6 @@ const SharedLayout: React.FC<Props> = ({
   children,
   pathNames,
   swagger,
-  graphQL,
   icon,
   swaggerIcon,
   graphQLIcon,
@@ -158,7 +156,6 @@ const SharedLayout: React.FC<Props> = ({
           setOpen={setGraphQLOpen}
           title={title}
           icon={icon}
-          graphQl={graphQL}
           baseUrl={SERVICE_API}
           adminUrl={CONDUIT_API}
           transportsAdmin={transportsAdmin}

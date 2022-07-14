@@ -55,7 +55,7 @@ const SwaggerModal: FC<Props> = ({
     const link = document.createElement("a");
     link.download = "conduitAdminSwagger.json";
     axios
-      .get(`${adminUrl}/admin/swagger.json`, {
+      .get(`${adminUrl}/swagger.json`, {
         responseType: "blob",
       })
       .then((res) => {
@@ -134,8 +134,8 @@ const SwaggerModal: FC<Props> = ({
               style={{ textDecoration: "none" }}
               href={
                 !swagger
-                  ? `${adminUrl}/admin/swagger/`
-                  : `${adminUrl}/admin/swagger/#/${swagger}`
+                  ? `${adminUrl}/swagger/`
+                  : `${adminUrl}/swagger/#/${swagger}`
               }
               target="_blank"
               rel="noreferrer"
