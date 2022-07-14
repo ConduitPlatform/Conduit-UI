@@ -5,13 +5,13 @@ import {
 } from '../../models/notifications/NotificationModels';
 
 export const sendNotification = (data: NotificationData) =>
-  postRequest(`/admin/pushNotifications/sendToManyDevices`, {
+  postRequest(`/pushNotifications/sendToManyDevices`, {
     ...data,
   });
 
-export const getNotificationConfig = () => getRequest(`/admin/config/pushNotifications`);
+export const getNotificationConfig = () => getRequest(`/config/pushNotifications`);
 
 export const putNotificationConfig = (data: INotificationConfig) =>
-  putRequest(`/admin/config/pushNotifications`, {
+  putRequest(`/config/pushNotifications`, {
     config: { ...data },
   });

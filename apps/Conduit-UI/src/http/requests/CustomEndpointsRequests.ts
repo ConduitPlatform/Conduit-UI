@@ -4,18 +4,18 @@ import { deleteRequest, getRequest, patchRequest, postRequest } from '../request
 export const getCustomEndpointsRequest = (
   params: Pagination & Search & { schemaName?: string[] } & { operation?: number }
 ) => {
-  return getRequest(`/admin/database/customEndpoints`, { params });
+  return getRequest(`/database/customEndpoints`, { params });
 };
 export const editCustomEndpointsRequest = (_id: string, endpointData: any) => {
-  return patchRequest(`/admin/database/customEndpoints/${_id}`, endpointData);
+  return patchRequest(`/database/customEndpoints/${_id}`, endpointData);
 };
 export const deleteCustomEndpointsRequest = (_id: string) => {
-  return deleteRequest(`/admin/database/customEndpoints/${_id}`);
+  return deleteRequest(`/database/customEndpoints/${_id}`);
 };
 export const createCustomEndpointsRequest = (endpointData: any) => {
-  return postRequest(`/admin/database/customEndpoints`, endpointData);
+  return postRequest(`/database/customEndpoints`, endpointData);
 };
 
 export const getSchemasWithEndpoints = () => {
-  return getRequest(`/admin/database/customEndpoints/schemas`);
+  return getRequest(`/database/customEndpoints/schemas`);
 };

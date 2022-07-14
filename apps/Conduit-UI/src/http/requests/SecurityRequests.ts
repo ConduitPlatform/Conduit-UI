@@ -5,7 +5,7 @@ import { IRouterConfig } from '../../models/router/RouterModels';
 import { Sort } from '../../models/http/HttpModels';
 
 export const getAvailableClientsRequest = (params: Sort) => {
-  return getRequest(`/admin/router/security/client`, { params });
+  return getRequest(`/router/security/client`, { params });
 };
 
 export const generateNewClientRequest = (
@@ -14,23 +14,23 @@ export const generateNewClientRequest = (
   notes?: string,
   alias?: string
 ) => {
-  return postRequest(`/admin/router/client`, { platform, domain, notes, alias });
+  return postRequest(`/router/client`, { platform, domain, notes, alias });
 };
 
 export const updateSecurityClient = (_id: string, data: IUpdateClient) => {
-  return putRequest(`/admin/router/client/${_id}`, { ...data });
+  return putRequest(`/router/client/${_id}`, { ...data });
 };
 
 export const deleteClientRequest = (_id: string) => {
-  return deleteRequest(`/admin/router/client/${_id}`);
+  return deleteRequest(`/router/client/${_id}`);
 };
 
 export const getRouterConfig = () => {
-  return getRequest(`/admin/config/router`);
+  return getRequest(`/config/router`);
 };
 
 export const putRouterConfig = (data: IRouterConfig) => {
-  return putRequest(`/admin/config/router`, {
+  return putRequest(`/config/router`, {
     config: { ...data },
   });
 };

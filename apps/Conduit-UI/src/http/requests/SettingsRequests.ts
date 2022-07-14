@@ -3,55 +3,55 @@ import { IAdminSettings, ICoreSettings } from '../../models/settings/SettingsMod
 import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
 
 export const getAdminModulesRequest = () => {
-  return getRequest(`/admin/config/modules`);
+  return getRequest(`/config/modules`);
 };
 
 export const getServiceAccounts = () => {
-  return getRequest(`/admin/authentication/services`);
+  return getRequest(`/authentication/services`);
 };
 
 export const deleteServiceAccounts = (_id: string) => {
-  return deleteRequest(`/admin/authentication/services/${_id}`);
+  return deleteRequest(`/authentication/services/${_id}`);
 };
 
 export const createServiceAccount = (name: string) => {
-  return postRequest(`/admin/authentication/services`, { name });
+  return postRequest(`/authentication/services`, { name });
 };
 
 export const getCoreSettings = () => {
-  return getRequest(`/admin/config/core`);
+  return getRequest(`/config/core`);
 };
 
 export const getAdminSettings = () => {
-  return getRequest(`/admin/config/admin`);
+  return getRequest(`/config/admin`);
 };
 
 export const putAdminSettings = (data: IAdminSettings) => {
-  return putRequest(`/admin/config/admin`, { config: { ...data } });
+  return putRequest(`/config/admin`, { config: { ...data } });
 };
 
 export const putCoreSettings = (data: ICoreSettings) => {
-  return putRequest(`/admin/config/core`, { config: { ...data } });
+  return putRequest(`/config/core`, { config: { ...data } });
 };
 
 export const refreshServiceAccount = (serviceId: string) => {
-  return getRequest(`/admin/authentication/services/${serviceId}/token`);
+  return getRequest(`/authentication/services/${serviceId}/token`);
 };
 
 export const postNewAdminUser = (endpointData: { username: string; password: string }) => {
-  return postRequest(`/admin/admins`, endpointData);
+  return postRequest(`/admins`, endpointData);
 };
 
 export const getAdmins = (params: Pagination) => {
-  return getRequest(`/admin/admins`, { params });
+  return getRequest(`/admins`, { params });
 };
 
 export const deleteAdmin = (id: string) => {
-  return deleteRequest(`/admin/admins/${id}`);
+  return deleteRequest(`/admins/${id}`);
 };
 
 export const changePassword = (oldPassword: string, newPassword: string) => {
-  return putRequest(`/admin/admin/change-password`, {
+  return putRequest(`/admin/change-password`, {
     data: { oldPassword: oldPassword, newPassword: newPassword },
   });
 };
