@@ -33,7 +33,7 @@ export const syncExternalTemplates = () => putRequest(`/email/syncExternalTempla
 
 export const getEmailSettingsRequest = () => getRequest(`/config/email`);
 
-export const putEmailSettingsRequest = (data: IEmailConfig) =>
-  putRequest(`/config/email`, { config: { ...data } });
+export const patchEmailSettingsRequest = (data: IEmailConfig) =>
+  patchRequest(`/config/email`, { config: { ...data } });
 
 export const sendEmailRequest = (data: SendEmailData) => postRequest(`/email/send`, { ...data });

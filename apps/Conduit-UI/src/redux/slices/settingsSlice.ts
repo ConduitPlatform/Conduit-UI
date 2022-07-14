@@ -12,8 +12,8 @@ import {
   getAdminSettings,
   getCoreSettings,
   postNewAdminUser,
-  putAdminSettings,
-  putCoreSettings,
+  patchAdminSettings,
+  patchCoreSettings,
 } from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -157,7 +157,7 @@ export const asyncUpdateAdminSettings = createAsyncThunk(
   async (args: IAdminSettings, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putAdminSettings(args);
+      const { data } = await patchAdminSettings(args);
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -173,7 +173,7 @@ export const asyncUpdateCoreSettings = createAsyncThunk(
   async (args: ICoreSettings, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await putCoreSettings(args);
+      const { data } = await patchCoreSettings(args);
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {

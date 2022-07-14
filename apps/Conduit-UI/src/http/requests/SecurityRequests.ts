@@ -1,4 +1,10 @@
-import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
+import {
+  deleteRequest,
+  getRequest,
+  patchRequest,
+  postRequest,
+  putRequest,
+} from '../requestsConfig';
 import ClientPlatformEnum, { IUpdateClient } from '../../models/security/SecurityModels';
 import { IRouterConfig } from '../../models/router/RouterModels';
 
@@ -29,8 +35,8 @@ export const getRouterConfig = () => {
   return getRequest(`/config/router`);
 };
 
-export const putRouterConfig = (data: IRouterConfig) => {
-  return putRequest(`/config/router`, {
+export const patchRouterConfig = (data: IRouterConfig) => {
+  return patchRequest(`/config/router`, {
     config: { ...data },
   });
 };

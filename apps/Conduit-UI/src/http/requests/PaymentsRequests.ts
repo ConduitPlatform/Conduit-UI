@@ -58,5 +58,5 @@ export const getSubscriptionsRequest = (params: IRequest) =>
 
 export const getPaymentSettingsRequest = () => getRequest(`/config/payments`);
 
-export const putPaymentSettingsRequest = (data: PaymentsConfig) =>
-  putRequest(`/config/payments`, { config: { ...data } });
+export const patchPaymentSettingsRequest = (data: PaymentsConfig) =>
+  patchRequest(`/config/payments`, { config: { ...data } });

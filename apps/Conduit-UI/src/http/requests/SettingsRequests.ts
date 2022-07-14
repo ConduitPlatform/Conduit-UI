@@ -1,6 +1,12 @@
 import { Pagination } from '../../models/http/HttpModels';
 import { IAdminSettings, ICoreSettings } from '../../models/settings/SettingsModels';
-import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
+import {
+  deleteRequest,
+  getRequest,
+  patchRequest,
+  postRequest,
+  putRequest,
+} from '../requestsConfig';
 
 export const getAdminModulesRequest = () => {
   return getRequest(`/config/modules`);
@@ -26,12 +32,12 @@ export const getAdminSettings = () => {
   return getRequest(`/config/admin`);
 };
 
-export const putAdminSettings = (data: IAdminSettings) => {
-  return putRequest(`/config/admin`, { config: { ...data } });
+export const patchAdminSettings = (data: IAdminSettings) => {
+  return patchRequest(`/config/admin`, { config: { ...data } });
 };
 
-export const putCoreSettings = (data: ICoreSettings) => {
-  return putRequest(`/config/core`, { config: { ...data } });
+export const patchCoreSettings = (data: ICoreSettings) => {
+  return patchRequest(`/config/core`, { config: { ...data } });
 };
 
 export const refreshServiceAccount = (serviceId: string) => {

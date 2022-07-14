@@ -1,10 +1,4 @@
-import {
-  deleteRequest,
-  getRequest,
-  patchRequest,
-  postRequest,
-  putRequest,
-} from '../requestsConfig';
+import { deleteRequest, getRequest, patchRequest, postRequest } from '../requestsConfig';
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
@@ -48,5 +42,5 @@ export const unblockUser = (id: string) => {
 
 export const getAuthenticationConfig = () => getRequest(`/config/authentication`);
 
-export const putAuthenticationConfig = (body: any) =>
-  putRequest(`/config/authentication`, { config: { ...body } });
+export const patchAuthenticationConfig = (body: any) =>
+  patchRequest(`/config/authentication`, { config: { ...body } });

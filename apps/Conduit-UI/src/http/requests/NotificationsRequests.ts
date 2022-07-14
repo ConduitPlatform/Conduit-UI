@@ -1,4 +1,4 @@
-import { getRequest, postRequest, putRequest } from '../requestsConfig';
+import { getRequest, postRequest, patchRequest } from '../requestsConfig';
 import {
   INotificationConfig,
   NotificationData,
@@ -11,7 +11,7 @@ export const sendNotification = (data: NotificationData) =>
 
 export const getNotificationConfig = () => getRequest(`/config/pushNotifications`);
 
-export const putNotificationConfig = (data: INotificationConfig) =>
-  putRequest(`/config/pushNotifications`, {
+export const patchNotificationConfig = (data: INotificationConfig) =>
+  patchRequest(`/config/pushNotifications`, {
     config: { ...data },
   });

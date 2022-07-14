@@ -1,10 +1,10 @@
-import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
+import { deleteRequest, getRequest, patchRequest, postRequest } from '../requestsConfig';
 import { IChatConfig } from '../../models/chat/ChatModels';
 
 export const getChatConfig = () => getRequest(`/config/chat`);
 
-export const putChatConfig = (params: IChatConfig) =>
-  putRequest(`/config/chat`, {
+export const patchChatConfig = (params: IChatConfig) =>
+  patchRequest(`/config/chat`, {
     config: { ...params },
   });
 

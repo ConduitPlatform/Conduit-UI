@@ -14,7 +14,7 @@ import {
   postCustomerRequest,
   postProductsRequest,
   putCustomerRequest,
-  putPaymentSettingsRequest,
+  patchPaymentSettingsRequest,
   patchProductRequest,
 } from '../../http/requests/PaymentsRequests';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
@@ -292,7 +292,7 @@ export const asyncUpdatePaymentConfig = createAsyncThunk(
     try {
       const {
         data: { config },
-      } = await putPaymentSettingsRequest(body);
+      } = await patchPaymentSettingsRequest(body);
       thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {

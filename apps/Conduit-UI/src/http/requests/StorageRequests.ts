@@ -1,10 +1,4 @@
-import {
-  deleteRequest,
-  getRequest,
-  patchRequest,
-  postRequest,
-  putRequest,
-} from '../requestsConfig';
+import { deleteRequest, getRequest, patchRequest, postRequest } from '../requestsConfig';
 import { IStorageConfig } from '../../models/storage/StorageModels';
 import {
   ICreateStorageContainer,
@@ -19,8 +13,8 @@ import {
 
 export const getStorageSettings = () => getRequest(`/config/storage`);
 
-export const putStorageSettings = (storageData: IStorageConfig) =>
-  putRequest(`/config/storage`, {
+export const patchStorageSettings = (storageData: IStorageConfig) =>
+  patchRequest(`/config/storage`, {
     config: {
       ...storageData,
     },

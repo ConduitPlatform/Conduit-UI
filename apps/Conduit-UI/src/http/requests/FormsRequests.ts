@@ -1,5 +1,11 @@
 import { IFormsConfig, FormsModel } from '../../models/forms/FormsModels';
-import { deleteRequest, getRequest, postRequest, putRequest } from '../requestsConfig';
+import {
+  deleteRequest,
+  getRequest,
+  patchRequest,
+  postRequest,
+  putRequest,
+} from '../requestsConfig';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
 export const getForms = (params: Pagination & Search & Sort) =>
@@ -19,7 +25,7 @@ export const updateForm = (id: string, data: FormsModel) => putRequest(`/forms/f
 
 export const getFormsConfig = () => getRequest(`/config/forms`);
 
-export const updateFormsConfig = (body: IFormsConfig) =>
-  putRequest(`/config/forms`, {
+export const patchFormsConfig = (body: IFormsConfig) =>
+  patchRequest(`/config/forms`, {
     config: { ...body },
   });

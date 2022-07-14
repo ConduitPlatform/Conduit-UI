@@ -8,7 +8,7 @@ import {
   getChatConfig,
   getChatMessages,
   getChatRooms,
-  putChatConfig,
+  patchChatConfig,
 } from '../../http/requests/ChatRequests';
 import { IChatConfig, IChatMessage, IChatRoom } from '../../models/chat/ChatModels';
 
@@ -67,13 +67,13 @@ export const asyncGetChatConfig = createAsyncThunk(
 );
 
 export const asyncPutChatConfig = createAsyncThunk(
-  'chat/putChatConfig',
+  'chat/patchChatConfig',
   async (params: IChatConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
-      } = await putChatConfig(params);
+      } = await patchChatConfig(params);
       thunkAPI.dispatch(enqueueSuccessNotification('Chat config successfully updated!'));
       thunkAPI.dispatch(setAppLoading(false));
       return config;
