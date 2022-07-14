@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { getSmsConfig, putSmsConfig, sendSmsRequest } from '../../http/requests/SmsRequests';
+import { getSmsConfig, patchSmsConfig, sendSmsRequest } from '../../http/requests/SmsRequests';
 import { ISendSms, ISmsConfig, ISmsProviders } from '../../models/sms/SmsModels';
 
 interface ISmsSlice {
@@ -62,7 +62,7 @@ export const asyncPutSmsConfig = createAsyncThunk(
   async (params: ISmsConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await putSmsConfig(params);
+      await patchSmsConfig(params);
       thunkAPI.dispatch(setAppLoading(false));
       // return config;
     } catch (error) {

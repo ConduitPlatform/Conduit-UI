@@ -19,7 +19,6 @@ const SMSLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'sms'}
-      graphQL={'sms'}
       icon={<Sms />}>
       {children}
     </StyledLayout>

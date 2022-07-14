@@ -18,7 +18,6 @@ interface Props {
   labels: { name: string; id: string }[];
   pathNames: string[];
   swagger?: string;
-  graphQL?: string;
   icon: JSX.Element;
   configActive?: boolean;
 }
@@ -28,7 +27,6 @@ const StyledLayout: FC<Props> = ({
   labels,
   pathNames,
   swagger,
-  graphQL,
   icon,
   configActive,
   children,
@@ -52,7 +50,6 @@ const StyledLayout: FC<Props> = ({
       labels={labels}
       pathNames={pathNames}
       swagger={swagger}
-      graphQL={graphQL}
       icon={icon}
       transportsAdmin={transportsAdmin}
       transportsRouter={transportsRouter}

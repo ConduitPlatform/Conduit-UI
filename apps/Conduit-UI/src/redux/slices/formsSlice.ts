@@ -9,7 +9,7 @@ import {
   getForms,
   getFormsConfig,
   updateForm,
-  updateFormsConfig,
+  patchFormsConfig,
 } from '../../http/requests/FormsRequests';
 import { FormReplies, IFormsConfig, FormsModel } from '../../models/forms/FormsModels';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
@@ -147,7 +147,7 @@ export const asyncEditFormsConfig = createAsyncThunk(
   async (config: IFormsConfig, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await updateFormsConfig(config);
+      const { data } = await patchFormsConfig(config);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Forms config successfully updated`));
       return data.config;

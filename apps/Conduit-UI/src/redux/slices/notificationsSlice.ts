@@ -6,7 +6,7 @@ import {
 import {
   sendNotification,
   getNotificationConfig,
-  putNotificationConfig,
+  patchNotificationConfig,
 } from '../../http/requests/NotificationsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -75,7 +75,7 @@ export const asyncSaveNotificationConfig = createAsyncThunk(
     try {
       const {
         data: { config },
-      } = await putNotificationConfig(settings);
+      } = await patchNotificationConfig(settings);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Notiufication config successfully updated`));
       return config;

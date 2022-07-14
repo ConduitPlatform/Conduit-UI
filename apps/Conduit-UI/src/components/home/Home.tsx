@@ -250,7 +250,6 @@ const Home: React.FC = () => {
           <GraphQLModal
             open={graphQLOpen}
             setOpen={setGraphQLOpen}
-            graphQl="App"
             title="App"
             baseUrl={SERVICE_API}
             adminUrl={CONDUIT_API}

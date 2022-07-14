@@ -23,7 +23,6 @@ const DatabaseLayout: React.FC = ({ children }) => {
       labels={labels}
       pathNames={pathNames}
       swagger={'cms'}
-      graphQL={'cms'}
       icon={<Toc />}>
       {children}
     </StyledLayout>

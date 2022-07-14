@@ -5,7 +5,7 @@ import {
   getEmailTemplateRequest,
   getExternalTemplatesRequest,
   postEmailTemplateRequest,
-  putEmailSettingsRequest,
+  patchEmailSettingsRequest,
   patchEmailTemplateRequest,
   sendEmailRequest,
   syncExternalTemplates,
@@ -204,7 +204,7 @@ export const asyncUpdateEmailConfig = createAsyncThunk(
     try {
       const {
         data: { config },
-      } = await putEmailSettingsRequest(updatedSettings);
+      } = await patchEmailSettingsRequest(updatedSettings);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Emails config successfully updated`));
       return config;

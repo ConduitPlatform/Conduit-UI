@@ -9,7 +9,7 @@ import {
   generateNewClientRequest,
   getAvailableClientsRequest,
   getRouterConfig,
-  putRouterConfig,
+  patchRouterConfig,
   updateSecurityClient,
 } from '../../http/requests/SecurityRequests';
 import { Sort } from '../../models/http/HttpModels';
@@ -135,7 +135,7 @@ export const asyncPutRouterConfig = createAsyncThunk(
     try {
       const {
         data: { config },
-      } = await putRouterConfig(params);
+      } = await patchRouterConfig(params);
       thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {

@@ -8,7 +8,7 @@ import {
   editUser,
   getAuthenticationConfig,
   getAuthUsersDataReq,
-  putAuthenticationConfig,
+  patchAuthenticationConfig,
   unblockUser,
 } from '../../http/requests/AuthenticationRequests';
 import { setAppLoading } from './appSlice';
@@ -263,7 +263,7 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
     try {
       const {
         data: { config },
-      } = await putAuthenticationConfig(body);
+      } = await patchAuthenticationConfig(body);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Authentication config successfully updated`));
       return config;

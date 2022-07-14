@@ -13,14 +13,13 @@ interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
   icon?: JSX.Element;
-  graphQl?: string;
   baseUrl?: string;
   adminUrl?: string;
   transportsAdmin:  IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
 }
 
-const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl, adminUrl, transportsAdmin, transportsRouter }) => {
+const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, baseUrl, adminUrl, transportsAdmin, transportsRouter }) => {
   const handleClose = () => {
     setOpen(false);
   };
@@ -57,7 +56,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl,
             <Typography>Go to App GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
-              href={!graphQl ? `${baseUrl}/graphQL/` : `${baseUrl}/graphQL/#/${graphQl}`}
+              href={`${baseUrl}/graphql/`}
               target="_blank"
               rel="noreferrer">
               <Button variant="outlined">graphQL</Button>
@@ -69,9 +68,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, graphQl, baseUrl,
             <Typography>Go to Admin GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
-              href={
-                !graphQl ? `${adminUrl}/admin/graphQL/` : `${adminUrl}/admin/graphQL/#/${graphQl}`
-              }
+              href={`${adminUrl}/graphql/`}
               target="_blank"
               rel="noreferrer">
               <Button variant="outlined">GraphQL</Button>

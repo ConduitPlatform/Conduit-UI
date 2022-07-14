@@ -19,7 +19,7 @@ import {
   getStorageFileUrl,
   getStorageFolders,
   getStorageSettings,
-  putStorageSettings,
+  patchStorageSettings,
 } from '../../http/requests/StorageRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -116,7 +116,7 @@ export const asyncSaveStorageConfig = createAsyncThunk(
     try {
       const {
         data: { config },
-      } = await putStorageSettings(dataForConfig);
+      } = await patchStorageSettings(dataForConfig);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Storage config successfully updated`));
       return config;
