@@ -27,8 +27,7 @@ const RouterSettings: React.FC = () => {
 
   const onSaveClick = (data: IRouterConfig) => {
     setEdit(false);
-    const finalData = { ...data, security: { clientValidation: true } };
-    dispatch(asyncPutRouterConfig(finalData));
+    dispatch(asyncPutRouterConfig(data));
   };
 
   const handleCancel = () => {

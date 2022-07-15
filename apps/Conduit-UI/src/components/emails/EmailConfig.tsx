@@ -70,32 +70,21 @@ const EmailConfig: React.FC = () => {
         <Grid item xs={12}>
           <Typography variant={'h6'}>Transport</Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item md={6} xs={12}>
           <FormInputSelect
-            label=""
+            label="Transport Provider"
             name="transport"
             options={providers.map((provider) => ({
               label: provider.label,
               value: provider.name,
             }))}
-            textFieldProps={{
-              fullWidth: false,
-              helperText: 'Select your transport provider',
-            }}
             disabled={!edit}
           />
         </Grid>
-        <Grid item xs={12}>
-          <FormInputText
-            name="sendingDomain"
-            label="Sending Domain"
-            textFieldProps={{
-              fullWidth: false,
-            }}
-            disabled={!edit}
-          />
+        <Grid item md={6} xs={12}>
+          <FormInputText name="sendingDomain" label="Sending Domain" disabled={!edit} />
         </Grid>
-        <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+        <Divider sx={{ marginTop: 3, width: '100%' }} />
         <TransportSettings data={config} control={control} disabled={!edit} />
       </>
     );
@@ -110,12 +99,12 @@ const EmailConfig: React.FC = () => {
               width={'100%'}
               display={'inline-flex'}
               justifyContent={'space-between'}
-              alignItems={'center'}>
+              alignItems={'center'}
+              mb={1}>
               <Typography variant={'h6'}>Activate Email Module</Typography>
               <FormInputSwitch name="active" />
             </Box>
-            <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
-            <Grid container spacing={2} sx={{ pl: 4 }}>
+            <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
               {isActive && renderSettingsFields()}
             </Grid>
             <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
