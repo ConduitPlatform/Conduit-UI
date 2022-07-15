@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.14.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.1...v0.14.0) (2022-07-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **conduit-ui:** changes for 0.14
+
+### Features
+
+* conduit-ui package json scripts to build the ui library ([#102](https://github.com/ConduitPlatform/Conduit-UI/issues/102)) ([5b04111](https://github.com/ConduitPlatform/Conduit-UI/commit/5b04111b6e335a927279e728c3ee2410f723e81b))
+* **global.css:** global css and scrollbar styles ([70d048b](https://github.com/ConduitPlatform/Conduit-UI/commit/70d048b3252e303e1303968503eeb6a3fa4e75ea))
+
+
+### Bug Fixes
+
+* **cancel button:** cancel button outlined ([6c6b61c](https://github.com/ConduitPlatform/Conduit-UI/commit/6c6b61ca4cb1a4aaea0e60f671a37638868f9f9c))
+* **cancel button:** cancel button outlined ([8b2662d](https://github.com/ConduitPlatform/Conduit-UI/commit/8b2662d79b99395fa67ee114894dedef6334130e))
+* **Conduit-UI:** admin url, graphql url, config patch ([f61898e](https://github.com/ConduitPlatform/Conduit-UI/commit/f61898e6b2dfd36a6321c8887d60a5f57a3a1876))
+* **Conduit-UI:** server-side css ([#109](https://github.com/ConduitPlatform/Conduit-UI/issues/109)) ([9047cdd](https://github.com/ConduitPlatform/Conduit-UI/commit/9047cdd766a0847516ba54cebf5dc433719ecf7b))
+* **CustomQueries:** fix overflow, select endpoint, styles ([61bca30](https://github.com/ConduitPlatform/Conduit-UI/commit/61bca306b94d654ddd269f2533f28d9ce0aacaf9))
+* **home-introspection:** text, list styles ([5f3bd3f](https://github.com/ConduitPlatform/Conduit-UI/commit/5f3bd3f470a7b99caa9f1126024e0e7b15c2536d))
+* **index:** primary/secondary experiments ([851bbe6](https://github.com/ConduitPlatform/Conduit-UI/commit/851bbe63795186b27996a99736469134a60228c0))
+* **IntrospectionLayout:** duplicate import ([8c57161](https://github.com/ConduitPlatform/Conduit-UI/commit/8c571614031a3f4528ee049061bb6d835e31fcc1))
+* **Multisect:** props for settings select styles ([1da43f1](https://github.com/ConduitPlatform/Conduit-UI/commit/1da43f1ddb1426dd29e7d08b79e35190f8559110))
+* **Permissions:** changed namings, improved theme visisibility ([#101](https://github.com/ConduitPlatform/Conduit-UI/issues/101)) ([0a24df7](https://github.com/ConduitPlatform/Conduit-UI/commit/0a24df7ab35c7592929334f0035b6a071b01e0c1))
+* **SchemaOverview:** grid responsiveness ([fc9facb](https://github.com/ConduitPlatform/Conduit-UI/commit/fc9facbd82dcb7368ad5e7369797ab7527a9948d))
+* **SchemaOverview:** grid responsiveness and logo ([d4b9a48](https://github.com/ConduitPlatform/Conduit-UI/commit/d4b9a48896fef5fc4783ea8a3091d9dceae56b04))
+* swapped primary/secondary colors ([79689e9](https://github.com/ConduitPlatform/Conduit-UI/commit/79689e9aa5498d5f0afeb2012301d722523c8cf3))
+* **width of tables-tabs:** tables-tabs bigger width, styles ([ed8f073](https://github.com/ConduitPlatform/Conduit-UI/commit/ed8f0734acae88fe3364e43663f0b01ddc8f60ce))
+
+
+* **conduit-ui:** changes for 0.14 ([9f25c09](https://github.com/ConduitPlatform/Conduit-UI/commit/9f25c096a4b0fdaf28ce24669eafc05725d77738))
+
 ### [0.13.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.0...v0.13.1) (2022-06-23)
 
 
