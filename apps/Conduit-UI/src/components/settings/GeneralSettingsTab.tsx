@@ -23,6 +23,7 @@ import { InfoOutlined } from '@mui/icons-material';
 import { ConfigSaveSection } from '@conduitplatform/ui-components';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
 
 const selectOptions = [
   { value: 'development', label: 'development' },
@@ -91,9 +92,9 @@ const GeneralSettingsTab: React.FC = () => {
 
   return (
     <Container maxWidth={'md'}>
-      <Grid container justifyContent={'center'}>
-        <Paper sx={{ p: 4, borderRadius: 8 }}>
-          <form onSubmit={onSaveClickEnv}>
+      <Paper sx={{ p: 4, borderRadius: 8 }}>
+        <form onSubmit={onSaveClickEnv}>
+          <Grid container>
             <Grid item xs={12}>
               <Typography variant={'h6'}>General</Typography>
               <Typography variant={'subtitle1'}>
@@ -117,59 +118,80 @@ const GeneralSettingsTab: React.FC = () => {
               </FormControl>
             </Grid>
             <ConfigSaveSection edit={editEnv} setEdit={setEditEnv} handleCancel={handleCancelEnv} />
-          </form>
-          <Divider sx={{ marginY: 2 }} />
-          <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSaveClick)}>
-              <Typography variant={'h6'}>Administrative Routing</Typography>
+          </Grid>
+        </form>
+
+        <Divider sx={{ marginY: 2 }} />
+        <FormProvider {...methods}>
+          <form onSubmit={methods.handleSubmit(onSaveClick)}>
+            <Grid container>
+              <Grid item xs={12}>
+                <Typography variant={'h6'}>Administrative Routing</Typography>
+              </Grid>
               <Grid item xs={12} sx={{ marginY: 2 }} container wrap={'nowrap'}>
                 <FormInputText name="hostUrl" label="URL" disabled={!edit} />
               </Grid>
-              <Grid container item alignItems={'center'} mb={1}>
-                <Grid item xs={12} container alignItems={'center'}>
-                  <Grid item xs={8} sm={4}>
-                    <Typography variant={'subtitle1'}>REST:</Typography>
-                  </Grid>
-                  <Grid item xs={4} sm={8} container alignItems={'center'}>
-                    <FormInputSwitch
-                      name="transports.rest"
-                      disabled
-                      switchProps={{ sx: { mr: 1 } }}
-                    />
-                    <Tooltip
-                      title={
-                        "Conduit's administrative REST API may not be disabled via the Admin Panel at this time"
-                      }
-                      placement={'top'}
-                      arrow>
-                      <InfoOutlined fontSize={'small'} />
-                    </Tooltip>
-                  </Grid>
+              <Grid container item alignItems={'center'} mb={1} spacing={1}>
+                <Grid item container>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'subtitle1'} mr={1}>
+                      REST:
+                    </Typography>
+                    <Box display={'flex'} alignItems={'center'}>
+                      <Tooltip
+                        sx={{ mr: 1 }}
+                        title={
+                          "Conduit's administrative REST API may not be disabled via the Admin Panel at this time"
+                        }
+                        placement={'top'}
+                        arrow>
+                        <InfoOutlined fontSize={'small'} />
+                      </Tooltip>
+                      <FormInputSwitch name={'transports.rest'} disabled={!edit} />
+                    </Box>
+                  </Box>
                 </Grid>
-                <Grid item xs={12} container alignItems={'center'}>
-                  <Grid item xs={8} sm={4}>
-                    <Typography variant={'subtitle1'}>GraphQL:</Typography>
-                  </Grid>
-                  <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.graphql" disabled={!edit} />
-                  </Grid>
+
+                <Grid item container>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'subtitle1'} mr={1}>
+                      GraphQL:
+                    </Typography>
+                    <FormInputSwitch name={'transports.graphql'} disabled={!edit} />
+                  </Box>
                 </Grid>
-                <Grid item xs={12} container>
-                  <Grid item xs={8} sm={4}>
-                    <Typography variant={'subtitle1'}>WebSockets:</Typography>
-                  </Grid>
-                  <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.sockets" disabled={!edit} />
-                  </Grid>
+                <Grid item container>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'subtitle1'} mr={1}>
+                      WebSockets:
+                    </Typography>
+                    <FormInputSwitch name={'transports.sockets'} disabled={!edit} />
+                  </Box>
                 </Grid>
-                <Typography variant={'h6'} sx={{ mt: 3 }}>
-                  Administrative Settings
-                </Typography>
-                <Grid item xs={12} container alignItems={'center'}>
-                  <Grid item xs={8} sm={4}>
-                    <Typography variant={'subtitle1'}>Hash Rounds:</Typography>
+                <Grid item xs={12}>
+                  <Typography variant={'h6'} sx={{ mt: 2 }}>
+                    Administrative Settings
+                  </Typography>
+                </Grid>
+                <Grid item container alignItems={'center'}>
+                  <Grid item md={4} xs={12}>
+                    <Typography variant={'subtitle1'} noWrap>
+                      Hash Rounds:
+                    </Typography>
                   </Grid>
-                  <Grid item>
+                  <Grid item md={8} xs={12}>
                     <FormInputText
                       name="auth.hashRounds"
                       disabled={!edit}
@@ -181,11 +203,12 @@ const GeneralSettingsTab: React.FC = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid item xs={12} container alignItems={'center'}>
-                  <Grid item xs={8} sm={4}>
+
+                <Grid item container alignItems={'center'}>
+                  <Grid item md={4} xs={12}>
                     <Typography variant={'subtitle1'}>Token Expiration Time:</Typography>
                   </Grid>
-                  <Grid item>
+                  <Grid item md={8} xs={12}>
                     <FormInputText
                       name="auth.tokenExpirationTime"
                       disabled={!edit}
@@ -197,11 +220,11 @@ const GeneralSettingsTab: React.FC = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid item xs={12} container alignItems={'center'}>
-                  <Grid item xs={8} sm={4}>
+                <Grid item container alignItems={'center'}>
+                  <Grid item md={4} xs={12}>
                     <Typography variant={'subtitle1'}>Token Secret:</Typography>
                   </Grid>
-                  <Grid item>
+                  <Grid item md={8} xs={12}>
                     <FormInputText
                       name="auth.tokenSecret"
                       disabled={!edit}
@@ -214,10 +237,10 @@ const GeneralSettingsTab: React.FC = () => {
                 </Grid>
               </Grid>
               <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
-            </form>
-          </FormProvider>
-        </Paper>
-      </Grid>
+            </Grid>
+          </form>
+        </FormProvider>
+      </Paper>
     </Container>
   );
 };

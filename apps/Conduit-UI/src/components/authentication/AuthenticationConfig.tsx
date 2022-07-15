@@ -73,12 +73,11 @@ const AuthenticationConfig: React.FC = () => {
               <Typography variant={'h6'}>Activate Authentication Module</Typography>
               <FormInputSwitch name={'active'} disabled={!edit} />
             </Box>
-            <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
-            <Grid container spacing={5} sx={{ padding: 3 }}>
+            <Grid container spacing={2} sx={{ padding: 3 }}>
               {isActive && (
                 <>
                   {inputFields.map((field, index) => (
-                    <Grid key={index} item xs={6}>
+                    <Grid key={index} item md={6} xs={12}>
                       <FormInputText
                         name={field}
                         label={startCase(camelCase(field))}
@@ -86,8 +85,8 @@ const AuthenticationConfig: React.FC = () => {
                       />
                     </Grid>
                   ))}
-                  <Grid item>
-                    <Grid display={'flex'} flex={1}>
+                  <Grid item container spacing={1}>
+                    <Grid item container>
                       <Box
                         width={'100%'}
                         display={'inline-flex'}
@@ -96,11 +95,14 @@ const AuthenticationConfig: React.FC = () => {
                         <Typography variant={'subtitle1'} mr={1}>
                           Generate Refresh Tokens
                         </Typography>
-                        <FormInputSwitch name={'generateRefreshToken'} disabled={!edit} />
+                        <FormInputSwitch
+                          name={'generateRefreshToken'}
+                          disabled={!edit}
+                          switchProps={{ sx: { ml: 1 } }}
+                        />
                       </Box>
                     </Grid>
-                    <Divider sx={{ mb: 1, mt: 1 }} />
-                    <Grid item>
+                    <Grid item container>
                       <Box
                         width={'100%'}
                         display={'inline-flex'}
@@ -109,11 +111,14 @@ const AuthenticationConfig: React.FC = () => {
                         <Typography variant={'subtitle1'} mr={1}>
                           Multiple User Sessions per Client
                         </Typography>
-                        <FormInputSwitch name={'clients.multipleUserSessions'} disabled={!edit} />
+                        <FormInputSwitch
+                          name={'clients.multipleUserSessions'}
+                          disabled={!edit}
+                          switchProps={{ sx: { ml: 1 } }}
+                        />
                       </Box>
                     </Grid>
-                    <Divider sx={{ mb: 1, mt: 1 }} />
-                    <Grid item>
+                    <Grid item container>
                       <Box
                         width={'100%'}
                         display={'inline-flex'}
@@ -122,114 +127,121 @@ const AuthenticationConfig: React.FC = () => {
                         <Typography variant={'subtitle1'} mr={1}>
                           User can be logged in to multiple Clients
                         </Typography>
-                        <FormInputSwitch name={'clients.multipleClientLogins'} disabled={!edit} />
+                        <FormInputSwitch
+                          name={'clients.multipleClientLogins'}
+                          disabled={!edit}
+                          switchProps={{ sx: { ml: 1 } }}
+                        />
                       </Box>
                     </Grid>
                   </Grid>
                 </>
               )}
             </Grid>
-
-            <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
-            <Grid container>
-              <Box
-                width={'100%'}
-                display={'inline-flex'}
-                justifyContent={'space-between'}
-                alignItems={'center'}>
-                <Typography variant={'h6'}>Use cookies</Typography>
-                <FormInputSwitch name={'setCookies.enabled'} disabled={!edit} />
-              </Box>
-              <Grid container spacing={5} sx={{ padding: 3 }}>
-                {useCookies && (
-                  <>
-                    <Grid key={0} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <Typography variant={'subtitle1'}>httpOnly</Typography>
-                        <FormInputSwitch name={'setCookies.httpOnly'} disabled={!edit} />
-                      </Box>
-                    </Grid>
-                    <Grid key={1} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <Typography variant={'subtitle1'}>secure</Typography>
-                        <FormInputSwitch name={'setCookies.secure'} disabled={!edit} />
-                      </Box>
-                    </Grid>
-                    <Grid key={2} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <Typography variant={'subtitle1'}>signed</Typography>
-                        <FormInputSwitch name={'setCookies.signed'} disabled={!edit} />
-                      </Box>
-                    </Grid>
-                    <Grid key={3} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <FormInputText
-                          typeOfInput={'number'}
-                          name={'setCookies.maxAge'}
-                          label={startCase(camelCase('maxAge'))}
-                          disabled={!edit}
-                        />
-                      </Box>
-                    </Grid>
-                    <Grid key={4} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <FormInputText
-                          name={'setCookies.domain'}
-                          label={startCase(camelCase('domain'))}
-                          disabled={!edit}
-                        />
-                      </Box>
-                    </Grid>
-                    <Grid key={5} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <FormInputText
-                          name={'setCookies.path'}
-                          label={startCase(camelCase('path'))}
-                          disabled={!edit}
-                        />
-                      </Box>
-                    </Grid>
-                    <Grid key={6} item xs={6}>
-                      <Box
-                        width={'100%'}
-                        display={'inline-flex'}
-                        justifyContent={'space-between'}
-                        alignItems={'center'}>
-                        <FormInputText
-                          name={'setCookies.sameSite'}
-                          label={startCase(camelCase('sameSite'))}
-                          disabled={!edit}
-                        />
-                      </Box>
-                    </Grid>
-                  </>
-                )}
-              </Grid>
-            </Grid>
+            {isActive && (
+              <>
+                <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+                <Grid container>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'h6'}>Use cookies</Typography>
+                    <FormInputSwitch name={'setCookies.enabled'} disabled={!edit} />
+                  </Box>
+                  <Grid container spacing={2} sx={{ padding: 3 }}>
+                    {useCookies && (
+                      <>
+                        <Grid key={0} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <Typography variant={'subtitle1'}>httpOnly</Typography>
+                            <FormInputSwitch name={'setCookies.httpOnly'} disabled={!edit} />
+                          </Box>
+                        </Grid>
+                        <Grid key={1} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <Typography variant={'subtitle1'}>secure</Typography>
+                            <FormInputSwitch name={'setCookies.secure'} disabled={!edit} />
+                          </Box>
+                        </Grid>
+                        <Grid key={2} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <Typography variant={'subtitle1'}>signed</Typography>
+                            <FormInputSwitch name={'setCookies.signed'} disabled={!edit} />
+                          </Box>
+                        </Grid>
+                        <Grid key={3} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <FormInputText
+                              typeOfInput={'number'}
+                              name={'setCookies.maxAge'}
+                              label={startCase(camelCase('maxAge'))}
+                              disabled={!edit}
+                            />
+                          </Box>
+                        </Grid>
+                        <Grid key={4} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <FormInputText
+                              name={'setCookies.domain'}
+                              label={startCase(camelCase('domain'))}
+                              disabled={!edit}
+                            />
+                          </Box>
+                        </Grid>
+                        <Grid key={5} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <FormInputText
+                              name={'setCookies.path'}
+                              label={startCase(camelCase('path'))}
+                              disabled={!edit}
+                            />
+                          </Box>
+                        </Grid>
+                        <Grid key={6} item md={6} xs={12}>
+                          <Box
+                            width={'100%'}
+                            display={'inline-flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}>
+                            <FormInputText
+                              name={'setCookies.sameSite'}
+                              label={startCase(camelCase('sameSite'))}
+                              disabled={!edit}
+                            />
+                          </Box>
+                        </Grid>
+                      </>
+                    )}
+                  </Grid>
+                </Grid>
+              </>
+            )}
             <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
           </Grid>
         </form>

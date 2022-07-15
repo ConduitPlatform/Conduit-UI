@@ -21,35 +21,31 @@ const TransportSettings: React.FC<Props> = ({ data, control, disabled }) => {
   const handleFields = () => {
     const fields: any = data.transportSettings[transportProvider];
     return (
-      <Grid item container xs={4} direction="column">
+      <Grid container spacing={2} item>
         {Object.keys(fields).map((field) => {
           if (transportProvider === 'smtp' && field === 'auth') {
             return Object.keys(fields[field]).map((childField) => {
               return (
-                <FormInputText
-                  name={`transportSettings.smtp.auth.${childField}`}
-                  label={childField}
-                  textFieldProps={{
-                    fullWidth: false,
-                    sx: { mb: 1 },
-                  }}
-                  disabled={disabled}
-                  key={childField}
-                />
+                <Grid item md={6} xs={12} key={`${childField}`}>
+                  <FormInputText
+                    name={`transportSettings.smtp.auth.${childField}`}
+                    label={childField}
+                    disabled={disabled}
+                    key={childField}
+                  />
+                </Grid>
               );
             });
           }
           return (
-            <FormInputText
-              name={`transportSettings.${transportProvider}.${field}`}
-              label={field}
-              textFieldProps={{
-                fullWidth: false,
-                sx: { mb: 1 },
-              }}
-              disabled={disabled}
-              key={field}
-            />
+            <Grid item md={6} xs={12} key={`${field}`}>
+              <FormInputText
+                name={`transportSettings.${transportProvider}.${field}`}
+                label={field}
+                disabled={disabled}
+                key={field}
+              />
+            </Grid>
           );
         })}
       </Grid>

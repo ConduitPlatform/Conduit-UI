@@ -3,7 +3,6 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -59,9 +58,7 @@ const FormsConfig: React.FC = () => {
               <FormInputSwitch disabled={!edit} name={'active'} />
             </Box>
 
-            <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
-
-            <Grid container spacing={2} sx={{ pl: 4 }}>
+            <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
               {isActive && (
                 <Grid item xs={12}>
                   <Box

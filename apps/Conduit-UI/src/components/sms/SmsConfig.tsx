@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ISmsConfig } from '../../models/sms/SmsModels';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
@@ -89,11 +87,11 @@ const SmsConfig: React.FC = () => {
           <Grid container spacing={2}>
             <Grid container item xs={12} justifyContent="space-between" alignItems={'center'}>
               <Typography variant={'h6'}>Activate SMS Module</Typography>
-              <FormInputSwitch name={'active'} />
+              <FormInputSwitch name={'active'} disabled={!edit} />
             </Grid>
             {isActive && (
               <>
-                <Grid item xs={2}>
+                <Grid item md={6} xs={12}>
                   <FormInputSelect
                     label={'Provider name'}
                     name="providerName"
@@ -104,53 +102,55 @@ const SmsConfig: React.FC = () => {
                     }))}
                   />
                 </Grid>
-                <Divider sx={{ mt: 1, mb: 1, width: '100%' }} />
                 {hasProvider && (
-                  <Grid item container xs={4}>
-                    <FormInputText
-                      name={'twilio.phoneNumber'}
-                      label={'Phone Number'}
-                      disabled={!edit}
-                      textFieldProps={{
-                        sx: { marginBottom: 1 },
-                      }}
-                    />
-                    <FormInputText
-                      name={'twilio.accountSID'}
-                      label={'Account SID'}
-                      disabled={!edit}
-                      textFieldProps={{
-                        sx: { marginBottom: 1 },
-                      }}
-                    />
-                    <FormInputText
-                      name={'twilio.authToken'}
-                      label={'Auth Token'}
-                      disabled={!edit}
-                      textFieldProps={{
-                        sx: { marginBottom: 1 },
-                      }}
-                    />
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle1">Verify:</Typography>
+                  <>
+                    <Grid item md={6} xs={12}>
+                      <FormInputText
+                        name={'twilio.phoneNumber'}
+                        label={'Phone Number'}
+                        disabled={!edit}
+                      />
                     </Grid>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Typography>Active</Typography>
+                    <Grid item md={6} xs={12}>
+                      <FormInputText
+                        name={'twilio.accountSID'}
+                        label={'Account SID'}
+                        disabled={!edit}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <FormInputText
+                        name={'twilio.authToken'}
+                        label={'Auth Token'}
+                        disabled={!edit}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Typography variant="subtitle1">Verify:</Typography>
                       <FormInputSwitch
                         name={'twilio.verify.active'}
                         switchProps={{ sx: { ml: 1 } }}
                       />
-                    </Box>
-                    <FormInputText
-                      name={'twilio.verify.serviceSid'}
-                      label={'Service SID'}
-                      disabled={!edit}
-                    />
-                  </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormInputText
+                        name={'twilio.verify.serviceSid'}
+                        label={'Service SID'}
+                        disabled={!edit}
+                      />
+                    </Grid>
+                  </>
                 )}
-                <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
               </>
             )}
+            <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
           </Grid>
         </form>
       </FormProvider>

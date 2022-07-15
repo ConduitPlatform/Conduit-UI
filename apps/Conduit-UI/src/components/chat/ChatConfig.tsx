@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { IChatConfig } from '../../models/chat/ChatModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
@@ -56,8 +55,7 @@ const ChatConfig: React.FC = () => {
               <Typography variant={'h6'}>Activate Chat Module</Typography>
               <FormInputSwitch name={'active'} disabled={!edit} />
             </Box>
-            <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
-            <Grid container spacing={2} sx={{ paddingLeft: 4 }}>
+            <Grid container spacing={2} sx={{ paddingLeft: 4, mt: 1 }}>
               {isActive && (
                 <>
                   <Grid item xs={12}>

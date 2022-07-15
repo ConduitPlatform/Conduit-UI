@@ -18,7 +18,7 @@ interface Props {
 const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down(980));
+  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 

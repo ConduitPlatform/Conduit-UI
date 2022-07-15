@@ -82,7 +82,7 @@ const SharedLayout: React.FC<Props> = ({
                 {noSwagger ? null :
                 <Button
                   color="primary"
-                  sx={{ textDecoration: "none", ml: 8 }}
+                  sx={{ textDecoration: "none", ml: 2 }}
                   variant="outlined"
                   onClick={() => setSwaggerOpen(true)}
                 >
