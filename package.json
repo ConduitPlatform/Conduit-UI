@@ -3,6 +3,8 @@
   "version": "0.14.0",
   "private": true,
   "scripts": {
+    "build": "yarn turbo run build",
+    "dev": "yarn turbo run dev --filter=@conduitplatform/conduit-ui...",
     "build:docker": "docker build -t ghcr.io/conduitplatform/conduit-admin:latest . && docker push ghcr.io/conduitplatform/conduit-admin:latest",
     "prepare": "husky install",
     "release": "standard-version"
@@ -15,13 +17,35 @@
     "apps/*",
     "libraries/*"
   ],
+  "turbo": {
+    "pipeline": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          ".dist/**"
+        ]
+      },
+      "dev": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          ".dist/**"
+        ],
+        "cache": false
+      }
+    }
+  },
   "devDependencies": {
     "lerna": "^4.0.0",
     "standard-version": "^9.3.0",
     "husky": "^7.0.2",
     "cz-conventional-changelog": "^3.3.0",
     "@commitlint/cli": "^16.1.0",
-    "@commitlint/config-conventional": "^16.0.0"
+    "@commitlint/config-conventional": "^16.0.0",
+    "turbo": "^1.0.6"
   },
   "dependencies": {},
   "config": {
