@@ -87,15 +87,14 @@ const SmsConfig: React.FC = () => {
           <Grid container spacing={2}>
             <Grid container item xs={12} justifyContent="space-between" alignItems={'center'}>
               <Typography variant={'h6'}>Activate SMS Module</Typography>
-              <FormInputSwitch {...register('active')} disabled={!edit} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Grid>
             {isActive && (
               <>
                 <Grid item md={6} xs={12}>
                   <FormInputSelect
-                    {...register('providerName')}
+                    {...register('providerName', { disabled: !edit })}
                     label={'Provider name'}
-                    disabled={!edit}
                     options={providers.map((provider) => ({
                       label: provider.name,
                       value: provider.name,
@@ -106,23 +105,20 @@ const SmsConfig: React.FC = () => {
                   <>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('twilio.phoneNumber')}
+                        {...register('twilio.phoneNumber', { disabled: !edit })}
                         label={'Phone Number'}
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('twilio.accountSID')}
+                        {...register('twilio.accountSID', { disabled: !edit })}
                         label={'Account SID'}
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('twilio.authToken')}
+                        {...register('twilio.authToken', { disabled: !edit })}
                         label={'Auth Token'}
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid
@@ -135,15 +131,14 @@ const SmsConfig: React.FC = () => {
                       }}>
                       <Typography variant="subtitle1">Verify:</Typography>
                       <FormInputSwitch
-                        {...register('twilio.verify.active')}
+                        {...register('twilio.verify.active', { disabled: !edit })}
                         switchProps={{ sx: { ml: 1 } }}
                       />
                     </Grid>
                     <Grid item xs={12}>
                       <FormInputText
-                        {...register('twilio.verify.serviceSid')}
+                        {...register('twilio.verify.serviceSid', { disabled: !edit })}
                         label={'Service SID'}
-                        disabled={!edit}
                       />
                     </Grid>
                   </>

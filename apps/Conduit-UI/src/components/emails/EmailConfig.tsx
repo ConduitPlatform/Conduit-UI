@@ -72,17 +72,19 @@ const EmailConfig: React.FC = () => {
         </Grid>
         <Grid item md={6} xs={12}>
           <FormInputSelect
-            {...register('transport')}
+            {...register('transport', { disabled: !edit })}
             label="Transport Provider"
             options={providers.map((provider) => ({
               label: provider.label,
               value: provider.name,
             }))}
-            disabled={!edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <FormInputText {...register('sendingDomain')} label="Sending Domain" disabled={!edit} />
+          <FormInputText
+            {...register('sendingDomain', { disabled: !edit })}
+            label="Sending Domain"
+          />
         </Grid>
         <Divider sx={{ marginTop: 3, width: '100%' }} />
         <TransportSettings data={config} control={control} disabled={!edit} />

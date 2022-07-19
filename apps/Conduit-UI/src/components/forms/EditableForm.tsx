@@ -137,12 +137,11 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              {...register('name')}
-              label="Name"
-              rules={{
+              {...register('name', {
                 required: 'The form name is required',
                 pattern: { value: /^[A-Za-z]+$/, message: 'A form name should not have spaces' },
-              }}
+              })}
+              label="Name"
             />
           </Grid>
           <Grid item container xs={12}>
@@ -198,17 +197,15 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           </Grid>
           <Grid item sm={12}>
             <FormInputText
-              {...register('forwardTo')}
-              rules={{ required: 'Forward to is required' }}
+              {...register('forwardTo', { required: 'Forward to is required' })}
               label="Forward to"
             />
           </Grid>
           <Grid item sm={12}>
             <FormInputSelect
-              {...register('emailField')}
+              {...register('emailField', { required: 'Email field is required' })}
               label="Email Field"
               options={validOptions()}
-              rules={{ required: 'Email field is required ' }}
             />
           </Grid>
           <Grid item container xs={12}>

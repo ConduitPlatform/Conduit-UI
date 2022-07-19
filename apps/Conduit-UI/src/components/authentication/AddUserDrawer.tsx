@@ -59,26 +59,24 @@ const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
               spacing={2}>
               <Grid item sm={12}>
                 <FormInputText
-                  {...register('email')}
-                  label="Username/Email"
-                  rules={{
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
                       value: emailRegExp,
                       message: 'Not a valid e-mail!',
                     },
-                  }}
+                  })}
+                  label="Username/Email"
                   typeOfInput={'text'}
                 />
               </Grid>
               <Grid item sm={12}>
                 <FormInputText
-                  {...register('password')}
-                  label="Password"
-                  rules={{
+                  {...register('password', {
                     required: 'Password is required',
                     pattern: { value: passwordRegExp, message: 'Not a valid password' },
-                  }}
+                  })}
+                  label="Password"
                   typeOfInput={'password'}
                 />
               </Grid>

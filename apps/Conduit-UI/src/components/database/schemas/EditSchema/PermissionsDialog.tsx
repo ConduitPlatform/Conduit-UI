@@ -95,9 +95,8 @@ const PermissionsDialog: FC<Props> = ({
                 <Grid item sm={6}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <FormInputCheckBox
-                      {...register('extendable')}
+                      {...register('extendable', { disabled: isDisabled() })}
                       label="Extendable"
-                      disabled={isDisabled()}
                     />
                     <Tooltip title="Allows the schema to be extended by modules">
                       <InfoOutlined />
@@ -107,9 +106,8 @@ const PermissionsDialog: FC<Props> = ({
                 <Grid item sm={6}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <FormInputCheckBox
-                      {...register('canCreate')}
+                      {...register('canCreate', { disabled: isDisabled() })}
                       label="Create"
-                      disabled={isDisabled()}
                     />
                     <Tooltip title="Allows the creation of schema entries by extension schemas">
                       <InfoOutlined />
@@ -119,9 +117,8 @@ const PermissionsDialog: FC<Props> = ({
                 <Grid item sm={6}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <FormInputCheckBox
-                      {...register('canDelete')}
+                      {...register('canDelete', { disabled: isDisabled() })}
                       label="Delete"
-                      disabled={isDisabled()}
                     />
                     <Tooltip title="Allows the deletion of schema entries by extension schemas">
                       <InfoOutlined />
@@ -132,9 +129,8 @@ const PermissionsDialog: FC<Props> = ({
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <FormInputSelect
                       textFieldProps={{ sx: { maxWidth: '200px' } }}
-                      disabled={isDisabled()}
                       label={'Modify'}
-                      {...register('canModify')}
+                      {...register('canModify', { disabled: isDisabled() })}
                       options={options.map((option) => ({
                         label: option.label,
                         value: option.value,

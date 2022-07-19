@@ -87,14 +87,13 @@ const StorageCreateDrawer: FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item width={'100%'}>
               <FormInputText
-                {...register('name')}
-                label="Name"
-                rules={{
+                {...register('name', {
                   pattern: {
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
-                }}
+                })}
+                label="Name"
               />
             </Grid>
             {data.type === CreateFormSelected.folder && (

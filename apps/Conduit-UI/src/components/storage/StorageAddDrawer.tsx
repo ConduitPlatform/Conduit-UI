@@ -109,14 +109,13 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
             </Grid>
             <Grid item sm={12}>
               <FormInputText
-                {...register('folder')}
-                label="Folder name"
-                rules={{
+                {...register('folder', {
                   pattern: {
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
-                }}
+                })}
+                label="Folder name"
               />
             </Grid>
             <Grid item sm={12}>

@@ -88,23 +88,21 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              {...register('name')}
+              {...register('name', { required: 'Product name is required' })}
               label="Name"
-              rules={{ required: 'Product name is required' }}
             />
           </Grid>
           <Grid item sm={6}>
             <FormInputText
-              {...register('value')}
-              label="Value"
-              typeOfInput="number"
-              rules={{
+              {...register('value', {
                 required: 'Value is required',
                 pattern: {
                   value: /^(?=.*\d)\d{1,3}(?:\.\d\d?)?$/,
                   message: 'Negative number not allowed',
                 },
-              }}
+              })}
+              label="Value"
+              typeOfInput="number"
             />
           </Grid>
           <Grid item sm={6}>
@@ -130,15 +128,14 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                 </Grid>
                 <Grid item sm={12} sx={{ marginTop: '10px' }}>
                   <FormInputText
-                    {...register('recurringCount')}
-                    label="Recurring count"
-                    typeOfInput="number"
-                    rules={{
+                    {...register('recurringCount', {
                       pattern: {
                         value: /^(?=.*\d)\d{1,3}(?:\.\d\d?)?$/,
                         message: 'Negative number not allowed',
                       },
-                    }}
+                    })}
+                    label="Recurring count"
+                    typeOfInput="number"
                   />
                 </Grid>
               </>

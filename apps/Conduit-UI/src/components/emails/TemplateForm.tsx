@@ -29,9 +29,8 @@ const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              {...register('name')}
+              {...register('name', { required: 'Template name is required!' })}
               label="Name"
-              rules={{ required: 'Template name is required!' }}
             />
           </Grid>
           <Grid item sm={12}>
@@ -39,9 +38,8 @@ const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           </Grid>
           <Grid item sm={12}>
             <FormInputText
-              {...register('subject')}
+              {...register('subject', { required: 'Subject is required!' })}
               label="Subject"
-              rules={{ required: 'Subject is required!' }}
             />
           </Grid>
           <Grid item sm={12}>

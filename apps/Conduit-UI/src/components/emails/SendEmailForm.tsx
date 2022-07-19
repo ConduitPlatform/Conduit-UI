@@ -134,34 +134,35 @@ const SendEmailForm: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormInputText
-                  {...register('email')}
-                  label={'Recipient (To:)'}
-                  rules={{
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
                       value: emailRegExp,
                       message: 'Not a valid e-mail!',
                     },
-                  }}
+                  })}
+                  label={'Recipient (To:)'}
                   typeOfInput={'text'}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormInputText
-                  {...register('sender')}
-                  label={'Sender (From:)'}
-                  rules={{
+                  {...register('sender', {
                     required: 'Email is required',
                     pattern: {
                       value: emailRegExp,
                       message: 'Not a valid e-mail!',
                     },
-                  }}
+                  })}
+                  label={'Sender (From:)'}
                   typeOfInput={'text'}
                 />
               </Grid>
               <Grid item xs={8}>
-                <FormInputText {...register('subject')} label={'Subject'} disabled={withTemplate} />
+                <FormInputText
+                  {...register('subject', { disabled: withTemplate })}
+                  label={'Subject'}
+                />
               </Grid>
               <Grid item xs={4} mt={1}>
                 <FormInputCheckBox {...register('withTemplate')} label="With Template" />

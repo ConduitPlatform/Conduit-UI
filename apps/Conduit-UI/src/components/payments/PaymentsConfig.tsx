@@ -79,7 +79,7 @@ const PaymentsConfig: React.FC = () => {
               justifyContent={'space-between'}
               alignItems={'center'}>
               <Typography variant={'h6'}>Activate Payments Module</Typography>
-              <FormInputSwitch {...register('active')} disabled={!edit} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
 
             <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
@@ -94,7 +94,7 @@ const PaymentsConfig: React.FC = () => {
                       justifyContent={'space-between'}
                       alignItems={'center'}>
                       <Typography variant={'h6'}>Enable stripe payments</Typography>
-                      <FormInputSwitch {...register('enabled')} disabled={!edit} />
+                      <FormInputSwitch {...register('enabled', { disabled: !edit })} />
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
@@ -102,9 +102,8 @@ const PaymentsConfig: React.FC = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <FormInputText
-                      {...register('secret_key')}
+                      {...register('secret_key', { disabled: !edit })}
                       label={'Secret key'}
-                      disabled={!edit}
                     />
                   </Grid>
                 </>

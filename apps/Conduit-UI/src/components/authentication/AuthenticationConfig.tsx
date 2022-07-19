@@ -53,12 +53,30 @@ const AuthenticationConfig: React.FC = () => {
     dispatch(asyncUpdateAuthenticationConfig(body));
   };
 
-  const inputFields = [
-    'rateLimit',
-    'tokenInvalidationPeriod',
-    'refreshTokenInvalidationPeriod',
-    'jwtSecret',
-  ];
+  const renderInputFields = useMemo(() => {
+    type InputFieldTypes =
+      | 'rateLimit'
+      | 'tokenInvalidationPeriod'
+      | 'refreshTokenInvalidationPeriod'
+      | 'jwtSecret';
+
+    const inputFields: InputFieldTypes[] = [
+      'rateLimit',
+      'tokenInvalidationPeriod',
+      'refreshTokenInvalidationPeriod',
+      'jwtSecret',
+    ];
+
+    return inputFields.map((field, index) => (
+      <Grid key={index} item md={6} xs={12}>
+        <FormInputText
+          {...register(inputFields[index])}
+          label={startCase(camelCase(field))}
+          disabled={!edit}
+        />
+      </Grid>
+    ));
+  }, [edit, register]);
 
   return (
     <ConfigContainer>
@@ -71,20 +89,12 @@ const AuthenticationConfig: React.FC = () => {
               justifyContent={'space-between'}
               alignItems={'center'}>
               <Typography variant={'h6'}>Activate Authentication Module</Typography>
-              <FormInputSwitch {...register('active')} disabled={!edit} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ padding: 3 }}>
               {isActive && (
                 <>
-                  {inputFields.map((field, index) => (
-                    <Grid key={index} item md={6} xs={12}>
-                      <FormInputText
-                        name={field}
-                        label={startCase(camelCase(field))}
-                        disabled={!edit}
-                      />
-                    </Grid>
-                  ))}
+                  {renderInputFields}
                   <Grid item container spacing={1}>
                     <Grid item container>
                       <Box
@@ -96,8 +106,7 @@ const AuthenticationConfig: React.FC = () => {
                           Generate Refresh Tokens
                         </Typography>
                         <FormInputSwitch
-                          {...register('generateRefreshToken')}
-                          disabled={!edit}
+                          {...register('generateRefreshToken', { disabled: !edit })}
                           switchProps={{ sx: { ml: 1 } }}
                         />
                       </Box>
@@ -112,8 +121,7 @@ const AuthenticationConfig: React.FC = () => {
                           Multiple User Sessions per Client
                         </Typography>
                         <FormInputSwitch
-                          {...register('clients.multipleUserSessions')}
-                          disabled={!edit}
+                          {...register('clients.multipleUserSessions', { disabled: !edit })}
                           switchProps={{ sx: { ml: 1 } }}
                         />
                       </Box>
@@ -128,8 +136,7 @@ const AuthenticationConfig: React.FC = () => {
                           User can be logged in to multiple Clients
                         </Typography>
                         <FormInputSwitch
-                          {...register('clients.multipleClientLogins')}
-                          disabled={!edit}
+                          {...register('clients.multipleClientLogins', { disabled: !edit })}
                           switchProps={{ sx: { ml: 1 } }}
                         />
                       </Box>
@@ -148,7 +155,7 @@ const AuthenticationConfig: React.FC = () => {
                     justifyContent={'space-between'}
                     alignItems={'center'}>
                     <Typography variant={'h6'}>Use cookies</Typography>
-                    <FormInputSwitch {...register('setCookies.enabled')} disabled={!edit} />
+                    <FormInputSwitch {...register('setCookies.enabled', { disabled: !edit })} />
                   </Box>
                   <Grid container spacing={2} sx={{ padding: 3 }}>
                     {useCookies && (
@@ -161,8 +168,7 @@ const AuthenticationConfig: React.FC = () => {
                             alignItems={'center'}>
                             <Typography variant={'subtitle1'}>httpOnly</Typography>
                             <FormInputSwitch
-                              {...register('setCookies.options.httpOnly')}
-                              disabled={!edit}
+                              {...register('setCookies.options.httpOnly', { disabled: !edit })}
                             />
                           </Box>
                         </Grid>
@@ -174,8 +180,7 @@ const AuthenticationConfig: React.FC = () => {
                             alignItems={'center'}>
                             <Typography variant={'subtitle1'}>secure</Typography>
                             <FormInputSwitch
-                              {...register('setCookies.options.secure')}
-                              disabled={!edit}
+                              {...register('setCookies.options.secure', { disabled: !edit })}
                             />
                           </Box>
                         </Grid>
@@ -187,8 +192,7 @@ const AuthenticationConfig: React.FC = () => {
                             alignItems={'center'}>
                             <Typography variant={'subtitle1'}>signed</Typography>
                             <FormInputSwitch
-                              {...register('setCookies.options.signed')}
-                              disabled={!edit}
+                              {...register('setCookies.options.signed', { disabled: !edit })}
                             />
                           </Box>
                         </Grid>
@@ -200,9 +204,8 @@ const AuthenticationConfig: React.FC = () => {
                             alignItems={'center'}>
                             <FormInputText
                               typeOfInput={'number'}
-                              {...register('setCookies.options.maxAge')}
+                              {...register('setCookies.options.maxAge', { disabled: !edit })}
                               label={startCase(camelCase('maxAge'))}
-                              disabled={!edit}
                             />
                           </Box>
                         </Grid>
@@ -213,9 +216,8 @@ const AuthenticationConfig: React.FC = () => {
                             justifyContent={'space-between'}
                             alignItems={'center'}>
                             <FormInputText
-                              {...register('setCookies.options.domain')}
+                              {...register('setCookies.options.domain', { disabled: !edit })}
                               label={startCase(camelCase('domain'))}
-                              disabled={!edit}
                             />
                           </Box>
                         </Grid>
@@ -226,9 +228,8 @@ const AuthenticationConfig: React.FC = () => {
                             justifyContent={'space-between'}
                             alignItems={'center'}>
                             <FormInputText
-                              {...register('setCookies.options.path')}
+                              {...register('setCookies.options.path', { disabled: !edit })}
                               label={startCase(camelCase('path'))}
-                              disabled={!edit}
                             />
                           </Box>
                         </Grid>
@@ -239,9 +240,8 @@ const AuthenticationConfig: React.FC = () => {
                             justifyContent={'space-between'}
                             alignItems={'center'}>
                             <FormInputText
-                              {...register('setCookies.options.sameSite')}
+                              {...register('setCookies.options.sameSite', { disabled: !edit })}
                               label={startCase(camelCase('sameSite'))}
-                              disabled={!edit}
                             />
                           </Box>
                         </Grid>

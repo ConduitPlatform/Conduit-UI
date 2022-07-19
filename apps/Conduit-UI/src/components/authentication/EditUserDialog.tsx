@@ -79,27 +79,25 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 spacing={2}>
                 <Grid item sm={12}>
                   <FormInputText
-                    {...register('email')}
-                    label="email"
-                    rules={{
+                    {...register('email', {
                       required: 'Email is required',
                       pattern: {
                         value: emailRegExp,
                         message: 'Not a valid e-mail!',
                       },
-                    }}
+                    })}
+                    label="email"
                   />
                 </Grid>
                 <Grid item sm={12}>
                   <FormInputText
-                    {...register('phoneNumber')}
-                    label="Phone Number"
-                    rules={{
+                    {...register('phoneNumber', {
                       pattern: {
                         value: phoneNumberRegExp,
                         message: 'Not a valid phone number',
                       },
-                    }}
+                    })}
+                    label="Phone Number"
                   />
                 </Grid>
                 <Grid item sm={3}>

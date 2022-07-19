@@ -70,7 +70,7 @@ const StorageConfig: React.FC = () => {
               mb: 2,
             }}>
             <Typography variant={'h6'}>Activate Storage Module</Typography>
-            <FormInputSwitch {...register('active')} disabled={!edit} />
+            <FormInputSwitch {...register('active', { disabled: !edit })} />
           </Box>
           <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
             {isActive && (
@@ -80,9 +80,8 @@ const StorageConfig: React.FC = () => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <FormInputSelect
-                    disabled={!edit}
                     label={'Provider'}
-                    {...register('provider')}
+                    {...register('provider', { disabled: !edit })}
                     options={providers?.map((template) => ({
                       label: template.label,
                       value: template.value,
@@ -92,9 +91,8 @@ const StorageConfig: React.FC = () => {
                 {watchProvider === 'azure' && (
                   <Grid item md={6} xs={12}>
                     <FormInputText
-                      {...register('azure.connectionString')}
+                      {...register('azure.connectionString', { disabled: !edit })}
                       label="Connection String"
-                      disabled={!edit}
                     />
                   </Grid>
                 )}
@@ -102,16 +100,14 @@ const StorageConfig: React.FC = () => {
                   <>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('google.serviceAccountKeyPath')}
+                        {...register('google.serviceAccountKeyPath', { disabled: !edit })}
                         label="Service Account Key Path"
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('google.bucketName')}
+                        {...register('google.bucketName', { disabled: !edit })}
                         label="Bucket Name"
-                        disabled={!edit}
                       />
                     </Grid>
                   </>
@@ -119,27 +115,27 @@ const StorageConfig: React.FC = () => {
                 {watchProvider === 'aws' && (
                   <>
                     <Grid item md={6} xs={12}>
-                      <FormInputText {...register('aws.region')} label="Region" disabled={!edit} />
+                      <FormInputText
+                        {...register('aws.region', { disabled: !edit })}
+                        label="Region"
+                      />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('aws.secretAccessKey')}
+                        {...register('aws.secretAccessKey', { disabled: !edit })}
                         label="Secret Access Key"
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('aws.accessKeyId')}
+                        {...register('aws.accessKeyId', { disabled: !edit })}
                         label="Access Key Id"
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('aws.accountId')}
+                        {...register('aws.accountId', { disabled: !edit })}
                         label="Account Id"
-                        disabled={!edit}
                       />
                     </Grid>
                   </>
@@ -148,23 +144,20 @@ const StorageConfig: React.FC = () => {
                   <>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('aliyun.region')}
+                        {...register('aliyun.region', { disabled: !edit })}
                         label="Region"
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('aliyun.accessKeyId')}
+                        {...register('aliyun.accessKeyId', { disabled: !edit })}
                         label="Access Key Id"
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('aliyun.accessKeySecret')}
+                        {...register('aliyun.accessKeySecret', { disabled: !edit })}
                         label="Access Key Secret"
-                        disabled={!edit}
                       />
                     </Grid>
                   </>
@@ -173,9 +166,8 @@ const StorageConfig: React.FC = () => {
                   <>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        {...register('local.storagePath')}
+                        {...register('local.storagePath', { disabled: !edit })}
                         label="Storage Path"
-                        disabled={!edit}
                       />
                     </Grid>
                   </>

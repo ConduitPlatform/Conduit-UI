@@ -53,7 +53,7 @@ const ChatConfig: React.FC = () => {
               justifyContent={'space-between'}
               alignItems={'center'}>
               <Typography variant={'h6'}>Activate Chat Module</Typography>
-              <FormInputSwitch {...register('active')} disabled={!edit} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ paddingLeft: 4, mt: 1 }}>
               {isActive && (
@@ -65,7 +65,7 @@ const ChatConfig: React.FC = () => {
                       justifyContent={'space-between'}
                       alignItems={'center'}>
                       <Typography variant={'subtitle1'}>Allow Message Edit</Typography>
-                      <FormInputSwitch {...register('allowMessageEdit')} disabled={!edit} />
+                      <FormInputSwitch {...register('allowMessageEdit', { disabled: !edit })} />
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
@@ -75,7 +75,7 @@ const ChatConfig: React.FC = () => {
                       justifyContent={'space-between'}
                       alignItems={'center'}>
                       <Typography variant={'subtitle1'}>Allow Message Delete</Typography>
-                      <FormInputSwitch {...register('allowMessageDelete')} disabled={!edit} />
+                      <FormInputSwitch {...register('allowMessageDelete', { disabled: !edit })} />
                     </Box>
                   </Grid>
                 </>

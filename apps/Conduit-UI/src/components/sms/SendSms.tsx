@@ -43,15 +43,14 @@ const SendSms: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <FormInputText
-                  {...register('to')}
-                  label="Send to"
-                  rules={{
+                  {...register('to', {
                     required: 'phone number is required',
                     pattern: {
                       value: phoneNumberRegExp,
                       message: 'Not a valid phone number!',
                     },
-                  }}
+                  })}
+                  label="Send to"
                   typeOfInput={'text'}
                 />
               </Grid>

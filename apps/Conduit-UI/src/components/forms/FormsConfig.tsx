@@ -55,7 +55,7 @@ const FormsConfig: React.FC = () => {
               justifyContent={'space-between'}
               alignItems={'center'}>
               <Typography variant={'h6'}>Activate Forms Module</Typography>
-              <FormInputSwitch disabled={!edit} {...register('active')} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
 
             <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
@@ -67,7 +67,7 @@ const FormsConfig: React.FC = () => {
                     justifyContent={'space-between'}
                     alignItems={'center'}>
                     <Typography variant={'h6'}>Use Attachments</Typography>
-                    <FormInputSwitch disabled={!edit} {...register('useAttachments')} />
+                    <FormInputSwitch {...register('useAttachments', { disabled: !edit })} />
                   </Box>
                 </Grid>
               )}
