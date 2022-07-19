@@ -27,7 +27,7 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
   const dispatch = useAppDispatch();
   const methods = useForm<AuthUser>({ defaultValues: data });
 
-  const { handleSubmit, reset, setValue } = methods;
+  const { handleSubmit, reset, setValue, register } = methods;
 
   useEffect(() => {
     setValue('email', data.email);
@@ -79,7 +79,7 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 spacing={2}>
                 <Grid item sm={12}>
                   <FormInputText
-                    name="email"
+                    {...register('email')}
                     label="email"
                     rules={{
                       required: 'Email is required',
@@ -92,7 +92,7 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 </Grid>
                 <Grid item sm={12}>
                   <FormInputText
-                    name="phoneNumber"
+                    {...register('phoneNumber')}
                     label="Phone Number"
                     rules={{
                       pattern: {
@@ -103,13 +103,16 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                   />
                 </Grid>
                 <Grid item sm={3}>
-                  <FormInputCheckBox name="active" label="Active" />
+                  <FormInputCheckBox {...register('active')} label="Active" />
                 </Grid>
                 <Grid item sm={3}>
-                  <FormInputCheckBox name="isVerified" label="Verified" />
+                  <FormInputCheckBox {...register('isVerified')} label="Verified" />
                 </Grid>
                 <Grid item sm={3}>
-                  <FormInputCheckBox name="hasTwoFA" label="Has Two-factor Authentication" />
+                  <FormInputCheckBox
+                    {...register('hasTwoFA')}
+                    label="Has Two-factor Authentication"
+                  />
                 </Grid>
                 <Grid item sm={12}>
                   <Button

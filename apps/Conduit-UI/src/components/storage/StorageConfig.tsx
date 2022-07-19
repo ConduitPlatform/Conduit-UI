@@ -70,7 +70,7 @@ const StorageConfig: React.FC = () => {
               mb: 2,
             }}>
             <Typography variant={'h6'}>Activate Storage Module</Typography>
-            <FormInputSwitch name={'active'} disabled={!edit} />
+            <FormInputSwitch {...register('active')} disabled={!edit} />
           </Box>
           <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
             {isActive && (

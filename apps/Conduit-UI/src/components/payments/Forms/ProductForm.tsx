@@ -23,7 +23,7 @@ interface IProductForm {
 const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   const methods = useForm<IProductForm>({ defaultValues: preloadedValues });
 
-  const { handleSubmit, reset, control, setValue } = methods;
+  const { handleSubmit, reset, control, setValue, register } = methods;
 
   const isSubscription = useWatch({
     control,
@@ -88,14 +88,14 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              name="name"
+              {...register('name')}
               label="Name"
               rules={{ required: 'Product name is required' }}
             />
           </Grid>
           <Grid item sm={6}>
             <FormInputText
-              name="value"
+              {...register('value')}
               label="Value"
               typeOfInput="number"
               rules={{
@@ -108,7 +108,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             />
           </Grid>
           <Grid item sm={6}>
-            <FormInputSelect name="currency" options={currencies} label="Currency" />
+            <FormInputSelect {...register('currency')} options={currencies} label="Currency" />
           </Grid>
           <Paper sx={{ p: 2, marginTop: 2, color: 'text.primary', width: '100%' }}>
             <Grid item container sm={12}>
@@ -116,17 +116,21 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                 <Typography>Is subscription:</Typography>
               </Grid>
               <Grid item sm={1}>
-                <FormInputSwitch name="isSubscription" />
+                <FormInputSwitch {...register('isSubscription')} />
               </Grid>
             </Grid>
             {isSubscription && (
               <>
                 <Grid item sm={12}>
-                  <FormInputSelect options={recuringOptions} name="recurring" label="Recurring" />
+                  <FormInputSelect
+                    {...register('recurring')}
+                    options={recuringOptions}
+                    label="Recurring"
+                  />
                 </Grid>
                 <Grid item sm={12} sx={{ marginTop: '10px' }}>
                   <FormInputText
-                    name="recurringCount"
+                    {...register('recurringCount')}
                     label="Recurring count"
                     typeOfInput="number"
                     rules={{

@@ -55,7 +55,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   const methods = useForm<IForm>({ defaultValues: preloadedValues });
 
-  const { reset, getValues, setValue } = methods;
+  const { reset, getValues, setValue, register } = methods;
 
   const handleAddField = () => {
     setInputFields([...inputFields, { id: uuidV4(), key: '', type: '' }]);
@@ -137,7 +137,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              name="name"
+              {...register('name')}
               label="Name"
               rules={{
                 required: 'The form name is required',
@@ -198,14 +198,14 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           </Grid>
           <Grid item sm={12}>
             <FormInputText
-              name="forwardTo"
+              {...register('forwardTo')}
               rules={{ required: 'Forward to is required' }}
               label="Forward to"
             />
           </Grid>
           <Grid item sm={12}>
             <FormInputSelect
-              name="emailField"
+              {...register('emailField')}
               label="Email Field"
               options={validOptions()}
               rules={{ required: 'Email field is required ' }}
@@ -216,7 +216,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               <Typography variant="subtitle2">Enabled form:</Typography>
             </Grid>
             <Grid item xs={1}>
-              <FormInputSwitch name="enabled" />
+              <FormInputSwitch {...register('enabled')} />
             </Grid>
           </Grid>
           <Grid container item>

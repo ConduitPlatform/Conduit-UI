@@ -26,6 +26,7 @@ const defaultValues = {
 
 const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
   const methods = useForm<NewUserInputs>({ defaultValues: defaultValues });
+  const { register } = methods;
 
   const onSubmit = (data: { password: string; email: string }) => {
     handleNewUserDispatch(data);
@@ -58,7 +59,7 @@ const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
               spacing={2}>
               <Grid item sm={12}>
                 <FormInputText
-                  name="email"
+                  {...register('email')}
                   label="Username/Email"
                   rules={{
                     required: 'Email is required',
@@ -72,7 +73,7 @@ const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
               </Grid>
               <Grid item sm={12}>
                 <FormInputText
-                  name="password"
+                  {...register('password')}
                   label="Password"
                   rules={{
                     required: 'Password is required',

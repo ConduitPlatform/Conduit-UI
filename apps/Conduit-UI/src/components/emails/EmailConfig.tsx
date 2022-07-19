@@ -24,7 +24,7 @@ const EmailConfig: React.FC = () => {
       return config;
     }, [config]),
   });
-  const { reset, control } = methods;
+  const { reset, control, register } = methods;
 
   useEffect(() => {
     reset(config);
@@ -72,8 +72,8 @@ const EmailConfig: React.FC = () => {
         </Grid>
         <Grid item md={6} xs={12}>
           <FormInputSelect
+            {...register('transport')}
             label="Transport Provider"
-            name="transport"
             options={providers.map((provider) => ({
               label: provider.label,
               value: provider.name,
@@ -82,7 +82,7 @@ const EmailConfig: React.FC = () => {
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <FormInputText name="sendingDomain" label="Sending Domain" disabled={!edit} />
+          <FormInputText {...register('sendingDomain')} label="Sending Domain" disabled={!edit} />
         </Grid>
         <Divider sx={{ marginTop: 3, width: '100%' }} />
         <TransportSettings data={config} control={control} disabled={!edit} />
@@ -102,7 +102,7 @@ const EmailConfig: React.FC = () => {
               alignItems={'center'}
               mb={1}>
               <Typography variant={'h6'}>Activate Email Module</Typography>
-              <FormInputSwitch name="active" />
+              <FormInputSwitch {...register('active')} />
             </Box>
             <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
               {isActive && renderSettingsFields()}

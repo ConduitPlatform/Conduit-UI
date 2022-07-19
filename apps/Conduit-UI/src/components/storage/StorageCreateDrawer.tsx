@@ -35,7 +35,7 @@ const StorageCreateDrawer: FC<Props> = ({
   const methods = useForm<FormProps>({
     defaultValues: { name: '', container: '', isPublic: false },
   });
-  const { reset, setValue } = methods;
+  const { reset, setValue, register } = methods;
 
   useEffect(() => {
     if (data.type === CreateFormSelected.folder) {
@@ -87,7 +87,7 @@ const StorageCreateDrawer: FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item width={'100%'}>
               <FormInputText
-                name="name"
+                {...register('name')}
                 label="Name"
                 rules={{
                   pattern: {
@@ -99,14 +99,18 @@ const StorageCreateDrawer: FC<Props> = ({
             </Grid>
             {data.type === CreateFormSelected.folder && (
               <Grid item sm={12}>
-                <FormInputSelect options={extractContainers()} label="Container" name="container" />
+                <FormInputSelect
+                  options={extractContainers()}
+                  label="Container"
+                  {...register('container')}
+                />
               </Grid>
             )}
             <Grid item sm={12} display={'flex'} alignItems={'center'} whiteSpace={'nowrap'}>
               <Typography variant="subtitle1" mr={2}>
                 Is Public
               </Typography>
-              <FormInputSwitch name="isPublic" />
+              <FormInputSwitch {...register('isPublic')} />
             </Grid>
             <Grid container item mt={2}>
               <Grid item sx={{ mr: 2 }}>

@@ -40,7 +40,7 @@ const SendEmailForm: React.FC = () => {
       withTemplate: false,
     },
   });
-  const { handleSubmit, reset, control, setValue, getValues } = methods;
+  const { handleSubmit, reset, control, setValue, getValues, register } = methods;
 
   const getData = useCallback(
     (params: Pagination & Search & { provider: string }) => {
@@ -134,7 +134,7 @@ const SendEmailForm: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormInputText
-                  name="email"
+                  {...register('email')}
                   label={'Recipient (To:)'}
                   rules={{
                     required: 'Email is required',
@@ -148,7 +148,7 @@ const SendEmailForm: React.FC = () => {
               </Grid>
               <Grid item xs={12}>
                 <FormInputText
-                  name="sender"
+                  {...register('sender')}
                   label={'Sender (From:)'}
                   rules={{
                     required: 'Email is required',
@@ -161,10 +161,10 @@ const SendEmailForm: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={8}>
-                <FormInputText name="subject" label={'Subject'} disabled={withTemplate} />
+                <FormInputText {...register('subject')} label={'Subject'} disabled={withTemplate} />
               </Grid>
               <Grid item xs={4} mt={1}>
-                <FormInputCheckBox name="withTemplate" label="With Template" />
+                <FormInputCheckBox {...register('withTemplate')} label="With Template" />
               </Grid>
               <Grid item xs={12}>
                 <SelectedElements
