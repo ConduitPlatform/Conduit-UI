@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { IEmailConfig } from '../../models/emails/EmailModels';
-import TransportSettings from './TransportSettings';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
@@ -24,6 +23,7 @@ const EmailConfig: React.FC = () => {
       return config;
     }, [config]),
   });
+
   const { reset, control, register } = methods;
 
   useEffect(() => {
@@ -33,6 +33,12 @@ const EmailConfig: React.FC = () => {
   const isActive = useWatch({
     control,
     name: 'active',
+  });
+
+  const transportProvider = useWatch({
+    control,
+    name: 'transport',
+    defaultValue: config?.transport,
   });
 
   const handleCancel = () => {
@@ -45,26 +51,48 @@ const EmailConfig: React.FC = () => {
     dispatch(asyncUpdateEmailConfig(data));
   };
 
-  const providers = [
-    {
-      name: 'mailgun',
-      label: 'Mailgun',
-    },
-    {
-      name: 'smtp',
-      label: 'Smtp',
-    },
-    {
-      name: 'mandrill',
-      label: 'Mandrill',
-    },
-    {
-      name: 'sendgrid',
-      label: 'Sendgrid',
-    },
-  ];
+  const fields: any = useMemo(() => {
+    return config?.transportSettings?.[transportProvider] ?? {};
+  }, [config?.transportSettings, transportProvider]);
 
-  const renderSettingsFields = () => {
+  const renderSettingsFields = useMemo(() => {
+    type FieldsTypes =
+      | 'transportSettings.mailgun'
+      | 'transportSettings.mailgun.apiKey'
+      | 'transportSettings.mailgun.domain'
+      | 'transportSettings.mailgun.host'
+      | 'transportSettings.mailgun.proxy'
+      | 'transportSettings.smtp'
+      | 'transportSettings.smtp.port'
+      | 'transportSettings.smtp.host'
+      | 'transportSettings.smtp.auth'
+      | 'transportSettings.smtp.auth.username'
+      | 'transportSettings.smtp.auth.password'
+      | 'transportSettings.smtp.auth.method'
+      | 'transportSettings.mandrill'
+      | 'transportSettings.mandrill.apiKey'
+      | 'transportSettings.sendgrid'
+      | 'transportSettings.sendgrid.apiKey';
+
+    const providers = [
+      {
+        name: 'mailgun',
+        label: 'Mailgun',
+      },
+      {
+        name: 'smtp',
+        label: 'Smtp',
+      },
+      {
+        name: 'mandrill',
+        label: 'Mandrill',
+      },
+      {
+        name: 'sendgrid',
+        label: 'Sendgrid',
+      },
+    ];
+
     return (
       <>
         <Grid item xs={12}>
@@ -86,11 +114,45 @@ const EmailConfig: React.FC = () => {
             label="Sending Domain"
           />
         </Grid>
-        <Divider sx={{ marginTop: 3, width: '100%' }} />
-        <TransportSettings data={config} control={control} disabled={!edit} />
+        <Grid item md={12} xs={12}>
+          <Divider sx={{ marginY: 2 }} variant={'fullWidth'} />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant={'h6'}>Transport settings</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2} item>
+            {Object.keys(fields)?.map((field) => {
+              if (transportProvider === 'smtp' && field === 'auth') {
+                return Object.keys(fields?.[field])?.map((childField) => {
+                  return (
+                    <Grid item md={6} xs={12} key={`${childField}`}>
+                      <FormInputText
+                        {...register(`transportSettings.smtp.auth.${childField}` as FieldsTypes)}
+                        label={childField}
+                        disabled={!edit}
+                        key={childField}
+                      />
+                    </Grid>
+                  );
+                });
+              }
+              return (
+                <Grid item md={6} xs={12} key={`${field}`}>
+                  <FormInputText
+                    {...register(`transportSettings.${transportProvider}.${field}` as FieldsTypes)}
+                    label={field}
+                    disabled={!edit}
+                    key={field}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Grid>
       </>
     );
-  };
+  }, [edit, fields, register, transportProvider]);
 
   return (
     <ConfigContainer>
@@ -107,7 +169,7 @@ const EmailConfig: React.FC = () => {
               <FormInputSwitch {...register('active')} />
             </Box>
             <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
-              {isActive && renderSettingsFields()}
+              {isActive && renderSettingsFields}
             </Grid>
             <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
           </Grid>
