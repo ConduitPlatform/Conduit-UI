@@ -35,6 +35,7 @@ const Modules: React.FC<Props> = ({
   const enabledForms = useAppSelector((state) => state.formsSlice.data.config.active);
   const enabledChat = useAppSelector((state) => state.chatSlice.config.active);
   const enabledSms = useAppSelector((state) => state.smsSlice.data.config.active);
+  const enabledPayments = useAppSelector((state) => state.paymentsSlice.data.config.active);
 
   const handleDisabledClick = () => {
     dispatch(enqueueInfoNotification('Module currently disabled.'));
@@ -58,7 +59,7 @@ const Modules: React.FC<Props> = ({
           case 'database':
             return '/database/schemas';
           case 'storage':
-            return enabledStorage ? '/storage/config' : '/storage/config';
+            return enabledStorage ? '/storage/files' : '/storage/config';
           case 'settings':
             return '/settings/settings';
           case 'pushNotifications':
@@ -66,7 +67,7 @@ const Modules: React.FC<Props> = ({
           case 'forms':
             return enabledForms ? '/forms/view' : '/forms/config';
           case 'payments':
-            return '/payments/customers';
+            return enabledPayments ? '/payments/customers' : 'payments/config';
           case 'sms':
             return enabledSms ? '/sms/send' : '/sms/config';
           case 'router':
@@ -96,6 +97,7 @@ const Modules: React.FC<Props> = ({
       enabledEmail,
       enabledForms,
       enabledNotifications,
+      enabledPayments,
       enabledSms,
       enabledStorage,
       itemSelected,
