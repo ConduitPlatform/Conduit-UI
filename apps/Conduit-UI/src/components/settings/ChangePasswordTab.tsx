@@ -13,7 +13,7 @@ const ChangePasswordTab: React.FC = () => {
     defaultValues: { oldPassword: '', newPassword: '', confirmPassword: '' },
   });
 
-  const { reset } = methods;
+  const { reset, register } = methods;
 
   const handleChangePassword = (values: IPasswordChange) => {
     dispatch(asyncChangePassword(values));
@@ -35,31 +35,25 @@ const ChangePasswordTab: React.FC = () => {
               <FormProvider {...methods}>
                 <form onSubmit={methods.handleSubmit(handleChangePassword)}>
                   <FormInputText
-                    name="oldPassword"
-                    rules={{
-                      required: 'Your old password is required',
-                    }}
+                    {...register('oldPassword', { required: 'Your old password is required' })}
                     label="Old password"
                   />
                   <Box mt={2}>
                     <FormInputText
-                      typeOfInput="password"
-                      name="newPassword"
-                      rules={{
-                        required: 'Password is required',
+                      {...register('newPassword', {
+                        required: 'password is required',
                         minLength: {
                           value: 5,
                           message: 'Password should be 5 characters or longer',
                         },
-                      }}
+                      })}
+                      typeOfInput="password"
                       label="New password"
                     />
                   </Box>
                   <Box mt={2}>
                     <FormInputText
-                      typeOfInput="password"
-                      name="confirmPassword"
-                      rules={{
+                      {...register('confirmPassword', {
                         required: 'Password must be confirmed',
                         validate: {
                           matchesPreviousPassword: (value) => {
@@ -67,7 +61,8 @@ const ChangePasswordTab: React.FC = () => {
                             return newPassword === value || 'Passwords should match!';
                           },
                         },
-                      }}
+                      })}
+                      typeOfInput="password"
                       label="Confirm new password"
                     />
                   </Box>

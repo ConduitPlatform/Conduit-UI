@@ -19,7 +19,7 @@ const RouterSettings: React.FC = () => {
     }, [config]),
   });
 
-  const { reset } = methods;
+  const { reset, register } = methods;
 
   useEffect(() => {
     methods.reset(config);
@@ -57,7 +57,7 @@ const RouterSettings: React.FC = () => {
                     alignItems={'center'}
                     wrap={'nowrap'}
                     sx={{ marginRight: 4 }}>
-                    <FormInputText name="hostUrl" label="Host URL" disabled={!edit} />
+                    <FormInputText {...register('hostUrl')} label="Host URL" disabled={!edit} />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} sx={{ marginTop: 3 }}>
@@ -68,7 +68,7 @@ const RouterSettings: React.FC = () => {
                     <Typography variant={'subtitle1'}>REST:</Typography>
                   </Grid>
                   <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.rest" disabled={!edit} />
+                    <FormInputSwitch {...register('transports.rest')} disabled={!edit} />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
@@ -76,7 +76,7 @@ const RouterSettings: React.FC = () => {
                     <Typography variant={'subtitle1'}>GraphQL:</Typography>
                   </Grid>
                   <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.graphql" disabled={!edit} />
+                    <FormInputSwitch {...register('transports.graphql')} disabled={!edit} />
                   </Grid>
                 </Grid>
                 <Grid item xs={12} container alignItems={'center'}>
@@ -84,7 +84,7 @@ const RouterSettings: React.FC = () => {
                     <Typography variant={'subtitle1'}>WebSockets:</Typography>
                   </Grid>
                   <Grid item xs={4} sm={8}>
-                    <FormInputSwitch name="transports.sockets" disabled={!edit} />
+                    <FormInputSwitch {...register('transports.sockets')} disabled={!edit} />
                   </Grid>
                 </Grid>
               </Grid>
