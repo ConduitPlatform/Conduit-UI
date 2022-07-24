@@ -151,7 +151,7 @@ const GeneralSettingsTab: React.FC = () => {
                         arrow>
                         <InfoOutlined fontSize={'small'} />
                       </Tooltip>
-                      <FormInputSwitch name={'transports.rest'} disabled={!edit} />
+                      <FormInputSwitch name={'transports.rest'} disabled />
                     </Box>
                   </Box>
                 </Grid>

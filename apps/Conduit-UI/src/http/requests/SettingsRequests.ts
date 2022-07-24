@@ -57,7 +57,8 @@ export const deleteAdmin = (id: string) => {
 };
 
 export const changePassword = (oldPassword: string, newPassword: string) => {
-  return putRequest(`/change-password`, {
-    data: { oldPassword: oldPassword, newPassword: newPassword },
+  return postRequest(`/change-password`, {
+    oldPassword: oldPassword,
+    newPassword: newPassword,
   });
 };

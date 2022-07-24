@@ -81,7 +81,7 @@ const ChangePasswordTab: React.FC = () => {
                     variant="contained"
                     color="primary"
                     sx={{ mt: 1 }}>
-                    Create New User
+                    Submit
                   </Button>
                 </form>
               </FormProvider>
