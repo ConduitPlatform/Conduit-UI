@@ -35,6 +35,7 @@ const ChangePasswordTab: React.FC = () => {
               <FormProvider {...methods}>
                 <form onSubmit={methods.handleSubmit(handleChangePassword)}>
                   <FormInputText
+                    typeOfInput="password"
                     name="oldPassword"
                     rules={{
                       required: 'Your old password is required',
