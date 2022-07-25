@@ -7,11 +7,6 @@ import { Icon } from '@mui/material';
 import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
-import getConfig from 'next/config';
-
-const {
-  publicRuntimeConfig: { CONDUIT_URL: CONDUIT_API },
-} = getConfig();
 
 interface Props {
   title: string;
@@ -35,6 +30,7 @@ const StyledLayout: FC<Props> = ({
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
   const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
+  const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;

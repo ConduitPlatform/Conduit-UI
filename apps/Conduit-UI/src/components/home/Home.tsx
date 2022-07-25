@@ -22,11 +22,6 @@ import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
-import getConfig from 'next/config';
-
-const {
-  publicRuntimeConfig: { CONDUIT_URL: CONDUIT_API },
-} = getConfig();
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -40,6 +35,7 @@ const Home: React.FC = () => {
   const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
   const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
+  const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
