@@ -56,7 +56,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, baseUrl, adminUrl
             <Typography>Go to App GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
-              href={`${baseUrl}/graphql/`}
+              href={`${baseUrl}/graphql`}
               target="_blank"
               rel="noreferrer">
               <Button variant="outlined">graphQL</Button>
@@ -68,7 +68,7 @@ const GraphQLModal: FC<Props> = ({ open, setOpen, icon, title, baseUrl, adminUrl
             <Typography>Go to Admin GraphQL: </Typography>
             <a
               style={{ textDecoration: 'none' }}
-              href={`${adminUrl}/graphql/`}
+              href={`${adminUrl}/graphql`}
               target="_blank"
               rel="noreferrer">
               <Button variant="outlined">GraphQL</Button>
