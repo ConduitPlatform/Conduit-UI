@@ -1,7 +1,9 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import RouterLayout from '../../components/navigation/InnerLayouts/routerLayout';
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
+import { asyncGetRouterConfig } from '../../redux/slices/routerSlice';
+import { useAppDispatch } from '../../redux/store';
 
 const SecurityTab = dynamic(() => import('../../components/routing/SecurityTab'), {
   loading: () => (
@@ -10,6 +12,12 @@ const SecurityTab = dynamic(() => import('../../components/routing/SecurityTab')
 });
 
 const SecurityClients = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(asyncGetRouterConfig());
+  }, [dispatch]);
+
   return <SecurityTab />;
 };
 
