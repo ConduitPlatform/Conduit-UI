@@ -27,7 +27,7 @@ const GeneralSettingsTab: React.FC = () => {
   const { coreSettings, adminSettings } = useAppSelector((state) => state.settingsSlice);
   const [editEnv, setEditEnv] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
-  const [env, setEnv] = useState<string>(coreSettings.env);
+  const [env, setEnv] = useState<string>('');
 
   const methodsAdmin = useForm<IAdminSettings>({
     defaultValues: useMemo(() => {
@@ -94,6 +94,17 @@ const GeneralSettingsTab: React.FC = () => {
     [dispatch]
   );
 
+  const SelectEnv = useMemo(() => {
+    return (
+      <FormInputSelect
+        {...registerCore('env', { onChange: (e) => setEnv(e.target.value) })}
+        disabled={!editEnv}
+        label={startCase(camelCase(env))}
+        options={selectOptions}
+      />
+    );
+  }, [editEnv, env, registerCore]);
+
   return (
     <Container maxWidth={'md'}>
       <Paper sx={{ p: 4, borderRadius: 8 }}>
@@ -107,11 +118,7 @@ const GeneralSettingsTab: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} mt={2} container alignItems={'center'} mb={1}>
-                <FormInputSelect
-                  {...registerCore('env', { disabled: !editEnv })}
-                  label={startCase(camelCase(env))}
-                  options={selectOptions}
-                />
+                {SelectEnv}
               </Grid>
               <ConfigSaveSection
                 edit={editEnv}
@@ -130,7 +137,7 @@ const GeneralSettingsTab: React.FC = () => {
                 <Typography variant={'h6'}>Administrative Routing</Typography>
               </Grid>
               <Grid item xs={12} sx={{ marginY: 2 }} container wrap={'nowrap'}>
-                <FormInputText {...registerAdmin('hostUrl', { disabled: !edit })} label="URL" />
+                <FormInputText {...registerAdmin('hostUrl')} disabled={!edit} label="URL" />
               </Grid>
               <Grid container item alignItems={'center'} mb={1} spacing={1}>
                 <Grid item container>
@@ -152,7 +159,11 @@ const GeneralSettingsTab: React.FC = () => {
                         arrow>
                         <InfoOutlined fontSize={'small'} />
                       </Tooltip>
-                      <FormInputSwitch {...registerAdmin('transports.rest', { disabled: true })} />
+                      <fieldset
+                        disabled={true}
+                        style={{ border: 0, paddingRight: 0, paddingLeft: 0 }}>
+                        <FormInputSwitch {...registerAdmin('transports.rest')} />
+                      </fieldset>
                     </Box>
                   </Box>
                 </Grid>
@@ -166,9 +177,7 @@ const GeneralSettingsTab: React.FC = () => {
                     <Typography variant={'subtitle1'} mr={1}>
                       GraphQL:
                     </Typography>
-                    <FormInputSwitch
-                      {...registerAdmin('transports.graphql', { disabled: !edit })}
-                    />
+                    <FormInputSwitch {...registerAdmin('transports.graphql')} disabled={!edit} />
                   </Box>
                 </Grid>
                 <Grid item container>
@@ -180,9 +189,7 @@ const GeneralSettingsTab: React.FC = () => {
                     <Typography variant={'subtitle1'} mr={1}>
                       WebSockets:
                     </Typography>
-                    <FormInputSwitch
-                      {...registerAdmin('transports.sockets', { disabled: !edit })}
-                    />
+                    <FormInputSwitch {...registerAdmin('transports.sockets')} disabled={!edit} />
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
@@ -198,7 +205,8 @@ const GeneralSettingsTab: React.FC = () => {
                   </Grid>
                   <Grid item md={8} xs={12}>
                     <FormInputText
-                      {...registerAdmin('auth.hashRounds', { disabled: !edit })}
+                      {...registerAdmin('auth.hashRounds')}
+                      disabled={!edit}
                       typeOfInput={'number'}
                       textFieldProps={{
                         margin: 'dense',
@@ -214,7 +222,8 @@ const GeneralSettingsTab: React.FC = () => {
                   </Grid>
                   <Grid item md={8} xs={12}>
                     <FormInputText
-                      {...registerAdmin('auth.tokenExpirationTime', { disabled: !edit })}
+                      {...registerAdmin('auth.tokenExpirationTime')}
+                      disabled={!edit}
                       typeOfInput={'number'}
                       textFieldProps={{
                         margin: 'dense',
@@ -229,7 +238,8 @@ const GeneralSettingsTab: React.FC = () => {
                   </Grid>
                   <Grid item md={8} xs={12}>
                     <FormInputText
-                      {...registerAdmin('auth.tokenSecret', { disabled: !edit })}
+                      {...registerAdmin('auth.tokenSecret')}
+                      disabled={!edit}
                       textFieldProps={{
                         margin: 'dense',
                         size: 'small',
