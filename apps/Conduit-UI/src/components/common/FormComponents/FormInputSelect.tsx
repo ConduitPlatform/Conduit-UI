@@ -38,7 +38,6 @@ export const FormInputSelect = forwardRef((props: FormSelectProps, ref) => {
       render={({ field }) => (
         <TextField
           {...field}
-          inputRef={ref}
           select
           fullWidth
           disabled={disabled}

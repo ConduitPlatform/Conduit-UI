@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -38,7 +38,7 @@ const EmailConfig: React.FC = () => {
   const transportProvider = useWatch({
     control,
     name: 'transport',
-    defaultValue: config?.transport,
+    defaultValue: 'smtp',
   });
 
   const handleCancel = () => {
@@ -46,14 +46,13 @@ const EmailConfig: React.FC = () => {
     reset();
   };
 
-  const onSubmit = (data: IEmailConfig) => {
-    setEdit(false);
-    dispatch(asyncUpdateEmailConfig(data));
-  };
-
-  const fields: any = useMemo(() => {
-    return config?.transportSettings?.[transportProvider] ?? {};
-  }, [config?.transportSettings, transportProvider]);
+  const onSubmit = useCallback(
+    (data: IEmailConfig) => {
+      setEdit(false);
+      dispatch(asyncUpdateEmailConfig(data));
+    },
+    [dispatch]
+  );
 
   const renderSettingsFields = useMemo(() => {
     type FieldsTypes =
@@ -73,6 +72,8 @@ const EmailConfig: React.FC = () => {
       | 'transportSettings.mandrill.apiKey'
       | 'transportSettings.sendgrid'
       | 'transportSettings.sendgrid.apiKey';
+
+    const fields: any = config?.transportSettings?.[transportProvider] ?? {};
 
     const providers = [
       {
@@ -100,7 +101,8 @@ const EmailConfig: React.FC = () => {
         </Grid>
         <Grid item md={6} xs={12}>
           <FormInputSelect
-            {...register('transport', { disabled: !edit })}
+            {...register('transport')}
+            disabled={!edit}
             label="Transport Provider"
             options={providers.map((provider) => ({
               label: provider.label,
@@ -152,7 +154,7 @@ const EmailConfig: React.FC = () => {
         </Grid>
       </>
     );
-  }, [edit, fields, register, transportProvider]);
+  }, [config?.transportSettings, edit, register, transportProvider]);
 
   return (
     <ConfigContainer>

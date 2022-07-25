@@ -29,7 +29,6 @@ export const FormInputText = forwardRef((props: FormInputTextProps, ref) => {
       render={({ field }) => (
         <TextField
           {...field}
-          inputRef={ref}
           multiline={rows !== undefined}
           rows={rows}
           disabled={disabled}

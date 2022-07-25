@@ -20,7 +20,6 @@ export const FormInputSwitch = forwardRef((props: FormSwitchProps, ref) => {
       render={({ field }) => (
         <Switch
           {...field}
-          inputRef={ref}
           checked={field.value}
           color="primary"
           disabled={disabled}
