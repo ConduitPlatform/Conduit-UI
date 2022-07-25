@@ -50,7 +50,7 @@ const PermissionsDialog: FC<Props> = ({
     methods.reset(permissions);
   }, [methods, permissions]);
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, register } = methods;
 
   const onSubmit = (data: Permissions) => {
     setPermissions({ ...data });
@@ -95,9 +95,8 @@ const PermissionsDialog: FC<Props> = ({
                 <Grid item sm={6}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <FormInputCheckBox
-                      name="extendable"
+                      {...register('extendable', { disabled: isDisabled() })}
                       label="Extendable"
-                      disabled={isDisabled()}
                     />
                     <Tooltip title="Allows the schema to be extended by modules">
                       <InfoOutlined />
@@ -106,7 +105,10 @@ const PermissionsDialog: FC<Props> = ({
                 </Grid>
                 <Grid item sm={6}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <FormInputCheckBox name="canCreate" label="Create" disabled={isDisabled()} />
+                    <FormInputCheckBox
+                      {...register('canCreate', { disabled: isDisabled() })}
+                      label="Create"
+                    />
                     <Tooltip title="Allows the creation of schema entries by extension schemas">
                       <InfoOutlined />
                     </Tooltip>
@@ -114,7 +116,10 @@ const PermissionsDialog: FC<Props> = ({
                 </Grid>
                 <Grid item sm={6}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <FormInputCheckBox name="canDelete" label="Delete" disabled={isDisabled()} />
+                    <FormInputCheckBox
+                      {...register('canDelete', { disabled: isDisabled() })}
+                      label="Delete"
+                    />
                     <Tooltip title="Allows the deletion of schema entries by extension schemas">
                       <InfoOutlined />
                     </Tooltip>
@@ -124,9 +129,8 @@ const PermissionsDialog: FC<Props> = ({
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <FormInputSelect
                       textFieldProps={{ sx: { maxWidth: '200px' } }}
-                      disabled={isDisabled()}
                       label={'Modify'}
-                      name="canModify"
+                      {...register('canModify', { disabled: isDisabled() })}
                       options={options.map((option) => ({
                         label: option.label,
                         value: option.value,

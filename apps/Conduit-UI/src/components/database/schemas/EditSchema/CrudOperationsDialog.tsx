@@ -42,7 +42,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
     methods.reset(crudOperations);
   }, [methods, crudOperations]);
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, register } = methods;
 
   const onSubmit = (data: ICrudOperations) => {
     setCrudOperations({ ...data });
@@ -87,49 +87,45 @@ const CrudOperationsDialog: React.FC<Props> = ({
                 <Grid item sm={6} p={2}>
                   <Typography>Create:</Typography>
                   <FormInputCheckBox
-                    name="create.enabled"
+                    {...register('create.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    name="create.authenticated"
+                    {...register('create.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6} p={2}>
                   <Typography>Delete:</Typography>
                   <FormInputCheckBox
-                    name="delete.enabled"
+                    {...register('delete.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    name="delete.authenticated"
+                    {...register('delete.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6} p={2}>
                   <Typography>Read:</Typography>
-                  <FormInputCheckBox name="read.enabled" label="enabled" disabled={isDisabled()} />
                   <FormInputCheckBox
-                    name="read.authenticated"
+                    {...register('read.enabled', { disabled: isDisabled() })}
+                    label="enabled"
+                  />
+                  <FormInputCheckBox
+                    {...register('read.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6} p={2}>
                   <Typography>Update:</Typography>
                   <FormInputCheckBox
-                    name="update.enabled"
+                    {...register('update.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    name="update.authenticated"
+                    {...register('update.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
 

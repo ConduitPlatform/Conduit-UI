@@ -20,7 +20,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<Customer>({ defaultValues: preloadedValues });
-  const { reset } = methods;
+  const { reset, register } = methods;
 
   const [drawer, setDrawer] = useState<boolean>(false);
   const [selectedUsers, setSelectedUsers] = useState<AuthUserUI[]>([]);
@@ -68,6 +68,18 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   };
 
   const inputs = ['email', 'buyerName', 'phoneNumber', 'address', 'postCode'];
+  type inputTypes =
+    | '_id'
+    | 'userId'
+    | 'email'
+    | 'buyerName'
+    | 'phoneNumber'
+    | 'address'
+    | 'postCode'
+    | 'stripe'
+    | 'updatedAt'
+    | 'createdAt'
+    | 'stripe.customerId';
 
   return (
     <FormProvider {...methods}>
@@ -85,8 +97,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           {inputs.map((input, index) => (
             <Grid key={index} item sm={12}>
               <FormInputText
-                name={input}
-                rules={{ required: `${input} is required` }}
+                {...register(`${input}` as inputTypes, { required: `${input} is required` })}
                 label={startCase(camelCase(input))}
               />
             </Grid>

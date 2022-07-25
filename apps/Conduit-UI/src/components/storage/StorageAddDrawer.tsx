@@ -36,7 +36,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
       return { name: '', folder: '', container: '', isPublic: false };
     }, []),
   });
-  const { reset, setValue } = methods;
+  const { reset, setValue, register } = methods;
 
   useEffect(() => {
     setValue('container', path[0]);
@@ -98,26 +98,29 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
               />
             </Grid>
             <Grid item sm={12}>
-              <FormInputText name="name" label="File name" />
+              <FormInputText {...register('name')} label="File name" />
             </Grid>
             <Grid item sm={12}>
-              <FormInputSelect options={extractContainers()} label="Container" name="container" />
+              <FormInputSelect
+                options={extractContainers()}
+                label="Container"
+                {...register('container')}
+              />
             </Grid>
             <Grid item sm={12}>
               <FormInputText
-                name="folder"
-                label="Folder name"
-                rules={{
+                {...register('folder', {
                   pattern: {
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
-                }}
+                })}
+                label="Folder name"
               />
             </Grid>
             <Grid item sm={12}>
               <Typography variant="subtitle1">Public</Typography>
-              <FormInputSwitch name="isPublic" />
+              <FormInputSwitch {...register('isPublic')} />
             </Grid>
             <Grid container item>
               <Grid item sx={{ mr: 2 }}>

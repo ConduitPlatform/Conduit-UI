@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { forwardRef } from 'react';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 import { TextFieldProps } from '@mui/material/TextField/TextField';
@@ -13,15 +13,9 @@ interface FormInputTextProps {
   textFieldProps?: TextFieldProps;
 }
 
-export const FormInputText: FC<FormInputTextProps> = ({
-  name,
-  label,
-  rows,
-  disabled,
-  typeOfInput,
-  rules,
-  textFieldProps,
-}) => {
+export const FormInputText = forwardRef((props: FormInputTextProps, ref) => {
+  const { name, label, rows, disabled, typeOfInput, rules, textFieldProps } = props;
+
   const {
     control,
     formState: { errors },
@@ -49,4 +43,6 @@ export const FormInputText: FC<FormInputTextProps> = ({
       )}
     />
   );
-};
+});
+
+FormInputText.displayName = 'FormInputText';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
 import { Switch, SwitchProps } from '@mui/material';
 
@@ -9,12 +9,8 @@ interface FormSwitchProps {
   switchProps?: SwitchProps;
 }
 
-export const FormInputSwitch: React.FC<FormSwitchProps> = ({
-  name,
-  disabled,
-  rules,
-  switchProps,
-}) => {
+export const FormInputSwitch = forwardRef((props: FormSwitchProps, ref) => {
+  const { name, disabled, rules, switchProps } = props;
   const { control } = useFormContext();
   return (
     <Controller
@@ -32,4 +28,6 @@ export const FormInputSwitch: React.FC<FormSwitchProps> = ({
       )}
     />
   );
-};
+});
+
+FormInputSwitch.displayName = 'FormInputSwitch';

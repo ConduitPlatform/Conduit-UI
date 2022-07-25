@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
 import { Checkbox, FormControlLabel } from '@mui/material';
 
@@ -9,12 +9,8 @@ interface FormCheckboxProps {
   rules?: ControllerProps['rules'];
 }
 
-export const FormInputCheckBox: React.FC<FormCheckboxProps> = ({
-  name,
-  disabled,
-  label,
-  rules,
-}) => {
+export const FormInputCheckBox = forwardRef((props: FormCheckboxProps, ref) => {
+  const { name, disabled, label, rules } = props;
   const { control } = useFormContext();
   return (
     <Controller
@@ -31,4 +27,6 @@ export const FormInputCheckBox: React.FC<FormCheckboxProps> = ({
       )}
     />
   );
-};
+});
+
+FormInputCheckBox.displayName = 'FormInputCheckBox';

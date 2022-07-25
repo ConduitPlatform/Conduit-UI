@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { IEmailConfig } from '../../models/emails/EmailModels';
-import TransportSettings from './TransportSettings';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
@@ -24,7 +23,8 @@ const EmailConfig: React.FC = () => {
       return config;
     }, [config]),
   });
-  const { reset, control } = methods;
+
+  const { reset, control, register } = methods;
 
   useEffect(() => {
     reset(config);
@@ -35,36 +35,65 @@ const EmailConfig: React.FC = () => {
     name: 'active',
   });
 
+  const transportProvider = useWatch({
+    control,
+    name: 'transport',
+    defaultValue: 'smtp',
+  });
+
   const handleCancel = () => {
     setEdit(false);
     reset();
   };
 
-  const onSubmit = (data: IEmailConfig) => {
-    setEdit(false);
-    dispatch(asyncUpdateEmailConfig(data));
-  };
+  const onSubmit = useCallback(
+    (data: IEmailConfig) => {
+      setEdit(false);
+      dispatch(asyncUpdateEmailConfig(data));
+    },
+    [dispatch]
+  );
 
-  const providers = [
-    {
-      name: 'mailgun',
-      label: 'Mailgun',
-    },
-    {
-      name: 'smtp',
-      label: 'Smtp',
-    },
-    {
-      name: 'mandrill',
-      label: 'Mandrill',
-    },
-    {
-      name: 'sendgrid',
-      label: 'Sendgrid',
-    },
-  ];
+  const renderSettingsFields = useMemo(() => {
+    type FieldsTypes =
+      | 'transportSettings.mailgun'
+      | 'transportSettings.mailgun.apiKey'
+      | 'transportSettings.mailgun.domain'
+      | 'transportSettings.mailgun.host'
+      | 'transportSettings.mailgun.proxy'
+      | 'transportSettings.smtp'
+      | 'transportSettings.smtp.port'
+      | 'transportSettings.smtp.host'
+      | 'transportSettings.smtp.auth'
+      | 'transportSettings.smtp.auth.username'
+      | 'transportSettings.smtp.auth.password'
+      | 'transportSettings.smtp.auth.method'
+      | 'transportSettings.mandrill'
+      | 'transportSettings.mandrill.apiKey'
+      | 'transportSettings.sendgrid'
+      | 'transportSettings.sendgrid.apiKey';
 
-  const renderSettingsFields = () => {
+    const fields: any = config?.transportSettings?.[transportProvider] ?? {};
+
+    const providers = [
+      {
+        name: 'mailgun',
+        label: 'Mailgun',
+      },
+      {
+        name: 'smtp',
+        label: 'Smtp',
+      },
+      {
+        name: 'mandrill',
+        label: 'Mandrill',
+      },
+      {
+        name: 'sendgrid',
+        label: 'Sendgrid',
+      },
+    ];
+
     return (
       <>
         <Grid item xs={12}>
@@ -72,23 +101,61 @@ const EmailConfig: React.FC = () => {
         </Grid>
         <Grid item md={6} xs={12}>
           <FormInputSelect
+            {...register('transport', { disabled: !edit })}
             label="Transport Provider"
-            name="transport"
             options={providers.map((provider) => ({
               label: provider.label,
               value: provider.name,
             }))}
-            disabled={!edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <FormInputText name="sendingDomain" label="Sending Domain" disabled={!edit} />
+          <FormInputText
+            {...register('sendingDomain', { disabled: !edit })}
+            label="Sending Domain"
+          />
         </Grid>
-        <Divider sx={{ marginTop: 3, width: '100%' }} />
-        <TransportSettings data={config} control={control} disabled={!edit} />
+        <Grid item md={12} xs={12}>
+          <Divider sx={{ marginY: 2 }} variant={'fullWidth'} />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant={'h6'}>Transport settings</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2} item>
+            {Object.keys(fields)?.map((field) => {
+              if (transportProvider === 'smtp' && field === 'auth') {
+                return Object.keys(fields?.[field])?.map((childField) => {
+                  return (
+                    <Grid item md={6} xs={12} key={`${childField}`}>
+                      <FormInputText
+                        {...register(`transportSettings.smtp.auth.${childField}` as FieldsTypes, {
+                          disabled: !edit,
+                        })}
+                        label={childField}
+                        key={childField}
+                      />
+                    </Grid>
+                  );
+                });
+              }
+              return (
+                <Grid item md={6} xs={12} key={`${field}`}>
+                  <FormInputText
+                    {...register(`transportSettings.${transportProvider}.${field}` as FieldsTypes, {
+                      disabled: !edit,
+                    })}
+                    label={field}
+                    key={field}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Grid>
       </>
     );
-  };
+  }, [config?.transportSettings, edit, register, transportProvider]);
 
   return (
     <ConfigContainer>
@@ -102,10 +169,10 @@ const EmailConfig: React.FC = () => {
               alignItems={'center'}
               mb={1}>
               <Typography variant={'h6'}>Activate Email Module</Typography>
-              <FormInputSwitch name="active" />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
-              {isActive && renderSettingsFields()}
+              {isActive && renderSettingsFields}
             </Grid>
             <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
           </Grid>

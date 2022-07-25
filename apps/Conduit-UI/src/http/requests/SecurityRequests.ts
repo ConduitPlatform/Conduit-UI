@@ -20,15 +20,15 @@ export const generateNewClientRequest = (
   notes?: string,
   alias?: string
 ) => {
-  return postRequest(`/router/client`, { platform, domain, notes, alias });
+  return postRequest(`/router/security/client`, { platform, domain, notes, alias });
 };
 
 export const updateSecurityClient = (_id: string, data: IUpdateClient) => {
-  return putRequest(`/router/client/${_id}`, { ...data });
+  return putRequest(`/router/security/client/${_id}`, { ...data });
 };
 
 export const deleteClientRequest = (_id: string) => {
-  return deleteRequest(`/router/client/${_id}`);
+  return deleteRequest(`/router/security/client/${_id}`);
 };
 
 export const getRouterConfig = () => {

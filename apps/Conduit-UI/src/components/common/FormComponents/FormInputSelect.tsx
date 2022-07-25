@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { MenuItem } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
@@ -13,14 +13,8 @@ interface FormSelectProps {
   textFieldProps?: TextFieldProps;
 }
 
-export const FormInputSelect: React.FC<FormSelectProps> = ({
-  name,
-  label,
-  options,
-  disabled,
-  rules,
-  textFieldProps,
-}) => {
+export const FormInputSelect = forwardRef((props: FormSelectProps, ref) => {
+  const { name, label, options, disabled, rules, textFieldProps } = props;
   const generateSingleOptions = () => {
     return options.map((option: { label: string; value: string }) => {
       return (
@@ -57,4 +51,6 @@ export const FormInputSelect: React.FC<FormSelectProps> = ({
       )}
     />
   );
-};
+});
+
+FormInputSelect.displayName = 'FormInputSelect';

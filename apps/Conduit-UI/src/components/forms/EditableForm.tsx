@@ -55,7 +55,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   const methods = useForm<IForm>({ defaultValues: preloadedValues });
 
-  const { reset, getValues, setValue } = methods;
+  const { reset, getValues, setValue, register } = methods;
 
   const handleAddField = () => {
     setInputFields([...inputFields, { id: uuidV4(), key: '', type: '' }]);
@@ -137,12 +137,11 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              name="name"
-              label="Name"
-              rules={{
+              {...register('name', {
                 required: 'The form name is required',
                 pattern: { value: /^[A-Za-z]+$/, message: 'A form name should not have spaces' },
-              }}
+              })}
+              label="Name"
             />
           </Grid>
           <Grid item container xs={12}>
@@ -198,17 +197,15 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           </Grid>
           <Grid item sm={12}>
             <FormInputText
-              name="forwardTo"
-              rules={{ required: 'Forward to is required' }}
+              {...register('forwardTo', { required: 'Forward to is required' })}
               label="Forward to"
             />
           </Grid>
           <Grid item sm={12}>
             <FormInputSelect
-              name="emailField"
+              {...register('emailField', { required: 'Email field is required' })}
               label="Email Field"
               options={validOptions()}
-              rules={{ required: 'Email field is required ' }}
             />
           </Grid>
           <Grid item container xs={12}>
@@ -216,7 +213,7 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               <Typography variant="subtitle2">Enabled form:</Typography>
             </Grid>
             <Grid item xs={1}>
-              <FormInputSwitch name="enabled" />
+              <FormInputSwitch {...register('enabled')} />
             </Grid>
           </Grid>
           <Grid container item>

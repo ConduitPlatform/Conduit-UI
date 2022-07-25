@@ -70,7 +70,7 @@ const SecurityTab: React.FC = () => {
     }, [config]),
   });
 
-  const { reset, control } = methods;
+  const { reset, control, register } = methods;
 
   useEffect(() => {
     methods.reset(config);
@@ -146,7 +146,11 @@ const SecurityTab: React.FC = () => {
   };
 
   const onSubmit = (data: IRouterConfig) => {
-    dispatch(asyncPutRouterConfig(data));
+    const finalData = {
+      ...config,
+      security: { clientValidation: data.security.clientValidation },
+    };
+    dispatch(asyncPutRouterConfig(finalData));
     setEdit(false);
   };
 
@@ -168,7 +172,7 @@ const SecurityTab: React.FC = () => {
               <Typography variant={'h6'} color={'#FFFFFF'}>
                 Require Client ID/Secret validation
               </Typography>
-              <FormInputSwitch name={'security.clientValidation'} disabled={!edit} />
+              <FormInputSwitch {...register('security.clientValidation')} disabled={!edit} />
             </Box>
 
             {isActive ? (

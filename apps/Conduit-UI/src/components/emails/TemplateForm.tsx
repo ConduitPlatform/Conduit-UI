@@ -13,7 +13,7 @@ interface Props {
 const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   const methods = useForm<EmailTemplateType>({ defaultValues: preloadedValues });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, register } = methods;
 
   const onSubmit = (data: EmailTemplateType) => {
     handleSubmitData({ ...data });
@@ -29,19 +29,17 @@ const TemplateForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
         <Grid container spacing={2}>
           <Grid item sm={12}>
             <FormInputText
-              name="name"
+              {...register('name', { required: 'Template name is required!' })}
               label="Name"
-              rules={{ required: 'Template name is required!' }}
             />
           </Grid>
           <Grid item sm={12}>
-            <FormInputText name="sender" label="Sender*" />
+            <FormInputText {...register('sender')} label="Sender*" />
           </Grid>
           <Grid item sm={12}>
             <FormInputText
-              name="subject"
+              {...register('subject', { required: 'Subject is required!' })}
               label="Subject"
-              rules={{ required: 'Subject is required!' }}
             />
           </Grid>
           <Grid item sm={12}>

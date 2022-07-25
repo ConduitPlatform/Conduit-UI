@@ -23,7 +23,7 @@ const SendSms: React.FC = () => {
     },
   });
 
-  const { reset } = methods;
+  const { reset, register } = methods;
 
   const handleSend = (data: ISendSms) => {
     dispatch(asyncSendSms(data));
@@ -43,20 +43,19 @@ const SendSms: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item sm={12}>
                 <FormInputText
-                  name="to"
-                  label="Send to"
-                  rules={{
+                  {...register('to', {
                     required: 'phone number is required',
                     pattern: {
                       value: phoneNumberRegExp,
                       message: 'Not a valid phone number!',
                     },
-                  }}
+                  })}
+                  label="Send to"
                   typeOfInput={'text'}
                 />
               </Grid>
               <Grid item sm={12}>
-                <FormInputText name="message" rows={4} label="Message" />
+                <FormInputText {...register('message')} rows={4} label="Message" />
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
                 <Box marginTop={3}>

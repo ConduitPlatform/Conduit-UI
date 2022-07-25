@@ -33,6 +33,8 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
   const [selectedUsers, setSelectedUsers] = useState<AuthUserUI[]>([]);
   const { users, count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
 
+  const { register } = methods;
+
   const getData = useCallback(
     (params: Pagination & Search & { provider: string }) => {
       dispatch(asyncGetAuthUserData(params));
@@ -90,10 +92,10 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
                 />
               </Box>
               <Grid item xs={12}>
-                <FormInputText name="title" label="title" />
+                <FormInputText {...register('title')} label="title" />
               </Grid>
               <Grid item xs={12}>
-                <FormInputText name="body" rows={10} label="Body" />
+                <FormInputText {...register('body')} rows={10} label="Body" />
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
                 <Button type="submit" variant="contained" color="primary" startIcon={<Send />}>

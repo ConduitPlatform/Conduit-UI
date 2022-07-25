@@ -28,7 +28,7 @@ const NotificationConfig: FC = () => {
       };
     }, [config]),
   });
-  const { reset, control, setValue } = methods;
+  const { reset, control, setValue, register } = methods;
 
   useEffect(() => {
     reset(config);
@@ -105,15 +105,14 @@ const NotificationConfig: FC = () => {
                 mb: 1,
               }}>
               <Typography variant={'h6'}>Activate Push Notifications Module</Typography>
-              <FormInputSwitch name={'active'} disabled={!edit} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             {isActive && (
               <Grid container spacing={2} sx={{ p: 3 }}>
                 <Grid container item alignContent={'center'} md={6} xs={12}>
                   <FormInputSelect
+                    {...register('providerName', { disabled: !edit })}
                     label={'Provider name'}
-                    name="providerName"
-                    disabled={!edit}
                     options={providers?.map((provider) => ({
                       label: provider.name,
                       value: provider.name,
@@ -124,23 +123,20 @@ const NotificationConfig: FC = () => {
                   <>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        name={'firebase.projectId'}
+                        {...register('firebase.projectId', { disabled: !edit })}
                         label={'Project Id'}
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        name={'firebase.privateKey'}
+                        {...register('firebase.privateKey', { disabled: !edit })}
                         label={'Private key'}
-                        disabled={!edit}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
-                        name={'firebase.clientEmail'}
+                        {...register('firebase.clientEmail', { disabled: !edit })}
                         label={'Client Email'}
-                        disabled={!edit}
                       />
                     </Grid>
                     <Typography sx={{ margin: '30px 15px 10px' }}> OR </Typography>

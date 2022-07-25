@@ -40,7 +40,7 @@ const SendEmailForm: React.FC = () => {
       withTemplate: false,
     },
   });
-  const { handleSubmit, reset, control, setValue, getValues } = methods;
+  const { handleSubmit, reset, control, setValue, getValues, register } = methods;
 
   const getData = useCallback(
     (params: Pagination & Search & { provider: string }) => {
@@ -134,37 +134,38 @@ const SendEmailForm: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormInputText
-                  name="email"
-                  label={'Recipient (To:)'}
-                  rules={{
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
                       value: emailRegExp,
                       message: 'Not a valid e-mail!',
                     },
-                  }}
+                  })}
+                  label={'Recipient (To:)'}
                   typeOfInput={'text'}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormInputText
-                  name="sender"
-                  label={'Sender (From:)'}
-                  rules={{
+                  {...register('sender', {
                     required: 'Email is required',
                     pattern: {
                       value: emailRegExp,
                       message: 'Not a valid e-mail!',
                     },
-                  }}
+                  })}
+                  label={'Sender (From:)'}
                   typeOfInput={'text'}
                 />
               </Grid>
               <Grid item xs={8}>
-                <FormInputText name="subject" label={'Subject'} disabled={withTemplate} />
+                <FormInputText
+                  {...register('subject', { disabled: withTemplate })}
+                  label={'Subject'}
+                />
               </Grid>
               <Grid item xs={4} mt={1}>
-                <FormInputCheckBox name="withTemplate" label="With Template" />
+                <FormInputCheckBox {...register('withTemplate')} label="With Template" />
               </Grid>
               <Grid item xs={12}>
                 <SelectedElements

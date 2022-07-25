@@ -27,7 +27,7 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
   const dispatch = useAppDispatch();
   const methods = useForm<AuthUser>({ defaultValues: data });
 
-  const { handleSubmit, reset, setValue } = methods;
+  const { handleSubmit, reset, setValue, register } = methods;
 
   useEffect(() => {
     setValue('email', data.email);
@@ -79,37 +79,38 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 spacing={2}>
                 <Grid item sm={12}>
                   <FormInputText
-                    name="email"
-                    label="email"
-                    rules={{
+                    {...register('email', {
                       required: 'Email is required',
                       pattern: {
                         value: emailRegExp,
                         message: 'Not a valid e-mail!',
                       },
-                    }}
+                    })}
+                    label="email"
                   />
                 </Grid>
                 <Grid item sm={12}>
                   <FormInputText
-                    name="phoneNumber"
-                    label="Phone Number"
-                    rules={{
+                    {...register('phoneNumber', {
                       pattern: {
                         value: phoneNumberRegExp,
                         message: 'Not a valid phone number',
                       },
-                    }}
+                    })}
+                    label="Phone Number"
                   />
                 </Grid>
                 <Grid item sm={3}>
-                  <FormInputCheckBox name="active" label="Active" />
+                  <FormInputCheckBox {...register('active')} label="Active" />
                 </Grid>
                 <Grid item sm={3}>
-                  <FormInputCheckBox name="isVerified" label="Verified" />
+                  <FormInputCheckBox {...register('isVerified')} label="Verified" />
                 </Grid>
                 <Grid item sm={3}>
-                  <FormInputCheckBox name="hasTwoFA" label="Has Two-factor Authentication" />
+                  <FormInputCheckBox
+                    {...register('hasTwoFA')}
+                    label="Has Two-factor Authentication"
+                  />
                 </Grid>
                 <Grid item sm={12}>
                   <Button

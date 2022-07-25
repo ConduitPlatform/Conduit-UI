@@ -1,13 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  MenuItem,
-  styled,
-  TextField,
-} from '@mui/material';
+import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
@@ -18,13 +10,6 @@ import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
 import { Loop } from '@mui/icons-material';
-
-const CustomizedGrid = styled(Grid)(() => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  textAlign: 'center',
-}));
 
 interface Props {
   schemas: any;
@@ -130,10 +115,10 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
-      get: d.modelOptions.conduit.cms.crudOperations.read.enabled,
-      post: d.modelOptions.conduit.cms.crudOperations.create.enabled,
-      update: d.modelOptions.conduit.cms.crudOperations.update.enabled,
-      delete: d.modelOptions.conduit.cms.crudOperations.delete.enabled,
+      get: d.modelOptions.conduit.cms?.crudOperations.read.enabled,
+      post: d.modelOptions.conduit.cms?.crudOperations.create.enabled,
+      update: d.modelOptions.conduit.cms?.crudOperations.update.enabled,
+      delete: d.modelOptions.conduit.cms?.crudOperations.delete.enabled,
     }));
   };
 
