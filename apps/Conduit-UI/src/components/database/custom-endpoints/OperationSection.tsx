@@ -115,10 +115,10 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
-      get: d.modelOptions.conduit.cms.crudOperations.read.enabled,
-      post: d.modelOptions.conduit.cms.crudOperations.create.enabled,
-      update: d.modelOptions.conduit.cms.crudOperations.update.enabled,
-      delete: d.modelOptions.conduit.cms.crudOperations.delete.enabled,
+      get: d.modelOptions.conduit.cms?.crudOperations.read.enabled,
+      post: d.modelOptions.conduit.cms?.crudOperations.create.enabled,
+      update: d.modelOptions.conduit.cms?.crudOperations.update.enabled,
+      delete: d.modelOptions.conduit.cms?.crudOperations.delete.enabled,
     }));
   };
 
