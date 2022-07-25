@@ -94,6 +94,7 @@ export const asyncChangePassword = createAsyncThunk(
       const { data } = await changePassword(params.newPassword, params.oldPassword);
 
       thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Password changed!`));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

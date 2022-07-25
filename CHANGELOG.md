@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.14.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.14.0...v0.14.1) (2022-07-24)
+
+
+### Features
+
+* added turborepo build & dev pipelines ([#112](https://github.com/ConduitPlatform/Conduit-UI/issues/112)) ([85ba94c](https://github.com/ConduitPlatform/Conduit-UI/commit/85ba94ca52fb5d1e613eeaa73cd81e934e3667b0))
+
+
+### Bug Fixes
+
+* **Conduit-UI:** consistent config pages ([#111](https://github.com/ConduitPlatform/Conduit-UI/issues/111)) ([67356f6](https://github.com/ConduitPlatform/Conduit-UI/commit/67356f61fac4edc9c72679814f966c1c7a396d63))
+* **settings:** change password using wrong endpoint ([#114](https://github.com/ConduitPlatform/Conduit-UI/issues/114)) ([94d44cc](https://github.com/ConduitPlatform/Conduit-UI/commit/94d44ccd501c6ad30ab8ee62f566633ebeffa62c))
+
 ## [0.14.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.13.1...v0.14.0) (2022-07-15)
 
 

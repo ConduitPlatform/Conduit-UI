@@ -37,6 +37,7 @@ const ChangePasswordTab: React.FC = () => {
                   <FormInputText
                     {...register('oldPassword', { required: 'Your old password is required' })}
                     label="Old password"
+                    typeOfInput="password"
                   />
                   <Box mt={2}>
                     <FormInputText
@@ -75,7 +76,7 @@ const ChangePasswordTab: React.FC = () => {
                     variant="contained"
                     color="primary"
                     sx={{ mt: 1 }}>
-                    Create New User
+                    Submit
                   </Button>
                 </form>
               </FormProvider>
