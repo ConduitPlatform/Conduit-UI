@@ -101,8 +101,7 @@ const EmailConfig: React.FC = () => {
         </Grid>
         <Grid item md={6} xs={12}>
           <FormInputSelect
-            {...register('transport')}
-            disabled={!edit}
+            {...register('transport', { disabled: !edit })}
             label="Transport Provider"
             options={providers.map((provider) => ({
               label: provider.label,
@@ -130,9 +129,10 @@ const EmailConfig: React.FC = () => {
                   return (
                     <Grid item md={6} xs={12} key={`${childField}`}>
                       <FormInputText
-                        {...register(`transportSettings.smtp.auth.${childField}` as FieldsTypes)}
+                        {...register(`transportSettings.smtp.auth.${childField}` as FieldsTypes, {
+                          disabled: !edit,
+                        })}
                         label={childField}
-                        disabled={!edit}
                         key={childField}
                       />
                     </Grid>
@@ -142,9 +142,10 @@ const EmailConfig: React.FC = () => {
               return (
                 <Grid item md={6} xs={12} key={`${field}`}>
                   <FormInputText
-                    {...register(`transportSettings.${transportProvider}.${field}` as FieldsTypes)}
+                    {...register(`transportSettings.${transportProvider}.${field}` as FieldsTypes, {
+                      disabled: !edit,
+                    })}
                     label={field}
-                    disabled={!edit}
                     key={field}
                   />
                 </Grid>
@@ -168,7 +169,7 @@ const EmailConfig: React.FC = () => {
               alignItems={'center'}
               mb={1}>
               <Typography variant={'h6'}>Activate Email Module</Typography>
-              <FormInputSwitch {...register('active')} />
+              <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
               {isActive && renderSettingsFields}

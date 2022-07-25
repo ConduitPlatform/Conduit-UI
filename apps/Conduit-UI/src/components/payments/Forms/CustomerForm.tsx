@@ -97,8 +97,7 @@ const CustomerForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
           {inputs.map((input, index) => (
             <Grid key={index} item sm={12}>
               <FormInputText
-                {...register(`${input}` as inputTypes)}
-                rules={{ required: `${input} is required` }}
+                {...register(`${input}` as inputTypes, { required: `${input} is required` })}
                 label={startCase(camelCase(input))}
               />
             </Grid>

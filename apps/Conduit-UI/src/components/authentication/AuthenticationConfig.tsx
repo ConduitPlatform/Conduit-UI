@@ -70,9 +70,8 @@ const AuthenticationConfig: React.FC = () => {
     return inputFields.map((field, index) => (
       <Grid key={index} item md={6} xs={12}>
         <FormInputText
-          {...register(inputFields[index])}
+          {...register(inputFields[index], { disabled: !edit })}
           label={startCase(camelCase(field))}
-          disabled={!edit}
         />
       </Grid>
     ));

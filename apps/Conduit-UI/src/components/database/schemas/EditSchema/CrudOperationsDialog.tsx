@@ -87,53 +87,45 @@ const CrudOperationsDialog: React.FC<Props> = ({
                 <Grid item sm={6} p={2}>
                   <Typography>Create:</Typography>
                   <FormInputCheckBox
-                    {...register('create.enabled')}
+                    {...register('create.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    {...register('create.authenticated')}
+                    {...register('create.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6} p={2}>
                   <Typography>Delete:</Typography>
                   <FormInputCheckBox
-                    {...register('delete.enabled')}
+                    {...register('delete.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    {...register('delete.authenticated')}
+                    {...register('delete.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6} p={2}>
                   <Typography>Read:</Typography>
                   <FormInputCheckBox
-                    {...register('read.enabled')}
+                    {...register('read.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    {...register('read.authenticated')}
+                    {...register('read.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
                 <Grid item sm={6} p={2}>
                   <Typography>Update:</Typography>
                   <FormInputCheckBox
-                    {...register('update.enabled')}
+                    {...register('update.enabled', { disabled: isDisabled() })}
                     label="enabled"
-                    disabled={isDisabled()}
                   />
                   <FormInputCheckBox
-                    {...register('update.authenticated')}
+                    {...register('update.authenticated', { disabled: isDisabled() })}
                     label="authenticated"
-                    disabled={isDisabled()}
                   />
                 </Grid>
 
