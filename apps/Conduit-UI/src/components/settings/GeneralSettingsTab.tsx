@@ -159,9 +159,7 @@ const GeneralSettingsTab: React.FC = () => {
                         arrow>
                         <InfoOutlined fontSize={'small'} />
                       </Tooltip>
-                      <fieldset
-                        disabled={true}
-                        style={{ border: 0, paddingRight: 0, paddingLeft: 0 }}>
+                      <fieldset disabled={true} style={{ border: 'none', padding: 0 }}>
                         <FormInputSwitch {...registerAdmin('transports.rest')} />
                       </fieldset>
                     </Box>
