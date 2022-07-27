@@ -10,12 +10,14 @@ const AuthenticationLayout: React.FC = ({ children }) => {
     '/authentication/signIn',
     '/authentication/serviceAccounts',
     '/authentication/config',
+    '/authentication/logs',
   ];
   const labels = [
     { name: 'users', id: 'users' },
     { name: 'sign in methods', id: 'signIn' },
     { name: 'service Accounts', id: 'serviceAccounts' },
     { name: 'config', id: 'config' },
+    { name: 'logs', id: 'logs' },
   ];
 
   return (
