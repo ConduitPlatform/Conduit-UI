@@ -15,8 +15,9 @@ const Logs = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetAuthenticationLogs());
+    dispatch(asyncGetAuthenticationLogs('core'));
   }, [dispatch]);
+
   return <AuthenticationLogs />;
 };
 

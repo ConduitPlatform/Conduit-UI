@@ -1,4 +1,10 @@
-import { deleteRequest, getRequest, patchRequest, postRequest } from '../requestsConfig';
+import {
+  deleteRequest,
+  getRequest,
+  getRequestLoki,
+  patchRequest,
+  postRequest,
+} from '../requestsConfig';
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
@@ -44,3 +50,19 @@ export const getAuthenticationConfig = () => getRequest(`/config/authentication`
 
 export const patchAuthenticationConfig = (body: any) =>
   patchRequest(`/config/authentication`, { config: { ...body } });
+
+export const getAuthenticationLogsLevels = () =>
+  getRequestLoki(`/loki/api/v1/label/level/values`, {});
+
+export const getAuthenticationLogsInstances = () =>
+  getRequestLoki(`/loki/api/v1/label/instance/values`, {});
+
+export const getAuthenticationLogsInstancesModules = () =>
+  getRequestLoki(`/loki/api/v1/label/module/values`, {});
+
+export const getAuthenticationLogsQuery = (module: string) =>
+  getRequestLoki(`/loki/api/v1/query`, {
+    query: `{module="${module}"}`,
+  });
+
+export const getAuthenticationLogs = () => getRequestLoki(`/loki/api/v1/status/buildinfo`, {});
