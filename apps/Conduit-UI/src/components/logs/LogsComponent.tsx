@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
   Checkbox,
@@ -17,45 +17,91 @@ import AdapterMoment from '@mui/lab/AdapterMoment';
 import ListItemText from '@mui/material/ListItemText';
 import LogsList from './LogsList';
 import Paper from '@mui/material/Paper';
-import { useAppSelector } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import {
+  asyncGetAuthenticationLevels,
+  asyncGetAuthenticationQueryRange,
+} from '../../redux/slices/authenticationSlice';
+import moment, { MomentInput } from 'moment';
 
 const LogsComponent: React.FC = () => {
-  const [labels, setLabels] = useState<string[]>([]);
-  const [selectedInstances, setInstances] = useState<string[]>([]);
-  const [startDateValue, setStartDateValue] = useState<Date | null>(new Date());
-  const [endDateValue, setEndDateValue] = useState<Date | null>(new Date());
-  const loaderRef = useRef<any>(null);
-  const levels = useAppSelector((state) => state.authenticationSlice?.data?.logs.levels);
+  const dispatch = useAppDispatch();
+  const logsLevels = useAppSelector((state) => state.authenticationSlice?.data?.logs.levels);
   const instances = useAppSelector((state) => state.authenticationSlice?.data?.logs.instances);
   const values = useAppSelector((state) => state.authenticationSlice?.data?.logs.query);
+  // const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  // const [selectedInstances, setInstances] = useState<string[]>([]);
+  const [startDateValue, setStartDateValue] = useState<MomentInput | null>(
+    moment().subtract(1, 'hours')
+  );
+  const [endDateValue, setEndDateValue] = useState<MomentInput | null>(moment());
+  const loaderRef = useRef<any>(null);
 
-  const handleChangeLabels = (event: SelectChangeEvent<typeof labels>) => {
-    const {
-      target: { value },
-    } = event;
-    setLabels(value);
-  };
+  // const query = useMemo(() => {
+  //   let string = '';
+  //   selectedLevels.map((item, index) => {
+  //     string =
+  //       index === 0
+  //         ? `{module="authentication", level="${item}"}`
+  //         : string.concat(' and ', `{module="authentication", level="${item}"}`);
+  //   });
+  //
+  //   return string;
+  // }, [selectedLevels]);
 
-  const handleChangeInstances = (event: SelectChangeEvent<typeof instances>) => {
-    const {
-      target: { value },
-    } = event;
-    setInstances(value);
-  };
+  useEffect(() => {
+    dispatch(
+      asyncGetAuthenticationQueryRange({
+        query: '{module="authentication"}',
+        startDate: moment(startDateValue).valueOf() * 1000000,
+        endDate: moment(endDateValue).valueOf() * 1000000,
+      })
+    );
 
-  const handleStartDateChange = (newValue: Date | null) => {
+    dispatch(asyncGetAuthenticationLevels(moment(startDateValue).valueOf() * 1000000));
+  }, [dispatch, endDateValue, startDateValue]);
+
+  // const handleChangeLabels = (event: SelectChangeEvent<typeof selectedLevels>) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   setSelectedLevels(value);
+  // };
+
+  // const handleChangeInstances = (event: SelectChangeEvent<typeof instances>) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   setInstances(value);
+  // };
+
+  const handleStartDateChange = (newValue: MomentInput | null) => {
     setStartDateValue(newValue);
   };
-  const handleEndDateChange = (newValue: Date | null) => {
+  const handleEndDateChange = (newValue: MomentInput | null) => {
     setEndDateValue(newValue);
   };
 
+  // const instancesData = useMemo(() => {
+  //   const instancesArr: string[] = [];
+  //   values?.forEach((item) =>
+  //     item?.values?.forEach((value) => {
+  //       instancesArr.push(item?.stream?.instance);
+  //     })
+  //   );
+  //
+  //   const final = instancesArr;
+  //   return final;
+  // }, [values]);
+
   const prepareData = useMemo(() => {
     const arr: Array<Array<string>> = [];
+    // const instancesArr: string[] = [];
     values?.forEach((item) =>
-      item?.values?.forEach((value) =>
-        arr.push([...value, item?.stream?.level, item?.stream?.instance])
-      )
+      item?.values?.forEach((value) => {
+        arr.push([...value, item?.stream?.level, item?.stream?.instance]);
+        // instancesArr.push(item.stream.instance);
+      })
     );
     return arr;
   }, [values]);
@@ -69,66 +115,72 @@ const LogsComponent: React.FC = () => {
           justifyContent: 'space-between',
           flexWrap: 'wrap',
         }}>
-        <Typography>Logs</Typography>
+        <Typography sx={{ fontSize: 24 }}>Logs</Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          <FormControl sx={{ m: 1, width: 150 }}>
-            <InputLabel id="demo-multiple-checkbox-label">Instance</InputLabel>
-            <Select
-              sx={{ borderRadius: 3 }}
-              name={'Instance'}
-              label={'Instance'}
-              value={selectedInstances}
-              multiple
-              disabled={instances?.length === 0}
-              onChange={handleChangeInstances}
-              renderValue={(selected) => selected.join(', ')}>
-              {instances.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  <Checkbox checked={selectedInstances.indexOf(item) > -1} />
-                  <ListItemText primary={item} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ mr: 1, mt: 1, width: 120 }}>
-            <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>
-            <Select
-              sx={{ borderRadius: 3 }}
-              name={'Level'}
-              label={'Level'}
-              value={labels}
-              multiple
-              disabled={levels?.length === 0}
-              onChange={handleChangeLabels}
-              renderValue={(selected) => selected.join(', ')}>
-              {levels?.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  <Checkbox checked={labels.indexOf(item) > -1} />
-                  <ListItemText primary={item} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/*<FormControl sx={{ m: 1, width: 150 }}>*/}
+          {/*  <InputLabel id="demo-multiple-checkbox-label">Instance</InputLabel>*/}
+          {/*  <Select*/}
+          {/*    sx={{ borderRadius: 3 }}*/}
+          {/*    name={'Instance'}*/}
+          {/*    label={'Instance'}*/}
+          {/*    value={selectedInstances}*/}
+          {/*    multiple*/}
+          {/*    disabled={instancesData?.length === 0}*/}
+          {/*    onChange={handleChangeInstances}*/}
+          {/*    renderValue={(selected) => selected.join(', ')}>*/}
+          {/*    {instancesData.map((item, index) => (*/}
+          {/*      <MenuItem key={index} value={item}>*/}
+          {/*        <Checkbox checked={selectedInstances.indexOf(item) > -1} />*/}
+          {/*        <ListItemText primary={item} />*/}
+          {/*      </MenuItem>*/}
+          {/*    ))}*/}
+          {/*  </Select>*/}
+          {/*</FormControl>*/}
+          {/*<FormControl sx={{ mr: 1, mt: 1, width: 120 }}>*/}
+          {/*  <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>*/}
+          {/*  <Select*/}
+          {/*    sx={{ borderRadius: 3 }}*/}
+          {/*    name={'Level'}*/}
+          {/*    label={'Level'}*/}
+          {/*    value={selectedLevels}*/}
+          {/*    multiple*/}
+          {/*    disabled={logsLevels?.length === 0}*/}
+          {/*    onChange={handleChangeLabels}*/}
+          {/*    renderValue={(selected) => selected.join(', ')}>*/}
+          {/*    {logsLevels?.map((item, index) => (*/}
+          {/*      <MenuItem key={index} value={item}>*/}
+          {/*        <Checkbox checked={selectedLevels.indexOf(item) > -1} />*/}
+          {/*        <ListItemText primary={item} />*/}
+          {/*      </MenuItem>*/}
+          {/*    ))}*/}
+          {/*  </Select>*/}
+          {/*</FormControl>*/}
           <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 450 }}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
+                disableFuture={true}
                 renderInput={(props) => <TextField {...props} />}
-                label="DateTimePicker"
+                label="Select Date"
                 value={startDateValue}
-                onChange={(newValue) => {
+                onAccept={(newValue) => {
                   handleStartDateChange(newValue);
                 }}
+                // onChange={() => {}}
               />
             </LocalizationProvider>
             <Typography sx={{ marginX: 1 }}>to</Typography>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
+                maxDateTime={moment()}
+                minDateTime={startDateValue}
+                disableFuture={true}
                 renderInput={(props) => <TextField {...props} />}
-                label="DateTimePicker"
+                label="Select Date"
                 value={endDateValue}
-                onChange={(newValue) => {
+                onAccept={(newValue) => {
                   handleEndDateChange(newValue);
                 }}
+                // onChange={() => {}}
               />
             </LocalizationProvider>
           </Box>
@@ -136,7 +188,7 @@ const LogsComponent: React.FC = () => {
       </Toolbar>
       <Box
         sx={{
-          height: '65vh',
+          height: '55vh',
           background: 'background.paper',
           display: 'flex',
         }}>

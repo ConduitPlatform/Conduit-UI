@@ -51,8 +51,10 @@ export const getAuthenticationConfig = () => getRequest(`/config/authentication`
 export const patchAuthenticationConfig = (body: any) =>
   patchRequest(`/config/authentication`, { config: { ...body } });
 
-export const getAuthenticationLogsLevels = () =>
-  getRequestLoki(`/loki/api/v1/label/level/values`, {});
+export const getAuthenticationLogsLevels = (body: any) =>
+  getRequestLoki(`/loki/api/v1/label/level/values`, {
+    start: body,
+  });
 
 export const getAuthenticationLogsInstances = () =>
   getRequestLoki(`/loki/api/v1/label/instance/values`, {});
@@ -63,6 +65,17 @@ export const getAuthenticationLogsInstancesModules = () =>
 export const getAuthenticationLogsQuery = (module: string) =>
   getRequestLoki(`/loki/api/v1/query`, {
     query: `{module="${module}"}`,
+  });
+
+export const getAuthenticationLogsQueryRange = (body: {
+  query: string;
+  startDate: any;
+  endDate: any;
+}) =>
+  getRequestLoki(`/loki/api/v1/query_range`, {
+    query: body.query,
+    start: body.startDate,
+    end: body.endDate,
   });
 
 export const getAuthenticationLogs = () => getRequestLoki(`/loki/api/v1/status/buildinfo`, {});
