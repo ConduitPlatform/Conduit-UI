@@ -76,6 +76,7 @@ export const getAuthenticationLogsQueryRange = (body: {
     query: body.query,
     start: body.startDate,
     end: body.endDate,
+    limit: 100,
   });
 
 export const getAuthenticationLogs = () => getRequestLoki(`/loki/api/v1/status/buildinfo`, {});

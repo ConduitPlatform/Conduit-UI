@@ -11,6 +11,7 @@ import {
   getAuthenticationLogsInstancesModules,
   getAuthenticationLogsLevels,
   getAuthenticationLogsQuery,
+  getAuthenticationLogsQueryRange,
   getAuthUsersDataReq,
   patchAuthenticationConfig,
   unblockUser,
@@ -20,6 +21,7 @@ import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
 import { LogsData } from '../../models/logs/LogsModels';
+import moment from 'moment';
 
 interface IAuthenticationSlice {
   data: {
@@ -298,12 +300,12 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
 
 export const asyncGetAuthenticationLevels = createAsyncThunk(
   '/authentication/getLevels',
-  async (arg, thunkAPI) => {
+  async (body: any, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { data },
-      } = await getAuthenticationLogsLevels();
+      } = await getAuthenticationLogsLevels(body);
 
       thunkAPI.dispatch(setAppLoading(false));
       return data;
@@ -374,12 +376,33 @@ export const asyncGetAuthenticationQuery = createAsyncThunk(
   }
 );
 
+export const asyncGetAuthenticationQueryRange = createAsyncThunk(
+  '/authentication/getQueryRange',
+  async (body: any, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const {
+        data: {
+          data: { result },
+        },
+      } = await getAuthenticationLogsQueryRange(body);
+
+      thunkAPI.dispatch(setAppLoading(false));
+      return result;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncGetAuthenticationLogs = createAsyncThunk(
   'authentication/getLogs',
   async (body: any, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      thunkAPI.dispatch(asyncGetAuthenticationLevels());
+      thunkAPI.dispatch(asyncGetAuthenticationLevels(moment().valueOf() * 1000000));
       thunkAPI.dispatch(asyncGetAuthenticationInstances());
       thunkAPI.dispatch(asyncGetAuthenticationModules());
       thunkAPI.dispatch(asyncGetAuthenticationQuery(body));
@@ -399,6 +422,9 @@ const authenticationSlice = createSlice({
   reducers: {
     clearAuthenticationPageStore: () => {
       return initialState;
+    },
+    clearQuery: (state) => {
+      state.data.logs.query = initialState.data.logs.query;
     },
   },
   extraReducers: (builder) => {
@@ -442,9 +468,12 @@ const authenticationSlice = createSlice({
     builder.addCase(asyncGetAuthenticationQuery.fulfilled, (state, action) => {
       state.data.logs.query = action.payload;
     });
+    builder.addCase(asyncGetAuthenticationQueryRange.fulfilled, (state, action) => {
+      state.data.logs.query = action.payload;
+    });
   },
 });
 
-export const { clearAuthenticationPageStore } = authenticationSlice.actions;
+export const { clearAuthenticationPageStore, clearQuery } = authenticationSlice.actions;
 
 export default authenticationSlice.reducer;
