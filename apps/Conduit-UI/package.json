@@ -54,6 +54,7 @@
     "react-spring": "^9.4.3",
     "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.6",
+    "react-virtuoso": "^2.16.6",
     "react-window": "^1.8.6",
     "react-window-infinite-loader": "^1.0.7",
     "redux": "^4.0.5",

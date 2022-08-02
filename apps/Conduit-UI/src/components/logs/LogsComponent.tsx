@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
+  IconButton,
   InputLabel,
   Select,
   SelectChangeEvent,
@@ -23,50 +24,49 @@ import {
   asyncGetAuthenticationQueryRange,
 } from '../../redux/slices/authenticationSlice';
 import moment, { MomentInput } from 'moment';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { debounce } from 'lodash';
 
 const LogsComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const logsLevels = useAppSelector((state) => state.authenticationSlice?.data?.logs.levels);
-  const instances = useAppSelector((state) => state.authenticationSlice?.data?.logs.instances);
+  // const instances = useAppSelector((state) => state.authenticationSlice?.data?.logs.instances);
   const values = useAppSelector((state) => state.authenticationSlice?.data?.logs.query);
-  // const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<any>(logsLevels);
   // const [selectedInstances, setInstances] = useState<string[]>([]);
   const [startDateValue, setStartDateValue] = useState<MomentInput | null>(
     moment().subtract(1, 'hours')
   );
   const [endDateValue, setEndDateValue] = useState<MomentInput | null>(moment());
-  const loaderRef = useRef<any>(null);
 
-  // const query = useMemo(() => {
-  //   let string = '';
-  //   selectedLevels.map((item, index) => {
-  //     string =
-  //       index === 0
-  //         ? `{module="authentication", level="${item}"}`
-  //         : string.concat(' and ', `{module="authentication", level="${item}"}`);
-  //   });
-  //
-  //   return string;
-  // }, [selectedLevels]);
+  const query = useMemo(() => {
+    const string = selectedLevels?.join('|');
+    return string ? `{module="authentication", level=~"${string}" }` : `{module="authentication"}`;
+  }, [selectedLevels]);
 
   useEffect(() => {
     dispatch(
       asyncGetAuthenticationQueryRange({
-        query: '{module="authentication"}',
+        query: query,
         startDate: moment(startDateValue).valueOf() * 1000000,
         endDate: moment(endDateValue).valueOf() * 1000000,
       })
     );
 
-    dispatch(asyncGetAuthenticationLevels(moment(startDateValue).valueOf() * 1000000));
-  }, [dispatch, endDateValue, startDateValue]);
+    dispatch(
+      asyncGetAuthenticationLevels({
+        query: query,
+        startDate: moment(startDateValue).valueOf() * 1000000,
+      })
+    );
+  }, [dispatch, endDateValue, query, startDateValue]);
 
-  // const handleChangeLabels = (event: SelectChangeEvent<typeof selectedLevels>) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   setSelectedLevels(value);
-  // };
+  const handleChangeLabels = (event: SelectChangeEvent<typeof selectedLevels>) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedLevels(value);
+  };
 
   // const handleChangeInstances = (event: SelectChangeEvent<typeof instances>) => {
   //   const {
@@ -106,6 +106,32 @@ const LogsComponent: React.FC = () => {
     return arr;
   }, [values]);
 
+  const handleRefresh = useCallback(() => {
+    dispatch(
+      asyncGetAuthenticationQueryRange({
+        query: query,
+        startDate: moment(startDateValue).valueOf() * 1000000,
+        endDate: moment().valueOf() * 1000000,
+      })
+    );
+  }, [dispatch, query, startDateValue]);
+
+  const handleGetMoreItems = useCallback(() => {
+    dispatch(
+      asyncGetAuthenticationQueryRange({
+        query: query,
+        startDate: moment(startDateValue).valueOf() * 1000000,
+        endDate: moment().valueOf() * 1000000,
+      })
+    );
+  }, [dispatch, query, startDateValue]);
+
+  const debouncedGetApiItems = debounce(() => handleGetMoreItems(), 300);
+
+  const loadMoreItems = async () => {
+    debouncedGetApiItems();
+  };
+
   return (
     <Paper sx={{ p: 4, borderRadius: 8 }}>
       <Toolbar
@@ -115,8 +141,11 @@ const LogsComponent: React.FC = () => {
           justifyContent: 'space-between',
           flexWrap: 'wrap',
         }}>
-        <Typography sx={{ fontSize: 24 }}>Logs</Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+        <Typography sx={{ fontSize: 24, mt: 2 }}>Logs</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+          <IconButton aria-label="refresh" sx={{ mr: 1, mt: 2 }} onClick={() => handleRefresh()}>
+            <RefreshIcon />
+          </IconButton>
           {/*<FormControl sx={{ m: 1, width: 150 }}>*/}
           {/*  <InputLabel id="demo-multiple-checkbox-label">Instance</InputLabel>*/}
           {/*  <Select*/}
@@ -136,26 +165,26 @@ const LogsComponent: React.FC = () => {
           {/*    ))}*/}
           {/*  </Select>*/}
           {/*</FormControl>*/}
-          {/*<FormControl sx={{ mr: 1, mt: 1, width: 120 }}>*/}
-          {/*  <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>*/}
-          {/*  <Select*/}
-          {/*    sx={{ borderRadius: 3 }}*/}
-          {/*    name={'Level'}*/}
-          {/*    label={'Level'}*/}
-          {/*    value={selectedLevels}*/}
-          {/*    multiple*/}
-          {/*    disabled={logsLevels?.length === 0}*/}
-          {/*    onChange={handleChangeLabels}*/}
-          {/*    renderValue={(selected) => selected.join(', ')}>*/}
-          {/*    {logsLevels?.map((item, index) => (*/}
-          {/*      <MenuItem key={index} value={item}>*/}
-          {/*        <Checkbox checked={selectedLevels.indexOf(item) > -1} />*/}
-          {/*        <ListItemText primary={item} />*/}
-          {/*      </MenuItem>*/}
-          {/*    ))}*/}
-          {/*  </Select>*/}
-          {/*</FormControl>*/}
-          <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 450 }}>
+          <FormControl sx={{ mr: 1, width: 120, mt: 2 }}>
+            <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>
+            <Select
+              sx={{ borderRadius: 3 }}
+              name={'Level'}
+              label={'Level'}
+              value={selectedLevels}
+              multiple
+              disabled={logsLevels?.length === 0}
+              onChange={handleChangeLabels}
+              renderValue={(selected) => selected.join(', ')}>
+              {logsLevels?.map((item, index) => (
+                <MenuItem key={index} value={item}>
+                  <Checkbox checked={selectedLevels?.indexOf(item) > -1} />
+                  <ListItemText primary={item} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 450, mt: 2 }}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
                 disableFuture={true}
@@ -165,7 +194,7 @@ const LogsComponent: React.FC = () => {
                 onAccept={(newValue) => {
                   handleStartDateChange(newValue);
                 }}
-                // onChange={() => {}}
+                onChange={() => {}}
               />
             </LocalizationProvider>
             <Typography sx={{ marginX: 1 }}>to</Typography>
@@ -180,7 +209,7 @@ const LogsComponent: React.FC = () => {
                 onAccept={(newValue) => {
                   handleEndDateChange(newValue);
                 }}
-                // onChange={() => {}}
+                onChange={() => {}}
               />
             </LocalizationProvider>
           </Box>
@@ -188,12 +217,14 @@ const LogsComponent: React.FC = () => {
       </Toolbar>
       <Box
         sx={{
-          height: '55vh',
+          height: '65vh',
           background: 'background.paper',
           display: 'flex',
+          flexGrow: 1,
+          mt: 1,
         }}>
         {prepareData?.length ? (
-          <LogsList data={prepareData} loaderRef={loaderRef} />
+          <LogsList data={prepareData} loadMoreItems={loadMoreItems} />
         ) : (
           <Typography
             sx={{ display: 'flex', flex: 1, alignSelf: 'center', justifyContent: 'center' }}>

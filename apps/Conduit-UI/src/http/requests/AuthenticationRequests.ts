@@ -51,9 +51,10 @@ export const getAuthenticationConfig = () => getRequest(`/config/authentication`
 export const patchAuthenticationConfig = (body: any) =>
   patchRequest(`/config/authentication`, { config: { ...body } });
 
-export const getAuthenticationLogsLevels = (body: any) =>
+export const getAuthenticationLogsLevels = (body: { startDate: any; query: string }) =>
   getRequestLoki(`/loki/api/v1/label/level/values`, {
-    start: body,
+    start: body.startDate,
+    query: body.query,
   });
 
 export const getAuthenticationLogsInstances = () =>
