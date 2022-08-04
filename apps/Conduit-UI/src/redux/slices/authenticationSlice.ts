@@ -7,11 +7,6 @@ import {
   deleteUsers,
   editUser,
   getAuthenticationConfig,
-  getAuthenticationLogsInstances,
-  getAuthenticationLogsInstancesModules,
-  getAuthenticationLogsLevels,
-  getAuthenticationLogsQuery,
-  getAuthenticationLogsQueryRange,
   getAuthUsersDataReq,
   patchAuthenticationConfig,
   unblockUser,
@@ -20,8 +15,6 @@ import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
-import { LogsData } from '../../models/logs/LogsModels';
-import moment from 'moment';
 
 interface IAuthenticationSlice {
   data: {
@@ -29,7 +22,6 @@ interface IAuthenticationSlice {
       users: AuthUser[];
       count: number;
     };
-    logs: LogsData;
     config: IAuthenticationConfig;
   };
 }
@@ -39,21 +31,6 @@ const initialState: IAuthenticationSlice = {
     authUsers: {
       users: [],
       count: 0,
-    },
-    logs: {
-      levels: [],
-      instances: [],
-      modules: [],
-      query: [
-        {
-          stream: {
-            instance: '',
-            level: '',
-            module: 'core',
-          },
-          values: [],
-        },
-      ],
     },
     config: {
       active: false,
@@ -298,133 +275,12 @@ export const asyncUpdateAuthenticationConfig = createAsyncThunk(
   }
 );
 
-export const asyncGetAuthenticationLevels = createAsyncThunk(
-  '/authentication/getLevels',
-  async (body: any, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const {
-        data: { data },
-      } = await getAuthenticationLogsLevels(body);
-
-      thunkAPI.dispatch(setAppLoading(false));
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncGetAuthenticationInstances = createAsyncThunk(
-  '/authentication/getInstances',
-  async (arg, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const {
-        data: { data },
-      } = await getAuthenticationLogsInstances();
-
-      thunkAPI.dispatch(setAppLoading(false));
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncGetAuthenticationModules = createAsyncThunk(
-  '/authentication/getModules',
-  async (arg, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const {
-        data: { data },
-      } = await getAuthenticationLogsInstancesModules();
-
-      thunkAPI.dispatch(setAppLoading(false));
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncGetAuthenticationQuery = createAsyncThunk(
-  '/authentication/getQuery',
-  async (body: any, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const {
-        data: {
-          data: { result },
-        },
-      } = await getAuthenticationLogsQuery(body);
-
-      thunkAPI.dispatch(setAppLoading(false));
-      return result;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncGetAuthenticationQueryRange = createAsyncThunk(
-  '/authentication/getQueryRange',
-  async (body: any, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const {
-        data: {
-          data: { result },
-        },
-      } = await getAuthenticationLogsQueryRange(body);
-
-      thunkAPI.dispatch(setAppLoading(false));
-      return result;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncGetAuthenticationLogs = createAsyncThunk(
-  'authentication/getLogs',
-  async (body: any, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      thunkAPI.dispatch(asyncGetAuthenticationLevels(moment().valueOf() * 1000000));
-      thunkAPI.dispatch(asyncGetAuthenticationInstances());
-      thunkAPI.dispatch(asyncGetAuthenticationModules());
-      thunkAPI.dispatch(asyncGetAuthenticationQuery(body));
-
-      thunkAPI.dispatch(setAppLoading(false));
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
 const authenticationSlice = createSlice({
   name: 'authentication',
   initialState,
   reducers: {
     clearAuthenticationPageStore: () => {
       return initialState;
-    },
-    clearQuery: (state) => {
-      state.data.logs.query = initialState.data.logs.query;
     },
   },
   extraReducers: (builder) => {
@@ -456,24 +312,9 @@ const authenticationSlice = createSlice({
     builder.addCase(asyncUpdateAuthenticationConfig.fulfilled, (state, action) => {
       state.data.config = action.payload;
     });
-    builder.addCase(asyncGetAuthenticationLevels.fulfilled, (state, action) => {
-      state.data.logs.levels = action.payload;
-    });
-    builder.addCase(asyncGetAuthenticationInstances.fulfilled, (state, action) => {
-      state.data.logs.instances = action.payload;
-    });
-    builder.addCase(asyncGetAuthenticationModules.fulfilled, (state, action) => {
-      state.data.logs.modules = action.payload;
-    });
-    builder.addCase(asyncGetAuthenticationQuery.fulfilled, (state, action) => {
-      state.data.logs.query = action.payload;
-    });
-    builder.addCase(asyncGetAuthenticationQueryRange.fulfilled, (state, action) => {
-      state.data.logs.query = action.payload;
-    });
   },
 });
 
-export const { clearAuthenticationPageStore, clearQuery } = authenticationSlice.actions;
+export const { clearAuthenticationPageStore } = authenticationSlice.actions;
 
 export default authenticationSlice.reducer;

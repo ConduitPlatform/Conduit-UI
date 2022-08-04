@@ -9,7 +9,6 @@ import { Virtuoso } from 'react-virtuoso';
 
 interface Props {
   data: Array<Array<string>>;
-  loadMoreItems: () => void;
 }
 
 const createItemData = memoize((logs, count) => ({
@@ -17,7 +16,7 @@ const createItemData = memoize((logs, count) => ({
   count,
 }));
 
-const LogsList: FC<Props> = ({ data, loadMoreItems }) => {
+const LogsList: FC<Props> = ({ data }) => {
   const listRef = useRef<any>(null);
 
   const count = useMemo(() => {
@@ -55,12 +54,12 @@ const LogsList: FC<Props> = ({ data, loadMoreItems }) => {
       }
     };
 
-    return rowItem ? (
+    return (
       <ListItem
         key={rowItem?.[0]}
         component="div"
         disablePadding
-        sx={{ alignItems: 'stretch', marginY: 1 }}>
+        sx={{ alignItems: 'stretch', paddingY: 1 }}>
         <Box
           sx={{
             display: 'flex',
@@ -91,11 +90,12 @@ const LogsList: FC<Props> = ({ data, loadMoreItems }) => {
             margin: 0,
             marginLeft: 1,
             wordWrap: 'break-word',
+            alignSelf: 'center',
           }}
           primary={rowItem?.[1]}
         />
       </ListItem>
-    ) : null;
+    );
   };
 
   return (
@@ -103,7 +103,7 @@ const LogsList: FC<Props> = ({ data, loadMoreItems }) => {
       ref={listRef}
       style={{ height: '100%', width: '100%' }}
       totalCount={count}
-      startReached={loadMoreItems}
+      overscan={200}
       itemContent={(index) => <ListRow index={index} />}
     />
   );

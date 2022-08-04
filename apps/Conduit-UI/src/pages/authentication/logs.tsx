@@ -1,9 +1,7 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
-import { useAppDispatch } from '../../redux/store';
-import { clearQuery } from '../../redux/slices/authenticationSlice';
 
 const AuthenticationLogs = dynamic(() => import('../../components/logs/LogsComponent'), {
   loading: () => (
@@ -12,13 +10,7 @@ const AuthenticationLogs = dynamic(() => import('../../components/logs/LogsCompo
 });
 
 const Logs = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(clearQuery());
-  }, [dispatch]);
-
-  return <AuthenticationLogs />;
+  return <AuthenticationLogs moduleName={'authentication'} />;
 };
 
 Logs.getLayout = function getLayout(page: ReactElement) {

@@ -12,17 +12,10 @@ export type ModulesTypes =
   | 'core';
 
 export interface LogsData {
-  levels: string[];
-  instances: string[];
-  modules: string[];
-  query: [
-    {
-      stream: {
-        instance: string;
-        level: string;
-        module: ModulesTypes;
-      };
-      values: [];
-    }
-  ];
+  stream: {
+    instance: string;
+    level: string;
+    module: ModulesTypes;
+  };
+  values: [];
 }

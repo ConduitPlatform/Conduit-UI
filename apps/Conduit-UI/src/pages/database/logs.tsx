@@ -1,8 +1,6 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
-import { useAppDispatch } from '../../redux/store';
-import { clearQuery } from '../../redux/slices/authenticationSlice';
 import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
 
 const DatabaseLogs = dynamic(() => import('../../components/logs/LogsComponent'), {
@@ -12,13 +10,7 @@ const DatabaseLogs = dynamic(() => import('../../components/logs/LogsComponent')
 });
 
 const Logs = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(clearQuery());
-  }, [dispatch]);
-
-  return <DatabaseLogs />;
+  return <DatabaseLogs moduleName={'database'} />;
 };
 
 Logs.getLayout = function getLayout(page: ReactElement) {

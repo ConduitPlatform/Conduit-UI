@@ -1,8 +1,6 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
-import { useAppDispatch } from '../../redux/store';
-import { clearQuery } from '../../redux/slices/authenticationSlice';
 import NotificationLayout from '../../components/navigation/InnerLayouts/notificationLayout';
 
 const NotificationsLogs = dynamic(() => import('../../components/logs/LogsComponent'), {
@@ -12,13 +10,7 @@ const NotificationsLogs = dynamic(() => import('../../components/logs/LogsCompon
 });
 
 const Logs = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(clearQuery());
-  }, [dispatch]);
-
-  return <NotificationsLogs />;
+  return <NotificationsLogs moduleName={'pushNotifications'} />;
 };
 
 Logs.getLayout = function getLayout(page: ReactElement) {

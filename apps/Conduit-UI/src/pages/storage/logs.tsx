@@ -1,8 +1,6 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
-import { useAppDispatch } from '../../redux/store';
-import { clearQuery } from '../../redux/slices/authenticationSlice';
 import StorageLayout from '../../components/navigation/InnerLayouts/storageLayout';
 
 const StorageLogs = dynamic(() => import('../../components/logs/LogsComponent'), {
@@ -12,13 +10,7 @@ const StorageLogs = dynamic(() => import('../../components/logs/LogsComponent'),
 });
 
 const Logs = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(clearQuery());
-  }, [dispatch]);
-
-  return <StorageLogs />;
+  return <StorageLogs moduleName={'storage'} />;
 };
 
 Logs.getLayout = function getLayout(page: ReactElement) {
