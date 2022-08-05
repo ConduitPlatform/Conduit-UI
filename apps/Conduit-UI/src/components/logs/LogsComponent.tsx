@@ -152,21 +152,21 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
   }, [refreshRequest]);
 
   const handleClearStartDateTime = () => {
-    if (endDateValue && endDateValue <= moment().subtract(1, 'hours')) {
-      setStartDateValue(endDateValue.subtract(1, 'hours'));
-      return;
+    if (endDateValue && endDateValue.isBefore(moment().subtract(1, 'hours'))) {
+      setEndDateValue(null);
     }
     setStartDateValue(null);
   };
 
   const handleClearEndDateTime = () => {
+    if (startDateValue && startDateValue.isBefore(moment().subtract(30, 'days'))) {
+      setStartDateValue(moment().subtract(30, 'days'));
+    }
     setEndDateValue(null);
   };
 
   const minDateOfStart = useMemo(() => {
-    return endDateValue
-      ? moment(endDateValue).subtract(30, 'days').add(1, 'minutes')
-      : moment().subtract(30, 'days').add(1, 'minutes');
+    return endDateValue ? moment(endDateValue).subtract(30, 'days') : moment().subtract(30, 'days');
   }, [endDateValue]);
 
   const maxDateOfStart = useMemo(() => {
