@@ -232,7 +232,9 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 onAccept={(newValue) => {
                   handleStartDateChange(newValue);
                 }}
-                onChange={() => {}}
+                onChange={() => {
+                  return;
+                }}
                 InputProps={{
                   startAdornment: startDateValue && (
                     <IconButton
@@ -274,7 +276,9 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 onAccept={(newValue) => {
                   handleEndDateChange(newValue);
                 }}
-                onChange={() => {}}
+                onChange={() => {
+                  return;
+                }}
                 InputProps={{
                   startAdornment: endDateValue && (
                     <IconButton
