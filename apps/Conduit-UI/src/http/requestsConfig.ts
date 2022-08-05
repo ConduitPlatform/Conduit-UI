@@ -78,6 +78,10 @@ export const getRequest = (endpoint: string, params?: any): Promise<any> => {
   return _axios.get('/api' + endpoint, { params });
 };
 
+export const getRequestLoki = (endpoint: string, params?: any): Promise<any> => {
+  return _axios.get('/api/loki' + endpoint, { params });
+};
+
 export const deleteRequest = (endpoint: string, params?: any): Promise<any> => {
   return _axios.delete('/api' + endpoint, { params });
 };

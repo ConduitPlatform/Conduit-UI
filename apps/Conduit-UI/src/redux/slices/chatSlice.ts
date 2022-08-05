@@ -53,10 +53,12 @@ const initialState: IChatSlice = {
 export const asyncGetChatConfig = createAsyncThunk(
   'chat/getChatConfig',
   async (params, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { config },
       } = await getChatConfig();
+      thunkAPI.dispatch(setAppLoading(false));
       return config;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

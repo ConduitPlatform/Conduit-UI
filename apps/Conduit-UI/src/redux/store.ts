@@ -15,6 +15,7 @@ import appSlice from './slices/appSlice';
 import formsSlice from './slices/formsSlice';
 import chatSlice from './slices/chatSlice';
 import paymentsSlice from './slices/paymentsSlice';
+import logsSlice from './slices/LogsSlice';
 
 let store: any;
 
@@ -35,6 +36,7 @@ export const makeStore = (preloadedState: any) =>
       emailsSlice,
       smsSlice,
       chatSlice,
+      logsSlice,
     },
     preloadedState,
   });

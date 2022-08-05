@@ -144,3 +144,13 @@ export const homePageFontSizeSubtitles = {
     fontSize: '0.7rem',
   },
 };
+
+export const logsDateText = {
+  fontSize: '1rem',
+  [theme.breakpoints.down('lg')]: {
+    fontSize: '0.8rem',
+  },
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '0.6rem',
+  },
+};
