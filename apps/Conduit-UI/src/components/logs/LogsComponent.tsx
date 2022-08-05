@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
+  Grid,
   IconButton,
   InputLabel,
   Select,
@@ -57,19 +58,21 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
           module: moduleName,
           levels: selectedLevels,
           instances: selectedInstances,
-          startDate: startDateValue ? moment(startDateValue).valueOf() * 1000000 : undefined,
-          endDate: endDateValue ? moment(endDateValue).valueOf() * 1000000 : undefined,
+          startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+          endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
           limit: selectedLimit,
         })
       );
       dispatch(
         asyncGetLevels({
-          startDate: startDateValue ? moment(startDateValue).valueOf() * 1000000 : undefined,
+          startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+          endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
         })
       );
       dispatch(
         asyncGetInstances({
-          startDate: startDateValue ? moment(startDateValue).valueOf() * 1000000 : undefined,
+          startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+          endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
         })
       );
     }, 1000),
@@ -107,6 +110,7 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
   const handleStartDateChange = (newValue: Moment | null) => {
     setStartDateValue(newValue);
   };
+
   const handleEndDateChange = (newValue: Moment | null) => {
     setEndDateValue(newValue);
   };
@@ -133,8 +137,8 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
             module: moduleName,
             levels: selectedLevels,
             instances: selectedInstances,
-            startDate: startDateValue ? moment(startDateValue).valueOf() * 1000000 : undefined,
-            endDate: endDateValue ? moment(endDateValue).valueOf() * 1000000 : undefined,
+            startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+            endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
             limit: selectedLimit,
           })
         ),
@@ -148,6 +152,10 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
   }, [refreshRequest]);
 
   const handleClearStartDateTime = () => {
+    if (endDateValue && endDateValue <= moment().subtract(1, 'hours')) {
+      setStartDateValue(endDateValue.subtract(1, 'hours'));
+      return;
+    }
     setStartDateValue(null);
   };
 
@@ -155,10 +163,32 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
     setEndDateValue(null);
   };
 
+  const minDateOfStart = useMemo(() => {
+    return endDateValue
+      ? moment(endDateValue).subtract(30, 'days').add(1, 'minutes')
+      : moment().subtract(30, 'days').add(1, 'minutes');
+  }, [endDateValue]);
+
+  const maxDateOfStart = useMemo(() => {
+    return endDateValue
+      ? moment(endDateValue).subtract(1, 'minutes')
+      : moment().subtract(1, 'minutes');
+  }, [endDateValue]);
+
+  const minDateOfEnd = useMemo(() => {
+    return startDateValue
+      ? moment(startDateValue).add(1, 'minutes')
+      : moment().subtract(59, 'minutes');
+  }, [startDateValue]);
+
+  const maxDateOfEnd = useMemo(() => {
+    return startDateValue ? moment(startDateValue).add(30, 'days') : undefined;
+  }, [startDateValue]);
+
   return (
     <Paper
       sx={{
-        p: 4,
+        padding: 4,
         borderRadius: 8,
         justifyContent: 'space-between',
       }}>
@@ -170,16 +200,18 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
           flexWrap: 'wrap',
           alignItems: 'stretch',
         }}>
-        <Typography sx={{ fontSize: 24, mt: 2 }}>Logs</Typography>
-        <Box display={'flex'} flexDirection={'column'}>
-          <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 330, mt: 2 }}>
-            <IconButton aria-label="refresh" sx={{ mr: 1 }} onClick={() => handleRefresh()}>
+        <Grid container spacing={2} alignItems={'center'} justifyContent={'stretch'}>
+          <Grid item xl={1} md={2} xs={12}>
+            <IconButton aria-label="refresh" onClick={() => handleRefresh()}>
               <RefreshIcon />
             </IconButton>
+          </Grid>
+          <Grid item xl={3} md={5} xs={12}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
                 disableFuture={true}
-                maxDateTime={moment(endDateValue).subtract(1, 'minutes')}
+                minDateTime={minDateOfStart}
+                maxDateTime={maxDateOfStart}
                 DialogProps={{
                   disableRestoreFocus: true,
                 }}
@@ -189,9 +221,9 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 renderInput={(props) => (
                   <TextField
                     {...props}
+                    fullWidth
                     InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
                     label={'Start Date'}
-                    sx={{ ...props.sx, width: 302 }}
                     inputProps={{ ...props.inputProps, placeholder: 'one hour ago' }}
                     onClick={() => setIsStartDatePickerOpen(true)}
                   />
@@ -202,7 +234,6 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 }}
                 onChange={() => {}}
                 InputProps={{
-                  sx: { mr: 1 },
                   startAdornment: startDateValue && (
                     <IconButton
                       onClick={(e) => {
@@ -216,10 +247,13 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 }}
               />
             </LocalizationProvider>
+          </Grid>
+          <Grid item xl={3} md={5} xs={12}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
                 disableFuture={true}
-                minDateTime={startDateValue ? startDateValue : moment().subtract(1, 'hours')}
+                maxDateTime={maxDateOfEnd}
+                minDateTime={minDateOfEnd}
                 DialogProps={{
                   disableRestoreFocus: true,
                 }}
@@ -229,9 +263,9 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 renderInput={(props) => (
                   <TextField
                     {...props}
+                    fullWidth
                     InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
                     label={'End Date'}
-                    sx={{ ...props.sx, width: 302 }}
                     inputProps={{ ...props.inputProps, placeholder: 'now' }}
                     onClick={() => setIsEndDatePickerOpen(true)}
                   />
@@ -255,9 +289,12 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 }}
               />
             </LocalizationProvider>
-            <FormControl sx={{ ml: 1, minWidth: 90 }}>
+          </Grid>
+          <Grid item xl={1} md={2} xs={12}>
+            <FormControl fullWidth>
               <InputLabel id="demo-multiple-checkbox-label">Limit</InputLabel>
               <Select
+                fullWidth
                 sx={{ borderRadius: 3 }}
                 name={'limit'}
                 label={'Limit'}
@@ -273,9 +310,9 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 ))}
               </Select>
             </FormControl>
-          </Box>
-          <Box display={'flex'}>
-            <FormControl sx={{ mt: 2, mr: 1, width: '100%' }}>
+          </Grid>
+          <Grid item xl={2} md={5} xs={12}>
+            <FormControl fullWidth>
               <InputLabel id="demo-multiple-checkbox-label">Instance</InputLabel>
               <Select
                 sx={{ borderRadius: 3 }}
@@ -295,7 +332,9 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 ))}
               </Select>
             </FormControl>
-            <FormControl sx={{ mt: 2, width: '100%' }}>
+          </Grid>
+          <Grid item xl={2} md={5} xs={12}>
+            <FormControl fullWidth>
               <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>
               <Select
                 sx={{ borderRadius: 3 }}
@@ -315,8 +354,8 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
                 ))}
               </Select>
             </FormControl>
-          </Box>
-        </Box>
+          </Grid>
+        </Grid>
       </Toolbar>
       <Box
         sx={{
@@ -328,7 +367,12 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
           <LogsList data={prepareData} />
         ) : (
           <Typography
-            sx={{ display: 'flex', flex: 1, alignSelf: 'center', justifyContent: 'center' }}>
+            sx={{
+              display: 'flex',
+              flex: 1,
+              alignSelf: 'center',
+              justifyContent: 'center',
+            }}>
             No data to show
           </Typography>
         )}

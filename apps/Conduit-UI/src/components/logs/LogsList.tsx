@@ -25,7 +25,7 @@ const LogsList: FC<Props> = ({ data }) => {
 
   useEffect(() => {
     listRef?.current?.scrollToIndex({ index: count, behavior: 'auto', align: 'end' });
-  }, [count]);
+  }, [count, data]);
 
   const itemData = createItemData(data, count);
 

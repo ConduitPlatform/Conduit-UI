@@ -9,7 +9,7 @@ export type ModulesTypes =
   | 'payments'
   | 'database'
   | 'router'
-  | 'core';
+  | 'settings';
 
 export interface LogsData {
   stream: {

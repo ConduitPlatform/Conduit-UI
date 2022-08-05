@@ -1,14 +1,16 @@
 import { getRequestLoki } from '../requestsConfig';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 
-export const getLogsLevels = (body: { startDate?: number }) =>
+export const getLogsLevels = (body: { startDate?: number; endDate?: number }) =>
   getRequestLoki(`/loki/api/v1/label/level/values`, {
     start: body.startDate,
+    end: body.endDate,
   });
 
-export const getLogsInstances = (body: { startDate?: number }) =>
+export const getLogsInstances = (body: { startDate?: number; endDate?: number }) =>
   getRequestLoki(`/loki/api/v1/label/instance/values`, {
     start: body.startDate,
+    end: body.endDate,
   });
 
 export const getLogsQueryRange = (body: {
