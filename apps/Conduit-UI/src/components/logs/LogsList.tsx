@@ -6,6 +6,7 @@ import { logsDateText } from '../../theme';
 import memoize from 'memoize-one';
 import moment from 'moment';
 import { Virtuoso } from 'react-virtuoso';
+import ColorHash from 'color-hash';
 
 interface Props {
   data: Array<Array<string>>;
@@ -18,6 +19,7 @@ const createItemData = memoize((logs, count) => ({
 
 const LogsList: FC<Props> = ({ data }) => {
   const listRef = useRef<any>(null);
+  const colorHash = new ColorHash();
 
   const count = useMemo(() => {
     return data?.length;
@@ -34,11 +36,7 @@ const LogsList: FC<Props> = ({ data }) => {
     const rowItem = logs[count - index - 1];
 
     const handleBackgroundBubble = () => {
-      //FIXME: color
-      switch (rowItem?.[3]) {
-        default:
-          return 'gray';
-      }
+      return rowItem?.[3] ? colorHash.hex(rowItem?.[3]) : 'gray';
     };
 
     const handleBackgroundLabel = () => {
@@ -89,7 +87,7 @@ const LogsList: FC<Props> = ({ data }) => {
             flex: 1,
             margin: 0,
             marginLeft: 1,
-            wordWrap: 'break-word',
+            wordBreak: 'break-all',
             alignSelf: 'center',
           }}
           primary={rowItem?.[1]}
