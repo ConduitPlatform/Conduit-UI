@@ -3,7 +3,7 @@ import { Box, Button, Typography, Tabs, Tab, useTheme, useMediaQuery } from '@mu
 import { IAdminSettings } from '../../../models/settings/SettingsModels';
 import { IRouterConfig } from '../../../models/router/RouterModels';
 import { useRouter } from 'next/router';
-import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-components/src';
+import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-components';
 
 interface Props {
   pathNames: string[];
