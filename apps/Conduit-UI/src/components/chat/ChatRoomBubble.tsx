@@ -8,6 +8,7 @@ import moment from 'moment';
 import useLongPress from '../../hooks/useLongPress';
 import { Skeleton } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
+import { AuthUser } from '../../models/authentication/AuthModels';
 
 const classes = {
   root: {
@@ -25,7 +26,7 @@ interface Props {
 const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...rest }) => {
   const users = useAppSelector((state) => state.authenticationSlice.data.authUsers.users);
 
-  const user = users.find((item) => data.senderUser === item._id);
+  const user = users.find((item: AuthUser) => data.senderUser === item._id);
 
   const handleLongPress = () => {
     onLongPress(data._id);
