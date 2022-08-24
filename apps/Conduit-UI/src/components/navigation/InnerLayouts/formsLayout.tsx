@@ -15,7 +15,7 @@ const FormsLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Forms'}
+      module={'forms'}
       labels={labels}
       pathNames={pathNames}
       swagger={'forms'}

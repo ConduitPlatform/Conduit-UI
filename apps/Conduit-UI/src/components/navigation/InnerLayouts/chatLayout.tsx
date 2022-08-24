@@ -13,7 +13,7 @@ const ChatLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      title={'Chat'}
+      module={'chat'}
       labels={labels}
       pathNames={pathNames}
       swagger={'chat'}

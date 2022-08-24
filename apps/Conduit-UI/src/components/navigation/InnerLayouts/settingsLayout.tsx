@@ -12,7 +12,7 @@ const SettingsLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      title={'Settings'}
+      module={'settings'}
       labels={labels}
       pathNames={pathNames}
       icon={<Settings />}

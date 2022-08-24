@@ -15,7 +15,7 @@ const SMSLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={configActive}
-      title={'SMS'}
+      module={'sms'}
       labels={labels}
       pathNames={pathNames}
       swagger={'sms'}

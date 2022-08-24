@@ -21,7 +21,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Authentication'}
+      module={'authentication'}
       labels={labels}
       pathNames={pathNames}
       swagger={'authentication'}

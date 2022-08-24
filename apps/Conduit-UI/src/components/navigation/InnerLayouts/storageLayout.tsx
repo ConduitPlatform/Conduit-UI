@@ -15,7 +15,7 @@ const StorageLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Storage'}
+      module={'storage'}
       labels={labels}
       pathNames={pathNames}
       swagger={'storage'}

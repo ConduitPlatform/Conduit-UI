@@ -16,7 +16,7 @@ const EmailsLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Email'}
+      module={'email'}
       labels={labels}
       pathNames={pathNames}
       swagger={'email'}

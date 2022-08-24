@@ -15,7 +15,7 @@ const NotificationLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Push Notifications'}
+      module={'pushNotifications'}
       labels={labels}
       pathNames={pathNames}
       swagger={'pushNotifications'}

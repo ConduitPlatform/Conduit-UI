@@ -21,7 +21,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
-      title={'Payments'}
+      module={'payments'}
       labels={labels}
       pathNames={pathNames}
       swagger={'payments'}

@@ -19,7 +19,7 @@ const DatabaseLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={true}
-      title={'Database'}
+      module={'database'}
       labels={labels}
       pathNames={pathNames}
       swagger={'cms'}

@@ -12,7 +12,7 @@ const RouterLayout: React.FC = ({ children }) => {
   return (
     <StyledLayout
       configActive={true}
-      title={'Router'}
+      module={'router'}
       labels={labels}
       pathNames={pathNames}
       swagger={'router'}
