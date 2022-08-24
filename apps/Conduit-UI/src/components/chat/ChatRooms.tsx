@@ -13,6 +13,7 @@ import useDebounce from '../../hooks/useDebounce';
 import ChatRoomTabs from './ChatRoomTabs';
 import { AuthUserUI } from '../../models/authentication/AuthModels';
 import { Search } from '@mui/icons-material';
+import { IChatRoom } from '../../models/chat/ChatModels';
 
 const ChatRooms: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -117,7 +118,7 @@ const ChatRooms: React.FC = () => {
             Create chat room
           </Button>
         </Box>
-        {data.map((item, index) => {
+        {data.map((item: IChatRoom, index: number) => {
           if (index === selected) {
             return <ChatRoomPanel panelData={item} key={index} selectedPanel={selected} />;
           }
