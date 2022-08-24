@@ -158,7 +158,7 @@ const FormsView: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: any) => {
-    const currentForm = forms?.find((form) => form._id === data._id);
+    const currentForm = forms?.find((form: FormsModel) => form._id === data._id);
     if (currentForm !== undefined) {
       if (action.type === 'view') {
         setDrawer(true);

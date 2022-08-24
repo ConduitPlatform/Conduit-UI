@@ -62,7 +62,7 @@ export interface IDatabaseSlice {
       documents: any;
       documentsCount: number;
     };
-    schemasWithEndpoints: { name: string; id: string }[];
+    schemasWithEndpoints: Schema[];
     customEndpoints: {
       endpoints: EndpointTypes[];
       count: number;

@@ -22,6 +22,7 @@ import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
+import { IModule } from '../../models/appAuth';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +52,7 @@ const Home: React.FC = () => {
 
   const isEnabled = useCallback(
     (str: string) => {
-      return enabledModules.find((item) => item.moduleName === str);
+      return enabledModules.find((item: IModule) => item.moduleName === str);
     },
     [enabledModules]
   );

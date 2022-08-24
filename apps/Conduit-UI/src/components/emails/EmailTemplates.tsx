@@ -168,7 +168,9 @@ const EmailTemplates: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: EmailUI) => {
-    const currentTemplate = templateDocuments?.find((template) => template._id === data._id);
+    const currentTemplate = templateDocuments?.find(
+      (template: EmailTemplateType) => template._id === data._id
+    );
 
     if (currentTemplate !== undefined) {
       if (action.type === 'view') {

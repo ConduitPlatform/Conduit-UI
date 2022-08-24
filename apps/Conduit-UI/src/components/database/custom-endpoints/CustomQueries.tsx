@@ -78,7 +78,7 @@ const CustomQueries: FC = () => {
 
   useEffect(() => {
     if (schema) {
-      const isFound = schemasWithEndpoints.some((element) => {
+      const isFound = schemasWithEndpoints.some((element: Schema) => {
         if (element.name === schema) {
           return true;
         }

@@ -196,7 +196,7 @@ const PaymentsCustomers: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: EmailUI) => {
-    const currentCustomer = customers?.find((customer) => customer._id === data._id);
+    const currentCustomer = customers?.find((customer: Customer) => customer._id === data._id);
 
     if (currentCustomer !== undefined) {
       if (action.type === 'view') {

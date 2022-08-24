@@ -37,7 +37,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     if (operation === 1) {
       if (endpoint.selectedSchema) {
         if (schemaFields.length > 0) {
-          schemaFields.forEach((field) => {
+          schemaFields.forEach((field: string) => {
             const assignment: Assignment = {
               schemaField: field,
               action: 0,

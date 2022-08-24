@@ -122,7 +122,9 @@ const PaymentsTransactions: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: any) => {
-    const currentTransaction = transactions?.find((transaction) => transaction._id === data._id);
+    const currentTransaction = transactions?.find(
+      (transaction: Transaction) => transaction._id === data._id
+    );
 
     if (currentTransaction !== undefined) {
       if (action.type === 'view') {
