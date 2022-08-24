@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 import SharedLayout from './sharedLayout';
-import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
+import { ModulesTypes } from '../../../models/logs/LogsModels';
 
 interface Props {
   module: ModulesTypes;
@@ -43,7 +43,7 @@ const StyledLayout: FC<Props> = ({
 
   return (
     <SharedLayout
-      title={moduleTitle(module)}
+      module={module}
       labels={labels}
       pathNames={pathNames}
       swagger={swagger}

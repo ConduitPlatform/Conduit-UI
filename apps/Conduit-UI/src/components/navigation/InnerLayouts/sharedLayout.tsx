@@ -1,9 +1,22 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Button, Typography, Tabs, Tab, useTheme, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Button,
+  Typography,
+  Tabs,
+  Tab,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
 import { IAdminSettings } from '../../../models/settings/SettingsModels';
 import { IRouterConfig } from '../../../models/router/RouterModels';
 import { useRouter } from 'next/router';
 import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-components';
+import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
+import LogsComponent from '../../logs/LogsComponent';
+import TerminalIcon from '@mui/icons-material/Terminal';
 
 interface Props {
   pathNames: string[];
@@ -12,7 +25,7 @@ interface Props {
   swaggerIcon: JSX.Element;
   graphQLIcon: JSX.Element;
   labels: { name: string; id: string }[];
-  title: string;
+  module: ModulesTypes;
   loader: JSX.Element;
   transportsAdmin: IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
@@ -31,7 +44,7 @@ const SharedLayout: FC<Props> = ({
   swaggerIcon,
   graphQLIcon,
   labels,
-  title,
+  module,
   loader,
   transportsAdmin,
   transportsRouter,
@@ -45,6 +58,7 @@ const SharedLayout: FC<Props> = ({
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
+  const [logsOpen, setLogsOpen] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -57,13 +71,23 @@ const SharedLayout: FC<Props> = ({
     setValue(index);
   }, [router.pathname, pathNames]);
 
+  const title = moduleTitle(module);
+
+  const handleCloseLogs = () => {
+    setLogsOpen(false);
+  };
+
+  const handleOpenLogs = () => {
+    setLogsOpen(true);
+  };
+
   return (
     <Box sx={{ height: '100vh', p: 4 }}>
       <Box sx={{ mb: 2 }}>
         <Box display="flex" alignItems="center">
           <Typography variant={'h4'}>{title}</Typography>
           <Box display="flex" alignItems="center">
-            {title !== 'Settings' && (
+            {module !== 'settings' && (
               <Box whiteSpace={'nowrap'}>
                 {noSwagger ? null : (
                   <Button
@@ -92,6 +116,13 @@ const SharedLayout: FC<Props> = ({
               </Box>
             )}
             <Box px={3}>{loader}</Box>
+          </Box>
+          <Box display={'flex'} flex={1} justifyContent={'flex-end'}>
+            <Tooltip title={'Logs'}>
+              <IconButton onClick={handleOpenLogs}>
+                <TerminalIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
         <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
@@ -148,6 +179,7 @@ const SharedLayout: FC<Props> = ({
           transportsAdmin={transportsAdmin}
           transportsRouter={transportsRouter}
         />
+        <LogsComponent module={module} open={logsOpen} onClose={handleCloseLogs} />
       </Box>
       <Box>{children}</Box>
     </Box>
