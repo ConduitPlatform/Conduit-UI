@@ -22,7 +22,6 @@ import ExtractDrawerInfo from "./components/ExtractDrawerInfo";
 import FieldIndicators from "./components/FieldIndicators";
 import StyledTreeItem from "./components/StyledTreeItem";
 import LinkComponent from "./components/LinkComponent";
-import SharedLayout from "@conduitplatform/conduit-ui/src/components/navigation/InnerLayouts/sharedLayout";
 
 export {
   ConduitMultiSelect,
@@ -36,7 +35,6 @@ export {
   SelectedElements,
   Paginator,
   CustomDatepicker,
-  SharedLayout,
   SideDrawerWrapper,
   StorageDownloadDialog,
   Dropzone,
