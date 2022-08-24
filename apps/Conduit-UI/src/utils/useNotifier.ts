@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { useAppDispatch, useAppSelector } from '../redux/store';
-import { addSnackbar, removeSnackbar } from '../redux/slices/appSlice';
+import { addSnackbar, INotification, removeSnackbar } from '../redux/slices/appSlice';
 import { v4 as uuidv4 } from 'uuid';
 
 const useNotifier = () => {
@@ -10,7 +10,7 @@ const useNotifier = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    notifications.forEach(({ key, message }) => {
+    notifications.forEach(({ key, message }: INotification) => {
       enqueueSnackbar(message, { key });
       dispatch(removeSnackbar(key));
     });

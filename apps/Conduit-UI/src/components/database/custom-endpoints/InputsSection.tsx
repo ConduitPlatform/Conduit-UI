@@ -66,7 +66,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
       }
     });
 
-    const updatedAssignments = endpoint.assignments.slice().map((a) => {
+    const updatedAssignments = endpoint.assignments.slice().map((a: any) => {
       const assignmentField: any = a.assignmentField;
       if (assignmentField.name === input.value) {
         return {

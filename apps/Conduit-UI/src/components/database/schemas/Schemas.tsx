@@ -85,7 +85,7 @@ const Schemas: FC = () => {
   useEffect(() => {
     if (schemas.length) {
       if (!schemaName) setActualSchema(undefined);
-      const schemaFound = schemas.find((schema) => schema.name === schemaName);
+      const schemaFound = schemas.find((schema: Schema) => schema.name === schemaName);
       setActualSchema(schemaFound);
     }
   }, [schemas, schemaName]);

@@ -2,7 +2,7 @@ import { Box, Container, TextField, Button, Grid, Paper, Typography } from '@mui
 import React, { useCallback, useEffect, useState } from 'react';
 import { Clear, MailOutline, Send } from '@mui/icons-material';
 import { useForm, useWatch, Controller, FormProvider } from 'react-hook-form';
-import { EmailUI } from '../../models/emails/EmailModels';
+import { EmailTemplateType, EmailUI } from '../../models/emails/EmailModels';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
@@ -97,7 +97,7 @@ const SendEmailForm: React.FC = () => {
     if (withTemplate) {
       if (!selectedTemplate.length) return;
       const foundTemplate = templateDocuments.find(
-        (template) => template.name === selectedTemplate[0].Name
+        (template: EmailTemplateType) => template.name === selectedTemplate[0].Name
       );
 
       if (!foundTemplate?.variables) return;

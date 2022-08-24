@@ -7,21 +7,19 @@ const DatabaseLayout: React.FC = ({ children }) => {
     '/database/schemas',
     '/database/introspection',
     '/database/custom',
-    '/database/logs',
     '/database/settings',
   ];
   const labels = [
     { name: 'schemas', id: 'schemas' },
     { name: 'introspection', id: 'introspection' },
     { name: 'custom endpoints', id: 'custom' },
-    { name: 'logs', id: 'logs' },
     { name: 'settings', id: 'settings' },
   ];
 
   return (
     <StyledLayout
       configActive={true}
-      title={'Database'}
+      module={'database'}
       labels={labels}
       pathNames={pathNames}
       swagger={'cms'}

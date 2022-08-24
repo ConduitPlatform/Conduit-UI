@@ -191,7 +191,7 @@ const PaymentsProducts: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: EmailUI) => {
-    const currentProduct = products?.find((product) => product._id === data._id);
+    const currentProduct = products?.find((product: Product) => product._id === data._id);
 
     if (currentProduct !== undefined) {
       if (action.type === 'view') {

@@ -81,7 +81,7 @@ const ExternalTemplates: React.FC<Props> = ({ handleSave }) => {
               <em>None</em>
             </MenuItem>
             {externalTemplates.length > 0 &&
-              externalTemplates.map((template, index: number) => (
+              externalTemplates.map((template: EmailTemplateType, index: number) => (
                 <MenuItem key={index} value={template._id}>
                   {template.name}
                 </MenuItem>

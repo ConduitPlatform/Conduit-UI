@@ -9,7 +9,6 @@ import InnerTable from "./components/InnerTable";
 import SelectedElements from "./components/SelectedElements";
 import Paginator from "./components/Paginator";
 import CustomDatepicker from "./components/CustomDatepicker";
-import SharedLayout from "./components/navigation/sharedLayout";
 import SideDrawerWrapper from "./components/navigation/SideDrawerWrapper";
 import StorageDownloadDialog from "./components/StorageDownloadDialog";
 import Dropzone from "./components/Dropzone";
@@ -36,7 +35,6 @@ export {
   SelectedElements,
   Paginator,
   CustomDatepicker,
-  SharedLayout,
   SideDrawerWrapper,
   StorageDownloadDialog,
   Dropzone,

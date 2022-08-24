@@ -56,7 +56,7 @@ const SettingsAdmins: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: IAdmin) => {
-    const currentUser = admins.find((admin) => admin._id === data._id) as IAdmin;
+    const currentUser = admins.find((admin: IAdmin) => admin._id === data._id) as IAdmin;
     if (action.type === 'delete') {
       setOpenDeleteUser({
         open: true,

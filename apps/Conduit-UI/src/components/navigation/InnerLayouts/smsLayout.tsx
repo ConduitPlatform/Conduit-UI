@@ -5,18 +5,17 @@ import { useAppSelector } from '../../../redux/store';
 
 const SMSLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.smsSlice.data.config.active);
-  const pathNames = ['/sms/send', '/sms/logs', '/sms/config'];
+  const pathNames = ['/sms/send', '/sms/config'];
 
   const labels = [
     { name: 'send', id: 'send' },
-    { name: 'logs', id: 'logs' },
     { name: 'config', id: 'config' },
   ];
 
   return (
     <StyledLayout
       configActive={configActive}
-      title={'SMS'}
+      module={'sms'}
       labels={labels}
       pathNames={pathNames}
       swagger={'sms'}

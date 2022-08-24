@@ -93,7 +93,9 @@ const PaymentsSubscriptions: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: Subscription) => {
-    const currentTransaction = subscriptions?.find((subscription) => subscription._id === data._id);
+    const currentTransaction = subscriptions?.find(
+      (subscription: Subscription) => subscription._id === data._id
+    );
 
     if (currentTransaction !== undefined) {
       if (action.type === 'view') {

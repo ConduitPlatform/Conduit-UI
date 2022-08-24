@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -7,13 +7,16 @@ import {
   Tab,
   useTheme,
   useMediaQuery,
-} from "@mui/material";
-import { useRouter } from "next/router";
-import SwaggerModal from "../SwaggerModal";
-import LinkComponent from "../LinkComponent";
-import GraphQLModal from "../GraphQLModal";
-import {IAdminSettings} from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
-import {IRouterConfig} from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import { IAdminSettings } from '../../../models/settings/SettingsModels';
+import { IRouterConfig } from '../../../models/router/RouterModels';
+import { useRouter } from 'next/router';
+import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-components';
+import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
+import LogsComponent from '../../logs/LogsComponent';
+import TerminalIcon from '@mui/icons-material/Terminal';
 
 interface Props {
   pathNames: string[];
@@ -22,7 +25,7 @@ interface Props {
   swaggerIcon: JSX.Element;
   graphQLIcon: JSX.Element;
   labels: { name: string; id: string }[];
-  title: string;
+  module: ModulesTypes;
   loader: JSX.Element;
   transportsAdmin: IAdminSettings['transports'];
   transportsRouter: IRouterConfig['transports'];
@@ -33,9 +36,7 @@ interface Props {
   CONDUIT_API?: string;
 }
 
-
-
-const SharedLayout: React.FC<Props> = ({
+const SharedLayout: FC<Props> = ({
   children,
   pathNames,
   swagger,
@@ -43,7 +44,7 @@ const SharedLayout: React.FC<Props> = ({
   swaggerIcon,
   graphQLIcon,
   labels,
-  title,
+  module,
   loader,
   transportsAdmin,
   transportsRouter,
@@ -51,59 +52,77 @@ const SharedLayout: React.FC<Props> = ({
   noGraphQL,
   configActive,
   SERVICE_API,
-  CONDUIT_API
+  CONDUIT_API,
 }) => {
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
+  const [logsOpen, setLogsOpen] = useState<boolean>(false);
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    if(!configActive){
-      setValue(labels.length-1);
+    if (!configActive) {
+      setValue(labels.length - 1);
       return;
     }
-    const index = pathNames.findIndex(
-      (pathname: string) => pathname === router.pathname
-    );
+    const index = pathNames.findIndex((pathname: string) => pathname === router.pathname);
     setValue(index);
   }, [router.pathname, pathNames]);
 
+  const title = moduleTitle(module);
+
+  const handleCloseLogs = () => {
+    setLogsOpen(false);
+  };
+
+  const handleOpenLogs = () => {
+    setLogsOpen(true);
+  };
+
   return (
-    <Box sx={{ height: "100vh", p: 4 }}>
+    <Box sx={{ height: '100vh', p: 4 }}>
       <Box sx={{ mb: 2 }}>
         <Box display="flex" alignItems="center">
-          <Typography variant={"h4"}>{title}</Typography>
+          <Typography variant={'h4'}>{title}</Typography>
           <Box display="flex" alignItems="center">
-            {title !== "Settings" && (
-              <Box whiteSpace={"nowrap"}>
-                {noSwagger ? null :
-                <Button
-                  color="primary"
-                  sx={{ textDecoration: "none", ml: 2 }}
-                  variant="outlined"
-                  onClick={() => setSwaggerOpen(true)}
-                >
-                  {swaggerIcon}
-                  <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-                    {smallScreen ? null : "SWAGGER"}
-                  </Typography>
-                </Button>
-                }
-                {noGraphQL ? null :
-                  <Button color="primary" variant="outlined" onClick={() => setGraphQLOpen(true)} sx={{ ml: 2 }}
-                  >
-                    {graphQLIcon}
+            {module !== 'settings' && (
+              <Box whiteSpace={'nowrap'}>
+                {noSwagger ? null : (
+                  <Button
+                    color="primary"
+                    sx={{ textDecoration: 'none', ml: 2 }}
+                    variant="outlined"
+                    onClick={() => setSwaggerOpen(true)}>
+                    {swaggerIcon}
                     <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-                      {smallScreen ? null : "GraphQL"}
+                      {smallScreen ? null : 'SWAGGER'}
                     </Typography>
                   </Button>
-                }
+                )}
+                {noGraphQL ? null : (
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => setGraphQLOpen(true)}
+                    sx={{ ml: 2 }}>
+                    {graphQLIcon}
+                    <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                      {smallScreen ? null : 'GraphQL'}
+                    </Typography>
+                  </Button>
+                )}
               </Box>
             )}
             <Box px={3}>{loader}</Box>
+          </Box>
+          <Box display={'flex'} flex={1} justifyContent={'flex-end'}>
+            <Tooltip title={'Logs'}>
+              <IconButton onClick={handleOpenLogs}>
+                <TerminalIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
         <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
@@ -113,10 +132,9 @@ const SharedLayout: React.FC<Props> = ({
               <LinkComponent
                 href={pathNames[index]}
                 key={index}
-                underline={"none"}
-                color={"#FFFFFF"}
-                disabled={disabled}
-              >
+                underline={'none'}
+                color={'#FFFFFF'}
+                disabled={disabled}>
                 <Tab
                   disabled={disabled}
                   label={label.name}
@@ -125,13 +143,13 @@ const SharedLayout: React.FC<Props> = ({
                     value === index
                       ? {
                           opacity: 1,
-                          "&:hover": {
-                            textDecoration: "none",
+                          '&:hover': {
+                            textDecoration: 'none',
                           },
                         }
                       : {
-                          "&:hover": {
-                            textDecoration: "none",
+                          '&:hover': {
+                            textDecoration: 'none',
                           },
                         }
                   }
@@ -161,6 +179,7 @@ const SharedLayout: React.FC<Props> = ({
           transportsAdmin={transportsAdmin}
           transportsRouter={transportsRouter}
         />
+        <LogsComponent module={module} open={logsOpen} onClose={handleCloseLogs} />
       </Box>
       <Box>{children}</Box>
     </Box>

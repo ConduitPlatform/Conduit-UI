@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { SharedLayout } from '@conduitplatform/ui-components';
 import { FC } from 'react';
 import GraphQL from '../../../assets/svgs/graphQL.svg';
 import Swagger from '../../../assets/svgs/swagger.svg';
@@ -7,9 +6,11 @@ import { Icon } from '@mui/material';
 import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
+import SharedLayout from './sharedLayout';
+import { ModulesTypes } from '../../../models/logs/LogsModels';
 
 interface Props {
-  title: string;
+  module: ModulesTypes;
   labels: { name: string; id: string }[];
   pathNames: string[];
   swagger?: string;
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const StyledLayout: FC<Props> = ({
-  title,
+  module,
   labels,
   pathNames,
   swagger,
@@ -42,7 +43,7 @@ const StyledLayout: FC<Props> = ({
 
   return (
     <SharedLayout
-      title={title}
+      module={module}
       labels={labels}
       pathNames={pathNames}
       swagger={swagger}

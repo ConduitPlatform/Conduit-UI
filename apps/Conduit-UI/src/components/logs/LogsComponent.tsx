@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   InputLabel,
@@ -18,7 +21,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import ListItemText from '@mui/material/ListItemText';
 import LogsList from './LogsList';
-import Paper from '@mui/material/Paper';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import moment, { Moment } from 'moment';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -28,20 +30,23 @@ import {
   asyncGetInstances,
   asyncGetLevels,
   asyncGetQueryRange,
+  // asyncLoadMoreQueryRange,
 } from '../../redux/slices/LogsSlice';
-import { ModulesTypes } from '../../models/logs/LogsModels';
+import { ModulesTypes, moduleTitle } from '../../models/logs/LogsModels';
 
 interface Props {
-  moduleName: ModulesTypes;
+  module: ModulesTypes;
+  open: boolean;
+  onClose: () => void;
 }
 
-const Limits = [50, 100, 300, 500, 1000];
+const Limits = [100, 500, 1000];
 
-const LogsComponent: React.FC<Props> = ({ moduleName }) => {
+const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
   const dispatch = useAppDispatch();
-  const logsLevels = useAppSelector((state) => state.logsSlice?.levels);
-  const instances = useAppSelector((state) => state.logsSlice?.instances);
-  const values = useAppSelector((state) => state.logsSlice?.logs?.[moduleName]);
+  const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
+  const instances: string[] = useAppSelector((state) => state.logsSlice?.instances);
+  const values = useAppSelector((state) => state.logsSlice?.logs?.[module]);
 
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedInstances, setInstances] = useState<string[]>([]);
@@ -55,7 +60,7 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
     debounce(() => {
       dispatch(
         asyncGetQueryRange({
-          module: moduleName,
+          module: module,
           levels: selectedLevels,
           instances: selectedInstances,
           startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
@@ -76,7 +81,7 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
         })
       );
     }, 1000),
-    [startDateValue, endDateValue, selectedInstances, selectedLevels, selectedLimit, moduleName]
+    [startDateValue, endDateValue, selectedInstances, selectedLevels, selectedLimit, module]
   );
 
   useEffect(() => {
@@ -85,7 +90,7 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
   }, [
     dispatch,
     endDateValue,
-    moduleName,
+    module,
     requestDebounce,
     selectedInstances,
     selectedLevels,
@@ -119,22 +124,12 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
     setSelectedLimit(newValue?.target?.value as number);
   };
 
-  const prepareData = useMemo(() => {
-    const arr: Array<Array<string>> = [];
-    values?.forEach((item) =>
-      item?.values?.forEach((value) => {
-        arr.push([...value, item?.stream?.level, item?.stream?.instance]);
-      })
-    );
-    return arr;
-  }, [values]);
-
   const refreshRequest = useCallback(
     throttle(
       () =>
         dispatch(
           asyncGetQueryRange({
-            module: moduleName,
+            module: module,
             levels: selectedLevels,
             instances: selectedInstances,
             startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
@@ -144,7 +139,7 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
         ),
       1000
     ),
-    [selectedInstances, selectedLimit, selectedLevels, moduleName, endDateValue, startDateValue]
+    [selectedInstances, selectedLimit, selectedLevels, module, endDateValue, startDateValue]
   );
 
   const handleRefresh = useCallback(() => {
@@ -185,203 +180,233 @@ const LogsComponent: React.FC<Props> = ({ moduleName }) => {
     return startDateValue ? moment(startDateValue).add(30, 'days') : undefined;
   }, [startDateValue]);
 
+  // const loadMore = useCallback(() => {
+  //   const firstItemTime = values?.[values.length - 1]?.timestamp;
+  //   if (
+  //     firstItemTime &&
+  //     firstItemTime >
+  //       (startDateValue
+  //         ? startDateValue.valueOf() * 1000000
+  //         : moment().subtract(1, 'hours').valueOf() * 1000000)
+  //   ) {
+  //     dispatch(
+  //       asyncLoadMoreQueryRange({
+  //         module: module,
+  //         levels: selectedLevels,
+  //         instances: selectedInstances,
+  //         startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+  //         endDate: firstItemTime,
+  //         limit: selectedLimit,
+  //       })
+  //     );
+  //   }
+  // }, [dispatch, module, values, selectedInstances, selectedLevels, selectedLimit, startDateValue]);
+
   return (
-    <Paper
-      sx={{
-        padding: 4,
-        borderRadius: 8,
-        justifyContent: 'space-between',
-      }}>
-      <Toolbar
-        disableGutters
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          alignItems: 'stretch',
-        }}>
-        <Grid container spacing={2} alignItems={'center'} justifyContent={'stretch'}>
-          <Grid item xl={1} md={2} xs={12}>
-            <IconButton aria-label="refresh" onClick={() => handleRefresh()}>
-              <RefreshIcon />
-            </IconButton>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth={'lg'}>
+      <DialogTitle>
+        {moduleTitle(module)} Logs
+        <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        <Toolbar
+          disableGutters
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            alignItems: 'stretch',
+            mt: 1,
+          }}>
+          <Grid container spacing={2} alignItems={'center'} justifyContent={'stretch'}>
+            <Grid item xl={1} md={2} xs={12}>
+              <IconButton aria-label="refresh" onClick={() => handleRefresh()}>
+                <RefreshIcon />
+              </IconButton>
+            </Grid>
+            <Grid item xl={3} md={5} xs={12}>
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DateTimePicker
+                  disableFuture={true}
+                  minDateTime={minDateOfStart}
+                  maxDateTime={maxDateOfStart}
+                  DialogProps={{
+                    disableRestoreFocus: true,
+                  }}
+                  onClose={() => setIsStartDatePickerOpen(false)}
+                  onOpen={() => setIsStartDatePickerOpen(true)}
+                  open={isStartDatePickerOpen}
+                  renderInput={(props) => (
+                    <TextField
+                      {...props}
+                      fullWidth
+                      InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
+                      label={'Start Date'}
+                      inputProps={{ ...props.inputProps, placeholder: 'one hour ago' }}
+                      onClick={() => setIsStartDatePickerOpen(true)}
+                    />
+                  )}
+                  value={startDateValue}
+                  onAccept={(newValue) => {
+                    handleStartDateChange(newValue);
+                  }}
+                  onChange={() => {
+                    return;
+                  }}
+                  InputProps={{
+                    startAdornment: startDateValue && (
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClearStartDateTime();
+                        }}
+                        sx={{ padding: 0, marginRight: 1, cursor: 'pointer' }}>
+                        <CloseIcon color={'inherit'} />
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid item xl={3} md={5} xs={12}>
+              <LocalizationProvider dateAdapter={AdapterMoment}>
+                <DateTimePicker
+                  disableFuture={true}
+                  maxDateTime={maxDateOfEnd}
+                  minDateTime={minDateOfEnd}
+                  DialogProps={{
+                    disableRestoreFocus: true,
+                  }}
+                  onClose={() => setIsEndDatePickerOpen(false)}
+                  onOpen={() => setIsEndDatePickerOpen(true)}
+                  open={isEndDatePickerOpen}
+                  renderInput={(props) => (
+                    <TextField
+                      {...props}
+                      fullWidth
+                      InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
+                      label={'End Date'}
+                      inputProps={{ ...props.inputProps, placeholder: 'now' }}
+                      onClick={() => setIsEndDatePickerOpen(true)}
+                    />
+                  )}
+                  value={endDateValue}
+                  onAccept={(newValue) => {
+                    handleEndDateChange(newValue);
+                  }}
+                  onChange={() => {
+                    return;
+                  }}
+                  InputProps={{
+                    startAdornment: endDateValue && (
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClearEndDateTime();
+                        }}
+                        sx={{ padding: 0, marginRight: 1, cursor: 'pointer' }}>
+                        <CloseIcon color={'inherit'} />
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid item xl={1} md={2} xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-multiple-checkbox-label">Limit</InputLabel>
+                <Select
+                  fullWidth
+                  sx={{ borderRadius: 3 }}
+                  name={'limit'}
+                  label={'Limit'}
+                  value={selectedLimit}
+                  disabled={Limits?.length === 0}
+                  onChange={handleChangeLimit}
+                  renderValue={(selected) => selected.toString()}>
+                  {Limits.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      <ListItemText primary={item} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xl={2} md={5} xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-multiple-checkbox-label">Instance</InputLabel>
+                <Select
+                  sx={{ borderRadius: 3 }}
+                  fullWidth
+                  name={'Instance'}
+                  label={'Instance'}
+                  value={selectedInstances}
+                  multiple
+                  disabled={instances?.length === 0}
+                  onChange={handleChangeInstances}
+                  renderValue={(selected) => selected.join(', ')}>
+                  {instances?.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      <Checkbox checked={selectedInstances.indexOf(item) > -1} />
+                      <ListItemText primary={item} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xl={2} md={5} xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>
+                <Select
+                  sx={{ borderRadius: 3 }}
+                  fullWidth
+                  name={'Level'}
+                  label={'Level'}
+                  value={selectedLevels}
+                  multiple
+                  disabled={logsLevels?.length === 0}
+                  onChange={handleChangeLevels}
+                  renderValue={(selected) => selected.join(', ')}>
+                  {logsLevels?.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      <Checkbox checked={selectedLevels?.indexOf(item) > -1} />
+                      <ListItemText primary={item} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xl={3} md={5} xs={12}>
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DateTimePicker
-                disableFuture={true}
-                minDateTime={minDateOfStart}
-                maxDateTime={maxDateOfStart}
-                DialogProps={{
-                  disableRestoreFocus: true,
-                }}
-                onClose={() => setIsStartDatePickerOpen(false)}
-                onOpen={() => setIsStartDatePickerOpen(true)}
-                open={isStartDatePickerOpen}
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    fullWidth
-                    InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
-                    label={'Start Date'}
-                    inputProps={{ ...props.inputProps, placeholder: 'one hour ago' }}
-                    onClick={() => setIsStartDatePickerOpen(true)}
-                  />
-                )}
-                value={startDateValue}
-                onAccept={(newValue) => {
-                  handleStartDateChange(newValue);
-                }}
-                onChange={() => {
-                  return;
-                }}
-                InputProps={{
-                  startAdornment: startDateValue && (
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClearStartDateTime();
-                      }}
-                      sx={{ padding: 0, marginRight: 1, cursor: 'pointer' }}>
-                      <CloseIcon color={'inherit'} />
-                    </IconButton>
-                  ),
-                }}
-              />
-            </LocalizationProvider>
-          </Grid>
-          <Grid item xl={3} md={5} xs={12}>
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DateTimePicker
-                disableFuture={true}
-                maxDateTime={maxDateOfEnd}
-                minDateTime={minDateOfEnd}
-                DialogProps={{
-                  disableRestoreFocus: true,
-                }}
-                onClose={() => setIsEndDatePickerOpen(false)}
-                onOpen={() => setIsEndDatePickerOpen(true)}
-                open={isEndDatePickerOpen}
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    fullWidth
-                    InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
-                    label={'End Date'}
-                    inputProps={{ ...props.inputProps, placeholder: 'now' }}
-                    onClick={() => setIsEndDatePickerOpen(true)}
-                  />
-                )}
-                value={endDateValue}
-                onAccept={(newValue) => {
-                  handleEndDateChange(newValue);
-                }}
-                onChange={() => {
-                  return;
-                }}
-                InputProps={{
-                  startAdornment: endDateValue && (
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClearEndDateTime();
-                      }}
-                      sx={{ padding: 0, marginRight: 1, cursor: 'pointer' }}>
-                      <CloseIcon color={'inherit'} />
-                    </IconButton>
-                  ),
-                }}
-              />
-            </LocalizationProvider>
-          </Grid>
-          <Grid item xl={1} md={2} xs={12}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-multiple-checkbox-label">Limit</InputLabel>
-              <Select
-                fullWidth
-                sx={{ borderRadius: 3 }}
-                name={'limit'}
-                label={'Limit'}
-                value={selectedLimit}
-                disabled={Limits?.length === 0}
-                onChange={handleChangeLimit}
-                renderValue={(selected) => selected.toString()}>
-                {Limits.map((item, index) => (
-                  <MenuItem key={index} value={item}>
-                    <Checkbox checked={selectedLimit === item} />
-                    <ListItemText primary={item} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xl={2} md={5} xs={12}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-multiple-checkbox-label">Instance</InputLabel>
-              <Select
-                sx={{ borderRadius: 3 }}
-                fullWidth
-                name={'Instance'}
-                label={'Instance'}
-                value={selectedInstances}
-                multiple
-                disabled={instances?.length === 0}
-                onChange={handleChangeInstances}
-                renderValue={(selected) => selected.join(', ')}>
-                {instances?.map((item, index) => (
-                  <MenuItem key={index} value={item}>
-                    <Checkbox checked={selectedInstances.indexOf(item) > -1} />
-                    <ListItemText primary={item} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xl={2} md={5} xs={12}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-multiple-checkbox-label">Level</InputLabel>
-              <Select
-                sx={{ borderRadius: 3 }}
-                fullWidth
-                name={'Level'}
-                label={'Level'}
-                value={selectedLevels}
-                multiple
-                disabled={logsLevels?.length === 0}
-                onChange={handleChangeLevels}
-                renderValue={(selected) => selected.join(', ')}>
-                {logsLevels?.map((item, index) => (
-                  <MenuItem key={index} value={item}>
-                    <Checkbox checked={selectedLevels?.indexOf(item) > -1} />
-                    <ListItemText primary={item} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </Toolbar>
-      <Box
-        sx={{
-          height: '55vh',
-          background: 'background.paper',
-          mt: 2,
-        }}>
-        {prepareData?.length ? (
-          <LogsList data={prepareData} />
-        ) : (
-          <Typography
-            sx={{
-              display: 'flex',
-              flex: 1,
-              alignSelf: 'center',
-              justifyContent: 'center',
-            }}>
-            No data to show
-          </Typography>
-        )}
-      </Box>
-    </Paper>
+        </Toolbar>
+        <Box
+          sx={{
+            display: 'flex',
+            height: '40vh',
+            background: 'black',
+            mt: 2,
+            borderRadius: 2,
+            paddingX: 1,
+          }}>
+          {values?.length ? (
+            <LogsList
+              data={values}
+              // loadMore={loadMore}
+            />
+          ) : (
+            <Box
+              display={'flex'}
+              flexDirection={'column'}
+              flex={1}
+              alignItems={'center'}
+              justifyContent={'center'}>
+              <Typography>No data to show</Typography>
+            </Box>
+          )}
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 };
 

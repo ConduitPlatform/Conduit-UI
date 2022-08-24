@@ -9,21 +9,19 @@ const AuthenticationLayout: React.FC = ({ children }) => {
     '/authentication/users',
     '/authentication/signIn',
     '/authentication/serviceAccounts',
-    '/authentication/logs',
     '/authentication/config',
   ];
   const labels = [
     { name: 'users', id: 'users' },
     { name: 'sign in methods', id: 'signIn' },
     { name: 'service Accounts', id: 'serviceAccounts' },
-    { name: 'logs', id: 'logs' },
     { name: 'config', id: 'config' },
   ];
 
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Authentication'}
+      module={'authentication'}
       labels={labels}
       pathNames={pathNames}
       swagger={'authentication'}

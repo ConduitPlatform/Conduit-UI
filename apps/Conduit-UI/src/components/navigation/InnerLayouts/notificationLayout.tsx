@@ -5,22 +5,17 @@ import { useAppSelector } from '../../../redux/store';
 
 const NotificationLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.notificationsSlice.data.config.active);
-  const pathNames = [
-    '/push-notifications/send',
-    '/push-notifications/logs',
-    '/push-notifications/config',
-  ];
+  const pathNames = ['/push-notifications/send', '/push-notifications/config'];
 
   const labels = [
     { name: 'send', id: 'send' },
-    { name: 'logs', id: 'logs' },
     { name: 'config', id: 'config' },
   ];
 
   return (
     <StyledLayout
       configActive={configActive}
-      title={'Push Notifications'}
+      module={'pushNotifications'}
       labels={labels}
       pathNames={pathNames}
       swagger={'pushNotifications'}

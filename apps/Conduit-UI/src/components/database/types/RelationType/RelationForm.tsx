@@ -17,6 +17,7 @@ import { asyncGetSchemas } from '../../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { IDrawerData, IRelationData } from '../../../../models/database/BuildTypesModels';
 import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
+import { Schema } from '../../../../models/database/CmsModels';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -70,10 +71,10 @@ const RelationForm: FC<IProps> = ({
 
   useEffect(() => {
     let activeModules = schemaDocuments.filter(
-      (s) => !s.modelOptions.conduit.cms || s.modelOptions.conduit.cms.enabled
+      (s: Schema) => !s.modelOptions.conduit.cms || s.modelOptions.conduit.cms.enabled
     );
     if (selectedSchema) {
-      activeModules = schemaDocuments.filter((s) => s.name !== selectedSchema.name);
+      activeModules = schemaDocuments.filter((s: Schema) => s.name !== selectedSchema.name);
     }
 
     setAvailableSchemas([...activeModules]);

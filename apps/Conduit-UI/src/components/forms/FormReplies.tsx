@@ -4,7 +4,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { FormsModel } from '../../models/forms/FormsModels';
+import { FormReplies, FormsModel } from '../../models/forms/FormsModels';
 import { asyncGetFormReplies } from '../../redux/slices/formsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { Box, Chip, Container, Grid, TextField } from '@mui/material';
@@ -27,7 +27,7 @@ const FormReplies: React.FC<Props> = ({ repliesForm }) => {
   return (
     <Container>
       {replies.length ? (
-        replies.map((reply, index: number) => (
+        replies.map((reply: FormReplies, index: number) => (
           <Accordion key={reply._id}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
