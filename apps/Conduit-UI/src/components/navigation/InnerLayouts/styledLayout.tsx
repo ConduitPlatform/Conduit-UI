@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { SharedLayout } from '@conduitplatform/ui-components';
 import { FC } from 'react';
 import GraphQL from '../../../assets/svgs/graphQL.svg';
 import Swagger from '../../../assets/svgs/swagger.svg';
@@ -7,6 +6,7 @@ import { Icon } from '@mui/material';
 import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
+import SharedLayout from './sharedLayout';
 
 interface Props {
   title: string;

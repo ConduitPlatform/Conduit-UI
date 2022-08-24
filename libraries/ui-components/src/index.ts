@@ -9,7 +9,6 @@ import InnerTable from "./components/InnerTable";
 import SelectedElements from "./components/SelectedElements";
 import Paginator from "./components/Paginator";
 import CustomDatepicker from "./components/CustomDatepicker";
-import SharedLayout from "./components/navigation/sharedLayout";
 import SideDrawerWrapper from "./components/navigation/SideDrawerWrapper";
 import StorageDownloadDialog from "./components/StorageDownloadDialog";
 import Dropzone from "./components/Dropzone";
@@ -23,6 +22,7 @@ import ExtractDrawerInfo from "./components/ExtractDrawerInfo";
 import FieldIndicators from "./components/FieldIndicators";
 import StyledTreeItem from "./components/StyledTreeItem";
 import LinkComponent from "./components/LinkComponent";
+import SharedLayout from "@conduitplatform/conduit-ui/src/components/navigation/InnerLayouts/sharedLayout";
 
 export {
   ConduitMultiSelect,
