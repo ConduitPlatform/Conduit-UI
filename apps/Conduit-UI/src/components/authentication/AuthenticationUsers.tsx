@@ -137,7 +137,7 @@ const Users: React.FC = () => {
   };
 
   const handleAction = (action: { title: string; type: string }, data: AuthUserUI) => {
-    const currentUser = users.find((user) => user._id === data._id) as AuthUser;
+    const currentUser = users.find((user: AuthUser) => user._id === data._id) as AuthUser;
     if (action.type === 'edit') {
       setOpenEditUser(true);
       setSelectedUser(currentUser);
@@ -168,7 +168,7 @@ const Users: React.FC = () => {
   const handleBlock = () => {
     if (openBlockUI.multiple) {
       const selectedUsersObj: boolean[] = [];
-      users.forEach((user) => {
+      users.forEach((user: AuthUser) => {
         if (selectedUsers.includes(user._id)) {
           selectedUsersObj.push(user.active);
         }
