@@ -30,6 +30,7 @@ import {
   asyncGetInstances,
   asyncGetLevels,
   asyncGetQueryRange,
+  // asyncLoadMoreQueryRange,
 } from '../../redux/slices/LogsSlice';
 import { ModulesTypes, moduleTitle } from '../../models/logs/LogsModels';
 
@@ -43,8 +44,8 @@ const Limits = [100, 500, 1000];
 
 const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
   const dispatch = useAppDispatch();
-  const logsLevels = useAppSelector((state) => state.logsSlice?.levels);
-  const instances = useAppSelector((state) => state.logsSlice?.instances);
+  const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
+  const instances: string[] = useAppSelector((state) => state.logsSlice?.instances);
   const values = useAppSelector((state) => state.logsSlice?.logs?.[module]);
 
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
@@ -123,16 +124,6 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
     setSelectedLimit(newValue?.target?.value as number);
   };
 
-  const prepareData = useMemo(() => {
-    const arr: Array<Array<string>> = [];
-    values?.forEach((item) =>
-      item?.values?.forEach((value) => {
-        arr.push([...value, item?.stream?.level, item?.stream?.instance]);
-      })
-    );
-    return arr;
-  }, [values]);
-
   const refreshRequest = useCallback(
     throttle(
       () =>
@@ -188,6 +179,28 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
   const maxDateOfEnd = useMemo(() => {
     return startDateValue ? moment(startDateValue).add(30, 'days') : undefined;
   }, [startDateValue]);
+
+  // const loadMore = useCallback(() => {
+  //   const firstItemTime = values?.[values.length - 1]?.timestamp;
+  //   if (
+  //     firstItemTime &&
+  //     firstItemTime >
+  //       (startDateValue
+  //         ? startDateValue.valueOf() * 1000000
+  //         : moment().subtract(1, 'hours').valueOf() * 1000000)
+  //   ) {
+  //     dispatch(
+  //       asyncLoadMoreQueryRange({
+  //         module: module,
+  //         levels: selectedLevels,
+  //         instances: selectedInstances,
+  //         startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+  //         endDate: firstItemTime,
+  //         limit: selectedLimit,
+  //       })
+  //     );
+  //   }
+  // }, [dispatch, module, values, selectedInstances, selectedLevels, selectedLimit, startDateValue]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={'lg'}>
@@ -376,8 +389,11 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
             borderRadius: 2,
             paddingX: 1,
           }}>
-          {prepareData?.length ? (
-            <LogsList data={prepareData} />
+          {values?.length ? (
+            <LogsList
+              data={values}
+              // loadMore={loadMore}
+            />
           ) : (
             <Box
               display={'flex'}

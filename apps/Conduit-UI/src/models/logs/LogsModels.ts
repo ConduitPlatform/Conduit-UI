@@ -12,6 +12,13 @@ export type ModulesTypes =
   | 'settings';
 
 export interface LogsData {
+  timestamp: number;
+  message: string;
+  level: string;
+  instance: string;
+}
+
+export interface LokiLogsData {
   stream: {
     instance: string;
     level: string;
