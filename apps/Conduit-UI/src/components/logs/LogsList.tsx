@@ -37,19 +37,21 @@ const LogsList: FC<Props> = ({
     const rowItem = logs[count - index - 1];
 
     const handleBackgroundBubble = () => {
-      return rowItem?.instance ? colorHash.hex(rowItem?.instance) : 'gray';
+      return rowItem?.instance ? colorHash.hex(rowItem?.instance) : 'grey';
     };
 
     const handleBackgroundLabel = () => {
       switch (rowItem?.level) {
         case 'info':
-          return 'blue';
+          return 'green';
         case 'warn':
           return 'yellow';
         case 'error':
           return 'red';
+        case 'debug':
+          return 'blue';
         default:
-          return 'gray';
+          return 'grey';
       }
     };
 
