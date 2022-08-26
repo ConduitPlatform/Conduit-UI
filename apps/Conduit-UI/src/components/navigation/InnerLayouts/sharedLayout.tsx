@@ -85,9 +85,8 @@ const SharedLayout: FC<Props> = ({
 
   const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
-  }>(({ theme }) => ({
+  }>(() => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
   }));
 
   return (

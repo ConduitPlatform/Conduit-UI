@@ -197,7 +197,6 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose, drawerHeight, s
       anchor={'bottom'}
       hideBackdrop
       variant={'persistent'}
-      elevation={30}
       PaperProps={{ sx: { background: '#15151f', paddingX: 2 } }}
       sx={{
         height: open ? drawerHeight : 0,
