@@ -17,6 +17,7 @@ import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-c
 import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
 import LogsComponent from '../../logs/LogsComponent';
 import TerminalIcon from '@mui/icons-material/Terminal';
+import { styled } from '@mui/material/styles';
 
 interface Props {
   pathNames: string[];
@@ -73,13 +74,21 @@ const SharedLayout: FC<Props> = ({
 
   const title = moduleTitle(module);
 
+  const drawerHeight = '35vh';
+
   const handleCloseLogs = () => {
     setLogsOpen(false);
   };
-
   const handleOpenLogs = () => {
     setLogsOpen(true);
   };
+
+  const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+    open?: boolean;
+  }>(({ theme }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  }));
 
   return (
     <Box sx={{ height: '100vh', p: 4 }}>
@@ -125,39 +134,41 @@ const SharedLayout: FC<Props> = ({
             </Tooltip>
           </Box>
         </Box>
-        <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
-          {labels.map((label: { name: string; id: string }, index: number) => {
-            const disabled = !configActive ? index < labels.length - 1 : false;
-            return (
-              <LinkComponent
-                href={pathNames[index]}
-                key={index}
-                underline={'none'}
-                color={'#FFFFFF'}
-                disabled={disabled}>
-                <Tab
-                  disabled={disabled}
-                  label={label.name}
-                  id={label.id}
-                  sx={
-                    value === index
-                      ? {
-                          opacity: 1,
-                          '&:hover': {
-                            textDecoration: 'none',
-                          },
-                        }
-                      : {
-                          '&:hover': {
-                            textDecoration: 'none',
-                          },
-                        }
-                  }
-                />
-              </LinkComponent>
-            );
-          })}
-        </Tabs>
+        <Main open={logsOpen}>
+          <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
+            {labels.map((label: { name: string; id: string }, index: number) => {
+              const disabled = !configActive ? index < labels.length - 1 : false;
+              return (
+                <LinkComponent
+                  href={pathNames[index]}
+                  key={index}
+                  underline={'none'}
+                  color={'#FFFFFF'}
+                  disabled={disabled}>
+                  <Tab
+                    disabled={disabled}
+                    label={label.name}
+                    id={label.id}
+                    sx={
+                      value === index
+                        ? {
+                            opacity: 1,
+                            '&:hover': {
+                              textDecoration: 'none',
+                            },
+                          }
+                        : {
+                            '&:hover': {
+                              textDecoration: 'none',
+                            },
+                          }
+                    }
+                  />
+                </LinkComponent>
+              );
+            })}
+          </Tabs>
+        </Main>
         <SwaggerModal
           open={swaggerOpen}
           setOpen={setSwaggerOpen}
@@ -179,9 +190,15 @@ const SharedLayout: FC<Props> = ({
           transportsAdmin={transportsAdmin}
           transportsRouter={transportsRouter}
         />
-        <LogsComponent module={module} open={logsOpen} onClose={handleCloseLogs} />
       </Box>
       <Box>{children}</Box>
+      <LogsComponent
+        module={module}
+        open={logsOpen}
+        onClose={handleCloseLogs}
+        drawerHeight={drawerHeight}
+        smallScreen={smallScreen}
+      />
     </Box>
   );
 };
