@@ -8,7 +8,6 @@ import {
   getLogsLevels,
   getLogsQueryRange,
 } from '../../http/requests/LogsRequests';
-import { RootState } from '../store';
 
 interface ILogsSlice {
   logs: Record<ModulesTypes, LogsData[]>;
@@ -111,62 +110,6 @@ export const asyncGetQueryRange = createAsyncThunk(
   }
 );
 
-// export const asyncLoadMoreQueryRange = createAsyncThunk(
-//   '/authentication/loadMoreQueryRange',
-//   async (
-//     body: {
-//       module: ModulesTypes;
-//       instances?: string[];
-//       levels?: string[];
-//       startDate?: number;
-//       endDate?: number;
-//       limit?: number;
-//       loadMore?: boolean;
-//     },
-//     thunkAPI
-//   ) => {
-//     thunkAPI.dispatch(setAppLoading(true));
-//
-//     try {
-//       const {
-//         data: {
-//           data: { result },
-//         },
-//       } = await getLogsQueryRange(body);
-//
-//       const state: RootState = thunkAPI.getState();
-//       const logs = state.logsSlice.logs?.[body.module];
-//
-//       let arr: LogsData[] = [];
-//
-//       result?.forEach((item: LokiLogsData) =>
-//         item?.values?.forEach((value) => {
-//           arr.push({
-//             timestamp: parseInt(value?.[0]),
-//             message: value?.[1],
-//             level: item?.stream?.level,
-//             instance: item?.stream?.instance,
-//           });
-//         })
-//       );
-//       arr = [...arr, ...logs];
-//       arr.sort((a, b) => {
-//         const dateStart = a?.timestamp;
-//         const dateEnd = b?.timestamp;
-//         return dateEnd - dateStart;
-//       });
-//
-//       thunkAPI.dispatch(setAppLoading(false));
-//
-//       return arr;
-//     } catch (error) {
-//       thunkAPI.dispatch(setAppLoading(false));
-//       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-//       throw error;
-//     }
-//   }
-// );
-
 const logsSlice = createSlice({
   name: 'logs',
   initialState,
@@ -181,9 +124,6 @@ const logsSlice = createSlice({
     builder.addCase(asyncGetQueryRange.fulfilled, (state, action) => {
       state.logs[action.meta.arg.module] = action.payload;
     });
-    // builder.addCase(asyncLoadMoreQueryRange.fulfilled, (state, action) => {
-    //   state.logs[action.meta.arg.module] = action.payload;
-    // });
   },
 });
 

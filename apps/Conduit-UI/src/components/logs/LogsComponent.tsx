@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
+  Button,
   Checkbox,
   Dialog,
   DialogContent,
@@ -30,9 +31,9 @@ import {
   asyncGetInstances,
   asyncGetLevels,
   asyncGetQueryRange,
-  // asyncLoadMoreQueryRange,
 } from '../../redux/slices/LogsSlice';
 import { ModulesTypes, moduleTitle } from '../../models/logs/LogsModels';
+import { VirtuosoHandle } from 'react-virtuoso';
 
 interface Props {
   module: ModulesTypes;
@@ -40,7 +41,7 @@ interface Props {
   onClose: () => void;
 }
 
-const Limits = [100, 500, 1000];
+const Limits = [100, 500, 1000, 5000];
 
 const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
   const dispatch = useAppDispatch();
@@ -55,6 +56,7 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
+  const listRef = useRef<VirtuosoHandle>(null);
 
   const requestDebounce = useCallback(
     debounce(() => {
@@ -97,6 +99,14 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
     selectedLimit,
     startDateValue,
   ]);
+
+  useEffect(() => {
+    listRef?.current?.scrollToIndex({
+      index: values?.length - 1,
+      align: 'start',
+      behavior: 'auto',
+    });
+  }, [values]);
 
   const handleChangeLevels = (event: SelectChangeEvent<unknown>) => {
     const {
@@ -180,30 +190,8 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
     return startDateValue ? moment(startDateValue).add(30, 'days') : undefined;
   }, [startDateValue]);
 
-  // const loadMore = useCallback(() => {
-  //   const firstItemTime = values?.[values.length - 1]?.timestamp;
-  //   if (
-  //     firstItemTime &&
-  //     firstItemTime >
-  //       (startDateValue
-  //         ? startDateValue.valueOf() * 1000000
-  //         : moment().subtract(1, 'hours').valueOf() * 1000000)
-  //   ) {
-  //     dispatch(
-  //       asyncLoadMoreQueryRange({
-  //         module: module,
-  //         levels: selectedLevels,
-  //         instances: selectedInstances,
-  //         startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
-  //         endDate: firstItemTime,
-  //         limit: selectedLimit,
-  //       })
-  //     );
-  //   }
-  // }, [dispatch, module, values, selectedInstances, selectedLevels, selectedLimit, startDateValue]);
-
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth={'lg'}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth={'xl'}>
       <DialogTitle>
         {moduleTitle(module)} Logs
         <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
@@ -222,9 +210,21 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
           }}>
           <Grid container spacing={2} alignItems={'center'} justifyContent={'stretch'}>
             <Grid item xl={1} md={2} xs={12}>
-              <IconButton aria-label="refresh" onClick={() => handleRefresh()}>
-                <RefreshIcon />
-              </IconButton>
+              <Button
+                aria-label="refresh"
+                onClick={() => handleRefresh()}
+                startIcon={<RefreshIcon />}
+                fullWidth
+                variant={'outlined'}
+                color={'inherit'}
+                sx={{
+                  height: 56,
+                  borderRadius: 3,
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                  fontSize: '1rem',
+                }}>
+                Refresh
+              </Button>
             </Grid>
             <Grid item xl={3} md={5} xs={12}>
               <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -390,10 +390,7 @@ const LogsComponent: React.FC<Props> = ({ module, open, onClose }) => {
             paddingX: 1,
           }}>
           {values?.length ? (
-            <LogsList
-              data={values}
-              // loadMore={loadMore}
-            />
+            <LogsList data={values} ref={listRef} />
           ) : (
             <Box
               display={'flex'}
