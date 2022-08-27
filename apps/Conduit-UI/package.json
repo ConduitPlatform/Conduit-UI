@@ -50,7 +50,7 @@
     "react-json-editor-ajrm": "^2.5.13",
     "react-redux": "^7.2.0",
     "react-simple-code-editor": "^0.11.0",
-    "react-spinners": "^0.12.0",
+    "react-spinners": "^0.13.0",
     "react-spring": "^9.4.3",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-virtuoso": "^2.16.6",

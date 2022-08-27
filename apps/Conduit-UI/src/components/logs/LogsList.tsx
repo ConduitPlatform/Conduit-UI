@@ -1,17 +1,21 @@
-import React, { FC, useMemo, useRef } from 'react';
-import { Box, ListItemText, Tooltip } from '@mui/material';
+import React, { forwardRef, useMemo } from 'react';
 import ListItem from '@mui/material/ListItem';
-import { Circle } from '@mui/icons-material';
-import { logsDateText } from '../../theme';
 import memoize from 'memoize-one';
-import moment from 'moment';
-import { Virtuoso } from 'react-virtuoso';
+import { Components, ItemProps, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import ColorHash from 'color-hash';
 import { LogsData } from '../../models/logs/LogsModels';
+import List from '@mui/material/List';
+import { Box, ListItemText, Tooltip } from '@mui/material';
+import { logsDateText } from '../../theme';
+import moment from 'moment';
+import { Circle } from '@mui/icons-material';
 
 interface Props {
   data: LogsData[];
-  // loadMore: () => void;
+}
+
+interface ListRowProps {
+  index: number;
 }
 
 const createItemData = memoize((logs, count) => ({
@@ -19,12 +23,9 @@ const createItemData = memoize((logs, count) => ({
   count,
 }));
 
-const LogsList: FC<Props> = ({
-  data,
-  // loadMore
-}) => {
-  const listRef = useRef<any>(null);
+const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
   const colorHash = new ColorHash();
+  const { data } = props;
 
   const count = useMemo(() => {
     return data?.length;
@@ -32,7 +33,7 @@ const LogsList: FC<Props> = ({
 
   const itemData = createItemData(data, count);
 
-  const ListRow = ({ index }: any) => {
+  const ListRow = ({ index }: ListRowProps) => {
     const { logs, count } = itemData;
     const rowItem = logs[count - index - 1];
 
@@ -56,11 +57,7 @@ const LogsList: FC<Props> = ({
     };
 
     return (
-      <ListItem
-        key={rowItem?.timestamp}
-        component="div"
-        disablePadding
-        sx={{ alignItems: 'stretch', paddingY: 1 }}>
+      <>
         <Box
           sx={{
             display: 'flex',
@@ -95,21 +92,49 @@ const LogsList: FC<Props> = ({
           }}
           primary={rowItem?.message}
         />
-      </ListItem>
+      </>
     );
+  };
+
+  const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
+    return (
+      <List style={{ padding: 0, ...style, margin: 0 }} component="div" ref={ref}>
+        {children}
+      </List>
+    );
+  });
+
+  MUIList.displayName = 'MuiList';
+
+  const MUIComponents: Components = {
+    List: MUIList,
+
+    Item: ({ children, ...props }: ItemProps) => {
+      return (
+        <ListItem
+          component="div"
+          {...props}
+          style={{ margin: 0, alignItems: 'stretch' }}
+          disableGutters>
+          {children}
+        </ListItem>
+      );
+    },
   };
 
   return (
     <Virtuoso
-      ref={listRef}
+      ref={ref}
       style={{ height: '100%', width: '100%' }}
       totalCount={count}
-      // overscan={10}
+      overscan={20}
       itemContent={(index) => <ListRow index={index} />}
-      // startReached={loadMore}
-      initialTopMostItemIndex={count}
+      followOutput={true}
+      components={MUIComponents}
     />
   );
-};
+});
+
+LogsList.displayName = 'LogsList';
 
 export default LogsList;

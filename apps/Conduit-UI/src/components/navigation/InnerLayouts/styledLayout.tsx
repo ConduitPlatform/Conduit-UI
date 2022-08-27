@@ -61,7 +61,10 @@ const StyledLayout: FC<Props> = ({
           color={'#07D9C4'}
           loading={loading}
           height={21}
-          width={4}
+          cssOverride={{
+            maxHeight: 23,
+            overflow: 'hidden',
+          }}
         />
       }
       swaggerIcon={
