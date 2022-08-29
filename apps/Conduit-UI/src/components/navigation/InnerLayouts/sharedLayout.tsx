@@ -1,22 +1,11 @@
 import React, { FC, useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Typography,
-  Tabs,
-  Tab,
-  useTheme,
-  useMediaQuery,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
+import { Box, Button, Typography, Tabs, Tab, useTheme, useMediaQuery } from '@mui/material';
 import { IAdminSettings } from '../../../models/settings/SettingsModels';
 import { IRouterConfig } from '../../../models/router/RouterModels';
 import { useRouter } from 'next/router';
 import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-components';
 import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
 import LogsComponent from '../../logs/LogsComponent';
-import TerminalIcon from '@mui/icons-material/Terminal';
 import { styled } from '@mui/material/styles';
 
 interface Props {
@@ -59,7 +48,7 @@ const SharedLayout: FC<Props> = ({
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
-  const [logsOpen, setLogsOpen] = useState<boolean>(false);
+
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -73,15 +62,6 @@ const SharedLayout: FC<Props> = ({
   }, [router.pathname, pathNames]);
 
   const title = moduleTitle(module);
-
-  const drawerHeight = '35vh';
-
-  const handleCloseLogs = () => {
-    setLogsOpen(false);
-  };
-  const handleOpenLogs = () => {
-    setLogsOpen(true);
-  };
 
   const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
@@ -125,15 +105,8 @@ const SharedLayout: FC<Props> = ({
             )}
             <Box px={3}>{loader}</Box>
           </Box>
-          <Box display={'flex'} flex={1} justifyContent={'flex-end'}>
-            <Tooltip title={'Logs'}>
-              <IconButton onClick={handleOpenLogs}>
-                <TerminalIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
         </Box>
-        <Main open={logsOpen}>
+        <Main open={true}>
           <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
             {labels.map((label: { name: string; id: string }, index: number) => {
               const disabled = !configActive ? index < labels.length - 1 : false;
@@ -191,13 +164,7 @@ const SharedLayout: FC<Props> = ({
         />
       </Box>
       <Box>{children}</Box>
-      <LogsComponent
-        module={module}
-        open={logsOpen}
-        onClose={handleCloseLogs}
-        drawerHeight={drawerHeight}
-        smallScreen={smallScreen}
-      />
+      <LogsComponent module={module} smallScreen={smallScreen} />
     </Box>
   );
 };
