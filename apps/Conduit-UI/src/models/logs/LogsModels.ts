@@ -9,7 +9,8 @@ export type ModulesTypes =
   | 'payments'
   | 'database'
   | 'router'
-  | 'settings';
+  | 'settings'
+  | 'core';
 
 export interface LogsData {
   timestamp: number;
@@ -51,6 +52,8 @@ export const moduleTitle = (type: ModulesTypes) => {
       return 'Router';
     case 'settings':
       return 'Settings';
+    case 'core':
+      return 'Core';
     default:
       return '';
   }
