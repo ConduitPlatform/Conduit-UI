@@ -220,6 +220,12 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
     }
   }, [drawerHeight]);
 
+  const handleOpenDrawer = () => {
+    if (drawerHeight === minDrawerHeight) {
+      setDrawerHeight(defaultDrawerHeight);
+    }
+  };
+
   return (
     <SwipeableDrawer
       open={true}
@@ -248,30 +254,35 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
       }}>
       <Box display={'flex'} justifyContent={'space-between'} pt={'4px'} pb={'3px'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
-          <Typography sx={{ display: 'flex', userSelect: 'none', alignItems: 'center' }}>
+          <Typography
+            sx={{
+              display: 'flex',
+              userSelect: 'none',
+              alignItems: 'center',
+              cursor: drawerHeight === minDrawerHeight ? 'pointer' : undefined,
+            }}
+            onClick={handleOpenDrawer}>
             <ShortTextIcon sx={{ mr: 1 }} />
             Logs
           </Typography>
         </Box>
 
-        <Box
-          display={'flex'}
-          flex={1}
-          paddingX={4}
-          paddingY={1}
-          alignItems={'center'}
-          onMouseDown={() => handleMouseDown()}
-          justifyContent={'center'}
-          sx={{ cursor: 'ns-resize' }}>
-          <div
-            style={{
-              width: 64,
-              height: 4,
-              borderRadius: 3,
-              zIndex: 10,
-              backgroundColor: 'white',
-            }}
-          />
+        <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'center'}>
+          <Box
+            paddingX={4}
+            paddingY={1}
+            sx={{ cursor: 'ns-resize' }}
+            onMouseDown={() => handleMouseDown()}>
+            <div
+              style={{
+                width: 64,
+                height: 4,
+                borderRadius: 3,
+                zIndex: 10,
+                backgroundColor: 'white',
+              }}
+            />
+          </Box>
         </Box>
 
         <Box display={'flex'} flex={1} justifyContent={'flex-end'}>
