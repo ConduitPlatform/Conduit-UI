@@ -12,6 +12,7 @@ import {
   TextField,
   Toolbar,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -35,10 +36,10 @@ import {
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
 import ShortTextIcon from '@mui/icons-material/ShortText';
+import theme from '../../theme';
 
 interface Props {
   module: ModulesTypes;
-  smallScreen: boolean;
 }
 
 const Limits = [100, 500, 1000, 5000];
@@ -46,7 +47,7 @@ const minDrawerHeight = 38;
 const maxDrawerHeight = 800;
 const defaultDrawerHeight = 400;
 
-const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
+const LogsComponent: React.FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
   const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
   const instances: string[] = useAppSelector((state) => state.logsSlice?.instances);
@@ -62,6 +63,7 @@ const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
   const [drawerHeight, setDrawerHeight] = useState<number>(minDrawerHeight);
 
   const listRef = useRef<VirtuosoHandle>(null);
+  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const requestDebounce = useCallback(
     debounce(() => {

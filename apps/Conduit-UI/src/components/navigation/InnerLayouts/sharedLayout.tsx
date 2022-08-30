@@ -63,9 +63,7 @@ const SharedLayout: FC<Props> = ({
 
   const title = moduleTitle(module);
 
-  const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-    open?: boolean;
-  }>(() => ({
+  const Main = styled('main')(() => ({
     flexGrow: 1,
   }));
 
@@ -106,7 +104,7 @@ const SharedLayout: FC<Props> = ({
             <Box px={3}>{loader}</Box>
           </Box>
         </Box>
-        <Main open={true}>
+        <Main>
           <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
             {labels.map((label: { name: string; id: string }, index: number) => {
               const disabled = !configActive ? index < labels.length - 1 : false;
@@ -164,7 +162,7 @@ const SharedLayout: FC<Props> = ({
         />
       </Box>
       <Box>{children}</Box>
-      <LogsComponent module={module} smallScreen={smallScreen} />
+      {module === 'settings' ? null : <LogsComponent module={module} />}
     </Box>
   );
 };
