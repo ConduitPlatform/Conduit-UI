@@ -34,7 +34,7 @@ import {
 } from '../../redux/slices/LogsSlice';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
-import TerminalIcon from '@mui/icons-material/Terminal';
+import ShortTextIcon from '@mui/icons-material/ShortText';
 
 interface Props {
   module: ModulesTypes;
@@ -246,10 +246,10 @@ const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
       }}>
       <Box display={'flex'} justifyContent={'space-between'} pt={'4px'} pb={'3px'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
-          <Typography mr={1} unselectable={'on'} sx={{ userSelect: 'none' }}>
+          <Typography sx={{ display: 'flex', userSelect: 'none', alignItems: 'center' }}>
+            <ShortTextIcon sx={{ mr: 1 }} />
             Logs
           </Typography>
-          <TerminalIcon />
         </Box>
 
         <Box
