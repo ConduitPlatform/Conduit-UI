@@ -4,12 +4,14 @@ import StyledLayout from './styledLayout';
 
 const DatabaseLayout: React.FC = ({ children }) => {
   const pathNames = [
+    '/database/dashboard',
     '/database/schemas',
     '/database/introspection',
     '/database/custom',
     '/database/settings',
   ];
   const labels = [
+    { name: 'dashboard', id: 'dashboard' },
     { name: 'schemas', id: 'schemas' },
     { name: 'introspection', id: 'introspection' },
     { name: 'custom endpoints', id: 'custom' },
