@@ -32,8 +32,9 @@ import {
   asyncGetLevels,
   asyncGetQueryRange,
 } from '../../redux/slices/LogsSlice';
-import { ModulesTypes, moduleTitle } from '../../models/logs/LogsModels';
+import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
+import TerminalIcon from '@mui/icons-material/Terminal';
 
 interface Props {
   module: ModulesTypes;
@@ -42,6 +43,8 @@ interface Props {
 
 const Limits = [100, 500, 1000, 5000];
 const minDrawerHeight = 38;
+const maxDrawerHeight = 800;
+const defaultDrawerHeight = 400;
 
 const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
   const dispatch = useAppDispatch();
@@ -56,7 +59,7 @@ const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
-  const [open, setOpen] = useState<boolean>(false);
+  const [drawerHeight, setDrawerHeight] = useState<number>(minDrawerHeight);
 
   const listRef = useRef<VirtuosoHandle>(null);
 
@@ -192,11 +195,38 @@ const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
     return startDateValue ? moment(startDateValue).add(30, 'days') : undefined;
   }, [startDateValue]);
 
+  const handleMouseMove = useCallback((e) => {
+    const newHeight = document.body.offsetHeight - e?.clientY + 16;
+    if (newHeight >= minDrawerHeight && newHeight <= maxDrawerHeight) {
+      setDrawerHeight(newHeight);
+    }
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    document.removeEventListener('mouseup', handleMouseUp, true);
+    document.removeEventListener('mousemove', handleMouseMove, true);
+  }, [handleMouseMove]);
+
+  const handleMouseDown = useCallback(() => {
+    document.addEventListener('mouseup', handleMouseUp, true);
+    document.addEventListener('mousemove', handleMouseMove, true);
+  }, [handleMouseMove, handleMouseUp]);
+
+  useEffect(() => {
+    if (drawerHeight < 48 && drawerHeight !== minDrawerHeight) {
+      setDrawerHeight(minDrawerHeight);
+    }
+  }, [drawerHeight]);
+
   return (
     <SwipeableDrawer
-      open={open}
-      onOpen={() => setOpen(true)}
-      onClose={() => setOpen(false)}
+      open={true}
+      onOpen={() => {
+        return;
+      }}
+      onClose={() => {
+        return;
+      }}
       anchor={'bottom'}
       swipeAreaWidth={minDrawerHeight}
       disableSwipeToOpen={false}
@@ -207,55 +237,64 @@ const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
       }}
       PaperProps={{ sx: { background: '#15151f', paddingX: 2 } }}
       sx={{
-        height: open ? 600 : minDrawerHeight,
+        height: drawerHeight,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          height: open ? 600 : minDrawerHeight,
+          height: drawerHeight,
           marginLeft: smallScreen ? '60px' : '200px',
         },
       }}>
-      <Box
-        sx={{
-          top: -minDrawerHeight,
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          right: 0,
-          left: 0,
-        }}>
-        <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} pt={'4px'}>
-          <Typography>{moduleTitle(module)} Logs</Typography>
+      <Box display={'flex'} justifyContent={'space-between'} pt={'4px'} pb={'3px'}>
+        <Box display={'flex'} alignItems={'center'} flex={1}>
+          <Typography mr={1} unselectable={'on'} sx={{ userSelect: 'none' }}>
+            Logs
+          </Typography>
+          <TerminalIcon />
+        </Box>
+
+        <Box
+          display={'flex'}
+          flex={1}
+          paddingX={4}
+          paddingY={1}
+          alignItems={'center'}
+          onMouseDown={() => handleMouseDown()}
+          justifyContent={'center'}
+          sx={{ cursor: 'ns-resize' }}>
           <div
             style={{
               width: 64,
-              minHeight: 4,
+              height: 4,
               borderRadius: 3,
               zIndex: 10,
               backgroundColor: 'white',
             }}
           />
-          <Box alignItems={'center'}>
-            {!open ? (
-              <IconButton onClick={() => setOpen(true)} size={'small'}>
-                <ExpandLessIcon fontSize={'small'} />
-              </IconButton>
-            ) : (
-              <IconButton onClick={() => setOpen(false)} size={'small'}>
-                <ExpandMoreIcon fontSize={'small'} />
-              </IconButton>
-            )}
-          </Box>
+        </Box>
+
+        <Box display={'flex'} flex={1} justifyContent={'flex-end'}>
+          {drawerHeight <= minDrawerHeight ? (
+            <IconButton onClick={() => setDrawerHeight(defaultDrawerHeight)} size={'small'}>
+              <ExpandLessIcon fontSize={'small'} />
+            </IconButton>
+          ) : (
+            <IconButton onClick={() => setDrawerHeight(minDrawerHeight)} size={'small'}>
+              <ExpandMoreIcon fontSize={'small'} />
+            </IconButton>
+          )}
         </Box>
       </Box>
+
       <Box
         sx={{
-          height: '100%',
+          display: 'flex',
+          flex: 1,
+          flexDirection: 'column',
           overflow: 'hidden',
         }}>
         <Toolbar
           disableGutters
           sx={{
-            display: 'flex',
-            flex: 1,
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             alignItems: 'stretch',
@@ -440,11 +479,11 @@ const LogsComponent: React.FC<Props> = ({ module, smallScreen }) => {
           sx={{
             display: 'flex',
             flex: 1,
-            height: '76%',
+            height: '100%',
             background: 'black',
-            mt: 2,
             borderRadius: 2,
             paddingX: 1,
+            mt: 1,
           }}>
           {values?.length ? (
             <LogsList data={values} ref={listRef} />
