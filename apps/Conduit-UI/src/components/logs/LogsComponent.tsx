@@ -44,7 +44,6 @@ interface Props {
 
 const Limits = [100, 500, 1000, 5000];
 const minDrawerHeight = 38;
-const maxDrawerHeight = 800;
 const defaultDrawerHeight = 400;
 
 const LogsComponent: React.FC<Props> = ({ module }) => {
@@ -199,7 +198,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
 
   const handleMouseMove = useCallback((e) => {
     const newHeight = document.body.offsetHeight - e?.clientY + 16;
-    if (newHeight >= minDrawerHeight && newHeight <= maxDrawerHeight) {
+    if (newHeight >= minDrawerHeight) {
       setDrawerHeight(newHeight);
     }
   }, []);
