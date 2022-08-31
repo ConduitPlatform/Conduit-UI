@@ -1,10 +1,16 @@
 import { Box, Typography } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import Chart from 'react-apexcharts';
-
+import { Carousel } from '@mantine/carousel';
 const AuthenticationDashboard = () => {
+  // useEffect(() => {
+  //   fetch(
+  //     'query?query=conduit_admin_grpc_requests_total&module_instance=22300d2842b5b6e7a1284a4fe54d4f2d&range_input=6h'
+  //   ).then((response) => console.log(response.json()));
+  // }, []);
+
   const options: ApexOptions = {
     chart: {
       id: 'basic-bar',
