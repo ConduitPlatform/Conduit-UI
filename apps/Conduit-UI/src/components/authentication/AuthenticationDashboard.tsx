@@ -1,7 +1,9 @@
 import { Box, Typography } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
 import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 import Chart from 'react-apexcharts';
+
 const AuthenticationDashboard = () => {
   const options: ApexOptions = {
     chart: {
@@ -65,21 +67,46 @@ const AuthenticationDashboard = () => {
 
   const radialSeries = [67];
   return (
-    <Box display="flex" flexDirection="column" gap={4}>
-      <Box display="flex" flexDirection="column" gap={3}>
-        <Typography>Dataset 1:</Typography>
-        <Chart options={options} series={series} type="bar" width="500" />
-      </Box>
-      <Box display="flex" flexDirection="column" gap={3}>
-        <Typography>Dataset 2:</Typography>
-        <Chart options={options} series={series} type="line" width="500" />
-      </Box>
-      <Box display="flex" flexDirection="column" gap={3}>
-        <Typography>Dataset 3:</Typography>
-        <Chart options={radialOptions} series={radialSeries} type="radialBar" width="500" />
+    <Box width="500px">
+      <Box display="flex" flexDirection="column" gap={4}>
+        <Box width="600px" display="flex" flexDirection="column" gap={3}>
+          <Typography>Dataset 1:</Typography>
+          <ReactApexChart options={options} series={series} type="bar" width="100%" />
+        </Box>
+        <Box width="600px" display="flex" flexDirection="column" gap={3}>
+          <Typography>Dataset 2:</Typography>
+          <Chart options={options} series={series} type="line" width="100%" />
+        </Box>
+        <Box width="200px" display="flex" flexDirection="column" gap={3}>
+          <Typography>Dataset 3:</Typography>
+          <Chart options={radialOptions} series={radialSeries} type="radialBar" width="100%" />
+        </Box>
       </Box>
     </Box>
   );
 };
 
 export default AuthenticationDashboard;
+
+{
+  /* <Carousel
+slideSize="100%"
+height={400}
+p={10}
+align="center"
+orientation="vertical"
+slideGap="xs"
+loop
+withControls={true}
+withIndicators>
+<Carousel.Slide>
+  <ReactApexChart options={options} series={series} type="bar" width="100%" />
+</Carousel.Slide>
+<Carousel.Slide>
+  <Chart options={options} series={series} type="line" width="100%" />
+</Carousel.Slide>
+<Carousel.Slide>
+  <Chart options={radialOptions} series={radialSeries} type="radialBar" width="100%" />
+</Carousel.Slide>
+</Carousel> */
+}
