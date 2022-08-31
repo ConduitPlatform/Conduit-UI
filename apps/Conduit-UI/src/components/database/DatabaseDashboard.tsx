@@ -1,34 +1,28 @@
 import { Box, Typography } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { getRequestProm } from '../../http/requestsConfig';
+import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { ModulesTypes } from '../../models/logs/LogsModels';
+import { MetricsData } from '../../models/metrics/metricsModels';
+
+const moduleName: ModulesTypes = 'database';
 
 const DatabaseDashboard = () => {
-  const [timestamps, setTimestamps] = useState<number[]>([]);
-  const [values, setValues] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const data: MetricsData = useAppSelector(
+    (state) => state?.metricsSlice?.metrics?.[moduleName]?.[0]
+  );
 
   useEffect(() => {
-    getRequestProm('query?query=conduit_admin_grpc_requests_total[1w]').then((res) => {
-      const totalData: number[] = [];
-      const totalCategories: string[] = [];
-
-      res?.data?.data?.result?.[0]?.values.forEach((e: any) => {
-        totalCategories.push(moment.unix(e[0]).format('DD/MM'));
-        totalData.push(e[1]);
-      });
-
-      setTimestamps(totalData);
-      setValues(totalCategories);
-    });
-  }, []);
+    dispatch(asyncGetMetricsQuery({ module: moduleName }));
+  }, [dispatch]);
 
   const options: ApexOptions = {
     chart: {
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
-
       background: '#202030',
     },
     theme: {
@@ -36,19 +30,21 @@ const DatabaseDashboard = () => {
       palette: 'palette4',
     },
     xaxis: {
-      categories: values,
+      type: 'datetime',
+      categories: data?.timestamps ?? [],
     },
   };
 
   const series = [
     {
       name: 'total requests',
-      data: timestamps,
+      data: data?.counters ?? [],
     },
   ];
+
   return (
     <Box>
-      <Box width="1000px" display="flex" flexDirection="column" gap={3}>
+      <Box width="600px" display="flex" flexDirection="column" gap={3}>
         <Typography>Dataset 1:</Typography>
         <ReactApexChart options={options} series={series} type="line" width="100%" />
       </Box>

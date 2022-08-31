@@ -16,6 +16,7 @@ import formsSlice from './slices/formsSlice';
 import chatSlice from './slices/chatSlice';
 import paymentsSlice from './slices/paymentsSlice';
 import logsSlice from './slices/LogsSlice';
+import metricsSlice from './slices/metricsSlice';
 
 let store: any;
 
@@ -37,6 +38,7 @@ export const makeStore = (preloadedState: any) =>
       smsSlice,
       chatSlice,
       logsSlice,
+      metricsSlice,
     },
     preloadedState,
   });

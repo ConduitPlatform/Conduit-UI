@@ -1,16 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 import Chart from 'react-apexcharts';
-import { Carousel } from '@mantine/carousel';
-const AuthenticationDashboard = () => {
-  // useEffect(() => {
-  //   fetch(
-  //     'query?query=conduit_admin_grpc_requests_total&module_instance=22300d2842b5b6e7a1284a4fe54d4f2d&range_input=6h'
-  //   ).then((response) => console.log(response.json()));
-  // }, []);
 
+const AuthenticationDashboard = () => {
   const options: ApexOptions = {
     chart: {
       id: 'basic-bar',
@@ -93,26 +87,3 @@ const AuthenticationDashboard = () => {
 };
 
 export default AuthenticationDashboard;
-
-{
-  /* <Carousel
-slideSize="100%"
-height={400}
-p={10}
-align="center"
-orientation="vertical"
-slideGap="xs"
-loop
-withControls={true}
-withIndicators>
-<Carousel.Slide>
-  <ReactApexChart options={options} series={series} type="bar" width="100%" />
-</Carousel.Slide>
-<Carousel.Slide>
-  <Chart options={options} series={series} type="line" width="100%" />
-</Carousel.Slide>
-<Carousel.Slide>
-  <Chart options={radialOptions} series={radialSeries} type="radialBar" width="100%" />
-</Carousel.Slide>
-</Carousel> */
-}

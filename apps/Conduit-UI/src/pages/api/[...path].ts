@@ -1,4 +1,4 @@
-import { proxy, proxyLoki } from '../../server/proxy';
+import { proxy, proxyLoki, proxyPrometheus } from '../../server/proxy';
 import http from 'http';
 
 const path = (req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -9,6 +9,12 @@ const path = (req: http.IncomingMessage, res: http.ServerResponse) => {
       proxyLoki.once('error', reject);
 
       proxyLoki.web(req, res);
+    } else if (req.url?.match(/^\/api\/prometheus/)) {
+      req.url = req.url?.replace(/^\/api\/prometheus/, '');
+
+      proxyPrometheus.once('error', reject);
+
+      proxyPrometheus.web(req, res);
     } else {
       // removes the api prefix from url
       req.url = req.url?.replace(/^\/api/, '');
