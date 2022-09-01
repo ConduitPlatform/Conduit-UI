@@ -54,7 +54,7 @@ const HomePageCard: FC<Props> = ({
       }}
     >
       <BoxWithIconText>
-        {icon}
+        {icon && icon}
         <Typography noWrap sx={{ fontSize: homePageFontSizeTitles }}>
           &nbsp; {title}
         </Typography>

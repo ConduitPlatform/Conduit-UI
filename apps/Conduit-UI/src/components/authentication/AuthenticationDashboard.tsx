@@ -2,7 +2,7 @@ import { Box, Container, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { HomePageCard } from '@conduitplatform/ui-components';
-import { People } from '@mui/icons-material';
+import { Info, People } from '@mui/icons-material';
 import {
   asyncGetAuthenticationConfig,
   asyncGetAuthUserData,
@@ -49,6 +49,10 @@ const AuthenticationDashboard = () => {
       background: '#202030',
       locales: [el],
       defaultLocale: 'el',
+    },
+    title: {
+      text: 'Placeholder diagram',
+      align: 'left',
     },
     theme: {
       mode: 'dark',
@@ -131,12 +135,23 @@ const AuthenticationDashboard = () => {
           slideGap="sm"
           align="start"
           withControls={false}
-          withIndicators>
+          withIndicators
+          styles={{
+            indicator: {
+              width: 12,
+              height: 4,
+              transition: 'width 250ms ease',
+
+              '&[data-active]': {
+                width: 25,
+                backgroundColor: '#07D9C4',
+              },
+            },
+          }}>
           <Carousel.Slide>
             <HomePageCard
               theme="light"
-              icon={<People width={24} height={24} />}
-              title="Authentication info"
+              title="At a glance"
               descriptionContent={
                 <Box display="flex" height="100px" flexDirection="column">
                   <Typography variant="subtitle2">
@@ -154,7 +169,6 @@ const AuthenticationDashboard = () => {
           <Carousel.Slide>
             <HomePageCard
               theme="light"
-              icon={<People width={24} height={24} />}
               title="Placeholder"
               descriptionContent={
                 <Box display="flex" height="100px" flexDirection="column">
@@ -174,7 +188,6 @@ const AuthenticationDashboard = () => {
           <Carousel.Slide>
             <HomePageCard
               theme="light"
-              icon={<People width={24} height={24} />}
               title="Placeholder"
               descriptionContent={
                 <Box display="flex" height="100px" flexDirection="column">
@@ -208,19 +221,16 @@ const AuthenticationDashboard = () => {
             <ReactApexChart
               options={placeholderOptions}
               series={placeholderSeries}
-              type="bar"
+              type="scatter"
               width="100%"
               height="300px"
             />
           </Grid>
           <Grid item sm={6}>
-            <Box display="flex" justifyContent="center">
-              <Typography>Placeholder diagram</Typography>
-            </Box>
             <ReactApexChart
               options={placeholderOptions}
               series={placeholderSeries}
-              type="line"
+              type="area"
               width="100%"
               height="300px"
             />
