@@ -1,11 +1,13 @@
 import { Box, Typography } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
 import React, { useEffect } from 'react';
-import ReactApexChart from 'react-apexcharts';
 import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { MetricsData } from '../../models/metrics/metricsModels';
+import dynamic from 'next/dynamic';
+
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const moduleName: ModulesTypes = 'database';
 
