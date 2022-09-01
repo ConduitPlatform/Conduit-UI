@@ -9,9 +9,12 @@ import {
 } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ApexOptions } from 'apexcharts';
-import ReactApexChart from 'react-apexcharts';
 import ConduitCheckbox from './ConduitCheckbox';
 import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
+import el from 'apexcharts/dist/locales/el.json';
+import dynamic from 'next/dynamic';
+
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const AuthenticationDashboard = () => {
   const dispatch = useAppDispatch();
@@ -44,6 +47,8 @@ const AuthenticationDashboard = () => {
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: '#202030',
+      locales: [el],
+      defaultLocale: 'el',
     },
     theme: {
       mode: 'dark',
@@ -66,6 +71,23 @@ const AuthenticationDashboard = () => {
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: '#202030',
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+          delay: 150,
+        },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350,
+        },
+      },
+    },
+    title: {
+      text: 'Total module requests',
+      align: 'left',
     },
     theme: {
       mode: 'dark',
@@ -74,6 +96,20 @@ const AuthenticationDashboard = () => {
     xaxis: {
       type: 'datetime',
       categories: data?.timestamps ?? [],
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: 'dark',
+        type: 'horizontal',
+        shadeIntensity: 0.5,
+        gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
+        inverseColors: true,
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 50, 100],
+        colorStops: [],
+      },
     },
   };
 
@@ -102,7 +138,7 @@ const AuthenticationDashboard = () => {
               icon={<People width={24} height={24} />}
               title="Authentication info"
               descriptionContent={
-                <Box display="flex" flexDirection="column">
+                <Box display="flex" height="100px" flexDirection="column">
                   <Typography variant="subtitle2">
                     Module is {config.active ? 'enabled' : 'disabled'}
                   </Typography>
@@ -121,7 +157,7 @@ const AuthenticationDashboard = () => {
               icon={<People width={24} height={24} />}
               title="Placeholder"
               descriptionContent={
-                <Box display="flex" flexDirection="column">
+                <Box display="flex" height="100px" flexDirection="column">
                   <Typography variant="subtitle2">
                     Placeholder unchecked <ConduitCheckbox />
                   </Typography>
@@ -141,7 +177,7 @@ const AuthenticationDashboard = () => {
               icon={<People width={24} height={24} />}
               title="Placeholder"
               descriptionContent={
-                <Box display="flex" flexDirection="column">
+                <Box display="flex" height="100px" flexDirection="column">
                   <Typography variant="subtitle2">
                     Placeholder unchecked <ConduitCheckbox />
                   </Typography>
@@ -178,6 +214,9 @@ const AuthenticationDashboard = () => {
             />
           </Grid>
           <Grid item sm={6}>
+            <Box display="flex" justifyContent="center">
+              <Typography>Placeholder diagram</Typography>
+            </Box>
             <ReactApexChart
               options={placeholderOptions}
               series={placeholderSeries}
