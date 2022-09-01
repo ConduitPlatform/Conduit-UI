@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Paper, styled, Typography } from '@mui/material';
+import { Box, Container, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { HomePageCard } from '@conduitplatform/ui-components';
@@ -11,12 +11,22 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ApexOptions } from 'apexcharts';
 import ReactApexChart from 'react-apexcharts';
 import ConduitCheckbox from './ConduitCheckbox';
+import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
 
 const AuthenticationDashboard = () => {
   const dispatch = useAppDispatch();
-
   const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
+
+  const data = useAppSelector((state) => state?.metricsSlice?.metrics?.['authentication']?.[0]);
+
+  useEffect(() => {
+    dispatch(asyncGetMetricsQuery({ module: 'authentication' }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(asyncGetAuthenticationConfig());
+  }, [dispatch]);
 
   const activeMethods = Object.values(config).filter((e: any) => e.enabled === true).length - 1;
 
@@ -29,11 +39,7 @@ const AuthenticationDashboard = () => {
     );
   }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(asyncGetAuthenticationConfig());
-  }, [dispatch]);
-
-  const options: ApexOptions = {
+  const placeholderOptions: ApexOptions = {
     chart: {
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
@@ -48,10 +54,33 @@ const AuthenticationDashboard = () => {
     },
   };
 
-  const series = [
+  const placeholderSeries = [
     {
       name: 'total requests',
       data: [20, 50, 130],
+    },
+  ];
+
+  const options: ApexOptions = {
+    chart: {
+      id: 'basic-bar',
+      fontFamily: 'JetBrains Mono',
+      background: '#202030',
+    },
+    theme: {
+      mode: 'dark',
+      palette: 'palette4',
+    },
+    xaxis: {
+      type: 'datetime',
+      categories: data?.timestamps ?? [],
+    },
+  };
+
+  const series = [
+    {
+      name: 'total requests',
+      data: data?.counters ?? [],
     },
   ];
 
@@ -141,8 +170,8 @@ const AuthenticationDashboard = () => {
 
           <Grid item sm={6}>
             <ReactApexChart
-              options={options}
-              series={series}
+              options={placeholderOptions}
+              series={placeholderSeries}
               type="bar"
               width="100%"
               height="300px"
@@ -150,8 +179,8 @@ const AuthenticationDashboard = () => {
           </Grid>
           <Grid item sm={6}>
             <ReactApexChart
-              options={options}
-              series={series}
+              options={placeholderOptions}
+              series={placeholderSeries}
               type="line"
               width="100%"
               height="300px"
@@ -160,8 +189,8 @@ const AuthenticationDashboard = () => {
 
           <Grid item sm={6}>
             <ReactApexChart
-              options={options}
-              series={series}
+              options={placeholderOptions}
+              series={placeholderSeries}
               type="bar"
               width="100%"
               height="300px"
