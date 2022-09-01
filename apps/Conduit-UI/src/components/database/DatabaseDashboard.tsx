@@ -35,6 +35,9 @@ const DatabaseDashboard = () => {
       type: 'datetime',
       categories: data?.timestamps ?? [],
     },
+    stroke: {
+      width: 2,
+    },
   };
 
   const series = [

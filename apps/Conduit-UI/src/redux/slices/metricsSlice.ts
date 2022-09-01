@@ -30,12 +30,23 @@ export const asyncGetMetricsQuery = createAsyncThunk(
       const timestamps: number[] = [];
       const counters: number[] = [];
 
+      const arr: [] = [];
       data?.data?.result.forEach((e: MetricsLogsData) => {
         e.values.forEach((item) => {
-          const itemsTime = item?.[0] as Moment;
-          timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
-          counters.push(parseInt(item?.[1]));
+          arr.push(item);
         });
+      });
+
+      arr.sort((a, b) => {
+        return a?.[0] - b?.[0];
+      });
+
+      arr.map((item) => {
+        const itemsTime = item?.[0] as Moment;
+        const itemsCount = item?.[1];
+
+        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
+        counters.push(parseInt(itemsCount));
       });
 
       thunkAPI.dispatch(setAppLoading(false));
