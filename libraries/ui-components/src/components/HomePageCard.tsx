@@ -1,4 +1,4 @@
-import { Box, Card, Divider, styled, Typography } from "@mui/material";
+import { Box, Card, Divider, Paper, styled, Typography } from "@mui/material";
 import React, { FC } from "react";
 import {
   homePageFontSizeSubtitles,
@@ -18,11 +18,11 @@ const CustomizedDivider = styled(Divider)(({ theme }) => ({
   marginBottom: "10px",
 }));
 
-const CustomizedCard = styled(Card)(() => ({
+const CustomizedCard = styled(Paper)(() => ({
   display: "flex",
   flex: 1,
   borderRadius: 8,
-  backgroundColor: "common.white",
+
   flexDirection: "column",
   padding: 20,
   "&:hover": {
@@ -34,18 +34,28 @@ const CustomizedCard = styled(Card)(() => ({
 }));
 
 interface Props {
-  icon: any;
+  icon?: any;
   title: string;
   descriptionContent: JSX.Element;
+  theme?: "light" | "dark";
 }
 
-const HomePageCard: FC<Props> = ({ icon, title, descriptionContent }) => {
+const HomePageCard: FC<Props> = ({
+  icon,
+  title,
+  descriptionContent,
+  theme = "dark",
+}) => {
   return (
-    <CustomizedCard>
+    <CustomizedCard
+      elevation={theme === "light" ? 8 : 3}
+      sx={{
+        backgroundColor: theme === "light" ? "#262840" : undefined,
+      }}
+    >
       <BoxWithIconText>
         {icon}
         <Typography noWrap sx={{ fontSize: homePageFontSizeTitles }}>
-          {" "}
           &nbsp; {title}
         </Typography>
       </BoxWithIconText>

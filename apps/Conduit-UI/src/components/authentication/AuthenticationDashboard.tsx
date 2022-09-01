@@ -1,10 +1,38 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Container, Grid, Paper, styled, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Carousel } from '@mantine/carousel';
+import { HomePageCard } from '@conduitplatform/ui-components';
+import { People } from '@mui/icons-material';
+import {
+  asyncGetAuthenticationConfig,
+  asyncGetAuthUserData,
+} from '../../redux/slices/authenticationSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ApexOptions } from 'apexcharts';
-import React from 'react';
 import ReactApexChart from 'react-apexcharts';
-import Chart from 'react-apexcharts';
+import ConduitCheckbox from './ConduitCheckbox';
 
 const AuthenticationDashboard = () => {
+  const dispatch = useAppDispatch();
+
+  const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
+  const { config } = useAppSelector((state) => state.authenticationSlice.data);
+
+  const activeMethods = Object.values(config).filter((e: any) => e.enabled === true).length - 1;
+
+  useEffect(() => {
+    dispatch(
+      asyncGetAuthUserData({
+        skip: 0,
+        limit: 25,
+      })
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(asyncGetAuthenticationConfig());
+  }, [dispatch]);
+
   const options: ApexOptions = {
     chart: {
       id: 'basic-bar',
@@ -16,73 +44,132 @@ const AuthenticationDashboard = () => {
       palette: 'palette4',
     },
     xaxis: {
-      categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+      categories: ['30/8', '31/8', '01/9'],
     },
   };
 
   const series = [
     {
-      name: 'series-1',
-      data: [30, 40, 45, 50, 49, 60, 70, 91],
+      name: 'total requests',
+      data: [20, 50, 130],
     },
   ];
 
-  const radialOptions: ApexOptions = {
-    chart: {
-      height: 120,
-      type: 'radialBar',
-      offsetY: -10,
-      background: '#262840',
-    },
-    theme: {
-      mode: 'dark',
-      palette: 'palette4',
-    },
-    plotOptions: {
-      radialBar: {
-        startAngle: -135,
-        endAngle: 135,
-        dataLabels: {
-          name: {
-            fontSize: '16px',
-            color: undefined,
-            offsetY: 120,
-          },
-          value: {
-            offsetY: 76,
-            fontSize: '22px',
-            color: undefined,
-            formatter: function (val) {
-              return val + '%';
-            },
-          },
-        },
-      },
-    },
-    stroke: {
-      dashArray: 2,
-    },
-    labels: ['Median Ratio'],
-  };
-
-  const radialSeries = [67];
   return (
-    <Box width="500px">
-      <Box display="flex" flexDirection="column" gap={4}>
-        <Box width="600px" display="flex" flexDirection="column" gap={3}>
-          <Typography>Dataset 1:</Typography>
-          <ReactApexChart options={options} series={series} type="bar" width="100%" />
-        </Box>
-        <Box width="600px" display="flex" flexDirection="column" gap={3}>
-          <Typography>Dataset 2:</Typography>
-          <Chart options={options} series={series} type="line" width="100%" />
-        </Box>
-        <Box width="200px" display="flex" flexDirection="column" gap={3}>
-          <Typography>Dataset 3:</Typography>
-          <Chart options={radialOptions} series={radialSeries} type="radialBar" width="100%" />
-        </Box>
+    <Container maxWidth="xl">
+      <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+        <Carousel
+          breakpoints={[{ maxWidth: 'sm', slideSize: '33.333333%' }]}
+          height={220}
+          slideSize="33.333333%"
+          orientation="horizontal"
+          slideGap="sm"
+          align="start"
+          withControls={false}
+          withIndicators>
+          <Carousel.Slide>
+            <HomePageCard
+              theme="light"
+              icon={<People width={24} height={24} />}
+              title="Authentication info"
+              descriptionContent={
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="subtitle2">
+                    Module is {config.active ? 'enabled' : 'disabled'}
+                  </Typography>
+                  <Typography variant="subtitle2">Total users: {count}</Typography>
+                  <Typography variant="subtitle2">
+                    Active sign-in methods: {activeMethods}
+                  </Typography>
+                  <Typography variant="subtitle2">JWT secret: {config.jwtSecret}</Typography>
+                </Box>
+              }
+            />
+          </Carousel.Slide>
+          <Carousel.Slide>
+            <HomePageCard
+              theme="light"
+              icon={<People width={24} height={24} />}
+              title="Placeholder"
+              descriptionContent={
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="subtitle2">
+                    Placeholder unchecked <ConduitCheckbox />
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    Placeholder checked <ConduitCheckbox defaultChecked />{' '}
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    Placeholder disabled <ConduitCheckbox disabled />
+                  </Typography>
+                </Box>
+              }
+            />
+          </Carousel.Slide>
+          <Carousel.Slide>
+            <HomePageCard
+              theme="light"
+              icon={<People width={24} height={24} />}
+              title="Placeholder"
+              descriptionContent={
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="subtitle2">
+                    Placeholder unchecked <ConduitCheckbox />
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    Placeholder checked <ConduitCheckbox defaultChecked />{' '}
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    Placeholder disabled <ConduitCheckbox disabled />
+                  </Typography>
+                </Box>
+              }
+            />
+          </Carousel.Slide>
+        </Carousel>
+
+        <Grid container spacing={4}>
+          <Grid item sm={6}>
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="line"
+              width="100%"
+              height="300px"
+            />
+          </Grid>
+
+          <Grid item sm={6}>
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="bar"
+              width="100%"
+              height="300px"
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="line"
+              width="100%"
+              height="300px"
+            />
+          </Grid>
+
+          <Grid item sm={6}>
+            <ReactApexChart
+              options={options}
+              series={series}
+              type="bar"
+              width="100%"
+              height="300px"
+            />
+          </Grid>
+        </Grid>
       </Box>
-    </Box>
+    </Container>
   );
 };
 
