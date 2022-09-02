@@ -7,15 +7,8 @@ export const getLogsLevels = (body: { startDate?: number; endDate?: number }) =>
     end: body.endDate,
   });
 
-export const getLogsInstances = (body: { startDate?: number; endDate?: number }) =>
-  getRequestLoki(`/loki/api/v1/label/instance/values`, {
-    start: body.startDate,
-    end: body.endDate,
-  });
-
 export const getLogsQueryRange = (body: {
   module: ModulesTypes;
-  instances?: string[];
   levels?: string[];
   startDate?: number;
   endDate?: number;
@@ -25,10 +18,6 @@ export const getLogsQueryRange = (body: {
   if (body.levels?.length) {
     const selectedLevelsStr = body.levels?.join('|');
     query = query.concat(', ', `level=~"${selectedLevelsStr}"`);
-  }
-  if (body.instances?.length) {
-    const selectedInstancesStr = body.instances?.join('|');
-    query = query.concat(', ', `instance=~"${selectedInstancesStr}"`);
   }
   query = query.concat('', '}');
 
