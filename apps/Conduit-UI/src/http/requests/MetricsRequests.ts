@@ -13,6 +13,6 @@ export const getMetricsQuery = (body: {
     query: `sum(increase(conduit_admin_grpc_requests_total{job="${body.module}"}[1h]))`,
     start: body.startDate,
     end: body.endDate ?? Math.floor(Date.now() / 1000),
-    step: 120,
+    step: body.step,
   });
 };
