@@ -2,7 +2,6 @@ import { Box, Container, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { HomePageCard } from '@conduitplatform/ui-components';
-import { Info, People } from '@mui/icons-material';
 import {
   asyncGetAuthenticationConfig,
   asyncGetAuthUserData,
@@ -10,9 +9,11 @@ import {
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ApexOptions } from 'apexcharts';
 import ConduitCheckbox from './ConduitCheckbox';
-import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
+
 import el from 'apexcharts/dist/locales/el.json';
 import dynamic from 'next/dynamic';
+
+import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -20,12 +21,6 @@ const AuthenticationDashboard = () => {
   const dispatch = useAppDispatch();
   const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
-
-  const data = useAppSelector((state) => state?.metricsSlice?.metrics?.['authentication']?.[0]);
-
-  useEffect(() => {
-    dispatch(asyncGetMetricsQuery({ module: 'authentication' }));
-  }, [dispatch]);
 
   useEffect(() => {
     dispatch(asyncGetAuthenticationConfig());
@@ -67,60 +62,6 @@ const AuthenticationDashboard = () => {
     {
       name: 'total requests',
       data: [20, 50, 130],
-    },
-  ];
-
-  const options: ApexOptions = {
-    chart: {
-      id: 'basic-bar',
-      fontFamily: 'JetBrains Mono',
-      background: '#202030',
-      animations: {
-        enabled: true,
-        easing: 'easeinout',
-        speed: 800,
-        animateGradually: {
-          enabled: true,
-          delay: 150,
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 350,
-        },
-      },
-    },
-    title: {
-      text: 'Total module requests',
-      align: 'left',
-    },
-    theme: {
-      mode: 'dark',
-      palette: 'palette4',
-    },
-    xaxis: {
-      type: 'datetime',
-      categories: data?.timestamps ?? [],
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'dark',
-        type: 'horizontal',
-        shadeIntensity: 0.5,
-        gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
-        inverseColors: true,
-        opacityFrom: 1,
-        opacityTo: 1,
-        stops: [0, 50, 100],
-        colorStops: [],
-      },
-    },
-  };
-
-  const series = [
-    {
-      name: 'total requests',
-      data: data?.counters ?? [],
     },
   ];
 
@@ -205,18 +146,12 @@ const AuthenticationDashboard = () => {
             />
           </Carousel.Slide>
         </Carousel>
-
-        <Grid container spacing={4}>
-          <Grid item sm={6}>
-            <ReactApexChart
-              options={options}
-              series={series}
-              type="line"
-              width="100%"
-              height="300px"
-            />
+        <Grid container spacing={1}>
+          <Grid item sm={12}>
+            <Box>
+              <TotalRequestsByModule module="authentication" />
+            </Box>
           </Grid>
-
           <Grid item sm={6}>
             <ReactApexChart
               options={placeholderOptions}
@@ -231,16 +166,6 @@ const AuthenticationDashboard = () => {
               options={placeholderOptions}
               series={placeholderSeries}
               type="area"
-              width="100%"
-              height="300px"
-            />
-          </Grid>
-
-          <Grid item sm={6}>
-            <ReactApexChart
-              options={placeholderOptions}
-              series={placeholderSeries}
-              type="bar"
               width="100%"
               height="300px"
             />

@@ -20,6 +20,9 @@ export const asyncGetMetricsQuery = createAsyncThunk(
   async (
     body: {
       module: ModulesTypes;
+      startDate?: number;
+      endDate?: number;
+      step?: string;
     },
     thunkAPI
   ) => {
