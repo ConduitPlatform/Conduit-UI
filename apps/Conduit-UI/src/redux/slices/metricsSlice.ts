@@ -2,7 +2,6 @@ import { ModulesTypes } from '../../models/logs/LogsModels';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { getErrorData } from '../../utils/error-handler';
 import { MetricsData, MetricsLogsData } from '../../models/metrics/metricsModels';
 import { getMetricsQuery } from '../../http/requests/MetricsRequests';
 import moment, { Moment } from 'moment';
@@ -54,9 +53,9 @@ export const asyncGetMetricsQuery = createAsyncThunk(
 
       thunkAPI.dispatch(setAppLoading(false));
       return [{ timestamps: timestamps, counters: counters }];
-    } catch (error) {
+    } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }

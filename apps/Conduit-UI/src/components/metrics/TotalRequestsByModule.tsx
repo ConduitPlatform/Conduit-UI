@@ -1,7 +1,7 @@
 import { Close } from '@mui/icons-material';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
-import { Box, IconButton, TextField } from '@mui/material';
+import { Box, IconButton, InputLabel, Select, SelectChangeEvent, TextField } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
 import moment, { Moment } from 'moment';
 import dynamic from 'next/dynamic';
@@ -9,12 +9,17 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
+import FormControl from '@mui/material/FormControl';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface Props {
   module: ModulesTypes;
 }
+
+const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
 const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
@@ -23,6 +28,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
+  const [selectedStep, setSelectedStep] = useState<string>('10m');
 
   const data = useAppSelector((state) => state?.metricsSlice?.metrics?.[module]?.[0]);
 
@@ -30,15 +36,17 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
     dispatch(
       asyncGetMetricsQuery({
         module,
-        startDate: startDateValue ? startDateValue.valueOf() / 1000 : undefined,
-        endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
-        step: '400',
+        startDate: startDateValue
+          ? startDateValue.valueOf() / 1000
+          : moment().subtract(1, 'hours').unix(),
+        endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
+        step: selectedStep,
       })
     );
-  }, [dispatch, module, startDateValue, endDateValue]);
+  }, [dispatch, module, startDateValue, endDateValue, selectedStep]);
 
   const minDateOfStart = useMemo(() => {
-    return endDateValue ? moment(endDateValue).subtract(30, 'days') : moment().subtract(30, 'days');
+    return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
   }, [endDateValue]);
 
   const maxDateOfStart = useMemo(() => {
@@ -76,8 +84,8 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   }, [startDateValue]);
 
   const maxDateOfEnd = useMemo(() => {
-    return startDateValue ? moment(startDateValue).add(30, 'days') : undefined;
-  }, [startDateValue]);
+    return undefined;
+  }, []);
 
   const options: ApexOptions = {
     chart: {
@@ -139,6 +147,13 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
       data: data?.counters ?? [],
     },
   ];
+
+  const handleChangeStep = (event: SelectChangeEvent<string>) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedStep(value as string);
+  };
 
   return (
     <>
@@ -229,6 +244,23 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
             }}
           />
         </LocalizationProvider>
+        <FormControl size={'small'} sx={{ minWidth: 88 }}>
+          <InputLabel>Step</InputLabel>
+          <Select
+            sx={{ borderRadius: 3 }}
+            fullWidth
+            name={'Step'}
+            label={'Step'}
+            value={selectedStep}
+            onChange={handleChangeStep}
+            renderValue={(selected) => selected.toString()}>
+            {steps?.map((item, index) => (
+              <MenuItem key={index} value={item}>
+                <ListItemText primary={item} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
       <ReactApexChart options={options} series={series} type="line" width="100%" height="300px" />
     </>

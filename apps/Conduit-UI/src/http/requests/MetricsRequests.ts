@@ -10,9 +10,9 @@ export const getMetricsQuery = (body: {
   //TODO define initial states of start,end,step
 }) => {
   return getRequestProm('/query_range', {
-    query: `sum(increase(conduit_admin_grpc_requests_total{job="${body.module}"}[1h]))`,
+    query: `sum(increase(conduit_admin_grpc_requests_total{job="${body.module}"}[10m]))`,
     start: body.startDate,
-    end: body.endDate ?? Math.floor(Date.now() / 1000),
+    end: body.endDate,
     step: body.step,
   });
 };
