@@ -125,7 +125,7 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
   return (
     <Virtuoso
       ref={ref}
-      style={{ height: '100%', width: '100%' }}
+      style={{ flex: '1 1 auto', overscrollBehavior: 'contain' }}
       totalCount={count}
       overscan={20}
       itemContent={(index) => <ListRow index={index} />}

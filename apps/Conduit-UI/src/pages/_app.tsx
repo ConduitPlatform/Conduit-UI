@@ -94,7 +94,7 @@ ConduitApp.getInitialProps = async (appContext: AppContext) => {
   const reduxStore = initializeStore({});
   const { dispatch } = reduxStore;
 
-  const cookie = getCookie('JWT', ctx.req);
+  const cookie = getCookie('Bearer', ctx.req);
 
   if (
     typeof window === 'undefined' &&
