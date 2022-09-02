@@ -32,7 +32,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         module,
         startDate: startDateValue ? startDateValue.valueOf() / 1000 : undefined,
         endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
-        step: '120',
+        step: '400',
       })
     );
   }, [dispatch, module, startDateValue, endDateValue]);
