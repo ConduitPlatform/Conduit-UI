@@ -142,7 +142,7 @@ const appAuthSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(asyncLogin.fulfilled, (state, action) => {
-      setCookie('JWT', action.payload.data.token, action.payload.cookie);
+      setCookie('Bearer', action.payload.data.token, action.payload.cookie);
       state.data.token = action.payload.data.token;
     });
     builder.addCase(asyncGetAdminModules.fulfilled, (state, action) => {
@@ -150,7 +150,7 @@ const appAuthSlice = createSlice({
       state.data.disabledModules = action.payload.disabledModules;
     });
     builder.addCase(asyncLogout.fulfilled, (state) => {
-      removeCookie('JWT');
+      removeCookie('Bearer');
       state.data.token = '';
       state.data.enabledModules = [];
       state.data.disabledModules = [];

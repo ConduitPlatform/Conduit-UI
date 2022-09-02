@@ -20,7 +20,7 @@ const _axios = axios.create({
 
 const JWT_CONFIG = (token: string) => ({
   // ...config,
-  Authorization: `JWT ${token}`,
+  Authorization: `Bearer ${token}`,
 });
 
 _axios.interceptors.request.use(
