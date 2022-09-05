@@ -18,6 +18,8 @@ import Close from '@mui/icons-material/Close';
 import { MetricsLogsData } from '../../models/metrics/metricsModels';
 import { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
+import { useAppDispatch } from '../../redux/store';
+import { enqueueErrorNotification } from '../../utils/useNotifier';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -30,6 +32,8 @@ interface Props {
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
 const ExtractGraph: FC<Props> = ({ query, expression, graphTitle }) => {
+  const dispatch = useAppDispatch();
+
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
@@ -72,7 +76,7 @@ const ExtractGraph: FC<Props> = ({ query, expression, graphTitle }) => {
         setTimestamps(timestamps);
         setCounters(counters);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => dispatch(enqueueErrorNotification(err.data.error)));
   }, [endDateValue, startDateValue, selectedStep, expression, query]);
 
   const minDateOfStart = useMemo(() => {
