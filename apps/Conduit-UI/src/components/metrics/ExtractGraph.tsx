@@ -73,11 +73,12 @@ const ExtractGraph: FC<Props> = ({ query, expression, graphTitle }) => {
           timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
           counters.push(parseInt(itemsCount));
         });
+
         setTimestamps(timestamps);
         setCounters(counters);
       })
       .catch((err) => dispatch(enqueueErrorNotification(err.data.error)));
-  }, [endDateValue, startDateValue, selectedStep, expression, query]);
+  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');

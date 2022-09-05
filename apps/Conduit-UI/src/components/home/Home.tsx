@@ -25,6 +25,8 @@ import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
+import ExtractGraph from '../metrics/ExtractGraph';
+import { Carousel } from '@mantine/carousel';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -241,6 +243,44 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
             </Grid>
+            <Box p={4} mt={5} sx={{ background: '#202030', borderRadius: '24px' }}>
+              <Carousel
+                breakpoints={[{ maxWidth: 'sm', slideSize: '33.333333%' }]}
+                height={400}
+                slideSize="100%"
+                orientation="horizontal"
+                slideGap="sm"
+                align="start"
+                withControls={false}
+                withIndicators
+                styles={{
+                  indicator: {
+                    width: 12,
+                    height: 4,
+                    transition: 'width 250ms ease',
+
+                    '&[data-active]': {
+                      width: 25,
+                      backgroundColor: '#07D9C4',
+                    },
+                  },
+                }}>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_admin_grpc_requests_total[5m]))"
+                    graphTitle="Total admin grpc requests"
+                  />
+                </Carousel.Slide>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
+                    graphTitle="Total admin grpc errors"
+                  />
+                </Carousel.Slide>
+              </Carousel>
+            </Box>
           </Container>
         </Main>
         <SwaggerModal

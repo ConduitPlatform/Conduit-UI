@@ -7,15 +7,9 @@ import {
   asyncGetAuthUserData,
 } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { ApexOptions } from 'apexcharts';
 import ConduitCheckbox from './ConduitCheckbox';
-
-import el from 'apexcharts/dist/locales/el.json';
-import dynamic from 'next/dynamic';
-
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
-
-const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+import ExtractGraph from '../metrics/ExtractGraph';
 
 const AuthenticationDashboard = () => {
   const dispatch = useAppDispatch();
@@ -36,34 +30,6 @@ const AuthenticationDashboard = () => {
       })
     );
   }, [dispatch]);
-
-  const placeholderOptions: ApexOptions = {
-    chart: {
-      id: 'basic-bar',
-      fontFamily: 'JetBrains Mono',
-      background: '#202030',
-      locales: [el],
-      defaultLocale: 'el',
-    },
-    title: {
-      text: 'Placeholder diagram',
-      align: 'left',
-    },
-    theme: {
-      mode: 'dark',
-      palette: 'palette4',
-    },
-    xaxis: {
-      categories: ['30/8', '31/8', '01/9'],
-    },
-  };
-
-  const placeholderSeries = [
-    {
-      name: 'total requests',
-      data: [20, 50, 130],
-    },
-  ];
 
   return (
     <Container maxWidth="xl">
@@ -152,23 +118,21 @@ const AuthenticationDashboard = () => {
               <TotalRequestsByModule module="authentication" />
             </Box>
           </Grid>
-          <Grid item sm={6}>
-            <ReactApexChart
-              options={placeholderOptions}
-              series={placeholderSeries}
-              type="scatter"
-              width="100%"
-              height="300px"
-            />
-          </Grid>
-          <Grid item sm={6}>
-            <ReactApexChart
-              options={placeholderOptions}
-              series={placeholderSeries}
-              type="area"
-              width="100%"
-              height="300px"
-            />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <ExtractGraph
+                query="/query_range"
+                expression="sum(increase(conduit_logged_in_users_total[5m]))"
+                graphTitle="Logged in users"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ExtractGraph
+                query="/query_range"
+                expression="sum(increase(conduit_login_requests_total[5m]))"
+                graphTitle="Total login requests"
+              />
+            </Grid>
           </Grid>
         </Grid>
       </Box>

@@ -7,15 +7,22 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 const DatabaseDashboard = () => {
   return (
     <Container maxWidth="xl">
-      <Box>
+      <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
         <Box>
           <TotalRequestsByModule module="database" />
-          <Grid container>
+          <Grid container spacing={2}>
             <Grid item xs={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="rate(conduit_database_queries_total[5m])*100"
                 graphTitle="Total database queries"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ExtractGraph
+                query="/query_range"
+                expression="rate(conduit_custom_endpoints_total[5m])"
+                graphTitle="Total custom endpoints"
               />
             </Grid>
           </Grid>
