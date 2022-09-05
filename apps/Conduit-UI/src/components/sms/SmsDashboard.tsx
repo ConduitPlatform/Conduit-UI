@@ -1,6 +1,6 @@
 import { Box, Container, Grid } from '@mui/material';
 import React from 'react';
-import ExtractGraph from '../metrics/ExtractGraph';
+import ExtractGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 
 const SmsDashboard = () => {

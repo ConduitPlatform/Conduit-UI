@@ -9,7 +9,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ConduitCheckbox from './ConduitCheckbox';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
-import ExtractGraph from '../metrics/ExtractGraph';
+import ExtractGraph from '../metrics/ExtractMetricGraph';
 
 const AuthenticationDashboard = () => {
   const dispatch = useAppDispatch();

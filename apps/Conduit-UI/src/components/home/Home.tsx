@@ -25,7 +25,7 @@ import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
-import ExtractGraph from '../metrics/ExtractGraph';
+import ExtractGraph from '../metrics/ExtractMetricGraph';
 import { Carousel } from '@mantine/carousel';
 
 const Home: React.FC = () => {
