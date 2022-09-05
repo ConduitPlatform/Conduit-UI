@@ -4,7 +4,7 @@ import { deleteRequest, getRequest, patchRequest, postRequest } from '../request
 export const getCustomEndpointsRequest = (
   params: Pagination & Search & { schemaName?: string[] } & { operation?: number }
 ) => {
-  return getRequest(`/database/customEndpoints`, { params });
+  return getRequest(`/database/customEndpoints`, params);
 };
 export const editCustomEndpointsRequest = (_id: string, endpointData: any) => {
   return patchRequest(`/database/customEndpoints/${_id}`, endpointData);

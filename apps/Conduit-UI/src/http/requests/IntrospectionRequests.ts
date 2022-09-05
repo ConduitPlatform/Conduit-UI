@@ -2,7 +2,7 @@ import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 import { getRequest, postRequest } from '../requestsConfig';
 
 export const getIntrospectionSchemas = (params: Pagination & Search & Sort) => {
-  return getRequest(`/database/introspection/schemas`, { params });
+  return getRequest(`/database/introspection/schemas`, params);
 };
 
 export const getIntrospectionSchemaById = (id: string | string[]) => {

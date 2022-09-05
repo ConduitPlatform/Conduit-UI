@@ -8,10 +8,7 @@ import {
 } from '../requestsConfig';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
-export const getForms = (params: Pagination & Search & Sort) =>
-  getRequest(`/forms/forms`, {
-    params,
-  });
+export const getForms = (params: Pagination & Search & Sort) => getRequest(`/forms/forms`, params);
 
 export const createForm = (data: any) => postRequest(`/forms/forms`, data);
 

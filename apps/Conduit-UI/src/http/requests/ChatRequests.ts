@@ -15,10 +15,10 @@ export const createChatRoom = (params: { name: string; participants: string[] })
 
 export const getChatRooms = (params: { skip: number; limit: number; search?: string }) =>
   getRequest(`/chat/rooms`, {
-    params: {
-      populate: 'participants',
-      ...params,
-    },
+    populate: '"participants"',
+    skip: params.skip,
+    limit: params.limit,
+    search: params.search,
   });
 
 export const getChatMessages = (params: {
