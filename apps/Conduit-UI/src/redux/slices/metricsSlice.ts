@@ -39,10 +39,6 @@ export const asyncGetMetricsQuery = createAsyncThunk(
         });
       });
 
-      arr.sort((a, b) => {
-        return a?.[0] - b?.[0];
-      });
-
       arr.map((item) => {
         const itemsTime = item?.[0] as Moment;
         const itemsCount = item?.[1];
