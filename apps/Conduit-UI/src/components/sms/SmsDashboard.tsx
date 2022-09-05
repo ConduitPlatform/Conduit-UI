@@ -10,7 +10,7 @@ const SmsDashboard = () => {
         <Box>
           <TotalRequestsByModule module="sms" />
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_forms_total[5m]))"

@@ -246,7 +246,7 @@ const Home: React.FC = () => {
             <Box p={4} mt={5} sx={{ background: '#202030', borderRadius: '24px' }}>
               <Carousel
                 breakpoints={[{ maxWidth: 'sm', slideSize: '33.333333%' }]}
-                height={400}
+                height={360}
                 slideSize="100%"
                 orientation="horizontal"
                 slideGap="sm"
@@ -270,6 +270,7 @@ const Home: React.FC = () => {
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[5m]))"
                     graphTitle="Total admin grpc requests"
+                    hasControls={false}
                   />
                 </Carousel.Slide>
                 <Carousel.Slide>
@@ -277,6 +278,7 @@ const Home: React.FC = () => {
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
                     graphTitle="Total admin grpc errors"
+                    hasControls={false}
                   />
                 </Carousel.Slide>
               </Carousel>

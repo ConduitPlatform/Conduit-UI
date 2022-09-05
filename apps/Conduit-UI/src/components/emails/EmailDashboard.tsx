@@ -10,14 +10,14 @@ const EmailDashboard = () => {
         <Box>
           <TotalRequestsByModule module="email" />
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_chat_rooms_total[5m]))"
                 graphTitle="Total email templates"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_emails_sent_total[5m]))"

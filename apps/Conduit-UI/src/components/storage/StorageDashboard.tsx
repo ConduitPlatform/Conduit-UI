@@ -10,21 +10,21 @@ const StorageDashboard = () => {
         <Box>
           <TotalRequestsByModule module="storage" />
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_storage_size_bytes_total[5m]))"
                 graphTitle="Storage size"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_folders_total[5m]))"
                 graphTitle="Total folders"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_files_total[5m]))"

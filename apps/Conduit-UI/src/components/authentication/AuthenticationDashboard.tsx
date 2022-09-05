@@ -35,11 +35,15 @@ const AuthenticationDashboard = () => {
     <Container maxWidth="xl">
       <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
         <Carousel
-          breakpoints={[{ maxWidth: 'sm', slideSize: '33.333333%' }]}
-          height={220}
+          breakpoints={[
+            { maxWidth: 'xs', slideSize: '100%' },
+            { maxWidth: 'sm', slideSize: '100%' },
+            { maxWidth: 'lg', slideSize: '33,3333%' },
+          ]}
           slideSize="33.333333%"
           orientation="horizontal"
           slideGap="sm"
+          height={200}
           align="start"
           withControls={false}
           withIndicators
@@ -60,7 +64,7 @@ const AuthenticationDashboard = () => {
               theme="light"
               title="At a glance"
               descriptionContent={
-                <Box display="flex" height="100px" flexDirection="column">
+                <Box display="flex" flexDirection="column">
                   <Typography variant="subtitle2">
                     Module is {config.active ? 'enabled' : 'disabled'}
                   </Typography>
@@ -78,7 +82,7 @@ const AuthenticationDashboard = () => {
               theme="light"
               title="Placeholder"
               descriptionContent={
-                <Box display="flex" height="100px" flexDirection="column">
+                <Box display="flex" flexDirection="column">
                   <Typography variant="subtitle2">
                     Placeholder unchecked <ConduitCheckbox />
                   </Typography>
@@ -97,7 +101,7 @@ const AuthenticationDashboard = () => {
               theme="light"
               title="Placeholder"
               descriptionContent={
-                <Box display="flex" height="100px" flexDirection="column">
+                <Box display="flex" flexDirection="column">
                   <Typography variant="subtitle2">
                     Placeholder unchecked <ConduitCheckbox />
                   </Typography>
@@ -119,14 +123,14 @@ const AuthenticationDashboard = () => {
             </Box>
           </Grid>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_logged_in_users_total[5m]))"
                 graphTitle="Logged in users"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_login_requests_total[5m]))"

@@ -10,7 +10,7 @@ const FormsDashboard = () => {
         <Box>
           <TotalRequestsByModule module="forms" />
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_forms_total[10m]))"
