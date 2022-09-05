@@ -255,7 +255,7 @@ const emailsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(asyncGetEmailTemplates.fulfilled, (state, action) => {
       state.data.templateDocuments = action.payload.templateDocuments;
-      state.data.totalCount = action.payload.totalCount;
+      state.data.totalCount = action.payload.count;
     });
 
     builder.addCase(asyncGetExternalTemplates.fulfilled, (state, action) => {

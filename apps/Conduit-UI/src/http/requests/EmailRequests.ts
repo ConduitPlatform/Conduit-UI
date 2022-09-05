@@ -11,9 +11,7 @@ import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 export const getExternalTemplatesRequest = () => getRequest(`/email/externalTemplates`);
 
 export const getEmailTemplateRequest = (params: Pagination & Search & Sort) =>
-  getRequest(`/email/templates`, {
-    params,
-  });
+  getRequest(`/email/templates`, params);
 
 export const postEmailTemplateRequest = (data: EmailData) =>
   postRequest(`/email/templates`, { ...data });

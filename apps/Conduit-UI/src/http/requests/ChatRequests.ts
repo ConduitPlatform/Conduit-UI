@@ -28,10 +28,11 @@ export const getChatMessages = (params: {
   roomId?: string;
 }) =>
   getRequest(`/chat/messages`, {
-    params: {
-      populate: 'senderUser',
-      ...params,
-    },
+    populate: '"senderUser"',
+    skip: params.skip,
+    limit: params.limit,
+    roomId: params.roomId,
+    senderId: params.senderId,
   });
 
 export const deleteChatRooms = (params: { ids: string[] }) =>
