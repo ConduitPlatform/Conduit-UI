@@ -28,11 +28,7 @@ import { debounce, throttle } from 'lodash';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-  asyncGetInstances,
-  asyncGetLevels,
-  asyncGetQueryRange,
-} from '../../redux/slices/LogsSlice';
+import { asyncGetLevels, asyncGetQueryRange } from '../../redux/slices/LogsSlice';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
 import ShortTextIcon from '@mui/icons-material/ShortText';
@@ -49,11 +45,9 @@ const defaultDrawerHeight = 400;
 const LogsComponent: React.FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
   const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
-  const instances: string[] = useAppSelector((state) => state.logsSlice?.instances);
   const values = useAppSelector((state) => state.logsSlice?.logs?.[module]);
 
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-  const [selectedInstances, setInstances] = useState<string[]>([]);
   const [selectedLimit, setSelectedLimit] = useState<number>(100);
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
@@ -70,7 +64,6 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
         asyncGetQueryRange({
           module: module,
           levels: selectedLevels,
-          instances: selectedInstances,
           startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
           endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
           limit: selectedLimit,
@@ -82,14 +75,8 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
           endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
         })
       );
-      dispatch(
-        asyncGetInstances({
-          startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
-          endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
-        })
-      );
     }, 1000),
-    [startDateValue, endDateValue, selectedInstances, selectedLevels, selectedLimit, module]
+    [startDateValue, endDateValue, selectedLevels, selectedLimit, module]
   );
 
   useEffect(() => {
@@ -100,7 +87,6 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
     endDateValue,
     module,
     requestDebounce,
-    selectedInstances,
     selectedLevels,
     selectedLimit,
     startDateValue,
@@ -119,13 +105,6 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
       target: { value },
     } = event;
     setSelectedLevels(value as string[]);
-  };
-
-  const handleChangeInstances = (event: SelectChangeEvent<unknown>) => {
-    const {
-      target: { value },
-    } = event;
-    setInstances(value as string[]);
   };
 
   const handleStartDateChange = (newValue: Moment | null) => {
@@ -147,7 +126,6 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
           asyncGetQueryRange({
             module: module,
             levels: selectedLevels,
-            instances: selectedInstances,
             startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
             endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
             limit: selectedLimit,
@@ -155,7 +133,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
         ),
       1000
     ),
-    [selectedInstances, selectedLimit, selectedLevels, module, endDateValue, startDateValue]
+    [selectedLimit, selectedLevels, module, endDateValue, startDateValue]
   );
 
   const handleRefresh = useCallback(() => {
@@ -420,7 +398,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xl={1} md={2} xs={12}>
+            <Grid item xl={2} md={6} xs={12}>
               <FormControl fullWidth>
                 <InputLabel>Limit</InputLabel>
                 <Select
@@ -441,29 +419,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xl={2} md={5} xs={12}>
-              <FormControl fullWidth size={'small'}>
-                <InputLabel>Instance</InputLabel>
-                <Select
-                  sx={{ borderRadius: 3 }}
-                  fullWidth
-                  name={'Instance'}
-                  label={'Instance'}
-                  value={selectedInstances}
-                  multiple
-                  disabled={instances?.length === 0}
-                  onChange={handleChangeInstances}
-                  renderValue={(selected) => selected.join(', ')}>
-                  {instances?.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      <Checkbox checked={selectedInstances.indexOf(item) > -1} />
-                      <ListItemText primary={item} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xl={2} md={5} xs={12}>
+            <Grid item xl={3} md={6} xs={12}>
               <FormControl fullWidth size={'small'}>
                 <InputLabel>Level</InputLabel>
                 <Select
