@@ -312,7 +312,7 @@ const EmailTemplates: React.FC = () => {
         handleLimitChange={handleLimitChange}
         page={page}
         count={totalCount}
-        noData={templateDocuments.length === 0 ? 'templates' : undefined}>
+        noData={templateDocuments?.length === 0 ? 'templates' : undefined}>
         <DataTable
           sort={sort}
           setSort={setSort}

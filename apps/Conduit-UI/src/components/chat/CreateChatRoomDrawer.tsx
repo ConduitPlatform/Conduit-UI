@@ -113,7 +113,11 @@ const CreateChatRoomDrawer: FC<Props> = ({ open, handleCreateChatRoom, closeDraw
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" color="primary" onClick={handleSave}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSave}
+                disabled={inputData?.participants?.length === 0 || inputData?.name?.length === 0}>
                 Save
               </Button>
             </Grid>

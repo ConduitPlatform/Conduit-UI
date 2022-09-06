@@ -1,12 +1,6 @@
 import { Pagination } from '../../models/http/HttpModels';
 import { IAdminSettings, ICoreSettings } from '../../models/settings/SettingsModels';
-import {
-  deleteRequest,
-  getRequest,
-  patchRequest,
-  postRequest,
-  putRequest,
-} from '../requestsConfig';
+import { deleteRequest, getRequest, patchRequest, postRequest } from '../requestsConfig';
 
 export const getAdminModulesRequest = () => {
   return getRequest(`/config/modules`);
@@ -49,7 +43,7 @@ export const postNewAdminUser = (endpointData: { username: string; password: str
 };
 
 export const getAdmins = (params: Pagination) => {
-  return getRequest(`/admins`, { params });
+  return getRequest(`/admins`, params);
 };
 
 export const deleteAdmin = (id: string) => {

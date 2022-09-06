@@ -3,7 +3,7 @@ import { deleteRequest, getRequest, patchRequest, postRequest } from '../request
 
 export const getSchemasRequest = (
   params: Pagination & Search & Sort & { enabled?: boolean } & { owner?: string[] }
-) => getRequest(`/database/schemas`, { params });
+) => getRequest(`/database/schemas`, params);
 
 export const getSchemaByIdRequest = (_id: string | string[]) =>
   getRequest(`/database/schemas/${_id}`);

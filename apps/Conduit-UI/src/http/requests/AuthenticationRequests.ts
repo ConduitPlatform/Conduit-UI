@@ -3,7 +3,7 @@ import { AuthUser } from '../../models/authentication/AuthModels';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
 export const getAuthUsersDataReq = (params: Pagination & Search & { provider: string } & Sort) =>
-  getRequest(`/authentication/users`, { params });
+  getRequest(`/authentication/users`, params);
 
 export const createNewUsers = (values: { email: string; password: string }) =>
   postRequest(`/authentication/users`, {
@@ -17,7 +17,7 @@ export const editUser = (values: AuthUser) =>
   });
 
 export const deleteUsers = (ids: string[]) => {
-  return deleteRequest(`/authentication/users`, { data: { ids } });
+  return deleteRequest(`/authentication/users`, { ids });
 };
 
 export const searchUser = (identifier: string) => {

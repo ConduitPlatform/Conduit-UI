@@ -9,16 +9,16 @@ export const patchChatConfig = (params: IChatConfig) =>
   });
 
 export const createChatRoom = (params: { name: string; participants: string[] }) =>
-  postRequest(`/chat/room`, {
+  postRequest(`/chat/rooms`, {
     ...params,
   });
 
 export const getChatRooms = (params: { skip: number; limit: number; search?: string }) =>
   getRequest(`/chat/rooms`, {
-    params: {
-      populate: 'participants',
-      ...params,
-    },
+    populate: '"participants"',
+    skip: params.skip,
+    limit: params.limit,
+    search: params.search,
   });
 
 export const getChatMessages = (params: {
@@ -28,10 +28,11 @@ export const getChatMessages = (params: {
   roomId?: string;
 }) =>
   getRequest(`/chat/messages`, {
-    params: {
-      populate: 'senderUser',
-      ...params,
-    },
+    populate: '"senderUser"',
+    skip: params.skip,
+    limit: params.limit,
+    roomId: params.roomId,
+    senderId: params.senderId,
   });
 
 export const deleteChatRooms = (params: { ids: string[] }) =>
