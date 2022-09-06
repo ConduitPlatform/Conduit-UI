@@ -21,25 +21,13 @@ export const patchStorageSettings = (storageData: IStorageConfig) =>
   });
 
 export const getStorageContainers = (params: IGetStorageContainers) =>
-  getRequest(`/storage/containers`, {
-    params: {
-      ...params,
-    },
-  });
+  getRequest(`/storage/containers`, params);
 
 export const getStorageFolders = (folderData: IGetStorageFolders) =>
-  getRequest(`/storage/folders`, {
-    params: {
-      ...folderData,
-    },
-  });
+  getRequest(`/storage/folders`, { ...folderData });
 
 export const getStorageFiles = (fileData: IGetStorageFiles) =>
-  getRequest(`/storage/files`, {
-    params: {
-      ...fileData,
-    },
-  });
+  getRequest(`/storage/files`, { ...fileData });
 
 export const getStorageFile = (id: string) => getRequest(`/storage/files/${id}/data`);
 
