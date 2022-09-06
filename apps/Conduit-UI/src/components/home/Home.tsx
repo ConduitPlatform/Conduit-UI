@@ -30,10 +30,11 @@ import { Carousel } from '@mantine/carousel';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
-  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
+  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
 
   const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
@@ -245,7 +246,6 @@ const Home: React.FC = () => {
             </Grid>
             <Box p={4} mt={5} sx={{ background: '#202030', borderRadius: '24px' }}>
               <Carousel
-                breakpoints={[{ maxWidth: 'sm', slideSize: '33.333333%' }]}
                 height={360}
                 slideSize="100%"
                 orientation="horizontal"
@@ -268,9 +268,27 @@ const Home: React.FC = () => {
                 <Carousel.Slide>
                   <ExtractGraph
                     query="/query_range"
-                    expression="sum(increase(conduit_admin_grpc_requests_total[5m]))"
+                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                     graphTitle="Total admin grpc requests"
                     label="Requests"
+                    hasControls={false}
+                  />
+                </Carousel.Slide>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                    graphTitle="Internal grpc requests"
+                    label="Requests"
+                    hasControls={false}
+                  />
+                </Carousel.Slide>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
+                    graphTitle="Grpc request latency"
+                    label="Latency (in seconds)"
                     hasControls={false}
                   />
                 </Carousel.Slide>

@@ -1,3 +1,4 @@
+import { Carousel } from '@mantine/carousel';
 import { Box, Container, Grid } from '@mui/material';
 import React from 'react';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
@@ -9,32 +10,59 @@ const StorageDashboard = () => {
       <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
         <Box>
           <TotalRequestsByModule module="storage" />
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+          <Carousel
+            height={390}
+            slideSize="100%"
+            orientation="horizontal"
+            slideGap="sm"
+            align="start"
+            withControls={false}
+            withIndicators
+            styles={{
+              indicator: {
+                width: 12,
+                height: 4,
+                transition: 'width 250ms ease',
+
+                '&[data-active]': {
+                  width: 25,
+                  backgroundColor: '#07D9C4',
+                },
+              },
+            }}>
+            <Carousel.Slide>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_storage_size_bytes_total[10m]))"
                 graphTitle="Storage size"
                 label="Size (in bytes)"
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Carousel.Slide>
+            <Carousel.Slide>
+              <ExtractGraph
+                query="/query_range"
+                expression="sum(increase(conduit_containers_total[10m]))"
+                graphTitle="Containers"
+                label="Containers"
+              />
+            </Carousel.Slide>
+            <Carousel.Slide>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_folders_total[10m]))"
-                graphTitle="Total folders"
+                graphTitle="Folders"
                 label="Folders"
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Carousel.Slide>
+            <Carousel.Slide>
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_files_total[10m]))"
-                graphTitle="Total files"
+                graphTitle="Files"
                 label="Files"
               />
-            </Grid>
-          </Grid>
+            </Carousel.Slide>
+          </Carousel>
         </Box>
       </Box>
     </Container>

@@ -18,6 +18,14 @@ const ChatDashboard = () => {
                 label="Rooms"
               />
             </Grid>
+            <Grid item xs={6}>
+              <ExtractGraph
+                query="/query_range"
+                expression="sum(increase(conduit_messages_sent_total[10m]))"
+                graphTitle="Messages sent"
+                label="Messages"
+              />
+            </Grid>
           </Grid>
         </Box>
       </Box>

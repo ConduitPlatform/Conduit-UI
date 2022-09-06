@@ -15,8 +15,16 @@ const DatabaseDashboard = () => {
               <ExtractGraph
                 query="/query_range"
                 expression="rate(conduit_database_queries_total[10m])*100"
-                graphTitle="Total database queries"
+                graphTitle="Database queries"
                 label="Queries"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ExtractGraph
+                query="/query_range"
+                expression="rate(conduit_registered_schemas_total[10m])"
+                graphTitle="Registered schemas"
+                label="Schemas"
               />
             </Grid>
             <Grid item xs={6}>
