@@ -13,7 +13,7 @@ export const getForms = (params: Pagination & Search & Sort) => getRequest(`/for
 export const createForm = (data: any) => postRequest(`/forms/forms`, data);
 
 export const deleteFormsRequest = (ids: string[]) => {
-  return deleteRequest(`/forms/forms`, { params: { ids } });
+  return deleteRequest(`/forms/forms`, { ids });
 };
 
 export const getFormReplies = (id: string) => getRequest(`/forms/replies/${id}`);

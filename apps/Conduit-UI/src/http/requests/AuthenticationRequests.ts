@@ -17,7 +17,7 @@ export const editUser = (values: AuthUser) =>
   });
 
 export const deleteUsers = (ids: string[]) => {
-  return deleteRequest(`/authentication/users`, { data: { ids } });
+  return deleteRequest(`/authentication/users`, { ids });
 };
 
 export const searchUser = (identifier: string) => {

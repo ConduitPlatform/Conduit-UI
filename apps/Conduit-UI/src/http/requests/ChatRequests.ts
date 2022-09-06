@@ -9,7 +9,7 @@ export const patchChatConfig = (params: IChatConfig) =>
   });
 
 export const createChatRoom = (params: { name: string; participants: string[] }) =>
-  postRequest(`/chat/room`, {
+  postRequest(`/chat/rooms`, {
     ...params,
   });
 
