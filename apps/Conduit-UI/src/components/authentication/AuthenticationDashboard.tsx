@@ -102,9 +102,18 @@ const AuthenticationDashboard = () => {
           <Carousel.Slide>
             <HomePageCard
               theme="light"
+              title="Placeholder"
               descriptionContent={
-                <Box px={2}>
-                  <ModuleHealth module="authentication" />
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="subtitle2">
+                    Placeholder unchecked <ConduitCheckbox />
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    Placeholder checked <ConduitCheckbox defaultChecked />{' '}
+                  </Typography>
+                  <Typography variant="subtitle2">
+                    Placeholder disabled <ConduitCheckbox disabled />
+                  </Typography>
                 </Box>
               }
             />
