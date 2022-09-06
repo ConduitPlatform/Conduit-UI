@@ -53,27 +53,29 @@ const Modules: React.FC<Props> = ({
       const configEnabled = (moduleName: string) => {
         switch (moduleName) {
           case 'authentication':
-            return enabledAuth ? '/authentication/users' : '/authentication/config';
+            return enabledAuth ? '/authentication/dashboard' : '/authentication/config';
           case 'email':
-            return enabledEmail ? '/email/templates' : '/email/config';
+            return enabledEmail ? '/email/dashboard' : '/email/config';
           case 'database':
-            return '/database/schemas';
+            return '/database/dashboard';
           case 'storage':
-            return enabledStorage ? '/storage/files' : '/storage/config';
+            return enabledStorage ? '/storage/dashboard' : '/storage/config';
           case 'settings':
             return '/settings/settings';
           case 'pushNotifications':
-            return enabledNotifications ? '/push-notifications/send' : '/push-notifications/config';
+            return enabledNotifications
+              ? '/push-notifications/dashboard'
+              : '/push-notifications/config';
           case 'forms':
-            return enabledForms ? '/forms/view' : '/forms/config';
+            return enabledForms ? '/forms/dashnoard' : '/forms/dashboard';
           case 'payments':
-            return enabledPayments ? '/payments/customers' : 'payments/config';
+            return enabledPayments ? '/payments/dashboard' : 'payments/config';
           case 'sms':
-            return enabledSms ? '/sms/send' : '/sms/config';
+            return enabledSms ? '/sms/dashboard' : '/sms/config';
           case 'router':
-            return '/router/settings';
+            return '/router/dashboard';
           case 'chat':
-            return enabledChat ? '/chat/rooms' : '/chat/config';
+            return enabledChat ? '/chat/dashboard' : '/chat/config';
           default:
             return `/${moduleName}`;
         }

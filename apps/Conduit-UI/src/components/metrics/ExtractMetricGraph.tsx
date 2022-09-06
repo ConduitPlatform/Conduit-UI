@@ -135,6 +135,9 @@ const ExtractGraph: FC<Props> = ({
 
   const options: ApexOptions = {
     chart: {
+      toolbar: {
+        show: false,
+      },
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: '#202030',
