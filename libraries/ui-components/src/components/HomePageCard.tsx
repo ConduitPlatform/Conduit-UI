@@ -1,5 +1,5 @@
-import { Box, Card, Divider, Paper, styled, Typography } from "@mui/material";
-import React, { FC } from "react";
+import { Box, Divider, Paper, styled, Typography } from "@mui/material";
+import React, { FC, ReactNode } from "react";
 import {
   homePageFontSizeSubtitles,
   homePageFontSizeTitles,
@@ -34,7 +34,7 @@ const CustomizedCard = styled(Paper)(() => ({
 }));
 
 interface Props {
-  icon?: any;
+  icon?: ReactNode;
   title: string;
   descriptionContent: JSX.Element;
   theme?: "light" | "dark";

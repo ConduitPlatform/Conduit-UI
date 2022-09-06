@@ -1,5 +1,5 @@
 import { Carousel } from '@mantine/carousel';
-import { Box, Container, Grid } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import React from 'react';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
