@@ -4,6 +4,7 @@ import StyledLayout from './styledLayout';
 
 const PaymentsLayout: React.FC = ({ children }) => {
   const pathNames = [
+    '/payments/dashboard',
     '/payments/customers',
     '/payments/products',
     '/payments/transactions',
@@ -12,6 +13,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
   ];
 
   const labels = [
+    { name: 'dashboard', id: 'dashboard' },
     { name: 'customers', id: 'customers' },
     { name: 'products', id: 'products' },
     { name: 'transactions', id: 'transactions' },

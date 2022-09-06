@@ -25,13 +25,16 @@ import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
+import ExtractGraph from '../metrics/ExtractMetricGraph';
+import { Carousel } from '@mantine/carousel';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
-  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
+  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
 
   const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
@@ -241,6 +244,65 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
             </Grid>
+            <Box p={4} mt={5} sx={{ background: '#202030', borderRadius: '24px' }}>
+              <Carousel
+                height={360}
+                slideSize="100%"
+                orientation="horizontal"
+                slideGap="sm"
+                align="start"
+                withControls={false}
+                withIndicators
+                styles={{
+                  indicator: {
+                    width: 12,
+                    height: 4,
+                    transition: 'width 250ms ease',
+
+                    '&[data-active]': {
+                      width: 25,
+                      backgroundColor: '#07D9C4',
+                    },
+                  },
+                }}>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
+                    graphTitle="Total admin grpc requests"
+                    label="Requests"
+                    hasControls={false}
+                  />
+                </Carousel.Slide>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                    graphTitle="Internal grpc requests"
+                    label="Requests"
+                    hasControls={false}
+                  />
+                </Carousel.Slide>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
+                    graphTitle="Grpc request latency"
+                    label="Latency (in seconds)"
+                    hasControls={false}
+                  />
+                </Carousel.Slide>
+                <Carousel.Slide>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
+                    graphTitle="Total admin grpc errors"
+                    label="Errors"
+                    hasControls={false}
+                  />
+                </Carousel.Slide>
+              </Carousel>
+            </Box>
           </Container>
         </Main>
         <SwaggerModal

@@ -4,7 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import View from "@mui/icons-material/ViewDay";
+import View from "@mui/icons-material/Visibility";
 import Upload from "@mui/icons-material/CloudUpload";
 import Sync from "@mui/icons-material/Sync";
 import ReplyAll from "@mui/icons-material/ReplyAll";

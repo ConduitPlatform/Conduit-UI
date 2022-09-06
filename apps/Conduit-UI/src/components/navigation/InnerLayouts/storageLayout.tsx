@@ -5,9 +5,10 @@ import { useAppSelector } from '../../../redux/store';
 
 const StorageLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.storageSlice.data.config.active);
-  const pathNames = ['/storage/files', '/storage/config'];
+  const pathNames = ['/storage/dashboard', '/storage/files', '/storage/config'];
 
   const labels = [
+    { name: 'dashboard', id: 'dashboard' },
     { name: 'files', id: 'files' },
     { name: 'config', id: 'config' },
   ];

@@ -5,9 +5,10 @@ import { useAppSelector } from '../../../redux/store';
 
 const FormsLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.formsSlice.data.config.active);
-  const pathNames = ['/forms/view', '/forms/config'];
+  const pathNames = ['/forms/dashboard', '/forms/view', '/forms/config'];
 
   const labels = [
+    { name: 'dashboard', id: 'dashboard' },
     { name: 'view', id: 'view' },
     { name: 'config', id: 'config' },
   ];

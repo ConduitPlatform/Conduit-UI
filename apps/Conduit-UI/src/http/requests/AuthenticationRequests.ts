@@ -2,7 +2,7 @@ import { deleteRequest, getRequest, patchRequest, postRequest } from '../request
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { Pagination, Search, Sort } from '../../models/http/HttpModels';
 
-export const getAuthUsersDataReq = (params: Pagination & Search & { provider: string } & Sort) =>
+export const getAuthUsersDataReq = (params: Pagination & Search & { provider?: string } & Sort) =>
   getRequest(`/authentication/users`, params);
 
 export const createNewUsers = (values: { email: string; password: string }) =>
@@ -18,14 +18,6 @@ export const editUser = (values: AuthUser) =>
 
 export const deleteUsers = (ids: string[]) => {
   return deleteRequest(`/authentication/users`, { ids });
-};
-
-export const searchUser = (identifier: string) => {
-  return getRequest(`/authentication/users`, {
-    params: {
-      identifier: identifier,
-    },
-  });
 };
 
 export const blockUser = (id: string) => {

@@ -5,9 +5,10 @@ import { useAppSelector } from '../../../redux/store';
 
 const EmailsLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.emailsSlice.data.config.active);
-  const pathNames = ['/email/templates', '/email/send', '/email/config'];
+  const pathNames = ['/email/dashboard', '/email/templates', '/email/send', '/email/config'];
 
   const labels = [
+    { name: 'dashboard', id: 'dashboard' },
     { name: 'templates', id: 'templates' },
     { name: 'send', id: 'send' },
     { name: 'config', id: 'config' },

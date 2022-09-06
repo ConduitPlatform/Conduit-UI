@@ -5,8 +5,9 @@ import { useAppSelector } from '../../../redux/store';
 
 const ChatLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.chatSlice.config.active);
-  const pathNames = ['/chat/rooms', '/chat/config'];
+  const pathNames = ['/chat/dashboard', '/chat/rooms', '/chat/config'];
   const labels = [
+    { name: 'Dashboard', id: 'dashboard' },
     { name: 'Rooms', id: 'rooms' },
     { name: 'config', id: 'config' },
   ];
