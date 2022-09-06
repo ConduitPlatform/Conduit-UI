@@ -270,6 +270,7 @@ const Home: React.FC = () => {
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[5m]))"
                     graphTitle="Total admin grpc requests"
+                    label="Requests"
                     hasControls={false}
                   />
                 </Carousel.Slide>
@@ -278,6 +279,7 @@ const Home: React.FC = () => {
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
                     graphTitle="Total admin grpc errors"
+                    label="Errors"
                     hasControls={false}
                   />
                 </Carousel.Slide>

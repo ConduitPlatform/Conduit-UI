@@ -13,22 +13,25 @@ const StorageDashboard = () => {
             <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_storage_size_bytes_total[5m]))"
+                expression="sum(increase(conduit_storage_size_bytes_total[10m]))"
                 graphTitle="Storage size"
+                label="Size (in bytes)"
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_folders_total[5m]))"
+                expression="sum(increase(conduit_folders_total[10m]))"
                 graphTitle="Total folders"
+                label="Folders"
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_files_total[5m]))"
+                expression="sum(increase(conduit_files_total[10m]))"
                 graphTitle="Total files"
+                label="Files"
               />
             </Grid>
           </Grid>

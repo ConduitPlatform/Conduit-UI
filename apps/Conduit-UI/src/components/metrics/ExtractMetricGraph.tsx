@@ -28,11 +28,18 @@ interface Props {
   expression: string;
   graphTitle?: string;
   hasControls?: boolean;
+  label?: string;
 }
 
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
-const ExtractGraph: FC<Props> = ({ query, expression, graphTitle, hasControls = true }) => {
+const ExtractGraph: FC<Props> = ({
+  query,
+  expression,
+  graphTitle,
+  hasControls = true,
+  label = 'value',
+}) => {
   const dispatch = useAppDispatch();
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
@@ -186,7 +193,7 @@ const ExtractGraph: FC<Props> = ({ query, expression, graphTitle, hasControls = 
 
   const series = [
     {
-      name: 'total requests',
+      name: label,
       data: counters ?? [],
     },
   ];

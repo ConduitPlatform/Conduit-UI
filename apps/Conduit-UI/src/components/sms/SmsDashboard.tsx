@@ -13,8 +13,9 @@ const SmsDashboard = () => {
             <Grid item xs={12}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_forms_total[5m]))"
+                expression="sum(increase(conduit_forms_total[10m]))"
                 graphTitle="Total sms sent"
+                label="Sms sent"
               />
             </Grid>
           </Grid>

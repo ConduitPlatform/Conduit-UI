@@ -13,8 +13,9 @@ const ChatDashboard = () => {
             <Grid item xs={6}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_chat_rooms_total[5m]))"
-                graphTitle="Total chat rooms"
+                expression="sum(increase(conduit_chat_rooms_total[10m]))"
+                graphTitle="Chat rooms"
+                label="Rooms"
               />
             </Grid>
           </Grid>

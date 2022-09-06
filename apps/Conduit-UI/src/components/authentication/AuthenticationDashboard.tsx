@@ -128,6 +128,7 @@ const AuthenticationDashboard = () => {
                 query="/query_range"
                 expression="sum(increase(conduit_logged_in_users_total[5m]))"
                 graphTitle="Logged in users"
+                label="Users"
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -135,6 +136,7 @@ const AuthenticationDashboard = () => {
                 query="/query_range"
                 expression="sum(increase(conduit_login_requests_total[5m]))"
                 graphTitle="Total login requests"
+                label="Requests"
               />
             </Grid>
           </Grid>

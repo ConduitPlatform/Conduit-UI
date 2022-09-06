@@ -14,7 +14,8 @@ const FormsDashboard = () => {
               <ExtractGraph
                 query="/query_range"
                 expression="sum(increase(conduit_forms_total[10m]))"
-                graphTitle="Total conduit forms"
+                graphTitle="Conduit forms"
+                label="Forms"
               />
             </Grid>
           </Grid>

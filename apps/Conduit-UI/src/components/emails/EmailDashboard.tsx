@@ -13,15 +13,17 @@ const EmailDashboard = () => {
             <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_chat_rooms_total[5m]))"
+                expression="sum(increase(conduit_email_templates_total[10m]))"
                 graphTitle="Total email templates"
+                label="Templates"
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <ExtractGraph
                 query="/query_range"
-                expression="sum(increase(conduit_emails_sent_total[5m]))"
+                expression="sum(increase(conduit_emails_sent_total[10m]))"
                 graphTitle="Total emails sent"
+                label="Emails sent"
               />
             </Grid>
           </Grid>
