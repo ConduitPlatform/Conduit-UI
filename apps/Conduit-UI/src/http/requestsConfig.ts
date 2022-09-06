@@ -84,7 +84,7 @@ export const getRequestLoki = (endpoint: string, params?: any): Promise<any> => 
 
 //TODO placeholder fow now till we proxy the actual request
 export const getRequestProm = (endpoint: string, params?: any): Promise<any> => {
-  return _axios.get('/api/prometheus' + endpoint, { params });
+  return _axios.get('/api/prometheus/api/v1' + endpoint, { params });
 };
 
 export const deleteRequest = (endpoint: string, params?: any): Promise<any> => {
