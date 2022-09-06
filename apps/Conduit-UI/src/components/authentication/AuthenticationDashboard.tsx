@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Grid, Icon, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { HomePageCard } from '@conduitplatform/ui-components';
@@ -10,6 +10,8 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ConduitCheckbox from './ConduitCheckbox';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
+import ModuleHealth from '../metrics/ModuleHealth';
+import { Lightbulb } from '@mui/icons-material';
 
 const AuthenticationDashboard = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +40,7 @@ const AuthenticationDashboard = () => {
           breakpoints={[
             { maxWidth: 'xs', slideSize: '100%' },
             { maxWidth: 'sm', slideSize: '100%' },
+            { maxWidth: 'md', slideSize: '100%' },
             { maxWidth: 'lg', slideSize: '33,3333%' },
           ]}
           slideSize="33.333333%"
@@ -99,18 +102,9 @@ const AuthenticationDashboard = () => {
           <Carousel.Slide>
             <HomePageCard
               theme="light"
-              title="Placeholder"
               descriptionContent={
-                <Box display="flex" flexDirection="column">
-                  <Typography variant="subtitle2">
-                    Placeholder unchecked <ConduitCheckbox />
-                  </Typography>
-                  <Typography variant="subtitle2">
-                    Placeholder checked <ConduitCheckbox defaultChecked />{' '}
-                  </Typography>
-                  <Typography variant="subtitle2">
-                    Placeholder disabled <ConduitCheckbox disabled />
-                  </Typography>
+                <Box px={2}>
+                  <ModuleHealth module="authentication" />
                 </Box>
               }
             />
