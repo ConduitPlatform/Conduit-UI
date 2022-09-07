@@ -70,7 +70,6 @@ const ConduitApp = (props: MyAppProps) => {
     []
   );
 
-  // Update the theme only if the mode changes
   const theme = useMemo(() => {
     const newTheme = createTheme(getDesignTokens(mode));
     return responsiveFontSizes(newTheme);

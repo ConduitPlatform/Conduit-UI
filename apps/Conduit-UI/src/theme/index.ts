@@ -153,36 +153,9 @@ const getDesignTokens = (mode: PaletteMode) => ({
 
 export default getDesignTokens;
 
-// export const homePageFontSizeHeader = {
-//   fontSize: '2.5rem',
-//   [theme.breakpoints.down('sm')]: {
-//     fontSize: '1.2rem',
-//   },
-//   [theme.breakpoints.between('sm', 'md')]: {
-//     fontSize: '2rem',
-//   },
-// };
-
 // export const homePageFontSizeTitles = {
 //   fontSize: '1rem',
 //   [theme.breakpoints.down('sm')]: {
 //     fontSize: '0.8rem',
-//   },
-// };
-
-// export const homePageFontSizeSubtitles = {
-//   fontSize: '0.8rem',
-//   [theme.breakpoints.down('sm')]: {
-//     fontSize: '0.7rem',
-//   },
-// };
-
-// export const logsDateText = {
-//   fontSize: '1rem',
-//   [theme.breakpoints.down('lg')]: {
-//     fontSize: '0.8rem',
-//   },
-//   [theme.breakpoints.down('sm')]: {
-//     fontSize: '0.6rem',
 //   },
 // };

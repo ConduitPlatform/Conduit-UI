@@ -221,7 +221,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
       ModalProps={{
         keepMounted: true,
       }}
-      PaperProps={{ sx: { background: '#15151f', paddingX: 2 } }}
+      PaperProps={{ sx: { background: theme.palette.background.default, paddingX: 2 } }}
       sx={{
         height: drawerHeight,
         flexShrink: 0,
@@ -449,7 +449,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
             display: 'flex',
             flex: 1,
             height: '100%',
-            background: 'black',
+            background: theme.palette.background.paper,
             borderRadius: 2,
             paddingX: 1,
             mt: 1,

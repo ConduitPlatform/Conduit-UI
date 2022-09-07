@@ -27,7 +27,6 @@ import {
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
-import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
@@ -40,6 +39,23 @@ const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const homePageFontSizeHeader = {
+    fontSize: '2.5rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.between('sm', 'md')]: {
+      fontSize: '2rem',
+    },
+  };
+
+  const homePageFontSizeSubtitles = {
+    fontSize: '0.8rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.7rem',
+    },
+  };
 
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
