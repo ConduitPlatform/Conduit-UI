@@ -67,7 +67,7 @@ const Modules: React.FC<Props> = ({
               ? '/push-notifications/dashboard'
               : '/push-notifications/config';
           case 'forms':
-            return enabledForms ? '/forms/dashnoard' : '/forms/dashboard';
+            return enabledForms ? '/forms/dashboard' : '/forms/dashboard';
           case 'payments':
             return enabledPayments ? '/payments/dashboard' : 'payments/config';
           case 'sms':

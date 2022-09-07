@@ -1,5 +1,5 @@
-import { Box, Container, Grid } from '@mui/material';
 import React from 'react';
+import { Container, Grid, Paper } from '@mui/material';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 
@@ -8,19 +8,19 @@ const FormsDashboard = () => {
     <Container maxWidth="xl">
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+          <Paper sx={{ padding: 4, borderRadius: '24px' }}>
             <TotalRequestsByModule module="forms" />
-          </Box>
+          </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+          <Paper sx={{ padding: 4, borderRadius: '24px' }}>
             <ExtractGraph
               query="/query_range"
               expression="sum(increase(conduit_forms_total[10m]))"
               graphTitle="Conduit forms"
               label="Forms"
             />
-          </Box>
+          </Paper>
         </Grid>
       </Grid>
     </Container>

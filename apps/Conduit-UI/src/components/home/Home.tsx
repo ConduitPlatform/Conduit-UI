@@ -26,7 +26,6 @@ import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
-import { Carousel } from '@mantine/carousel';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
