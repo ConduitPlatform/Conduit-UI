@@ -109,6 +109,13 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         },
       },
     },
+    grid: {
+      yaxis: {
+        lines: {
+          show: false,
+        },
+      },
+    },
     title: {
       text: 'Total module requests',
       align: 'left',
