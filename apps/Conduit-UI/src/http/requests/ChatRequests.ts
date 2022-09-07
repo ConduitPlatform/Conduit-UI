@@ -26,6 +26,7 @@ export const getChatMessages = (params: {
   limit: number;
   senderId?: string;
   roomId?: string;
+  sort?: string;
 }) =>
   getRequest(`/chat/messages`, {
     populate: '"senderUser"',
@@ -33,6 +34,7 @@ export const getChatMessages = (params: {
     limit: params.limit,
     roomId: params.roomId,
     senderId: params.senderId,
+    sort: params.sort,
   });
 
 export const deleteChatRooms = (params: { ids: string[] }) =>
