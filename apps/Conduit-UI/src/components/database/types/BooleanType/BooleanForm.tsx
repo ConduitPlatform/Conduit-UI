@@ -162,7 +162,7 @@ const BooleanForm: FC<IProps> = ({
                     color="primary"
                   />
                 }
-                label={booleanData.default ? 'True' : 'False'}
+                label=""
               />
             </Box>
           </Grid>

@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { asyncLogin } from '../../redux/slices/appAuthSlice';
-import { Box, Fade, useMediaQuery } from '@mui/material';
+import { Box, Fade, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useRouter } from 'next/router';
 import Grid from '@mui/material/Grid';
@@ -13,7 +13,6 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import Image from 'next/image';
-import theme from '../../theme';
 
 interface ILoginValues {
   username: string;
@@ -22,6 +21,7 @@ interface ILoginValues {
 }
 
 const Login: React.FC = () => {
+  const theme = useTheme();
   const { token } = useAppSelector((state) => state.appAuthSlice.data);
   const { loading } = useAppSelector((state) => state.appSlice);
   const dispatch = useAppDispatch();

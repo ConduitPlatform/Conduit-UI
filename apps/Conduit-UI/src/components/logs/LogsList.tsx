@@ -5,8 +5,7 @@ import { Components, ItemProps, Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import ColorHash from 'color-hash';
 import { LogsData } from '../../models/logs/LogsModels';
 import List from '@mui/material/List';
-import { Box, ListItemText, Tooltip } from '@mui/material';
-import { logsDateText } from '../../theme';
+import { Box, ListItemText, Tooltip, useTheme } from '@mui/material';
 import moment from 'moment';
 import { Circle } from '@mui/icons-material';
 
@@ -26,6 +25,17 @@ const createItemData = memoize((logs, count) => ({
 const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
   const colorHash = new ColorHash();
   const { data } = props;
+  const theme = useTheme();
+
+  const logsDateText = {
+    fontSize: '1rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.8rem',
+    },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.6rem',
+    },
+  };
 
   const count = useMemo(() => {
     return data?.length;

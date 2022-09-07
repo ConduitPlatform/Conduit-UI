@@ -1,5 +1,5 @@
-import { createTheme } from '@mui/material/styles';
 import ArrowDropDownRounded from '@mui/icons-material/ArrowDropDownRounded';
+import { PaletteMode, PaletteOptions } from '@mui/material';
 
 const primary = '#07D9C4';
 const secondary = '#5B44F2';
@@ -8,32 +8,64 @@ const error = '#ef476f';
 const warning = '#E265AB';
 const disabled = '#808080';
 
-const theme = createTheme({
+const paletteDark: PaletteOptions = {
+  mode: 'dark',
+  primary: {
+    main: primary,
+    contrastText: '#F2F2F2',
+  },
+  secondary: {
+    main: secondary,
+    contrastText: '#000000',
+  },
+  error: {
+    main: error,
+    contrastText: '#fff',
+  },
+  warning: {
+    main: warning,
+  },
+  background: {
+    paper: '#202030',
+    default: '#262840',
+  },
+  action: {
+    disabledBackground: 'transparent',
+    disabled: disabled,
+  },
+};
+
+const paletteLight: PaletteOptions = {
+  mode: 'light',
+  primary: {
+    main: secondary,
+    contrastText: '#F2F2F2',
+  },
+  secondary: {
+    main: primary,
+    contrastText: '#fff',
+  },
+  error: {
+    main: error,
+    contrastText: '#fff',
+  },
+  warning: {
+    main: warning,
+  },
+  background: {
+    paper: '#E8E7E7',
+    default: '#F2F2F2',
+  },
+  action: {
+    disabledBackground: 'transparent',
+    disabled: disabled,
+  },
+};
+
+const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
-    mode: 'dark',
-    primary: {
-      main: primary,
-      contrastText: '#202030',
-    },
-    secondary: {
-      main: secondary,
-      contrastText: '#F2F2F2',
-    },
-    error: {
-      main: error,
-      contrastText: '#fff',
-    },
-    warning: {
-      main: warning,
-    },
-    background: {
-      paper: '#202030',
-      default: '#262840',
-    },
-    action: {
-      disabledBackground: 'transparent',
-      disabled: disabled,
-    },
+    mode,
+    ...(mode === 'light' ? paletteLight : paletteDark),
   },
   typography: {
     fontFamily: 'JetBrains Mono',
@@ -119,38 +151,11 @@ const theme = createTheme({
   },
 });
 
-export default theme;
+export default getDesignTokens;
 
-export const homePageFontSizeHeader = {
-  fontSize: '2.5rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '1.2rem',
-  },
-  [theme.breakpoints.between('sm', 'md')]: {
-    fontSize: '2rem',
-  },
-};
-
-export const homePageFontSizeTitles = {
-  fontSize: '1rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '0.8rem',
-  },
-};
-
-export const homePageFontSizeSubtitles = {
-  fontSize: '0.8rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '0.7rem',
-  },
-};
-
-export const logsDateText = {
-  fontSize: '1rem',
-  [theme.breakpoints.down('lg')]: {
-    fontSize: '0.8rem',
-  },
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '0.6rem',
-  },
-};
+// export const homePageFontSizeTitles = {
+//   fontSize: '1rem',
+//   [theme.breakpoints.down('sm')]: {
+//     fontSize: '0.8rem',
+//   },
+// };

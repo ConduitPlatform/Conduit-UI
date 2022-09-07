@@ -7,6 +7,7 @@ import {
   SignInTypes,
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './SignInMethod';
+import { useTheme } from '@mui/material';
 
 interface Props {
   configData: IAuthenticationConfig;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) => {
+  const theme = useTheme();
   const [local, setLocal] = useState<SignInTypes>({
     enabled: false,
     sendVerificationEmail: false,
@@ -303,17 +305,23 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
         display={'flex'}
         alignItems={'center'}
         sx={{
-          backgroundColor: 'primary.main',
+          backgroundColor: theme.palette.primary.dark,
           height: 38,
           color: '#000',
           borderTopLeftRadius: 4,
           borderTopRightRadius: 4,
         }}
         boxShadow={2}>
-        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 2 }}>
+        <Typography
+          variant={'subtitle2'}
+          sx={{ width: '50%', paddingLeft: 2 }}
+          color="common.white">
           Provider
         </Typography>
-        <Typography variant={'subtitle2'} sx={{ width: '50%', paddingLeft: 2 }}>
+        <Typography
+          variant={'subtitle2'}
+          sx={{ width: '50%', paddingLeft: 2 }}
+          color="common.white">
           Status
         </Typography>
       </Box>

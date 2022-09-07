@@ -132,7 +132,11 @@ const DataTable: React.FC<Props> = ({
             </TableCell>
             {headers.map((header: any, idx: number) => (
               <TableCell
-                sx={{ backgroundColor: "primary.dark", whiteSpace: "nowrap" }}
+                sx={{
+                  backgroundColor: "primary.dark",
+                  whiteSpace: "nowrap",
+                  color: "common.white",
+                }}
                 key={idx}
               >
                 {header.sort && sort ? (

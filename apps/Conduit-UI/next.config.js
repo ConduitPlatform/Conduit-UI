@@ -24,57 +24,57 @@ module.exports = (phase) => {
     return [
       {
         source: '/authentication',
-        destination: '/authentication/users',
+        destination: '/authentication/dashboard',
         permanent: true,
       },
       {
         source: '/email',
-        destination: '/email/templates',
+        destination: '/email/dashboard',
         permanent: true,
       },
       {
         source: '/database',
-        destination: '/database/schemas',
+        destination: '/database/dashboard',
         permanent: true,
       },
       {
         source: '/storage',
-        destination: '/storage/files',
+        destination: '/storage/dashboard',
         permanent: true,
       },
       {
         source: '/settings',
-        destination: '/settings/settings',
+        destination: '/settings/dashboard',
         permanent: true,
       },
       {
         source: '/push-notifications',
-        destination: '/push-notifications/send',
+        destination: '/push-notifications/dashboard',
         permanent: true,
       },
       {
         source: '/router',
-        destination: '/router/settings',
+        destination: '/router/dashboard',
         permanent: true,
       },
       {
         source: '/forms',
-        destination: '/forms/view',
+        destination: '/forms/dashboard',
         permanent: true,
       },
       {
         source: '/sms',
-        destination: '/sms/send',
+        destination: '/sms/dashboard',
         permanent: true,
       },
       {
         source: '/payments',
-        destination: '/payments/customers',
+        destination: '/payments/dashboard',
         permanent: true,
       },
       {
         source: '/chat',
-        destination: '/chat/rooms',
+        destination: '/chat/dashboard',
         permanent: true,
       },
     ];

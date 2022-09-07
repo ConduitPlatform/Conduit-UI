@@ -1,9 +1,5 @@
 import { Box, Divider, Paper, styled, Typography } from "@mui/material";
 import React, { FC, ReactNode } from "react";
-import {
-  homePageFontSizeSubtitles,
-  homePageFontSizeTitles,
-} from "@conduitplatform/conduit-ui/src/theme";
 
 const BoxWithIconText = styled(Box)(() => ({
   display: "flex",
@@ -35,7 +31,7 @@ const CustomizedCard = styled(Paper)(() => ({
 
 interface Props {
   icon?: ReactNode;
-  title: string;
+  title?: string;
   descriptionContent: JSX.Element;
   theme?: "light" | "dark";
 }
@@ -53,13 +49,15 @@ const HomePageCard: FC<Props> = ({
         backgroundColor: theme === "light" ? "#262840" : undefined,
       }}
     >
-      <BoxWithIconText>
-        {icon && icon}
-        <Typography noWrap sx={{ fontSize: homePageFontSizeTitles }}>
-          &nbsp; {title}
-        </Typography>
-      </BoxWithIconText>
-      <CustomizedDivider />
+      {title && (
+        <>
+          <BoxWithIconText>
+            {icon && icon}
+            <Typography noWrap>&nbsp; {title}</Typography>
+          </BoxWithIconText>
+          <CustomizedDivider />
+        </>
+      )}
       {descriptionContent}
     </CustomizedCard>
   );

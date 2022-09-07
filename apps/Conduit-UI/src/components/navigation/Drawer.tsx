@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
@@ -10,6 +10,8 @@ import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import ConduitLogoMini from '../../assets/svgs/conduitLogoMini.svg';
 import Image from 'next/image';
+import { ColorModeContext } from '../../pages/_app';
+import ThemeSwitch from '../common/ThemeSwitch';
 
 interface Props {
   itemSelected?: string;
@@ -19,6 +21,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const colorMode = useContext(ColorModeContext);
 
   const { enabledModules, disabledModules } = useAppSelector((state) => state.appAuthSlice.data);
 
@@ -81,7 +84,16 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             <></>
           )}
         </List>
-        <Box sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}>
+        <Box
+          sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}
+          display="flex"
+          flexDirection="column">
+          <Box py={1} px={!smallScreen ? 3 : undefined}>
+            <ThemeSwitch
+              checked={theme.palette.mode === 'dark'}
+              onClick={colorMode.toggleColorMode}
+            />
+          </Box>
           <ModuleItem
             icon={<ExitToApp color={'inherit'} width={24} height={24} />}
             title={'Log out'}

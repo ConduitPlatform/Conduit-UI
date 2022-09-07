@@ -45,12 +45,12 @@ const SharedLayout: FC<Props> = ({
   CONDUIT_API,
 }) => {
   const router = useRouter();
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
-
-  const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     if (!configActive) {
@@ -113,11 +113,19 @@ const SharedLayout: FC<Props> = ({
                   href={pathNames[index]}
                   key={index}
                   underline={'none'}
-                  color={'#FFFFFF'}
                   disabled={disabled}>
                   <Tab
                     disabled={disabled}
-                    label={label.name}
+                    label={
+                      <Typography
+                        color={
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black
+                        }>
+                        {label.name}
+                      </Typography>
+                    }
                     id={label.id}
                     sx={
                       value === index

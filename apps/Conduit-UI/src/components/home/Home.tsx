@@ -3,7 +3,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import { Container, Grid, Button, Icon, useTheme, useMediaQuery, Divider } from '@mui/material';
+import {
+  Container,
+  Grid,
+  Button,
+  Icon,
+  useTheme,
+  useMediaQuery,
+  Divider,
+  Paper,
+} from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
@@ -18,7 +27,6 @@ import {
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
-import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
@@ -26,12 +34,28 @@ import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
-import { Carousel } from '@mantine/carousel';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const homePageFontSizeHeader = {
+    fontSize: '2.5rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.between('sm', 'md')]: {
+      fontSize: '2rem',
+    },
+  };
+
+  const homePageFontSizeSubtitles = {
+    fontSize: '0.8rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.7rem',
+    },
+  };
 
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
@@ -132,8 +156,54 @@ const Home: React.FC = () => {
           </Typography>
         </Box>
         <Main>
-          <Container maxWidth="md" sx={{ marginBottom: 4 }}>
-            <Grid container spacing={6}>
+          <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
+                    graphTitle="Total admin grpc requests"
+                    label="Requests"
+                    hasControls={false}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                    graphTitle="Internal grpc requests"
+                    label="Requests"
+                    hasControls={false}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
+                    graphTitle="Grpc request latency"
+                    label="Latency (in seconds)"
+                    hasControls={false}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                  <ExtractGraph
+                    query="/query_range"
+                    expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
+                    graphTitle="Total admin grpc errors"
+                    label="Errors"
+                    hasControls={false}
+                  />
+                </Paper>
+              </Grid>
+            </Grid>
+            <Grid pt={2} container spacing={2}>
               {isEnabled('authentication') ? (
                 <Grid item xs={12} md={6}>
                   <LinkComponent href="/authentication/signIn" underline={'none'}>
@@ -244,65 +314,6 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
             </Grid>
-            <Box p={4} mt={5} sx={{ background: '#202030', borderRadius: '24px' }}>
-              <Carousel
-                height={360}
-                slideSize="100%"
-                orientation="horizontal"
-                slideGap="sm"
-                align="start"
-                withControls={false}
-                withIndicators
-                styles={{
-                  indicator: {
-                    width: 12,
-                    height: 4,
-                    transition: 'width 250ms ease',
-
-                    '&[data-active]': {
-                      width: 25,
-                      backgroundColor: '#07D9C4',
-                    },
-                  },
-                }}>
-                <Carousel.Slide>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                    graphTitle="Total admin grpc requests"
-                    label="Requests"
-                    hasControls={false}
-                  />
-                </Carousel.Slide>
-                <Carousel.Slide>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                    graphTitle="Internal grpc requests"
-                    label="Requests"
-                    hasControls={false}
-                  />
-                </Carousel.Slide>
-                <Carousel.Slide>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
-                    graphTitle="Grpc request latency"
-                    label="Latency (in seconds)"
-                    hasControls={false}
-                  />
-                </Carousel.Slide>
-                <Carousel.Slide>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
-                    graphTitle="Total admin grpc errors"
-                    label="Errors"
-                    hasControls={false}
-                  />
-                </Carousel.Slide>
-              </Carousel>
-            </Box>
           </Container>
         </Main>
         <SwaggerModal

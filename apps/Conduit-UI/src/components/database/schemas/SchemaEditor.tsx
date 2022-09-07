@@ -36,7 +36,7 @@ import {
   Permissions,
   Schema,
 } from '../../../models/database/CmsModels';
-import { Chip, Typography } from '@mui/material';
+import { Chip, Typography, useTheme } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -65,6 +65,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const dispatch = useAppDispatch();
   const { id } = router.query;
   resetServerContext();
+  const theme = useTheme();
 
   const initialCrudOperations = {
     create: { enabled: false, authenticated: false },
@@ -663,7 +664,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
             sx={{
               height: `calc(100vh - ${headerHeight}px)`,
               width: '25%',
-              backgroundColor: '#262840',
+              backgroundColor: theme.palette.background.paper,
               padding: 2,
               position: 'fixed',
               top: headerHeight,
@@ -677,7 +678,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
                     width: '100%',
                     height: '100%',
                     border: '1px',
-                    background: '#262840',
+                    backgroundColor: theme.palette.background.paper,
                     borderRadius: 4,
                   }}
                   ref={provided.innerRef}>

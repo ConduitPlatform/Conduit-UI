@@ -16,3 +16,13 @@ export const getMetricsQuery = (body: {
     step: body.step,
   });
 };
+
+//This is an instant vector as we dont need a time series
+export const getModuleHealth = (body: {
+  module: ModulesTypes;
+  //TODO define initial states of start,end,step
+}) => {
+  return getRequestProm('/query', {
+    query: `conduit_module_health_state{job="${body.module}"}[1m]`,
+  });
+};
