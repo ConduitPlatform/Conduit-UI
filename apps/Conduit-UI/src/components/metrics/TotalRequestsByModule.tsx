@@ -89,6 +89,9 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
 
   const options: ApexOptions = {
     chart: {
+      toolbar: {
+        show: false,
+      },
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: '#202030',
@@ -103,6 +106,13 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         dynamicAnimation: {
           enabled: true,
           speed: 350,
+        },
+      },
+    },
+    grid: {
+      yaxis: {
+        lines: {
+          show: false,
         },
       },
     },
@@ -262,7 +272,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
           </Select>
         </FormControl>
       </Box>
-      <ReactApexChart options={options} series={series} type="line" width="100%" height="300px" />
+      <ReactApexChart options={options} series={series} type="area" width="100%" height="300px" />
     </>
   );
 };

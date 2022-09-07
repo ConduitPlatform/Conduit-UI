@@ -135,6 +135,10 @@ const ExtractGraph: FC<Props> = ({
 
   const options: ApexOptions = {
     chart: {
+      toolbar: {
+        show: false,
+      },
+
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: '#202030',
@@ -149,6 +153,13 @@ const ExtractGraph: FC<Props> = ({
         dynamicAnimation: {
           enabled: true,
           speed: 350,
+        },
+      },
+    },
+    grid: {
+      yaxis: {
+        lines: {
+          show: false,
         },
       },
     },
