@@ -12,7 +12,7 @@ const ChatDashboard = () => {
             <TotalRequestsByModule module="chat" />
           </Paper>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <Paper sx={{ padding: 4, borderRadius: '24px' }}>
             <ExtractGraph
               query="/query_range"
@@ -22,7 +22,7 @@ const ChatDashboard = () => {
             />
           </Paper>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <Paper sx={{ padding: 4, borderRadius: '24px' }}>
             <ExtractGraph
               query="/query_range"

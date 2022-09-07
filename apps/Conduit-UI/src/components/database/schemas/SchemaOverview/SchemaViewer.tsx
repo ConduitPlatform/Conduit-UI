@@ -75,6 +75,7 @@ const SchemaViewer: FC<Props> = ({
   return (
     <Box {...rest}>
       <Paper
+        elevation={0}
         sx={{
           maxHeight: '65vh',
           border: '1px',

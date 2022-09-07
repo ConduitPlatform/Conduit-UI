@@ -69,9 +69,11 @@ const InfiniteScrollList: FC<Props> = ({
             sx={{
               '&.MuiListItemButton-root': {
                 marginRight: '8px',
+                color: theme.palette.mode === 'dark' ? 'common.white' : 'common.black',
                 '&.Mui-selected': {
+                  color: 'common.white',
                   background:
-                    theme.palette.mode === 'dark' ? '#202030' : theme.palette.primary.light,
+                    theme.palette.mode === 'dark' ? '#202030' : theme.palette.primary.dark,
                 },
                 borderRadius: '10px',
               },
