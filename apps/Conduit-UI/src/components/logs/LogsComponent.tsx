@@ -13,6 +13,7 @@ import {
   Toolbar,
   Typography,
   useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -32,7 +33,6 @@ import { asyncGetLevels, asyncGetQueryRange } from '../../redux/slices/LogsSlice
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
 import ShortTextIcon from '@mui/icons-material/ShortText';
-import theme from '../../theme';
 
 interface Props {
   module: ModulesTypes;
@@ -43,6 +43,7 @@ const minDrawerHeight = 38;
 const defaultDrawerHeight = 400;
 
 const LogsComponent: React.FC<Props> = ({ module }) => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
   const values = useAppSelector((state) => state.logsSlice?.logs?.[module]);
@@ -220,7 +221,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
       ModalProps={{
         keepMounted: true,
       }}
-      PaperProps={{ sx: { background: '#15151f', paddingX: 2 } }}
+      PaperProps={{ sx: { background: theme.palette.background.default, paddingX: 2 } }}
       sx={{
         height: drawerHeight,
         flexShrink: 0,
@@ -448,7 +449,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
             display: 'flex',
             flex: 1,
             height: '100%',
-            background: 'black',
+            background: theme.palette.background.paper,
             borderRadius: 2,
             paddingX: 1,
             mt: 1,

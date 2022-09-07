@@ -9,6 +9,7 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  useTheme,
 } from '@mui/material';
 import { getRequestProm } from '../../http/requestsConfig';
 import moment, { Moment } from 'moment';
@@ -41,6 +42,7 @@ const ExtractGraph: FC<Props> = ({
   label = 'value',
 }) => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
@@ -141,7 +143,7 @@ const ExtractGraph: FC<Props> = ({
 
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
-      background: '#202030',
+      background: theme.palette.background.paper,
       animations: {
         enabled: true,
         easing: 'easeinout',
@@ -168,8 +170,8 @@ const ExtractGraph: FC<Props> = ({
       align: 'left',
     },
     theme: {
-      mode: 'dark',
-      palette: 'palette4',
+      mode: theme.palette.mode === 'dark' ? 'dark' : 'light',
+      palette: theme.palette.mode === 'dark' ? 'palette4' : 'palette2',
     },
     xaxis: {
       type: 'datetime',
@@ -314,7 +316,7 @@ const ExtractGraph: FC<Props> = ({
           </FormControl>
         </Box>
       )}
-      <ReactApexChart options={options} series={series} type="line" width="100%" height="300px" />
+      <ReactApexChart options={options} series={series} type="area" width="100%" height="300px" />
     </>
   );
 };

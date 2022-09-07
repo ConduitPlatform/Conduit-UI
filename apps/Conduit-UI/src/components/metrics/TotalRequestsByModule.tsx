@@ -1,7 +1,15 @@
 import { Close } from '@mui/icons-material';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
-import { Box, IconButton, InputLabel, Select, SelectChangeEvent, TextField } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  useTheme,
+} from '@mui/material';
 import { ApexOptions } from 'apexcharts';
 import moment, { Moment } from 'moment';
 import dynamic from 'next/dynamic';
@@ -23,6 +31,7 @@ const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
 const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
@@ -94,7 +103,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
       },
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
-      background: '#202030',
+      background: theme.palette.background.paper,
       animations: {
         enabled: true,
         easing: 'easeinout',
@@ -121,8 +130,8 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
       align: 'left',
     },
     theme: {
-      mode: 'dark',
-      palette: 'palette4',
+      mode: theme.palette.mode === 'dark' ? 'dark' : 'light',
+      palette: theme.palette.mode === 'dark' ? 'palette4' : 'palette2',
     },
     xaxis: {
       type: 'datetime',

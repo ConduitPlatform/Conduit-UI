@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input, TextField } from '@mui/material';
+import { Box, Typography, Button, Input, TextField, useTheme } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
@@ -45,6 +45,7 @@ const Header: FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const theme = useTheme();
 
   const [schemaName, setSchemaName] = useState(name);
   const [schemaCrudOperations, setSchemaCrudOperations] = useState<ICrudOperations>({
@@ -134,7 +135,7 @@ const Header: FC<Props> = ({
               }}>
               <ArrowBackIos
                 onClick={() => clearSelectedSchema}
-                sx={{ height: 30, width: 30, color: 'common.white' }}
+                sx={{ height: 30, width: 30, color: theme.palette.primary.main }}
               />
             </Box>
           </a>

@@ -7,10 +7,10 @@ import 'prismjs/components/prism-clike';
 import 'prismjs/themes/prism-dark.css';
 import { styled } from '@mui/material';
 
-const CustomizedEditor = styled(Editor)(() => ({
+const CustomizedEditor = styled(Editor)(({ theme }) => ({
   minHeight: 300,
   width: '100%',
-  backgroundColor: 'rgb(40 40 40)',
+  backgroundColor: theme.palette.background.default,
 }));
 
 interface Props {

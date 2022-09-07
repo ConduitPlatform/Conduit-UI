@@ -3,7 +3,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import { Container, Grid, Button, Icon, useTheme, useMediaQuery, Divider } from '@mui/material';
+import {
+  Container,
+  Grid,
+  Button,
+  Icon,
+  useTheme,
+  useMediaQuery,
+  Divider,
+  Paper,
+} from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
@@ -18,7 +27,6 @@ import {
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
-import { homePageFontSizeHeader, homePageFontSizeSubtitles } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
@@ -31,6 +39,23 @@ const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const homePageFontSizeHeader = {
+    fontSize: '2.5rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.between('sm', 'md')]: {
+      fontSize: '2rem',
+    },
+  };
+
+  const homePageFontSizeSubtitles = {
+    fontSize: '0.8rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.7rem',
+    },
+  };
 
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
@@ -134,7 +159,7 @@ const Home: React.FC = () => {
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
@@ -142,10 +167,10 @@ const Home: React.FC = () => {
                     label="Requests"
                     hasControls={false}
                   />
-                </Box>
+                </Paper>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
@@ -153,10 +178,10 @@ const Home: React.FC = () => {
                     label="Requests"
                     hasControls={false}
                   />
-                </Box>
+                </Paper>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
@@ -164,10 +189,10 @@ const Home: React.FC = () => {
                     label="Latency (in seconds)"
                     hasControls={false}
                   />
-                </Box>
+                </Paper>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Box p={4} sx={{ background: '#202030', borderRadius: '24px' }}>
+                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
@@ -175,7 +200,7 @@ const Home: React.FC = () => {
                     label="Errors"
                     hasControls={false}
                   />
-                </Box>
+                </Paper>
               </Grid>
             </Grid>
             <Grid pt={2} container spacing={2}>

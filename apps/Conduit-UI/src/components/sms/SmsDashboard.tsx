@@ -12,7 +12,7 @@ const SmsDashboard = () => {
             <TotalRequestsByModule module="sms" />
           </Paper>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <Paper sx={{ padding: 4, borderRadius: '24px' }}>
             <ExtractGraph
               query="/query_range"

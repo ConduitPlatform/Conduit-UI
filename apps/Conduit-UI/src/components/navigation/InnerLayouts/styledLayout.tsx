@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { FC } from 'react';
 import GraphQL from '../../../assets/svgs/graphQL.svg';
 import Swagger from '../../../assets/svgs/swagger.svg';
-import { Icon } from '@mui/material';
+import { Icon, useTheme } from '@mui/material';
 import Image from 'next/image';
 import { useAppSelector } from '../../../redux/store';
 import ScaleLoader from 'react-spinners/ScaleLoader';
@@ -27,6 +27,7 @@ const StyledLayout: FC<Props> = ({
   configActive,
   children,
 }) => {
+  const theme = useTheme();
   const { loading } = useAppSelector((state) => state.appSlice);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
@@ -58,7 +59,7 @@ const StyledLayout: FC<Props> = ({
       loader={
         <ScaleLoader
           speedMultiplier={3}
-          color={'#07D9C4'}
+          color={theme.palette.primary.main}
           loading={loading}
           height={21}
           cssOverride={{

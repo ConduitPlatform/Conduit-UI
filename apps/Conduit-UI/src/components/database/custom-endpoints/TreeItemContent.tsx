@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Button, Grid, useTheme } from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -21,6 +21,7 @@ const TreeItemContent: FC<Props> = ({
   handleRemoveNode,
   handleAddQuery,
 }) => {
+  const theme = useTheme();
   const handleChange = () => {
     if (operator === 'AND') handleOperatorChange('OR');
     if (operator === 'OR') handleOperatorChange('AND');
@@ -43,7 +44,9 @@ const TreeItemContent: FC<Props> = ({
                 aria-label="left aligned"
                 color="primary"
                 sx={{
-                  '&.Mui-selected': { '&&': { backgroundColor: '#07D9C4', color: '#262840' } },
+                  '&.Mui-selected': {
+                    '&&': { backgroundColor: theme.palette.primary.main, color: '#262840' },
+                  },
                   '&.MuiToggleButton-root': { width: '52px', height: '35px', fontWeight: 'bold' },
                 }}>
                 AND
@@ -53,7 +56,9 @@ const TreeItemContent: FC<Props> = ({
                 value="OR"
                 aria-label="centered"
                 sx={{
-                  '&.Mui-selected': { '&&': { backgroundColor: '#07D9C4', color: '#262840' } },
+                  '&.Mui-selected': {
+                    '&&': { backgroundColor: theme.palette.primary.main, color: '#262840' },
+                  },
                   '&.MuiToggleButton-root': { width: '52px', height: '35px', fontWeight: 'bold' },
                 }}>
                 OR
