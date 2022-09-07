@@ -8,7 +8,7 @@ import RelationTypeViewer from '../../types/RelationType/RelationTypeViewer';
 import BooleanTypeViewer from '../../types/BooleanType/BooleanTypeViewer';
 import ObjectIdTypeViewer from '../../types/ObjectIdType/ObjectIdTypeViewer';
 import SimpleTypeViewer from '../../types/SimpleType/SimpleTypeViewer';
-import { Checkbox, FormControlLabel, FormGroup, Grid, Tooltip } from '@mui/material';
+import { Checkbox, FormControlLabel, FormGroup, Grid, Paper, Tooltip } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
 import JSONTypeViewer from '../../types/JSONType/JSONTypeViewer';
 
@@ -73,8 +73,8 @@ const SchemaViewer: FC<Props> = ({
   };
 
   return (
-    <Box {...rest}>
-      <Box
+    <Paper {...rest}>
+      <Paper
         sx={{
           maxHeight: '65vh',
           border: '1px',
@@ -151,8 +151,8 @@ const SchemaViewer: FC<Props> = ({
               </Grid>
             </Box>
           ))}
-      </Box>
-    </Box>
+      </Paper>
+    </Paper>
   );
 };
 

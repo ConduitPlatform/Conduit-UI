@@ -13,6 +13,7 @@ import {
   Toolbar,
   Typography,
   useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -32,7 +33,6 @@ import { asyncGetLevels, asyncGetQueryRange } from '../../redux/slices/LogsSlice
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
 import ShortTextIcon from '@mui/icons-material/ShortText';
-import theme from '../../theme';
 
 interface Props {
   module: ModulesTypes;
@@ -43,6 +43,7 @@ const minDrawerHeight = 38;
 const defaultDrawerHeight = 400;
 
 const LogsComponent: React.FC<Props> = ({ module }) => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
   const values = useAppSelector((state) => state.logsSlice?.logs?.[module]);

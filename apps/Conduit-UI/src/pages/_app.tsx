@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useEffect } from 'react';
+import React, { ReactElement, ReactNode, useEffect, useState, useMemo, createContext } from 'react';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import type { AppContext, AppProps } from 'next/app';
@@ -17,6 +17,8 @@ import ScaleLoader from 'react-spinners/ScaleLoader';
 import createEmotionCache from '../createEmotionCache';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { NextPage } from 'next';
+import { createTheme, PaletteMode, responsiveFontSizes } from '@mui/material';
+import getDesignTokens from '../theme';
 
 const Layout = dynamic(() => import('../components/navigation/Layout'), {
   loading: () => (
@@ -31,6 +33,11 @@ declare module '@mui/styles/defaultTheme' {
 
 const clientSideEmotionCache = createEmotionCache();
 
+export const ColorModeContext = createContext({
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  toggleColorMode: () => {},
+});
+
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -42,6 +49,32 @@ interface MyAppProps extends AppProps {
 
 const ConduitApp = (props: MyAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const [mode, setMode] = useState<PaletteMode>('dark');
+
+  useEffect(() => {
+    const storedMode = localStorage?.getItem('theme');
+    if (storedMode) {
+      setMode(storedMode === 'dark' ? 'dark' : 'light');
+    }
+  }, []);
+
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode: PaletteMode) => {
+          localStorage?.setItem('theme', prevMode === 'light' ? 'dark' : 'light');
+          return prevMode === 'light' ? 'dark' : 'light';
+        });
+      },
+    }),
+    []
+  );
+
+  // Update the theme only if the mode changes
+  const theme = useMemo(() => {
+    const newTheme = createTheme(getDesignTokens(mode));
+    return responsiveFontSizes(newTheme);
+  }, [mode]);
 
   const reduxStore = useStore(pageProps.initialReduxState);
 
@@ -68,18 +101,20 @@ const ConduitApp = (props: MyAppProps) => {
       </Head>
       <Provider store={reduxStore}>
         <StyledEngineProvider>
-          <ThemeProvider theme={theme}>
-            <SnackbarProvider
-              preventDuplicate={true}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              content={(key, message) => <Snackbar id={key} options={formOptions(message)} />}>
-              <CssBaseline />
-              <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
-            </SnackbarProvider>
-          </ThemeProvider>
+          <ColorModeContext.Provider value={colorMode}>
+            <ThemeProvider theme={theme}>
+              <SnackbarProvider
+                preventDuplicate={true}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                content={(key, message) => <Snackbar id={key} options={formOptions(message)} />}>
+                <CssBaseline />
+                <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </ColorModeContext.Provider>
         </StyledEngineProvider>
       </Provider>
     </CacheProvider>

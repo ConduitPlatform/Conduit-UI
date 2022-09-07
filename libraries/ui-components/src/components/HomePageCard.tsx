@@ -1,9 +1,5 @@
 import { Box, Divider, Paper, styled, Typography } from "@mui/material";
 import React, { FC, ReactNode } from "react";
-import {
-  homePageFontSizeSubtitles,
-  homePageFontSizeTitles,
-} from "@conduitplatform/conduit-ui/src/theme";
 
 const BoxWithIconText = styled(Box)(() => ({
   display: "flex",
@@ -57,9 +53,7 @@ const HomePageCard: FC<Props> = ({
         <>
           <BoxWithIconText>
             {icon && icon}
-            <Typography noWrap sx={{ fontSize: homePageFontSizeTitles }}>
-              &nbsp; {title}
-            </Typography>
+            <Typography noWrap>&nbsp; {title}</Typography>
           </BoxWithIconText>
           <CustomizedDivider />
         </>

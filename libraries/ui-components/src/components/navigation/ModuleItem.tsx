@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: theme.spacing(3),
     borderRadius: theme.spacing(0.5),
     margin: theme.spacing(1),
-    color: "#F2F2F2",
+    color: theme.palette.primary.contrastText,
     borderWidth: 1,
     padding: theme.spacing(1),
     "&:hover": {
