@@ -23,6 +23,7 @@ import {
   GraphQLModal,
   HomePageCard,
   LinkComponent,
+  GraphContainer,
 } from '@conduitplatform/ui-components';
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
@@ -159,29 +160,31 @@ const Home: React.FC = () => {
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                     graphTitle="Total admin grpc requests"
                     label="Requests"
                     hasControls={false}
+                    canZoom={false}
                   />
-                </Paper>
+                </GraphContainer>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
                     graphTitle="Internal grpc requests"
                     label="Requests"
                     hasControls={false}
+                    canZoom={false}
                   />
-                </Paper>
+                </GraphContainer>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
@@ -189,10 +192,10 @@ const Home: React.FC = () => {
                     label="Latency (in seconds)"
                     hasControls={false}
                   />
-                </Paper>
+                </GraphContainer>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+                <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
@@ -200,7 +203,7 @@ const Home: React.FC = () => {
                     label="Errors"
                     hasControls={false}
                   />
-                </Paper>
+                </GraphContainer>
               </Grid>
             </Grid>
             <Grid pt={2} container spacing={2}>

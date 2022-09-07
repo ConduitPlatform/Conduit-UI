@@ -1,15 +1,16 @@
 import React from 'react';
-import { Container, Grid, Paper } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
+import { GraphContainer } from '@conduitplatform/ui-components';
 
 const NotificationDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+          <GraphContainer>
             <TotalRequestsByModule module="pushNotifications" />
-          </Paper>
+          </GraphContainer>
         </Grid>
       </Grid>
     </Container>

@@ -30,6 +30,7 @@ interface Props {
   graphTitle?: string;
   hasControls?: boolean;
   label?: string;
+  canZoom?: boolean;
 }
 
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
@@ -40,6 +41,7 @@ const ExtractGraph: FC<Props> = ({
   graphTitle,
   hasControls = true,
   label = 'value',
+  canZoom = true,
 }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -139,6 +141,9 @@ const ExtractGraph: FC<Props> = ({
     chart: {
       toolbar: {
         show: false,
+      },
+      zoom: {
+        enabled: canZoom,
       },
 
       id: 'basic-bar',

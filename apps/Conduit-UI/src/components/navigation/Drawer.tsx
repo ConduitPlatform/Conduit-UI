@@ -37,7 +37,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
         flexDirection: 'column',
         alignItems: 'left',
       }}
-      elevation={2}
+      elevation={0}
       {...rest}>
       <ListItem
         sx={{
