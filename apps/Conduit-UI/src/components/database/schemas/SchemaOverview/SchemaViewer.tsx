@@ -73,7 +73,7 @@ const SchemaViewer: FC<Props> = ({
   };
 
   return (
-    <Paper {...rest}>
+    <Box {...rest}>
       <Paper
         sx={{
           maxHeight: '65vh',
@@ -152,7 +152,7 @@ const SchemaViewer: FC<Props> = ({
             </Box>
           ))}
       </Paper>
-    </Paper>
+    </Box>
   );
 };
 

@@ -7,6 +7,7 @@ import {
   ListItemIcon,
   Paper,
   ListItemText,
+  useTheme,
 } from '@mui/material';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
@@ -40,6 +41,7 @@ const InfiniteScrollList: FC<Props> = ({
 }) => {
   const ListRow = ({ index, style }: ListChildComponentProps) => {
     const listItem = listItems[index];
+    const theme = useTheme();
 
     const getBadgeColor = (endpointForBadge: any) => {
       switch (endpointForBadge.operation) {
@@ -68,7 +70,8 @@ const InfiniteScrollList: FC<Props> = ({
               '&.MuiListItemButton-root': {
                 marginRight: '8px',
                 '&.Mui-selected': {
-                  background: '#202030',
+                  background:
+                    theme.palette.mode === 'dark' ? '#202030' : theme.palette.primary.light,
                 },
                 borderRadius: '10px',
               },

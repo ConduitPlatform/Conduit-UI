@@ -39,7 +39,7 @@ const paletteLight: PaletteOptions = {
   mode: 'light',
   primary: {
     main: secondary,
-    contrastText: '#000000',
+    contrastText: '#F2F2F2',
   },
   secondary: {
     main: primary,

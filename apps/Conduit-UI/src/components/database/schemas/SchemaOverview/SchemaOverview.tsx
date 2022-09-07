@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Grid, Box, Button } from '@mui/material';
+import { Grid, Box, Button, useTheme } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
 import JSONInput from 'react-json-editor-ajrm';
 import { ExtractSchemaInfo } from '../../../../utils/ExtractSchemaInfo';
@@ -27,6 +27,7 @@ interface Props {
 export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospectionModal }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const theme = useTheme();
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
     data: any;
     action: actions;
@@ -166,7 +167,7 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
             sx={{
               overflow: 'auto',
               overflowX: 'hidden',
-              background: '#202030',
+              background: theme.palette.background.paper,
               borderRadius: 4,
             }}>
             {objectView ? (
