@@ -113,11 +113,14 @@ const SharedLayout: FC<Props> = ({
                   href={pathNames[index]}
                   key={index}
                   underline={'none'}
-                  color={'#FFFFFF'}
                   disabled={disabled}>
                   <Tab
                     disabled={disabled}
-                    label={label.name}
+                    label={
+                      <Typography color={theme.palette.primary.contrastText}>
+                        {label.name}
+                      </Typography>
+                    }
                     id={label.id}
                     sx={
                       value === index

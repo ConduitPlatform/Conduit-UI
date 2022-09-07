@@ -49,7 +49,7 @@ interface MyAppProps extends AppProps {
 
 const ConduitApp = (props: MyAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  const [mode, setMode] = useState<PaletteMode>('dark');
+  const [mode, setMode] = useState<PaletteMode>('light');
 
   useEffect(() => {
     const storedMode = localStorage?.getItem('theme');
