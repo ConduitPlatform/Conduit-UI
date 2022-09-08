@@ -37,6 +37,8 @@ import { styled } from '@mui/material/styles';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import MetricsWidget from '../metrics/MetricsWidget';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
+import ModuleHealth from '../metrics/ModuleHealth';
+import RequestsLatency from '../metrics/RequestLatency';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -200,7 +202,7 @@ const Home: React.FC = () => {
                 <MetricsWidget title="Latency" value="20ms" />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <MetricsWidget title="Latency" value="20ms" />
+                <RequestsLatency module="home" />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <MetricsWidget title="Schemas" value={schemasCount} />
