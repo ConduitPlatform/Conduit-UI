@@ -2,7 +2,7 @@ import React from "react";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import makeStyles from "@mui/styles/makeStyles";
-import { ListItem, Theme, Tooltip } from "@mui/material";
+import { ListItem, Theme, Tooltip, useTheme } from "@mui/material";
 import clsx from "clsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -62,6 +62,7 @@ const ModuleItem: React.FC<Props> = ({
   ...rest
 }) => {
   const classes = useStyles();
+  const theme = useTheme();
 
   const capitalize = (title: string) => {
     return title.charAt(0).toUpperCase() + title.slice(1);
@@ -86,7 +87,7 @@ const ModuleItem: React.FC<Props> = ({
               "&	.MuiListItemText-primary": {
                 color: "inherit",
                 textTransform: "capitalize",
-                fontWeight: "bold",
+                fontWeight: theme.palette.mode === "dark" ? "bold" : "regular",
                 fontSize: fontSize ?? 12,
                 marginLeft: 1,
               },

@@ -29,12 +29,14 @@ import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
+import { asyncGetIntrospectionStatus, asyncGetSchemas } from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
+import MetricsWidget from '../metrics/MetricsWidget';
+import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -53,8 +55,11 @@ const Home: React.FC = () => {
 
   const homePageFontSizeSubtitles = {
     fontSize: '0.8rem',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.7rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.6rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.6rem',
     },
   };
 
@@ -67,6 +72,14 @@ const Home: React.FC = () => {
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
   const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
   const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
+
+  const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
+  const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
+
+  useEffect(() => {
+    dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
+    dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
+  }, [dispatch]);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
@@ -183,32 +196,22 @@ const Home: React.FC = () => {
                   />
                 </GraphContainer>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <GraphContainer>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
-                    graphTitle="Grpc request latency"
-                    label="Latency (in seconds)"
-                    hasControls={false}
-                  />
-                </GraphContainer>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget title="Latency" value="20ms" />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <GraphContainer>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
-                    graphTitle="Total admin grpc errors"
-                    label="Errors"
-                    hasControls={false}
-                  />
-                </GraphContainer>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget title="Latency" value="20ms" />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget title="Schemas" value={schemasCount} />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget title="Users" value={count} />
               </Grid>
             </Grid>
-            <Grid pt={2} container spacing={2}>
+            <Grid pt={3} container spacing={2}>
               {isEnabled('authentication') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/authentication/signIn" underline={'none'}>
                     <HomePageCard
                       icon={<SecretIcon width={24} height={24} />}
@@ -225,7 +228,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('database') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/database/schemas" underline={'none'}>
                     <HomePageCard
                       icon={<SchemaIcon width={24} height={24} />}
@@ -243,7 +246,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('email') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/email/config" underline={'none'}>
                     <HomePageCard
                       icon={<EmailIcon width={24} height={24} />}
@@ -260,7 +263,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('router') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/router/security" underline={'none'}>
                     <HomePageCard
                       icon={<LockIcon width={24} height={24} />}
@@ -277,7 +280,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('database') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/database/introspection" underline={'none'}>
                     <HomePageCard
                       icon={<ScreenSearchDesktopRounded width={24} height={24} />}

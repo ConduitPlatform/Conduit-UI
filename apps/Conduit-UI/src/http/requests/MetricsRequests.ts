@@ -26,3 +26,12 @@ export const getModuleHealth = (body: {
     query: `conduit_module_health_state{job="${body.module}"}[1m]`,
   });
 };
+
+export const getModuleLatency = (body: {
+  module?: ModulesTypes;
+  //TODO define initial states of start,end,step
+}) => {
+  return getRequestProm('/query', {
+    query: `avg_over_time(conduit_grpc_request_latency_seconds{job="${body.module}"}[5m])`,
+  });
+};

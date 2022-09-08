@@ -3,17 +3,23 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { MetricsData, MetricsLogsData } from '../../models/metrics/metricsModels';
-import { getMetricsQuery, getModuleHealth } from '../../http/requests/MetricsRequests';
+import {
+  getMetricsQuery,
+  getModuleHealth,
+  getModuleLatency,
+} from '../../http/requests/MetricsRequests';
 import moment, { Moment } from 'moment';
 
 interface IMetricsSlice {
   metrics: Record<ModulesTypes, MetricsData[]>;
   moduleHealth: Record<ModulesTypes, boolean>;
+  moduleLatency: Record<ModulesTypes, number>;
 }
 
 const initialState: IMetricsSlice = {
   metrics: {} as Record<ModulesTypes, MetricsData[]>,
   moduleHealth: {} as Record<ModulesTypes, boolean>,
+  moduleLatency: {} as Record<ModulesTypes, number>,
 };
 
 export const asyncGetMetricsQuery = createAsyncThunk(
@@ -80,6 +86,27 @@ export const asyncGetModuleHealth = createAsyncThunk(
   }
 );
 
+export const asyncGetModuleLatency = createAsyncThunk(
+  '/metrics/getModuleLatency',
+  async (
+    body: {
+      module: ModulesTypes;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getModuleLatency(body);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data.data.result[0].value[1] * 1000;
+    } catch (error: any) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+      throw error;
+    }
+  }
+);
+
 const metricsSlice = createSlice({
   name: 'metrics',
   initialState,
@@ -90,6 +117,9 @@ const metricsSlice = createSlice({
     });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
       state.moduleHealth[action.meta.arg.module] = action.payload;
+    });
+    builder.addCase(asyncGetModuleLatency.fulfilled, (state, action) => {
+      state.moduleLatency[action.meta.arg.module] = action.payload;
     });
   },
 });

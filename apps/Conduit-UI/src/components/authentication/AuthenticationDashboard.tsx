@@ -3,6 +3,7 @@ import { Container, Grid } from '@mui/material';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import { GraphContainer } from '@conduitplatform/ui-components';
+import RequestsLatency from '../metrics/RequestLatency';
 
 const AuthenticationDashboard = () => {
   return (
@@ -32,6 +33,9 @@ const AuthenticationDashboard = () => {
               label="Requests"
             />
           </GraphContainer>
+        </Grid>
+        <Grid item xs={4}>
+          <RequestsLatency module="authentication" />
         </Grid>
       </Grid>
     </Container>
