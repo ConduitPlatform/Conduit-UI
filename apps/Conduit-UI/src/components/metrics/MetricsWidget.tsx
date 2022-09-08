@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Paper, Typography } from '@mui/material';
 
 interface Props {
-  value: string;
+  metric: ReactNode;
   title: string;
 }
 
-const MetricsWidget: FC<Props> = ({ value, title }) => {
+const MetricsWidget: FC<Props> = ({ metric, title }) => {
   return (
     <Paper
       elevation={0}
@@ -17,9 +17,7 @@ const MetricsWidget: FC<Props> = ({ value, title }) => {
         gap: 3,
         borderRadius: '24px',
       }}>
-      <Typography color="primary" variant="h4">
-        {value}
-      </Typography>
+      {metric}
       <Typography>{title}</Typography>
     </Paper>
   );

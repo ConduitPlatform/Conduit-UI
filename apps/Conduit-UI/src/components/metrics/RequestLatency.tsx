@@ -1,8 +1,9 @@
 import React, { FC, useEffect } from 'react';
-import { Paper, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleLatency } from '../../redux/slices/metricsSlice';
+import MetricsWidget from './MetricsWidget';
 
 interface Props {
   module: ModulesTypes;
@@ -21,20 +22,14 @@ const RequestsLatency: FC<Props> = ({ module }) => {
   }, [dispatch, module]);
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        p: 2,
-        gap: 3,
-        borderRadius: '24px',
-      }}>
-      <Typography color="primary" variant="h4">
-        {latency?.toFixed(1)}ms
-      </Typography>
-      <Typography>Latency</Typography>
-    </Paper>
+    <MetricsWidget
+      metric={
+        <Typography color="primary" variant="h4">
+          {latency?.toFixed(1)}ms
+        </Typography>
+      }
+      title="Latency"
+    />
   );
 };
 

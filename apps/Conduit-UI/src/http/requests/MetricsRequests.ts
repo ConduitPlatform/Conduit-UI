@@ -23,7 +23,10 @@ export const getModuleHealth = (body: {
   //TODO define initial states of start,end,step
 }) => {
   return getRequestProm('/query', {
-    query: `conduit_module_health_state{job="${body.module}"}[1m]`,
+    query:
+      body.module !== 'home'
+        ? `conduit_module_health_state{job="${body.module}"}[1m]`
+        : `conduit_module_health_state[1m]`,
   });
 };
 

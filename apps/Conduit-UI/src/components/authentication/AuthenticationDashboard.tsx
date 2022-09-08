@@ -15,7 +15,7 @@ const AuthenticationDashboard = () => {
             <TotalRequestsByModule module="authentication" />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -25,7 +25,7 @@ const AuthenticationDashboard = () => {
             />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"

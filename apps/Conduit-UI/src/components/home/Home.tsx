@@ -3,16 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import {
-  Container,
-  Grid,
-  Button,
-  Icon,
-  useTheme,
-  useMediaQuery,
-  Divider,
-  Paper,
-} from '@mui/material';
+import { Container, Grid, Button, Icon, useTheme, useMediaQuery, Divider } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
@@ -29,7 +20,11 @@ import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { asyncGetIntrospectionStatus, asyncGetSchemas } from '../../redux/slices/databaseSlice';
+import {
+  asyncGetIntrospectionStatus,
+  asyncGetSchemas,
+  asyncSetCustomEndpoints,
+} from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
@@ -37,8 +32,9 @@ import { styled } from '@mui/material/styles';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import MetricsWidget from '../metrics/MetricsWidget';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
-import ModuleHealth from '../metrics/ModuleHealth';
 import RequestsLatency from '../metrics/RequestLatency';
+import ModuleHealth from '../metrics/ModuleHealth';
+import { asyncGetForms } from '../../redux/slices/formsSlice';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -77,10 +73,14 @@ const Home: React.FC = () => {
 
   const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
   const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
+  const formsCount = useAppSelector((state) => state.formsSlice.data.count);
+  const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
 
   useEffect(() => {
     dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
     dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
+    dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
+    dispatch(asyncGetForms({ skip: 0, limit: 5 }));
   }, [dispatch]);
 
   const noSwagger = useMemo(() => {
@@ -174,7 +174,7 @@ const Home: React.FC = () => {
         <Main>
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
@@ -186,7 +186,7 @@ const Home: React.FC = () => {
                   />
                 </GraphContainer>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
@@ -199,16 +199,50 @@ const Home: React.FC = () => {
                 </GraphContainer>
               </Grid>
               <Grid item xs={6} sm={3}>
-                <MetricsWidget title="Latency" value="20ms" />
-              </Grid>
-              <Grid item xs={6} sm={3}>
                 <RequestsLatency module="home" />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <MetricsWidget title="Schemas" value={schemasCount} />
+                <ModuleHealth module="home" />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <MetricsWidget title="Users" value={count} />
+                <MetricsWidget
+                  title="Schemas"
+                  metric={
+                    <Typography color="primary" variant="h4">
+                      {schemasCount}
+                    </Typography>
+                  }
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget
+                  title="Endpoints"
+                  metric={
+                    <Typography color="primary" variant="h4">
+                      {endpointsCount}
+                    </Typography>
+                  }
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget
+                  title="Users"
+                  metric={
+                    <Typography color="primary" variant="h4">
+                      {count}
+                    </Typography>
+                  }
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <MetricsWidget
+                  title="Forms"
+                  metric={
+                    <Typography color="primary" variant="h4">
+                      {formsCount}
+                    </Typography>
+                  }
+                />
               </Grid>
             </Grid>
             <Grid pt={3} container spacing={2}>
