@@ -4,6 +4,7 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
+import ModuleHealth from '../metrics/ModuleHealth';
 
 const AuthenticationDashboard = () => {
   return (
@@ -36,6 +37,9 @@ const AuthenticationDashboard = () => {
         </Grid>
         <Grid item xs={4}>
           <RequestsLatency module="authentication" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="authentication" />
         </Grid>
       </Grid>
     </Container>

@@ -10,7 +10,7 @@ interface Props {
 
 const RequestsLatency: FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
-  const latency = useAppSelector((state) => state?.metricsSlice?.moduleLatency?.[module]);
+  const latency: number = useAppSelector((state) => state?.metricsSlice?.moduleLatency?.[module]);
 
   useEffect(() => {
     dispatch(
@@ -31,7 +31,7 @@ const RequestsLatency: FC<Props> = ({ module }) => {
         borderRadius: '24px',
       }}>
       <Typography color="primary" variant="h4">
-        {latency}ms
+        {latency?.toFixed(1)}ms
       </Typography>
       <Typography>Latency</Typography>
     </Paper>

@@ -3,6 +3,8 @@ import { Container, Grid } from '@mui/material';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
+import RequestsLatency from '../metrics/RequestLatency';
+import ModuleHealth from '../metrics/ModuleHealth';
 
 const DatabaseDashboard = () => {
   return (
@@ -13,7 +15,7 @@ const DatabaseDashboard = () => {
             <TotalRequestsByModule module="database" />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -23,7 +25,7 @@ const DatabaseDashboard = () => {
             />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -33,7 +35,7 @@ const DatabaseDashboard = () => {
             />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -42,6 +44,12 @@ const DatabaseDashboard = () => {
               label="Custom endpoints"
             />
           </GraphContainer>
+        </Grid>
+        <Grid item xs={4}>
+          <RequestsLatency module="database" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="database" />
         </Grid>
       </Grid>
     </Container>

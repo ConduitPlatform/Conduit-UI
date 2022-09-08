@@ -3,6 +3,8 @@ import { Container, Grid } from '@mui/material';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
+import RequestsLatency from '../metrics/RequestLatency';
+import ModuleHealth from '../metrics/ModuleHealth';
 
 const ChatDashboard = () => {
   return (
@@ -13,7 +15,7 @@ const ChatDashboard = () => {
             <TotalRequestsByModule module="chat" />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -23,7 +25,7 @@ const ChatDashboard = () => {
             />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -32,6 +34,12 @@ const ChatDashboard = () => {
               label="Messages"
             />
           </GraphContainer>
+        </Grid>
+        <Grid item xs={4}>
+          <RequestsLatency module="chat" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="chat" />
         </Grid>
       </Grid>
     </Container>

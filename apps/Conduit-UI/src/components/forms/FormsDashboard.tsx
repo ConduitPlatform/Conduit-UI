@@ -3,6 +3,8 @@ import { Container, Grid } from '@mui/material';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
+import RequestsLatency from '../metrics/RequestLatency';
+import ModuleHealth from '../metrics/ModuleHealth';
 
 const FormsDashboard = () => {
   return (
@@ -13,7 +15,7 @@ const FormsDashboard = () => {
             <TotalRequestsByModule module="forms" />
           </GraphContainer>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractGraph
               query="/query_range"
@@ -22,6 +24,12 @@ const FormsDashboard = () => {
               label="Forms"
             />
           </GraphContainer>
+        </Grid>
+        <Grid item xs={4}>
+          <RequestsLatency module="forms" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="forms" />
         </Grid>
       </Grid>
     </Container>
