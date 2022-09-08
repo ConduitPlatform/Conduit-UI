@@ -170,6 +170,9 @@ const ExtractGraph: FC<Props> = ({
         },
       },
     },
+    dataLabels: {
+      enabled: false,
+    },
     title: {
       text: graphTitle ?? '',
       align: 'left',
@@ -181,6 +184,9 @@ const ExtractGraph: FC<Props> = ({
     xaxis: {
       type: 'datetime',
       categories: timestamps ?? [],
+      labels: {
+        format: 'hh:mm',
+      },
     },
     fill: {
       type: 'gradient',

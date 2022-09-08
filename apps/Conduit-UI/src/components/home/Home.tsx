@@ -35,6 +35,7 @@ import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
 import { asyncGetForms } from '../../redux/slices/formsSlice';
+import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -75,11 +76,13 @@ const Home: React.FC = () => {
   const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
   const formsCount = useAppSelector((state) => state.formsSlice.data.count);
   const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
+  const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
 
   useEffect(() => {
     dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
     dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
     dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
+    dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
     dispatch(asyncGetForms({ skip: 0, limit: 5 }));
   }, [dispatch]);
 
@@ -204,46 +207,66 @@ const Home: React.FC = () => {
               <Grid item xs={6} sm={3}>
                 <ModuleHealth module="home" />
               </Grid>
-              <Grid item xs={6} sm={3}>
-                <MetricsWidget
-                  title="Schemas"
-                  metric={
-                    <Typography color="primary" variant="h4">
-                      {schemasCount}
-                    </Typography>
-                  }
-                />
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <MetricsWidget
-                  title="Endpoints"
-                  metric={
-                    <Typography color="primary" variant="h4">
-                      {endpointsCount}
-                    </Typography>
-                  }
-                />
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <MetricsWidget
-                  title="Users"
-                  metric={
-                    <Typography color="primary" variant="h4">
-                      {count}
-                    </Typography>
-                  }
-                />
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <MetricsWidget
-                  title="Forms"
-                  metric={
-                    <Typography color="primary" variant="h4">
-                      {formsCount}
-                    </Typography>
-                  }
-                />
-              </Grid>
+              {isEnabled('database') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Schemas"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {schemasCount}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
+              {isEnabled('database') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Endpoints"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {endpointsCount}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
+              {isEnabled('authentication') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Users"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {count}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
+              {isEnabled('forms') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Forms"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {formsCount}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
+              {isEnabled('email') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Email templates"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {emailsCount}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
             </Grid>
             <Grid pt={3} container spacing={2}>
               {isEnabled('authentication') ? (

@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography, useTheme } from '@mui/material';
 
 interface Props {
   metric: ReactNode;
@@ -7,6 +7,17 @@ interface Props {
 }
 
 const MetricsWidget: FC<Props> = ({ metric, title }) => {
+  const theme = useTheme();
+
+  const fontSizes = {
+    fontSize: '1rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.8rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.7rem',
+    },
+  };
   return (
     <Paper
       elevation={0}
@@ -18,7 +29,7 @@ const MetricsWidget: FC<Props> = ({ metric, title }) => {
         borderRadius: '24px',
       }}>
       {metric}
-      <Typography>{title}</Typography>
+      <Typography sx={{ fontSize: fontSizes }}>{title}</Typography>
     </Paper>
   );
 };
