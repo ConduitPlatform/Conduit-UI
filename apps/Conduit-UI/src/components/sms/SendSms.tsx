@@ -32,7 +32,7 @@ const SendSms: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper sx={{ p: 4, color: 'text.primary', borderRadius: 8 }}>
+      <Paper elevation={0} sx={{ p: 4, color: 'text.primary', borderRadius: 8 }}>
         <Box>
           <Typography variant={'h6'} sx={{ mb: 4 }}>
             <Sms fontSize={'small'} /> Compose your SMS

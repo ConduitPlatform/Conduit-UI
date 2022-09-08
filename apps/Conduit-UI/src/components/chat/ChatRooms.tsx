@@ -62,6 +62,7 @@ const ChatRooms: React.FC = () => {
   return (
     <>
       <Paper
+        elevation={0}
         sx={{
           display: 'flex',
           height: '80vh',

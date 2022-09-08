@@ -122,7 +122,7 @@ const ClientsTab: React.FC = () => {
 
   return (
     <Grid>
-      <Paper sx={{ p: 4, borderRadius: 8 }}>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 8 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant={'h6'}>Available Security Clients</Typography>
           <Button variant="contained" onClick={() => setOpenDialog(true)}>

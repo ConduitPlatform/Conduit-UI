@@ -77,7 +77,7 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
           borderRadius: 2,
           overflow: 'hidden',
         }}
-        elevation={6}>
+        elevation={0}>
         <Typography
           sx={{
             overflow: 'hidden',

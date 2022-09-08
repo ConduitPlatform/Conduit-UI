@@ -39,7 +39,7 @@ const RouterSettings: React.FC = () => {
   return (
     <Container maxWidth={'md'}>
       <Grid container justifyContent={'center'}>
-        <Paper sx={{ p: 4, borderRadius: 8 }}>
+        <Paper elevation={0} sx={{ p: 4, borderRadius: 8 }}>
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSaveClick)}>
               <Grid container item spacing={1} alignItems={'center'}>
