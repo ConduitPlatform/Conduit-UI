@@ -44,7 +44,7 @@ const HomePageCard: FC<Props> = ({
 }) => {
   return (
     <CustomizedCard
-      elevation={theme === "light" ? 8 : 3}
+      elevation={0}
       sx={{
         backgroundColor: theme === "light" ? "#262840" : undefined,
       }}

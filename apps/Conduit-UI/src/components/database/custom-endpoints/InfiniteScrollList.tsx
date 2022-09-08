@@ -84,7 +84,7 @@ const InfiniteScrollList: FC<Props> = ({
             {badge ? (
               <ListItemIcon>
                 <Paper
-                  elevation={12}
+                  elevation={0}
                   sx={{
                     color: 'white',
                     padding: 0.2,

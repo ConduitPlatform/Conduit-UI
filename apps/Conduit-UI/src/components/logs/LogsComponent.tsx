@@ -257,7 +257,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 height: 4,
                 borderRadius: 3,
                 zIndex: 10,
-                backgroundColor: 'white',
+                backgroundColor: theme.palette.mode === 'dark' ? 'white' : 'black',
               }}
             />
           </Box>

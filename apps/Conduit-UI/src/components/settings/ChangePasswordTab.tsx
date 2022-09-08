@@ -24,7 +24,7 @@ const ChangePasswordTab: React.FC = () => {
   return (
     <Container maxWidth="md">
       <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Paper sx={{ padding: 4, borderRadius: 8 }}>
+        <Paper elevation={0} sx={{ padding: 4, borderRadius: 8 }}>
           <Grid item xs={12}>
             <Typography textAlign="center" variant={'h5'} mb={2}>
               Change your password

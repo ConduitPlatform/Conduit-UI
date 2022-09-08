@@ -107,7 +107,7 @@ const GeneralSettingsTab: React.FC = () => {
 
   return (
     <Container maxWidth={'md'}>
-      <Paper sx={{ p: 4, borderRadius: 8 }}>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 8 }}>
         <FormProvider {...methodsCore}>
           <form onSubmit={handleSubmitCore(onSaveClickEnv)}>
             <Grid container>

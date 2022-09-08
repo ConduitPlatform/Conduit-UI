@@ -161,7 +161,7 @@ const SecurityTab: React.FC = () => {
 
   return (
     <Container maxWidth={'md'} sx={{ background: 'text.primary' }}>
-      <Paper sx={{ p: 4, borderRadius: 8 }}>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 8 }}>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <Box
