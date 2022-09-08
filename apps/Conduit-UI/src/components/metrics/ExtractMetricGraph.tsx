@@ -30,6 +30,7 @@ interface Props {
   graphTitle?: string;
   hasControls?: boolean;
   label?: string;
+  canZoom?: boolean;
 }
 
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
@@ -40,6 +41,7 @@ const ExtractGraph: FC<Props> = ({
   graphTitle,
   hasControls = true,
   label = 'value',
+  canZoom = true,
 }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -140,6 +142,9 @@ const ExtractGraph: FC<Props> = ({
       toolbar: {
         show: false,
       },
+      zoom: {
+        enabled: canZoom,
+      },
 
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
@@ -165,6 +170,9 @@ const ExtractGraph: FC<Props> = ({
         },
       },
     },
+    dataLabels: {
+      enabled: false,
+    },
     title: {
       text: graphTitle ?? '',
       align: 'left',
@@ -176,6 +184,9 @@ const ExtractGraph: FC<Props> = ({
     xaxis: {
       type: 'datetime',
       categories: timestamps ?? [],
+      labels: {
+        format: 'hh:mm',
+      },
     },
     fill: {
       type: 'gradient',

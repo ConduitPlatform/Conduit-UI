@@ -3,6 +3,9 @@ import React, { FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import Rate from '../../assets/svgs/rate.svg';
+import Image from 'next/image';
+import MetricsWidget from './MetricsWidget';
 
 interface Props {
   module: ModulesTypes;
@@ -20,29 +23,24 @@ const ModuleHealth: FC<Props> = ({ module }) => {
     );
   }, [dispatch, module]);
 
-  //TODO logic for displaying module health
-
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      maxHeight="129px"
-      gap={2}
-      alignItems="center"
-      justifyContent="center">
-      <Typography>
-        Module{' '}
-        {health ? (
-          <Typography color="primary" sx={{ display: 'inline' }}>
-            is healthy
-          </Typography>
-        ) : (
-          <Typography color="error" sx={{ display: 'inline' }}>
-            health is critical
-          </Typography>
-        )}
-      </Typography>
-    </Box>
+    <MetricsWidget
+      metric={
+        <Box display="flex" gap={1} alignItems="center">
+          {health ? (
+            <Typography color="primary" variant="h4">
+              Good
+            </Typography>
+          ) : (
+            <Typography color="error" variant="h4">
+              Critical
+            </Typography>
+          )}
+          <Image src={Rate} alt="Heart rate" />
+        </Box>
+      }
+      title="Health"
+    />
   );
 };
 

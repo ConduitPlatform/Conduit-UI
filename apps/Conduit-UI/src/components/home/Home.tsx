@@ -3,16 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import {
-  Container,
-  Grid,
-  Button,
-  Icon,
-  useTheme,
-  useMediaQuery,
-  Divider,
-  Paper,
-} from '@mui/material';
+import { Container, Grid, Button, Icon, useTheme, useMediaQuery, Divider } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import SchemaIcon from '@mui/icons-material/VerticalSplit';
@@ -23,17 +14,28 @@ import {
   GraphQLModal,
   HomePageCard,
   LinkComponent,
+  GraphContainer,
 } from '@conduitplatform/ui-components';
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { asyncGetIntrospectionStatus } from '../../redux/slices/databaseSlice';
+import {
+  asyncGetIntrospectionStatus,
+  asyncGetSchemas,
+  asyncSetCustomEndpoints,
+} from '../../redux/slices/databaseSlice';
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractGraph from '../metrics/ExtractMetricGraph';
+import MetricsWidget from '../metrics/MetricsWidget';
+import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
+import RequestsLatency from '../metrics/RequestLatency';
+import ModuleHealth from '../metrics/ModuleHealth';
+import { asyncGetForms } from '../../redux/slices/formsSlice';
+import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -52,8 +54,11 @@ const Home: React.FC = () => {
 
   const homePageFontSizeSubtitles = {
     fontSize: '0.8rem',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '0.7rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.6rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.6rem',
     },
   };
 
@@ -66,6 +71,20 @@ const Home: React.FC = () => {
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
   const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
   const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
+
+  const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
+  const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
+  const formsCount = useAppSelector((state) => state.formsSlice.data.count);
+  const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
+  const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
+
+  useEffect(() => {
+    dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
+    dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
+    dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
+    dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
+    dispatch(asyncGetForms({ skip: 0, limit: 5 }));
+  }, [dispatch]);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
@@ -158,54 +177,100 @@ const Home: React.FC = () => {
         <Main>
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+              <Grid item xs={12} sm={12} md={12} lg={6}>
+                <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                     graphTitle="Total admin grpc requests"
                     label="Requests"
                     hasControls={false}
+                    canZoom={false}
                   />
-                </Paper>
+                </GraphContainer>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+              <Grid item xs={12} sm={12} md={12} lg={6}>
+                <GraphContainer>
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
                     graphTitle="Internal grpc requests"
                     label="Requests"
                     hasControls={false}
+                    canZoom={false}
                   />
-                </Paper>
+                </GraphContainer>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))"
-                    graphTitle="Grpc request latency"
-                    label="Latency (in seconds)"
-                    hasControls={false}
+              <Grid item xs={6} sm={3}>
+                <RequestsLatency module="home" />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <ModuleHealth module="home" />
+              </Grid>
+              {isEnabled('database') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Schemas"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {schemasCount}
+                      </Typography>
+                    }
                   />
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Paper sx={{ padding: 4, borderRadius: '24px' }}>
-                  <ExtractGraph
-                    query="/query_range"
-                    expression="sum(increase(conduit_admin_grpc_errors_total[5m]))"
-                    graphTitle="Total admin grpc errors"
-                    label="Errors"
-                    hasControls={false}
+                </Grid>
+              )}
+              {isEnabled('database') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Endpoints"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {endpointsCount}
+                      </Typography>
+                    }
                   />
-                </Paper>
-              </Grid>
+                </Grid>
+              )}
+              {isEnabled('authentication') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Users"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {count}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
+              {isEnabled('forms') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Forms"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {formsCount}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
+              {isEnabled('email') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricsWidget
+                    title="Email templates"
+                    metric={
+                      <Typography color="primary" variant="h4">
+                        {emailsCount}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              )}
             </Grid>
-            <Grid pt={2} container spacing={2}>
+            <Grid pt={3} container spacing={2}>
               {isEnabled('authentication') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/authentication/signIn" underline={'none'}>
                     <HomePageCard
                       icon={<SecretIcon width={24} height={24} />}
@@ -222,7 +287,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('database') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/database/schemas" underline={'none'}>
                     <HomePageCard
                       icon={<SchemaIcon width={24} height={24} />}
@@ -240,7 +305,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('email') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/email/config" underline={'none'}>
                     <HomePageCard
                       icon={<EmailIcon width={24} height={24} />}
@@ -257,7 +322,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('router') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/router/security" underline={'none'}>
                     <HomePageCard
                       icon={<LockIcon width={24} height={24} />}
@@ -274,7 +339,7 @@ const Home: React.FC = () => {
                 </Grid>
               ) : null}
               {isEnabled('database') ? (
-                <Grid item xs={12} md={6}>
+                <Grid item xs={6} md={4}>
                   <LinkComponent href="/database/introspection" underline={'none'}>
                     <HomePageCard
                       icon={<ScreenSearchDesktopRounded width={24} height={24} />}

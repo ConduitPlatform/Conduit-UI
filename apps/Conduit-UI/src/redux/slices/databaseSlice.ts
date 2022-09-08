@@ -27,11 +27,7 @@ import {
 import { EndpointTypes, IntrospectionStatus, Schema } from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import {
-  enqueueErrorNotification,
-  enqueueInfoNotification,
-  enqueueSuccessNotification,
-} from '../../utils/useNotifier';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import { Pagination, Search } from '../../models/http/HttpModels';
 import { set } from 'lodash';
 import {

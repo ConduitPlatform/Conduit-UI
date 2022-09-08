@@ -1,4 +1,5 @@
 export type ModulesTypes =
+  | 'home'
   | 'authentication'
   | 'email'
   | 'storage'

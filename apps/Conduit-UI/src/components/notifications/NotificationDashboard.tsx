@@ -1,15 +1,24 @@
 import React from 'react';
-import { Container, Grid, Paper } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
+import { GraphContainer } from '@conduitplatform/ui-components';
+import ModuleHealth from '../metrics/ModuleHealth';
+import RequestsLatency from '../metrics/RequestLatency';
 
 const NotificationDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Paper sx={{ padding: 4, borderRadius: '24px' }}>
+          <GraphContainer>
             <TotalRequestsByModule module="pushNotifications" />
-          </Paper>
+          </GraphContainer>
+        </Grid>
+        <Grid item xs={4}>
+          <RequestsLatency module="pushNotifications" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="pushNotifications" />
         </Grid>
       </Grid>
     </Container>

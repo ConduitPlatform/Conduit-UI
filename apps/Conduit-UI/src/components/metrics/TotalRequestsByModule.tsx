@@ -101,7 +101,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
       toolbar: {
         show: false,
       },
-      id: 'basic-bar',
+
       fontFamily: 'JetBrains Mono',
       background: theme.palette.background.paper,
       animations: {
@@ -118,6 +118,11 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         },
       },
     },
+
+    dataLabels: {
+      enabled: false,
+    },
+
     grid: {
       yaxis: {
         lines: {
@@ -136,6 +141,9 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
     xaxis: {
       type: 'datetime',
       categories: data?.timestamps ?? [],
+      labels: {
+        format: 'hh:mm',
+      },
     },
     fill: {
       type: 'gradient',
