@@ -1,4 +1,4 @@
-import React, { FC, forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetChatMessages } from '../../redux/slices/chatSlice';
@@ -10,8 +10,10 @@ import { Typography } from '@mui/material';
 import { Components, ItemProps, Virtuoso } from 'react-virtuoso';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import { IChatMessage } from '../../models/chat/ChatModels';
+import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   bubble: {
     marginBottom: theme.spacing(0.5),
     padding: theme.spacing(1, 1),
@@ -24,22 +26,87 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const timeoutAmount = 750;
+const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
+  return (
+    <List
+      style={{
+        padding: 0,
+        ...style,
+      }}
+      component="div"
+      ref={ref}>
+      {children}
+    </List>
+  );
+});
 
-const createItemData = memoize(
-  (messages, messagesCount, selectedMessages, onPress, onLongPress, classes) => ({
-    messages,
-    messagesCount,
-    selectedMessages,
-    onPress,
-    onLongPress,
-    classes,
-  })
-);
+MUIList.displayName = 'MuiList';
+
+const EmptyList: Components['EmptyPlaceholder'] = () => {
+  return <Typography sx={{ textAlign: 'center', pt: 1 }}>No messages</Typography>;
+};
+
+const MUIComponents: Components = {
+  List: MUIList,
+  EmptyPlaceholder: EmptyList,
+  Item: ({ children, ...props }: ItemProps) => {
+    return (
+      <ListItem
+        component="div"
+        {...props}
+        style={{ margin: 0, alignItems: 'stretch' }}
+        disableGutters>
+        {children}
+      </ListItem>
+    );
+  },
+};
+
+const createItemData = memoize((selectedMessages, onPress, onLongPress) => ({
+  selectedMessages,
+  onPress,
+  onLongPress,
+}));
+
+interface ListRowProps {
+  message: IChatMessage;
+  itemData: {
+    selectedMessages: string[];
+    onPress: (id: string) => void;
+    onLongPress: (id: string) => void;
+  };
+}
+
+const Row = ({ message, itemData }: ListRowProps) => {
+  const { selectedMessages, onPress, onLongPress } = itemData;
+  const isSelected = message?.message && selectedMessages.includes(message?._id);
+  const classes = useStyles();
+
+  const getClassName = () => {
+    if (isSelected) {
+      return clsx(classes.bubble, classes.bubbleSelected);
+    }
+    return classes.bubble;
+  };
+
+  return (
+    <>
+      {!message ? (
+        <ChatRoomBubbleSkeleton className={classes.bubble} />
+      ) : (
+        <ChatRoomBubble
+          data={message}
+          className={getClassName()}
+          onLongPress={onLongPress}
+          onPress={onPress}
+        />
+      )}
+    </>
+  );
+};
 
 interface Props {
   roomId: string;
-  selectedPanel: number;
   selectedMessages: string[];
   onPress: (id: string) => void;
   onLongPress: (id: string) => void;
@@ -47,24 +114,18 @@ interface Props {
 
 const START_INDEX = 500;
 const INITIAL_ITEM_COUNT = 20;
+const topMostItem = INITIAL_ITEM_COUNT - 1;
 
-const ChatRoomMessages: FC<Props> = ({
-  roomId,
-  selectedPanel,
-  selectedMessages,
-  onPress,
-  onLongPress,
-}) => {
+const timeoutAmount = 750;
+
+const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLongPress }) => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const {
     chatMessages: { data, count },
   } = useAppSelector((state) => state.chatSlice.data);
-
-  const infiniteLoaderRef = useRef<any>(null);
-  const hasMountedRef = useRef(false);
   const [firstItemIndex, setFirstItemIndex] = useState<number>(START_INDEX);
-  const [messages, setMessages] = useState(data);
+  const [messages, setMessages] = useState<IChatMessage[]>([]);
+  const prevCountRef = useRef<number>(500);
 
   useEffect(() => {
     const reversedArray = [...data].reverse();
@@ -72,11 +133,17 @@ const ChatRoomMessages: FC<Props> = ({
   }, [data]);
 
   useEffect(() => {
-    if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache();
+    const nextFirstItemIndex = firstItemIndex - 20;
+
+    if (prevCountRef.current === nextFirstItemIndex) {
+      return;
+    } else {
+      setFirstItemIndex(nextFirstItemIndex);
     }
-    hasMountedRef.current = true;
-  }, [selectedPanel, count]);
+    prevCountRef.current = firstItemIndex;
+  }, [data]);
+
+  const itemData = createItemData(selectedMessages, onPress, onLongPress);
 
   const getChatMessages = useCallback(
     (skip: number, limit: number) => {
@@ -95,105 +162,28 @@ const ChatRoomMessages: FC<Props> = ({
     getChatMessages(0, 20);
   }, [getChatMessages]);
 
-  const debouncedGetApiItems = debounce(
-    (skip: number, limit: number) => getChatMessages(skip, limit),
-    timeoutAmount
-  );
-
-  const loadMoreItems = async () => {
-    debouncedGetApiItems(data?.length, 20);
-  };
-
-  const itemData = createItemData(data, count, selectedMessages, onPress, onLongPress, classes);
+  const debouncedGetApiItems = debounce(() => getChatMessages(data?.length, 20), timeoutAmount);
 
   const prependItems = useCallback(() => {
-    const usersToPrepend = 20;
-    const nextFirstItemIndex = firstItemIndex - usersToPrepend;
+    debouncedGetApiItems();
+    return () => debouncedGetApiItems.cancel();
+  }, [debouncedGetApiItems]);
 
-    setTimeout(() => {
-      setFirstItemIndex(() => nextFirstItemIndex);
-      loadMoreItems();
-    }, 500);
-
-    return false;
-  }, [firstItemIndex, loadMoreItems]);
-
-  const Row = ({ index, message }: any) => {
-    // const { selectedMessages, onPress, onLongPress, classes } = itemData;
-    const isSelected = message.message && selectedMessages.includes(message._id);
-
-    const getClassName = () => {
-      if (isSelected) {
-        return clsx(classes.bubble, classes.bubbleSelected);
-      }
-      return classes.bubble;
-    };
-
-    return (
-      <div>
-        {!message ? (
-          <ChatRoomBubbleSkeleton className={classes.bubble} />
-        ) : (
-          <div id={`bubble-${index}`}>
-            <ChatRoomBubble
-              data={message}
-              className={getClassName()}
-              onLongPress={onLongPress}
-              onPress={onPress}
-            />
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
-    return (
-      <List
-        style={{
-          padding: 0,
-          ...style,
-        }}
-        component="div"
-        ref={ref}>
-        {children}
-      </List>
-    );
-  });
-
-  MUIList.displayName = 'MuiList';
-
-  const EmptyList: Components['EmptyPlaceholder'] = () => {
-    return <Typography sx={{ textAlign: 'center', pt: 1 }}>No messages</Typography>;
-  };
-
-  const MUIComponents: Components = {
-    List: MUIList,
-    EmptyPlaceholder: EmptyList,
-
-    Item: ({ children, ...props }: ItemProps) => {
-      return (
-        <ListItem
-          component="div"
-          {...props}
-          style={{ margin: 0, alignItems: 'stretch' }}
-          disableGutters>
-          {children}
-        </ListItem>
-      );
-    },
-  };
+  const startReached = useMemo(() => {
+    if (!data?.length) return;
+    return data?.length >= count ? undefined : prependItems;
+  }, [count, data?.length, prependItems]);
 
   return (
     <Virtuoso
-      style={{ height: '300px' }}
-      firstItemIndex={Math.max(0, firstItemIndex)}
-      initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}
+      firstItemIndex={firstItemIndex}
+      initialTopMostItemIndex={topMostItem}
       data={messages}
-      startReached={data?.length >= count ? undefined : prependItems}
-      itemContent={(index, message) => <Row index={index} message={message} />}
+      startReached={startReached}
+      itemContent={(index, message) => <Row message={message} itemData={itemData} />}
       components={MUIComponents}
       overscan={100}
+      computeItemKey={(index, item) => `bubble-${item._id}${index}`}
     />
   );
 };

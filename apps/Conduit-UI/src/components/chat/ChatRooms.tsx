@@ -120,7 +120,7 @@ const ChatRooms: React.FC = () => {
         </Box>
         {data.map((item: IChatRoom, index: number) => {
           if (index === selected) {
-            return <ChatRoomPanel panelData={item} key={index} selectedPanel={selected} />;
+            return <ChatRoomPanel panelData={item} key={index} />;
           }
         })}
       </Paper>

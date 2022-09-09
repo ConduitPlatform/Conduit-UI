@@ -13,10 +13,9 @@ import ChatRoomMessages from './ChatRoomMessages';
 
 interface Props extends BoxProps {
   panelData: IChatRoom;
-  selectedPanel: number;
 }
 
-const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
+const ChatRoomPanel: FC<Props> = ({ panelData }) => {
   const dispatch = useAppDispatch();
 
   const [infoDialog, setInfoDialog] = useState<boolean>(false);
@@ -111,7 +110,6 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
       <Box sx={{ flex: 1, pt: 2, pl: 2 }}>
         <ChatRoomMessages
           roomId={panelData._id}
-          selectedPanel={selectedPanel}
           selectedMessages={selected}
           onPress={onPress}
           onLongPress={onLongPress}
