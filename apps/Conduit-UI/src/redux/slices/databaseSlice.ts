@@ -433,13 +433,15 @@ export const asyncSetCustomEndpoints = createAsyncThunk(
     params: Pagination & Search & { schemaName?: string[] } & { operation?: number },
     thunkAPI
   ) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { customEndpoints, count },
       } = await getCustomEndpointsRequest(params);
-
+      thunkAPI.dispatch(setAppLoading(false));
       return { endpoints: customEndpoints as EndpointTypes[], count: count };
     } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -452,13 +454,16 @@ export const asyncAddCustomEndpoints = createAsyncThunk(
     params: Pagination & Search & { schemaName?: string[] } & { operation?: number },
     thunkAPI
   ) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { customEndpoints },
       } = await getCustomEndpointsRequest(params);
+      thunkAPI.dispatch(setAppLoading(false));
 
       return { endpoints: customEndpoints as EndpointTypes[] };
     } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }

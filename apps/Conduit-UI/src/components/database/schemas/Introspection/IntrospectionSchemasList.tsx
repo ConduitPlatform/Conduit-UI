@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import {
@@ -19,21 +19,11 @@ interface Props {
 const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, actualSchema }) => {
   const dispatch = useAppDispatch();
 
-  const loaderRef = useRef<any>(null);
-  const hasMountedRef = useRef(false);
-
   const { schemaDocuments, schemasCount } = useAppSelector(
     (state) => state.databaseSlice.data.introspectionSchemas
   );
 
-  const isItemLoaded = (index: number) => !!schemaDocuments[index];
-
   useEffect(() => {
-    if (loaderRef.current && hasMountedRef.current) {
-      loaderRef.current.resetloadMoreItemsCache();
-      loaderRef.current._listRef.scrollTo(0);
-    }
-    hasMountedRef.current = true;
     const params = {
       skip: 0,
       limit: 25,
@@ -52,21 +42,24 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
   };
 
   const debouncedGetApiItems = debounce(
-    (skip: number, limit: number) => addSchemas(skip, limit),
+    (limit: number) => addSchemas(schemaDocuments?.length, limit),
     timeoutAmount
   );
 
-  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
-    const limit = stopIndex + 1;
-    debouncedGetApiItems(schemaDocuments.length, limit);
-  };
+  const loadMoreItems = useCallback(
+    (index) => {
+      const limit = index + 1;
+
+      debouncedGetApiItems(limit);
+      return () => debouncedGetApiItems.cancel();
+    },
+    [debouncedGetApiItems]
+  );
 
   return (
     <InfiniteScrollList
       count={schemasCount}
       loadMoreItems={loadMoreItems}
-      loaderRef={loaderRef}
-      isItemLoaded={isItemLoaded}
       listItems={schemaDocuments}
       handleListItemSelect={handleListItemSelect}
       selectedEndpoint={actualSchema}

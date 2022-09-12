@@ -1,6 +1,5 @@
-import React, { FC } from 'react';
+import React, { FC, forwardRef, useMemo } from 'react';
 import {
-  Box,
   Typography,
   Skeleton,
   ListItemButton,
@@ -9,37 +8,73 @@ import {
   ListItemText,
   useTheme,
 } from '@mui/material';
-import InfiniteLoader from 'react-window-infinite-loader';
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
 import { EndpointTypes, Schema } from '../../../models/database/CmsModels';
+import { Components, ItemProps, Virtuoso } from 'react-virtuoso';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
 
 interface Props {
-  listItems: EndpointTypes[] | Schema[];
+  listItems: EndpointTypes[] & Schema[];
   count: number;
-  loaderRef: any;
-  isItemLoaded: (index: number) => boolean;
-  loadMoreItems: (startIndex: number, stopIndex: number) => void;
+  loadMoreItems: (limit: number) => void;
   handleListItemSelect: (endpoint: any) => void;
   selectedEndpoint?: Schema;
   badge?: boolean;
   isEndpoint?: boolean;
 }
 
+const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
+  return (
+    <List
+      style={{
+        padding: 0,
+        ...style,
+      }}
+      component="div"
+      ref={ref}>
+      {children}
+    </List>
+  );
+});
+
+MUIList.displayName = 'MuiList';
+
+const EmptyList: Components['EmptyPlaceholder'] = () => {
+  return <Typography sx={{ textAlign: 'center', pt: 1 }}>No rooms</Typography>;
+};
+
+const MUIComponents: Components = {
+  List: MUIList,
+  EmptyPlaceholder: EmptyList,
+  Item: ({ children, ...props }: ItemProps) => {
+    return (
+      <ListItem
+        component="div"
+        {...props}
+        style={{ margin: 0, alignItems: 'stretch' }}
+        disableGutters>
+        {children}
+      </ListItem>
+    );
+  },
+};
+
+interface ListRow {
+  index: number;
+}
+
 const InfiniteScrollList: FC<Props> = ({
   listItems,
   count,
-  loaderRef,
-  isItemLoaded,
   loadMoreItems,
   handleListItemSelect,
   selectedEndpoint,
   badge,
   isEndpoint,
 }) => {
-  const ListRow = ({ index, style }: ListChildComponentProps) => {
+  const ListRow = ({ index }: ListRow) => {
     const listItem = listItems[index];
     const theme = useTheme();
 
@@ -59,7 +94,7 @@ const InfiniteScrollList: FC<Props> = ({
     };
 
     return (
-      <div style={style}>
+      <>
         {!listItem ? (
           <Typography variant="h2">
             <Skeleton sx={{ marginRight: '8px' }} />
@@ -106,46 +141,24 @@ const InfiniteScrollList: FC<Props> = ({
             />
           </ListItemButton>
         )}
-      </div>
+      </>
     );
   };
 
+  const endReached = useMemo(() => {
+    if (listItems?.length === 0) return;
+    return listItems?.length >= count ? undefined : loadMoreItems;
+  }, [count, listItems?.length, loadMoreItems]);
+
   return (
-    <AutoSizer>
-      {({ height, width }) => {
-        if (!count) {
-          return (
-            <Box width={width}>
-              <Typography sx={{ textAlign: 'center', marginTop: '100px' }}>
-                No endpoints available
-              </Typography>
-            </Box>
-          );
-        }
-        return (
-          <InfiniteLoader
-            ref={loaderRef}
-            isItemLoaded={isItemLoaded}
-            itemCount={count}
-            loadMoreItems={loadMoreItems}
-            threshold={4}>
-            {({ onItemsRendered, ref }) => {
-              return (
-                <List
-                  height={height}
-                  itemCount={count}
-                  itemSize={56}
-                  onItemsRendered={onItemsRendered}
-                  ref={ref}
-                  width={width}>
-                  {ListRow}
-                </List>
-              );
-            }}
-          </InfiniteLoader>
-        );
-      }}
-    </AutoSizer>
+    <Virtuoso
+      data={listItems}
+      endReached={endReached}
+      itemContent={(index) => <ListRow index={index} />}
+      components={MUIComponents}
+      overscan={100}
+      computeItemKey={(index, item) => `listItem-${item._id}${index}`}
+    />
   );
 };
 
