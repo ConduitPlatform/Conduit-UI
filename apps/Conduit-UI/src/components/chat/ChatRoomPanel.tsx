@@ -85,7 +85,7 @@ const ChatRoomPanel: FC<Props> = ({ panelData }) => {
           {panelData.name}
         </Typography>
 
-        <Box>
+        <Box display={'flex'} alignItems={'center'}>
           {selected.length > 0 ? (
             <IconButton sx={{ padding: 1 }} onClick={() => onDeletePress()} size="large">
               <DeleteIcon />
@@ -95,17 +95,18 @@ const ChatRoomPanel: FC<Props> = ({ panelData }) => {
               <InfoOutlined />
             </IconButton>
           )}
+          {selected.length > 0 && (
+            <Box
+              sx={{
+                backgroundColor: 'gray',
+                borderRadius: 2,
+                padding: '4px',
+                ml: 1,
+              }}>
+              <Typography variant={'subtitle2'}>{selected.length} selected</Typography>
+            </Box>
+          )}
         </Box>
-        {selected.length > 0 && (
-          <Box
-            sx={{
-              backgroundColor: 'gray',
-              borderRadius: 2,
-              padding: '4px',
-            }}>
-            <Typography variant={'subtitle2'}>{selected.length} selected</Typography>
-          </Box>
-        )}
       </Paper>
       <Box sx={{ flex: 1, pt: 2, pl: 2 }}>
         <ChatRoomMessages
