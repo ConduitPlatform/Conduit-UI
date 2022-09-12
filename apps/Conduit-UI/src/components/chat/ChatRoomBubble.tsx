@@ -26,7 +26,7 @@ interface Props {
 const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...rest }) => {
   const users = useAppSelector((state) => state.authenticationSlice.data.authUsers.users);
 
-  const user = users.find((item: AuthUser) => data.senderUser === item._id);
+  const user = users.find((item: AuthUser) => data?.senderUser === item?._id);
 
   const handleLongPress = () => {
     onLongPress(data._id);

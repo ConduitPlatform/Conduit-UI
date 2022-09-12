@@ -1,4 +1,4 @@
-import React, { FC, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetChatMessages } from '../../redux/slices/chatSlice';
@@ -116,7 +116,7 @@ const START_INDEX = 500;
 const INITIAL_ITEM_COUNT = 20;
 const topMostItem = INITIAL_ITEM_COUNT - 1;
 
-const timeoutAmount = 750;
+const timeoutAmount = 300;
 
 const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLongPress }) => {
   const dispatch = useAppDispatch();
@@ -125,7 +125,6 @@ const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLong
   } = useAppSelector((state) => state.chatSlice.data);
   const [firstItemIndex, setFirstItemIndex] = useState<number>(START_INDEX);
   const [messages, setMessages] = useState<IChatMessage[]>([]);
-  const prevCountRef = useRef<number>(500);
 
   useEffect(() => {
     const reversedArray = [...data].reverse();
@@ -134,13 +133,7 @@ const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLong
 
   useEffect(() => {
     const nextFirstItemIndex = firstItemIndex - 20;
-
-    if (prevCountRef.current === nextFirstItemIndex) {
-      return;
-    } else {
-      setFirstItemIndex(nextFirstItemIndex);
-    }
-    prevCountRef.current = firstItemIndex;
+    setFirstItemIndex(nextFirstItemIndex);
   }, [data]);
 
   const itemData = createItemData(selectedMessages, onPress, onLongPress);

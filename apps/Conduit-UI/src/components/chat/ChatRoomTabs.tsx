@@ -1,7 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useRef } from 'react';
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import React, { FC, forwardRef, useCallback, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch } from '../../redux/store';
 import { asyncGetChatRooms } from '../../redux/slices/chatSlice';
@@ -9,43 +6,48 @@ import makeStyles from '@mui/styles/makeStyles';
 import memoize from 'memoize-one';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import ChatRoomTab, { ChatRoomTabSkeleton } from './ChatRoomTab';
-import { styled, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { Components, ItemProps, Virtuoso } from 'react-virtuoso';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
 
 const useStyles = makeStyles(() => ({
   tabSelected: {
     background: '#202030',
+    width: '100%',
   },
-}));
-
-const CustomizedList = styled(List)(() => ({
-  scrollbarWidth: 'thin',
-  scrollbarColor: 'transparent transparent',
-  '&::-webkit-scrollbar': {
-    display: 'none',
-  },
-  '&::-webkit-scrollbar-track': {
-    background: 'transparent',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    background: 'transparent',
+  tabUnselected: {
+    width: '100%',
   },
 }));
 
 const timeoutAmount = 750;
 
-const Row = ({ data, index, style }: ListChildComponentProps) => {
-  const { rooms, onPress, onLongPress, selectedTab, classes } = data;
+interface ListRowProps {
+  index: number;
+  data: {
+    rooms: IChatRoom[];
+    selectedTab: number;
+    onPress: (index: number) => void;
+    onLongPress: (index: number) => void;
+  };
+}
+
+const Row = ({ data, index }: ListRowProps) => {
+  const { rooms, onPress, onLongPress, selectedTab } = data;
   const rowItem = rooms[index];
   const isSelected = selectedTab === index;
+  const classes = useStyles();
 
   const getClassName = () => {
     if (isSelected) {
       return classes.tabSelected;
     }
+    return classes.tabUnselected;
   };
 
   return (
-    <div style={style as CSSProperties}>
+    <>
       {!rowItem ? (
         <ChatRoomTabSkeleton />
       ) : (
@@ -56,8 +58,44 @@ const Row = ({ data, index, style }: ListChildComponentProps) => {
           className={getClassName()}
         />
       )}
-    </div>
+    </>
   );
+};
+
+const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
+  return (
+    <List
+      style={{
+        padding: 0,
+        ...style,
+      }}
+      component="div"
+      ref={ref}>
+      {children}
+    </List>
+  );
+});
+
+MUIList.displayName = 'MuiList';
+
+const EmptyList: Components['EmptyPlaceholder'] = () => {
+  return <Typography sx={{ textAlign: 'center', pt: 1 }}>No rooms</Typography>;
+};
+
+const MUIComponents: Components = {
+  List: MUIList,
+  EmptyPlaceholder: EmptyList,
+  Item: ({ children, ...props }: ItemProps) => {
+    return (
+      <ListItem
+        component="div"
+        {...props}
+        style={{ margin: 0, alignItems: 'stretch' }}
+        disableGutters>
+        {children}
+      </ListItem>
+    );
+  },
 };
 
 const createItemData = memoize((rooms, onPress, onLongPress, selectedTab, classes) => ({
@@ -75,7 +113,6 @@ interface Props {
   onPress: (index: number) => void;
   onLongPress: (index: number) => void;
   debouncedSearch: string;
-  areEmpty: boolean;
 }
 
 const ChatRoomTabs: FC<Props> = ({
@@ -85,22 +122,9 @@ const ChatRoomTabs: FC<Props> = ({
   onPress,
   onLongPress,
   debouncedSearch,
-  areEmpty,
 }) => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
-
-  const infiniteLoaderRef = useRef<any>(null);
-  const hasMountedRef = useRef(false);
-
-  const isItemLoaded = (index: number) => !!chatRooms[index];
-
-  useEffect(() => {
-    if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache();
-    }
-    hasMountedRef.current = true;
-  }, [debouncedSearch]);
 
   const getChatRooms = useCallback(
     (skip: number, limit: number) => {
@@ -114,51 +138,29 @@ const ChatRoomTabs: FC<Props> = ({
     [debouncedSearch, dispatch]
   );
 
-  const debouncedGetApiItems = debounce(
-    (skip: number, limit: number) => getChatRooms(skip, limit),
-    timeoutAmount
-  );
+  const debouncedGetApiItems = debounce(() => getChatRooms(chatRooms?.length, 10), timeoutAmount);
 
-  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
-    const limit = stopIndex + 1;
-    debouncedGetApiItems(chatRooms.length, limit);
-  };
+  const loadMoreItems = useCallback(() => {
+    debouncedGetApiItems();
+    return () => debouncedGetApiItems.cancel();
+  }, [debouncedGetApiItems]);
 
   const itemData = createItemData(chatRooms, onPress, onLongPress, selectedTab, classes);
 
+  const endReached = useMemo(() => {
+    if (chatRooms?.length === 0) return;
+    return chatRooms?.length >= chatRoomCount ? undefined : loadMoreItems;
+  }, [chatRoomCount, chatRooms?.length, loadMoreItems]);
+
   return (
-    <AutoSizer>
-      {({ height, width }) => {
-        if (!chatRoomCount) {
-          if (areEmpty)
-            return <Typography sx={{ whiteSpace: 'nowrap' }}>No available Rooms</Typography>;
-          return <></>;
-        }
-        return (
-          <InfiniteLoader
-            ref={infiniteLoaderRef}
-            isItemLoaded={isItemLoaded}
-            itemCount={chatRoomCount}
-            loadMoreItems={loadMoreItems}
-            threshold={4}>
-            {({ onItemsRendered, ref }) => {
-              return (
-                <CustomizedList
-                  height={height}
-                  itemCount={chatRoomCount}
-                  itemSize={56}
-                  onItemsRendered={onItemsRendered}
-                  ref={ref}
-                  itemData={itemData}
-                  width={width}>
-                  {Row}
-                </CustomizedList>
-              );
-            }}
-          </InfiniteLoader>
-        );
-      }}
-    </AutoSizer>
+    <Virtuoso
+      data={chatRooms}
+      endReached={endReached}
+      itemContent={(index) => <Row data={itemData} index={index} />}
+      components={MUIComponents}
+      overscan={100}
+      computeItemKey={(index, item) => `chatRoom-${item._id}${index}`}
+    />
   );
 };
 
