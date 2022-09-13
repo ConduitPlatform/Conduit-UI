@@ -29,7 +29,7 @@ const ChatRooms: React.FC = () => {
   const debouncedSearch: string = useDebounce(search, 500);
 
   const getChatRooms = useCallback(() => {
-    const params = { skip: 0, limit: 10, search: debouncedSearch };
+    const params = { skip: 0, limit: 20, search: debouncedSearch };
     dispatch(asyncGetChatRooms(params));
   }, [debouncedSearch, dispatch]);
 

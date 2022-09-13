@@ -15,14 +15,16 @@ import { Theme } from '@mui/material/styles';
 
 const useStyles = makeStyles<Theme>((theme) => ({
   bubble: {
-    marginBottom: theme.spacing(0.5),
+    margin: '2px 0px 2px 0px',
     padding: theme.spacing(1, 1),
     borderRadius: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
+    width: '100%',
   },
   bubbleSelected: {
     backgroundColor: `${theme.palette.grey[700]}80`,
+    width: '100%',
   },
 }));
 
@@ -31,6 +33,7 @@ const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
     <List
       style={{
         padding: 0,
+        margin: 0,
         ...style,
       }}
       component="div"
@@ -55,7 +58,7 @@ const MUIComponents: Components = {
         component="div"
         {...props}
         style={{ margin: 0, alignItems: 'stretch' }}
-        disableGutters>
+        disablePadding>
         {children}
       </ListItem>
     );
@@ -175,7 +178,6 @@ const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLong
       startReached={startReached}
       itemContent={(index, message) => <Row message={message} itemData={itemData} />}
       components={MUIComponents}
-      overscan={100}
       computeItemKey={(index, item) => `bubble-${item._id}${index}`}
     />
   );

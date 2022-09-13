@@ -10,13 +10,13 @@ import {
 } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { getOperation } from '../../../utils/getOperation';
-import { EndpointTypes, Schema } from '../../../models/database/CmsModels';
+import { Schema } from '../../../models/database/CmsModels';
 import { Components, ItemProps, Virtuoso } from 'react-virtuoso';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 
 interface Props {
-  listItems: EndpointTypes[] & Schema[];
+  listItems: any[];
   count: number;
   loadMoreItems: (limit: number) => void;
   handleListItemSelect: (endpoint: any) => void;

@@ -90,7 +90,7 @@ const MUIComponents: Components = {
       <ListItem
         component="div"
         {...props}
-        style={{ margin: 0, alignItems: 'stretch' }}
+        style={{ margin: 0, padding: 0, alignItems: 'stretch' }}
         disableGutters>
         {children}
       </ListItem>
@@ -138,7 +138,7 @@ const ChatRoomTabs: FC<Props> = ({
     [debouncedSearch, dispatch]
   );
 
-  const debouncedGetApiItems = debounce(() => getChatRooms(chatRooms?.length, 10), timeoutAmount);
+  const debouncedGetApiItems = debounce(() => getChatRooms(chatRooms?.length, 20), timeoutAmount);
 
   const loadMoreItems = useCallback(() => {
     debouncedGetApiItems();
@@ -158,8 +158,7 @@ const ChatRoomTabs: FC<Props> = ({
       endReached={endReached}
       itemContent={(index) => <Row data={itemData} index={index} />}
       components={MUIComponents}
-      overscan={100}
-      computeItemKey={(index, item) => `chatRoom-${item._id}${index}`}
+      computeItemKey={(index, item) => `chatRoomTab-${item._id}${index}`}
     />
   );
 };
