@@ -19,7 +19,7 @@ const ChatRooms: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const {
-    chatRooms: { data, count, areEmpty },
+    chatRooms: { data, count },
   } = useAppSelector((state) => state.chatSlice.data);
 
   const [selected, setSelected] = useState(0);
@@ -29,7 +29,7 @@ const ChatRooms: React.FC = () => {
   const debouncedSearch: string = useDebounce(search, 500);
 
   const getChatRooms = useCallback(() => {
-    const params = { skip: 0, limit: 10, search: debouncedSearch };
+    const params = { skip: 0, limit: 20, search: debouncedSearch };
     dispatch(asyncGetChatRooms(params));
   }, [debouncedSearch, dispatch]);
 
@@ -106,7 +106,6 @@ const ChatRooms: React.FC = () => {
               onLongPress={onLongPress}
               selectedTab={selected}
               debouncedSearch={debouncedSearch}
-              areEmpty={areEmpty}
             />
           </Box>
           <Button
@@ -121,7 +120,7 @@ const ChatRooms: React.FC = () => {
         </Box>
         {data.map((item: IChatRoom, index: number) => {
           if (index === selected) {
-            return <ChatRoomPanel panelData={item} key={index} selectedPanel={selected} />;
+            return <ChatRoomPanel panelData={item} key={index} />;
           }
         })}
       </Paper>

@@ -13,10 +13,9 @@ import ChatRoomMessages from './ChatRoomMessages';
 
 interface Props extends BoxProps {
   panelData: IChatRoom;
-  selectedPanel: number;
 }
 
-const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
+const ChatRoomPanel: FC<Props> = ({ panelData }) => {
   const dispatch = useAppDispatch();
 
   const [infoDialog, setInfoDialog] = useState<boolean>(false);
@@ -86,7 +85,7 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
           {panelData.name}
         </Typography>
 
-        <Box>
+        <Box display={'flex'} alignItems={'center'}>
           {selected.length > 0 ? (
             <IconButton sx={{ padding: 1 }} onClick={() => onDeletePress()} size="large">
               <DeleteIcon />
@@ -96,22 +95,22 @@ const ChatRoomPanel: FC<Props> = ({ panelData, selectedPanel }) => {
               <InfoOutlined />
             </IconButton>
           )}
+          {selected.length > 0 && (
+            <Box
+              sx={{
+                backgroundColor: 'gray',
+                borderRadius: 2,
+                padding: '4px',
+                ml: 1,
+              }}>
+              <Typography variant={'subtitle2'}>{selected.length} selected</Typography>
+            </Box>
+          )}
         </Box>
-        {selected.length > 0 && (
-          <Box
-            sx={{
-              backgroundColor: 'gray',
-              borderRadius: 2,
-              padding: '4px',
-            }}>
-            <Typography variant={'subtitle2'}>{selected.length} selected</Typography>
-          </Box>
-        )}
       </Paper>
       <Box sx={{ flex: 1, pt: 2, pl: 2 }}>
         <ChatRoomMessages
           roomId={panelData._id}
-          selectedPanel={selectedPanel}
           selectedMessages={selected}
           onPress={onPress}
           onLongPress={onLongPress}

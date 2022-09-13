@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import {
@@ -19,20 +19,10 @@ interface Props {
 const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, selectedSchemas }) => {
   const dispatch = useAppDispatch();
 
-  const infiniteLoaderRef = useRef<any>(null);
-  const hasMountedRef = useRef(false);
-
   const { endpoints, count } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
   const { selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
-  const isItemLoaded = (index: number) => !!endpoints[index];
-
   useEffect(() => {
-    if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache();
-      infiniteLoaderRef.current._listRef.scrollTo(0);
-    }
-    hasMountedRef.current = true;
     const params = {
       skip: 0,
       limit: 20,
@@ -55,21 +45,23 @@ const EndpointsList: FC<Props> = ({ handleListItemSelect, search, operation, sel
   };
 
   const debouncedGetApiItems = debounce(
-    (skip: number, limit: number) => addEndpoints(skip, limit),
+    (limit: number) => addEndpoints(endpoints?.length, limit),
     timeoutAmount
   );
 
-  const loadMoreItems = async (startIndex: number, stopIndex: number) => {
-    const limit = stopIndex + 1;
-    debouncedGetApiItems(endpoints.length, limit);
-  };
+  const loadMoreItems = useCallback(
+    (index) => {
+      const limit = index + 1;
+      debouncedGetApiItems(limit);
+      return () => debouncedGetApiItems.cancel();
+    },
+    [debouncedGetApiItems]
+  );
 
   return (
     <InfiniteScrollList
       count={count}
       loadMoreItems={loadMoreItems}
-      loaderRef={infiniteLoaderRef}
-      isItemLoaded={isItemLoaded}
       listItems={endpoints}
       handleListItemSelect={handleListItemSelect}
       selectedEndpoint={selectedEndpoint}

@@ -26,7 +26,7 @@ interface Props {
 const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...rest }) => {
   const users = useAppSelector((state) => state.authenticationSlice.data.authUsers.users);
 
-  const user = users.find((item: AuthUser) => data.senderUser === item._id);
+  const user = users.find((item: AuthUser) => data?.senderUser === item?._id);
 
   const handleLongPress = () => {
     onLongPress(data._id);
@@ -57,7 +57,7 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
 
   return (
     <div className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
-      <Box sx={{ alignSelf: 'flex-end' }}>
+      <Box>
         <Tooltip title={user?.email ?? ''} placement="left" key={user?.email}>
           <Box
             sx={{
@@ -83,11 +83,8 @@ const ChatRoomBubble: FC<Props> = ({ data, className, onPress, onLongPress, ...r
             backgroundColor: 'gray',
             borderRadius: 2,
             padding: 1,
-            maxWidth: '80%',
           }}>
-          <Typography variant="body2" noWrap>
-            {data?.message}
-          </Typography>
+          <Typography variant="body2">{data?.message}</Typography>
         </Box>
       </Tooltip>
     </div>

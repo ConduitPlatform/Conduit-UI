@@ -1,7 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useRef } from 'react';
-import { ListChildComponentProps, VariableSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import React, { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetChatMessages } from '../../redux/slices/chatSlice';
@@ -10,35 +7,83 @@ import memoize from 'memoize-one';
 import ChatRoomBubble, { ChatRoomBubbleSkeleton } from './ChatRoomBubble';
 import clsx from 'clsx';
 import { Typography } from '@mui/material';
+import { Components, ItemProps, Virtuoso } from 'react-virtuoso';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import { IChatMessage } from '../../models/chat/ChatModels';
+import { Theme } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
   bubble: {
-    marginBottom: theme.spacing(0.5),
+    margin: '2px 0px 2px 0px',
     padding: theme.spacing(1, 1),
     borderRadius: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
+    width: '100%',
   },
   bubbleSelected: {
     backgroundColor: `${theme.palette.grey[700]}80`,
+    width: '100%',
   },
 }));
 
-const timeoutAmount = 750;
+const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
+  return (
+    <List
+      style={{
+        padding: 0,
+        margin: 0,
+        ...style,
+      }}
+      component="div"
+      ref={ref}>
+      {children}
+    </List>
+  );
+});
 
-const Row = ({ data, index, style }: ListChildComponentProps) => {
-  const { messages, messagesCount, selectedMessages, onPress, onLongPress, setRowHeight, classes } =
-    data;
-  const rowItem = messages[messagesCount - index - 1];
-  const isSelected = rowItem && selectedMessages.includes(rowItem._id);
+MUIList.displayName = 'MuiList';
 
-  const rowRef = useRef<any>({});
+const EmptyList: Components['EmptyPlaceholder'] = () => {
+  return <Typography sx={{ textAlign: 'center', pt: 1 }}>No messages</Typography>;
+};
 
-  useEffect(() => {
-    if (rowRef.current) {
-      setRowHeight(index, rowRef.current.clientHeight);
-    }
-  }, [rowRef]);
+const MUIComponents: Components = {
+  List: MUIList,
+  EmptyPlaceholder: EmptyList,
+  Item: ({ children, ...props }: ItemProps) => {
+    return (
+      <ListItem
+        component="div"
+        {...props}
+        style={{ margin: 0, alignItems: 'stretch' }}
+        disablePadding>
+        {children}
+      </ListItem>
+    );
+  },
+};
+
+const createItemData = memoize((selectedMessages, onPress, onLongPress) => ({
+  selectedMessages,
+  onPress,
+  onLongPress,
+}));
+
+interface ListRowProps {
+  message: IChatMessage;
+  itemData: {
+    selectedMessages: string[];
+    onPress: (id: string) => void;
+    onLongPress: (id: string) => void;
+  };
+}
+
+const Row = ({ message, itemData }: ListRowProps) => {
+  const { selectedMessages, onPress, onLongPress } = itemData;
+  const isSelected = message?.message && selectedMessages.includes(message?._id);
+  const classes = useStyles();
 
   const getClassName = () => {
     if (isSelected) {
@@ -48,79 +93,53 @@ const Row = ({ data, index, style }: ListChildComponentProps) => {
   };
 
   return (
-    <div style={style as CSSProperties}>
-      {!rowItem ? (
+    <>
+      {!message ? (
         <ChatRoomBubbleSkeleton className={classes.bubble} />
       ) : (
-        <div ref={rowRef} id={`bubble-${index}`}>
-          <ChatRoomBubble
-            data={rowItem}
-            className={getClassName()}
-            onLongPress={onLongPress}
-            onPress={onPress}
-          />
-        </div>
+        <ChatRoomBubble
+          data={message}
+          className={getClassName()}
+          onLongPress={onLongPress}
+          onPress={onPress}
+        />
       )}
-    </div>
+    </>
   );
 };
 
-const createItemData = memoize(
-  (messages, messagesCount, selectedMessages, onPress, onLongPress, classes, setRowHeight) => ({
-    messages,
-    messagesCount,
-    selectedMessages,
-    onPress,
-    onLongPress,
-    classes,
-    setRowHeight,
-  })
-);
-
 interface Props {
   roomId: string;
-  selectedPanel: number;
   selectedMessages: string[];
   onPress: (id: string) => void;
   onLongPress: (id: string) => void;
 }
 
-const ChatRoomMessages: FC<Props> = ({
-  roomId,
-  selectedPanel,
-  selectedMessages,
-  onPress,
-  onLongPress,
-}) => {
+const START_INDEX = 500;
+const INITIAL_ITEM_COUNT = 20;
+const topMostItem = INITIAL_ITEM_COUNT - 1;
+
+const timeoutAmount = 300;
+
+const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLongPress }) => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const {
-    chatMessages: { data, count, areEmpty },
+    chatMessages: { data, count },
   } = useAppSelector((state) => state.chatSlice.data);
-
-  const infiniteLoaderRef = useRef<any>(null);
-  const hasMountedRef = useRef(false);
-  const rowHeights = useRef<any>({});
-
-  const getRowHeight = (index: number) => {
-    return rowHeights.current[index] + 8 || 56;
-  };
-
-  const setRowHeight = (index: number, size: number) => {
-    // infiniteLoaderRef.current._listRef.resetAfterIndex(0);
-    rowHeights.current = { ...rowHeights.current, [index]: size };
-  };
-
-  const isItemLoaded = (index: number) => {
-    return !!data[count - index - 1];
-  };
+  const [firstItemIndex, setFirstItemIndex] = useState<number>(START_INDEX);
+  const [messages, setMessages] = useState<IChatMessage[]>([]);
 
   useEffect(() => {
-    if (infiniteLoaderRef.current && hasMountedRef.current) {
-      infiniteLoaderRef.current.resetloadMoreItemsCache();
-    }
-    hasMountedRef.current = true;
-  }, [selectedPanel, count]);
+    const reversedArray = [...data].reverse();
+    setMessages(reversedArray);
+  }, [data]);
+
+  useEffect(() => {
+    const nextFirstItemIndex = firstItemIndex - 20;
+    setFirstItemIndex(nextFirstItemIndex);
+  }, [data]);
+
+  const itemData = createItemData(selectedMessages, onPress, onLongPress);
 
   const getChatMessages = useCallback(
     (skip: number, limit: number) => {
@@ -128,6 +147,7 @@ const ChatRoomMessages: FC<Props> = ({
         skip: skip,
         limit: limit,
         roomId: roomId,
+        sort: '-createdAt',
       };
       dispatch(asyncGetChatMessages(params));
     },
@@ -138,64 +158,28 @@ const ChatRoomMessages: FC<Props> = ({
     getChatMessages(0, 20);
   }, [getChatMessages]);
 
-  const debouncedGetApiItems = debounce(
-    (skip: number, limit: number) => getChatMessages(skip, limit),
-    timeoutAmount
-  );
+  const debouncedGetApiItems = debounce(() => getChatMessages(data?.length, 20), timeoutAmount);
 
-  const loadMoreItems = async (startIndex: number) => {
-    const limit = count - startIndex - data.length;
-    debouncedGetApiItems(data.length, limit);
-  };
+  const prependItems = useCallback(() => {
+    debouncedGetApiItems();
+    return () => debouncedGetApiItems.cancel();
+  }, [debouncedGetApiItems]);
 
-  const itemData = createItemData(
-    data,
-    count,
-    selectedMessages,
-    onPress,
-    onLongPress,
-    classes,
-    setRowHeight
-  );
+  const startReached = useMemo(() => {
+    if (!data?.length) return;
+    return data?.length >= count ? undefined : prependItems;
+  }, [count, data?.length, prependItems]);
 
   return (
-    <AutoSizer>
-      {({ height, width }) => {
-        if (!count) {
-          if (areEmpty)
-            return (
-              <Typography sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
-                No available messages
-              </Typography>
-            );
-          return <></>;
-        }
-        return (
-          <InfiniteLoader
-            ref={infiniteLoaderRef}
-            isItemLoaded={isItemLoaded}
-            itemCount={count}
-            loadMoreItems={loadMoreItems}
-            threshold={4}>
-            {({ onItemsRendered, ref }) => {
-              return (
-                <List
-                  height={height}
-                  itemCount={count}
-                  itemSize={(index) => getRowHeight(count - index - 1)}
-                  onItemsRendered={onItemsRendered}
-                  ref={ref}
-                  initialScrollOffset={count * 500}
-                  itemData={itemData}
-                  width={width}>
-                  {Row}
-                </List>
-              );
-            }}
-          </InfiniteLoader>
-        );
-      }}
-    </AutoSizer>
+    <Virtuoso
+      firstItemIndex={firstItemIndex}
+      initialTopMostItemIndex={topMostItem}
+      data={messages}
+      startReached={startReached}
+      itemContent={(index, message) => <Row message={message} itemData={itemData} />}
+      components={MUIComponents}
+      computeItemKey={(index, item) => `bubble-${item._id}${index}`}
+    />
   );
 };
 

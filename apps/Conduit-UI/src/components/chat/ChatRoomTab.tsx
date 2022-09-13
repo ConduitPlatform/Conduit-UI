@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     cursor: 'pointer',
     borderRadius: 8,
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     overflow: 'hidden',
   },
 }));

@@ -90,10 +90,13 @@ export const asyncPutChatConfig = createAsyncThunk(
 export const asyncGetChatRooms = createAsyncThunk(
   'chat/getChatRooms',
   async (params: { skip: number; limit: number; search?: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const {
         data: { chatRoomDocuments, count },
       } = await getChatRooms(params);
+      thunkAPI.dispatch(setAppLoading(false));
+
       return {
         chatRooms: chatRoomDocuments,
         count,
@@ -109,11 +112,18 @@ export const asyncGetChatRooms = createAsyncThunk(
 
 export const asyncGetChatMessages = createAsyncThunk(
   'chat/getChatMessages',
-  async (params: { skip: number; limit: number; senderId?: string; roomId?: string }, thunkAPI) => {
+  async (
+    params: { skip: number; limit: number; senderId?: string; roomId?: string; sort?: string },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+
     try {
       const {
         data: { messages, count },
       } = await getChatMessages(params);
+      thunkAPI.dispatch(setAppLoading(false));
+
       return { messages: messages, count: count };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
