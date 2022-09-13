@@ -21,6 +21,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
     display: 'flex',
     alignItems: 'center',
     width: '100%',
+    color: 'white',
   },
   bubbleSelected: {
     backgroundColor: `${theme.palette.grey[700]}80`,

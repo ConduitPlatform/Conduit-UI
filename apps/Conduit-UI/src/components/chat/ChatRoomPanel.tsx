@@ -81,17 +81,24 @@ const ChatRoomPanel: FC<Props> = ({ panelData }) => {
           sx={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            color: 'common.white',
           }}>
           {panelData.name}
         </Typography>
 
         <Box display={'flex'} alignItems={'center'}>
           {selected.length > 0 ? (
-            <IconButton sx={{ padding: 1 }} onClick={() => onDeletePress()} size="large">
+            <IconButton
+              sx={{ padding: 1, color: 'common.white' }}
+              onClick={() => onDeletePress()}
+              size="large">
               <DeleteIcon />
             </IconButton>
           ) : (
-            <IconButton sx={{ padding: 1 }} onClick={() => handleOpenModal()} size="large">
+            <IconButton
+              sx={{ padding: 1, color: 'common.white' }}
+              onClick={() => handleOpenModal()}
+              size="large">
               <InfoOutlined />
             </IconButton>
           )}
@@ -103,7 +110,9 @@ const ChatRoomPanel: FC<Props> = ({ panelData }) => {
                 padding: '4px',
                 ml: 1,
               }}>
-              <Typography variant={'subtitle2'}>{selected.length} selected</Typography>
+              <Typography variant={'subtitle2'} color={'common.white'}>
+                {selected.length} selected
+              </Typography>
             </Box>
           )}
         </Box>

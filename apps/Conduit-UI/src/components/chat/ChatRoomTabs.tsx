@@ -11,9 +11,9 @@ import { Components, ItemProps, Virtuoso } from 'react-virtuoso';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   tabSelected: {
-    background: '#202030',
+    background: theme.palette.mode === 'dark' ? '#202030' : theme.palette.primary.dark,
     width: '100%',
   },
   tabUnselected: {
@@ -56,6 +56,7 @@ const Row = ({ data, index }: ListRowProps) => {
           onLongPress={() => onLongPress(index)}
           data={rowItem}
           className={getClassName()}
+          isSelected={isSelected}
         />
       )}
     </>

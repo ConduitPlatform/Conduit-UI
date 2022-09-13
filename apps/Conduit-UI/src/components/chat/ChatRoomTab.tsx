@@ -4,7 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { IChatRoom } from '../../models/chat/ChatModels';
 import useLongPress from '../../hooks/useLongPress';
-import { Box, Skeleton } from '@mui/material';
+import { Box, Skeleton, useTheme } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,11 +23,12 @@ interface Props {
   className?: string;
   onPress: () => void;
   onLongPress: () => void;
+  isSelected: boolean;
 }
 
-const ChatRoomTab: FC<Props> = ({ data, className, onPress, onLongPress, ...rest }) => {
+const ChatRoomTab: FC<Props> = ({ data, className, onPress, onLongPress, isSelected, ...rest }) => {
   const classes = useStyles();
-
+  const theme = useTheme();
   const defaultOptions = {
     shouldPreventDefault: false,
     delay: 500,
@@ -36,7 +37,13 @@ const ChatRoomTab: FC<Props> = ({ data, className, onPress, onLongPress, ...rest
 
   return (
     <Box className={clsx(classes.root, className)} {...longPressEvent} {...rest}>
-      <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <Typography
+        variant="body2"
+        sx={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          color: theme.palette.mode === 'dark' ? 'white' : isSelected ? 'white' : 'black',
+        }}>
         {data?.name}
       </Typography>
     </Box>
