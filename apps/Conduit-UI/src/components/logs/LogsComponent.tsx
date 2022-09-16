@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
-  Button,
   Checkbox,
+  FormControlLabel,
   Grid,
   IconButton,
   InputLabel,
   Select,
   SelectChangeEvent,
   SwipeableDrawer,
+  Switch,
   TextField,
   Toolbar,
   Typography,
@@ -29,10 +30,11 @@ import { debounce, throttle } from 'lodash';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CloseIcon from '@mui/icons-material/Close';
-import { asyncGetLevels, asyncGetQueryRange } from '../../redux/slices/LogsSlice';
+import { asyncGetLevels, asyncGetQueryRange } from '../../redux/slices/logsSlice';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { VirtuosoHandle } from 'react-virtuoso';
 import ShortTextIcon from '@mui/icons-material/ShortText';
+import { LoadingButton } from '@mui/lab';
 
 interface Props {
   module: ModulesTypes;
@@ -47,7 +49,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
   const logsLevels: string[] = useAppSelector((state) => state.logsSlice?.levels);
   const values = useAppSelector((state) => state.logsSlice?.logs?.[module]);
-
+  const appLoading: boolean = useAppSelector((state) => state.appSlice.loading);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedLimit, setSelectedLimit] = useState<number>(100);
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
@@ -55,6 +57,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [drawerHeight, setDrawerHeight] = useState<number>(minDrawerHeight);
+  const [liveReloadChecked, setLiveReloadChecked] = useState<boolean>(false);
 
   const listRef = useRef<VirtuosoHandle>(null);
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -77,12 +80,11 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
         })
       );
     }, 1000),
-    [startDateValue, endDateValue, selectedLevels, selectedLimit, module]
+    [dispatch, module, selectedLevels, startDateValue, endDateValue, selectedLimit]
   );
 
   useEffect(() => {
     requestDebounce();
-    return () => requestDebounce.cancel();
   }, [
     dispatch,
     endDateValue,
@@ -134,12 +136,23 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
         ),
       1000
     ),
-    [selectedLimit, selectedLevels, module, endDateValue, startDateValue]
+    [dispatch, module, selectedLevels, startDateValue, endDateValue, selectedLimit]
   );
 
   const handleRefresh = useCallback(() => {
     refreshRequest();
   }, [refreshRequest]);
+
+  useEffect(() => {
+    if (liveReloadChecked) {
+      if (endDateValue) setEndDateValue(null);
+      if (startDateValue) setStartDateValue(null);
+      const timer = setInterval(() => requestDebounce(), 3000);
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [endDateValue, liveReloadChecked, requestDebounce, startDateValue]);
 
   const handleClearStartDateTime = () => {
     if (endDateValue && endDateValue.isBefore(moment().subtract(1, 'hours'))) {
@@ -202,6 +215,10 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
     if (drawerHeight === minDrawerHeight) {
       setDrawerHeight(defaultDrawerHeight);
     }
+  };
+
+  const handleChangeLiveReload = (bool: ChangeEvent<HTMLInputElement>) => {
+    setLiveReloadChecked(bool.target.checked);
   };
 
   return (
@@ -292,26 +309,63 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
             mt: 1,
           }}>
           <Grid container spacing={2} alignItems={'center'} justifyContent={'stretch'}>
+            <Grid
+              item
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'center'}
+              xl={1}
+              md={2}
+              xs={12}>
+              <FormControlLabel
+                sx={{
+                  marginLeft: 0,
+                  marginRight: 0,
+                  '&.MuiFormControlLabel-labelPlacementStart': {
+                    '.MuiFormControlLabel-label': {
+                      mr: 2,
+                      fontSize: '0.875rem',
+                    },
+                  },
+                }}
+                control={
+                  <Switch
+                    checked={liveReloadChecked}
+                    onChange={handleChangeLiveReload}
+                    color="primary"
+                  />
+                }
+                labelPlacement="start"
+                label={'LIVE'}
+              />
+            </Grid>
             <Grid item xl={1} md={2} xs={12}>
-              <Button
-                aria-label="refresh"
+              <LoadingButton
                 onClick={() => handleRefresh()}
-                startIcon={<RefreshIcon />}
+                endIcon={<RefreshIcon />}
+                loading={appLoading || liveReloadChecked}
+                loadingPosition="end"
+                variant="outlined"
                 fullWidth
-                variant={'outlined'}
                 color={'inherit'}
                 sx={{
-                  height: 40,
-                  borderRadius: 3,
-                  borderColor: 'rgba(255, 255, 255, 0.23)',
-                  fontSize: '1rem',
+                  fontSize: '0.875rem',
+                  '&.MuiLoadingButton-root': {
+                    height: 40,
+                    borderRadius: 3,
+                    borderColor:
+                      theme.palette.mode === 'dark'
+                        ? 'rgba(255, 255, 255, 0.23)'
+                        : 'rgba(0, 0, 0, 0.23)',
+                  },
                 }}>
                 Refresh
-              </Button>
+              </LoadingButton>
             </Grid>
-            <Grid item xl={3} md={5} xs={12}>
+            <Grid item xl={3} md={4} xs={12}>
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DateTimePicker
+                  disabled={liveReloadChecked}
                   disableFuture={true}
                   minDateTime={minDateOfStart}
                   maxDateTime={maxDateOfStart}
@@ -329,7 +383,9 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                       InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
                       label={'Start Date'}
                       inputProps={{ ...props.inputProps, placeholder: 'one hour ago' }}
-                      onClick={() => setIsStartDatePickerOpen(true)}
+                      onClick={() => {
+                        if (!liveReloadChecked) setIsStartDatePickerOpen(true);
+                      }}
                     />
                   )}
                   value={startDateValue}
@@ -354,9 +410,10 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xl={3} md={5} xs={12}>
+            <Grid item xl={3} md={4} xs={12}>
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DateTimePicker
+                  disabled={liveReloadChecked}
                   disableFuture={true}
                   maxDateTime={maxDateOfEnd}
                   minDateTime={minDateOfEnd}
@@ -374,7 +431,9 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                       InputLabelProps={{ ...props.InputLabelProps, shrink: true }}
                       label={'End Date'}
                       inputProps={{ ...props.inputProps, placeholder: 'now' }}
-                      onClick={() => setIsEndDatePickerOpen(true)}
+                      onClick={() => {
+                        if (!liveReloadChecked) setIsEndDatePickerOpen(true);
+                      }}
                     />
                   )}
                   value={endDateValue}
@@ -420,7 +479,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xl={3} md={6} xs={12}>
+            <Grid item xl={2} md={6} xs={12}>
               <FormControl fullWidth size={'small'}>
                 <InputLabel>Level</InputLabel>
                 <Select
@@ -454,18 +513,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
             paddingX: 1,
             mt: 1,
           }}>
-          {values?.length ? (
-            <LogsList data={values} ref={listRef} />
-          ) : (
-            <Box
-              display={'flex'}
-              flexDirection={'column'}
-              flex={1}
-              alignItems={'center'}
-              justifyContent={'center'}>
-              <Typography>No data to show</Typography>
-            </Box>
-          )}
+          <LogsList data={values} ref={listRef} />
         </Box>
       </Box>
     </SwipeableDrawer>

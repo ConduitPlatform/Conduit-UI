@@ -5,7 +5,7 @@ import { Components, ItemProps, Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import ColorHash from 'color-hash';
 import { LogsData } from '../../models/logs/LogsModels';
 import List from '@mui/material/List';
-import { Box, ListItemText, Tooltip, useTheme } from '@mui/material';
+import { Box, ListItemText, Tooltip, Typography, useTheme } from '@mui/material';
 import moment from 'moment';
 import { Circle } from '@mui/icons-material';
 
@@ -116,9 +116,13 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
 
   MUIList.displayName = 'MuiList';
 
+  const EmptyList: Components['EmptyPlaceholder'] = () => {
+    return <Typography sx={{ textAlign: 'center', pt: 1 }}>No logs</Typography>;
+  };
+
   const MUIComponents: Components = {
     List: MUIList,
-
+    EmptyPlaceholder: EmptyList,
     Item: ({ children, ...props }: ItemProps) => {
       return (
         <ListItem
@@ -137,10 +141,11 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
       ref={ref}
       style={{ flex: '1 1 auto', overscrollBehavior: 'contain' }}
       totalCount={count}
-      overscan={20}
+      overscan={100}
       itemContent={(index) => <ListRow index={index} />}
       followOutput={true}
       components={MUIComponents}
+      computeItemKey={(index, item) => `log-${item?.timestamp}${index}`}
     />
   );
 });

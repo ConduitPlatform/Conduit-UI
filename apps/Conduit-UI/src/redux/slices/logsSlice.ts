@@ -18,7 +18,7 @@ const initialState: ILogsSlice = {
 };
 
 export const asyncGetLevels = createAsyncThunk(
-  '/authentication/getLevels',
+  'logs/getLevels',
   async (body: { startDate?: number; endDate?: number }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
@@ -37,7 +37,7 @@ export const asyncGetLevels = createAsyncThunk(
 );
 
 export const asyncGetQueryRange = createAsyncThunk(
-  '/authentication/getQueryRange',
+  'logs/getQueryRange',
   async (
     body: {
       module: ModulesTypes;
