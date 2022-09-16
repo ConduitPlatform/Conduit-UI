@@ -15,7 +15,7 @@ import appSlice from './slices/appSlice';
 import formsSlice from './slices/formsSlice';
 import chatSlice from './slices/chatSlice';
 import paymentsSlice from './slices/paymentsSlice';
-import logsSlice from './slices/LogsSlice';
+import logsSlice from './slices/logsSlice';
 import metricsSlice from './slices/metricsSlice';
 
 let store: any;
