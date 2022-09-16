@@ -50,20 +50,15 @@ const EmptyList: Components['EmptyPlaceholder'] = () => {
   return <Typography sx={{ textAlign: 'center', pt: 1 }}>No messages</Typography>;
 };
 
-const MUIComponents: Components = {
-  List: MUIList,
-  EmptyPlaceholder: EmptyList,
-  Item: ({ children, ...props }: ItemProps) => {
-    return (
-      <ListItem
-        component="div"
-        {...props}
-        style={{ margin: 0, alignItems: 'stretch' }}
-        disablePadding>
-        {children}
-      </ListItem>
-    );
-  },
+interface HeaderListProps {
+  dataLength: number;
+  dataTotalCount: number;
+}
+
+const HeaderList = ({ dataLength, dataTotalCount }: HeaderListProps) => {
+  return dataTotalCount <= dataLength ? null : (
+    <Typography sx={{ textAlign: 'center' }}>Loading...</Typography>
+  );
 };
 
 const createItemData = memoize((selectedMessages, onPress, onLongPress) => ({
@@ -170,6 +165,25 @@ const ChatRoomMessages: FC<Props> = ({ roomId, selectedMessages, onPress, onLong
     if (!data?.length) return;
     return data?.length >= count ? undefined : prependItems;
   }, [count, data?.length, prependItems]);
+
+  const MUIComponents: Components = useMemo(() => {
+    return {
+      List: MUIList,
+      EmptyPlaceholder: EmptyList,
+      Header: () => HeaderList({ dataLength: data?.length, dataTotalCount: count }),
+      Item: ({ children, ...props }: ItemProps) => {
+        return (
+          <ListItem
+            component="div"
+            {...props}
+            style={{ margin: 0, alignItems: 'stretch' }}
+            disablePadding>
+            {children}
+          </ListItem>
+        );
+      },
+    };
+  }, [count, data?.length]);
 
   return (
     <Virtuoso
