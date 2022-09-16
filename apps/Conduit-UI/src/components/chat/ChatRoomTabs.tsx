@@ -33,6 +33,11 @@ interface ListRowProps {
   };
 }
 
+interface FooterListProps {
+  dataLength: number;
+  dataTotalCount: number;
+}
+
 const Row = ({ data, index }: ListRowProps) => {
   const { rooms, onPress, onLongPress, selectedTab } = data;
   const rowItem = rooms[index];
@@ -83,20 +88,10 @@ const EmptyList: Components['EmptyPlaceholder'] = () => {
   return <Typography sx={{ textAlign: 'center', pt: 1 }}>No rooms</Typography>;
 };
 
-const MUIComponents: Components = {
-  List: MUIList,
-  EmptyPlaceholder: EmptyList,
-  Item: ({ children, ...props }: ItemProps) => {
-    return (
-      <ListItem
-        component="div"
-        {...props}
-        style={{ margin: 0, padding: 0, alignItems: 'stretch' }}
-        disableGutters>
-        {children}
-      </ListItem>
-    );
-  },
+const FooterList = ({ dataLength, dataTotalCount }: FooterListProps) => {
+  return dataTotalCount <= dataLength ? null : (
+    <Typography sx={{ textAlign: 'center' }}>Loading...</Typography>
+  );
 };
 
 const createItemData = memoize((rooms, onPress, onLongPress, selectedTab, classes) => ({
@@ -152,6 +147,25 @@ const ChatRoomTabs: FC<Props> = ({
     if (chatRooms?.length === 0) return;
     return chatRooms?.length >= chatRoomCount ? undefined : loadMoreItems;
   }, [chatRoomCount, chatRooms?.length, loadMoreItems]);
+
+  const MUIComponents: Components = useMemo(() => {
+    return {
+      List: MUIList,
+      EmptyPlaceholder: EmptyList,
+      Footer: () => FooterList({ dataLength: chatRooms?.length, dataTotalCount: chatRoomCount }),
+      Item: ({ children, ...props }: ItemProps) => {
+        return (
+          <ListItem
+            component="div"
+            {...props}
+            style={{ margin: 0, padding: 0, alignItems: 'stretch' }}
+            disableGutters>
+            {children}
+          </ListItem>
+        );
+      },
+    };
+  }, [chatRoomCount, chatRooms?.length]);
 
   return (
     <Virtuoso

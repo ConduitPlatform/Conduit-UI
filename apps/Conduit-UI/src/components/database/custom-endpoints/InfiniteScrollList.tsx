@@ -25,6 +25,11 @@ interface Props {
   isEndpoint?: boolean;
 }
 
+interface FooterListProps {
+  dataLength: number;
+  dataTotalCount: number;
+}
+
 const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
   return (
     <List
@@ -45,20 +50,10 @@ const EmptyList: Components['EmptyPlaceholder'] = () => {
   return <Typography sx={{ textAlign: 'center', pt: 1 }}>No rooms</Typography>;
 };
 
-const MUIComponents: Components = {
-  List: MUIList,
-  EmptyPlaceholder: EmptyList,
-  Item: ({ children, ...props }: ItemProps) => {
-    return (
-      <ListItem
-        component="div"
-        {...props}
-        style={{ margin: 0, alignItems: 'stretch' }}
-        disableGutters>
-        {children}
-      </ListItem>
-    );
-  },
+const FooterList = ({ dataLength, dataTotalCount }: FooterListProps) => {
+  return dataTotalCount <= dataLength ? null : (
+    <Typography sx={{ textAlign: 'center' }}>Loading...</Typography>
+  );
 };
 
 interface ListRow {
@@ -149,6 +144,25 @@ const InfiniteScrollList: FC<Props> = ({
     if (listItems?.length === 0) return;
     return listItems?.length >= count ? undefined : loadMoreItems;
   }, [count, listItems?.length, loadMoreItems]);
+
+  const MUIComponents: Components = useMemo(() => {
+    return {
+      List: MUIList,
+      EmptyPlaceholder: EmptyList,
+      Footer: () => FooterList({ dataLength: listItems?.length, dataTotalCount: count }),
+      Item: ({ children, ...props }: ItemProps) => {
+        return (
+          <ListItem
+            component="div"
+            {...props}
+            style={{ margin: 0, alignItems: 'stretch' }}
+            disableGutters>
+            {children}
+          </ListItem>
+        );
+      },
+    };
+  }, [count, listItems?.length]);
 
   return (
     <Virtuoso
