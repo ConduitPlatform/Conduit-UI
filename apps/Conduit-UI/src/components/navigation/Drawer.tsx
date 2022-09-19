@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 import { ExitToApp, Refresh, Settings } from '@mui/icons-material';
@@ -98,33 +98,12 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
               onClick={colorMode.toggleColorMode}
             />
           </Box>
-          <Box
-            px={!smallScreen ? 2 : undefined}
-            display={'flex'}
-            justifyContent={smallScreen ? 'center' : undefined}>
-            <Button
-              color={'inherit'}
-              size={'small'}
-              onClick={handleRefreshModules}
-              sx={{
-                paddingX: 0,
-                minWidth: '35px',
-                borderRadius: 1,
-              }}>
-              <Refresh fontSize={'medium'} />
-              {!smallScreen ? (
-                <Typography
-                  sx={{
-                    ml: smallScreen ? 0 : 1,
-                    fontSize: 12,
-                    textTransform: 'none',
-                    fontWeight: theme.palette.mode === 'dark' ? 'bold' : 'regular',
-                  }}>
-                  Modules
-                </Typography>
-              ) : null}
-            </Button>
-          </Box>
+          <ModuleItem
+            title={'Modules Refresh'}
+            icon={<Refresh />}
+            smallScreen={smallScreen}
+            onClick={handleRefreshModules}
+          />
           <ModuleItem
             icon={<ExitToApp color={'inherit'} width={24} height={24} />}
             title={'Log out'}
