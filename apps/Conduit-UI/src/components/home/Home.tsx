@@ -182,7 +182,7 @@ const Home: React.FC = () => {
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                    graphTitle="Total admin grpc requests"
+                    graphTitle="Total admin gRPC requests"
                     label="Requests"
                     hasControls={false}
                     canZoom={false}
@@ -194,7 +194,7 @@ const Home: React.FC = () => {
                   <ExtractGraph
                     query="/query_range"
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                    graphTitle="Internal grpc requests"
+                    graphTitle="Internal gRPC requests"
                     label="Requests"
                     hasControls={false}
                     canZoom={false}

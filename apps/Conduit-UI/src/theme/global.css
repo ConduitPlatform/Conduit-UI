@@ -5,22 +5,16 @@ body *::-webkit-scrollbar {
     height: 6px !important;
 }
 
-/* Track */
-body *::-webkit-scrollbar-track {
-    background: #202030;
-    border-radius: 99px !important;
-}
-
 /* Handle */
 body *::-webkit-scrollbar-thumb:hover {
-    background: #656469;
+    background: #59597c;
     border-radius: 99px !important;
 
 }
 
 /* Handle */
 body *::-webkit-scrollbar-thumb {
-    background: #656469;
+    background: #59597c;
     border-radius: 99px !important;
 
 }
