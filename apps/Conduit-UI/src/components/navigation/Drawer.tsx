@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import { ExitToApp, Settings } from '@mui/icons-material';
-import { asyncLogout } from '../../redux/slices/appAuthSlice';
+import { ExitToApp, Refresh, Settings } from '@mui/icons-material';
+import { asyncGetAdminModules, asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
@@ -27,6 +27,10 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
 
   const handleLogout = async () => {
     dispatch(asyncLogout());
+  };
+
+  const handleRefreshModules = async () => {
+    dispatch(asyncGetAdminModules());
   };
 
   return (
@@ -88,11 +92,38 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}
           display="flex"
           flexDirection="column">
-          <Box py={1} px={!smallScreen ? 3 : undefined}>
+          <Box py={2} px={!smallScreen ? 2 : undefined}>
             <ThemeSwitch
               checked={theme.palette.mode === 'dark'}
               onClick={colorMode.toggleColorMode}
             />
+          </Box>
+          <Box
+            px={!smallScreen ? 2 : undefined}
+            display={'flex'}
+            justifyContent={smallScreen ? 'center' : undefined}>
+            <Button
+              color={'inherit'}
+              size={'small'}
+              onClick={handleRefreshModules}
+              sx={{
+                paddingX: 0,
+                minWidth: '35px',
+                borderRadius: 1,
+              }}>
+              <Refresh fontSize={'medium'} />
+              {!smallScreen ? (
+                <Typography
+                  sx={{
+                    ml: smallScreen ? 0 : 1,
+                    fontSize: 12,
+                    textTransform: 'none',
+                    fontWeight: theme.palette.mode === 'dark' ? 'bold' : 'regular',
+                  }}>
+                  Modules
+                </Typography>
+              ) : null}
+            </Button>
           </Box>
           <ModuleItem
             icon={<ExitToApp color={'inherit'} width={24} height={24} />}
