@@ -10,9 +10,9 @@ const useNotifier = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    notifications.forEach(({ key, message }: INotification) => {
-      enqueueSnackbar(message, { key });
-      dispatch(removeSnackbar(key));
+    notifications.forEach(({ options, message }: INotification) => {
+      enqueueSnackbar(message, options);
+      dispatch(removeSnackbar(options.key));
     });
   }, [dispatch, enqueueSnackbar, notifications]);
 };
@@ -20,39 +20,39 @@ const useNotifier = () => {
 export default useNotifier;
 
 export const enqueueErrorNotification = (message: string, optionalKey?: string) => {
-  const options = { variant: 'error', message: message ? message : 'Something went wrong' };
+  const messageObj = { variant: 'error', message: message ? message : 'Something went wrong' };
   return addSnackbar({
-    message: JSON.stringify(options),
+    message: JSON.stringify(messageObj),
     options: {
       key: optionalKey ? optionalKey : uuidv4(),
       variant: 'error',
-      autoHideDuration: 3000,
+      autoHideDuration: 2000,
       preventDuplicate: true,
     },
   });
 };
 
 export const enqueueInfoNotification = (message: string, optionalKey?: string) => {
-  const options = { variant: 'info', message: message ? message : 'Info' };
+  const messageObj = { variant: 'info', message: message ? message : 'Info' };
   return addSnackbar({
-    message: JSON.stringify(options),
+    message: JSON.stringify(messageObj),
     options: {
       key: optionalKey ? optionalKey : uuidv4(),
       variant: 'info',
-      autoHideDuration: 3000,
+      autoHideDuration: 2000,
       preventDuplicate: true,
     },
   });
 };
 
 export const enqueueSuccessNotification = (message: string) => {
-  const options = { variant: 'success', message: message ? message : 'Success' };
+  const messageObj = { variant: 'success', message: message ? message : 'Success' };
   return addSnackbar({
-    message: JSON.stringify(options),
+    message: JSON.stringify(messageObj),
     options: {
       key: uuidv4(),
       variant: 'success',
-      autoHideDuration: 3000,
+      autoHideDuration: 2000,
     },
   });
 };
