@@ -78,13 +78,20 @@ const Home: React.FC = () => {
   const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
   const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
 
+  const isEnabled = useCallback(
+    (str: string) => {
+      return enabledModules.find((item: IModule) => item.moduleName === str);
+    },
+    [enabledModules]
+  );
+
   useEffect(() => {
-    dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
-    dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
-    dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
-    dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
-    dispatch(asyncGetForms({ skip: 0, limit: 5 }));
-  }, [dispatch]);
+    isEnabled('authentication') && dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
+    isEnabled('database') && dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
+    isEnabled('database') && dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
+    isEnabled('emails') && dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
+    isEnabled('forms') && dispatch(asyncGetForms({ skip: 0, limit: 5 }));
+  }, [dispatch, isEnabled]);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
@@ -97,13 +104,6 @@ const Home: React.FC = () => {
   useEffect(() => {
     dispatch(asyncGetIntrospectionStatus());
   }, [dispatch]);
-
-  const isEnabled = useCallback(
-    (str: string) => {
-      return enabledModules.find((item: IModule) => item.moduleName === str);
-    },
-    [enabledModules]
-  );
 
   const Main = styled('main')(() => ({
     flexGrow: 1,
