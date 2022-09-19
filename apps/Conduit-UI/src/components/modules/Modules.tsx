@@ -38,7 +38,7 @@ const Modules: React.FC<Props> = ({
   const enabledPayments = useAppSelector((state) => state.paymentsSlice.data.config.active);
 
   const handleDisabledClick = () => {
-    dispatch(enqueueInfoNotification('Module currently disabled.'));
+    dispatch(enqueueInfoNotification('Module currently disabled.', 'moduleDisabled'));
   };
 
   const modulesInstance = [...modules];

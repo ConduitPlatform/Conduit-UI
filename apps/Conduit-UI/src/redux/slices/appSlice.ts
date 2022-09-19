@@ -1,15 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
+import { OptionsObject, SnackbarMessage } from 'notistack';
 
 export interface INotification {
-  key: number;
-  message: string;
-  dismissed?: boolean;
-  options: {
-    autoHideDuration: number;
-    key: number;
-    variant: string;
-  };
+  message: SnackbarMessage;
+  options: OptionsObject;
 }
 
 export type AppState = {
@@ -48,7 +43,7 @@ const appSlice = createSlice({
     },
     removeSnackbar: (state, action) => {
       state.notifications = state.notifications.filter(
-        (notification: { key: number }) => notification.key !== action.payload
+        (notification: { options: OptionsObject }) => notification.options.key !== action.payload
       );
     },
   },
