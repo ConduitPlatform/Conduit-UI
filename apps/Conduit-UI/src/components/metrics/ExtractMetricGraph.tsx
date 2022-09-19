@@ -21,6 +21,7 @@ import { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
+import useIsMounted from '../../hooks/useIsMounted';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -54,6 +55,8 @@ const ExtractGraph: FC<Props> = ({
   const [timestamps, setTimestamps] = useState<number[]>([]);
   const [counters, setCounters] = useState<number[]>([]);
 
+  const isMountedRef = useIsMounted();
+
   useEffect(() => {
     getRequestProm(query, {
       query: expression,
@@ -81,12 +84,13 @@ const ExtractGraph: FC<Props> = ({
           timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
           counters.push(parseInt(itemsCount));
         });
-
-        setTimestamps(timestamps);
-        setCounters(counters);
+        if (isMountedRef.current) {
+          setTimestamps(timestamps);
+          setCounters(counters);
+        }
       })
       .catch((err) => dispatch(enqueueErrorNotification(err.data.error)));
-  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch]);
+  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch, isMountedRef]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
