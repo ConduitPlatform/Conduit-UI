@@ -18,7 +18,7 @@ export const deleteFormsRequest = (ids: string[]) => {
 
 export const getFormReplies = (id: string) => getRequest(`/forms/replies/${id}`);
 
-export const updateForm = (id: string, data: FormsModel) => putRequest(`/forms/forms/${id}`, data);
+export const updateForm = (id: string, data: FormsModel) => putRequest(`/forms/${id}`, data);
 
 export const getFormsConfig = () => getRequest(`/config/forms`);
 

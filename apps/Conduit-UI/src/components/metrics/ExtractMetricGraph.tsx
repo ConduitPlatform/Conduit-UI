@@ -18,6 +18,7 @@ import Close from '@mui/icons-material/Close';
 import { MetricsLogsData } from '../../models/metrics/metricsModels';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
+import useIsMounted from '../../hooks/useIsMounted';
 import AreaChart from '../charts/AreaChart';
 
 interface Props {
@@ -50,6 +51,8 @@ const ExtractGraph: FC<Props> = ({
   const [counters, setCounters] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const isMountedRef = useIsMounted();
+
   useEffect(() => {
     setLoading(true);
     getRequestProm(query, {
@@ -78,13 +81,14 @@ const ExtractGraph: FC<Props> = ({
           timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
           counters.push(parseInt(itemsCount));
         });
-
-        setTimestamps(timestamps);
-        setCounters(counters);
+        if (isMountedRef.current) {
+          setTimestamps(timestamps);
+          setCounters(counters);
+        }
       })
       .catch((err) => dispatch(enqueueErrorNotification(err.data.error)))
       .finally(() => setLoading(false));
-  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch]);
+  }, [endDateValue, startDateValue, selectedStep, expression, query, isMountedRef, dispatch]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
