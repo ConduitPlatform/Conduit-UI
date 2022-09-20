@@ -18,7 +18,6 @@ const EmailDashboard = () => {
         <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractQueryRangeGraph
-              query="/query_range"
               expression="sum(increase(conduit_email_templates_total[10m]))"
               graphTitle="Total email templates"
               label="Templates"
@@ -28,7 +27,6 @@ const EmailDashboard = () => {
         <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractQueryRangeGraph
-              query="/query_range"
               expression="sum(increase(conduit_emails_sent_total[10m]))"
               graphTitle="Total emails sent"
               label="Emails sent"

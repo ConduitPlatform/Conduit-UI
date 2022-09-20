@@ -18,7 +18,6 @@ const FormsDashboard = () => {
         <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractQueryRangeGraph
-              query="/query_range"
               expression="sum(increase(conduit_forms_total[10m]))"
               graphTitle="Conduit forms"
               label="Forms"

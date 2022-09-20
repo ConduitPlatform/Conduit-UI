@@ -18,7 +18,6 @@ const AuthenticationDashboard = () => {
         <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractQueryRangeGraph
-              query="/query_range"
               expression="sum(increase(conduit_logged_in_users_total[5m]))"
               graphTitle="Logged in users"
               label="Users"
@@ -28,7 +27,6 @@ const AuthenticationDashboard = () => {
         <Grid item md={12} lg={6}>
           <GraphContainer>
             <ExtractQueryRangeGraph
-              query="/query_range"
               expression="sum(increase(conduit_login_requests_total[5m]))"
               graphTitle="Total login requests"
               label="Requests"

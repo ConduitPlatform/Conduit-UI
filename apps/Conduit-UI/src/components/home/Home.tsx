@@ -180,7 +180,6 @@ const Home: React.FC = () => {
               <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
                   <ExtractQueryRangeGraph
-                    query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                     graphTitle="Total admin grpc requests"
                     label="Requests"
@@ -192,7 +191,6 @@ const Home: React.FC = () => {
               <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
                   <ExtractQueryRangeGraph
-                    query="/query_range"
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
                     graphTitle="Internal grpc requests"
                     label="Requests"
