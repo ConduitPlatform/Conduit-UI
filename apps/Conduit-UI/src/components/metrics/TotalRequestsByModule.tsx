@@ -27,7 +27,13 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const data = useAppSelector((state) => state?.metricsSlice?.moduleTotalRequests?.[module]?.[0]);
+  const data = useAppSelector(
+    (state) => state?.metricsSlice?.data?.moduleTotalRequests?.[module]?.[0]
+  );
+
+  const loading = useAppSelector(
+    (state) => state?.metricsSlice?.meta?.moduleTotalRequestsLoading?.[module]
+  );
 
   useEffect(() => {
     dispatch(
@@ -203,6 +209,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         timestamps={data?.timestamps}
         counters={data?.counters}
         graphTitle={'Total module requests'}
+        loading={loading}
       />
     </>
   );

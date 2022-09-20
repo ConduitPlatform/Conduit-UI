@@ -11,7 +11,9 @@ interface Props {
 
 const RequestsLatency: FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
-  const latency: number = useAppSelector((state) => state?.metricsSlice?.moduleLatency?.[module]);
+  const latency: number = useAppSelector(
+    (state) => state?.metricsSlice?.data?.moduleLatency?.[module]
+  );
 
   useEffect(() => {
     dispatch(

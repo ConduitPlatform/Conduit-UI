@@ -13,7 +13,7 @@ interface Props {
 
 const ModuleHealth: FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
-  const health = useAppSelector((state) => state?.metricsSlice?.moduleHealth?.[module]);
+  const health = useAppSelector((state) => state?.metricsSlice?.data?.moduleHealth?.[module]);
 
   useEffect(() => {
     dispatch(

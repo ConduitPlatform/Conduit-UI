@@ -43,7 +43,13 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const data = useAppSelector((state) => state?.metricsSlice?.genericMetric?.[expression]?.[0]);
+  const data = useAppSelector(
+    (state) => state?.metricsSlice?.data?.genericMetric?.[expression]?.[0]
+  );
+
+  const loading = useAppSelector(
+    (state) => state?.metricsSlice?.meta.genericMetricLoading?.[expression]
+  );
 
   useEffect(() => {
     dispatch(
@@ -222,6 +228,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
         counters={data?.counters}
         graphTitle={graphTitle}
         canZoom={canZoom}
+        loading={loading}
       />
     </>
   );
