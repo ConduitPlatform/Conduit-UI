@@ -11,13 +11,13 @@ import {
 import moment, { Moment } from 'moment';
 
 interface IMetricsSlice {
-  metrics: Record<ModulesTypes, MetricsData[]>;
+  moduleRequests: Record<ModulesTypes, MetricsData[]>;
   moduleHealth: Record<ModulesTypes, boolean>;
   moduleLatency: Record<ModulesTypes, number>;
 }
 
 const initialState: IMetricsSlice = {
-  metrics: {} as Record<ModulesTypes, MetricsData[]>,
+  moduleRequests: {} as Record<ModulesTypes, MetricsData[]>,
   moduleHealth: {} as Record<ModulesTypes, boolean>,
   moduleLatency: {} as Record<ModulesTypes, number>,
 };
@@ -113,7 +113,7 @@ const metricsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(asyncGetMetricsQuery.fulfilled, (state, action) => {
-      state.metrics[action.meta.arg.module] = action.payload;
+      state.moduleRequests[action.meta.arg.module] = action.payload;
     });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
       state.moduleHealth[action.meta.arg.module] = action.payload;

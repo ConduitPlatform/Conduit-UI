@@ -27,7 +27,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const data = useAppSelector((state) => state?.metricsSlice?.metrics?.[module]?.[0]);
+  const data = useAppSelector((state) => state?.metricsSlice?.moduleRequests?.[module]?.[0]);
 
   useEffect(() => {
     dispatch(
