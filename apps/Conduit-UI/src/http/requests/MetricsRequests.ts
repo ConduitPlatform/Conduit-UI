@@ -41,3 +41,16 @@ export const getModuleLatency = (body: {
         : `avg_over_time(conduit_grpc_request_latency_seconds[5m])`,
   });
 };
+
+export const getGenericMetricQueryRange = (body: {
+  expression: string;
+  startDate?: number;
+  endDate?: number;
+  step?: string;
+}) =>
+  getRequestProm('/query_range', {
+    query: body.expression,
+    start: body.startDate,
+    end: body.endDate,
+    step: body.step,
+  });

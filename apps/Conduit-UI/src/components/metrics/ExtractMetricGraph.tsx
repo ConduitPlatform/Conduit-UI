@@ -10,18 +10,15 @@ import {
   SelectChangeEvent,
   TextField,
 } from '@mui/material';
-import { getRequestProm } from '../../http/requestsConfig';
 import moment, { Moment } from 'moment';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import Close from '@mui/icons-material/Close';
-import { MetricsLogsData } from '../../models/metrics/metricsModels';
-import { useAppDispatch } from '../../redux/store';
-import { enqueueErrorNotification } from '../../utils/useNotifier';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
+import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 
 interface Props {
-  query: string;
   expression: string;
   graphTitle?: string;
   hasControls?: boolean;
@@ -31,8 +28,7 @@ interface Props {
 
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
-const ExtractGraph: FC<Props> = ({
-  query,
+const ExtractQueryRangeGraph: FC<Props> = ({
   expression,
   graphTitle,
   hasControls = true,
@@ -46,45 +42,21 @@ const ExtractGraph: FC<Props> = ({
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
-  const [timestamps, setTimestamps] = useState<number[]>([]);
-  const [counters, setCounters] = useState<number[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  const data = useAppSelector((state) => state?.metricsSlice?.genericMetric?.[expression]?.[0]);
 
   useEffect(() => {
-    setLoading(true);
-    getRequestProm(query, {
-      query: expression,
-      start: startDateValue
-        ? startDateValue.valueOf() / 1000
-        : moment().subtract(1, 'hours').unix(),
-      end: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
-      step: selectedStep,
-    })
-      .then(({ data }) => {
-        const arr: [] = [];
-        const timestamps: number[] = [];
-        const counters: number[] = [];
-
-        data?.data?.result.forEach((e: MetricsLogsData) => {
-          e.values.forEach((item) => {
-            arr.push(item);
-          });
-        });
-
-        arr.map((item) => {
-          const itemsTime = item?.[0] as Moment;
-          const itemsCount = item?.[1];
-
-          timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
-          counters.push(parseInt(itemsCount));
-        });
-
-        setTimestamps(timestamps);
-        setCounters(counters);
+    dispatch(
+      asyncGetGenericMetricQueryRange({
+        expression,
+        startDate: startDateValue
+          ? startDateValue.valueOf() / 1000
+          : moment().subtract(1, 'hours').unix(),
+        endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
+        step: selectedStep,
       })
-      .catch((err) => dispatch(enqueueErrorNotification(err.data.error)))
-      .finally(() => setLoading(false));
-  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch]);
+    );
+  }, [dispatch, expression, startDateValue, endDateValue, selectedStep]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
@@ -246,14 +218,13 @@ const ExtractGraph: FC<Props> = ({
       )}
       <AreaChart
         label={label}
-        timestamps={timestamps}
-        counters={counters}
+        timestamps={data?.timestamps}
+        counters={data?.counters}
         graphTitle={graphTitle}
         canZoom={canZoom}
-        loading={loading}
       />
     </>
   );
 };
 
-export default ExtractGraph;
+export default ExtractQueryRangeGraph;

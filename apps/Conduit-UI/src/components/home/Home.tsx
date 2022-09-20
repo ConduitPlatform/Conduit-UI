@@ -29,7 +29,7 @@ import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
-import ExtractGraph from '../metrics/ExtractMetricGraph';
+import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import MetricsWidget from '../metrics/MetricsWidget';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import RequestsLatency from '../metrics/RequestLatency';
@@ -179,7 +179,7 @@ const Home: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
-                  <ExtractGraph
+                  <ExtractQueryRangeGraph
                     query="/query_range"
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                     graphTitle="Total admin grpc requests"
@@ -191,7 +191,7 @@ const Home: React.FC = () => {
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
-                  <ExtractGraph
+                  <ExtractQueryRangeGraph
                     query="/query_range"
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
                     graphTitle="Internal grpc requests"

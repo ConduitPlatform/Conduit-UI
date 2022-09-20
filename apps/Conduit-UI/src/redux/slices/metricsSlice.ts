@@ -4,6 +4,7 @@ import { setAppLoading } from './appSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { MetricsData, MetricsLogsData } from '../../models/metrics/metricsModels';
 import {
+  getGenericMetricQueryRange,
   getMetricsQuery,
   getModuleHealth,
   getModuleLatency,
@@ -11,16 +12,61 @@ import {
 import moment, { Moment } from 'moment';
 
 interface IMetricsSlice {
-  moduleRequests: Record<ModulesTypes, MetricsData[]>;
+  genericMetric: Record<string, MetricsData[]>;
+  moduleTotalRequests: Record<ModulesTypes, MetricsData[]>;
   moduleHealth: Record<ModulesTypes, boolean>;
   moduleLatency: Record<ModulesTypes, number>;
 }
 
 const initialState: IMetricsSlice = {
-  moduleRequests: {} as Record<ModulesTypes, MetricsData[]>,
+  genericMetric: {} as Record<string, MetricsData[]>,
+  moduleTotalRequests: {} as Record<ModulesTypes, MetricsData[]>,
   moduleHealth: {} as Record<ModulesTypes, boolean>,
   moduleLatency: {} as Record<ModulesTypes, number>,
 };
+
+export const asyncGetGenericMetricQueryRange = createAsyncThunk(
+  '/metrics/getGenericMetric',
+  async (
+    body: {
+      expression: string;
+      startDate?: number;
+      endDate?: number;
+      step?: string;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getGenericMetricQueryRange(body);
+
+      const timestamps: number[] = [];
+      const counters: number[] = [];
+
+      const arr: [] = [];
+      data?.data?.result.forEach((e: MetricsLogsData) => {
+        e.values.forEach((item) => {
+          arr.push(item);
+        });
+      });
+
+      arr.map((item) => {
+        const itemsTime = item?.[0] as Moment;
+        const itemsCount = item?.[1];
+
+        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
+        counters.push(parseInt(itemsCount));
+      });
+
+      thunkAPI.dispatch(setAppLoading(false));
+      return [{ timestamps: timestamps, counters: counters }];
+    } catch (error: any) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+      throw error;
+    }
+  }
+);
 
 export const asyncGetMetricsQuery = createAsyncThunk(
   '/metrics/getQueryRange',
@@ -112,8 +158,11 @@ const metricsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(asyncGetGenericMetricQueryRange.fulfilled, (state, action) => {
+      state.genericMetric[action.meta.arg.expression] = action.payload;
+    });
     builder.addCase(asyncGetMetricsQuery.fulfilled, (state, action) => {
-      state.moduleRequests[action.meta.arg.module] = action.payload;
+      state.moduleTotalRequests[action.meta.arg.module] = action.payload;
     });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
       state.moduleHealth[action.meta.arg.module] = action.payload;
