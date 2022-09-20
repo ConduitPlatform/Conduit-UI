@@ -23,7 +23,9 @@ const MetricsWidget: FC<Props> = ({ metric, title }) => {
       elevation={0}
       sx={{
         display: 'flex',
+        flex: 1,
         flexDirection: 'column',
+        height: '100%',
         p: 2,
         gap: 3,
         borderRadius: '24px',

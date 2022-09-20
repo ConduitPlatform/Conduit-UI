@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import React, { FC, useEffect } from 'react';
+import React, { CSSProperties, FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -10,9 +10,10 @@ import { ScaleLoader } from 'react-spinners';
 
 interface Props {
   module: ModulesTypes;
+  fontSizes: CSSProperties;
 }
 
-const ModuleHealth: FC<Props> = ({ module }) => {
+const ModuleHealth: FC<Props> = ({ module, fontSizes }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const health = useAppSelector((state) => state?.metricsSlice?.data?.moduleHealth?.[module]);
@@ -50,7 +51,7 @@ const ModuleHealth: FC<Props> = ({ module }) => {
             </Typography>
           )}
           {!health && !loading && (
-            <Typography color="error" variant="h4">
+            <Typography color="error" variant="h4" sx={{ fontSize: fontSizes }}>
               Critical
             </Typography>
           )}

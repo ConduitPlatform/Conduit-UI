@@ -62,8 +62,18 @@ const Home: React.FC = () => {
       fontSize: '0.6rem',
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: '0.6rem',
+      fontSize: '0.4rem',
     },
+  };
+
+  const cardsTextFontSize = {
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '1rem',
+    },
+    fontSize: '5rem',
   };
 
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
@@ -197,17 +207,17 @@ const Home: React.FC = () => {
                 </GraphContainer>
               </Grid>
               <Grid item xs={6} sm={3}>
-                <RequestsLatency module="home" />
+                <RequestsLatency module="home" fontSizes={cardsTextFontSize} />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <ModuleHealth module="home" />
+                <ModuleHealth module="home" fontSizes={cardsTextFontSize} />
               </Grid>
               {isEnabled('database') && (
                 <Grid item xs={6} sm={3}>
                   <MetricsWidget
                     title="Schemas"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {schemasCount}
                       </Typography>
                     }
@@ -219,7 +229,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Endpoints"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {endpointsCount}
                       </Typography>
                     }
@@ -231,7 +241,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Users"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {count}
                       </Typography>
                     }
@@ -243,7 +253,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Forms"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {formsCount}
                       </Typography>
                     }
@@ -251,11 +261,11 @@ const Home: React.FC = () => {
                 </Grid>
               )}
               {isEnabled('email') && (
-                <Grid item xs={6} sm={3}>
+                <Grid item xs={6} sm={6} md={6} lg={3}>
                   <MetricsWidget
                     title="Email templates"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {emailsCount}
                       </Typography>
                     }
