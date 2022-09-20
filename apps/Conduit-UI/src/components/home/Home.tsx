@@ -37,6 +37,10 @@ import ModuleHealth from '../metrics/ModuleHealth';
 import { asyncGetForms } from '../../redux/slices/formsSlice';
 import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
 
+const Main = styled('main')(() => ({
+  flexGrow: 1,
+}));
+
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -84,6 +88,7 @@ const Home: React.FC = () => {
     dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
     dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
     dispatch(asyncGetForms({ skip: 0, limit: 5 }));
+    dispatch(asyncGetIntrospectionStatus());
   }, [dispatch]);
 
   const noSwagger = useMemo(() => {
@@ -94,20 +99,12 @@ const Home: React.FC = () => {
     return !transportsRouter.graphql && !transportsAdmin.graphql;
   }, [transportsAdmin.graphql, transportsRouter.graphql]);
 
-  useEffect(() => {
-    dispatch(asyncGetIntrospectionStatus());
-  }, [dispatch]);
-
   const isEnabled = useCallback(
     (str: string) => {
       return enabledModules.find((item: IModule) => item.moduleName === str);
     },
     [enabledModules]
   );
-
-  const Main = styled('main')(() => ({
-    flexGrow: 1,
-  }));
 
   return (
     <>
