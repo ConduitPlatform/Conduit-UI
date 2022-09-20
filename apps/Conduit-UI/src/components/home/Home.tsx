@@ -82,14 +82,21 @@ const Home: React.FC = () => {
   const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
   const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
 
+  const isEnabled = useCallback(
+    (str: string) => {
+      return enabledModules.find((item: IModule) => item.moduleName === str);
+    },
+    [enabledModules]
+  );
+
   useEffect(() => {
-    dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
-    dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
-    dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
-    dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
-    dispatch(asyncGetForms({ skip: 0, limit: 5 }));
+    isEnabled('authentication') && dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
+    isEnabled('database') && dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
+    isEnabled('database') && dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
+    isEnabled('emails') && dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
+    isEnabled('forms') && dispatch(asyncGetForms({ skip: 0, limit: 5 }));
     dispatch(asyncGetIntrospectionStatus());
-  }, [dispatch]);
+  }, [dispatch, isEnabled]);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
@@ -98,13 +105,6 @@ const Home: React.FC = () => {
   const noGraphQL = useMemo(() => {
     return !transportsRouter.graphql && !transportsAdmin.graphql;
   }, [transportsAdmin.graphql, transportsRouter.graphql]);
-
-  const isEnabled = useCallback(
-    (str: string) => {
-      return enabledModules.find((item: IModule) => item.moduleName === str);
-    },
-    [enabledModules]
-  );
 
   return (
     <>
@@ -178,7 +178,7 @@ const Home: React.FC = () => {
                 <GraphContainer>
                   <ExtractQueryRangeGraph
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                    graphTitle="Total admin grpc requests"
+                    graphTitle="Total admin gRPC requests"
                     label="Requests"
                     hasControls={false}
                     canZoom={false}
@@ -189,7 +189,7 @@ const Home: React.FC = () => {
                 <GraphContainer>
                   <ExtractQueryRangeGraph
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                    graphTitle="Internal grpc requests"
+                    graphTitle="Internal gRPC requests"
                     label="Requests"
                     hasControls={false}
                     canZoom={false}
