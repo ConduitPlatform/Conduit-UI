@@ -1,18 +1,8 @@
 import { Close } from '@mui/icons-material';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
-import {
-  Box,
-  IconButton,
-  InputLabel,
-  Select,
-  SelectChangeEvent,
-  TextField,
-  useTheme,
-} from '@mui/material';
-import { ApexOptions } from 'apexcharts';
+import { Box, IconButton, InputLabel, Select, SelectChangeEvent, TextField } from '@mui/material';
 import moment, { Moment } from 'moment';
-import dynamic from 'next/dynamic';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
@@ -20,8 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import FormControl from '@mui/material/FormControl';
-
-const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+import AreaChart from '../charts/AreaChart';
 
 interface Props {
   module: ModulesTypes;
@@ -31,7 +20,6 @@ const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
 const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
@@ -95,85 +83,6 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const maxDateOfEnd = useMemo(() => {
     return undefined;
   }, []);
-
-  const options: ApexOptions = {
-    chart: {
-      toolbar: {
-        show: false,
-      },
-
-      fontFamily: 'JetBrains Mono',
-      background: theme.palette.background.paper,
-      animations: {
-        enabled: true,
-        easing: 'easeinout',
-        speed: 800,
-        animateGradually: {
-          enabled: true,
-          delay: 150,
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 350,
-        },
-      },
-    },
-
-    dataLabels: {
-      enabled: false,
-    },
-
-    grid: {
-      yaxis: {
-        lines: {
-          show: false,
-        },
-      },
-    },
-    title: {
-      text: 'Total module requests',
-      align: 'left',
-    },
-    theme: {
-      mode: theme.palette.mode === 'dark' ? 'dark' : 'light',
-      palette: theme.palette.mode === 'dark' ? 'palette4' : 'palette2',
-    },
-    xaxis: {
-      type: 'datetime',
-      categories: data?.timestamps ?? [],
-      labels: {
-        format: 'hh:mm',
-      },
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'dark',
-        type: 'horizontal',
-        shadeIntensity: 0.5,
-        inverseColors: true,
-        opacityFrom: 1,
-        opacityTo: 1,
-        stops: [0, 50, 100],
-        colorStops: [],
-      },
-    },
-    stroke: {
-      show: true,
-      curve: 'smooth',
-      lineCap: 'butt',
-      colors: undefined,
-      width: 2,
-      dashArray: 0,
-    },
-  };
-
-  const series = [
-    {
-      name: 'total requests',
-      data: data?.counters ?? [],
-    },
-  ];
 
   const handleChangeStep = (event: SelectChangeEvent<string>) => {
     const {
@@ -289,7 +198,12 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
           </Select>
         </FormControl>
       </Box>
-      <ReactApexChart options={options} series={series} type="area" width="100%" height="300px" />
+      <AreaChart
+        label={'total requests'}
+        timestamps={data?.timestamps}
+        counters={data?.counters}
+        graphTitle={'Total module requests'}
+      />
     </>
   );
 };

@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import { ExitToApp, Settings } from '@mui/icons-material';
-import { asyncLogout } from '../../redux/slices/appAuthSlice';
+import { ExitToApp, Refresh, Settings } from '@mui/icons-material';
+import { asyncGetAdminModules, asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
 import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
@@ -27,6 +27,10 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
 
   const handleLogout = async () => {
     dispatch(asyncLogout());
+  };
+
+  const handleRefreshModules = async () => {
+    dispatch(asyncGetAdminModules());
   };
 
   return (
@@ -88,12 +92,18 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}
           display="flex"
           flexDirection="column">
-          <Box py={1} px={!smallScreen ? 3 : undefined}>
+          <Box py={2} px={!smallScreen ? 2 : undefined}>
             <ThemeSwitch
               checked={theme.palette.mode === 'dark'}
               onClick={colorMode.toggleColorMode}
             />
           </Box>
+          <ModuleItem
+            title={'Modules Refresh'}
+            icon={<Refresh />}
+            smallScreen={smallScreen}
+            onClick={handleRefreshModules}
+          />
           <ModuleItem
             icon={<ExitToApp color={'inherit'} width={24} height={24} />}
             title={'Log out'}

@@ -9,7 +9,6 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
-  useTheme,
 } from '@mui/material';
 import { getRequestProm } from '../../http/requestsConfig';
 import moment, { Moment } from 'moment';
@@ -17,13 +16,10 @@ import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import Close from '@mui/icons-material/Close';
 import { MetricsLogsData } from '../../models/metrics/metricsModels';
-import { ApexOptions } from 'apexcharts';
-import dynamic from 'next/dynamic';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import useIsMounted from '../../hooks/useIsMounted';
-
-const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+import AreaChart from '../charts/AreaChart';
 
 interface Props {
   query: string;
@@ -45,7 +41,6 @@ const ExtractGraph: FC<Props> = ({
   canZoom = true,
 }) => {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
@@ -54,10 +49,12 @@ const ExtractGraph: FC<Props> = ({
   const [selectedStep, setSelectedStep] = useState<string>('10m');
   const [timestamps, setTimestamps] = useState<number[]>([]);
   const [counters, setCounters] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const isMountedRef = useIsMounted();
 
   useEffect(() => {
+    setLoading(true);
     getRequestProm(query, {
       query: expression,
       start: startDateValue
@@ -89,8 +86,9 @@ const ExtractGraph: FC<Props> = ({
           setCounters(counters);
         }
       })
-      .catch((err) => dispatch(enqueueErrorNotification(err.data.error)));
-  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch, isMountedRef]);
+      .catch((err) => dispatch(enqueueErrorNotification(err.data.error)))
+      .finally(() => setLoading(false));
+  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
@@ -140,87 +138,6 @@ const ExtractGraph: FC<Props> = ({
   const maxDateOfEnd = useMemo(() => {
     return undefined;
   }, []);
-
-  const options: ApexOptions = {
-    chart: {
-      toolbar: {
-        show: false,
-      },
-      zoom: {
-        enabled: canZoom,
-      },
-
-      id: 'basic-bar',
-      fontFamily: 'JetBrains Mono',
-      background: theme.palette.background.paper,
-      animations: {
-        enabled: true,
-        easing: 'easeinout',
-        speed: 800,
-        animateGradually: {
-          enabled: true,
-          delay: 150,
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 350,
-        },
-      },
-    },
-    grid: {
-      yaxis: {
-        lines: {
-          show: false,
-        },
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    title: {
-      text: graphTitle ?? '',
-      align: 'left',
-    },
-    theme: {
-      mode: theme.palette.mode === 'dark' ? 'dark' : 'light',
-      palette: theme.palette.mode === 'dark' ? 'palette4' : 'palette2',
-    },
-    xaxis: {
-      type: 'datetime',
-      categories: timestamps ?? [],
-      labels: {
-        format: 'hh:mm',
-      },
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'dark',
-        type: 'horizontal',
-        shadeIntensity: 0.5,
-        inverseColors: true,
-        opacityFrom: 1,
-        opacityTo: 1,
-        stops: [0, 50, 100],
-        colorStops: [],
-      },
-    },
-    stroke: {
-      show: true,
-      curve: 'smooth',
-      lineCap: 'butt',
-      colors: undefined,
-      width: 2,
-      dashArray: 0,
-    },
-  };
-
-  const series = [
-    {
-      name: label,
-      data: counters ?? [],
-    },
-  ];
 
   return (
     <>
@@ -331,7 +248,14 @@ const ExtractGraph: FC<Props> = ({
           </FormControl>
         </Box>
       )}
-      <ReactApexChart options={options} series={series} type="area" width="100%" height="300px" />
+      <AreaChart
+        label={label}
+        timestamps={timestamps}
+        counters={counters}
+        graphTitle={graphTitle}
+        canZoom={canZoom}
+        loading={loading}
+      />
     </>
   );
 };
