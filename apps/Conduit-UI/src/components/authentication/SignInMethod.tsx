@@ -96,7 +96,13 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
                 ? { flex: 1, color: 'primary.main' }
                 : { flex: 1, color: 'primary.main' }
             }>
-            {accProps.enabled ? 'Enabled' : 'Disabled'}
+            {accProps.enabled ? (
+              <Typography variant="caption">Enabled</Typography>
+            ) : (
+              <Typography variant="caption" color="error">
+                Disabled
+              </Typography>
+            )}
           </Typography>
         </Box>
       </AccordionSummary>
