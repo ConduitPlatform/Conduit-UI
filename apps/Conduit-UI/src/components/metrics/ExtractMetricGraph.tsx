@@ -88,7 +88,7 @@ const ExtractGraph: FC<Props> = ({
       })
       .catch((err) => dispatch(enqueueErrorNotification(err.data.error)))
       .finally(() => setLoading(false));
-  }, [endDateValue, startDateValue, selectedStep, expression, query, dispatch]);
+  }, [endDateValue, startDateValue, selectedStep, expression, query, isMountedRef, dispatch]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
