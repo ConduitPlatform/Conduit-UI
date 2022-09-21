@@ -68,6 +68,4 @@ export const changeOtherAdminsPassword = (adminId: string, newPassword: string) 
     newPassword,
   });
 
-export const enableTwoFA = () => putRequest('/enable-twofa', { method: 'qrcode' });
-
-export const disableTwoFA = () => putRequest('/disable-twofa');
+export const toggleTwoFA = (enabled: boolean) => putRequest('/enable-twofa', { enabled: enabled });

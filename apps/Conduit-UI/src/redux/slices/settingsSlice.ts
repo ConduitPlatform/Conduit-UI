@@ -15,8 +15,7 @@ import {
   patchAdminSettings,
   patchCoreSettings,
   changeOtherAdminsPassword,
-  enableTwoFA,
-  disableTwoFA,
+  toggleTwoFA,
 } from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -61,7 +60,6 @@ export const asyncGetAdmins = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdmins(params);
-
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -121,30 +119,14 @@ export const asyncChangeOtherAdminsPassword = createAsyncThunk(
   }
 );
 
-export const asyncEnableTwoFA = createAsyncThunk(
+export const asyncToggleTwoFA = createAsyncThunk(
   'authentication/enableTwoFA',
-  async (args, thunkAPI) => {
+  async (args: { enabled: boolean }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await enableTwoFA();
+      await toggleTwoFA(args.enabled);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Two factor authentication enabled!`));
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncDisableTwoFA = createAsyncThunk(
-  'authentication/enableTwoFA',
-  async (args, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      await disableTwoFA();
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueSuccessNotification(`Two factor authentication disabled!`));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -193,6 +175,7 @@ export const asyncGetAdminSettings = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdminSettings();
+
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -253,8 +236,8 @@ const settingsSlice = createSlice({
       state.adminSettings = action.payload.config;
     });
     builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
-      state.data.authAdmins.admins = action.payload.result.admins;
-      state.data.authAdmins.count = action.payload.result.count;
+      state.data.authAdmins.admins = action.payload.admins;
+      state.data.authAdmins.count = action.payload.count;
     });
   },
 });

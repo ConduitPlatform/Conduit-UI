@@ -2,11 +2,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IAdmin, INewAdminUser } from '../../models/settings/SettingsModels';
 import {
+  asyncChangeOtherAdminsPassword,
   asyncCreateAdminUser,
   asyncDeleteAdmin,
   asyncGetAdmins,
 } from '../../redux/slices/settingsSlice';
-import { Box, Button } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import {
   ConfirmationDialog,
@@ -15,6 +16,7 @@ import {
   TableContainer,
 } from '@conduitplatform/ui-components';
 import CreateNewUserModal from './CreateNewAdminUserTab';
+import ChangeOtherAdminsPassword from './ChangeAdminPassword';
 
 const SettingsAdmins: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +31,10 @@ const SettingsAdmins: React.FC = () => {
     updatedAt: '',
     _id: '',
   });
-  const [drawer, setDrawer] = useState<boolean>(false);
+  const [drawer, setDrawer] = useState<{ open: boolean; action: string }>({
+    open: false,
+    action: '',
+  });
   const [openDeleteUser, setOpenDeleteUser] = useState<{ open: boolean; multiple: boolean }>({
     open: false,
     multiple: false,
@@ -62,6 +67,9 @@ const SettingsAdmins: React.FC = () => {
         open: true,
         multiple: false,
       });
+      setSelectedAdmin(currentUser);
+    } else if (action.type === 'edit') {
+      setDrawer({ open: true, action: 'edit' });
       setSelectedAdmin(currentUser);
     }
   };
@@ -110,7 +118,14 @@ const SettingsAdmins: React.FC = () => {
     type: 'delete',
   };
 
-  const actions = [toDelete];
+  //TODO this button can be accessed only when admin is superAdmin, to be implemented later on
+
+  const toEdit = {
+    title: 'Change password',
+    type: 'edit',
+  };
+
+  const actions = [toEdit, toDelete];
 
   const handleDeleteTitle = (multiple: boolean, admin: IAdmin) => {
     return `Delete admin ${admin.username}`;
@@ -122,7 +137,12 @@ const SettingsAdmins: React.FC = () => {
 
   const handleAddNewUser = (values: INewAdminUser) => {
     dispatch(asyncCreateAdminUser({ values: values, getAdmins: getAdminsCallback }));
-    setDrawer(false);
+    setDrawer({ open: false, action: '' });
+  };
+
+  const handleChangePassword = (password: string) => {
+    dispatch(asyncChangeOtherAdminsPassword({ adminId: selectedAdmin._id, newPassword: password }));
+    setDrawer({ open: false, action: '' });
   };
 
   return (
@@ -131,7 +151,7 @@ const SettingsAdmins: React.FC = () => {
         <Button
           color="primary"
           variant="contained"
-          onClick={() => setDrawer(true)}
+          onClick={() => setDrawer({ open: true, action: 'create' })}
           endIcon={<Add />}>
           Create
         </Button>
@@ -161,13 +181,20 @@ const SettingsAdmins: React.FC = () => {
         buttonText={'Delete'}
       />
       <SideDrawerWrapper
-        open={drawer}
+        open={drawer.open}
         maxWidth={550}
-        title="Create new admin user"
+        title={
+          drawer.action === 'create'
+            ? 'Create new admin user'
+            : `Edit ${selectedAdmin.username} password`
+        }
         closeDrawer={() => {
-          setDrawer(false);
+          setDrawer({ open: false, action: '' });
         }}>
-        <CreateNewUserModal handeAddNewUser={handleAddNewUser} />
+        {drawer.action === 'create' && <CreateNewUserModal handeAddNewUser={handleAddNewUser} />}
+        {drawer.action === 'edit' && (
+          <ChangeOtherAdminsPassword handleChangePassword={handleChangePassword} />
+        )}
       </SideDrawerWrapper>
     </div>
   );
