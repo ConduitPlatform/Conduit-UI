@@ -3,18 +3,18 @@ import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLay
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
-const ChangePasswordTab = dynamic(() => import('../../components/settings/ChangePasswordTab'), {
+const UserSettingsTab = dynamic(() => import('../../components/settings/UserSettingsLayout'), {
   loading: () => (
     <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
   ),
 });
 
-const Password = () => {
-  return <ChangePasswordTab />;
+const UserSettings = () => {
+  return <UserSettingsTab />;
 };
 
-Password.getLayout = function getLayout(page: ReactElement) {
+UserSettings.getLayout = function getLayout(page: ReactElement) {
   return <SettingsLayout>{page}</SettingsLayout>;
 };
 
-export default Password;
+export default UserSettings;
