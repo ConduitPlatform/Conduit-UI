@@ -56,13 +56,23 @@ const Home: React.FC = () => {
     },
   };
 
+  const homePageFontSizeTitles = {
+    fontSize: '1rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.8rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.7rem',
+    },
+  };
+
   const homePageFontSizeSubtitles = {
     fontSize: '0.8rem',
     [theme.breakpoints.down('lg')]: {
       fontSize: '0.6rem',
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: '0.4rem',
+      fontSize: '0.5rem',
     },
   };
 
@@ -73,7 +83,6 @@ const Home: React.FC = () => {
     [theme.breakpoints.down('md')]: {
       fontSize: '1rem',
     },
-    fontSize: '5rem',
   };
 
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
@@ -280,6 +289,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<SecretIcon width={24} height={24} />}
                       title="Set up an authentication method"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -297,6 +307,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<SchemaIcon width={24} height={24} />}
                       title="Create a schema"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -315,6 +326,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<EmailIcon width={24} height={24} />}
                       title="Set up email provider"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -332,6 +344,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<LockIcon width={24} height={24} />}
                       title="Set up client secrets"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -349,6 +362,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<ScreenSearchDesktopRounded width={24} height={24} />}
                       title="Introspection"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Box
                           display="flex"

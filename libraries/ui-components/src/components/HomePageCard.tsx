@@ -1,5 +1,5 @@
 import { Box, Divider, Paper, styled, Typography } from "@mui/material";
-import React, { FC, ReactNode } from "react";
+import React, {CSSProperties, FC, ReactNode} from "react";
 
 const BoxWithIconText = styled(Box)(() => ({
   display: "flex",
@@ -34,6 +34,7 @@ interface Props {
   title?: string;
   descriptionContent: JSX.Element;
   theme?: "light" | "dark";
+  titleFontSize: CSSProperties;
 }
 
 const HomePageCard: FC<Props> = ({
@@ -41,6 +42,7 @@ const HomePageCard: FC<Props> = ({
   title,
   descriptionContent,
   theme = "dark",
+    titleFontSize
 }) => {
   return (
     <CustomizedCard
@@ -53,7 +55,7 @@ const HomePageCard: FC<Props> = ({
         <>
           <BoxWithIconText>
             {icon && icon}
-            <Typography noWrap>&nbsp; {title}</Typography>
+            <Typography noWrap sx={{fontSize:titleFontSize}}>&nbsp; {title}</Typography>
           </BoxWithIconText>
           <CustomizedDivider />
         </>

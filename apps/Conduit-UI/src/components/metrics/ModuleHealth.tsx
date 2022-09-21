@@ -46,7 +46,7 @@ const ModuleHealth: FC<Props> = ({ module, fontSizes }) => {
             />
           )}
           {health && !loading && (
-            <Typography color="primary" variant="h4">
+            <Typography color="primary" variant="h4" sx={{ fontSize: fontSizes }}>
               Good
             </Typography>
           )}
