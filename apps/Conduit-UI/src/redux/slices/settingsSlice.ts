@@ -14,6 +14,9 @@ import {
   postNewAdminUser,
   patchAdminSettings,
   patchCoreSettings,
+  changeOtherAdminsPassword,
+  enableTwoFA,
+  disableTwoFA,
 } from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -74,7 +77,7 @@ export const asyncDeleteAdmin = createAsyncThunk(
   async (params: { id: string; getAdmins: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await deleteAdmin(params.id);
+      await deleteAdmin(params.id);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted admin!`));
       params.getAdmins();
       thunkAPI.dispatch(setAppLoading(false));
@@ -91,10 +94,57 @@ export const asyncChangePassword = createAsyncThunk(
   async (params: { newPassword: string; oldPassword: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await changePassword(params.newPassword, params.oldPassword);
-
+      await changePassword(params.newPassword, params.oldPassword);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Password changed!`));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncChangeOtherAdminsPassword = createAsyncThunk(
+  'authentication/changeOtherAdminsPassword',
+  async (params: { adminId: string; newPassword: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await changeOtherAdminsPassword(params.adminId, params.newPassword);
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Password changed!`));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncEnableTwoFA = createAsyncThunk(
+  'authentication/enableTwoFA',
+  async (args, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await enableTwoFA();
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Two factor authentication enabled!`));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDisableTwoFA = createAsyncThunk(
+  'authentication/enableTwoFA',
+  async (args, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await disableTwoFA();
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Two factor authentication disabled!`));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

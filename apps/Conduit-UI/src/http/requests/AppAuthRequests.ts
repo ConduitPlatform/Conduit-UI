@@ -6,6 +6,6 @@ export const loginRequest = (username: string, password: string) =>
     password,
   });
 
-export const verifyQrCodeRequest = () => postRequest('/verify-qr-code', { code: '' });
+export const verifyQrCodeRequest = (code: string) => postRequest('/verify-qr-code', { code });
 
-export const verifyTwoFARequest = () => postRequest('/verify-twofa', { code: '' });
+export const verifyTwoFARequest = (code: string) => postRequest('/verify-twofa', { code });

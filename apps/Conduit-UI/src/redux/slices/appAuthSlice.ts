@@ -4,7 +4,11 @@ import { IModule } from '../../models/appAuth';
 import { asyncGetNotificationConfig, clearNotificationPageStore } from './notificationsSlice';
 import { asyncGetStorageConfig, clearStoragePageStore } from './storageSlice';
 import { getAdminModulesRequest } from '../../http/requests/SettingsRequests';
-import { loginRequest } from '../../http/requests/AppAuthRequests';
+import {
+  loginRequest,
+  verifyQrCodeRequest,
+  verifyTwoFARequest,
+} from '../../http/requests/AppAuthRequests';
 import { clearAppNotifications, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { asyncGetEmailConfig, clearEmailPageStore } from './emailsSlice';
@@ -46,6 +50,40 @@ export const asyncLogin = createAsyncThunk(
       thunkAPI.dispatch(enqueueInfoNotification(`Welcome ${username}!`));
       thunkAPI.dispatch(setAppLoading(false));
       return { data, cookie: values.remember };
+    } catch (error) {
+      thunkAPI.dispatch(
+        enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
+      throw error;
+    }
+  }
+);
+
+export const asyncVerifyQrCode = createAsyncThunk(
+  'appAuth/verifyQrCode',
+  async (args: { code: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await verifyQrCodeRequest(args.code);
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(
+        enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
+      throw error;
+    }
+  }
+);
+
+export const asyncverifyTwoFA = createAsyncThunk(
+  'appAuth/verifyTwoFA',
+  async (args: { code: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await verifyTwoFARequest(args.code);
+      thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(
         enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
