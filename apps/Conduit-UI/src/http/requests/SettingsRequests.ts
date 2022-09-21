@@ -1,6 +1,12 @@
 import { Pagination } from '../../models/http/HttpModels';
 import { IAdminSettings, ICoreSettings } from '../../models/settings/SettingsModels';
-import { deleteRequest, getRequest, patchRequest, postRequest } from '../requestsConfig';
+import {
+  deleteRequest,
+  getRequest,
+  patchRequest,
+  postRequest,
+  putRequest,
+} from '../requestsConfig';
 
 export const getAdminModulesRequest = () => {
   return getRequest(`/config/modules`);
@@ -51,8 +57,17 @@ export const deleteAdmin = (id: string) => {
 };
 
 export const changePassword = (oldPassword: string, newPassword: string) => {
-  return postRequest(`/change-password`, {
+  return putRequest(`/change-password`, {
     oldPassword: oldPassword,
     newPassword: newPassword,
   });
 };
+
+export const changeOtherAdminsPassword = (adminId: string, newPassword: string) =>
+  putRequest(`/change-password/${adminId}`, {
+    newPassword,
+  });
+
+export const enableTwoFA = () => putRequest('/enable-twofa', { method: 'qrcode' });
+
+export const disableTwoFa = () => putRequest('/disable-twofa');

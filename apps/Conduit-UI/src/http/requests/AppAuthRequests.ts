@@ -5,3 +5,7 @@ export const loginRequest = (username: string, password: string) =>
     username,
     password,
   });
+
+export const verifyQrCodeRequest = () => postRequest('/verify-qr-code', { code: '' });
+
+export const verifyTwoFARequest = () => postRequest('/verify-twofa', { code: '' });
