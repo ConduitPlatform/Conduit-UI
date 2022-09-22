@@ -316,6 +316,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
               justifyContent={'center'}
               xl={1}
               md={2}
+              sm={6}
               xs={12}>
               <FormControlLabel
                 sx={{
@@ -339,7 +340,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 label={'LIVE'}
               />
             </Grid>
-            <Grid item xl={1} md={2} xs={12}>
+            <Grid item xl={1} md={2} xs={12} sm={6}>
               <LoadingButton
                 onClick={() => handleRefresh()}
                 endIcon={<RefreshIcon />}
@@ -362,7 +363,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 Refresh
               </LoadingButton>
             </Grid>
-            <Grid item xl={3} md={4} xs={12}>
+            <Grid item xl={3} md={4} xs={12} sm={6}>
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DateTimePicker
                   disabled={liveReloadChecked}
@@ -410,7 +411,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xl={3} md={4} xs={12}>
+            <Grid item xl={3} md={4} xs={12} sm={6}>
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DateTimePicker
                   disabled={liveReloadChecked}
@@ -458,7 +459,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xl={2} md={6} xs={12}>
+            <Grid item xl={2} md={6} xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Limit</InputLabel>
                 <Select
@@ -479,7 +480,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xl={2} md={6} xs={12}>
+            <Grid item xl={2} md={6} xs={12} sm={6}>
               <FormControl fullWidth size={'small'}>
                 <InputLabel>Level</InputLabel>
                 <Select
