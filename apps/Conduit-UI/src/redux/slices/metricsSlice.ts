@@ -139,7 +139,7 @@ export const asyncGetModuleHealth = createAsyncThunk(
     try {
       const { data } = await getModuleHealth(body);
       thunkAPI.dispatch(setAppLoading(false));
-      return data.data.result[0].values[0][1] === '1' ? true : false;
+      return data.data.result[0].values[0][1] === '1';
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
