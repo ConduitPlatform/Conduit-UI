@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Typography, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
@@ -8,10 +8,9 @@ import { ScaleLoader } from 'react-spinners';
 
 interface Props {
   module: ModulesTypes;
-  fontSizes: CSSProperties;
 }
 
-const RequestsLatency: FC<Props> = ({ module, fontSizes }) => {
+const RequestsLatency: FC<Props> = ({ module }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const latency: number = useAppSelector(
@@ -21,6 +20,15 @@ const RequestsLatency: FC<Props> = ({ module, fontSizes }) => {
   const loading = useAppSelector(
     (state) => state?.metricsSlice?.meta?.moduleLatencyLoading?.[module]
   );
+
+  const latencyFontSize = {
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '1rem',
+    },
+  };
 
   useEffect(() => {
     dispatch(
@@ -33,7 +41,7 @@ const RequestsLatency: FC<Props> = ({ module, fontSizes }) => {
   return (
     <MetricsWidget
       metric={
-        <Typography color="primary" variant="h4" sx={{ fontSize: fontSizes }}>
+        <Typography color="primary" variant="h4" sx={{ fontSize: latencyFontSize }}>
           {loading ? (
             <ScaleLoader
               speedMultiplier={3}

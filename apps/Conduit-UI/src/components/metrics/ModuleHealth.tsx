@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import React, { CSSProperties, FC, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -10,16 +10,24 @@ import { ScaleLoader } from 'react-spinners';
 
 interface Props {
   module: ModulesTypes;
-  fontSizes: CSSProperties;
 }
 
-const ModuleHealth: FC<Props> = ({ module, fontSizes }) => {
+const ModuleHealth: FC<Props> = ({ module }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const health = useAppSelector((state) => state?.metricsSlice?.data?.moduleHealth?.[module]);
   const loading = useAppSelector(
     (state) => state?.metricsSlice?.meta?.moduleHealthLoading?.[module]
   );
+
+  const healthFontSize = {
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '1rem',
+    },
+  };
 
   useEffect(() => {
     dispatch(
@@ -46,12 +54,12 @@ const ModuleHealth: FC<Props> = ({ module, fontSizes }) => {
             />
           )}
           {health && !loading && (
-            <Typography color="primary" variant="h4" sx={{ fontSize: fontSizes }}>
+            <Typography color="primary" variant="h4" sx={{ fontSize: healthFontSize }}>
               Good
             </Typography>
           )}
           {!health && !loading && (
-            <Typography color="error" variant="h4" sx={{ fontSize: fontSizes }}>
+            <Typography color="error" variant="h4" sx={{ fontSize: healthFontSize }}>
               Critical
             </Typography>
           )}

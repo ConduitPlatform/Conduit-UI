@@ -45,6 +45,21 @@ const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
+  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
+
+  const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
+  const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
+  const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
+  const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
+  const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
+  const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
+
+  const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
+  const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
+  const formsCount = useAppSelector((state) => state.formsSlice.data.count);
+  const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
+  const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
 
   const homePageFontSizeHeader = {
     fontSize: '2.5rem',
@@ -84,22 +99,6 @@ const Home: React.FC = () => {
       fontSize: '1rem',
     },
   };
-
-  const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
-  const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
-
-  const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
-  const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
-  const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
-  const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
-  const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
-  const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
-
-  const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
-  const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
-  const formsCount = useAppSelector((state) => state.formsSlice.data.count);
-  const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
-  const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
 
   const isEnabled = useCallback(
     (str: string) => {
@@ -216,10 +215,10 @@ const Home: React.FC = () => {
                 </GraphContainer>
               </Grid>
               <Grid item xs={6} sm={3}>
-                <RequestsLatency module="home" fontSizes={cardsTextFontSize} />
+                <RequestsLatency module="home" />
               </Grid>
               <Grid item xs={6} sm={3}>
-                <ModuleHealth module="home" fontSizes={cardsTextFontSize} />
+                <ModuleHealth module="home" />
               </Grid>
               {isEnabled('database') && (
                 <Grid item xs={6} sm={3}>
