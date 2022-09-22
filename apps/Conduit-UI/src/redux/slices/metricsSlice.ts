@@ -4,12 +4,14 @@ import { setAppLoading } from './appSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { MetricsData, MetricsLogsData } from '../../models/metrics/metricsModels';
 import {
+  getAdminRoutes,
   getGenericMetricQueryRange,
   getMetricsQuery,
   getModuleHealth,
   getModuleLatency,
 } from '../../http/requests/MetricsRequests';
 import moment, { Moment } from 'moment';
+import { parseInt } from 'lodash';
 
 interface IMetricsSlice {
   data: {
@@ -17,12 +19,14 @@ interface IMetricsSlice {
     moduleTotalRequests: Record<ModulesTypes, MetricsData[]>;
     moduleHealth: Record<ModulesTypes, boolean>;
     moduleLatency: Record<ModulesTypes, number>;
+    adminRoutes: Record<string, MetricsData[]>;
   };
   meta: {
     genericMetricLoading: Record<string, boolean>;
     moduleTotalRequestsLoading: Record<ModulesTypes, boolean>;
     moduleHealthLoading: Record<ModulesTypes, boolean>;
     moduleLatencyLoading: Record<ModulesTypes, boolean>;
+    adminRoutes: Record<string, boolean>;
   };
 }
 
@@ -32,12 +36,14 @@ const initialState: IMetricsSlice = {
     moduleTotalRequests: {} as Record<ModulesTypes, MetricsData[]>,
     moduleHealth: {} as Record<ModulesTypes, boolean>,
     moduleLatency: {} as Record<ModulesTypes, number>,
+    adminRoutes: {} as Record<string, MetricsData[]>,
   },
   meta: {
     genericMetricLoading: {} as Record<string, boolean>,
     moduleTotalRequestsLoading: {} as Record<ModulesTypes, boolean>,
     moduleHealthLoading: {} as Record<ModulesTypes, boolean>,
     moduleLatencyLoading: {} as Record<ModulesTypes, boolean>,
+    adminRoutes: {} as Record<string, boolean>,
   },
 };
 
@@ -139,7 +145,7 @@ export const asyncGetModuleHealth = createAsyncThunk(
     try {
       const { data } = await getModuleHealth(body);
       thunkAPI.dispatch(setAppLoading(false));
-      return data.data.result[0].values[0][1] === '1' ? true : false;
+      return data.data.result[0].values[0][1] === '1';
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
@@ -161,6 +167,45 @@ export const asyncGetModuleLatency = createAsyncThunk(
       const { data } = await getModuleLatency(body);
       thunkAPI.dispatch(setAppLoading(false));
       return data.data.result[0].value[1] * 1000;
+    } catch (error: any) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetAdminRoutes = createAsyncThunk(
+  '/metrics/getAdminRoutes',
+  async (
+    body: {
+      expression: string;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getAdminRoutes(body);
+
+      const timestamps: number[] = [];
+      const counters: number[] = [];
+
+      const arr: [] = [];
+      data?.data?.result.forEach((e: MetricsLogsData) => {
+        e.values.forEach((item) => {
+          arr.push(item);
+        });
+      });
+
+      arr.map((item) => {
+        const itemsTime = item?.[0] as Moment;
+        const itemsCount = item?.[1];
+
+        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
+        counters.push(parseInt(itemsCount));
+      });
+      thunkAPI.dispatch(setAppLoading(false));
+      return [{ timestamps: timestamps, counters: counters }];
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
@@ -201,6 +246,13 @@ const metricsSlice = createSlice({
     builder.addCase(asyncGetModuleLatency.fulfilled, (state, action) => {
       state.data.moduleLatency[action.meta.arg.module] = action.payload;
       state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
+    });
+    builder.addCase(asyncGetAdminRoutes.pending, (state, action) => {
+      state.meta.adminRoutes[action.meta.arg.expression] = true;
+    });
+    builder.addCase(asyncGetAdminRoutes.fulfilled, (state, action) => {
+      state.data.adminRoutes[action.meta.arg.expression] = action.payload;
+      state.meta.adminRoutes[action.meta.arg.expression] = false;
     });
   },
 });
