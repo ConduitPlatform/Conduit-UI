@@ -16,6 +16,8 @@ import {
   patchCoreSettings,
   changeOtherAdminsPassword,
   toggleTwoFA,
+  getAdminById,
+  verifyQrCodeRequest,
 } from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -28,6 +30,7 @@ interface ISettingsSlice {
       admins: IAdmin[];
       count: number;
     };
+    selectedAdmin: IAdmin;
   };
   coreSettings: ICoreSettings;
   adminSettings: IAdminSettings;
@@ -38,6 +41,15 @@ const initialState: ISettingsSlice = {
     authAdmins: {
       admins: [],
       count: 0,
+    },
+    selectedAdmin: {
+      createdAt: '',
+      email: '',
+      username: '',
+      updatedAt: '',
+      _id: '',
+      isSuperAdmin: false,
+      hasTwoFa: false,
     },
   },
   coreSettings: {
@@ -61,6 +73,23 @@ export const asyncGetAdmins = createAsyncThunk(
     try {
       const { data } = await getAdmins(params);
       thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetAdminById = createAsyncThunk(
+  'authentication/getAdminById',
+  async (id: string, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getAdminById(id);
+      thunkAPI.dispatch(setAppLoading(false));
+      console.log(data);
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -130,6 +159,23 @@ export const asyncToggleTwoFA = createAsyncThunk(
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncVerifyQrCode = createAsyncThunk(
+  'appAuth/verifyQrCode',
+  async (args: { code: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await verifyQrCodeRequest(args.code);
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(
+        enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
       throw error;
     }
   }
@@ -238,6 +284,10 @@ const settingsSlice = createSlice({
     builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
       state.data.authAdmins.admins = action.payload.admins;
       state.data.authAdmins.count = action.payload.count;
+    });
+    builder.addCase(asyncGetAdminById.fulfilled, (state, action) => {
+      console.log(action.payload);
+      state.data.selectedAdmin = action.payload;
     });
   },
 });

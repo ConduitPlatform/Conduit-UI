@@ -5,13 +5,13 @@ import UserInformation from './UserInformation';
 
 const UserSettingsLayout = () => {
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Paper sx={{ padding: 4, borderRadius: 8 }}>
-        <Grid container>
-          <Grid item xs={12} md={6}>
+        <Grid container spacing={3}>
+          <Grid item minHeight={'325px'} xs={12} md={12} lg={6}>
             <UserInformation />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12} lg={6}>
             <ChangePassword />
           </Grid>
         </Grid>

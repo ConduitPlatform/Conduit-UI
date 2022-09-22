@@ -29,7 +29,7 @@ const ChangePassword: React.FC = () => {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="center" alignItems="center">
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(handleChangePassword)}>
               <FormInputText

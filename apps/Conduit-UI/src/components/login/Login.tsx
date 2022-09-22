@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { asyncLogin } from '../../redux/slices/appAuthSlice';
-import { Box, Fade, useMediaQuery, useTheme } from '@mui/material';
+import { asyncLogin, asyncverifyTwoFA } from '../../redux/slices/appAuthSlice';
+import { Box, Fade, Paper, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useRouter } from 'next/router';
 import Grid from '@mui/material/Grid';
@@ -12,7 +12,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
+import jwt_decode from 'jwt-decode';
 import Image from 'next/image';
+import key from '../../assets/svgs/key.svg';
 
 interface ILoginValues {
   username: string;
@@ -23,10 +25,11 @@ interface ILoginValues {
 const Login: React.FC = () => {
   const theme = useTheme();
   const { token } = useAppSelector((state) => state.appAuthSlice.data);
-  const { loading } = useAppSelector((state) => state.appSlice);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [authenticationCode, setAuthenticationCode] = useState<string>('');
 
   const methods = useForm<ILoginValues>({
     defaultValues: { username: '', password: '', remember: false },
@@ -34,12 +37,23 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (token) {
-      router.replace('/');
+      const decoded: { id: string; twoFaRequired: boolean; iat: number; exp: number } =
+        jwt_decode(token);
+      if (!decoded.twoFaRequired) router.replace('/');
     }
   }, [router, token]);
 
   const handleLogin = (values: { username: string; password: string; remember: boolean }) => {
     dispatch(asyncLogin(values));
+  };
+
+  const remember = methods.watch('remember');
+
+  const username = methods.watch('username');
+  const password = methods.watch('password');
+
+  const handleTwoFALogin = () => {
+    dispatch(asyncverifyTwoFA({ code: authenticationCode, remember, username }));
   };
 
   return (
@@ -117,12 +131,31 @@ const Login: React.FC = () => {
                       fullWidth
                       variant="contained"
                       color="primary"
-                      disabled={loading}
+                      disabled={username === '' || password === ''}
                       sx={{ whiteSpace: 'nowrap' }}>
                       Sign In
                     </Button>
                   </form>
                 </FormProvider>
+                {token && jwt_decode(token).twoFaRequired && (
+                  <Paper elevation={0} sx={{ borderRadius: 8 }}>
+                    <Box mt={4} p={4} display="flex" flexDirection="column" gap={2}>
+                      <Box display="flex" justifyContent="center" gap={1}>
+                        <Typography textAlign="center">2FA Required!</Typography>
+                        <Image src={key} alt="key" />
+                      </Box>
+                      <Typography textAlign="center">Please insert your 2FA code</Typography>
+                      <TextField
+                        label="Authentication Code"
+                        value={authenticationCode}
+                        onChange={(e) => setAuthenticationCode(e.target.value)}
+                      />
+                      <Button sx={{ textAlign: 'center' }} onClick={() => handleTwoFALogin()}>
+                        Continue
+                      </Button>
+                    </Box>
+                  </Paper>
+                )}
               </Container>
             </Grid>
           </Grid>

@@ -35,6 +35,8 @@ export interface IAdmin {
   username: string;
   updatedAt: string;
   _id: string;
+  isSuperAdmin: boolean;
+  hasTwoFa: boolean;
 }
 
 export interface AuthUserUI {

@@ -52,6 +52,10 @@ export const getAdmins = (params: Pagination) => {
   return getRequest(`/admins`, params);
 };
 
+export const getAdminById = (id: string) => {
+  return getRequest(`/admins/${id}`);
+};
+
 export const deleteAdmin = (id: string) => {
   return deleteRequest(`/admins/${id}`);
 };
@@ -68,4 +72,7 @@ export const changeOtherAdminsPassword = (adminId: string, newPassword: string) 
     newPassword,
   });
 
-export const toggleTwoFA = (enabled: boolean) => putRequest('/enable-twofa', { enabled: enabled });
+export const toggleTwoFA = (enabled: boolean) =>
+  putRequest('/toggle-twofa', { enableTwoFa: enabled });
+
+export const verifyQrCodeRequest = (code: string) => postRequest('/verify-qr-code', { code });
