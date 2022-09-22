@@ -4,6 +4,7 @@ import { setAppLoading } from './appSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
 import { MetricsData, MetricsLogsData } from '../../models/metrics/metricsModels';
 import {
+  getGenericMetricQueryRange,
   getMetricsQuery,
   getModuleHealth,
   getModuleLatency,
@@ -11,16 +12,77 @@ import {
 import moment, { Moment } from 'moment';
 
 interface IMetricsSlice {
-  metrics: Record<ModulesTypes, MetricsData[]>;
-  moduleHealth: Record<ModulesTypes, boolean>;
-  moduleLatency: Record<ModulesTypes, number>;
+  data: {
+    genericMetric: Record<string, MetricsData[]>;
+    moduleTotalRequests: Record<ModulesTypes, MetricsData[]>;
+    moduleHealth: Record<ModulesTypes, boolean>;
+    moduleLatency: Record<ModulesTypes, number>;
+  };
+  meta: {
+    genericMetricLoading: Record<string, boolean>;
+    moduleTotalRequestsLoading: Record<ModulesTypes, boolean>;
+    moduleHealthLoading: Record<ModulesTypes, boolean>;
+    moduleLatencyLoading: Record<ModulesTypes, boolean>;
+  };
 }
 
 const initialState: IMetricsSlice = {
-  metrics: {} as Record<ModulesTypes, MetricsData[]>,
-  moduleHealth: {} as Record<ModulesTypes, boolean>,
-  moduleLatency: {} as Record<ModulesTypes, number>,
+  data: {
+    genericMetric: {} as Record<string, MetricsData[]>,
+    moduleTotalRequests: {} as Record<ModulesTypes, MetricsData[]>,
+    moduleHealth: {} as Record<ModulesTypes, boolean>,
+    moduleLatency: {} as Record<ModulesTypes, number>,
+  },
+  meta: {
+    genericMetricLoading: {} as Record<string, boolean>,
+    moduleTotalRequestsLoading: {} as Record<ModulesTypes, boolean>,
+    moduleHealthLoading: {} as Record<ModulesTypes, boolean>,
+    moduleLatencyLoading: {} as Record<ModulesTypes, boolean>,
+  },
 };
+
+export const asyncGetGenericMetricQueryRange = createAsyncThunk(
+  '/metrics/getGenericMetric',
+  async (
+    body: {
+      expression: string;
+      startDate?: number;
+      endDate?: number;
+      step?: string;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getGenericMetricQueryRange(body);
+
+      const timestamps: number[] = [];
+      const counters: number[] = [];
+
+      const arr: [] = [];
+      data?.data?.result.forEach((e: MetricsLogsData) => {
+        e.values.forEach((item) => {
+          arr.push(item);
+        });
+      });
+
+      arr.map((item) => {
+        const itemsTime = item?.[0] as Moment;
+        const itemsCount = item?.[1];
+
+        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
+        counters.push(parseInt(itemsCount));
+      });
+
+      thunkAPI.dispatch(setAppLoading(false));
+      return [{ timestamps: timestamps, counters: counters }];
+    } catch (error: any) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+      throw error;
+    }
+  }
+);
 
 export const asyncGetMetricsQuery = createAsyncThunk(
   '/metrics/getQueryRange',
@@ -112,14 +174,33 @@ const metricsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(asyncGetGenericMetricQueryRange.pending, (state, action) => {
+      state.meta.genericMetricLoading[action.meta.arg.expression] = true;
+    });
+    builder.addCase(asyncGetGenericMetricQueryRange.fulfilled, (state, action) => {
+      state.data.genericMetric[action.meta.arg.expression] = action.payload;
+      state.meta.genericMetricLoading[action.meta.arg.expression] = false;
+    });
+    builder.addCase(asyncGetMetricsQuery.pending, (state, action) => {
+      state.meta.moduleTotalRequestsLoading[action.meta.arg.module] = true;
+    });
     builder.addCase(asyncGetMetricsQuery.fulfilled, (state, action) => {
-      state.metrics[action.meta.arg.module] = action.payload;
+      state.data.moduleTotalRequests[action.meta.arg.module] = action.payload;
+      state.meta.moduleTotalRequestsLoading[action.meta.arg.module] = false;
+    });
+    builder.addCase(asyncGetModuleHealth.pending, (state, action) => {
+      state.meta.moduleHealthLoading[action.meta.arg.module] = true;
     });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
-      state.moduleHealth[action.meta.arg.module] = action.payload;
+      state.data.moduleHealth[action.meta.arg.module] = action.payload;
+      state.meta.moduleHealthLoading[action.meta.arg.module] = false;
+    });
+    builder.addCase(asyncGetModuleLatency.pending, (state, action) => {
+      state.meta.moduleLatencyLoading[action.meta.arg.module] = true;
     });
     builder.addCase(asyncGetModuleLatency.fulfilled, (state, action) => {
-      state.moduleLatency[action.meta.arg.module] = action.payload;
+      state.data.moduleLatency[action.meta.arg.module] = action.payload;
+      state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
     });
   },
 });
