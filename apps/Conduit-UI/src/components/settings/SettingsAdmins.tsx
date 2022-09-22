@@ -96,7 +96,7 @@ const SettingsAdmins: React.FC = () => {
   ];
 
   const formatData = (admins: IAdmin[]) => {
-    return admins.map((u) => {
+    return admins?.map((u) => {
       return {
         _id: u._id,
         username: u.username,
@@ -143,7 +143,7 @@ const SettingsAdmins: React.FC = () => {
         handleLimitChange={handleLimitChange}
         page={page}
         count={count}
-        noData={!admins.length ? 'admins' : undefined}>
+        noData={!admins?.length ? 'admins' : undefined}>
         <DataTable
           headers={headers}
           dsData={formatData(admins)}

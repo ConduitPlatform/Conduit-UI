@@ -203,8 +203,8 @@ const settingsSlice = createSlice({
       state.adminSettings = action.payload.config;
     });
     builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
-      state.data.authAdmins.admins = action.payload.result.admins;
-      state.data.authAdmins.count = action.payload.result.count;
+      state.data.authAdmins.admins = action.payload.result?.admins;
+      state.data.authAdmins.count = action.payload.result?.count;
     });
   },
 });
