@@ -55,7 +55,7 @@ const ModuleHealth: FC<Props> = ({ module, fontSizes }) => {
               Critical
             </Typography>
           )}
-          <Image src={Rate} alt="Heart rate" />
+          <Image src={Rate} alt="Heart rate" height={19} width={19} />
         </Box>
       }
       title="Health"
