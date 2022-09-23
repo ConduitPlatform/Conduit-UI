@@ -168,7 +168,7 @@ export const asyncVerifyQrCode = createAsyncThunk(
   async (args: { code: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await verifyQrCodeRequest(args.code);
+      await verifyQrCodeRequest(args.code);
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(
