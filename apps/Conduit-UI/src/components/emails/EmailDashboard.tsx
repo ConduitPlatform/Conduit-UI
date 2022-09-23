@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
-import ExtractGraph from '../metrics/ExtractMetricGraph';
+import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
@@ -17,8 +17,7 @@ const EmailDashboard = () => {
         </Grid>
         <Grid item md={12} lg={6}>
           <GraphContainer>
-            <ExtractGraph
-              query="/query_range"
+            <ExtractQueryRangeGraph
               expression="sum(increase(conduit_email_templates_total[10m]))"
               graphTitle="Total email templates"
               label="Templates"
@@ -27,8 +26,7 @@ const EmailDashboard = () => {
         </Grid>
         <Grid item md={12} lg={6}>
           <GraphContainer>
-            <ExtractGraph
-              query="/query_range"
+            <ExtractQueryRangeGraph
               expression="sum(increase(conduit_emails_sent_total[10m]))"
               graphTitle="Total emails sent"
               label="Emails sent"

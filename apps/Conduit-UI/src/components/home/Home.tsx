@@ -29,7 +29,7 @@ import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
-import ExtractGraph from '../metrics/ExtractMetricGraph';
+import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import MetricsWidget from '../metrics/MetricsWidget';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import RequestsLatency from '../metrics/RequestLatency';
@@ -37,31 +37,14 @@ import ModuleHealth from '../metrics/ModuleHealth';
 import { asyncGetForms } from '../../redux/slices/formsSlice';
 import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
 
+const Main = styled('main')(() => ({
+  flexGrow: 1,
+}));
+
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const homePageFontSizeHeader = {
-    fontSize: '2.5rem',
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '1.2rem',
-    },
-    [theme.breakpoints.between('sm', 'md')]: {
-      fontSize: '2rem',
-    },
-  };
-
-  const homePageFontSizeSubtitles = {
-    fontSize: '0.8rem',
-    [theme.breakpoints.down('lg')]: {
-      fontSize: '0.6rem',
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: '0.6rem',
-    },
-  };
-
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
 
@@ -78,6 +61,45 @@ const Home: React.FC = () => {
   const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
   const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
 
+  const homePageFontSizeHeader = {
+    fontSize: '2.5rem',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.between('sm', 'md')]: {
+      fontSize: '2rem',
+    },
+  };
+
+  const homePageFontSizeTitles = {
+    fontSize: '1rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.8rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.7rem',
+    },
+  };
+
+  const homePageFontSizeSubtitles = {
+    fontSize: '0.8rem',
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.6rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.5rem',
+    },
+  };
+
+  const cardsTextFontSize = {
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '1.2rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '1rem',
+    },
+  };
+
   const isEnabled = useCallback(
     (str: string) => {
       return enabledModules.find((item: IModule) => item.moduleName === str);
@@ -91,6 +113,7 @@ const Home: React.FC = () => {
     isEnabled('database') && dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
     isEnabled('emails') && dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
     isEnabled('forms') && dispatch(asyncGetForms({ skip: 0, limit: 5 }));
+    dispatch(asyncGetIntrospectionStatus());
   }, [dispatch, isEnabled]);
 
   const noSwagger = useMemo(() => {
@@ -100,14 +123,6 @@ const Home: React.FC = () => {
   const noGraphQL = useMemo(() => {
     return !transportsRouter.graphql && !transportsAdmin.graphql;
   }, [transportsAdmin.graphql, transportsRouter.graphql]);
-
-  useEffect(() => {
-    dispatch(asyncGetIntrospectionStatus());
-  }, [dispatch]);
-
-  const Main = styled('main')(() => ({
-    flexGrow: 1,
-  }));
 
   return (
     <>
@@ -179,8 +194,7 @@ const Home: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
-                  <ExtractGraph
-                    query="/query_range"
+                  <ExtractQueryRangeGraph
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                     graphTitle="Total admin gRPC requests"
                     label="Requests"
@@ -191,8 +205,7 @@ const Home: React.FC = () => {
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={6}>
                 <GraphContainer>
-                  <ExtractGraph
-                    query="/query_range"
+                  <ExtractQueryRangeGraph
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
                     graphTitle="Internal gRPC requests"
                     label="Requests"
@@ -212,7 +225,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Schemas"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {schemasCount}
                       </Typography>
                     }
@@ -224,7 +237,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Endpoints"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {endpointsCount}
                       </Typography>
                     }
@@ -236,7 +249,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Users"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {count}
                       </Typography>
                     }
@@ -248,7 +261,7 @@ const Home: React.FC = () => {
                   <MetricsWidget
                     title="Forms"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {formsCount}
                       </Typography>
                     }
@@ -256,11 +269,11 @@ const Home: React.FC = () => {
                 </Grid>
               )}
               {isEnabled('email') && (
-                <Grid item xs={6} sm={3}>
+                <Grid item xs={6} sm={6} md={6} lg={3}>
                   <MetricsWidget
                     title="Email templates"
                     metric={
-                      <Typography color="primary" variant="h4">
+                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
                         {emailsCount}
                       </Typography>
                     }
@@ -275,6 +288,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<SecretIcon width={24} height={24} />}
                       title="Set up an authentication method"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -292,6 +306,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<SchemaIcon width={24} height={24} />}
                       title="Create a schema"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -310,6 +325,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<EmailIcon width={24} height={24} />}
                       title="Set up email provider"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -327,6 +343,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<LockIcon width={24} height={24} />}
                       title="Set up client secrets"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Typography
                           variant="subtitle2"
@@ -344,6 +361,7 @@ const Home: React.FC = () => {
                     <HomePageCard
                       icon={<ScreenSearchDesktopRounded width={24} height={24} />}
                       title="Introspection"
+                      titleFontSize={homePageFontSizeTitles}
                       descriptionContent={
                         <Box
                           display="flex"

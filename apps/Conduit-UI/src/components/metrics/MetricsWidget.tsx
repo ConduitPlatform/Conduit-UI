@@ -15,7 +15,7 @@ const MetricsWidget: FC<Props> = ({ metric, title }) => {
       fontSize: '0.8rem',
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: '0.7rem',
+      fontSize: '0.6rem',
     },
   };
   return (
@@ -23,7 +23,10 @@ const MetricsWidget: FC<Props> = ({ metric, title }) => {
       elevation={0}
       sx={{
         display: 'flex',
+        flex: 1,
         flexDirection: 'column',
+        justifyContent: 'space-between',
+        height: '100%',
         p: 2,
         gap: 3,
         borderRadius: '24px',
