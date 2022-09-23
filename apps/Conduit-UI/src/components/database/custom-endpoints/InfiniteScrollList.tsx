@@ -47,7 +47,7 @@ const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
 MUIList.displayName = 'MuiList';
 
 const EmptyList: Components['EmptyPlaceholder'] = () => {
-  return <Typography sx={{ textAlign: 'center', pt: 1 }}>No rooms</Typography>;
+  return <Typography sx={{ textAlign: 'center', pt: 1 }}>No results</Typography>;
 };
 
 const FooterList = ({ dataLength, dataTotalCount }: FooterListProps) => {
