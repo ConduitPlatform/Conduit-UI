@@ -89,7 +89,6 @@ export const asyncGetAdminById = createAsyncThunk(
     try {
       const { data } = await getAdminById(id);
       thunkAPI.dispatch(setAppLoading(false));
-      console.log(data);
       return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -286,7 +285,6 @@ const settingsSlice = createSlice({
       state.data.authAdmins.count = action.payload.count;
     });
     builder.addCase(asyncGetAdminById.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.data.selectedAdmin = action.payload;
     });
   },

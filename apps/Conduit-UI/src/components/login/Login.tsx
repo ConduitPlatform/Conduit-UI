@@ -15,6 +15,7 @@ import ConduitLogo from '../../assets/svgs/conduitLogo.svg';
 import jwt_decode from 'jwt-decode';
 import Image from 'next/image';
 import key from '../../assets/svgs/key.svg';
+import { ArrowForwardIos } from '@mui/icons-material';
 
 interface ILoginValues {
   username: string;
@@ -54,6 +55,16 @@ const Login: React.FC = () => {
 
   const handleTwoFALogin = () => {
     dispatch(asyncverifyTwoFA({ code: authenticationCode, remember, username }));
+  };
+
+  const displayTwoFAPopup = () => {
+    if (token) {
+      const decoded: { id: string; twoFaRequired: boolean; iat: number; exp: number } =
+        jwt_decode(token);
+      if (decoded.twoFaRequired) {
+        return true;
+      } else return false;
+    }
   };
 
   return (
@@ -137,7 +148,7 @@ const Login: React.FC = () => {
                     </Button>
                   </form>
                 </FormProvider>
-                {token && jwt_decode(token).twoFaRequired && (
+                {displayTwoFAPopup() && (
                   <Paper elevation={0} sx={{ borderRadius: 8 }}>
                     <Box mt={4} p={4} display="flex" flexDirection="column" gap={2}>
                       <Box display="flex" justifyContent="center" gap={1}>
@@ -150,7 +161,10 @@ const Login: React.FC = () => {
                         value={authenticationCode}
                         onChange={(e) => setAuthenticationCode(e.target.value)}
                       />
-                      <Button sx={{ textAlign: 'center' }} onClick={() => handleTwoFALogin()}>
+                      <Button
+                        endIcon={<ArrowForwardIos />}
+                        sx={{ textAlign: 'center' }}
+                        onClick={() => handleTwoFALogin()}>
                         Continue
                       </Button>
                     </Box>

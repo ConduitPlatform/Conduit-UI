@@ -4,6 +4,9 @@ import {
   Button,
   FormControl,
   FormControlLabel,
+  List,
+  ListItem,
+  ListItemText,
   TextField,
   Typography,
   useTheme,
@@ -25,14 +28,14 @@ const UserInformation: FC = () => {
   const [qrCode, setQrCode] = useState<string>('');
   const [drawer, setDrawer] = useState<boolean>(false);
   const [verificationCode, setVerificationCode] = useState<string>('');
+  const [twoFAChanged, setTwoFAChanged] = useState(false);
 
   const { selectedAdmin } = useAppSelector((state) => state.settingsSlice.data);
 
-  console.log(selectedAdmin.hasTwoFA);
-
   useEffect(() => {
     dispatch(asyncGetAdminById('me'));
-  }, [dispatch]);
+    setTwoFAChanged(false);
+  }, [dispatch, twoFAChanged]);
 
   const handleToggleTwoFa = () => {
     let enable = false;
@@ -45,7 +48,7 @@ const UserInformation: FC = () => {
       if (res.data.message === 'OK') {
         setQrCode('');
         dispatch(enqueueSuccessNotification('Successfuly disabled Two Factor Authentication!'));
-        dispatch(asyncGetAdminById('me'));
+        setTwoFAChanged(true);
       } else {
         setQrCode(res.data.result);
         setDrawer(true);
@@ -55,13 +58,14 @@ const UserInformation: FC = () => {
 
   const handleSubmitVerificationCode = () => {
     postRequest('/verify-qr-code', { code: verificationCode })
-      .then((res) =>
-        dispatch(enqueueSuccessNotification('Successfuly enabled Two Factor Authentication!'))
-      )
-      .catch((err) =>
+      .then(() => {
+        dispatch(enqueueSuccessNotification('Successfuly enabled Two Factor Authentication!'));
+        setTwoFAChanged(true);
+      })
+      .catch(() =>
         dispatch(enqueueErrorNotification('Verification code incorrect, signing out...'))
       );
-    dispatch(asyncGetAdminById('me'));
+
     setDrawer(false);
     setVerificationCode('');
   };
@@ -71,33 +75,42 @@ const UserInformation: FC = () => {
     setVerificationCode('');
   };
 
+  //TODO use mui list below
+
   return (
-    <Box px={12} display="flex" flexDirection="column" alignItems="center" gap={2}>
+    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
       <Typography textAlign="center" variant={'h5'} mb={2}>
         User information
       </Typography>
-      <Typography variant={'body2'}>Username: {selectedAdmin.username}</Typography>
-      <Typography variant={'body2'}>
-        Created at: {moment(selectedAdmin.createdAt).format('DD/MM/YY')}
-      </Typography>
-      <FormControl>
-        <FormControlLabel
-          label="Is super admin"
-          control={<ConduitCheckbox sx={{ mx: 2 }} disabled checked={selectedAdmin.isSuperAdmin} />}
-        />
-      </FormControl>
-      <FormControl>
-        <FormControlLabel
-          label="Two Factor Authentication"
-          control={
-            <ConduitCheckbox
-              sx={{ mx: 2 }}
-              disabled
-              checked={selectedAdmin.hasTwoFA ? true : false}
+      <List>
+        <ListItem>
+          <ListItemText primary={`Username: ${selectedAdmin.username}`} />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary={`Created at: ${moment(selectedAdmin.createdAt).format('DD/MM/YY')}`}
+          />
+        </ListItem>
+        <ListItem>
+          <FormControl>
+            <FormControlLabel
+              label="Is super admin"
+              control={
+                <ConduitCheckbox sx={{ mx: 2 }} disabled checked={selectedAdmin.isSuperAdmin} />
+              }
             />
-          }
-        />
-      </FormControl>
+          </FormControl>
+        </ListItem>
+        <ListItem>
+          <FormControl>
+            <FormControlLabel
+              label="Two Factor Authentication"
+              control={<ConduitCheckbox sx={{ mx: 2 }} disabled checked={selectedAdmin.hasTwoFA} />}
+            />
+          </FormControl>
+        </ListItem>
+      </List>
+
       <Button variant="outlined" onClick={() => handleToggleTwoFa()}>
         {selectedAdmin.hasTwoFA ? 'Disable 2FA' : 'Enable 2FA'}
       </Button>
