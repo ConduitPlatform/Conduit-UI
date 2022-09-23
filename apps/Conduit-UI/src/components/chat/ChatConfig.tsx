@@ -79,7 +79,7 @@ const ChatConfig: React.FC = () => {
                         </Typography>
                         <Box display="flex" justifyContent="flex-end">
                           <a
-                            href="https://getconduit.dev/docs/modules/authentication/config#available-options"
+                            href="https://getconduit.dev/docs/modules/chat/config"
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ textDecoration: 'none' }}>
