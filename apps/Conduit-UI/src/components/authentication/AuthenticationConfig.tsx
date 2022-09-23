@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon } from '@mui/material';
+import { Button, Icon } from '@mui/material';
 
 const AuthenticationConfig: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -104,7 +104,25 @@ const AuthenticationConfig: React.FC = () => {
                 <Typography variant={'h6'}>Activate Authentication Module</Typography>
                 <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
                   <RichTooltip
-                    content={<Typography variant="caption">Placeholder...</Typography>}
+                    content={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          To see more information regarding Authentication config, please visit our
+                          docs
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/authentication/config#available-options"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Take me there</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }
+                    width="400px"
+                    placement="bottom"
                     open={openTooltip}
                     onClose={MouseOutTooltip}>
                     <Icon>

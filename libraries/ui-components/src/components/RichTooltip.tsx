@@ -6,7 +6,6 @@ import {
   PaperProps,
   Popper,
   PopperPlacementType,
-  styled,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { ReactElement } from "react";
@@ -73,7 +72,7 @@ const useStyles = makeStyles({
 });
 
 const RichTooltip = ({
-  placement = "top",
+  placement = "bottom",
   open,
   size = "md",
   onClose,
@@ -122,7 +121,13 @@ const RichTooltip = ({
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Paper {...paperProps} sx={{ borderRadius: radius }}>
+            <Paper
+              elevation={10}
+              {...paperProps}
+              sx={{
+                borderRadius: radius,
+              }}
+            >
               <ClickAwayListener onClickAway={onClose}>
                 <Paper>
                   <Box maxWidth={width} p={padding}>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Grid, Container, Paper, Tooltip, Divider } from '@mui/material';
+import { Grid, Container, Paper, Tooltip, Divider, Button, Icon } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
@@ -11,7 +11,7 @@ import {
   asyncUpdateCoreSettings,
 } from '../../redux/slices/settingsSlice';
 import { InfoOutlined } from '@mui/icons-material';
-import { ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
 import Box from '@mui/material/Box';
 import { camelCase, startCase } from 'lodash';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
@@ -25,6 +25,7 @@ const selectOptions = [
 const GeneralSettingsTab: React.FC = () => {
   const dispatch = useAppDispatch();
   const { coreSettings, adminSettings } = useAppSelector((state) => state.settingsSlice);
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [editEnv, setEditEnv] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const [env, setEnv] = useState<string>('');
@@ -70,6 +71,13 @@ const GeneralSettingsTab: React.FC = () => {
     setEditEnv(false);
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
   const onSaveClick = useCallback(
     (data: IAdminSettings) => {
       const finalData = {
@@ -134,7 +142,63 @@ const GeneralSettingsTab: React.FC = () => {
           <form onSubmit={handleSubmitAdmin(onSaveClick)}>
             <Grid container>
               <Grid item xs={12}>
-                <Typography variant={'h6'}>Administrative Routing</Typography>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Typography variant={'h6'}>Administrative Routing</Typography>
+                  <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                    <RichTooltip
+                      content={
+                        <Box display="flex" flexDirection="column" gap={2} p={2}>
+                          <Typography variant="body2">
+                            For specifics about different kinds of administrative routes, visit the
+                            links below
+                          </Typography>
+                          <Box display="flex" justifyContent="space-between">
+                            <a
+                              href="https://getconduit.dev/docs/administration/rest"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: 'none' }}>
+                              <Button variant="outlined">REST</Button>
+                            </a>
+                            <a
+                              href="https://getconduit.dev/docs/administration/graphql"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: 'none' }}>
+                              <Button variant="outlined">GraphQL</Button>
+                            </a>
+                            <a
+                              href="https://getconduit.dev/docs/administration/sockets"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: 'none' }}>
+                              <Button variant="outlined">WebSockets</Button>
+                            </a>
+                          </Box>
+                          <Typography mt={2} variant="body2">
+                            To see more information regarding the Administrative APIs, please visit
+                            our docs
+                          </Typography>
+                          <Box display="flex" justifyContent="flex-end">
+                            <a
+                              href="https://getconduit.dev/docs/administration/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: 'none' }}>
+                              <Button variant="outlined">Take me there</Button>
+                            </a>
+                          </Box>
+                        </Box>
+                      }
+                      width="400px"
+                      open={openTooltip}
+                      onClose={MouseOutTooltip}>
+                      <Icon>
+                        <InfoOutlined />
+                      </Icon>
+                    </RichTooltip>
+                  </Box>
+                </Box>
               </Grid>
               <Grid item xs={12} sx={{ marginY: 2 }} container wrap={'nowrap'}>
                 <FormInputText {...registerAdmin('hostUrl')} disabled={!edit} label="URL" />

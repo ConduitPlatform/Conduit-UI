@@ -9,7 +9,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
 import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
-import { Box, Icon } from '@mui/material';
+import { Box, Button, Icon } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
 const SmsConfig: React.FC = () => {
@@ -102,7 +102,23 @@ const SmsConfig: React.FC = () => {
                 <Typography variant={'h6'}>Activate SMS Module</Typography>
                 <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
                   <RichTooltip
-                    content={<Typography variant="caption">Placeholder...</Typography>}
+                    content={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          To see more information regarding the SMS config, please visit our docs
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/sms/config"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Take me there</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }
+                    width="400px"
                     open={openTooltip}
                     onClose={MouseOutTooltip}>
                     <Icon>

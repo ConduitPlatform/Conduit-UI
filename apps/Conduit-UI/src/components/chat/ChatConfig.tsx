@@ -9,7 +9,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { ConfigSaveSection, ConfigContainer, RichTooltip } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon } from '@mui/material';
+import { Button, Icon } from '@mui/material';
 
 const ChatConfig: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -72,7 +72,23 @@ const ChatConfig: React.FC = () => {
                   onMouseOver={MouseOverTooltip}
                   onMouseOut={MouseOutTooltip}>
                   <RichTooltip
-                    content={<Typography variant="caption">Placeholder...</Typography>}
+                    content={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          To see more information regarding the Chat config, please visit our docs!
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/authentication/config#available-options"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Take me there</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }
+                    width="400px"
                     open={openTooltip}
                     onClose={MouseOutTooltip}>
                     <Icon>
