@@ -103,6 +103,7 @@ const UserInformation: FC = () => {
           </ListItemIcon>
           <FormControl>
             <FormControlLabel
+              labelPlacement="start"
               label="Is super admin"
               control={
                 <ConduitCheckbox sx={{ mx: 2 }} disabled checked={selectedAdmin.isSuperAdmin} />
