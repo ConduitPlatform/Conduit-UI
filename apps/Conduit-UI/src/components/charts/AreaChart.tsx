@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 import { useTheme } from '@mui/material';
+import { MultipleSeries } from '../../models/metrics/metricsModels';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -14,6 +15,7 @@ interface Props {
   width?: string | number;
   height?: string | number;
   loading?: boolean;
+  multipleSeries?: MultipleSeries[];
 }
 const AreaChart: FC<Props> = ({
   canZoom,
@@ -24,6 +26,7 @@ const AreaChart: FC<Props> = ({
   width = '100%',
   height = '300px',
   loading,
+  multipleSeries,
 }) => {
   const theme = useTheme();
 
@@ -99,12 +102,14 @@ const AreaChart: FC<Props> = ({
     },
   };
 
-  const series = [
-    {
-      name: label,
-      data: counters ?? [],
-    },
-  ];
+  const series = multipleSeries
+    ? multipleSeries
+    : [
+        {
+          name: label,
+          data: counters ?? [],
+        },
+      ];
 
   return (
     <ReactApexChart options={options} series={series} type="area" width={width} height={height} />
