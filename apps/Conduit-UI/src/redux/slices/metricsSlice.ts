@@ -8,7 +8,7 @@ import {
   MetricsLogsDataRaw,
 } from '../../models/metrics/metricsModels';
 import {
-  getAdminRoutes,
+  getAdminClientRoutes,
   getGenericMetricQueryRange,
   getMetricsQuery,
   getModuleHealth,
@@ -23,14 +23,14 @@ interface IMetricsSlice {
     moduleTotalRequests: Record<ModulesTypes, MetricsData[]>;
     moduleHealth: Record<ModulesTypes, boolean>;
     moduleLatency: Record<ModulesTypes, number>;
-    adminRoutes: Record<string, MetricsData[]>;
+    adminClientRoutes: Record<string, MetricsData[]>;
   };
   meta: {
     genericMetricLoading: Record<string, boolean>;
     moduleTotalRequestsLoading: Record<ModulesTypes, boolean>;
     moduleHealthLoading: Record<ModulesTypes, boolean>;
     moduleLatencyLoading: Record<ModulesTypes, boolean>;
-    adminRoutes: Record<string, boolean>;
+    adminClientRoutes: Record<string, boolean>;
   };
 }
 
@@ -40,14 +40,14 @@ const initialState: IMetricsSlice = {
     moduleTotalRequests: {} as Record<ModulesTypes, MetricsData[]>,
     moduleHealth: {} as Record<ModulesTypes, boolean>,
     moduleLatency: {} as Record<ModulesTypes, number>,
-    adminRoutes: {} as Record<string, MetricsData[]>,
+    adminClientRoutes: {} as Record<string, MetricsData[]>,
   },
   meta: {
     genericMetricLoading: {} as Record<string, boolean>,
     moduleTotalRequestsLoading: {} as Record<ModulesTypes, boolean>,
     moduleHealthLoading: {} as Record<ModulesTypes, boolean>,
     moduleLatencyLoading: {} as Record<ModulesTypes, boolean>,
-    adminRoutes: {} as Record<string, boolean>,
+    adminClientRoutes: {} as Record<string, boolean>,
   },
 };
 
@@ -167,8 +167,8 @@ export const asyncGetModuleLatency = createAsyncThunk(
   }
 );
 
-export const asyncGetAdminRoutes = createAsyncThunk(
-  '/metrics/getAdminRoutes',
+export const asyncGetAdminClientRoutes = createAsyncThunk(
+  '/metrics/getAdminClientRoutes',
   async (
     body: {
       expression: string;
@@ -177,7 +177,7 @@ export const asyncGetAdminRoutes = createAsyncThunk(
   ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getAdminRoutes(body);
+      const { data } = await getAdminClientRoutes(body);
       thunkAPI.dispatch(setAppLoading(false));
 
       return prepareData(data);
@@ -222,12 +222,12 @@ const metricsSlice = createSlice({
       state.data.moduleLatency[action.meta.arg.module] = action.payload;
       state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
     });
-    builder.addCase(asyncGetAdminRoutes.pending, (state, action) => {
-      state.meta.adminRoutes[action.meta.arg.expression] = true;
+    builder.addCase(asyncGetAdminClientRoutes.pending, (state, action) => {
+      state.meta.adminClientRoutes[action.meta.arg.expression] = true;
     });
-    builder.addCase(asyncGetAdminRoutes.fulfilled, (state, action) => {
-      state.data.adminRoutes[action.meta.arg.expression] = action.payload;
-      state.meta.adminRoutes[action.meta.arg.expression] = false;
+    builder.addCase(asyncGetAdminClientRoutes.fulfilled, (state, action) => {
+      state.data.adminClientRoutes[action.meta.arg.expression] = action.payload;
+      state.meta.adminClientRoutes[action.meta.arg.expression] = false;
     });
   },
 });

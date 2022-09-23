@@ -5,6 +5,14 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';
+import MultipleMetricGraph from '../metrics/MultipleMetricGraph';
+
+const expressionClientRoutes: ExpressionsRoutesArray[] = [
+  { title: 'graphql', expression: 'conduit_client_routes_total{transport="graphql"}[10m]' },
+  { title: 'rest', expression: 'conduit_client_routes_total{transport="rest"}[10m]' },
+  { title: 'socket', expression: 'conduit_client_routes_total{transport="socket"}[10m]' },
+];
 
 const RouterDashboard = () => {
   return (
@@ -21,6 +29,16 @@ const RouterDashboard = () => {
               expression="sum(increase(conduit_registered_routes_total[1h]))"
               graphTitle="Registered routes"
               label="Routes"
+            />
+          </GraphContainer>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          <GraphContainer>
+            <MultipleMetricGraph
+              label="Requests"
+              expressionsRoutes={expressionClientRoutes}
+              hasControls={false}
+              graphTitle={'Client routes'}
             />
           </GraphContainer>
         </Grid>

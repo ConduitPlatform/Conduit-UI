@@ -31,7 +31,7 @@ export interface MultipleSeries {
   data: number[];
 }
 
-export interface ExpressionsArray {
+export interface ExpressionsRoutesArray {
   title: string;
   expression: string;
 }

@@ -37,13 +37,13 @@ import ModuleHealth from '../metrics/ModuleHealth';
 import { asyncGetForms } from '../../redux/slices/formsSlice';
 import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
 import MultipleMetricGraph from '../metrics/MultipleMetricGraph';
-import { ExpressionsArray } from '../../models/metrics/metricsModels';
+import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';
 
 const Main = styled('main')(() => ({
   flexGrow: 1,
 }));
 
-const expressionsAdminRoutes: ExpressionsArray[] = [
+const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
   { title: 'graphql', expression: 'conduit_admin_routes_total{transport="graphql"}[10m]' },
   { title: 'rest', expression: 'conduit_admin_routes_total{transport="rest"}[10m]' },
   { title: 'socket', expression: 'conduit_admin_routes_total{transport="socket"}[10m]' },
@@ -226,8 +226,9 @@ const Home: React.FC = () => {
                 <GraphContainer>
                   <MultipleMetricGraph
                     label="Requests"
-                    expressions={expressionsAdminRoutes}
+                    expressionsRoutes={expressionsAdminRoutes}
                     hasControls={false}
+                    graphTitle={'Admin routes'}
                   />
                 </GraphContainer>
               </Grid>

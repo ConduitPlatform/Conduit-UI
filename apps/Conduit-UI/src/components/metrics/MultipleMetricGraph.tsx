@@ -16,11 +16,12 @@ import AdapterMoment from '@mui/lab/AdapterMoment';
 import Close from '@mui/icons-material/Close';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
-import { ExpressionsArray, MultipleSeries } from '../../models/metrics/metricsModels';
-import { asyncGetAdminRoutes } from '../../redux/slices/metricsSlice';
+import { ExpressionsRoutesArray, MultipleSeries } from '../../models/metrics/metricsModels';
+import { asyncGetAdminClientRoutes } from '../../redux/slices/metricsSlice';
 
 interface Props {
-  expressions: ExpressionsArray[];
+  expressionsRoutes: ExpressionsRoutesArray[];
+  graphTitle?: string;
   hasControls?: boolean;
   label?: string;
   canZoom?: boolean;
@@ -29,7 +30,8 @@ interface Props {
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
 const MultipleMetricGraph: FC<Props> = ({
-  expressions,
+  expressionsRoutes,
+  graphTitle,
   hasControls = true,
   label = 'value',
   canZoom = true,
@@ -42,40 +44,40 @@ const MultipleMetricGraph: FC<Props> = ({
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const totalData = useAppSelector((state) => state?.metricsSlice?.data?.adminRoutes);
-
-  const loading = useAppSelector((state) => state?.metricsSlice?.meta.adminRoutes);
+  const totalData = useAppSelector((state) => state?.metricsSlice?.data?.adminClientRoutes);
+  const loading = useAppSelector((state) => state?.metricsSlice?.meta.adminClientRoutes);
+  const timestamps = totalData?.[expressionsRoutes[0].expression]?.[0].timestamps;
 
   useEffect(() => {
-    expressions.map((expression) => {
+    expressionsRoutes?.map((exprRoute) => {
       dispatch(
-        asyncGetAdminRoutes({
-          expression: expression.expression,
+        asyncGetAdminClientRoutes({
+          expression: exprRoute.expression,
         })
       );
     });
-  }, [dispatch, expressions]);
+  }, [dispatch, expressionsRoutes]);
 
   const graphLoading = useMemo(() => {
     const arr: boolean[] = [];
-    expressions.map((expr) => {
-      arr.push(loading?.[expr.expression]);
+    expressionsRoutes?.map((exprRoute) => {
+      arr.push(loading?.[exprRoute.expression]);
     });
     return arr.every((bool) => bool);
-  }, [expressions, loading]);
+  }, [expressionsRoutes, loading]);
 
   const series = useMemo(() => {
     const multipleSeries: MultipleSeries[] = [];
 
-    expressions?.map((expr) => {
-      if (totalData?.[expr.expression]?.[0]?.counters?.length !== 0)
+    expressionsRoutes?.map((exprRoute) => {
+      if (totalData?.[exprRoute.expression]?.[0]?.counters?.length !== 0)
         multipleSeries.push({
-          name: expr.title,
-          data: totalData?.[expr.expression]?.[0]?.counters ?? [],
+          name: exprRoute.title,
+          data: totalData?.[exprRoute.expression]?.[0]?.counters ?? [],
         });
     });
     return multipleSeries;
-  }, [expressions, totalData]);
+  }, [expressionsRoutes, totalData]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
@@ -237,10 +239,10 @@ const MultipleMetricGraph: FC<Props> = ({
       )}
       <AreaChart
         label={label}
-        timestamps={totalData?.[expressions[0].expression]?.[0].timestamps}
+        timestamps={timestamps}
         multipleSeries={series}
         loading={graphLoading}
-        graphTitle={'Admin routes'}
+        graphTitle={graphTitle}
         canZoom={canZoom}
         type={'line'}
       />

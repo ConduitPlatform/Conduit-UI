@@ -55,7 +55,7 @@ export const getGenericMetricQueryRange = (body: {
     step: body.step,
   });
 
-export const getAdminRoutes = (body: { expression: string }) =>
+export const getAdminClientRoutes = (body: { expression: string }) =>
   getRequestProm('/query', {
     query: body.expression,
   });
