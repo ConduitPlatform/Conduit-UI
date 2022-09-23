@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   TextField,
   Typography,
@@ -18,6 +19,7 @@ import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import Image from 'next/image';
 import { useDispatch } from 'react-redux';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
+import { AdminPanelSettings, ArrowForwardIos, CalendarMonth, Person } from '@mui/icons-material';
 import { asyncGetAdminById } from '../../redux/slices/settingsSlice';
 import { useAppSelector } from '../../redux/store';
 import moment from 'moment';
@@ -75,23 +77,30 @@ const UserInformation: FC = () => {
     setVerificationCode('');
   };
 
-  //TODO use mui list below
-
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+    <Box display="flex" flexDirection="column" alignItems="center">
       <Typography textAlign="center" variant={'h5'} mb={2}>
         User information
       </Typography>
       <List>
         <ListItem>
+          <ListItemIcon>
+            <Person />
+          </ListItemIcon>
           <ListItemText primary={`Username: ${selectedAdmin.username}`} />
         </ListItem>
         <ListItem>
+          <ListItemIcon>
+            <CalendarMonth />
+          </ListItemIcon>
           <ListItemText
             primary={`Created at: ${moment(selectedAdmin.createdAt).format('DD/MM/YY')}`}
           />
         </ListItem>
         <ListItem>
+          <ListItemIcon>
+            <AdminPanelSettings />
+          </ListItemIcon>
           <FormControl>
             <FormControlLabel
               label="Is super admin"
@@ -101,19 +110,16 @@ const UserInformation: FC = () => {
             />
           </FormControl>
         </ListItem>
-        <ListItem>
-          <FormControl>
-            <FormControlLabel
-              label="Two Factor Authentication"
-              control={<ConduitCheckbox sx={{ mx: 2 }} disabled checked={selectedAdmin.hasTwoFA} />}
-            />
-          </FormControl>
+        <ListItem sx={{ display: 'flex', justifyContent: 'center' }} alignItems="center">
+          <Button
+            endIcon={<ArrowForwardIos />}
+            variant="outlined"
+            onClick={() => handleToggleTwoFa()}>
+            {selectedAdmin.hasTwoFA ? '2FA Enabled - Disable it?' : '2FA Disabled - Enable it?'}
+          </Button>
         </ListItem>
       </List>
 
-      <Button variant="outlined" onClick={() => handleToggleTwoFa()}>
-        {selectedAdmin.hasTwoFA ? 'Disable 2FA' : 'Enable 2FA'}
-      </Button>
       <SideDrawerWrapper
         closeDrawer={() => handleCloseDrawer()}
         open={drawer}

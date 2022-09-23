@@ -5,9 +5,9 @@ import UserInformation from './UserInformation';
 
 const UserSettingsLayout = () => {
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="md">
       <Paper sx={{ padding: 4, borderRadius: 8 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={0}>
           <Grid item minHeight={'325px'} xs={12} md={12} lg={6}>
             <UserInformation />
           </Grid>
