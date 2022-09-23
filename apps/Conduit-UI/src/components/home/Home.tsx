@@ -224,7 +224,11 @@ const Home: React.FC = () => {
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12}>
                 <GraphContainer>
-                  <MultipleMetricGraph label="Requests" expressions={expressionsAdminRoutes} />
+                  <MultipleMetricGraph
+                    label="Requests"
+                    expressions={expressionsAdminRoutes}
+                    hasControls={false}
+                  />
                 </GraphContainer>
               </Grid>
               <Grid item xs={6} sm={3}>

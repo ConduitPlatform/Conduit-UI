@@ -56,7 +56,7 @@ const MultipleMetricGraph: FC<Props> = ({
     });
   }, [dispatch, expressions]);
 
-  const loadings = useMemo(() => {
+  const graphLoading = useMemo(() => {
     const arr: boolean[] = [];
     expressions.map((expr) => {
       arr.push(loading?.[expr.expression]);
@@ -239,9 +239,10 @@ const MultipleMetricGraph: FC<Props> = ({
         label={label}
         timestamps={totalData?.[expressions[0].expression]?.[0].timestamps}
         multipleSeries={series}
-        loading={loadings}
+        loading={graphLoading}
         graphTitle={'Admin routes'}
         canZoom={canZoom}
+        type={'line'}
       />
     </>
   );

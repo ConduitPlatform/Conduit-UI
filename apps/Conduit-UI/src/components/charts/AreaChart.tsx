@@ -6,6 +6,24 @@ import { MultipleSeries } from '../../models/metrics/metricsModels';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
+type AreaChartType =
+  | 'line'
+  | 'area'
+  | 'bar'
+  | 'histogram'
+  | 'pie'
+  | 'donut'
+  | 'radialBar'
+  | 'scatter'
+  | 'bubble'
+  | 'heatmap'
+  | 'treemap'
+  | 'boxPlot'
+  | 'candlestick'
+  | 'radar'
+  | 'polarArea'
+  | 'rangeBar';
+
 interface Props {
   canZoom?: boolean;
   graphTitle?: string;
@@ -16,6 +34,7 @@ interface Props {
   height?: string | number;
   loading?: boolean;
   multipleSeries?: MultipleSeries[];
+  type?: AreaChartType;
 }
 const AreaChart: FC<Props> = ({
   canZoom,
@@ -27,6 +46,7 @@ const AreaChart: FC<Props> = ({
   height = '300px',
   loading,
   multipleSeries,
+  type = 'area',
 }) => {
   const theme = useTheme();
 
@@ -42,6 +62,7 @@ const AreaChart: FC<Props> = ({
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: theme.palette.background.paper,
+      stacked: false,
     },
     grid: {
       yaxis: {
@@ -112,7 +133,7 @@ const AreaChart: FC<Props> = ({
       ];
 
   return (
-    <ReactApexChart options={options} series={series} type="area" width={width} height={height} />
+    <ReactApexChart options={options} series={series} type={type} width={width} height={height} />
   );
 };
 
