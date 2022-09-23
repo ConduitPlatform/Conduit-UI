@@ -17,8 +17,6 @@ interface Props {
   open: boolean;
   width?: string;
   padding?: string;
-  radius?: string;
-  size?: "sm" | "md";
   onClose: () => void;
   paperProps?: PaperProps;
   placement?: PopperPlacementType;
@@ -75,11 +73,9 @@ const useStyles = makeStyles({
 const RichTooltip = ({
   placement = "bottom",
   open,
-  size = "md",
   onClose,
   width = "216px",
-  padding = "12px",
-  radius = "8px",
+  padding = "4px",
   content,
   children,
   paperProps,
