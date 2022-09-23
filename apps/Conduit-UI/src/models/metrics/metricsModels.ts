@@ -13,6 +13,25 @@ export interface MetricsLogsData {
     pod: string;
     service: string;
     __name__: string;
+    transport: string | undefined;
   };
   values: [];
+}
+
+export interface MetricsLogsDataRaw {
+  data: {
+    result: MetricsLogsData[];
+    resultType: string;
+  };
+  status: string;
+}
+
+export interface MultipleSeries {
+  name: string;
+  data: number[];
+}
+
+export interface ExpressionsArray {
+  title: string;
+  expression: string;
 }

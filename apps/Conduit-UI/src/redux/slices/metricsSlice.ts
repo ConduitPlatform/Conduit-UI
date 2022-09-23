@@ -2,7 +2,11 @@ import { ModulesTypes } from '../../models/logs/LogsModels';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
 import { enqueueErrorNotification } from '../../utils/useNotifier';
-import { MetricsData, MetricsLogsData } from '../../models/metrics/metricsModels';
+import {
+  MetricsData,
+  MetricsLogsData,
+  MetricsLogsDataRaw,
+} from '../../models/metrics/metricsModels';
 import {
   getAdminRoutes,
   getGenericMetricQueryRange,
@@ -47,6 +51,28 @@ const initialState: IMetricsSlice = {
   },
 };
 
+const prepareData = (data: MetricsLogsDataRaw) => {
+  const timestamps: number[] = [];
+  const counters: number[] = [];
+
+  const arr: [] = [];
+  data?.data?.result.forEach((e: MetricsLogsData) => {
+    e.values.forEach((item) => {
+      arr.push(item);
+    });
+  });
+
+  arr.map((item) => {
+    const itemsTime = item?.[0] as Moment;
+    const itemsCount = item?.[1];
+
+    timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
+    counters.push(parseInt(itemsCount));
+  });
+
+  return [{ timestamps: timestamps, counters: counters }];
+};
+
 export const asyncGetGenericMetricQueryRange = createAsyncThunk(
   '/metrics/getGenericMetric',
   async (
@@ -61,27 +87,9 @@ export const asyncGetGenericMetricQueryRange = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getGenericMetricQueryRange(body);
-
-      const timestamps: number[] = [];
-      const counters: number[] = [];
-
-      const arr: [] = [];
-      data?.data?.result.forEach((e: MetricsLogsData) => {
-        e.values.forEach((item) => {
-          arr.push(item);
-        });
-      });
-
-      arr.map((item) => {
-        const itemsTime = item?.[0] as Moment;
-        const itemsCount = item?.[1];
-
-        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
-        counters.push(parseInt(itemsCount));
-      });
-
       thunkAPI.dispatch(setAppLoading(false));
-      return [{ timestamps: timestamps, counters: counters }];
+
+      return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
@@ -104,27 +112,9 @@ export const asyncGetMetricsQuery = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getMetricsQuery(body);
-
-      const timestamps: number[] = [];
-      const counters: number[] = [];
-
-      const arr: [] = [];
-      data?.data?.result.forEach((e: MetricsLogsData) => {
-        e.values.forEach((item) => {
-          arr.push(item);
-        });
-      });
-
-      arr.map((item) => {
-        const itemsTime = item?.[0] as Moment;
-        const itemsCount = item?.[1];
-
-        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
-        counters.push(parseInt(itemsCount));
-      });
-
       thunkAPI.dispatch(setAppLoading(false));
-      return [{ timestamps: timestamps, counters: counters }];
+
+      return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
@@ -145,6 +135,7 @@ export const asyncGetModuleHealth = createAsyncThunk(
     try {
       const { data } = await getModuleHealth(body);
       thunkAPI.dispatch(setAppLoading(false));
+
       return data.data.result[0].values[0][1] === '1';
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -166,6 +157,7 @@ export const asyncGetModuleLatency = createAsyncThunk(
     try {
       const { data } = await getModuleLatency(body);
       thunkAPI.dispatch(setAppLoading(false));
+
       return data.data.result[0].value[1] * 1000;
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -186,26 +178,9 @@ export const asyncGetAdminRoutes = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdminRoutes(body);
-
-      const timestamps: number[] = [];
-      const counters: number[] = [];
-
-      const arr: [] = [];
-      data?.data?.result.forEach((e: MetricsLogsData) => {
-        e.values.forEach((item) => {
-          arr.push(item);
-        });
-      });
-
-      arr.map((item) => {
-        const itemsTime = item?.[0] as Moment;
-        const itemsCount = item?.[1];
-
-        timestamps.push(moment(itemsTime.valueOf() * 1000).valueOf());
-        counters.push(parseInt(itemsCount));
-      });
       thunkAPI.dispatch(setAppLoading(false));
-      return [{ timestamps: timestamps, counters: counters }];
+
+      return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
