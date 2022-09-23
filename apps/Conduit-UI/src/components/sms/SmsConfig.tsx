@@ -8,14 +8,18 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
-import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
+import { Box, Icon } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 
 const SmsConfig: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
+
   const { config } = useAppSelector((state) => state.smsSlice.data);
 
-  const [edit, setEdit] = useState<boolean>(false);
   const methods = useForm<ISmsConfig>({
     defaultValues: useMemo(() => {
       return {
@@ -80,13 +84,33 @@ const SmsConfig: React.FC = () => {
     },
   ];
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   return (
     <ConfigContainer>
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid container item xs={12} justifyContent="space-between" alignItems={'center'}>
-              <Typography variant={'h6'}>Activate SMS Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate SMS Module</Typography>
+                <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                  <RichTooltip
+                    content={<Typography variant="caption">Placeholder...</Typography>}
+                    open={openTooltip}
+                    onClose={MouseOutTooltip}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </RichTooltip>
+                </Box>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Grid>
             {isActive && (

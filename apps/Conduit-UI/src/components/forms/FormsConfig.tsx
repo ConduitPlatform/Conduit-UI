@@ -7,11 +7,16 @@ import { IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
-import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
+import { Icon } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 
 const FormsConfig: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
+
   const { config } = useAppSelector((state) => state.formsSlice.data);
 
   const methods = useForm<IFormsConfig>({
@@ -44,6 +49,14 @@ const FormsConfig: React.FC = () => {
     dispatch(asyncEditFormsConfig(updatedConfig));
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   return (
     <ConfigContainer>
       <FormProvider {...methods}>
@@ -54,7 +67,19 @@ const FormsConfig: React.FC = () => {
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'h6'}>Activate Forms Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate Forms Module</Typography>
+                <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                  <RichTooltip
+                    content={<Typography variant="caption">Placeholder...</Typography>}
+                    open={openTooltip}
+                    onClose={MouseOutTooltip}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </RichTooltip>
+                </Box>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
 

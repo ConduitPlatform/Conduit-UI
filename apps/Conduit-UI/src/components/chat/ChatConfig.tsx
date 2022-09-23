@@ -7,10 +7,14 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
+import { ConfigSaveSection, ConfigContainer, RichTooltip } from '@conduitplatform/ui-components';
+import { InfoOutlined } from '@mui/icons-material';
+import { Icon } from '@mui/material';
 
 const ChatConfig: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
 
   const { config } = useAppSelector((state) => state.chatSlice);
@@ -37,6 +41,14 @@ const ChatConfig: React.FC = () => {
     methods.reset();
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   const onSubmit = (data: IChatConfig) => {
     setEdit(false);
     dispatch(asyncPutChatConfig(data));
@@ -52,7 +64,23 @@ const ChatConfig: React.FC = () => {
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'h6'}>Activate Chat Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate Chat Module</Typography>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  onMouseOver={MouseOverTooltip}
+                  onMouseOut={MouseOutTooltip}>
+                  <RichTooltip
+                    content={<Typography variant="caption">Placeholder...</Typography>}
+                    open={openTooltip}
+                    onClose={MouseOutTooltip}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </RichTooltip>
+                </Box>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ paddingLeft: 4, mt: 1 }}>
