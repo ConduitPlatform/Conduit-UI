@@ -6,6 +6,7 @@ import {
   PaperProps,
   Popper,
   PopperPlacementType,
+  useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { ReactElement } from "react";
@@ -84,6 +85,7 @@ const RichTooltip = ({
   paperProps,
 }: Props) => {
   const classes = useStyles();
+  const theme = useTheme();
 
   const [childNode, setChildNode] = React.useState<HTMLElement | null>(null);
 
@@ -91,6 +93,7 @@ const RichTooltip = ({
     <div>
       {React.cloneElement(children, { ...children.props, ref: setChildNode })}
       <Popper
+        sx={{ borderRadius: "24px" }}
         open={open}
         anchorEl={childNode}
         className={classes.popper}
@@ -123,17 +126,16 @@ const RichTooltip = ({
           <Fade {...TransitionProps} timeout={350}>
             <Paper
               elevation={10}
-              {...paperProps}
               sx={{
-                borderRadius: radius,
+                borderRadius: "24px",
+                border: `1px solid ${theme.palette.primary.main}`,
               }}
+              {...paperProps}
             >
               <ClickAwayListener onClickAway={onClose}>
-                <Paper>
-                  <Box maxWidth={width} p={padding}>
-                    {content}
-                  </Box>
-                </Paper>
+                <Box maxWidth={width} p={padding}>
+                  {content}
+                </Box>
               </ClickAwayListener>
             </Paper>
           </Fade>

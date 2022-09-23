@@ -1,6 +1,7 @@
 import {
   Button,
   Container,
+  Icon,
   IconButton,
   Paper,
   Table,
@@ -28,9 +29,9 @@ import {
 } from '../../redux/slices/routerSlice';
 import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
-import { Add, Edit, KeyboardArrowDown } from '@mui/icons-material';
+import { Add, Edit, InfoOutlined, KeyboardArrowDown } from '@mui/icons-material';
 import UpdateSecurityClient from './UpdateSecurityClient';
-import { ConfigSaveSection, SideDrawerWrapper } from '@conduitplatform/ui-components';
+import { ConfigSaveSection, RichTooltip, SideDrawerWrapper } from '@conduitplatform/ui-components';
 import ClientSecretDialog from './ClientSecretDialog';
 import { prepareSort } from '../../utils/prepareSort';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
@@ -62,6 +63,7 @@ const SecurityTab: React.FC = () => {
   });
   const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
   const [edit, setEdit] = useState<boolean>(false);
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const { config } = useAppSelector((state) => state.routerSlice.data);
 
   const methods = useForm<IRouterConfig>({
@@ -120,6 +122,14 @@ const SecurityTab: React.FC = () => {
     setUpdateDialog(true);
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   const headCells = [
     { label: 'Client ID', sort: 'clientId' },
     { label: 'Alias', sort: 'alias' },
@@ -169,9 +179,36 @@ const SecurityTab: React.FC = () => {
               display={'flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'h6'} color={'#FFFFFF'}>
-                Require Client ID/Secret validation
-              </Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Require Client ID / Validation</Typography>
+                <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                  <RichTooltip
+                    content={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          To learn more about Security client validation head over to the docs
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/router/security"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Take me there</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }
+                    width="400px"
+                    placement="bottom"
+                    open={openTooltip}
+                    onClose={MouseOutTooltip}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </RichTooltip>
+                </Box>
+              </Box>
               <FormInputSwitch {...register('security.clientValidation')} disabled={!edit} />
             </Box>
 

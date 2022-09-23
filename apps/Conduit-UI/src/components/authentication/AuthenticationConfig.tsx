@@ -107,8 +107,8 @@ const AuthenticationConfig: React.FC = () => {
                     content={
                       <Box display="flex" flexDirection="column" gap={2} p={2}>
                         <Typography variant="body2">
-                          To see more information regarding Authentication config, please visit our
-                          docs
+                          To see more information regarding the Authentication config, please visit
+                          our docs
                         </Typography>
                         <Box display="flex" justifyContent="flex-end">
                           <a

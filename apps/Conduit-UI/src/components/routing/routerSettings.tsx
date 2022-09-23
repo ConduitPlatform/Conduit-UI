@@ -1,17 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Container, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Icon, Paper, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { IRouterConfig } from '../../models/router/RouterModels';
 import { asyncPutRouterConfig } from '../../redux/slices/routerSlice';
-import { ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
+import { InfoOutlined } from '@mui/icons-material';
 
 const RouterSettings: React.FC = () => {
   const dispatch = useAppDispatch();
   const { config } = useAppSelector((state) => state.routerSlice.data);
   const [edit, setEdit] = useState(false);
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
 
   const methods = useForm<IRouterConfig>({
     defaultValues: useMemo(() => {
@@ -36,6 +38,14 @@ const RouterSettings: React.FC = () => {
     setEdit(false);
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   return (
     <Container maxWidth={'md'}>
       <Grid container justifyContent={'center'}>
@@ -44,7 +54,37 @@ const RouterSettings: React.FC = () => {
             <form onSubmit={methods.handleSubmit(onSaveClick)}>
               <Grid container item spacing={1} alignItems={'center'}>
                 <Grid item xs={12}>
-                  <Typography variant={'h6'}>General</Typography>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Typography variant={'h6'}>Activate Authentication Module</Typography>
+                    <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                      <RichTooltip
+                        content={
+                          <Box display="flex" flexDirection="column" gap={2} p={2}>
+                            <Typography variant="body2">
+                              To see more information regarding the Router module, please visit our
+                              docs
+                            </Typography>
+                            <Box display="flex" justifyContent="flex-end">
+                              <a
+                                href="https://getconduit.dev/docs/modules/router/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ textDecoration: 'none' }}>
+                                <Button variant="outlined">Take me there</Button>
+                              </a>
+                            </Box>
+                          </Box>
+                        }
+                        width="400px"
+                        placement="bottom"
+                        open={openTooltip}
+                        onClose={MouseOutTooltip}>
+                        <Icon>
+                          <InfoOutlined />
+                        </Icon>
+                      </RichTooltip>
+                    </Box>
+                  </Box>
                   <Typography variant={'subtitle1'}>
                     Below you can see information about the Conduit location
                   </Typography>
