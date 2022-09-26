@@ -23,14 +23,12 @@ interface IMetricsSlice {
     moduleTotalRequests: Record<ModulesTypes, MetricsData[]>;
     moduleHealth: Record<ModulesTypes, boolean>;
     moduleLatency: Record<ModulesTypes, number>;
-    adminClientRoutes: Record<string, MetricsData[]>;
   };
   meta: {
     genericMetricLoading: Record<string, boolean>;
     moduleTotalRequestsLoading: Record<ModulesTypes, boolean>;
     moduleHealthLoading: Record<ModulesTypes, boolean>;
     moduleLatencyLoading: Record<ModulesTypes, boolean>;
-    adminClientRoutes: Record<string, boolean>;
   };
 }
 
@@ -40,14 +38,12 @@ const initialState: IMetricsSlice = {
     moduleTotalRequests: {} as Record<ModulesTypes, MetricsData[]>,
     moduleHealth: {} as Record<ModulesTypes, boolean>,
     moduleLatency: {} as Record<ModulesTypes, number>,
-    adminClientRoutes: {} as Record<string, MetricsData[]>,
   },
   meta: {
     genericMetricLoading: {} as Record<string, boolean>,
     moduleTotalRequestsLoading: {} as Record<ModulesTypes, boolean>,
     moduleHealthLoading: {} as Record<ModulesTypes, boolean>,
     moduleLatencyLoading: {} as Record<ModulesTypes, boolean>,
-    adminClientRoutes: {} as Record<string, boolean>,
   },
 };
 
@@ -223,11 +219,11 @@ const metricsSlice = createSlice({
       state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
     });
     builder.addCase(asyncGetAdminClientRoutes.pending, (state, action) => {
-      state.meta.adminClientRoutes[action.meta.arg.expression] = true;
+      state.meta.genericMetricLoading[action.meta.arg.expression] = true;
     });
     builder.addCase(asyncGetAdminClientRoutes.fulfilled, (state, action) => {
-      state.data.adminClientRoutes[action.meta.arg.expression] = action.payload;
-      state.meta.adminClientRoutes[action.meta.arg.expression] = false;
+      state.data.genericMetric[action.meta.arg.expression] = action.payload;
+      state.meta.genericMetricLoading[action.meta.arg.expression] = false;
     });
   },
 });

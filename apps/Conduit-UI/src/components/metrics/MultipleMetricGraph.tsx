@@ -44,9 +44,20 @@ const MultipleMetricGraph: FC<Props> = ({
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const totalData = useAppSelector((state) => state?.metricsSlice?.data?.adminClientRoutes);
-  const loading = useAppSelector((state) => state?.metricsSlice?.meta.adminClientRoutes);
-  const timestamps = totalData?.[expressionsRoutes[0].expression]?.[0].timestamps;
+  const totalData = useAppSelector((state) => state?.metricsSlice?.data?.genericMetric);
+  const loading = useAppSelector((state) => state?.metricsSlice?.meta.genericMetric);
+
+  const timestamps = useMemo(() => {
+    let timeStamps = totalData?.[expressionsRoutes[0].expression]?.[0].timestamps;
+    if (timeStamps?.length === 0) {
+      expressionsRoutes.map((exprRoute) => {
+        if (totalData?.[exprRoute.expression]?.[0].timestamp?.length !== 0)
+          timeStamps = totalData?.[exprRoute.expression]?.[0].timestamp;
+        return;
+      });
+    }
+    return timeStamps;
+  }, [expressionsRoutes, totalData]);
 
   useEffect(() => {
     expressionsRoutes?.map((exprRoute) => {
