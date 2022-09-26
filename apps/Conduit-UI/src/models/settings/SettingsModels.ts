@@ -4,6 +4,11 @@ export interface INewAdminUser {
   confirmPassword: string;
 }
 
+export interface IOtherAdminsPasswordChange {
+  password: string;
+  confirmPassword: string;
+}
+
 export interface IPasswordChange {
   oldPassword: string;
   newPassword: string;
@@ -30,6 +35,8 @@ export interface IAdmin {
   username: string;
   updatedAt: string;
   _id: string;
+  isSuperAdmin: boolean;
+  hasTwoFa: boolean;
 }
 
 export interface AuthUserUI {

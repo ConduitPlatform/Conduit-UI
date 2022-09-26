@@ -4,7 +4,7 @@ import { IModule } from '../../models/appAuth';
 import { asyncGetNotificationConfig, clearNotificationPageStore } from './notificationsSlice';
 import { asyncGetStorageConfig, clearStoragePageStore } from './storageSlice';
 import { getAdminModulesRequest } from '../../http/requests/SettingsRequests';
-import { loginRequest } from '../../http/requests/AppAuthRequests';
+import { loginRequest, verifyTwoFARequest } from '../../http/requests/AppAuthRequests';
 import { clearAppNotifications, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { asyncGetEmailConfig, clearEmailPageStore } from './emailsSlice';
@@ -17,6 +17,7 @@ import { asyncGetPaymentConfig } from './paymentsSlice';
 import { asyncGetSmsConfig } from './smsSlice';
 import { asyncGetRouterConfig } from './routerSlice';
 import { asyncGetAdminSettings } from './settingsSlice';
+import jwt_decode from 'jwt-decode';
 import Router from 'next/router';
 
 export type AppAuthState = {
@@ -43,9 +44,35 @@ export const asyncLogin = createAsyncThunk(
       const username = values.username;
       const password = values.password;
       const { data } = await loginRequest(username, password);
-      thunkAPI.dispatch(enqueueInfoNotification(`Welcome ${username}!`));
+      const decoded: { id: string; twoFaRequired: boolean; iat: number; exp: number } = jwt_decode(
+        data.token
+      );
+      if (!decoded.twoFaRequired)
+        thunkAPI.dispatch(enqueueInfoNotification(`Welcome ${username}!`));
+
       thunkAPI.dispatch(setAppLoading(false));
       return { data, cookie: values.remember };
+    } catch (error) {
+      thunkAPI.dispatch(
+        enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
+      throw error;
+    }
+  }
+);
+
+export const asyncverifyTwoFA = createAsyncThunk(
+  'appAuth/verifyTwoFA',
+  async (args: { code: string; remember: boolean; username: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await verifyTwoFARequest(args.code);
+
+      thunkAPI.dispatch(enqueueInfoNotification(`Welcome ${args.username}!`));
+
+      thunkAPI.dispatch(setAppLoading(false));
+      return { data, remember: args.remember };
     } catch (error) {
       thunkAPI.dispatch(
         enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
@@ -144,6 +171,10 @@ const appAuthSlice = createSlice({
     builder.addCase(asyncLogin.fulfilled, (state, action) => {
       setCookie('Bearer', action.payload.data.token, action.payload.cookie);
       state.data.token = action.payload.data.token;
+    });
+    builder.addCase(asyncverifyTwoFA.fulfilled, (state, action) => {
+      setCookie('Bearer', action.payload.data.result, action.payload.remember);
+      state.data.token = action.payload.data.result;
     });
     builder.addCase(asyncGetAdminModules.fulfilled, (state, action) => {
       state.data.enabledModules = action.payload.enabledModules;

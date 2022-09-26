@@ -14,6 +14,10 @@ import {
   postNewAdminUser,
   patchAdminSettings,
   patchCoreSettings,
+  changeOtherAdminsPassword,
+  toggleTwoFA,
+  getAdminById,
+  verifyQrCodeRequest,
 } from '../../http/requests/SettingsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -26,6 +30,7 @@ interface ISettingsSlice {
       admins: IAdmin[];
       count: number;
     };
+    selectedAdmin: IAdmin;
   };
   coreSettings: ICoreSettings;
   adminSettings: IAdminSettings;
@@ -36,6 +41,15 @@ const initialState: ISettingsSlice = {
     authAdmins: {
       admins: [],
       count: 0,
+    },
+    selectedAdmin: {
+      createdAt: '',
+      email: '',
+      username: '',
+      updatedAt: '',
+      _id: '',
+      isSuperAdmin: false,
+      hasTwoFa: false,
     },
   },
   coreSettings: {
@@ -58,7 +72,22 @@ export const asyncGetAdmins = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdmins(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
 
+export const asyncGetAdminById = createAsyncThunk(
+  'authentication/getAdminById',
+  async (id: string, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getAdminById(id);
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -74,7 +103,7 @@ export const asyncDeleteAdmin = createAsyncThunk(
   async (params: { id: string; getAdmins: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await deleteAdmin(params.id);
+      await deleteAdmin(params.id);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted admin!`));
       params.getAdmins();
       thunkAPI.dispatch(setAppLoading(false));
@@ -91,13 +120,61 @@ export const asyncChangePassword = createAsyncThunk(
   async (params: { newPassword: string; oldPassword: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await changePassword(params.newPassword, params.oldPassword);
-
+      await changePassword(params.newPassword, params.oldPassword);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueSuccessNotification(`Password changed!`));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncChangeOtherAdminsPassword = createAsyncThunk(
+  'authentication/changeOtherAdminsPassword',
+  async (params: { adminId: string; newPassword: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await changeOtherAdminsPassword(params.adminId, params.newPassword);
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Password changed!`));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncToggleTwoFA = createAsyncThunk(
+  'authentication/enableTwoFA',
+  async (args: { enabled: boolean }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await toggleTwoFA(args.enabled);
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Two factor authentication enabled!`));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncVerifyQrCode = createAsyncThunk(
+  'appAuth/verifyQrCode',
+  async (args: { code: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await verifyQrCodeRequest(args.code);
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(
+        enqueueErrorNotification(`Could not login! error msg:${getErrorData(error)}`)
+      );
+      thunkAPI.dispatch(setAppLoading(false));
       throw error;
     }
   }
@@ -143,6 +220,7 @@ export const asyncGetAdminSettings = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getAdminSettings();
+
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
@@ -203,8 +281,11 @@ const settingsSlice = createSlice({
       state.adminSettings = action.payload.config;
     });
     builder.addCase(asyncGetAdmins.fulfilled, (state, action) => {
-      state.data.authAdmins.admins = action.payload.result.admins;
-      state.data.authAdmins.count = action.payload.result.count;
+      state.data.authAdmins.admins = action.payload.admins;
+      state.data.authAdmins.count = action.payload.count;
+    });
+    builder.addCase(asyncGetAdminById.fulfilled, (state, action) => {
+      state.data.selectedAdmin = action.payload;
     });
   },
 });
