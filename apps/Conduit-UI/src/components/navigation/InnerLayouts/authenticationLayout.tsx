@@ -24,6 +24,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
     <StyledLayout
       configActive={configActive}
       module={'authentication'}
+      docs="https://getconduit.dev/docs/modules/authentication/config#available-options"
       labels={labels}
       pathNames={pathNames}
       swagger={'authentication'}

@@ -23,6 +23,7 @@ const DatabaseLayout: React.FC = ({ children }) => {
       configActive={true}
       module={'database'}
       labels={labels}
+      docs={'https://getconduit.dev/docs/modules/database/'}
       pathNames={pathNames}
       swagger={'cms'}
       icon={<Toc />}>

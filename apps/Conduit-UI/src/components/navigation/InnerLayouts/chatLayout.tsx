@@ -17,6 +17,7 @@ const ChatLayout: React.FC = ({ children }) => {
       module={'chat'}
       labels={labels}
       pathNames={pathNames}
+      docs={'https://getconduit.dev/docs/modules/chat/'}
       swagger={'chat'}
       icon={<Toc />}
       configActive={configActive}>
