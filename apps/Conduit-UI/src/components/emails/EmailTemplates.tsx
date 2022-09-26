@@ -12,16 +12,31 @@ import {
 } from '../../redux/slices/emailsSlice';
 import { prepareSort } from '../../utils/prepareSort';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
-import { Box, Button, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
+import {
+  Box,
+  Button,
+  Icon,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import {
   ConfirmationDialog,
   DataTable,
+  RichTooltip,
   SideDrawerWrapper,
   TableActionsContainer,
   TableContainer,
 } from '@conduitplatform/ui-components';
 import SearchIcon from '@mui/icons-material/Search';
-import { AddCircleOutline, CallMissedOutgoing, DeleteTwoTone } from '@mui/icons-material';
+import {
+  AddCircleOutline,
+  CallMissedOutgoing,
+  DeleteTwoTone,
+  InfoOutlined,
+} from '@mui/icons-material';
 import Sync from '@mui/icons-material/Sync';
 import { formatData, headers } from './FormatTemplatesHelper';
 import TabPanel from './EmailDrawerContent';
@@ -55,6 +70,7 @@ const EmailTemplates: React.FC = () => {
   const [importTemplate, setImportTemplate] = useState<boolean>(false);
   const [create, setCreate] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
 
   const debouncedSearch: string = useDebounce(search, 500);
 
@@ -255,24 +271,69 @@ const EmailTemplates: React.FC = () => {
     return 'Import an external template';
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   return (
     <Box>
       <TableActionsContainer>
-        <TextField
-          size="small"
-          variant="outlined"
-          name="Search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          label="Find template"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Box display="flex" gap={1} alignItems="center">
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find template"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+            <RichTooltip
+              content={
+                <Box display="flex" flexDirection="column" gap={2} p={2}>
+                  <Typography variant="body2">
+                    Most web applications typically require a way to send e-mails to users. The
+                    Email module serves this very purpose. Below you can see a brief introduction to
+                    some of its features.
+                  </Typography>
+                  <Box display="flex" gap={2}>
+                    <a
+                      href="https://getconduit.dev/docs/modules/email/get-started#templates"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none' }}>
+                      <Button variant="outlined">Templates</Button>
+                    </a>
+                    <a
+                      href="https://getconduit.dev/docs/modules/email/get-started#import-a-template"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none' }}>
+                      <Button variant="outlined">Import a template</Button>
+                    </a>
+                  </Box>
+                </Box>
+              }
+              width="400px"
+              open={openTooltip}
+              onClose={MouseOutTooltip}>
+              <Icon>
+                <InfoOutlined />
+              </Icon>
+            </RichTooltip>
+          </Box>
+        </Box>
         <Box display="flex" gap={2} alignItems="center">
           {selectedTemplates.length > 0 && (
             <IconButton

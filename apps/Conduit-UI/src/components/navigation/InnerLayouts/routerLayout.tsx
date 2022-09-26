@@ -15,6 +15,7 @@ const RouterLayout: React.FC = ({ children }) => {
       configActive={true}
       module={'router'}
       labels={labels}
+      docs={'https://getconduit.dev/docs/modules/router/'}
       pathNames={pathNames}
       swagger={'router'}
       icon={<AltRoute />}>

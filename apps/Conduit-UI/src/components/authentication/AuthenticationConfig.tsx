@@ -11,12 +11,16 @@ import { camelCase, startCase } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { InfoOutlined } from '@mui/icons-material';
+import { Icon, Tooltip } from '@mui/material';
 
 const AuthenticationConfig: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const [edit, setEdit] = useState<boolean>(false);
+
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
+
   const methods = useForm<IAuthenticationConfig>({
     defaultValues: useMemo(() => {
       return config;
@@ -87,7 +91,20 @@ const AuthenticationConfig: React.FC = () => {
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'h6'}>Activate Authentication Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate Authentication Module</Typography>
+                <Tooltip title="Authentication configuration documentation">
+                  <a
+                    href="https://getconduit.dev/docs/modules/authentication/config"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'white' }}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </a>
+                </Tooltip>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ padding: 3 }}>

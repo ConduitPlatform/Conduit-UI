@@ -7,9 +7,11 @@ import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-c
 import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
 import LogsComponent from '../../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
+import { Description } from '@mui/icons-material';
 
 interface Props {
   pathNames: string[];
+  docs?: string;
   swagger?: string;
   icon: JSX.Element;
   swaggerIcon: JSX.Element;
@@ -29,6 +31,7 @@ interface Props {
 const SharedLayout: FC<Props> = ({
   children,
   pathNames,
+  docs,
   swagger,
   icon,
   swaggerIcon,
@@ -46,7 +49,7 @@ const SharedLayout: FC<Props> = ({
 }) => {
   const router = useRouter();
   const theme = useTheme();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const smallScreen = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
@@ -98,6 +101,20 @@ const SharedLayout: FC<Props> = ({
                       {smallScreen ? null : 'GraphQL'}
                     </Typography>
                   </Button>
+                )}
+                {!docs ? null : (
+                  <a
+                    href={docs}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}>
+                    <Button color="primary" variant="contained" sx={{ ml: 2 }}>
+                      {<Description />}
+                      <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                        {smallScreen ? null : 'Documentation'}
+                      </Typography>
+                    </Button>
+                  </a>
                 )}
               </Box>
             )}

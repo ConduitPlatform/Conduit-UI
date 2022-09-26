@@ -11,7 +11,9 @@ import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-componen
 
 const FormsConfig: React.FC = () => {
   const dispatch = useAppDispatch();
+
   const [edit, setEdit] = useState<boolean>(false);
+
   const { config } = useAppSelector((state) => state.formsSlice.data);
 
   const methods = useForm<IFormsConfig>({
@@ -57,7 +59,6 @@ const FormsConfig: React.FC = () => {
               <Typography variant={'h6'}>Activate Forms Module</Typography>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
-
             <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
               {isActive && (
                 <Grid item xs={12}>

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Icon, Typography } from '@mui/material';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -9,12 +9,16 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveNotificationConfig } from '../../redux/slices/notificationsSlice';
-import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
+import { ConfigSaveSection, ConfigContainer, RichTooltip } from '@conduitplatform/ui-components';
+import { InfoOutlined } from '@mui/icons-material';
 
 const NotificationConfig: FC = () => {
   const dispatch = useAppDispatch();
   const { config } = useAppSelector((state) => state.notificationsSlice.data);
+
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
+
   const methods = useForm<INotificationConfig>({
     defaultValues: useMemo(() => {
       return {
@@ -84,6 +88,14 @@ const NotificationConfig: FC = () => {
     };
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   const providers = [
     {
       name: 'firebase',
@@ -104,7 +116,37 @@ const NotificationConfig: FC = () => {
                 alignItems: 'center',
                 mb: 1,
               }}>
-              <Typography variant={'h6'}>Activate Push Notifications Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate Authentication Module</Typography>
+                <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                  <RichTooltip
+                    content={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          To see more information regarding the Push Notifications config, please
+                          visit our docs
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/push-notifications/config"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Take me there</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }
+                    width="400px"
+                    placement="bottom"
+                    open={openTooltip}
+                    onClose={MouseOutTooltip}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </RichTooltip>
+                </Box>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             {isActive && (

@@ -19,6 +19,7 @@ const EmailsLayout: React.FC = ({ children }) => {
       configActive={configActive}
       module={'email'}
       labels={labels}
+      docs={'https://getconduit.dev/docs/modules/email/'}
       pathNames={pathNames}
       swagger={'email'}
       icon={<Email />}>

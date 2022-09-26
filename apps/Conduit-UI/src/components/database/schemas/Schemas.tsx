@@ -8,14 +8,14 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaData/SchemaDataCard';
-import { ConfirmationDialog } from '@conduitplatform/ui-components';
+import { ConfirmationDialog, RichTooltip } from '@conduitplatform/ui-components';
 import SchemaDataHeader from './SchemaData/SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaData/SchemaDataPlaceholder';
 import JSONEditor from './SchemaData/JSONEditor';
-import { Grid, InputAdornment, TextField, Typography, Tooltip } from '@mui/material';
-import { Archive, Check, Search } from '@mui/icons-material';
+import { Grid, InputAdornment, TextField, Typography, Tooltip, Icon, Button } from '@mui/material';
+import { Archive, Check, InfoOutlined, Search } from '@mui/icons-material';
 import useDebounce from '../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
 import { Schema } from '../../../models/database/CmsModels';
@@ -61,6 +61,7 @@ const Schemas: FC = () => {
     limit: 25,
   });
   const [search, setSearch] = useState<string>('');
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [objectView, setObjectView] = useState<boolean>(false);
   const [schemaSearch, setSchemaSearch] = useState<string>('');
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
@@ -158,6 +159,14 @@ const Schemas: FC = () => {
 
   const handleClose = () => {
     setCreateDialog(false);
+  };
+
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
   };
 
   const renderMainContent = () => {
@@ -260,22 +269,62 @@ const Schemas: FC = () => {
           <Box>
             <Grid spacing={2} container item>
               <Grid item xs={12}>
-                <TextField
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                  name="Search"
-                  value={schemaSearch}
-                  onChange={(e) => setSchemaSearch(e.target.value)}
-                  label="Find schema"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Box display="flex" gap={1} alignItems="center">
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    fullWidth
+                    name="Search"
+                    value={schemaSearch}
+                    onChange={(e) => setSchemaSearch(e.target.value)}
+                    label="Find schema"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                    <RichTooltip
+                      content={
+                        <Box display="flex" flexDirection="column" gap={2} p={2}>
+                          <Typography variant="body2">
+                            Custom content types are expressed as database schemas. Schemas contain
+                            fields of different types. Some of them are optional, while others are
+                            required. Some of them might even take a default value if nothing else
+                            is explicitly specified.
+                          </Typography>
+                          <Box display="flex" justifyContent="flex-end">
+                            <a
+                              href="https://getconduit.dev/docs/modules/database/get-started#documents-example"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: 'none' }}>
+                              <Button variant="outlined">Schemas</Button>
+                            </a>
+                          </Box>
+                          <Box display="flex" justifyContent="flex-end">
+                            <a
+                              href="https://getconduit.dev/docs/modules/database/get-started#documents-example"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: 'none' }}>
+                              <Button variant="outlined">Schema Data</Button>
+                            </a>
+                          </Box>
+                        </Box>
+                      }
+                      width="400px"
+                      open={openTooltip}
+                      onClose={MouseOutTooltip}>
+                      <Icon>
+                        <InfoOutlined />
+                      </Icon>
+                    </RichTooltip>
+                  </Box>
+                </Box>
               </Grid>
               <Grid container item columnSpacing={9}>
                 <Grid item xs={3}>

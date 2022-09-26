@@ -8,9 +8,12 @@ import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
+import { InfoOutlined } from '@mui/icons-material';
+import { Icon, Tooltip } from '@mui/material';
 
 const ChatConfig: React.FC = () => {
   const dispatch = useAppDispatch();
+
   const [edit, setEdit] = useState<boolean>(false);
 
   const { config } = useAppSelector((state) => state.chatSlice);
@@ -52,7 +55,20 @@ const ChatConfig: React.FC = () => {
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'h6'}>Activate Chat Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate Chat Module</Typography>
+                <Tooltip title="Chat configuration documentation">
+                  <a
+                    href="https://getconduit.dev/docs/modules/chat/config"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'white' }}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </a>
+                </Tooltip>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             <Grid container spacing={2} sx={{ paddingLeft: 4, mt: 1 }}>

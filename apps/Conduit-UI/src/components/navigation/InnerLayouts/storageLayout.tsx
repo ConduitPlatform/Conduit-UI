@@ -18,6 +18,7 @@ const StorageLayout: React.FC = ({ children }) => {
       configActive={configActive}
       module={'storage'}
       labels={labels}
+      docs={'https://getconduit.dev/docs/modules/storage/'}
       pathNames={pathNames}
       swagger={'storage'}
       icon={<Cloud />}>

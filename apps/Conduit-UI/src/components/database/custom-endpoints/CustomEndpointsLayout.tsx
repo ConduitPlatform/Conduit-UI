@@ -1,8 +1,10 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   Box,
+  Button,
   FormControl,
   Grid,
+  Icon,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -11,7 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Delete, Edit, Search } from '@mui/icons-material';
+import { Delete, Edit, InfoOutlined, Search } from '@mui/icons-material';
 import {
   findFieldsWithTypes,
   getAvailableFieldsOfSchema,
@@ -21,7 +23,11 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
+import {
+  ConduitMultiSelect,
+  ConfirmationDialog,
+  RichTooltip,
+} from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
@@ -50,23 +56,26 @@ import useDebounce from '../../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import EndpointsList from './EndpointsList';
 
-const CustomQueries: FC = () => {
+const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { schema } = router.query;
+
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
+  const [search, setSearch] = useState('');
+  const [schemas, setSchemas] = useState<string[]>([]);
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
+  const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
   const { filters } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
   const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
   const {
     schemas: { schemaDocuments },
   } = useAppSelector((state) => state.databaseSlice.data);
-  const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
-  const router = useRouter();
-  const { schema } = router.query;
-  const [search, setSearch] = useState('');
-  const [schemas, setSchemas] = useState<string[]>([]);
-  const debouncedSearch = useDebounce(search, 500);
-  const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
 
   useEffect(() => {
     dispatch(setEndpointsSearch(debouncedSearch));
@@ -203,6 +212,14 @@ const CustomQueries: FC = () => {
   const handleEditClick = () => {
     setEditMode(true);
     setCreateMode(false);
+  };
+
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
   };
 
   const handleSubmit = (edit = false) => {
@@ -432,14 +449,44 @@ const CustomQueries: FC = () => {
               </FormControl>
             </Grid>
             <Grid item sm={12}>
-              <ConduitMultiSelect
-                formControlProps={{ fullWidth: true }}
-                handleChange={handleFilterChange}
-                label="Schemas"
-                options={schemasWithEndpoints}
-                values={schemas}
-                sortBy="name"
-              />
+              <Box display="flex" gap={1} alignItems="center">
+                <ConduitMultiSelect
+                  formControlProps={{ fullWidth: true }}
+                  handleChange={handleFilterChange}
+                  label="Schemas"
+                  options={schemasWithEndpoints}
+                  values={schemas}
+                  sortBy="name"
+                />
+                <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                  <RichTooltip
+                    content={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          Creating a custom schema allows up to optionally make use of
+                          auto-generated CRUD operations. These are simple operations that may be
+                          enabled individually. They may also be protected by user authentication.
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/database/tutorials/custom_endpoints"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Take me to the docs</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }
+                    width="400px"
+                    open={openTooltip}
+                    onClose={MouseOutTooltip}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </RichTooltip>
+                </Box>
+              </Box>
             </Grid>
           </Grid>
         }
@@ -468,4 +515,4 @@ const CustomQueries: FC = () => {
   );
 };
 
-export default CustomQueries;
+export default CustomEndpointsLayout;

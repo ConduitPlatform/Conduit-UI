@@ -19,6 +19,7 @@ const SMSLayout: React.FC = ({ children }) => {
       module={'sms'}
       labels={labels}
       pathNames={pathNames}
+      docs={'https://getconduit.dev/docs/modules/sms/'}
       swagger={'sms'}
       icon={<Sms />}>
       {children}

@@ -13,6 +13,7 @@ interface Props {
   module: ModulesTypes;
   labels: { name: string; id: string }[];
   pathNames: string[];
+  docs?: string;
   swagger?: string;
   icon: JSX.Element;
   configActive?: boolean;
@@ -22,6 +23,7 @@ const StyledLayout: FC<Props> = ({
   module,
   labels,
   pathNames,
+  docs,
   swagger,
   icon,
   configActive,
@@ -47,6 +49,7 @@ const StyledLayout: FC<Props> = ({
       module={module}
       labels={labels}
       pathNames={pathNames}
+      docs={docs}
       swagger={swagger}
       icon={icon}
       transportsAdmin={transportsAdmin}
