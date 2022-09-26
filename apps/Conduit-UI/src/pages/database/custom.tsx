@@ -5,8 +5,8 @@ import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLay
 import dynamic from 'next/dynamic';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
-const CustomQueries = dynamic(
-  () => import('../../components/database/custom-endpoints/CustomQueries'),
+const CustomEndpointsLayout = dynamic(
+  () => import('../../components/database/custom-endpoints/CustomEndpointsLayout'),
   {
     loading: () => (
       <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
@@ -21,7 +21,7 @@ const Custom = () => {
     dispatch(asyncGetSchemas({ skip: 0, limit: 50, enabled: true }));
   }, [dispatch]);
 
-  return <CustomQueries />;
+  return <CustomEndpointsLayout />;
 };
 
 Custom.getLayout = function getLayout(page: ReactElement) {

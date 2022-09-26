@@ -5,3 +5,5 @@ export const loginRequest = (username: string, password: string) =>
     username,
     password,
   });
+
+export const verifyTwoFARequest = (code: string) => postRequest('/verify-twofa', { code });

@@ -18,6 +18,7 @@ const FormsLayout: React.FC = ({ children }) => {
       configActive={configActive}
       module={'forms'}
       labels={labels}
+      docs={'https://getconduit.dev/docs/modules/forms/'}
       pathNames={pathNames}
       swagger={'forms'}
       icon={<FormatAlignLeft />}>

@@ -9,13 +9,16 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
 import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { Box, Icon, Tooltip } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 
 const SmsConfig: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  const [edit, setEdit] = useState<boolean>(false);
+
   const { config } = useAppSelector((state) => state.smsSlice.data);
 
-  const [edit, setEdit] = useState<boolean>(false);
   const methods = useForm<ISmsConfig>({
     defaultValues: useMemo(() => {
       return {
@@ -86,7 +89,20 @@ const SmsConfig: React.FC = () => {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid container item xs={12} justifyContent="space-between" alignItems={'center'}>
-              <Typography variant={'h6'}>Activate SMS Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate SMS Module</Typography>
+                <Tooltip title="SMS configuration documentation">
+                  <a
+                    href="https://getconduit.dev/docs/modules/sms/config"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'white' }}>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </a>
+                </Tooltip>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Grid>
             {isActive && (

@@ -22,6 +22,7 @@ const NotificationLayout: React.FC = ({ children }) => {
       configActive={configActive}
       module={'pushNotifications'}
       labels={labels}
+      docs={'https://getconduit.dev/docs/modules/push-notifications/'}
       pathNames={pathNames}
       swagger={'pushNotifications'}
       icon={<Notifications />}>
