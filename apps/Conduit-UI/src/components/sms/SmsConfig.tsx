@@ -8,8 +8,8 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
-import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
-import { Box, Button, Icon, Tooltip } from '@mui/material';
+import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { Box, Icon, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
 const SmsConfig: React.FC = () => {

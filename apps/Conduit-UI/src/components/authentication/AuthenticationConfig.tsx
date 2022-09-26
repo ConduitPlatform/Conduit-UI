@@ -10,14 +10,13 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { camelCase, startCase } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
-import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
+import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Button, Icon, Tooltip } from '@mui/material';
+import { Icon, Tooltip } from '@mui/material';
 
 const AuthenticationConfig: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
 
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
@@ -56,14 +55,6 @@ const AuthenticationConfig: React.FC = () => {
       ...data,
     };
     dispatch(asyncUpdateAuthenticationConfig(body));
-  };
-
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
   };
 
   const renderInputFields = useMemo(() => {
