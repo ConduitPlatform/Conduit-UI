@@ -8,14 +8,12 @@ const DatabaseLayout: React.FC = ({ children }) => {
     '/database/schemas',
     '/database/introspection',
     '/database/custom',
-    '/database/settings',
   ];
   const labels = [
     { name: 'dashboard', id: 'dashboard' },
     { name: 'schemas', id: 'schemas' },
     { name: 'introspection', id: 'introspection' },
     { name: 'custom endpoints', id: 'custom' },
-    { name: 'settings', id: 'settings' },
   ];
 
   return (

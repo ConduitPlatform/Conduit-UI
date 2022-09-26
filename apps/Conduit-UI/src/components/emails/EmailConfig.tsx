@@ -187,15 +187,24 @@ const EmailConfig: React.FC = () => {
                     content={
                       <Box display="flex" flexDirection="column" gap={2} p={2}>
                         <Typography variant="body2">
-                          To see more information regarding the Email config, please visit our docs
+                          Since you have created an account on one of the Supported Providers
+                          (Mailgun, Sendgrid, Mandrill, Smtp), you need to configure the provider to
+                          proceed with the activation of the module.
                         </Typography>
-                        <Box display="flex" justifyContent="flex-end">
+                        <Box display="flex" gap={2}>
                           <a
-                            href="https://getconduit.dev/docs/modules/email/config"
+                            href="https://getconduit.dev/docs/modules/email/config#mandrill"
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Take me there</Button>
+                            <Button variant="outlined">Mandrill</Button>
+                          </a>
+                          <a
+                            href="https://getconduit.dev/docs/modules/email/config#sendgrid"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Sendgrid</Button>
                           </a>
                         </Box>
                       </Box>

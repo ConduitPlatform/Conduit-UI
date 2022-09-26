@@ -186,7 +186,11 @@ const SecurityTab: React.FC = () => {
                     content={
                       <Box display="flex" flexDirection="column" gap={2} p={2}>
                         <Typography variant="body2">
-                          To learn more about Security client validation head over to the docs
+                          Security client validation introduces an additional security layer for
+                          your application requests. Upon enabling this option any client requests
+                          going through your transport APIs are going to have to provide a client
+                          id/secret pair before their request can be forwarded to the appropriate
+                          module.
                         </Typography>
                         <Box display="flex" justifyContent="flex-end">
                           <a
@@ -194,7 +198,7 @@ const SecurityTab: React.FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Take me there</Button>
+                            <Button variant="outlined">Take me to the docs</Button>
                           </a>
                         </Box>
                       </Box>

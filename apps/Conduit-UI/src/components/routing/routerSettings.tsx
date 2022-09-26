@@ -61,8 +61,10 @@ const RouterSettings: React.FC = () => {
                         content={
                           <Box display="flex" flexDirection="column" gap={2} p={2}>
                             <Typography variant="body2">
-                              To see more information regarding the Router module, please visit our
-                              docs
+                              This module provides a way for modules to register application routes
+                              for REST and GraphQL APIs. Endpoint documentation is automatically
+                              generated so as to further facilitate development. It also provides
+                              support for application-level WebSockets.
                             </Typography>
                             <Box display="flex" justifyContent="flex-end">
                               <a
@@ -70,7 +72,7 @@ const RouterSettings: React.FC = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{ textDecoration: 'none' }}>
-                                <Button variant="outlined">Take me there</Button>
+                                <Button variant="outlined">To the docs!</Button>
                               </a>
                             </Box>
                           </Box>

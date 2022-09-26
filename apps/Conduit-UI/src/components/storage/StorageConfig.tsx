@@ -10,7 +10,7 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncSaveStorageConfig } from '../../redux/slices/storageSlice';
 import { ConfigSaveSection, ConfigContainer, RichTooltip } from '@conduitplatform/ui-components';
-import { Icon } from '@mui/material';
+import { Button, Icon } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
 const StorageConfig: React.FC = () => {
@@ -85,7 +85,45 @@ const StorageConfig: React.FC = () => {
               <Typography variant={'h6'}>Activate Storage Module</Typography>
               <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
                 <RichTooltip
-                  content={<Typography variant="caption">Placeholder...</Typography>}
+                  content={
+                    <Box display="flex" flexDirection="column" gap={2} p={2}>
+                      <Typography variant="body2">
+                        To get an idea on how to setup your storage provider take a look at the
+                        documentation.
+                      </Typography>
+                      <Box display="flex" gap={2}>
+                        <a
+                          href="https://getconduit.dev/docs/modules/storage/config#local-storage"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Local</Button>
+                        </a>
+                        <a
+                          href="https://getconduit.dev/docs/modules/storage/config#azure-storage"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Azure</Button>
+                        </a>
+                        <a
+                          href="https://getconduit.dev/docs/modules/storage/config#google-storage"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Google</Button>
+                        </a>
+                        <a
+                          href="https://getconduit.dev/docs/modules/storage/config#amazon-storage"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">AS3</Button>
+                        </a>
+                      </Box>
+                    </Box>
+                  }
+                  width="400px"
                   open={openTooltip}
                   onClose={MouseOutTooltip}>
                   <Icon>
