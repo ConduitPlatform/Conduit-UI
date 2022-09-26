@@ -57,7 +57,9 @@ const MultipleMetricGraph: FC<Props> = ({
 
   const prepareData = useMemo(() => {
     return Object.entries(totalData).filter(([key, item]) =>
-      expressionsRoutes.some((exprRoute) => key === exprRoute.expression)
+      expressionsRoutes.some(
+        (exprRoute) => key === exprRoute.expression && item?.counters?.length > 0
+      )
     );
   }, [expressionsRoutes, totalData]);
 
