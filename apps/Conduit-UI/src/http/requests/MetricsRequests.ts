@@ -54,8 +54,3 @@ export const getGenericMetricQueryRange = (body: {
     end: body.endDate,
     step: body.step,
   });
-
-export const getAdminClientRoutes = (body: { expression: string }) =>
-  getRequestProm('/query', {
-    query: body.expression,
-  });

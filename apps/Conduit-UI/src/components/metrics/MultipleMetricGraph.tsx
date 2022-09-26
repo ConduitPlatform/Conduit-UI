@@ -16,8 +16,12 @@ import AdapterMoment from '@mui/lab/AdapterMoment';
 import Close from '@mui/icons-material/Close';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
-import { ExpressionsRoutesArray, MultipleSeries } from '../../models/metrics/metricsModels';
-import { asyncGetAdminClientRoutes } from '../../redux/slices/metricsSlice';
+import {
+  ExpressionsRoutesArray,
+  MetricsData,
+  MultipleSeries,
+} from '../../models/metrics/metricsModels';
+import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 
 interface Props {
   expressionsRoutes: ExpressionsRoutesArray[];
@@ -44,51 +48,53 @@ const MultipleMetricGraph: FC<Props> = ({
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const totalData = useAppSelector((state) => state?.metricsSlice?.data?.genericMetric);
-  const loading = useAppSelector((state) => state?.metricsSlice?.meta.genericMetric);
+  const totalData: Record<string, MetricsData> = useAppSelector(
+    (state) => state?.metricsSlice?.data?.genericMetric
+  );
+  const loading: Record<string, boolean> = useAppSelector(
+    (state) => state?.metricsSlice?.meta.genericMetricLoading
+  );
+
+  const prepareData = useMemo(() => {
+    return Object.entries(totalData).filter(([key, item]) =>
+      expressionsRoutes.some((exprRoute) => key === exprRoute.expression)
+    );
+  }, [expressionsRoutes, totalData]);
 
   const timestamps = useMemo(() => {
-    let timeStamps = totalData?.[expressionsRoutes[0].expression]?.[0].timestamps;
-    if (timeStamps?.length === 0) {
-      expressionsRoutes.map((exprRoute) => {
-        if (totalData?.[exprRoute.expression]?.[0].timestamp?.length !== 0)
-          timeStamps = totalData?.[exprRoute.expression]?.[0].timestamp;
-        return;
-      });
-    }
-    return timeStamps;
-  }, [expressionsRoutes, totalData]);
+    return prepareData?.find(([key, item]) => item?.timestamps?.length > 0)?.[1]?.timestamps ?? [];
+  }, [prepareData]);
 
   useEffect(() => {
     expressionsRoutes?.map((exprRoute) => {
       dispatch(
-        asyncGetAdminClientRoutes({
+        asyncGetGenericMetricQueryRange({
           expression: exprRoute.expression,
+          startDate: startDateValue
+            ? startDateValue.valueOf() / 1000
+            : moment().subtract(1, 'hours').unix(),
+          endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
+          step: selectedStep,
         })
       );
     });
-  }, [dispatch, expressionsRoutes]);
+  }, [dispatch, endDateValue, expressionsRoutes, selectedStep, startDateValue]);
 
   const graphLoading = useMemo(() => {
-    const arr: boolean[] = [];
-    expressionsRoutes?.map((exprRoute) => {
-      arr.push(loading?.[exprRoute.expression]);
-    });
-    return arr.every((bool) => bool);
+    return Object.entries(loading)
+      .filter(([key, _item]) => expressionsRoutes.some((exprRoute) => key === exprRoute.expression))
+      .some(([_key, item]) => item);
   }, [expressionsRoutes, loading]);
 
   const series = useMemo(() => {
-    const multipleSeries: MultipleSeries[] = [];
-
-    expressionsRoutes?.map((exprRoute) => {
-      if (totalData?.[exprRoute.expression]?.[0]?.counters?.length !== 0)
-        multipleSeries.push({
-          name: exprRoute.title,
-          data: totalData?.[exprRoute.expression]?.[0]?.counters ?? [],
-        });
+    return prepareData.map(([key, item]) => {
+      const serie: MultipleSeries = {
+        name: expressionsRoutes?.find((exprRoute) => exprRoute.expression === key)?.title ?? '',
+        data: item.counters,
+      };
+      return serie;
     });
-    return multipleSeries;
-  }, [expressionsRoutes, totalData]);
+  }, [expressionsRoutes, prepareData]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');

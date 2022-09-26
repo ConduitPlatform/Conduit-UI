@@ -44,9 +44,15 @@ const Main = styled('main')(() => ({
 }));
 
 const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
-  { title: 'graphql', expression: 'conduit_admin_routes_total{transport="graphql"}[10m]' },
-  { title: 'rest', expression: 'conduit_admin_routes_total{transport="rest"}[10m]' },
-  { title: 'socket', expression: 'conduit_admin_routes_total{transport="socket"}[10m]' },
+  {
+    title: 'graphql',
+    expression: 'sum(increase(conduit_admin_routes_total{transport="graphql"}[10m]))',
+  },
+  { title: 'rest', expression: 'sum(increase(conduit_admin_routes_total{transport="rest"}[10m]))' },
+  {
+    title: 'socket',
+    expression: 'sum(increase(conduit_admin_routes_total{transport="socket"}[10m]))',
+  },
 ];
 
 const Home: React.FC = () => {

@@ -8,7 +8,6 @@ import {
   MetricsLogsDataRaw,
 } from '../../models/metrics/metricsModels';
 import {
-  getAdminClientRoutes,
   getGenericMetricQueryRange,
   getMetricsQuery,
   getModuleHealth,
@@ -19,8 +18,8 @@ import { parseInt } from 'lodash';
 
 interface IMetricsSlice {
   data: {
-    genericMetric: Record<string, MetricsData[]>;
-    moduleTotalRequests: Record<ModulesTypes, MetricsData[]>;
+    genericMetric: Record<string, MetricsData>;
+    moduleTotalRequests: Record<ModulesTypes, MetricsData>;
     moduleHealth: Record<ModulesTypes, boolean>;
     moduleLatency: Record<ModulesTypes, number>;
   };
@@ -34,8 +33,8 @@ interface IMetricsSlice {
 
 const initialState: IMetricsSlice = {
   data: {
-    genericMetric: {} as Record<string, MetricsData[]>,
-    moduleTotalRequests: {} as Record<ModulesTypes, MetricsData[]>,
+    genericMetric: {} as Record<string, MetricsData>,
+    moduleTotalRequests: {} as Record<ModulesTypes, MetricsData>,
     moduleHealth: {} as Record<ModulesTypes, boolean>,
     moduleLatency: {} as Record<ModulesTypes, number>,
   },
@@ -66,7 +65,7 @@ const prepareData = (data: MetricsLogsDataRaw) => {
     counters.push(parseInt(itemsCount));
   });
 
-  return [{ timestamps: timestamps, counters: counters }];
+  return { timestamps: timestamps, counters: counters };
 };
 
 export const asyncGetGenericMetricQueryRange = createAsyncThunk(
@@ -163,28 +162,6 @@ export const asyncGetModuleLatency = createAsyncThunk(
   }
 );
 
-export const asyncGetAdminClientRoutes = createAsyncThunk(
-  '/metrics/getAdminClientRoutes',
-  async (
-    body: {
-      expression: string;
-    },
-    thunkAPI
-  ) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const { data } = await getAdminClientRoutes(body);
-      thunkAPI.dispatch(setAppLoading(false));
-
-      return prepareData(data);
-    } catch (error: any) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
-      throw error;
-    }
-  }
-);
-
 const metricsSlice = createSlice({
   name: 'metrics',
   initialState,
@@ -217,13 +194,6 @@ const metricsSlice = createSlice({
     builder.addCase(asyncGetModuleLatency.fulfilled, (state, action) => {
       state.data.moduleLatency[action.meta.arg.module] = action.payload;
       state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
-    });
-    builder.addCase(asyncGetAdminClientRoutes.pending, (state, action) => {
-      state.meta.genericMetricLoading[action.meta.arg.expression] = true;
-    });
-    builder.addCase(asyncGetAdminClientRoutes.fulfilled, (state, action) => {
-      state.data.genericMetric[action.meta.arg.expression] = action.payload;
-      state.meta.genericMetricLoading[action.meta.arg.expression] = false;
     });
   },
 });
