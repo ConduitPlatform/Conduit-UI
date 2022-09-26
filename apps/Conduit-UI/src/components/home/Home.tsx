@@ -36,10 +36,24 @@ import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
 import { asyncGetForms } from '../../redux/slices/formsSlice';
 import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
+import MultipleMetricGraph from '../metrics/MultipleMetricGraph';
+import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';
 
 const Main = styled('main')(() => ({
   flexGrow: 1,
 }));
+
+const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
+  {
+    title: 'graphql',
+    expression: 'sum(increase(conduit_admin_routes_total{transport="graphql"}[10m]))',
+  },
+  { title: 'rest', expression: 'sum(increase(conduit_admin_routes_total{transport="rest"}[10m]))' },
+  {
+    title: 'socket',
+    expression: 'sum(increase(conduit_admin_routes_total{transport="socket"}[10m]))',
+  },
+];
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -211,6 +225,16 @@ const Home: React.FC = () => {
                     label="Requests"
                     hasControls={false}
                     canZoom={false}
+                  />
+                </GraphContainer>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <GraphContainer>
+                  <MultipleMetricGraph
+                    label="Requests"
+                    expressionsRoutes={expressionsAdminRoutes}
+                    hasControls={false}
+                    graphTitle={'Admin routes'}
                   />
                 </GraphContainer>
               </Grid>

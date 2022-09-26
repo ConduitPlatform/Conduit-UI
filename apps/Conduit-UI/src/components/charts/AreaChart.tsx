@@ -2,8 +2,27 @@ import React, { FC } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 import { useTheme } from '@mui/material';
+import { MultipleSeries } from '../../models/metrics/metricsModels';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+
+type AreaChartType =
+  | 'line'
+  | 'area'
+  | 'bar'
+  | 'histogram'
+  | 'pie'
+  | 'donut'
+  | 'radialBar'
+  | 'scatter'
+  | 'bubble'
+  | 'heatmap'
+  | 'treemap'
+  | 'boxPlot'
+  | 'candlestick'
+  | 'radar'
+  | 'polarArea'
+  | 'rangeBar';
 
 interface Props {
   canZoom?: boolean;
@@ -14,6 +33,8 @@ interface Props {
   width?: string | number;
   height?: string | number;
   loading?: boolean;
+  multipleSeries?: MultipleSeries[];
+  type?: AreaChartType;
 }
 const AreaChart: FC<Props> = ({
   canZoom,
@@ -24,6 +45,8 @@ const AreaChart: FC<Props> = ({
   width = '100%',
   height = '300px',
   loading,
+  multipleSeries,
+  type = 'area',
 }) => {
   const theme = useTheme();
 
@@ -39,6 +62,7 @@ const AreaChart: FC<Props> = ({
       id: 'basic-bar',
       fontFamily: 'JetBrains Mono',
       background: theme.palette.background.paper,
+      stacked: false,
     },
     grid: {
       yaxis: {
@@ -99,15 +123,17 @@ const AreaChart: FC<Props> = ({
     },
   };
 
-  const series = [
-    {
-      name: label,
-      data: counters ?? [],
-    },
-  ];
+  const series = multipleSeries
+    ? multipleSeries
+    : [
+        {
+          name: label,
+          data: counters ?? [],
+        },
+      ];
 
   return (
-    <ReactApexChart options={options} series={series} type="area" width={width} height={height} />
+    <ReactApexChart options={options} series={series} type={type} width={width} height={height} />
   );
 };
 

@@ -16,10 +16,15 @@ import AdapterMoment from '@mui/lab/AdapterMoment';
 import Close from '@mui/icons-material/Close';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
+import {
+  ExpressionsRoutesArray,
+  MetricsData,
+  MultipleSeries,
+} from '../../models/metrics/metricsModels';
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 
 interface Props {
-  expression: string;
+  expressionsRoutes: ExpressionsRoutesArray[];
   graphTitle?: string;
   hasControls?: boolean;
   label?: string;
@@ -28,8 +33,8 @@ interface Props {
 
 const steps = ['1s', '10s', '1m', '10m', '1h', '12h', '1w', '2w'];
 
-const ExtractQueryRangeGraph: FC<Props> = ({
-  expression,
+const MultipleMetricGraph: FC<Props> = ({
+  expressionsRoutes,
   graphTitle,
   hasControls = true,
   label = 'value',
@@ -43,24 +48,55 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
 
-  const data = useAppSelector((state) => state?.metricsSlice?.data?.genericMetric?.[expression]);
-
-  const loading = useAppSelector(
-    (state) => state?.metricsSlice?.meta.genericMetricLoading?.[expression]
+  const totalData: Record<string, MetricsData> = useAppSelector(
+    (state) => state?.metricsSlice?.data?.genericMetric
+  );
+  const loading: Record<string, boolean> = useAppSelector(
+    (state) => state?.metricsSlice?.meta.genericMetricLoading
   );
 
-  useEffect(() => {
-    dispatch(
-      asyncGetGenericMetricQueryRange({
-        expression,
-        startDate: startDateValue
-          ? startDateValue.valueOf() / 1000
-          : moment().subtract(1, 'hours').unix(),
-        endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
-        step: selectedStep,
-      })
+  const prepareData = useMemo(() => {
+    return Object.entries(totalData).filter(([key, item]) =>
+      expressionsRoutes.some(
+        (exprRoute) => key === exprRoute.expression && item?.counters?.length > 0
+      )
     );
-  }, [dispatch, expression, startDateValue, endDateValue, selectedStep]);
+  }, [expressionsRoutes, totalData]);
+
+  const timestamps = useMemo(() => {
+    return prepareData?.find(([key, item]) => item?.timestamps?.length > 0)?.[1]?.timestamps ?? [];
+  }, [prepareData]);
+
+  useEffect(() => {
+    expressionsRoutes?.map((exprRoute) => {
+      dispatch(
+        asyncGetGenericMetricQueryRange({
+          expression: exprRoute.expression,
+          startDate: startDateValue
+            ? startDateValue.valueOf() / 1000
+            : moment().subtract(1, 'hours').unix(),
+          endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
+          step: selectedStep,
+        })
+      );
+    });
+  }, [dispatch, endDateValue, expressionsRoutes, selectedStep, startDateValue]);
+
+  const graphLoading = useMemo(() => {
+    return Object.entries(loading)
+      .filter(([key, _item]) => expressionsRoutes.some((exprRoute) => key === exprRoute.expression))
+      .some(([_key, item]) => item);
+  }, [expressionsRoutes, loading]);
+
+  const series = useMemo(() => {
+    return prepareData.map(([key, item]) => {
+      const serie: MultipleSeries = {
+        name: expressionsRoutes?.find((exprRoute) => exprRoute.expression === key)?.title ?? '',
+        data: item.counters,
+      };
+      return serie;
+    });
+  }, [expressionsRoutes, prepareData]);
 
   const minDateOfStart = useMemo(() => {
     return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
@@ -222,14 +258,15 @@ const ExtractQueryRangeGraph: FC<Props> = ({
       )}
       <AreaChart
         label={label}
-        timestamps={data?.timestamps}
-        counters={data?.counters}
+        timestamps={timestamps}
+        multipleSeries={series}
+        loading={graphLoading}
         graphTitle={graphTitle}
         canZoom={canZoom}
-        loading={loading}
+        type={'line'}
       />
     </>
   );
 };
 
-export default ExtractQueryRangeGraph;
+export default MultipleMetricGraph;
