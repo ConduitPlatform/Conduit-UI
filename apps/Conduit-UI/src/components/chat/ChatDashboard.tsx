@@ -10,6 +10,12 @@ const ChatDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <RequestsLatency module="chat" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="chat" />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="chat" />
@@ -32,12 +38,6 @@ const ChatDashboard = () => {
               label="Messages"
             />
           </GraphContainer>
-        </Grid>
-        <Grid item xs={4}>
-          <RequestsLatency module="chat" />
-        </Grid>
-        <Grid item xs={4}>
-          <ModuleHealth module="chat" />
         </Grid>
       </Grid>
     </Container>

@@ -10,6 +10,21 @@ const StorageDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item md={12} lg={6}>
+          <GraphContainer>
+            <ExtractQueryRangeGraph
+              expression="sum(increase(conduit_files_total[10m]))"
+              graphTitle="Files"
+              label="Files"
+            />
+          </GraphContainer>
+        </Grid>
+        <Grid item xs={3}>
+          <RequestsLatency module="storage" />
+        </Grid>
+        <Grid item xs={3}>
+          <ModuleHealth module="storage" />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="storage" />
@@ -41,21 +56,6 @@ const StorageDashboard = () => {
               label="Folders"
             />
           </GraphContainer>
-        </Grid>
-        <Grid item md={12} lg={6}>
-          <GraphContainer>
-            <ExtractQueryRangeGraph
-              expression="sum(increase(conduit_files_total[10m]))"
-              graphTitle="Files"
-              label="Files"
-            />
-          </GraphContainer>
-        </Grid>
-        <Grid item xs={3}>
-          <RequestsLatency module="storage" />
-        </Grid>
-        <Grid item xs={3}>
-          <ModuleHealth module="storage" />
         </Grid>
       </Grid>
     </Container>

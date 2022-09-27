@@ -10,6 +10,12 @@ const EmailDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <RequestsLatency module="email" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="email" />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="email" />
@@ -32,12 +38,6 @@ const EmailDashboard = () => {
               label="Emails sent"
             />
           </GraphContainer>
-        </Grid>
-        <Grid item xs={4}>
-          <RequestsLatency module="email" />
-        </Grid>
-        <Grid item xs={4}>
-          <ModuleHealth module="email" />
         </Grid>
       </Grid>
     </Container>

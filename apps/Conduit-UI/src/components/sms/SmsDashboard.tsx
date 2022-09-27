@@ -10,6 +10,14 @@ const SmsDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container gap={2}>
+        <Grid container gap={2}>
+          <Grid item xs={4}>
+            <RequestsLatency module="sms" />
+          </Grid>
+          <Grid item xs={4}>
+            <ModuleHealth module="sms" />
+          </Grid>
+        </Grid>
         <Grid container item spacing={2}>
           <Grid item xs={12}>
             <GraphContainer>
@@ -24,14 +32,6 @@ const SmsDashboard = () => {
                 label="Sms sent"
               />
             </GraphContainer>
-          </Grid>
-        </Grid>
-        <Grid container gap={2}>
-          <Grid item xs={4}>
-            <RequestsLatency module="sms" />
-          </Grid>
-          <Grid item xs={4}>
-            <ModuleHealth module="sms" />
           </Grid>
         </Grid>
       </Grid>

@@ -10,6 +10,12 @@ const AuthenticationDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <RequestsLatency module="authentication" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="authentication" />
+        </Grid>
         <Grid item sm={12}>
           <GraphContainer>
             <TotalRequestsByModule module="authentication" />
@@ -32,12 +38,6 @@ const AuthenticationDashboard = () => {
               label="Requests"
             />
           </GraphContainer>
-        </Grid>
-        <Grid item xs={4}>
-          <RequestsLatency module="authentication" />
-        </Grid>
-        <Grid item xs={4}>
-          <ModuleHealth module="authentication" />
         </Grid>
       </Grid>
     </Container>

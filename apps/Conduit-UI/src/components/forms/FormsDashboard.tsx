@@ -10,6 +10,12 @@ const FormsDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <RequestsLatency module="forms" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="forms" />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="forms" />
@@ -23,12 +29,6 @@ const FormsDashboard = () => {
               label="Forms"
             />
           </GraphContainer>
-        </Grid>
-        <Grid item xs={4}>
-          <RequestsLatency module="forms" />
-        </Grid>
-        <Grid item xs={4}>
-          <ModuleHealth module="forms" />
         </Grid>
       </Grid>
     </Container>

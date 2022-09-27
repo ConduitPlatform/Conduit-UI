@@ -27,6 +27,12 @@ const RouterDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item xs={3}>
+          <RequestsLatency module="router" />
+        </Grid>
+        <Grid item xs={3}>
+          <ModuleHealth module="router" />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="router" />
@@ -50,12 +56,6 @@ const RouterDashboard = () => {
               graphTitle={'Client routes'}
             />
           </GraphContainer>
-        </Grid>
-        <Grid item xs={3}>
-          <RequestsLatency module="router" />
-        </Grid>
-        <Grid item xs={3}>
-          <ModuleHealth module="router" />
         </Grid>
       </Grid>
     </Container>
