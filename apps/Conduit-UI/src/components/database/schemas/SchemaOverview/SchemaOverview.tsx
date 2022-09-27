@@ -180,12 +180,8 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
                 locale={localeEn}
                 viewOnly
                 colors={{
-                  background: theme.palette.background.paper,
+                  background: undefined,
                   keys: theme.palette.primary.dark,
-                  string:
-                    theme.palette.mode === 'dark'
-                      ? theme.palette.common.white
-                      : theme.palette.common.black,
                 }}
                 height="69vh"
                 width="100%"
