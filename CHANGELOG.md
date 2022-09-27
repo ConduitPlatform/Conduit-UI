@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.14.2](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.14.1...v0.14.2) (2022-09-27)
+
+
+### Bug Fixes
+
+* **chat:** wrong create room request ([ecb894f](https://github.com/ConduitPlatform/Conduit-UI/commit/ecb894f20eacf541bfcb6a65cca16b3c9cc098cd))
+
 ### [0.14.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.14.0...v0.14.1) (2022-07-24)
 
 
