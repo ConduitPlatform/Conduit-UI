@@ -59,6 +59,8 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   const [drawerHeight, setDrawerHeight] = useState<number>(minDrawerHeight);
   const [liveReloadChecked, setLiveReloadChecked] = useState<boolean>(false);
 
+  const drawerHeaderRef = useRef<HTMLDivElement>();
+
   const listRef = useRef<VirtuosoHandle>(null);
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -189,7 +191,10 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   }, [startDateValue]);
 
   const handleMouseMove = useCallback((e) => {
-    const newHeight = document.body.offsetHeight - e?.clientY + 16;
+    const newHeight =
+      document?.body?.offsetHeight -
+      e?.screenY -
+      (drawerHeaderRef?.current ? drawerHeaderRef?.current?.clientHeight : 0);
     if (newHeight >= minDrawerHeight) {
       setDrawerHeight(newHeight);
     }
@@ -206,7 +211,11 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   }, [handleMouseMove, handleMouseUp]);
 
   useEffect(() => {
-    if (drawerHeight < 48 && drawerHeight !== minDrawerHeight) {
+    if (
+      drawerHeight <
+        (drawerHeaderRef?.current ? drawerHeaderRef?.current?.clientHeight : 0) * 1.5 &&
+      drawerHeight !== minDrawerHeight
+    ) {
       setDrawerHeight(minDrawerHeight);
     }
   }, [drawerHeight]);
@@ -247,7 +256,12 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
           marginLeft: smallScreen ? '60px' : '200px',
         },
       }}>
-      <Box display={'flex'} justifyContent={'space-between'} pt={'4px'} pb={'3px'}>
+      <Box
+        display={'flex'}
+        justifyContent={'space-between'}
+        pt={'4px'}
+        pb={'3px'}
+        ref={drawerHeaderRef}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
           <Typography
             sx={{
