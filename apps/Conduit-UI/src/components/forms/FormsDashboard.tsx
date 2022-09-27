@@ -5,6 +5,7 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const FormsDashboard = () => {
   return (
@@ -15,6 +16,9 @@ const FormsDashboard = () => {
         </Grid>
         <Grid item xs={4}>
           <ModuleHealth module="forms" />
+        </Grid>
+        <Grid item xs={4}>
+          <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
         </Grid>
         <Grid item xs={12}>
           <GraphContainer>

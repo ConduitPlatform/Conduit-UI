@@ -1,60 +1,39 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
-import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const StorageDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item md={12} lg={6}>
-          <GraphContainer>
-            <ExtractQueryRangeGraph
-              expression="sum(increase(conduit_files_total[10m]))"
-              graphTitle="Files"
-              label="Files"
-            />
-          </GraphContainer>
-        </Grid>
         <Grid item xs={3}>
           <RequestsLatency module="storage" />
         </Grid>
         <Grid item xs={3}>
           <ModuleHealth module="storage" />
         </Grid>
+        <Grid item xs={3}>
+          <MetricCount title="Containers" expression="conduit_containers_total[5m]" />
+        </Grid>
+        <Grid item xs={3}>
+          <MetricCount title="Folders" expression="conduit_folders_total[5m]" />
+        </Grid>
+        <Grid item xs={3}>
+          <MetricCount title="Files" expression="conduit_files_total[5m]" />
+        </Grid>
+        <Grid item xs={3}>
+          <MetricCount
+            title="Storage size (bytes)"
+            expression="conduit_storage_size_bytes_total[5m]"
+          />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="storage" />
-          </GraphContainer>
-        </Grid>
-        <Grid item md={12} lg={6}>
-          <GraphContainer>
-            <ExtractQueryRangeGraph
-              expression="sum(increase(conduit_storage_size_bytes_total[10m]))"
-              graphTitle="Storage size"
-              label="Size (in bytes)"
-            />
-          </GraphContainer>
-        </Grid>
-        <Grid item md={12} lg={6}>
-          <GraphContainer>
-            <ExtractQueryRangeGraph
-              expression="sum(increase(conduit_containers_total[10m]))"
-              graphTitle="Containers"
-              label="Containers"
-            />
-          </GraphContainer>
-        </Grid>
-        <Grid item md={12} lg={6}>
-          <GraphContainer>
-            <ExtractQueryRangeGraph
-              expression="sum(increase(conduit_folders_total[10m]))"
-              graphTitle="Folders"
-              label="Folders"
-            />
           </GraphContainer>
         </Grid>
       </Grid>

@@ -247,7 +247,7 @@ const Home: React.FC = () => {
                 <Grid item xs={6} sm={6} md={6} lg={3}>
                   <MetricCount
                     title="Logged in users"
-                    expression="conduit_logged_in_users_total[1h]"
+                    expression="conduit_logged_in_users_total[5m]"
                   />
                 </Grid>
               )}

@@ -5,11 +5,30 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const DatabaseDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <RequestsLatency module="database" />
+        </Grid>
+        <Grid item xs={4}>
+          <ModuleHealth module="database" />
+        </Grid>
+        <Grid item xs={4}>
+          <MetricCount
+            title="Non imported Schemas"
+            expression="conduit_registered_schemas_total{imported='false'}[5m]"
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <MetricCount
+            title="Imported Schemas"
+            expression="conduit_registered_schemas_total{imported='true'}[5m]"
+          />
+        </Grid>
         <Grid item xs={12}>
           <GraphContainer>
             <TotalRequestsByModule module="database" />
@@ -41,12 +60,6 @@ const DatabaseDashboard = () => {
               label="Custom endpoints"
             />
           </GraphContainer>
-        </Grid>
-        <Grid item xs={4}>
-          <RequestsLatency module="database" />
-        </Grid>
-        <Grid item xs={4}>
-          <ModuleHealth module="database" />
         </Grid>
       </Grid>
     </Container>

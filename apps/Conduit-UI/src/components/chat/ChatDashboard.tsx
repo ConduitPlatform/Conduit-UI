@@ -5,6 +5,7 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const ChatDashboard = () => {
   return (
@@ -15,6 +16,9 @@ const ChatDashboard = () => {
         </Grid>
         <Grid item xs={4}>
           <ModuleHealth module="chat" />
+        </Grid>
+        <Grid item xs={4}>
+          <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[1h]" />
         </Grid>
         <Grid item xs={12}>
           <GraphContainer>
