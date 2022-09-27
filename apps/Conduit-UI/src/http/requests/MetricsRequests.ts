@@ -42,6 +42,9 @@ export const getModuleLatency = (body: {
   });
 };
 
+export const getGenericMetricCounterQuery = (expression: string) =>
+  getRequestProm('/query', { query: expression });
+
 export const getGenericMetricQueryRange = (body: {
   expression: string;
   startDate?: number;
