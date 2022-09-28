@@ -4,13 +4,13 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleLatency } from '../../redux/slices/metricsSlice';
 import MetricsWidget from './MetricsWidget';
-import { ScaleLoader } from 'react-spinners';
 
 interface Props {
   module: ModulesTypes;
+  modulesLength?: number;
 }
 
-const RequestsLatency: FC<Props> = ({ module }) => {
+const RequestsLatency: FC<Props> = ({ module, modulesLength }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const latency: number = useAppSelector(
@@ -34,9 +34,10 @@ const RequestsLatency: FC<Props> = ({ module }) => {
     dispatch(
       asyncGetModuleLatency({
         module,
+        modulesLength,
       })
     );
-  }, [dispatch, module]);
+  }, [dispatch, module, modulesLength]);
 
   return (
     <MetricsWidget
