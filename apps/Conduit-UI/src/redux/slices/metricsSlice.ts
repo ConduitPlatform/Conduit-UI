@@ -149,6 +149,7 @@ export const asyncGetModuleLatency = createAsyncThunk(
   async (
     body: {
       module: ModulesTypes;
+      modulesLength?: number;
     },
     thunkAPI
   ) => {
@@ -157,7 +158,19 @@ export const asyncGetModuleLatency = createAsyncThunk(
       const { data } = await getModuleLatency(body);
       thunkAPI.dispatch(setAppLoading(false));
 
-      return data.data.result[0].value[1] * 1000;
+      if (body.modulesLength) {
+        console.log(body.modulesLength);
+      }
+
+      let finalizedData;
+
+      if (body.module === 'home' && body.modulesLength) {
+        finalizedData = (data.data.result[0].value[1] * 1000) / body.modulesLength;
+      } else {
+        finalizedData = data.data.result[0].value[1] * 1000;
+      }
+
+      return finalizedData;
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
