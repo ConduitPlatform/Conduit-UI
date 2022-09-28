@@ -1,12 +1,11 @@
 import React, { FC, useEffect, useState } from 'react';
-import JSONInput from 'react-json-editor-ajrm';
-import { localeEn } from '../../../../models/JSONEditorAjrmLocale';
 import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
 import { useAppDispatch } from '../../../../redux/store';
 import { Schema } from '../../../../models/database/CmsModels';
 import { asyncEditSchemaDocument } from '../../../../redux/slices/databaseSlice';
 import { enqueueErrorNotification } from '../../../../utils/useNotifier';
 import { Box, styled } from '@mui/material';
+import JsonEditorComponent from '../../../common/JsonEditorComponent';
 
 const StyledDocActions = styled(DocumentActions)(() => ({
   display: 'flex',
@@ -82,10 +81,9 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
         }}>
         <StyledDocActions sx={{ mb: 2 }} onEdit={onEdit} onDelete={onDelete} edit={edit} />
       </Box>
-      <JSONInput
+      <JsonEditorComponent
         id={documents._id}
         placeholder={documentState}
-        locale={localeEn}
         onChange={handleChange}
         viewOnly={!edit}
         confirmGood={!edit}
