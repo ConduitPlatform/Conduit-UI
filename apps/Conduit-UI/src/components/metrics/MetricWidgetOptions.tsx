@@ -1,16 +1,8 @@
-import {
-  ArrowBackIosNew,
-  ArrowForwardIos,
-  Close,
-  Expand,
-  InfoOutlined,
-  OpenInFull,
-} from '@mui/icons-material';
+import { Close, InfoOutlined, OpenInFull } from '@mui/icons-material';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import {
   Box,
-  Button,
   FormControl,
   Icon,
   IconButton,
@@ -241,9 +233,9 @@ const MetricWidgetOptions: FC<Props> = ({
             </Select>
           </FormControl>
           <Tooltip title="Return to simple view">
-            <Button color="primary" onClick={() => handleChangeToSimple()}>
+            <IconButton color="primary" onClick={() => handleChangeToSimple()}>
               <Close />
-            </Button>
+            </IconButton>
           </Tooltip>
         </Box>
       ) : (
@@ -271,9 +263,9 @@ const MetricWidgetOptions: FC<Props> = ({
             </Icon>
           </Tooltip>
           <Tooltip title="Expanded view">
-            <Button color="primary" onClick={() => handleChangeToDetailed()}>
+            <IconButton color="primary" onClick={() => handleChangeToDetailed()}>
               <OpenInFull />
-            </Button>
+            </IconButton>
           </Tooltip>
         </Box>
       )}

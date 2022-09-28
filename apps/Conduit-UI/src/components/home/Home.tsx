@@ -98,15 +98,6 @@ const Home: React.FC = () => {
     },
   };
 
-  const cardsTextFontSize = {
-    [theme.breakpoints.down('lg')]: {
-      fontSize: '1.2rem',
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: '1rem',
-    },
-  };
-
   const isEnabled = useCallback(
     (str: string) => {
       return enabledModules.find((item: IModule) => item.moduleName === str);

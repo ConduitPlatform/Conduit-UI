@@ -2,7 +2,6 @@ import React from 'react';
 import { Container, Grid } from '@mui/material';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
-import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
 import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';

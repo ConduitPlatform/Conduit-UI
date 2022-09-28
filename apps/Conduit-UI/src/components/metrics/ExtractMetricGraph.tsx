@@ -35,6 +35,8 @@ const ExtractQueryRangeGraph: FC<Props> = ({
     (state) => state?.metricsSlice?.meta.genericMetricLoading?.[expression]
   );
 
+  console.log(data);
+
   useEffect(() => {
     dispatch(
       asyncGetGenericMetricQueryRange({

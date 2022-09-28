@@ -13,7 +13,7 @@ interface FormInputTextProps {
   textFieldProps?: TextFieldProps;
 }
 
-export const FormInputText = forwardRef((props: FormInputTextProps, ref) => {
+export const FormInputText = forwardRef((props: FormInputTextProps) => {
   const { name, label, rows, disabled, typeOfInput, rules, textFieldProps } = props;
 
   const {

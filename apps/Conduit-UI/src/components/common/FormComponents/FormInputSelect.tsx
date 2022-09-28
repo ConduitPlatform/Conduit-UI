@@ -13,7 +13,7 @@ interface FormSelectProps {
   textFieldProps?: TextFieldProps;
 }
 
-export const FormInputSelect = forwardRef((props: FormSelectProps, ref) => {
+export const FormInputSelect = forwardRef((props: FormSelectProps) => {
   const { name, label, options, disabled, rules, textFieldProps } = props;
   const generateSingleOptions = () => {
     return options.map((option: { label: string; value: string }) => {

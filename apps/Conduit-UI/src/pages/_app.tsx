@@ -8,7 +8,6 @@ import Head from 'next/head';
 import { initializeStore, useStore } from '../redux/store';
 import { setToken } from '../redux/slices/appAuthSlice';
 import { getCookie } from '../utils/cookie';
-import theme from '../theme';
 import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import Snackbar from '../components/navigation/Snackbar';
 import './../theme/global.css';

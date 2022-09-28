@@ -9,7 +9,7 @@ interface FormSwitchProps {
   switchProps?: SwitchProps;
 }
 
-export const FormInputSwitch = forwardRef((props: FormSwitchProps, ref) => {
+export const FormInputSwitch = forwardRef((props: FormSwitchProps) => {
   const { name, disabled, rules, switchProps } = props;
   const { control } = useFormContext();
   return (
