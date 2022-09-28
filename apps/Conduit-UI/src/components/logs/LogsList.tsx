@@ -159,7 +159,14 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
           },
         }}>
         <AccordionSummary
-          sx={{ padding: 0 }}
+          sx={{
+            '&.MuiAccordionSummary-root': { minHeight: 'unset' },
+            '.MuiAccordionSummary-content': {
+              margin: 0,
+              padding: 0,
+            },
+            padding: 0,
+          }}
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2a-content"
           id="panel2a-header">
