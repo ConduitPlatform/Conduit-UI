@@ -1,7 +1,6 @@
-import { Typography, useTheme } from '@mui/material';
+import { Skeleton, Typography, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { ScaleLoader } from 'react-spinners';
 import { asyncGetCounter } from '../../redux/slices/metricsSlice';
 import { useAppSelector } from '../../redux/store';
 import MetricsWidget from './MetricsWidget';
@@ -45,16 +44,7 @@ const MetricCount: FC<Props> = ({ expression, title }) => {
       metric={
         <Typography color="primary" variant="h4" sx={{ fontSize: latencyFontSize }}>
           {loading ? (
-            <ScaleLoader
-              speedMultiplier={3}
-              color={theme.palette.primary.main}
-              loading={loading}
-              height={28}
-              cssOverride={{
-                maxHeight: 28,
-                overflow: 'hidden',
-              }}
-            />
+            <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
           ) : (
             counter
           )}
