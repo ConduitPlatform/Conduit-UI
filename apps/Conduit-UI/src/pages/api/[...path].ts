@@ -6,15 +6,15 @@ const path = (req: http.IncomingMessage, res: http.ServerResponse) => {
     if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
 
-      proxyLoki.once('error', reject);
+      proxyLoki?.once('error', reject);
 
-      proxyLoki.web(req, res);
+      proxyLoki?.web(req, res);
     } else if (req.url?.match(/^\/api\/prometheus/)) {
       req.url = req.url?.replace(/^\/api\/prometheus/, '');
 
-      proxyPrometheus.once('error', reject);
+      proxyPrometheus?.once('error', reject);
 
-      proxyPrometheus.web(req, res);
+      proxyPrometheus?.web(req, res);
     } else {
       // removes the api prefix from url
       req.url = req.url?.replace(/^\/api/, '');
