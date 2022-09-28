@@ -14,7 +14,6 @@ import {
   GraphQLModal,
   HomePageCard,
   LinkComponent,
-  GraphContainer,
 } from '@conduitplatform/ui-components';
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
@@ -30,7 +29,6 @@ import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
-import MetricsWidget from '../metrics/MetricsWidget';
 import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
@@ -38,6 +36,7 @@ import { asyncGetForms } from '../../redux/slices/formsSlice';
 import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
 import MultipleMetricGraph from '../metrics/MultipleMetricGraph';
 import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';
+import MetricCount from '../metrics/MetricCount';
 
 const Main = styled('main')(() => ({
   flexGrow: 1,
@@ -69,12 +68,6 @@ const Home: React.FC = () => {
   const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
   const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
 
-  const { count } = useAppSelector((state) => state.authenticationSlice.data.authUsers);
-  const { schemasCount } = useAppSelector((state) => state.databaseSlice.data.schemas);
-  const formsCount = useAppSelector((state) => state.formsSlice.data.count);
-  const endpointsCount = useAppSelector((state) => state.databaseSlice.data.customEndpoints.count);
-  const emailsCount = useAppSelector((state) => state.emailsSlice.data.totalCount);
-
   const homePageFontSizeHeader = {
     fontSize: '2.5rem',
     [theme.breakpoints.down('sm')]: {
@@ -102,15 +95,6 @@ const Home: React.FC = () => {
     },
     [theme.breakpoints.down('md')]: {
       fontSize: '0.5rem',
-    },
-  };
-
-  const cardsTextFontSize = {
-    [theme.breakpoints.down('lg')]: {
-      fontSize: '1.2rem',
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: '1rem',
     },
   };
 
@@ -206,38 +190,6 @@ const Home: React.FC = () => {
         <Main>
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} md={12} lg={6}>
-                <GraphContainer>
-                  <ExtractQueryRangeGraph
-                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                    graphTitle="Total admin gRPC requests"
-                    label="Requests"
-                    hasControls={false}
-                    canZoom={false}
-                  />
-                </GraphContainer>
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={6}>
-                <GraphContainer>
-                  <ExtractQueryRangeGraph
-                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                    graphTitle="Internal gRPC requests"
-                    label="Requests"
-                    hasControls={false}
-                    canZoom={false}
-                  />
-                </GraphContainer>
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <GraphContainer>
-                  <MultipleMetricGraph
-                    label="Requests"
-                    expressionsRoutes={expressionsAdminRoutes}
-                    hasControls={false}
-                    graphTitle={'Admin routes'}
-                  />
-                </GraphContainer>
-              </Grid>
               <Grid item xs={6} sm={3}>
                 <RequestsLatency module="home" />
               </Grid>
@@ -246,64 +198,75 @@ const Home: React.FC = () => {
               </Grid>
               {isEnabled('database') && (
                 <Grid item xs={6} sm={3}>
-                  <MetricsWidget
+                  <MetricCount
                     title="Schemas"
-                    metric={
-                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
-                        {schemasCount}
-                      </Typography>
-                    }
+                    expression="conduit_registered_schemas_total{imported='false'}[5m]"
                   />
                 </Grid>
               )}
               {isEnabled('database') && (
                 <Grid item xs={6} sm={3}>
-                  <MetricsWidget
-                    title="Endpoints"
-                    metric={
-                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
-                        {endpointsCount}
-                      </Typography>
-                    }
-                  />
+                  <MetricCount title="Endpoints" expression="conduit_custom_endpoints_total[5m]" />
                 </Grid>
               )}
-              {isEnabled('authentication') && (
+              {/* {isEnabled('authentication') && (
                 <Grid item xs={6} sm={3}>
-                  <MetricsWidget
-                    title="Users"
-                    metric={
-                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
-                        {count}
-                      </Typography>
-                    }
-                  />
+                  <MetricCount title="Users" expression="" />
+                </Grid>
+                Missing prom endpoint
+              )} */}
+              {isEnabled('chat') && (
+                <Grid item xs={6} sm={3}>
+                  <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[5m]" />
                 </Grid>
               )}
               {isEnabled('forms') && (
                 <Grid item xs={6} sm={3}>
-                  <MetricsWidget
-                    title="Forms"
-                    metric={
-                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
-                        {formsCount}
-                      </Typography>
-                    }
-                  />
+                  <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
                 </Grid>
               )}
               {isEnabled('email') && (
                 <Grid item xs={6} sm={6} md={6} lg={3}>
-                  <MetricsWidget
+                  <MetricCount
                     title="Email templates"
-                    metric={
-                      <Typography color="primary" variant="h4" sx={{ fontSize: cardsTextFontSize }}>
-                        {emailsCount}
-                      </Typography>
-                    }
+                    expression="conduit_email_templates_total[5m]"
                   />
                 </Grid>
               )}
+              {isEnabled('router') && (
+                <Grid item xs={6} sm={6} md={6} lg={3}>
+                  <MetricCount
+                    title="Logged in users"
+                    expression="conduit_logged_in_users_total[5m]"
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} sm={12} md={12} lg={6}>
+                <ExtractQueryRangeGraph
+                  expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
+                  graphTitle="Total admin gRPC requests"
+                  label="Requests"
+                  hasControls={false}
+                  canZoom={false}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={6}>
+                <ExtractQueryRangeGraph
+                  expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                  graphTitle="Internal gRPC requests"
+                  label="Requests"
+                  hasControls={false}
+                  canZoom={false}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <MultipleMetricGraph
+                  label="Requests"
+                  expressionsRoutes={expressionsAdminRoutes}
+                  hasControls={false}
+                  graphTitle={'Admin routes'}
+                />
+              </Grid>
             </Grid>
             <Grid pt={3} container spacing={2}>
               {isEnabled('authentication') ? (

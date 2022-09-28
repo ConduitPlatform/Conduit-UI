@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Skeleton, Typography, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
@@ -42,16 +42,9 @@ const ModuleHealth: FC<Props> = ({ module }) => {
       metric={
         <Box display="flex" gap={1} alignItems="center">
           {loading && (
-            <ScaleLoader
-              speedMultiplier={3}
-              color={theme.palette.primary.main}
-              loading={loading}
-              height={28}
-              cssOverride={{
-                maxHeight: 28,
-                overflow: 'hidden',
-              }}
-            />
+            <Typography color="primary" variant="h4" sx={{ fontSize: healthFontSize }}>
+              <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
+            </Typography>
           )}
           {health && !loading && (
             <Typography color="primary" variant="h4" sx={{ fontSize: healthFontSize }}>

@@ -9,7 +9,7 @@ interface FormCheckboxProps {
   rules?: ControllerProps['rules'];
 }
 
-export const FormInputCheckBox = forwardRef((props: FormCheckboxProps, ref) => {
+export const FormInputCheckBox = forwardRef((props: FormCheckboxProps) => {
   const { name, disabled, label, rules } = props;
   const { control } = useFormContext();
   return (

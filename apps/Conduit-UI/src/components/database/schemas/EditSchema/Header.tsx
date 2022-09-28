@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, Input, TextField, useTheme } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
+import { Box, Typography, Button, TextField, useTheme } from '@mui/material';
+import { ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../../redux/slices/databaseSlice';
 import { enqueueInfoNotification } from '../../../../utils/useNotifier';

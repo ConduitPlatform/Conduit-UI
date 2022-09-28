@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Typography, useTheme } from '@mui/material';
+import { Skeleton, Typography, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleLatency } from '../../redux/slices/metricsSlice';
@@ -43,16 +43,7 @@ const RequestsLatency: FC<Props> = ({ module }) => {
       metric={
         <Typography color="primary" variant="h4" sx={{ fontSize: latencyFontSize }}>
           {loading ? (
-            <ScaleLoader
-              speedMultiplier={3}
-              color={theme.palette.primary.main}
-              loading={loading}
-              height={28}
-              cssOverride={{
-                maxHeight: 28,
-                overflow: 'hidden',
-              }}
-            />
+            <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
           ) : (
             `${latency?.toFixed(1)}ms`
           )}

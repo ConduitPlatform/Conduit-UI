@@ -8,6 +8,7 @@ import {
   MetricsLogsDataRaw,
 } from '../../models/metrics/metricsModels';
 import {
+  getGenericMetricCounterQuery,
   getGenericMetricQueryRange,
   getMetricsQuery,
   getModuleHealth,
@@ -19,12 +20,14 @@ import { parseInt } from 'lodash';
 interface IMetricsSlice {
   data: {
     genericMetric: Record<string, MetricsData>;
+    metricCounter: Record<string, number>;
     moduleTotalRequests: Record<ModulesTypes, MetricsData>;
     moduleHealth: Record<ModulesTypes, boolean>;
     moduleLatency: Record<ModulesTypes, number>;
   };
   meta: {
     genericMetricLoading: Record<string, boolean>;
+    metricCounterLoading: Record<string, boolean>;
     moduleTotalRequestsLoading: Record<ModulesTypes, boolean>;
     moduleHealthLoading: Record<ModulesTypes, boolean>;
     moduleLatencyLoading: Record<ModulesTypes, boolean>;
@@ -34,12 +37,14 @@ interface IMetricsSlice {
 const initialState: IMetricsSlice = {
   data: {
     genericMetric: {} as Record<string, MetricsData>,
+    metricCounter: {} as Record<string, number>,
     moduleTotalRequests: {} as Record<ModulesTypes, MetricsData>,
     moduleHealth: {} as Record<ModulesTypes, boolean>,
     moduleLatency: {} as Record<ModulesTypes, number>,
   },
   meta: {
     genericMetricLoading: {} as Record<string, boolean>,
+    metricCounterLoading: {} as Record<string, boolean>,
     moduleTotalRequestsLoading: {} as Record<ModulesTypes, boolean>,
     moduleHealthLoading: {} as Record<ModulesTypes, boolean>,
     moduleLatencyLoading: {} as Record<ModulesTypes, boolean>,
@@ -161,6 +166,28 @@ export const asyncGetModuleLatency = createAsyncThunk(
   }
 );
 
+export const asyncGetCounter = createAsyncThunk(
+  '/metrics/getMetricCounter',
+  async (
+    body: {
+      expression: string;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getGenericMetricCounterQuery(body.expression);
+      thunkAPI.dispatch(setAppLoading(false));
+
+      return data.data.result[0].values[0][1];
+    } catch (error: any) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+      throw error;
+    }
+  }
+);
+
 const metricsSlice = createSlice({
   name: 'metrics',
   initialState,
@@ -193,6 +220,13 @@ const metricsSlice = createSlice({
     builder.addCase(asyncGetModuleLatency.fulfilled, (state, action) => {
       state.data.moduleLatency[action.meta.arg.module] = action.payload;
       state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
+    });
+    builder.addCase(asyncGetCounter.pending, (state, action) => {
+      state.meta.metricCounterLoading[action.meta.arg.expression] = true;
+    });
+    builder.addCase(asyncGetCounter.fulfilled, (state, action) => {
+      state.data.metricCounter[action.meta.arg.expression] = action.payload;
+      state.meta.metricCounterLoading[action.meta.arg.expression] = false;
     });
   },
 });
