@@ -10,6 +10,7 @@ import {
 } from '../../models/metrics/metricsModels';
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 import MetricWidgetOptions from './MetricWidgetOptions';
+import { GraphContainer } from '@conduitplatform/ui-components';
 
 interface Props {
   expressionsRoutes: ExpressionsRoutesArray[];
@@ -85,7 +86,7 @@ const MultipleMetricGraph: FC<Props> = ({
   }, [expressionsRoutes, prepareData]);
 
   return (
-    <>
+    <GraphContainer>
       {hasControls && (
         <MetricWidgetOptions
           startDateValue={startDateValue}
@@ -106,7 +107,7 @@ const MultipleMetricGraph: FC<Props> = ({
         canZoom={canZoom}
         type={'line'}
       />
-    </>
+    </GraphContainer>
   );
 };
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
-import { GraphContainer } from '@conduitplatform/ui-components';
 import ModuleHealth from '../metrics/ModuleHealth';
 import RequestsLatency from '../metrics/RequestLatency';
 
@@ -16,9 +15,7 @@ const NotificationDashboard = () => {
           <ModuleHealth module="pushNotifications" />
         </Grid>
         <Grid item xs={12}>
-          <GraphContainer>
-            <TotalRequestsByModule module="pushNotifications" />
-          </GraphContainer>
+          <TotalRequestsByModule module="pushNotifications" />
         </Grid>
       </Grid>
     </Container>

@@ -1,3 +1,4 @@
+import { GraphContainer } from '@conduitplatform/ui-components';
 import moment, { Moment } from 'moment';
 import React, { FC, useEffect, useState } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
@@ -39,7 +40,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   }, [dispatch, module, startDateValue, endDateValue, selectedStep]);
 
   return (
-    <>
+    <GraphContainer>
       <MetricWidgetOptions
         startDateValue={startDateValue}
         setStartDateValue={setStartDateValue}
@@ -56,7 +57,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         graphTitle={'Total module requests'}
         loading={loading}
       />
-    </>
+    </GraphContainer>
   );
 };
 

@@ -266,7 +266,7 @@ const MetricWidgetOptions: FC<Props> = ({
             </Select>
           </FormControl>
           <Tooltip title="The step on the simple view defaults to 10m">
-            <Icon sx={{ mb: '5px' }}>
+            <Icon sx={{ mb: '8px' }}>
               <InfoOutlined />
             </Icon>
           </Tooltip>

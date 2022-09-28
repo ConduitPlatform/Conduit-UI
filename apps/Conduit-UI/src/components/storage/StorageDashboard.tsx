@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
-import { GraphContainer } from '@conduitplatform/ui-components';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
 import MetricCount from '../metrics/MetricCount';
@@ -29,9 +28,7 @@ const StorageDashboard = () => {
           <MetricCount title="Size (bytes)" expression="conduit_storage_size_bytes_total[5m]" />
         </Grid>
         <Grid item xs={12}>
-          <GraphContainer>
-            <TotalRequestsByModule module="storage" />
-          </GraphContainer>
+          <TotalRequestsByModule module="storage" />
         </Grid>
       </Grid>
     </Container>

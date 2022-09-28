@@ -14,7 +14,6 @@ import {
   GraphQLModal,
   HomePageCard,
   LinkComponent,
-  GraphContainer,
 } from '@conduitplatform/ui-components';
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
@@ -252,36 +251,30 @@ const Home: React.FC = () => {
                 </Grid>
               )}
               <Grid item xs={12} sm={12} md={12} lg={6}>
-                <GraphContainer>
-                  <ExtractQueryRangeGraph
-                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                    graphTitle="Total admin gRPC requests"
-                    label="Requests"
-                    hasControls={false}
-                    canZoom={false}
-                  />
-                </GraphContainer>
+                <ExtractQueryRangeGraph
+                  expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
+                  graphTitle="Total admin gRPC requests"
+                  label="Requests"
+                  hasControls={false}
+                  canZoom={false}
+                />
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={6}>
-                <GraphContainer>
-                  <ExtractQueryRangeGraph
-                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                    graphTitle="Internal gRPC requests"
-                    label="Requests"
-                    hasControls={false}
-                    canZoom={false}
-                  />
-                </GraphContainer>
+                <ExtractQueryRangeGraph
+                  expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                  graphTitle="Internal gRPC requests"
+                  label="Requests"
+                  hasControls={false}
+                  canZoom={false}
+                />
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12}>
-                <GraphContainer>
-                  <MultipleMetricGraph
-                    label="Requests"
-                    expressionsRoutes={expressionsAdminRoutes}
-                    hasControls={false}
-                    graphTitle={'Admin routes'}
-                  />
-                </GraphContainer>
+                <MultipleMetricGraph
+                  label="Requests"
+                  expressionsRoutes={expressionsAdminRoutes}
+                  hasControls={false}
+                  graphTitle={'Admin routes'}
+                />
               </Grid>
             </Grid>
             <Grid pt={3} container spacing={2}>

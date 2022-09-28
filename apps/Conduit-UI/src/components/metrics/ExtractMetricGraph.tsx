@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 import MetricWidgetOptions from './MetricWidgetOptions';
+import { GraphContainer } from '@conduitplatform/ui-components';
 
 interface Props {
   expression: string;
@@ -48,7 +49,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   }, [dispatch, expression, startDateValue, endDateValue, selectedStep]);
 
   return (
-    <>
+    <GraphContainer>
       {hasControls && (
         <MetricWidgetOptions
           startDateValue={startDateValue}
@@ -68,7 +69,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
         canZoom={canZoom}
         loading={loading}
       />
-    </>
+    </GraphContainer>
   );
 };
 
