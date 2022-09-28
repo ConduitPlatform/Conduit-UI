@@ -7,10 +7,11 @@ import MetricsWidget from './MetricsWidget';
 
 interface Props {
   module: ModulesTypes;
+  modulesLength?: number;
   small?: boolean;
 }
 
-const RequestsLatency: FC<Props> = ({ module, small }) => {
+const RequestsLatency: FC<Props> = ({ module, modulesLength, small }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const latency: number = useAppSelector(
@@ -34,9 +35,10 @@ const RequestsLatency: FC<Props> = ({ module, small }) => {
     dispatch(
       asyncGetModuleLatency({
         module,
+        modulesLength,
       })
     );
-  }, [dispatch, module]);
+  }, [dispatch, module, modulesLength]);
 
   return (
     <MetricsWidget
