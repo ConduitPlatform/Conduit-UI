@@ -10,16 +10,18 @@ const ChatDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item xs={6} sm={4}>
-          <RequestsLatency module="chat" />
+        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+          <Grid item xs={6} sm={3}>
+            <RequestsLatency small module="chat" />
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <ModuleHealth small module="chat" />
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <MetricCount small title="Chat rooms" expression="conduit_chat_rooms_total[1h]" />
+          </Grid>
         </Grid>
-        <Grid item xs={6} sm={4}>
-          <ModuleHealth module="chat" />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[1h]" />
-        </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} lg={6}>
           <TotalRequestsByModule module="chat" />
         </Grid>
         <Grid item md={12} lg={6}>

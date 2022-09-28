@@ -26,11 +26,13 @@ const RouterDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item xs={6} sm={4}>
-          <RequestsLatency module="router" />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <ModuleHealth module="router" />
+        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+          <Grid item xs={6} sm={3}>
+            <RequestsLatency small module="router" />
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <ModuleHealth small module="router" />
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <TotalRequestsByModule module="router" />

@@ -9,12 +9,12 @@ const SmsDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container gap={2}>
-        <Grid container gap={2}>
-          <Grid item sm={4} xs={12}>
-            <RequestsLatency module="sms" />
+        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+          <Grid item sm={3} xs={12}>
+            <RequestsLatency small module="sms" />
           </Grid>
-          <Grid item sm={4} xs={12}>
-            <ModuleHealth module="sms" />
+          <Grid item sm={3} xs={12}>
+            <ModuleHealth small module="sms" />
           </Grid>
         </Grid>
         <Grid container item spacing={2}>
