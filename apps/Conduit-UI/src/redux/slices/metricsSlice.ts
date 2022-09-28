@@ -158,19 +158,15 @@ export const asyncGetModuleLatency = createAsyncThunk(
       const { data } = await getModuleLatency(body);
       thunkAPI.dispatch(setAppLoading(false));
 
-      if (body.modulesLength) {
-        console.log(body.modulesLength);
-      }
-
-      let finalizedData;
+      let finalizedLatency;
 
       if (body.module === 'home' && body.modulesLength) {
-        finalizedData = (data.data.result[0].value[1] * 1000) / body.modulesLength;
-      } else {
-        finalizedData = data.data.result[0].value[1] * 1000;
+        finalizedLatency = (data.data.result[0].value[1] * 1000) / body.modulesLength;
+      } else if (body.module !== 'home') {
+        finalizedLatency = data.data.result[0].value[1] * 1000;
       }
 
-      return finalizedData;
+      return finalizedLatency;
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
@@ -231,8 +227,10 @@ const metricsSlice = createSlice({
       state.meta.moduleLatencyLoading[action.meta.arg.module] = true;
     });
     builder.addCase(asyncGetModuleLatency.fulfilled, (state, action) => {
-      state.data.moduleLatency[action.meta.arg.module] = action.payload;
-      state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
+      if (action.payload !== undefined) {
+        state.data.moduleLatency[action.meta.arg.module] = action.payload;
+        state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
+      }
     });
     builder.addCase(asyncGetCounter.pending, (state, action) => {
       state.meta.metricCounterLoading[action.meta.arg.expression] = true;
