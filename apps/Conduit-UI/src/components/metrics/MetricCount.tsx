@@ -8,9 +8,10 @@ import MetricsWidget from './MetricsWidget';
 interface Props {
   expression: string;
   title: string;
+  small?: boolean;
 }
 
-const MetricCount: FC<Props> = ({ expression, title }) => {
+const MetricCount: FC<Props> = ({ expression, title, small }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -41,6 +42,7 @@ const MetricCount: FC<Props> = ({ expression, title }) => {
 
   return (
     <MetricsWidget
+      small={small}
       metric={
         <Typography color="primary" variant="h4" sx={{ fontSize: latencyFontSize }}>
           {loading ? (

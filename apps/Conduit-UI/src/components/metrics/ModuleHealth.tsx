@@ -10,9 +10,10 @@ import { ScaleLoader } from 'react-spinners';
 
 interface Props {
   module: ModulesTypes;
+  small?: boolean;
 }
 
-const ModuleHealth: FC<Props> = ({ module }) => {
+const ModuleHealth: FC<Props> = ({ module, small }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const health = useAppSelector((state) => state?.metricsSlice?.data?.moduleHealth?.[module]);
@@ -39,6 +40,7 @@ const ModuleHealth: FC<Props> = ({ module }) => {
 
   return (
     <MetricsWidget
+      small={small}
       metric={
         <Box display="flex" gap={1} alignItems="center">
           {loading && (
