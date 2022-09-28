@@ -11,16 +11,16 @@ const EmailDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item xs={3}>
+        <Grid item xs={6} sm={3}>
           <RequestsLatency module="email" />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={6} sm={3}>
           <ModuleHealth module="email" />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={6} sm={3}>
           <MetricCount title="Email templates" expression="conduit_email_templates_total[5m]" />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={6} sm={3}>
           <MetricCount title="Sent emails" expression="conduit_emails_sent_total[5m]" />
         </Grid>
         <Grid item xs={12}>

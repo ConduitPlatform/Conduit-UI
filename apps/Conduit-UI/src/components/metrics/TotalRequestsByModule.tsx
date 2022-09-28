@@ -4,7 +4,7 @@ import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetMetricsQuery } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
-import MetricOptions from './MetricOptions';
+import MetricWidgetOptions from './MetricWidgetOptions';
 
 interface Props {
   module: ModulesTypes;
@@ -40,7 +40,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
 
   return (
     <>
-      <MetricOptions
+      <MetricWidgetOptions
         startDateValue={startDateValue}
         setStartDateValue={setStartDateValue}
         endDateValue={endDateValue}

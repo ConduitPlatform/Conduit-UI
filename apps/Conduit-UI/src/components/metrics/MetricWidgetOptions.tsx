@@ -1,8 +1,16 @@
-import { Close, CloseOutlined, InfoOutlined, OpenInFull } from '@mui/icons-material';
+import {
+  ArrowBackIosNew,
+  ArrowForwardIos,
+  Close,
+  Expand,
+  InfoOutlined,
+  OpenInFull,
+} from '@mui/icons-material';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import {
   Box,
+  Button,
   FormControl,
   Icon,
   IconButton,
@@ -29,7 +37,7 @@ interface Props {
 
 const simpleViewOptions = ['Last hour', 'Last 12h', 'Last 24h', 'Last week'];
 
-const MetricOptions: FC<Props> = ({
+const MetricWidgetOptions: FC<Props> = ({
   startDateValue,
   setStartDateValue,
   endDateValue,
@@ -97,7 +105,7 @@ const MetricOptions: FC<Props> = ({
       setStartDateValue(moment().subtract(12, 'hours'));
     } else if (value === 'Last 24h') {
       setSelectedStep('10m');
-      setStartDateValue(moment().subtract(24, 'hours'));
+      setStartDateValue(moment().subtract(7, 'days'));
     }
   };
 
@@ -233,9 +241,9 @@ const MetricOptions: FC<Props> = ({
             </Select>
           </FormControl>
           <Tooltip title="Return to simple view">
-            <IconButton color="primary" onClick={() => handleChangeToSimple()}>
-              <CloseOutlined />
-            </IconButton>
+            <Button color="primary" onClick={() => handleChangeToSimple()}>
+              <Close />
+            </Button>
           </Tooltip>
         </Box>
       ) : (
@@ -258,14 +266,14 @@ const MetricOptions: FC<Props> = ({
             </Select>
           </FormControl>
           <Tooltip title="The step on the simple view defaults to 10m">
-            <Icon>
+            <Icon sx={{ mb: '5px' }}>
               <InfoOutlined />
             </Icon>
           </Tooltip>
           <Tooltip title="Expanded view">
-            <IconButton color="primary" onClick={() => handleChangeToDetailed()}>
+            <Button color="primary" onClick={() => handleChangeToDetailed()}>
               <OpenInFull />
-            </IconButton>
+            </Button>
           </Tooltip>
         </Box>
       )}
@@ -273,4 +281,4 @@ const MetricOptions: FC<Props> = ({
   );
 };
 
-export default MetricOptions;
+export default MetricWidgetOptions;

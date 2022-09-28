@@ -9,7 +9,7 @@ import {
   MultipleSeries,
 } from '../../models/metrics/metricsModels';
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
-import MetricOptions from './MetricOptions';
+import MetricWidgetOptions from './MetricWidgetOptions';
 
 interface Props {
   expressionsRoutes: ExpressionsRoutesArray[];
@@ -87,7 +87,7 @@ const MultipleMetricGraph: FC<Props> = ({
   return (
     <>
       {hasControls && (
-        <MetricOptions
+        <MetricWidgetOptions
           startDateValue={startDateValue}
           setStartDateValue={setStartDateValue}
           endDateValue={endDateValue}

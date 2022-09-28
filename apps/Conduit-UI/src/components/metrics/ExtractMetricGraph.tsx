@@ -3,7 +3,7 @@ import moment, { Moment } from 'moment';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import AreaChart from '../charts/AreaChart';
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
-import MetricOptions from './MetricOptions';
+import MetricWidgetOptions from './MetricWidgetOptions';
 
 interface Props {
   expression: string;
@@ -50,7 +50,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   return (
     <>
       {hasControls && (
-        <MetricOptions
+        <MetricWidgetOptions
           startDateValue={startDateValue}
           setStartDateValue={setStartDateValue}
           endDateValue={endDateValue}

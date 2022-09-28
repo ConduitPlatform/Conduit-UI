@@ -11,19 +11,19 @@ const DatabaseDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={4}>
           <RequestsLatency module="database" />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={4}>
           <ModuleHealth module="database" />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={4}>
           <MetricCount
             title="Non imported Schemas"
             expression="conduit_registered_schemas_total{imported='false'}[5m]"
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={4}>
           <MetricCount
             title="Imported Schemas"
             expression="conduit_registered_schemas_total{imported='true'}[5m]"
