@@ -9,8 +9,7 @@ import Typography from '@mui/material/Typography';
 import React, { FC, useState } from 'react';
 import { IDrawerData, ISimpleData } from '../../../../models/database/BuildTypesModels';
 import { styled } from '@mui/material';
-import JSONInput from 'react-json-editor-ajrm';
-import { localeEn } from '../../../../models/JSONEditorAjrmLocale';
+import JsonEditorComponent from '../../../common/JsonEditorComponent';
 
 export const StyledForm = styled('form')(({ theme }) => ({
   display: 'flex',
@@ -102,12 +101,11 @@ const JSONForm: FC<IProps> = ({
       />
       <Box width="100%" mb={2}>
         <Typography variant="caption">Value</Typography>
-        <JSONInput
+        <JsonEditorComponent
           id="default"
           placeholder={
             typeof jsonData.default === 'object' ? jsonData.default : { placeholder: '123' }
           }
-          locale={localeEn}
           onChange={handleFieldDefault}
           height="fit-content"
           width="100%"
