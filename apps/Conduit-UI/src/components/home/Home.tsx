@@ -18,22 +18,16 @@ import {
 import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import {
-  asyncGetIntrospectionStatus,
-  asyncGetSchemas,
-  asyncSetCustomEndpoints,
-} from '../../redux/slices/databaseSlice';
+import { useAppSelector } from '../../redux/store';
+
 import { ScreenSearchDesktopRounded } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
-import { asyncGetAuthUserData } from '../../redux/slices/authenticationSlice';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
-import { asyncGetForms } from '../../redux/slices/formsSlice';
-import { asyncGetEmailTemplates } from '../../redux/slices/emailsSlice';
+
 import MultipleMetricGraph from '../metrics/MultipleMetricGraph';
 import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';
 import MetricCount from '../metrics/MetricCount';
@@ -55,12 +49,10 @@ const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
 ];
 
 const Home: React.FC = () => {
-  const dispatch = useAppDispatch();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [swaggerModal, setSwaggerModal] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
-
   const { introspectionStatus } = useAppSelector((state) => state.databaseSlice.data);
   const transportsAdmin = useAppSelector((state) => state.settingsSlice?.adminSettings?.transports);
   const transportsRouter = useAppSelector((state) => state.routerSlice?.data?.config?.transports);
@@ -104,15 +96,6 @@ const Home: React.FC = () => {
     },
     [enabledModules]
   );
-
-  useEffect(() => {
-    isEnabled('authentication') && dispatch(asyncGetAuthUserData({ skip: 0, limit: 5 }));
-    isEnabled('database') && dispatch(asyncGetSchemas({ skip: 0, limit: 5 }));
-    isEnabled('database') && dispatch(asyncSetCustomEndpoints({ skip: 0, limit: 5 }));
-    isEnabled('emails') && dispatch(asyncGetEmailTemplates({ skip: 0, limit: 5 }));
-    isEnabled('forms') && dispatch(asyncGetForms({ skip: 0, limit: 5 }));
-    dispatch(asyncGetIntrospectionStatus());
-  }, [dispatch, isEnabled]);
 
   const noSwagger = useMemo(() => {
     return !transportsRouter.rest && !transportsAdmin.rest;
