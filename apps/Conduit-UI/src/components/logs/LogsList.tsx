@@ -17,9 +17,8 @@ import {
 } from '@mui/material';
 import moment from 'moment';
 import { Circle } from '@mui/icons-material';
-import JSONInput from 'react-json-editor-ajrm';
-import { localeEn } from '../../models/JSONEditorAjrmLocale';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import JsonEditorComponent from '../common/JsonEditorComponent';
 
 interface MessageItemProps {
   message?: string;
@@ -173,18 +172,9 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
           })}
         </AccordionSummary>
         <AccordionDetails>
-          <JSONInput
+          <JsonEditorComponent
             placeholder={expandable?.metaData}
-            locale={localeEn}
             viewOnly
-            colors={{
-              background: theme.palette.background.paper,
-              keys: theme.palette.primary.dark,
-              string:
-                theme.palette.mode === 'dark'
-                  ? theme.palette.common.white
-                  : theme.palette.common.black,
-            }}
             height="100%"
             width="100%"
             confirmGood={false}

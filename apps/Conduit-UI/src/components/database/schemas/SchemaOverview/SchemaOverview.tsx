@@ -1,9 +1,7 @@
 import React, { FC, useState } from 'react';
 import { Grid, Box, Button, useTheme } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
-import JSONInput from 'react-json-editor-ajrm';
 import { ExtractSchemaInfo } from '../../../../utils/ExtractSchemaInfo';
-import { localeEn } from '../../../../models/JSONEditorAjrmLocale';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from '../../../../redux/store';
 import SchemaActionsDialog, { actions } from './SchemaActionsDialog';
@@ -17,6 +15,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import Data from '../../../../assets/svgs/data.svg';
 import Image from 'next/image';
+import JsonEditorComponent from '../../../common/JsonEditorComponent';
 
 interface Props {
   schema: Schema;
@@ -161,12 +160,17 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
         )}
       </Box>
       <Grid container spacing={3}>
-        <Grid item xs={12} sx={{ padding: '20px', mt: 2 }}>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            padding: 1,
+            mt: 1,
+          }}>
           <Box
-            height="69vh"
+            height="100%"
             sx={{
               overflow: 'auto',
-              overflowX: 'hidden',
               background: theme.palette.background.paper,
               borderRadius: 4,
             }}>
@@ -175,29 +179,16 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
                 <SchemaViewer dataKey={dataKey} data={{ newTypeFields: formattedFields }} key={i} />
               ))
             ) : (
-              <JSONInput
+              <JsonEditorComponent
                 placeholder={schema?.fields}
-                locale={localeEn}
                 viewOnly
-                colors={{
-                  background: undefined,
-                  keys: theme.palette.primary.dark,
-                }}
-                height="69vh"
+                height="100%"
                 width="100%"
                 confirmGood={false}
               />
             )}
           </Box>
-          <Box textAlign="center" pt={2} />
         </Grid>
-        <Grid
-          item
-          container
-          xs={12}
-          alignContent="space-between"
-          sx={{ padding: '20px', marginTop: '23px' }}
-        />
       </Grid>
       <SideDrawerWrapper
         title="Schema information"
