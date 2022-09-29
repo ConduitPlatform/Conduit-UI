@@ -19,7 +19,7 @@ import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import { useAppSelector } from '../../redux/store';
-import { ScreenSearchDesktopRounded } from '@mui/icons-material';
+import { ScreenSearchDesktopRounded, Security } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
@@ -211,19 +211,16 @@ const Home: React.FC = () => {
                   </Grid>
                 )}
                 {isEnabled('email') && (
-                  <Grid item xs={6} sm={6} md={6} lg={3}>
+                  <Grid item xs={6} sm={3}>
                     <MetricCount
                       title="Email templates"
                       expression="conduit_email_templates_total[5m]"
                     />
                   </Grid>
                 )}
-                {isEnabled('router') && (
-                  <Grid item xs={6} sm={6} md={6} lg={3}>
-                    <MetricCount
-                      title="Logged in users"
-                      expression="conduit_logged_in_users_total[5m]"
-                    />
+                {isEnabled('storage') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount title="Files" expression="conduit_files_total[5m]" />
                   </Grid>
                 )}
               </Grid>
@@ -356,6 +353,28 @@ const Home: React.FC = () => {
                             </Typography>
                           </Box>
                         </Box>
+                      }
+                    />
+                  </LinkComponent>
+                </Grid>
+              ) : null}
+              {isEnabled('router') ? (
+                <Grid item xs={6} md={4}>
+                  <LinkComponent href="/settings/userSettings" underline={'none'}>
+                    <HomePageCard
+                      icon={<Security width={24} height={24} />}
+                      title="Enable 2FA"
+                      titleFontSize={homePageFontSizeTitles}
+                      descriptionContent={
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            height: '40px',
+                            fontSize: homePageFontSizeSubtitles,
+                            mb: 1,
+                          }}>
+                          Secure your account with Two Factor Authentication!
+                        </Typography>
                       }
                     />
                   </LinkComponent>

@@ -14,10 +14,10 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
   const fontSizes = {
     fontSize: '1rem',
     [theme.breakpoints.down('lg')]: {
-      fontSize: '0.8rem',
+      fontSize: '0.7rem',
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: '0.6rem',
+      fontSize: '0.57rem',
     },
   };
 
@@ -41,7 +41,7 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
             flexDirection: 'column',
             justifyContent: 'space-between',
             p: 2,
-            gap: 3,
+            gap: 2.5,
             borderRadius: '24px',
           }}>
           <Box display="flex">
