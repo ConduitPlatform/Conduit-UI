@@ -3,12 +3,10 @@ import { useAppDispatch } from '../../redux/store';
 import RouterLayout from '../../components/navigation/InnerLayouts/routerLayout';
 import { asyncGetRouterConfig } from '../../redux/slices/routerSlice';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const RouterSettings = dynamic(() => import('../../components/routing/routerSettings'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const Settings = () => {

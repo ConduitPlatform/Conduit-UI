@@ -1,14 +1,12 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const SettingsDashboard = dynamic(
   () => import('../../components/notifications/NotificationDashboard'),
   {
-    loading: () => (
-      <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-    ),
+    loading: () => <LoaderComponent />,
   }
 );
 
