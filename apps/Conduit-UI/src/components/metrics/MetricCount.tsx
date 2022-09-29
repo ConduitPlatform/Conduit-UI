@@ -3,7 +3,9 @@ import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { asyncGetCounter } from '../../redux/slices/metricsSlice';
 import { useAppSelector } from '../../redux/store';
+import LottieForWidget from './LottieForWidget';
 import MetricsWidget from './MetricsWidget';
+import { getLottieByTitle } from './getLottieByTitle';
 
 interface Props {
   expression: string;
@@ -55,6 +57,7 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
   return (
     <MetricsWidget
       small={small}
+      icon={<LottieForWidget small={small} lottieFile={getLottieByTitle(title)} />}
       metric={
         <Typography
           color="primary"
