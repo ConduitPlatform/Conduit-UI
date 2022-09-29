@@ -1,13 +1,14 @@
 import React, { FC, ReactNode } from 'react';
-import { Box, Chip, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Paper, Typography, useTheme } from '@mui/material';
 
 interface Props {
   metric: ReactNode;
   title: string;
   small?: boolean;
+  icon?: ReactNode;
 }
 
-const MetricsWidget: FC<Props> = ({ metric, title, small }) => {
+const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
   const theme = useTheme();
 
   const fontSizes = {
@@ -43,7 +44,9 @@ const MetricsWidget: FC<Props> = ({ metric, title, small }) => {
             gap: 3,
             borderRadius: '24px',
           }}>
-          {metric}
+          <Box display="flex">
+            {metric} {icon}
+          </Box>
           <Typography sx={{ fontSize: fontSizes }}>{title}</Typography>
         </Paper>
       ) : (
@@ -58,7 +61,9 @@ const MetricsWidget: FC<Props> = ({ metric, title, small }) => {
             gap: 0.7,
             borderRadius: '16px',
           }}>
-          {metric}
+          <Box display="flex">
+            {metric} {icon}
+          </Box>
           <Typography sx={{ fontSize: fontSizesSmall }}>{title}</Typography>
         </Paper>
       )}

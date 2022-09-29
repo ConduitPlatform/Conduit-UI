@@ -10,19 +10,19 @@ const AuthenticationDashboard = () => {
     <Container maxWidth="xl">
       <Grid container spacing={2}>
         <Grid item container rowSpacing={1} columnSpacing={1.5}>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={6} sm={2}>
             <RequestsLatency small module="authentication" />
           </Grid>
 
-          <Grid xs={6} item sm={3}>
+          <Grid xs={6} item sm={2}>
             <ModuleHealth small module="authentication" />
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={6}>
+        <Grid item sm={12} md={6}>
           <TotalRequestsByModule module="authentication" />
         </Grid>
 
-        <Grid item xs={12} sm={12} md={12} lg={6}>
+        <Grid item sm={12} md={6}>
           <ExtractQueryRangeGraph
             expression="sum(increase(conduit_login_requests_total[5m]))"
             graphTitle="Total login requests"

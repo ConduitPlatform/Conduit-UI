@@ -26,6 +26,7 @@
     "@mui/styles": "^5.5.1",
     "@reduxjs/toolkit": "^1.8.0",
     "@types/react-json-editor-ajrm": "^2.5.3",
+    "@types/react-lottie": "^1.2.6",
     "apexcharts": "^3.35.5",
     "axios": "^0.26.0",
     "clsx": "^1.1.0",

@@ -10,10 +10,10 @@ const SmsDashboard = () => {
     <Container maxWidth="xl">
       <Grid container gap={2}>
         <Grid item container rowSpacing={1} columnSpacing={1.5}>
-          <Grid item sm={3} xs={12}>
+          <Grid item sm={2} xs={12}>
             <RequestsLatency small module="sms" />
           </Grid>
-          <Grid item sm={3} xs={12}>
+          <Grid item sm={2} xs={12}>
             <ModuleHealth small module="sms" />
           </Grid>
         </Grid>

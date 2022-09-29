@@ -15,7 +15,10 @@ interface Props {
 const ModuleHealth: FC<Props> = ({ module, small }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('lg'));
+  const xs = useMediaQuery(theme.breakpoints.only('xs'));
+  const sm = useMediaQuery(theme.breakpoints.only('sm'));
+  const md = useMediaQuery(theme.breakpoints.only('md'));
+  const lg = useMediaQuery(theme.breakpoints.only('lg'));
   const health = useAppSelector((state) => state?.metricsSlice?.data?.moduleHealth?.[module]);
   const loading = useAppSelector(
     (state) => state?.metricsSlice?.meta?.moduleHealthLoading?.[module]
@@ -26,7 +29,7 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
     autoplay: true,
     animationData: heartbeat,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
+      preserveAspectRatio: 'xMid slice',
     },
   };
 
@@ -51,6 +54,28 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
     },
   };
 
+  const healthLottieSizing = () => {
+    if (small) {
+      if (xs || sm) {
+        return 16;
+      } else if (md) {
+        return 19;
+      } else if (lg) {
+        return 26;
+      } else {
+        return 26;
+      }
+    } else if (xs || sm) {
+      return 24;
+    } else if (md) {
+      return 26;
+    } else if (lg) {
+      return 30;
+    } else {
+      return 42;
+    }
+  };
+
   useEffect(() => {
     dispatch(
       asyncGetModuleHealth({
@@ -62,6 +87,16 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
   return (
     <MetricsWidget
       small={small}
+      icon={
+        !loading && (
+          <Lottie
+            options={defaultOptions}
+            height={healthLottieSizing()}
+            width={healthLottieSizing()}
+            style={{ padding: 0 }}
+          />
+        )
+      }
       metric={
         <Box display="flex" gap={1} alignItems="center">
           {loading && (
@@ -88,7 +123,6 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
               Critical
             </Typography>
           )}
-          <Lottie options={defaultOptions} height={24} width={24} />
         </Box>
       }
       title="Health"

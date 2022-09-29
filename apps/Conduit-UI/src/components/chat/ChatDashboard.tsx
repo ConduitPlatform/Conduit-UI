@@ -11,13 +11,13 @@ const ChatDashboard = () => {
     <Container maxWidth="xl">
       <Grid container spacing={2}>
         <Grid item container rowSpacing={1} columnSpacing={1.5}>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={6} sm={2}>
             <RequestsLatency small module="chat" />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={6} sm={2}>
             <ModuleHealth small module="chat" />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={6} sm={2}>
             <MetricCount small title="Chat rooms" expression="conduit_chat_rooms_total[1h]" />
           </Grid>
         </Grid>
