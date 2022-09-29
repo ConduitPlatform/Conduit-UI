@@ -169,7 +169,7 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
             padding: 0,
             '.MuiAccordionSummary-expandIconWrapper': { marginLeft: 1 },
           }}
-          expandIcon={<ExpandMoreIcon />}
+          expandIcon={<ExpandMoreIcon color={'disabled'} />}
           aria-controls="panel2a-content"
           id="panel2a-header">
           {MessageItem({
