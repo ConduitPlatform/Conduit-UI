@@ -19,6 +19,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
+  const [detailedView, setDetailedView] = useState<boolean>(false);
 
   const data = useAppSelector((state) => state?.metricsSlice?.data?.moduleTotalRequests?.[module]);
 
@@ -49,12 +50,15 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         selectedStep={selectedStep}
         setSelectedStep={setSelectedStep}
         steps={steps}
+        detailedView={detailedView}
+        setDetailedView={setDetailedView}
+        graphTitle={'Module requests'}
       />
       <AreaChart
         label={'total requests'}
         timestamps={data?.timestamps}
         counters={data?.counters}
-        graphTitle={'Total module requests'}
+        graphTitle={detailedView ? 'Module requests' : undefined}
         loading={loading}
       />
     </GraphContainer>

@@ -4,31 +4,35 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const AuthenticationDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item xs={6} sm={4}>
-          <RequestsLatency module="authentication" />
+        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+          <Grid item xs={6} sm={2}>
+            <RequestsLatency small module="authentication" />
+          </Grid>
+
+          <Grid item xs={6} sm={2}>
+            <ModuleHealth small module="authentication" />
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <MetricCount
+              small
+              title="Logged in users"
+              expression="conduit_logged_in_users_total[5m]"
+            />
+          </Grid>
         </Grid>
-        <Grid xs={6} item sm={4}>
-          <ModuleHealth module="authentication" />
-        </Grid>
-        <Grid item sm={12}>
+        <Grid item sm={12} lg={6}>
           <TotalRequestsByModule module="authentication" />
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={6}>
-          <ExtractQueryRangeGraph
-            expression="sum(increase(conduit_logged_in_users_total[5m]))"
-            graphTitle="Logged in users"
-            label="Users"
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={6}>
+        <Grid item sm={12} lg={6}>
           <ExtractQueryRangeGraph
             expression="sum(increase(conduit_login_requests_total[5m]))"
-            graphTitle="Total login requests"
+            graphTitle="Login requests"
             label="Requests"
           />
         </Grid>

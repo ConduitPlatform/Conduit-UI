@@ -19,32 +19,31 @@ import GraphQL from '../../assets/svgs/graphQL.svg';
 import Swagger from '../../assets/svgs/swagger.svg';
 import Image from 'next/image';
 import { useAppSelector } from '../../redux/store';
-import { ScreenSearchDesktopRounded } from '@mui/icons-material';
+import { ScreenSearchDesktopRounded, Security } from '@mui/icons-material';
 import { IModule } from '../../models/appAuth';
 import LogsComponent from '../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
-import MultipleMetricGraph from '../metrics/MultipleMetricGraph';
-import { ExpressionsRoutesArray } from '../../models/metrics/metricsModels';
 import MetricCount from '../metrics/MetricCount';
 
 const Main = styled('main')(() => ({
   flexGrow: 1,
 }));
 
-const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
-  {
-    title: 'graphql',
-    expression: 'sum(increase(conduit_admin_routes_total{transport="graphql"}[10m]))',
-  },
-  { title: 'rest', expression: 'sum(increase(conduit_admin_routes_total{transport="rest"}[10m]))' },
-  {
-    title: 'socket',
-    expression: 'sum(increase(conduit_admin_routes_total{transport="socket"}[10m]))',
-  },
-];
+// TODO to be added on a separate page
+// const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
+//   {
+//     title: 'graphql',
+//     expression: 'sum(increase(conduit_admin_routes_total{transport="graphql"}[10m]))',
+//   },
+//   { title: 'rest', expression: 'sum(increase(conduit_admin_routes_total{transport="rest"}[10m]))' },
+//   {
+//     title: 'socket',
+//     expression: 'sum(increase(conduit_admin_routes_total{transport="socket"}[10m]))',
+//   },
+// ];
 
 const Home: React.FC = () => {
   const theme = useTheme();
@@ -172,58 +171,60 @@ const Home: React.FC = () => {
         <Main>
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
             <Grid container spacing={2}>
-              <Grid item xs={6} sm={3}>
-                <RequestsLatency module="home" modulesLength={enabledModules.length} />
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <ModuleHealth module="home" />
-              </Grid>
-              {isEnabled('database') && (
+              <Grid item container spacing={2}>
                 <Grid item xs={6} sm={3}>
-                  <MetricCount
-                    title="Schemas"
-                    expression="conduit_registered_schemas_total{imported='false'}[5m]"
-                  />
+                  <RequestsLatency module="home" modulesLength={enabledModules.length} />
                 </Grid>
-              )}
-              {isEnabled('database') && (
                 <Grid item xs={6} sm={3}>
-                  <MetricCount title="Endpoints" expression="conduit_custom_endpoints_total[5m]" />
+                  <ModuleHealth module="home" />
                 </Grid>
-              )}
-              {/* {isEnabled('authentication') && (
+                {isEnabled('database') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount
+                      title="Schemas"
+                      expression="conduit_registered_schemas_total{imported='false'}[5m]"
+                    />
+                  </Grid>
+                )}
+                {isEnabled('database') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount
+                      title="Endpoints"
+                      expression="conduit_custom_endpoints_total[5m]"
+                    />
+                  </Grid>
+                )}
+                {/* {isEnabled('authentication') && (
                 <Grid item xs={6} sm={3}>
                   <MetricCount title="Users" expression="" />
                 </Grid>
                 Missing prom endpoint
               )} */}
-              {isEnabled('chat') && (
-                <Grid item xs={6} sm={3}>
-                  <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[5m]" />
-                </Grid>
-              )}
-              {isEnabled('forms') && (
-                <Grid item xs={6} sm={3}>
-                  <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
-                </Grid>
-              )}
-              {isEnabled('email') && (
-                <Grid item xs={6} sm={6} md={6} lg={3}>
-                  <MetricCount
-                    title="Email templates"
-                    expression="conduit_email_templates_total[5m]"
-                  />
-                </Grid>
-              )}
-              {isEnabled('router') && (
-                <Grid item xs={6} sm={6} md={6} lg={3}>
-                  <MetricCount
-                    title="Logged in users"
-                    expression="conduit_logged_in_users_total[5m]"
-                  />
-                </Grid>
-              )}
-              <Grid item xs={12} sm={12} md={12} lg={6}>
+                {isEnabled('chat') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[5m]" />
+                  </Grid>
+                )}
+                {isEnabled('forms') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
+                  </Grid>
+                )}
+                {isEnabled('email') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount
+                      title="Email templates"
+                      expression="conduit_email_templates_total[5m]"
+                    />
+                  </Grid>
+                )}
+                {isEnabled('storage') && (
+                  <Grid item xs={6} sm={3}>
+                    <MetricCount title="Files" expression="conduit_files_total[5m]" />
+                  </Grid>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12} md={6} lg={6}>
                 <ExtractQueryRangeGraph
                   expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
                   graphTitle="Total admin gRPC requests"
@@ -232,21 +233,13 @@ const Home: React.FC = () => {
                   canZoom={false}
                 />
               </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={6}>
+              <Grid item xs={12} sm={12} md={6} lg={6}>
                 <ExtractQueryRangeGraph
                   expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
                   graphTitle="Internal gRPC requests"
                   label="Requests"
                   hasControls={false}
                   canZoom={false}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MultipleMetricGraph
-                  label="Requests"
-                  expressionsRoutes={expressionsAdminRoutes}
-                  hasControls={false}
-                  graphTitle={'Admin routes'}
                 />
               </Grid>
             </Grid>
@@ -360,6 +353,28 @@ const Home: React.FC = () => {
                             </Typography>
                           </Box>
                         </Box>
+                      }
+                    />
+                  </LinkComponent>
+                </Grid>
+              ) : null}
+              {isEnabled('router') ? (
+                <Grid item xs={6} md={4}>
+                  <LinkComponent href="/settings/userSettings" underline={'none'}>
+                    <HomePageCard
+                      icon={<Security width={24} height={24} />}
+                      title="Enable 2FA"
+                      titleFontSize={homePageFontSizeTitles}
+                      descriptionContent={
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            height: '40px',
+                            fontSize: homePageFontSizeSubtitles,
+                            mb: 1,
+                          }}>
+                          Secure your account with Two Factor Authentication!
+                        </Typography>
                       }
                     />
                   </LinkComponent>

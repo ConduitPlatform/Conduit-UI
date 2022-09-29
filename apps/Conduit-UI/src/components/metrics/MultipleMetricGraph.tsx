@@ -34,6 +34,7 @@ const MultipleMetricGraph: FC<Props> = ({
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
+  const [detailedView, setDetailedView] = useState<boolean>(false);
 
   const totalData: Record<string, MetricsData> = useAppSelector(
     (state) => state?.metricsSlice?.data?.genericMetric
@@ -96,6 +97,9 @@ const MultipleMetricGraph: FC<Props> = ({
           selectedStep={selectedStep}
           setSelectedStep={setSelectedStep}
           steps={steps}
+          detailedView={detailedView}
+          setDetailedView={setDetailedView}
+          graphTitle={graphTitle}
         />
       )}
       <AreaChart
@@ -103,7 +107,7 @@ const MultipleMetricGraph: FC<Props> = ({
         timestamps={timestamps}
         multipleSeries={series}
         loading={graphLoading}
-        graphTitle={graphTitle}
+        graphTitle={!hasControls || detailedView ? graphTitle : undefined}
         canZoom={canZoom}
         type={'line'}
       />

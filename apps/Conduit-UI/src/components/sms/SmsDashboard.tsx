@@ -9,19 +9,19 @@ const SmsDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container gap={2}>
-        <Grid container gap={2}>
-          <Grid item sm={4} xs={12}>
-            <RequestsLatency module="sms" />
+        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+          <Grid item sm={2} xs={12}>
+            <RequestsLatency small module="sms" />
           </Grid>
-          <Grid item sm={4} xs={12}>
-            <ModuleHealth module="sms" />
+          <Grid item sm={2} xs={12}>
+            <ModuleHealth small module="sms" />
           </Grid>
         </Grid>
         <Grid container item spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} lg={6}>
             <TotalRequestsByModule module="sms" />
           </Grid>
-          <Grid item md={12} lg={6}>
+          <Grid item xs={12} lg={6}>
             <ExtractQueryRangeGraph
               expression="sum(increase(conduit_forms_total[10m]))"
               graphTitle="Total sms sent"

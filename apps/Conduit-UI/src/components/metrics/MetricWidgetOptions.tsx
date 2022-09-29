@@ -1,4 +1,4 @@
-import { Close, InfoOutlined, OpenInFull } from '@mui/icons-material';
+import { ArrowBackIosNew, Close, InfoOutlined, OpenInFull } from '@mui/icons-material';
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import {
@@ -13,6 +13,8 @@ import {
   SelectChangeEvent,
   TextField,
   Tooltip,
+  Typography,
+  useTheme,
 } from '@mui/material';
 import moment, { Moment } from 'moment';
 import React, { FC, useMemo, useState } from 'react';
@@ -25,6 +27,9 @@ interface Props {
   selectedStep: string;
   setSelectedStep: (selectedStep: string) => void;
   steps: string[];
+  detailedView: boolean;
+  setDetailedView: (detailedView: boolean) => void;
+  graphTitle?: string;
 }
 
 const simpleViewOptions = ['Last hour', 'Last 12h', 'Last 24h', 'Last week'];
@@ -36,11 +41,15 @@ const MetricWidgetOptions: FC<Props> = ({
   setEndDateValue,
   selectedStep,
   setSelectedStep,
+  detailedView,
+  setDetailedView,
+  graphTitle,
   steps,
 }) => {
+  const theme = useTheme();
+
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
-  const [detailedView, setDetailedView] = useState<boolean>(false);
   const [simpleViewValue, setSimpleViewValue] = useState<string>('Last hour');
 
   const minDateOfStart = useMemo(() => {
@@ -113,22 +122,29 @@ const MetricWidgetOptions: FC<Props> = ({
 
   const handleChangeToDetailed = () => {
     setDetailedView(true);
-    setStartDateValue(null);
-    setEndDateValue(null);
-    setSelectedStep('10m');
   };
 
   const handleChangeToSimple = () => {
     setDetailedView(false);
+    setSimpleViewValue('Last hour');
     setStartDateValue(moment().subtract(1, 'hours'));
     setEndDateValue(moment());
     setSelectedStep('10m');
   };
 
+  const titleFontSizes = {
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '1rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.8rem',
+    },
+  };
+
   return (
     <>
       {detailedView ? (
-        <Box display="flex" p={1} gap={2}>
+        <Box display="flex" px={1} gap={2}>
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <DateTimePicker
               disableFuture={true}
@@ -239,34 +255,41 @@ const MetricWidgetOptions: FC<Props> = ({
           </Tooltip>
         </Box>
       ) : (
-        <Box display="flex" alignItems="center" justifyContent="flex-end" p={1} gap={2}>
-          <FormControl size={'small'} sx={{ minWidth: 150 }}>
-            <InputLabel>Duration</InputLabel>
-            <Select
-              sx={{ borderRadius: 3 }}
-              fullWidth
-              name={'Duration'}
-              label={'Duration'}
-              value={simpleViewValue}
-              onChange={handleChangeSimpleViewStep}
-              renderValue={(selected) => selected.toString()}>
-              {simpleViewOptions?.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  <ListItemText primary={item} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Tooltip title="The step on the simple view defaults to 10m">
-            <Icon sx={{ mb: '8px' }}>
-              <InfoOutlined />
-            </Icon>
-          </Tooltip>
-          <Tooltip title="Expanded view">
-            <IconButton color="primary" onClick={() => handleChangeToDetailed()}>
-              <OpenInFull />
-            </IconButton>
-          </Tooltip>
+        <Box px={1} display="flex" alignItems="center" justifyContent="space-between">
+          <Box>
+            <Typography textAlign="center" fontWeight="bold" sx={{ fontSize: titleFontSizes }}>
+              {graphTitle}
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="flex-end" gap={2}>
+            <FormControl size={'small'} sx={{ minWidth: 150 }}>
+              <InputLabel>Duration</InputLabel>
+              <Select
+                sx={{ borderRadius: 3 }}
+                fullWidth
+                name={'Duration'}
+                label={'Duration'}
+                value={simpleViewValue}
+                onChange={handleChangeSimpleViewStep}
+                renderValue={(selected) => selected.toString()}>
+                {simpleViewOptions?.map((item, index) => (
+                  <MenuItem key={index} value={item}>
+                    <ListItemText primary={item} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Tooltip title="The step on the simple view defaults to 10m">
+              <Icon sx={{ mb: '8px' }}>
+                <InfoOutlined />
+              </Icon>
+            </Tooltip>
+            <Tooltip title="Expanded view">
+              <IconButton color="primary" onClick={() => handleChangeToDetailed()}>
+                <ArrowBackIosNew />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
       )}
     </>

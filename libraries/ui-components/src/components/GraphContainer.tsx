@@ -7,7 +7,10 @@ interface Props {
 
 const GraphContainer: FC<Props> = ({ children }) => {
   return (
-    <Paper elevation={0} sx={{ py: 1.3, px: 0.8, borderRadius: "24px" }}>
+    <Paper
+      elevation={0}
+      sx={{ py: 1.3, px: 0.8, borderRadius: "24px", overflow: "hidden" }}
+    >
       {children}
     </Paper>
   );

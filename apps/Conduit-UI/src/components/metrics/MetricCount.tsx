@@ -8,9 +8,10 @@ import MetricsWidget from './MetricsWidget';
 interface Props {
   expression: string;
   title: string;
+  small?: boolean;
 }
 
-const MetricCount: FC<Props> = ({ expression, title }) => {
+const MetricCount: FC<Props> = ({ expression, title, small }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -20,6 +21,18 @@ const MetricCount: FC<Props> = ({ expression, title }) => {
     },
     [theme.breakpoints.down('md')]: {
       fontSize: '1rem',
+    },
+  };
+
+  const latencyFontSizeSmall = {
+    [theme.breakpoints.up('lg')]: {
+      fontSize: '1.3rem',
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: '0.9rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: '0.7rem',
     },
   };
 
@@ -41,8 +54,12 @@ const MetricCount: FC<Props> = ({ expression, title }) => {
 
   return (
     <MetricsWidget
+      small={small}
       metric={
-        <Typography color="primary" variant="h4" sx={{ fontSize: latencyFontSize }}>
+        <Typography
+          color="primary"
+          variant="h4"
+          sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
           {loading ? (
             <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
           ) : (
