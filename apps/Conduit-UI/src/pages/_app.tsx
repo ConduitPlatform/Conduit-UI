@@ -12,17 +12,15 @@ import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import Snackbar from '../components/navigation/Snackbar';
 import './../theme/global.css';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 import createEmotionCache from '../createEmotionCache';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { NextPage } from 'next';
 import { createTheme, PaletteMode, responsiveFontSizes } from '@mui/material';
 import getDesignTokens from '../theme';
+import LoaderComponent from '../components/common/LoaderComponent';
 
 const Layout = dynamic(() => import('../components/navigation/Layout'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 declare module '@mui/styles/defaultTheme' {

@@ -1,12 +1,10 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 import SMSLayout from '../../components/navigation/InnerLayouts/smsLayout';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const SmsDashboard = dynamic(() => import('../../components/sms/SmsDashboard'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const Dashboard = () => {

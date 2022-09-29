@@ -1,12 +1,10 @@
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const FormsView = dynamic(() => import('../../components/forms/FormsView'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const Create = () => {

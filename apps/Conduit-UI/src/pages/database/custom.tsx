@@ -3,14 +3,12 @@ import { useAppDispatch } from '../../redux/store';
 import { asyncGetSchemas } from '../../redux/slices/databaseSlice';
 import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const CustomEndpointsLayout = dynamic(
   () => import('../../components/database/custom-endpoints/CustomEndpointsLayout'),
   {
-    loading: () => (
-      <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-    ),
+    loading: () => <LoaderComponent />,
   }
 );
 

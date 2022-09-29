@@ -1,12 +1,10 @@
 import React, { ReactElement } from 'react';
 import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const PaymentsProducts = dynamic(() => import('../../components/payments/PaymentsProducts'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const Products = () => {

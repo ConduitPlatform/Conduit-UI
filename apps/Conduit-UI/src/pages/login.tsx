@@ -1,11 +1,9 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
+import LoaderComponent from '../components/common/LoaderComponent';
 
 const Login = dynamic(() => import('../components/login/Login'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const LoginPage = () => {
