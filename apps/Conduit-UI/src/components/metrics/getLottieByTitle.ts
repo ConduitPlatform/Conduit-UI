@@ -4,6 +4,8 @@ import Chat from '../../assets/lotties/chat.json';
 import Endpoints from '../../assets/lotties/endpoints.json';
 import Files from '../../assets/lotties/files.json';
 import Forms from '../../assets/lotties/forms.json';
+import Size from '../../assets/lotties/size.json';
+import Containers from '../../assets/lotties/containers.json';
 
 export const getLottieByTitle = (title: string) => {
   switch (title) {
@@ -17,6 +19,12 @@ export const getLottieByTitle = (title: string) => {
       return Files;
     case 'Forms':
       return Forms;
+    case 'Folders':
+      return Schemas;
+    case 'Containers':
+      return Containers;
+    case 'Size (bytes)':
+      return Size;
     default:
       return Schemas;
   }
