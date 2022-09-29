@@ -1,12 +1,10 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import ScaleLoader from 'react-spinners/ScaleLoader';
 import EmailsLayout from '../../components/navigation/InnerLayouts/emailsLayout';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const EmailDashboard = dynamic(() => import('../../components/emails/EmailDashboard'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const Dashboard = () => {

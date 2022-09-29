@@ -3,12 +3,10 @@ import StorageLayout from '../../components/navigation/InnerLayouts/storageLayou
 import { asyncGetStorageConfig } from '../../redux/slices/storageSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
-import ScaleLoader from 'react-spinners/ScaleLoader';
+import LoaderComponent from '../../components/common/LoaderComponent';
 
 const StorageConfig = dynamic(() => import('../../components/storage/StorageConfig'), {
-  loading: () => (
-    <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
-  ),
+  loading: () => <LoaderComponent />,
 });
 
 const Config = () => {
