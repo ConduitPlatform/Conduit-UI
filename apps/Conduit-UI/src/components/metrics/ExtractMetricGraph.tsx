@@ -28,6 +28,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
   const [selectedStep, setSelectedStep] = useState<string>('10m');
+  const [detailedView, setDetailedView] = useState<boolean>(false);
 
   const data = useAppSelector((state) => state?.metricsSlice?.data?.genericMetric?.[expression]);
 
@@ -59,13 +60,16 @@ const ExtractQueryRangeGraph: FC<Props> = ({
           selectedStep={selectedStep}
           setSelectedStep={setSelectedStep}
           steps={steps}
+          detailedView={detailedView}
+          setDetailedView={setDetailedView}
+          graphTitle={graphTitle}
         />
       )}
       <AreaChart
         label={label}
         timestamps={data?.timestamps}
         counters={data?.counters}
-        graphTitle={graphTitle}
+        graphTitle={!hasControls || detailedView ? graphTitle : undefined}
         canZoom={canZoom}
         loading={loading}
       />

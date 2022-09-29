@@ -4,6 +4,7 @@ import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const AuthenticationDashboard = () => {
   return (
@@ -14,18 +15,24 @@ const AuthenticationDashboard = () => {
             <RequestsLatency small module="authentication" />
           </Grid>
 
-          <Grid xs={6} item sm={2}>
+          <Grid item xs={6} sm={2}>
             <ModuleHealth small module="authentication" />
           </Grid>
+          <Grid item xs={6} sm={3}>
+            <MetricCount
+              small
+              title="Logged in users"
+              expression="conduit_logged_in_users_total[5m]"
+            />
+          </Grid>
         </Grid>
-        <Grid item sm={12} md={6}>
+        <Grid item sm={12} lg={6}>
           <TotalRequestsByModule module="authentication" />
         </Grid>
-
-        <Grid item sm={12} md={6}>
+        <Grid item sm={12} lg={6}>
           <ExtractQueryRangeGraph
             expression="sum(increase(conduit_login_requests_total[5m]))"
-            graphTitle="Total login requests"
+            graphTitle="Login requests"
             label="Requests"
           />
         </Grid>

@@ -18,10 +18,10 @@ const SmsDashboard = () => {
           </Grid>
         </Grid>
         <Grid container item spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={12} lg={6}>
             <TotalRequestsByModule module="sms" />
           </Grid>
-          <Grid item md={12} lg={6}>
+          <Grid item xs={12} lg={6}>
             <ExtractQueryRangeGraph
               expression="sum(increase(conduit_forms_total[10m]))"
               graphTitle="Total sms sent"
