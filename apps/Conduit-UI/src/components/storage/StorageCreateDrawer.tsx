@@ -7,7 +7,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { noSpacesOrSpecialChars } from '../../utils/validations';
 
 interface Props {
   data: { open: boolean; type: CreateFormSelected };
@@ -86,15 +85,7 @@ const StorageCreateDrawer: FC<Props> = ({
         <form onSubmit={methods.handleSubmit(handleSave)}>
           <Grid container spacing={2}>
             <Grid item width={'100%'}>
-              <FormInputText
-                {...register('name', {
-                  pattern: {
-                    value: noSpacesOrSpecialChars,
-                    message: 'No spaces or special characters allowed!',
-                  },
-                })}
-                label="Name"
-              />
+              <FormInputText {...register('name')} label="Name" />
             </Grid>
             {data.type === CreateFormSelected.folder && (
               <Grid item sm={12}>

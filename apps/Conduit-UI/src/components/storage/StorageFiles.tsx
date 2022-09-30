@@ -46,6 +46,7 @@ const StorageFiles = () => {
   };
   const [dialog, setDialog] = useState(dialogInitialState);
   const [placeholder, setPlaceholder] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
 
   const getContainers = useCallback(() => {
     dispatch(asyncGetStorageContainers({ skip, limit }));
@@ -63,9 +64,10 @@ const StorageFiles = () => {
         limit: limit,
         container: filteredPath[0],
         parent: filteredPath.length > 1 ? filteredPath.slice(1).join('/') : '',
+        search: search ? search : undefined,
       })
     );
-  }, [dispatch, filteredPath, limit, skip]);
+  }, [dispatch, filteredPath, limit, search, skip]);
 
   useEffect(() => {
     if (filteredPath.length < 1) {
@@ -254,6 +256,8 @@ const StorageFiles = () => {
         page={page}
         count={path === '/' ? containersCount : totalCount}
         placeholder={placeholder}
+        search={search}
+        setSearch={setSearch}
       />
       <StorageCreateDrawer
         data={drawerCreate}

@@ -8,6 +8,7 @@ export interface IGetStorageFolders {
   limit: number;
   container: string;
   parent?: string;
+  search?: string;
 }
 
 export interface IGetStorageFiles {
@@ -15,6 +16,7 @@ export interface IGetStorageFiles {
   limit: number;
   container: string;
   folder?: string;
+  search?: string;
 }
 
 export interface ICreateStorageFile {
