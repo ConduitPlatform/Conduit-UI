@@ -3,7 +3,9 @@ import { Skeleton, Typography, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleLatency } from '../../redux/slices/metricsSlice';
+import latencyLottie from '../../assets/lotties/latency.json';
 import MetricsWidget from './MetricsWidget';
+import LottieForWidget from './LottieForWidget';
 
 interface Props {
   module: ModulesTypes;
@@ -14,6 +16,7 @@ interface Props {
 const RequestsLatency: FC<Props> = ({ module, modulesLength, small }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+
   const latency: number = useAppSelector(
     (state) => state?.metricsSlice?.data?.moduleLatency?.[module]
   );
@@ -54,6 +57,7 @@ const RequestsLatency: FC<Props> = ({ module, modulesLength, small }) => {
 
   return (
     <MetricsWidget
+      icon={!loading && <LottieForWidget small={small} lottieFile={latencyLottie} />}
       small={small}
       metric={
         <Typography

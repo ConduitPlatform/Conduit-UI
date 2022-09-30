@@ -1,8 +1,9 @@
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 import React from 'react';
 
 const LoaderComponent = () => {
+  const theme = useTheme();
   return (
     <Box
       display={'flex'}
@@ -12,7 +13,13 @@ const LoaderComponent = () => {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <ScaleLoader speedMultiplier={3} color={'#07D9C4'} loading={true} height={21} width={4} />
+      <ScaleLoader
+        speedMultiplier={3}
+        color={theme.palette.primary.main}
+        loading={true}
+        height={21}
+        width={4}
+      />
     </Box>
   );
 };

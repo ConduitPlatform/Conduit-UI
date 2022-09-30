@@ -1,11 +1,11 @@
-import { Box, Skeleton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Skeleton, Typography, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import MetricsWidget from './MetricsWidget';
-import Lottie from 'react-lottie';
 import heartbeat from '../../assets/lotties/heartbeat.json';
+import LottieForWidget from './LottieForWidget';
 
 interface Props {
   module: ModulesTypes;
@@ -15,23 +15,10 @@ interface Props {
 const ModuleHealth: FC<Props> = ({ module, small }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const xs = useMediaQuery(theme.breakpoints.only('xs'));
-  const sm = useMediaQuery(theme.breakpoints.only('sm'));
-  const md = useMediaQuery(theme.breakpoints.only('md'));
-  const lg = useMediaQuery(theme.breakpoints.only('lg'));
   const health = useAppSelector((state) => state?.metricsSlice?.data?.moduleHealth?.[module]);
   const loading = useAppSelector(
     (state) => state?.metricsSlice?.meta?.moduleHealthLoading?.[module]
   );
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: heartbeat,
-    rendererSettings: {
-      preserveAspectRatio: 'xMid slice',
-    },
-  };
 
   const healthFontSize = {
     [theme.breakpoints.down('lg')]: {
@@ -54,28 +41,6 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
     },
   };
 
-  const healthLottieSizing = () => {
-    if (small) {
-      if (xs || sm) {
-        return 16;
-      } else if (md) {
-        return 19;
-      } else if (lg) {
-        return 26;
-      } else {
-        return 26;
-      }
-    } else if (xs || sm) {
-      return 24;
-    } else if (md) {
-      return 26;
-    } else if (lg) {
-      return 30;
-    } else {
-      return 42;
-    }
-  };
-
   useEffect(() => {
     dispatch(
       asyncGetModuleHealth({
@@ -87,16 +52,7 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
   return (
     <MetricsWidget
       small={small}
-      icon={
-        !loading && (
-          <Lottie
-            options={defaultOptions}
-            height={healthLottieSizing()}
-            width={healthLottieSizing()}
-            style={{ padding: 0 }}
-          />
-        )
-      }
+      icon={!loading && <LottieForWidget small={small} lottieFile={heartbeat} />}
       metric={
         <Box display="flex" gap={1} alignItems="center">
           {loading && (

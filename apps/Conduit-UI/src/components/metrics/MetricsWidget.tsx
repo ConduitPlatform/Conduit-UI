@@ -44,8 +44,11 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
             gap: 2.5,
             borderRadius: '24px',
           }}>
-          <Box display="flex">
-            {metric} {icon}
+          <Box display="flex" justifyContent="space-between">
+            <Box>{metric}</Box>
+            <Box display="flex" justifyContent="flex-end">
+              {icon}
+            </Box>
           </Box>
           <Typography sx={{ fontSize: fontSizes }}>{title}</Typography>
         </Paper>
@@ -61,8 +64,11 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
             gap: 0.7,
             borderRadius: '16px',
           }}>
-          <Box display="flex">
-            {metric} {icon}
+          <Box display="flex" justifyContent="space-between">
+            <Box>{metric}</Box>
+            <Box display="flex" justifyContent="flex-end">
+              {icon}
+            </Box>
           </Box>
           <Typography sx={{ fontSize: fontSizesSmall }}>{title}</Typography>
         </Paper>
