@@ -73,17 +73,6 @@ export interface CookieOptions {
 }
 
 export interface IAuthenticationConfig {
-  active: boolean;
-  generateRefreshToken: boolean;
-  jwtSecret: string;
-  rateLimit: number;
-  refreshTokenInvalidationPeriod: number;
-  tokenInvalidationPeriod: number;
-  twofa: { enabled: boolean };
-  service: { enabled: boolean };
-  phoneAuthentication: { enabled: boolean };
-  clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };
-  setCookies: { enabled: boolean; options: CookieOptions };
   facebook: SignInTypes;
   google: SignInTypes;
   local: SignInTypes;
@@ -92,4 +81,21 @@ export interface IAuthenticationConfig {
   figma: SignInTypes;
   slack: SignInTypes;
   microsoft: SignInTypes;
+  twofa: { enabled: boolean };
+  accessTokens: {
+    cookieOptions: CookieOptions;
+    jwtSecret: string;
+    expiryPeriod: number;
+    setCookie: boolean;
+  };
+  refreshTokens: {
+    cookieOptions: CookieOptions;
+    expiryPeriod: number;
+    enabled: boolean;
+    secure: boolean;
+  };
+  service: { enabled: boolean };
+  phoneAuthentication: { enabled: boolean };
+  clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };
+  active: boolean;
 }
