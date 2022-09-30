@@ -6,9 +6,14 @@ import Files from '../../assets/lotties/files.json';
 import Forms from '../../assets/lotties/forms.json';
 import Size from '../../assets/lotties/size.json';
 import Containers from '../../assets/lotties/containers.json';
+import SendEmail from '../../assets/lotties/sendEmail.json';
+import Users from '../../assets/lotties/users.json';
+import Folders from '../../assets/lotties/folders.json';
 
 export const getLottieByTitle = (title: string) => {
   switch (title) {
+    case 'Folders':
+      return Folders;
     case 'Email templates':
       return Email;
     case 'Chat rooms':
@@ -25,7 +30,13 @@ export const getLottieByTitle = (title: string) => {
       return Containers;
     case 'Size (bytes)':
       return Size;
-    default:
+    case 'Sent emails':
+      return SendEmail;
+    case 'Schemas':
       return Schemas;
+    case 'Logged in users':
+      return Users;
+    default:
+      return undefined;
   }
 };

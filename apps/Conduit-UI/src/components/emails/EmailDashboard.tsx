@@ -18,7 +18,11 @@ const EmailDashboard = () => {
             <ModuleHealth small module="email" />
           </Grid>
           <Grid item xs={6} sm={3}>
-            <MetricCount small title="Templates" expression="conduit_email_templates_total[5m]" />
+            <MetricCount
+              small
+              title="Email templates"
+              expression="conduit_email_templates_total[5m]"
+            />
           </Grid>
           <Grid item xs={6} sm={3}>
             <MetricCount small title="Sent emails" expression="conduit_emails_sent_total[5m]" />
