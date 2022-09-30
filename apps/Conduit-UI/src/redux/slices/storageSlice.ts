@@ -402,7 +402,9 @@ const storageSlice = createSlice({
       state.data.containerData.totalCount = action.payload.totalCount;
       if (action.payload.totalCount < 1) {
         state.data.containerData.areContainerDataEmpty = true;
+        return;
       }
+      state.data.containerData.areContainerDataEmpty = false;
     });
     builder.addCase(asyncDeleteStorageFile.fulfilled, (state, action) => {
       const foundIndex = state.data.containerData.data.findIndex(
