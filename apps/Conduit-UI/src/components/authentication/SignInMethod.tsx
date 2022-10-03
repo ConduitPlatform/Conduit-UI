@@ -70,6 +70,14 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
     }
   };
 
+  const extractHeader = (name: string) => {
+    if (name === 'phoneAuthentication') {
+      return `Allow users to sign up using their ${name} account.`;
+    } else if (name === 'twoFa') {
+      return 'Allow users to sign up using two factor authentication';
+    } else return `Allow users to sign up using their ${name} account.`;
+  };
+
   return (
     <Accordion
       expanded={expanded}
@@ -127,9 +135,7 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
               justifyContent={'space-between'}
               alignItems={'center'}>
               <Typography variant={'button'} sx={{ width: '100%' }}>
-                {name !== 'phoneAuthentication'
-                  ? `Allow users to sign up using their ${name} account.`
-                  : `Allow users to sign up using their phone number.`}
+                {extractHeader(name)}
               </Typography>
               <FormControlLabel
                 sx={{

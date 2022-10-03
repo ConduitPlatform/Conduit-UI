@@ -30,6 +30,9 @@ export interface SignInTypes {
   forgot_password_redirect_uri?: string;
   redirect_uri?: string;
   clientSecret?: string;
+  methods?: { authenticator?: boolean; sms?: boolean };
+  authenticator?: boolean;
+  sms?: boolean;
 }
 
 export type SocialNameTypes =
@@ -41,7 +44,8 @@ export type SocialNameTypes =
   | 'slack'
   | 'github'
   | 'figma'
-  | 'phoneAuthentication';
+  | 'phoneAuthentication'
+  | 'twoFa';
 
 export interface ServiceAccount {
   active: boolean;
@@ -81,7 +85,8 @@ export interface IAuthenticationConfig {
   figma: SignInTypes;
   slack: SignInTypes;
   microsoft: SignInTypes;
-  twofa: { enabled: boolean };
+  service: SignInTypes;
+  twoFa: SignInTypes;
   accessTokens: {
     cookieOptions: CookieOptions;
     jwtSecret: string;
@@ -94,7 +99,6 @@ export interface IAuthenticationConfig {
     enabled: boolean;
     secure: boolean;
   };
-  service: { enabled: boolean };
   phoneAuthentication: { enabled: boolean };
   clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };
   active: boolean;

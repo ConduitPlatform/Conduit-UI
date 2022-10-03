@@ -7,6 +7,7 @@ import Github from '../assets/svgs/providers/github.svg';
 import Slack from '../assets/svgs/providers/slack.svg';
 import Microsoft from '../assets/svgs/providers/microsoft.svg';
 import Phone from '../assets/svgs/providers/phone.svg';
+import Refresh from '../assets/svgs/providers/refresh.svg';
 
 export const extractProviderIcon = (name: string) => {
   switch (name) {
@@ -28,6 +29,8 @@ export const extractProviderIcon = (name: string) => {
       return Microsoft;
     case 'phoneAuthentication':
       return Phone;
+    case 'twoFa':
+      return Refresh;
     default:
       return Github;
   }
@@ -53,6 +56,8 @@ export const extractProviderName = (name: string) => {
       return 'Microsoft';
     case 'phoneAuthentication':
       return 'Phone';
+    case 'twoFa':
+      return 'Two Factor Authentication';
     default:
       return 'Local';
   }

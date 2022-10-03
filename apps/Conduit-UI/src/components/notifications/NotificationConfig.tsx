@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Grid, Icon, Typography } from '@mui/material';
+import { Grid, Icon, Typography, useTheme } from '@mui/material';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -14,6 +14,7 @@ import { InfoOutlined } from '@mui/icons-material';
 
 const NotificationConfig: FC = () => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
   const { config } = useAppSelector((state) => state.notificationsSlice.data);
 
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
@@ -141,7 +142,13 @@ const NotificationConfig: FC = () => {
                     placement="bottom"
                     open={openTooltip}
                     onClose={MouseOutTooltip}>
-                    <Icon>
+                    <Icon
+                      sx={{
+                        color:
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black,
+                      }}>
                       <InfoOutlined />
                     </Icon>
                   </RichTooltip>

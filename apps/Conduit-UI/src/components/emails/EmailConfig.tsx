@@ -11,10 +11,11 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
 import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
-import { Button, Icon } from '@mui/material';
+import { Button, Icon, useTheme } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
 const EmailConfig: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
@@ -212,7 +213,13 @@ const EmailConfig: React.FC = () => {
                     width="400px"
                     open={openTooltip}
                     onClose={MouseOutTooltip}>
-                    <Icon>
+                    <Icon
+                      sx={{
+                        color:
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black,
+                      }}>
                       <InfoOutlined />
                     </Icon>
                   </RichTooltip>

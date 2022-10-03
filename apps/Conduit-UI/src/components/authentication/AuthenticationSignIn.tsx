@@ -26,7 +26,24 @@ const SignIn: React.FC = () => {
       delete newValue.clientSecret;
     }
 
-    if (type === 'local') {
+    if (type === 'twoFa') {
+      const newData = {
+        enabled: newValue.enabled,
+        methods: {
+          authenticator: newValue.authenticator,
+          sms: newValue.sms,
+        },
+      };
+
+      const data = {
+        ...config,
+        [type]: {
+          ...newData,
+        },
+      };
+
+      dispatch(asyncUpdateAuthenticationConfig(data));
+    } else if (type === 'local') {
       const newData = {
         enabled: newValue.enabled,
         verification: {

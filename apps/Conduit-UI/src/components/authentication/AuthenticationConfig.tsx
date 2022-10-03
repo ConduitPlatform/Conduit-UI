@@ -11,9 +11,10 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon, Tooltip } from '@mui/material';
+import { Icon, Tooltip, useTheme } from '@mui/material';
 
 const AuthenticationConfig: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const [edit, setEdit] = useState<boolean>(false);
@@ -73,8 +74,14 @@ const AuthenticationConfig: React.FC = () => {
                     href="https://getconduit.dev/docs/modules/authentication/config"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ textDecoration: 'none', color: 'white' }}>
-                    <Icon>
+                    style={{ textDecoration: 'none' }}>
+                    <Icon
+                      sx={{
+                        color:
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black,
+                      }}>
                       <InfoOutlined />
                     </Icon>
                   </a>
