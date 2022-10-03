@@ -29,8 +29,6 @@ interface Props {
 const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configData, accProps }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  console.log(accProps);
-
   const handleCancel = () => {
     if (configData && configData[name] && name !== 'google' && name !== 'facebook') {
       setAccProps(configData[name]);
