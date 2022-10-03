@@ -75,7 +75,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
               smallScreen={smallScreen}
             />
           </LinkComponent>
-          {disabledModules.length > 0 ? (
+          {disabledModules?.length > 0 ? (
             <>
               <Modules
                 modules={disabledModules}

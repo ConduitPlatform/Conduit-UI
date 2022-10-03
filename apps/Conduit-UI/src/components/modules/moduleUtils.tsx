@@ -13,6 +13,44 @@ import {
   Toc,
   ViewModule,
 } from '@mui/icons-material';
+import { IModule } from '../../models/appAuth';
+
+const modules = [
+  'authentication',
+  'email',
+  'storage',
+  'forms',
+  'pushNotifications',
+  'sms',
+  'chat',
+  'payments',
+  'database',
+  'router',
+];
+
+export const getDisabledModules = (payloadModules: string[]) => {
+  const disabledModules: IModule[] = [];
+  modules?.forEach((module) => {
+    if (!payloadModules?.includes(module)) {
+      disabledModules.push({
+        moduleName: module,
+        url: '',
+        serving: false,
+      });
+    }
+  });
+  return disabledModules;
+};
+
+export const getSortedModules = (payloadModules: IModule[]) => {
+  const sortedModules: IModule[] = [];
+  modules?.forEach((module) => {
+    payloadModules?.forEach((innerModule) => {
+      if (module === innerModule.moduleName) sortedModules.push(innerModule);
+    });
+  });
+  return sortedModules;
+};
 
 export const getModuleIcon = (moduleName: string) => {
   switch (moduleName) {
@@ -47,4 +85,20 @@ export const getModuleName = (moduleName: string) => {
   if (moduleName === 'pushNotifications') return 'Push Notifications';
   if (moduleName === 'sms') return 'SMS';
   return moduleName;
+};
+
+export const isModuleOnline = (pathName: string, onlineModules: IModule[]) => {
+  const splitPathName = pathName?.split('/')?.[1];
+
+  switch (splitPathName) {
+    case '':
+    case '404':
+    case '500':
+    case 'login':
+      return true;
+    case 'push-notifications':
+      return onlineModules?.some((item) => item.moduleName === 'pushNotifications');
+    default:
+      return onlineModules?.some((item) => item.moduleName === splitPathName);
+  }
 };
