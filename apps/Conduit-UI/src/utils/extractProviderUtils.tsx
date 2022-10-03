@@ -8,6 +8,7 @@ import Slack from '../assets/svgs/providers/slack.svg';
 import Microsoft from '../assets/svgs/providers/microsoft.svg';
 import Phone from '../assets/svgs/providers/phone.svg';
 import Refresh from '../assets/svgs/providers/refresh.svg';
+import MagicLink from '../assets/svgs/providers/magicLink.svg';
 
 export const extractProviderIcon = (name: string) => {
   switch (name) {
@@ -31,6 +32,8 @@ export const extractProviderIcon = (name: string) => {
       return Phone;
     case 'twoFa':
       return Refresh;
+    case 'magic_link':
+      return MagicLink;
     default:
       return Github;
   }
@@ -58,6 +61,8 @@ export const extractProviderName = (name: string) => {
       return 'Phone';
     case 'twoFa':
       return 'Two Factor Authentication';
+    case 'magic_link':
+      return 'Magic Link';
     default:
       return 'Local';
   }

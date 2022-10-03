@@ -72,10 +72,12 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
 
   const extractHeader = (name: string) => {
     if (name === 'phoneAuthentication') {
-      return `Allow users to sign up using their ${name} account.`;
+      return `Allow users to sign in using their ${name} account.`;
     } else if (name === 'twoFa') {
-      return 'Allow users to sign up using two factor authentication';
-    } else return `Allow users to sign up using their ${name} account.`;
+      return 'Allow users to sign in using two factor authentication';
+    } else if (name === 'magic_link') {
+      return 'Allow users to sign in using a magic link';
+    } else return `Allow users to sign in using their ${name} account.`;
   };
 
   return (

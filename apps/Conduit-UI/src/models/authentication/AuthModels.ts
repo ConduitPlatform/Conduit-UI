@@ -45,7 +45,8 @@ export type SocialNameTypes =
   | 'github'
   | 'figma'
   | 'phoneAuthentication'
-  | 'twoFa';
+  | 'twoFa'
+  | 'magic_link';
 
 export interface ServiceAccount {
   active: boolean;
@@ -86,6 +87,7 @@ export interface IAuthenticationConfig {
   slack: SignInTypes;
   microsoft: SignInTypes;
   service: SignInTypes;
+  magic_link: SignInTypes;
   twoFa: SignInTypes;
   accessTokens: {
     cookieOptions: CookieOptions;
