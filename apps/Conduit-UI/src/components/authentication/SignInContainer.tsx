@@ -92,10 +92,15 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     enabled: false,
   });
 
-  const [twoFa, setTwoFa] = useState<{ enabled: boolean; authenticator: boolean; sms: boolean }>({
+  const [twoFa, setTwoFa] = useState<SignInTypes>({
     enabled: false,
     authenticator: false,
     sms: false,
+  });
+
+  const [magic_link, setMagicLink] = useState<SignInTypes>({
+    enabled: false,
+    redirect_uri: '',
   });
 
   const MouseOverTooltip = () => {
@@ -214,6 +219,13 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
           enabled: twoFa.enabled ?? false,
           authenticator: twoFa.methods?.authenticator ?? false,
           sms: twoFa.methods?.sms ?? false,
+        });
+      }
+      if (configData.magic_link) {
+        const magicLinkData = configData.magic_link;
+        setMagicLink({
+          enabled: magicLinkData.enabled ?? false,
+          redirect_uri: magicLinkData.redirect_uri ?? '',
         });
       }
     }
@@ -339,6 +351,18 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     );
   }, [twoFa, configData, handleData]);
 
+  const magicLinkMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'magic_link'}
+        accProps={magic_link}
+        setAccProps={setMagicLink}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [magic_link, configData, handleData]);
+
   return (
     <Box sx={{ width: '100%', paddingBottom: '20px' }} {...rest}>
       <Box
@@ -425,6 +449,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       {microsoftMemo}
       {phoneMemo}
       {twoFaMemo}
+      {magicLinkMemo}
     </Box>
   );
 };

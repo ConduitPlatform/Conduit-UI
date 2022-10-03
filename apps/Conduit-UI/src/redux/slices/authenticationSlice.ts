@@ -85,6 +85,10 @@ const initialState: IAuthenticationSlice = {
         redirect_uri: '',
         clientSecret: '',
       },
+      magic_link: {
+        enabled: false,
+        redirect_uri: '',
+      },
       local: {
         identifier: '',
         accountLinking: false,
