@@ -21,6 +21,8 @@ const AuthenticationConfig: React.FC = () => {
 
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
 
+  console.log(config);
+
   const methods = useForm<IAuthenticationConfig>({
     defaultValues: useMemo(() => {
       return config;

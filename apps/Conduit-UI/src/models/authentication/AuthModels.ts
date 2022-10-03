@@ -97,7 +97,6 @@ export interface IAuthenticationConfig {
     cookieOptions: CookieOptions;
     expiryPeriod: number;
     enabled: boolean;
-    secure: boolean;
     setCookie: boolean;
   };
   phoneAuthentication: { enabled: boolean };

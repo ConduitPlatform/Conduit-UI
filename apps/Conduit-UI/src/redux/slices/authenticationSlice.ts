@@ -34,6 +34,34 @@ const initialState: IAuthenticationSlice = {
     },
     config: {
       active: false,
+      accessTokens: {
+        jwtSecret: '',
+        expiryPeriod: 0,
+        setCookie: false,
+        cookieOptions: {
+          httpOnly: false,
+          secure: false,
+          signed: false,
+          maxAge: 0,
+          domain: '',
+          sameSite: 'Lax',
+          path: '',
+        },
+      },
+      refreshTokens: {
+        enabled: false,
+        expiryPeriod: 0,
+        setCookie: false,
+        cookieOptions: {
+          httpOnly: false,
+          secure: false,
+          signed: false,
+          maxAge: 0,
+          domain: '',
+          sameSite: 'Lax',
+          path: '',
+        },
+      },
       clients: {
         multipleUserSessions: false,
         multipleClientLogins: true,
@@ -49,7 +77,6 @@ const initialState: IAuthenticationSlice = {
         redirect_uri: '',
         clientSecret: '',
       },
-      generateRefreshToken: false,
       google: {
         enabled: false,
         accountLinking: true,
@@ -58,7 +85,6 @@ const initialState: IAuthenticationSlice = {
         redirect_uri: '',
         clientSecret: '',
       },
-      jwtSecret: '',
       local: {
         identifier: '',
         accountLinking: false,
@@ -67,10 +93,8 @@ const initialState: IAuthenticationSlice = {
         verificationRequired: false,
         verification_redirect_uri: '',
       },
-      rateLimit: 3,
-      refreshTokenInvalidationPeriod: 0,
       service: { enabled: false },
-      tokenInvalidationPeriod: 0,
+
       twitch: {
         accountLinking: false,
         enabled: false,
@@ -106,19 +130,7 @@ const initialState: IAuthenticationSlice = {
         redirect_uri: '',
         clientSecret: '',
       },
-      setCookies: {
-        enabled: false,
-        options: {
-          httpOnly: false,
-          secure: false,
-          signed: false,
-          maxAge: 900000,
-          domain: '',
-          path: '',
-          sameSite: 'Lax',
-        },
-      },
-      twofa: { enabled: false },
+      twoFa: { enabled: false, methods: { authenticator: false, sms: false } },
     },
   },
 };
