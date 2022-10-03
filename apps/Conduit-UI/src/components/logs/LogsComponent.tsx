@@ -192,9 +192,10 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
 
   const handleMouseMove = useCallback((e) => {
     const newHeight =
-      document?.body?.offsetHeight -
+      window?.innerHeight -
       e?.clientY +
       (drawerHeaderRef?.current ? drawerHeaderRef?.current?.clientHeight / 2 : 0);
+
     if (newHeight >= minDrawerHeight) {
       setDrawerHeight(newHeight);
     }
