@@ -26,7 +26,7 @@ const Layout: React.FC = ({ children, ...rest }) => {
       router.replace('/').catch(console.log);
       dispatch(enqueueInfoNotification('Module currently disabled.', 'moduleDisabled'));
     }
-  }, [dispatch, onlineModules, router?.pathname]);
+  }, [dispatch, onlineModules, router]);
 
   useEffect(() => {
     const splitUri = router.pathname.split('/')[1];
