@@ -98,6 +98,7 @@ export interface IAuthenticationConfig {
     expiryPeriod: number;
     enabled: boolean;
     secure: boolean;
+    setCookie: boolean;
   };
   phoneAuthentication: { enabled: boolean };
   clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };

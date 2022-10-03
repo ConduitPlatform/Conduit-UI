@@ -43,6 +43,16 @@ const AuthenticationConfig: React.FC = () => {
     name: 'refreshTokens.enabled',
   });
 
+  const accessTokensCookies = useWatch({
+    control,
+    name: 'accessTokens.setCookie',
+  });
+
+  const refreshTokenscookies = useWatch({
+    control,
+    name: 'refreshTokens.setCookie',
+  });
+
   const handleCancel = () => {
     setEdit(!edit);
     methods.reset();
@@ -107,14 +117,11 @@ const AuthenticationConfig: React.FC = () => {
                       label="Expiry Period"
                     />
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Box
-                      width={'100%'}
-                      display={'inline-flex'}
-                      justifyContent={'space-between'}
-                      alignItems={'center'}>
-                      <Typography variant={'subtitle1'} mr={1}>
-                        Set Cookie
+
+                  <Grid item xs={12}>
+                    <Box display="flex" justifyContent="space-between" pt={2}>
+                      <Typography variant="body1" fontWeight={'bold'}>
+                        Cookies
                       </Typography>
                       <FormInputSwitch
                         {...register('accessTokens.setCookie', { disabled: !edit })}
@@ -122,37 +129,38 @@ const AuthenticationConfig: React.FC = () => {
                       />
                     </Box>
                   </Grid>
-
-                  <Grid item xs={12}>
-                    <Typography variant="body1" fontWeight={'bold'}>
-                      Cookie options
-                    </Typography>
-                  </Grid>
                   <Grid item md={6} xs={12}>
                     <FormInputText
-                      {...register('accessTokens.cookieOptions.domain', { disabled: !edit })}
+                      {...register('accessTokens.cookieOptions.domain', {
+                        disabled: !edit || !accessTokensCookies,
+                      })}
                       label="Domain"
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <FormInputText
-                      {...register('accessTokens.cookieOptions.sameSite', { disabled: !edit })}
+                      {...register('accessTokens.cookieOptions.sameSite', {
+                        disabled: !edit || !accessTokensCookies,
+                      })}
                       label="Same site"
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <FormInputText
-                      {...register('accessTokens.cookieOptions.maxAge', { disabled: !edit })}
+                      {...register('accessTokens.cookieOptions.maxAge', {
+                        disabled: !edit || !accessTokensCookies,
+                      })}
                       label="Max age"
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <FormInputText
-                      {...register('accessTokens.cookieOptions.path', { disabled: !edit })}
+                      {...register('accessTokens.cookieOptions.path', {
+                        disabled: !edit || !accessTokensCookies,
+                      })}
                       label="Path"
                     />
                   </Grid>
-
                   <Grid item md={6} xs={12}>
                     <Box
                       width={'100%'}
@@ -163,7 +171,9 @@ const AuthenticationConfig: React.FC = () => {
                         HTTP only
                       </Typography>
                       <FormInputSwitch
-                        {...register('accessTokens.cookieOptions.httpOnly', { disabled: !edit })}
+                        {...register('accessTokens.cookieOptions.httpOnly', {
+                          disabled: !edit || !accessTokensCookies,
+                        })}
                         switchProps={{ sx: { ml: 1 } }}
                       />
                     </Box>
@@ -178,7 +188,9 @@ const AuthenticationConfig: React.FC = () => {
                         Signed
                       </Typography>
                       <FormInputSwitch
-                        {...register('accessTokens.cookieOptions.signed', { disabled: !edit })}
+                        {...register('accessTokens.cookieOptions.signed', {
+                          disabled: !edit || !accessTokensCookies,
+                        })}
                         switchProps={{ sx: { ml: 1 } }}
                       />
                     </Box>
@@ -193,7 +205,9 @@ const AuthenticationConfig: React.FC = () => {
                         Secure
                       </Typography>
                       <FormInputSwitch
-                        {...register('accessTokens.cookieOptions.secure', { disabled: !edit })}
+                        {...register('accessTokens.cookieOptions.secure', {
+                          disabled: !edit || !accessTokensCookies,
+                        })}
                         switchProps={{ sx: { ml: 1 } }}
                       />
                     </Box>
@@ -225,26 +239,17 @@ const AuthenticationConfig: React.FC = () => {
                               label="Expiry Period"
                             />
                           </Grid>
-                          <Grid item md={6} xs={12}>
-                            <Box
-                              width={'100%'}
-                              display={'inline-flex'}
-                              justifyContent={'space-between'}
-                              alignItems={'center'}>
-                              <Typography variant={'subtitle1'} mr={1}>
-                                Set Cookie
-                              </Typography>
-                              <FormInputSwitch
-                                {...register('accessTokens.setCookie', { disabled: !edit })}
-                                switchProps={{ sx: { ml: 1 } }}
-                              />
-                            </Box>
-                          </Grid>
                         </Grid>
                         <Grid item xs={12}>
-                          <Typography variant="body1" fontWeight={'bold'}>
-                            Cookie options
-                          </Typography>
+                          <Box display="flex" justifyContent="space-between" pt={2}>
+                            <Typography variant="body1" fontWeight={'bold'}>
+                              Cookies
+                            </Typography>
+                            <FormInputSwitch
+                              {...register('accessTokens.setCookie', { disabled: !edit })}
+                              switchProps={{ sx: { ml: 1 } }}
+                            />
+                          </Box>
                         </Grid>
 
                         <Grid item md={6} xs={12}>
