@@ -90,7 +90,7 @@ const Home: React.FC = () => {
 
   const isEnabled = useCallback(
     (str: string) => {
-      return enabledModules.find((item: IModule) => item.moduleName === str);
+      return enabledModules?.find((item: IModule) => item.moduleName === str);
     },
     [enabledModules]
   );
@@ -173,7 +173,7 @@ const Home: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item container spacing={2}>
                 <Grid item xs={6} sm={3}>
-                  <RequestsLatency module="home" modulesLength={enabledModules.length} />
+                  <RequestsLatency module="home" modulesLength={enabledModules?.length} />
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <ModuleHealth module="home" />

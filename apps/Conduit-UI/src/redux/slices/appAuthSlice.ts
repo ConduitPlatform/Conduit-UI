@@ -10,7 +10,6 @@ import { getErrorData } from '../../utils/error-handler';
 import { asyncGetEmailConfig, clearEmailPageStore } from './emailsSlice';
 import { asyncGetAuthenticationConfig, clearAuthenticationPageStore } from './authenticationSlice';
 import { enqueueErrorNotification, enqueueInfoNotification } from '../../utils/useNotifier';
-import { getDisabledModules, getSortedModules } from '../../utils/modules';
 import { asyncGetChatConfig } from './chatSlice';
 import { asyncGetFormsConfig } from './formsSlice';
 import { asyncGetPaymentConfig } from './paymentsSlice';
@@ -19,20 +18,21 @@ import { asyncGetRouterConfig } from './routerSlice';
 import { asyncGetAdminSettings } from './settingsSlice';
 import jwt_decode from 'jwt-decode';
 import Router from 'next/router';
+import { getDisabledModules, getSortedModules } from '../../components/modules/moduleUtils';
 
 export type AppAuthState = {
   data: {
     token: string;
-    enabledModules: IModule[];
-    disabledModules: IModule[];
+    enabledModules?: IModule[];
+    disabledModules?: IModule[];
   };
 };
 
 const initialState: AppAuthState = {
   data: {
     token: '',
-    enabledModules: [],
-    disabledModules: [],
+    enabledModules: undefined,
+    disabledModules: undefined,
   },
 };
 

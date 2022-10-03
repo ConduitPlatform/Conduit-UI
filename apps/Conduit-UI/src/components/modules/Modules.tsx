@@ -4,11 +4,7 @@ import { getModuleIcon, getModuleName } from './moduleUtils';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
 import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
-
-interface IModule {
-  moduleName: string;
-  url: string;
-}
+import { IModule } from '../../models/appAuth';
 
 interface Props {
   modules: IModule[];
@@ -41,8 +37,8 @@ const Modules: React.FC<Props> = ({
     dispatch(enqueueInfoNotification('Module currently disabled.', 'moduleDisabled'));
   };
 
-  const modulesInstance = [...modules];
-  const sortedArray = modulesInstance.sort((a, b) => {
+  const modulesInstance = modules ? [...modules] : [];
+  const sortedArray = modulesInstance?.sort((a, b) => {
     const textA = a.moduleName.toUpperCase();
     const textB = b.moduleName.toUpperCase();
     return textA < textB ? -1 : textA > textB ? 1 : 0;
