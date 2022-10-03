@@ -19,8 +19,6 @@ interface Props {
 const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) => {
   const theme = useTheme();
 
-  console.log(configData);
-
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
 
   const [local, setLocal] = useState<SignInTypes>({

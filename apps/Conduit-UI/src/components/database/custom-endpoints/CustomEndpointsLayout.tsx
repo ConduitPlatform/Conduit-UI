@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   FormControl,
   Grid,
   Icon,
@@ -25,11 +24,7 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import {
-  ConduitMultiSelect,
-  ConfirmationDialog,
-  RichTooltip,
-} from '@conduitplatform/ui-components';
+import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
