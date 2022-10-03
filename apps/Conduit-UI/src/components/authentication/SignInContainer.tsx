@@ -92,6 +92,12 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     enabled: false,
   });
 
+  const [twoFa, setTwoFa] = useState<{ enabled: boolean; authenticator: boolean; sms: boolean }>({
+    enabled: false,
+    authenticator: false,
+    sms: false,
+  });
+
   const MouseOverTooltip = () => {
     setOpenTooltip(!openTooltip);
   };
@@ -199,6 +205,15 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
         const phoneData = configData.phoneAuthentication;
         setPhoneAuthentication({
           enabled: phoneData.enabled,
+        });
+      }
+      if (configData.twoFa) {
+        const twoFa = configData.twoFa;
+
+        setTwoFa({
+          enabled: twoFa.enabled ?? false,
+          authenticator: twoFa.methods?.authenticator ?? false,
+          sms: twoFa.methods?.sms ?? false,
         });
       }
     }
@@ -312,6 +327,18 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     );
   }, [phoneAuthentication, configData, handleData]);
 
+  const twoFaMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'twoFa'}
+        accProps={twoFa}
+        setAccProps={setTwoFa}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [twoFa, configData, handleData]);
+
   return (
     <Box sx={{ width: '100%', paddingBottom: '20px' }} {...rest}>
       <Box
@@ -375,7 +402,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
               width="400px"
               open={openTooltip}
               onClose={MouseOutTooltip}>
-              <Icon>
+              <Icon sx={{ color: 'common.white' }}>
                 <InfoOutlined />
               </Icon>
             </RichTooltip>
@@ -397,6 +424,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       {githubMemo}
       {microsoftMemo}
       {phoneMemo}
+      {twoFaMemo}
     </Box>
   );
 };

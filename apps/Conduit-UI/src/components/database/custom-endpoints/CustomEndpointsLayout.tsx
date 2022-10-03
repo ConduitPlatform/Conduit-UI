@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   FormControl,
   Grid,
   Icon,
@@ -11,7 +10,9 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { Delete, Edit, InfoOutlined, Search } from '@mui/icons-material';
 import {
@@ -23,11 +24,7 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import {
-  ConduitMultiSelect,
-  ConfirmationDialog,
-  RichTooltip,
-} from '@conduitplatform/ui-components';
+import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
@@ -58,6 +55,7 @@ import EndpointsList from './EndpointsList';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
   const router = useRouter();
   const { schema } = router.query;
 
@@ -66,7 +64,6 @@ const CustomEndpointsLayout: FC = () => {
   const [createMode, setCreateMode] = useState(false);
   const [search, setSearch] = useState('');
   const [schemas, setSchemas] = useState<string[]>([]);
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const debouncedSearch = useDebounce(search, 500);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
@@ -212,14 +209,6 @@ const CustomEndpointsLayout: FC = () => {
   const handleEditClick = () => {
     setEditMode(true);
     setCreateMode(false);
-  };
-
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
   };
 
   const handleSubmit = (edit = false) => {
@@ -458,34 +447,23 @@ const CustomEndpointsLayout: FC = () => {
                   values={schemas}
                   sortBy="name"
                 />
-                <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-                  <RichTooltip
-                    content={
-                      <Box display="flex" flexDirection="column" gap={2} p={2}>
-                        <Typography variant="body2">
-                          Creating a custom schema allows up to optionally make use of
-                          auto-generated CRUD operations. These are simple operations that may be
-                          enabled individually. They may also be protected by user authentication.
-                        </Typography>
-                        <Box display="flex" justifyContent="flex-end">
-                          <a
-                            href="https://getconduit.dev/docs/modules/database/tutorials/custom_endpoints"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Take me to the docs</Button>
-                          </a>
-                        </Box>
-                      </Box>
-                    }
-                    width="400px"
-                    open={openTooltip}
-                    onClose={MouseOutTooltip}>
-                    <Icon>
+                <Tooltip title="Custom Endpoints Documentation">
+                  <a
+                    href="https://getconduit.dev/docs/modules/database/tutorials/custom_endpoints"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}>
+                    <Icon
+                      sx={{
+                        color:
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black,
+                      }}>
                       <InfoOutlined />
                     </Icon>
-                  </RichTooltip>
-                </Box>
+                  </a>
+                </Tooltip>
               </Box>
             </Grid>
           </Grid>

@@ -9,9 +9,10 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon, Tooltip } from '@mui/material';
+import { Icon, Tooltip, useTheme } from '@mui/material';
 
 const ChatConfig: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const [edit, setEdit] = useState<boolean>(false);
@@ -62,8 +63,14 @@ const ChatConfig: React.FC = () => {
                     href="https://getconduit.dev/docs/modules/chat/config"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ textDecoration: 'none', color: 'white' }}>
-                    <Icon>
+                    style={{ textDecoration: 'none' }}>
+                    <Icon
+                      sx={{
+                        color:
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black,
+                      }}>
                       <InfoOutlined />
                     </Icon>
                   </a>

@@ -9,10 +9,11 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
 import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
-import { Box, Icon, Tooltip } from '@mui/material';
+import { Box, Icon, Tooltip, useTheme } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
 const SmsConfig: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const [edit, setEdit] = useState<boolean>(false);
@@ -96,8 +97,14 @@ const SmsConfig: React.FC = () => {
                     href="https://getconduit.dev/docs/modules/sms/config"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ textDecoration: 'none', color: 'white' }}>
-                    <Icon>
+                    style={{ textDecoration: 'none' }}>
+                    <Icon
+                      sx={{
+                        color:
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.common.white
+                            : theme.palette.common.black,
+                      }}>
                       <InfoOutlined />
                     </Icon>
                   </a>
