@@ -95,7 +95,6 @@ export const isModuleOnline = (pathName: string, onlineModules: IModule[]) => {
     case '404':
     case '500':
     case 'login':
-      return true;
     case 'settings':
       return true;
     case 'push-notifications':
