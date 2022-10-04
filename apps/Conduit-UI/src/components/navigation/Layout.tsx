@@ -64,6 +64,7 @@ const Layout: React.FC = ({ children, ...rest }) => {
       case '404':
       case '500':
       case 'login':
+      case 'settings':
         return false;
       default:
         return onlineModules === undefined;
