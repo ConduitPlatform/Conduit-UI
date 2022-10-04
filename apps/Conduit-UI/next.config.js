@@ -44,7 +44,7 @@ module.exports = (phase) => {
       },
       {
         source: '/settings',
-        destination: '/settings/dashboard',
+        destination: '/settings/settings',
         permanent: true,
       },
       {

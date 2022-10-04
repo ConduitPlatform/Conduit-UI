@@ -96,6 +96,8 @@ export const isModuleOnline = (pathName: string, onlineModules: IModule[]) => {
     case '500':
     case 'login':
       return true;
+    case 'settings':
+      return true;
     case 'push-notifications':
       return onlineModules?.some((item) => item.moduleName === 'pushNotifications');
     default:
