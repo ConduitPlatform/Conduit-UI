@@ -186,17 +186,12 @@ const ServiceAccountsTabs = () => {
           </Button>
         </Box>
       </Box>
-      {!enabledConfig && (
-        <Typography textAlign="center" pt={20}>
-          Service config is currently disabled!
-        </Typography>
-      )}
-      {!serviceAccounts.length && (
+      {serviceAccounts.length === 0 && (
         <Typography textAlign="center" pt={20}>
           No available service accounts
         </Typography>
       )}
-      {enabledConfig && serviceAccounts.length && (
+      {serviceAccounts.length > 0 && (
         <DataTable
           selectable={false}
           sort={sort}

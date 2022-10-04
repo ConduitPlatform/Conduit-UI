@@ -219,93 +219,101 @@ const SecurityTab: React.FC = () => {
             {isActive ? (
               <>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mt={3}>
-                  <Typography variant={'h6'}>Available Security Clients</Typography>
+                  {availableClients.length > 0 ? (
+                    <Typography variant={'h6'}>Available Security Clients</Typography>
+                  ) : (
+                    <Box />
+                  )}
                   <Button variant="contained" onClick={() => setOpenDialog(true)}>
                     {<Add />}
                     {smallScreen ? undefined : <Typography>Generate</Typography>}
                   </Button>
                 </Box>
                 <Box display="flex" justifyContent="center" mt={2}>
-                  <TableContainer sx={{ maxHeight: '49vh' }}>
-                    <Table stickyHeader>
-                      <TableHead>
-                        <TableRow>
-                          {headCells.map((headCell) => (
-                            <TableCell
-                              sx={{ backgroundColor: 'background.paper' }}
-                              key={headCell.sort}>
-                              <TableSortLabel
-                                IconComponent={KeyboardArrowDown}
-                                active={sort?.index === headCell.sort}
-                                direction={handleDirection(sort?.asc)}
-                                onClick={() => onSelectedField(headCell.sort)}>
-                                <Typography variant="body2">{headCell.label}</Typography>
-                              </TableSortLabel>
-                            </TableCell>
-                          ))}
-                          <TableCell sx={{ backgroundColor: 'background.paper' }} />
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {availableClients?.map((client: IClient, index: number) => (
-                          <TableRow key={index}>
-                            <TableCell
-                              sx={{
-                                maxWidth: '40px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}>
-                              <Typography variant={'caption'}>{client.clientId}</Typography>
-                            </TableCell>
-                            <TableCell
-                              sx={{
-                                maxWidth: '40px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}>
-                              <Typography variant={'caption'}>{client.alias || 'N/A'}</Typography>
-                            </TableCell>
-
-                            <TableCell sx={{ maxWidth: '20px' }}>
-                              <Typography variant={'caption'}>{client.platform}</Typography>
-                            </TableCell>
-                            <TableCell
-                              sx={{
-                                maxWidth: '40px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}>
-                              <Typography variant={'caption'}>{client.domain || 'N/A'}</Typography>
-                            </TableCell>
-                            <TableCell
-                              sx={{
-                                whiteSpace: 'nowrap',
-                                maxWidth: '100px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}>
-                              <Typography variant={'caption'}>{client.notes || 'N/A'}</Typography>
-                            </TableCell>
-
-                            <TableCell>
-                              <Box display="flex" justifyContent="flex-end" gap={1}>
-                                <Tooltip title="Delete security client">
-                                  <IconButton onClick={() => handleDeletion(client._id)}>
-                                    <DeleteIcon color={'error'} />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Edit security client">
-                                  <IconButton onClick={() => handleOpenUpdateDialog(client)}>
-                                    <Edit color={'primary'} />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </TableCell>
+                  {availableClients.length > 0 && (
+                    <TableContainer sx={{ maxHeight: '49vh' }}>
+                      <Table stickyHeader>
+                        <TableHead>
+                          <TableRow>
+                            {headCells.map((headCell) => (
+                              <TableCell
+                                sx={{ backgroundColor: 'background.paper' }}
+                                key={headCell.sort}>
+                                <TableSortLabel
+                                  IconComponent={KeyboardArrowDown}
+                                  active={sort?.index === headCell.sort}
+                                  direction={handleDirection(sort?.asc)}
+                                  onClick={() => onSelectedField(headCell.sort)}>
+                                  <Typography variant="body2">{headCell.label}</Typography>
+                                </TableSortLabel>
+                              </TableCell>
+                            ))}
+                            <TableCell sx={{ backgroundColor: 'background.paper' }} />
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                          {availableClients?.map((client: IClient, index: number) => (
+                            <TableRow key={index}>
+                              <TableCell
+                                sx={{
+                                  maxWidth: '40px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}>
+                                <Typography variant={'caption'}>{client.clientId}</Typography>
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  maxWidth: '40px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}>
+                                <Typography variant={'caption'}>{client.alias || 'N/A'}</Typography>
+                              </TableCell>
+
+                              <TableCell sx={{ maxWidth: '20px' }}>
+                                <Typography variant={'caption'}>{client.platform}</Typography>
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  maxWidth: '40px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}>
+                                <Typography variant={'caption'}>
+                                  {client.domain || 'N/A'}
+                                </Typography>
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  whiteSpace: 'nowrap',
+                                  maxWidth: '100px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}>
+                                <Typography variant={'caption'}>{client.notes || 'N/A'}</Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                <Box display="flex" justifyContent="flex-end" gap={1}>
+                                  <Tooltip title="Delete security client">
+                                    <IconButton onClick={() => handleDeletion(client._id)}>
+                                      <DeleteIcon color={'error'} />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Edit security client">
+                                    <IconButton onClick={() => handleOpenUpdateDialog(client)}>
+                                      <Edit color={'primary'} />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Box>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
                 </Box>
 
                 <CreateSecurityClientDialog
