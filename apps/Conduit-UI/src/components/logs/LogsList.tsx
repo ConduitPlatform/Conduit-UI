@@ -128,7 +128,7 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
         case 'debug':
           return 'blue';
         default:
-          return 'grey';
+          return 'gray';
       }
     };
 
