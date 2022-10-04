@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Box, Paper, useMediaQuery, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import { ExitToApp, Refresh, Settings } from '@mui/icons-material';
+import { ExitToApp, Refresh } from '@mui/icons-material';
 import { asyncGetAdminModules, asyncLogout } from '../../redux/slices/appAuthSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import Modules from '../modules/Modules';
@@ -12,6 +12,7 @@ import ConduitLogoMini from '../../assets/svgs/conduitLogoMini.svg';
 import Image from 'next/image';
 import { ColorModeContext } from '../../pages/_app';
 import ThemeSwitch from '../common/ThemeSwitch';
+import { getModuleIcon } from '../modules/moduleUtils';
 
 interface Props {
   itemSelected?: string;
@@ -58,7 +59,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          mt: 4,
+          mt: 2,
         }}>
         <List component="nav">
           <Modules
@@ -70,7 +71,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           <LinkComponent href="/settings/settings">
             <ModuleItem
               selected={itemSelected === 'settings'}
-              icon={<Settings color={'inherit'} width={24} height={24} />}
+              icon={getModuleIcon('settings')}
               title={'Settings'}
               smallScreen={smallScreen}
             />
@@ -92,7 +93,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           sx={{ margin: 0, paddingLeft: 0, cursor: 'pointer' }}
           display="flex"
           flexDirection="column">
-          <Box py={2} px={!smallScreen ? 2 : undefined}>
+          <Box py={1} px={!smallScreen ? 2 : undefined}>
             <ThemeSwitch
               checked={theme.palette.mode === 'dark'}
               onClick={colorMode.toggleColorMode}
@@ -105,7 +106,7 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
             onClick={handleRefreshModules}
           />
           <ModuleItem
-            icon={<ExitToApp color={'inherit'} width={24} height={24} />}
+            icon={<ExitToApp color={'inherit'} />}
             title={'Log out'}
             onClick={() => handleLogout()}
             smallScreen={smallScreen}

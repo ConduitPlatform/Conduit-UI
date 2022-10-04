@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Home } from '@mui/icons-material';
 import { getModuleIcon, getModuleName } from './moduleUtils';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
@@ -109,7 +108,7 @@ const Modules: React.FC<Props> = ({
         <LinkComponent href="/">
           <ModuleItem
             selected={itemSelected === ''}
-            icon={<Home color={'inherit'} width={24} height={24} />}
+            icon={getModuleIcon('home')}
             title={'home'}
             smallScreen={smallScreen}
           />
