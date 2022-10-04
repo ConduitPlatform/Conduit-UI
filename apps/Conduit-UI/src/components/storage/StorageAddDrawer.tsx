@@ -97,17 +97,20 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
               />
             </Grid>
             <Grid item sm={12}>
-              <FormInputText {...register('name')} label="File name" />
+              <FormInputText {...register('name', { required: true })} label="File name" />
             </Grid>
             <Grid item sm={12}>
               <FormInputSelect
                 options={extractContainers()}
                 label="Container"
-                {...register('container')}
+                {...register('container', { required: true })}
               />
             </Grid>
             <Grid item sm={12}>
-              <FormInputText {...register('folder')} label="Folder name" />
+              <FormInputText
+                {...register('folder', { required: path?.length > 1 })}
+                label="Folder name"
+              />
             </Grid>
             <Grid item sm={12}>
               <Typography variant="subtitle1">Public</Typography>

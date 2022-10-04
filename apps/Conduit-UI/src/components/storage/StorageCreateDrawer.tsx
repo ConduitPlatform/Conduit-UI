@@ -85,7 +85,7 @@ const StorageCreateDrawer: FC<Props> = ({
         <form onSubmit={methods.handleSubmit(handleSave)}>
           <Grid container spacing={2}>
             <Grid item width={'100%'}>
-              <FormInputText {...register('name')} label="Name" />
+              <FormInputText {...register('name', { required: true })} label="Name" />
             </Grid>
             {data.type === CreateFormSelected.folder && (
               <Grid item sm={12}>
