@@ -12,6 +12,8 @@ import GetServiceAccountToken from './GetServiceAccountToken';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
 import { Box } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncGetAuthenticationConfig } from '../../redux/slices/authenticationSlice';
 
 interface ServiceAccountsUI {
   _id: string;
@@ -21,6 +23,7 @@ interface ServiceAccountsUI {
 }
 
 const ServiceAccountsTabs = () => {
+  const dispatch = useAppDispatch();
   const [name, setName] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [serviceId, setServiceId] = useState<string>('');
@@ -35,6 +38,11 @@ const ServiceAccountsTabs = () => {
     asc: false,
     index: null,
   });
+  const enabledConfig = useAppSelector(
+    (state) => state.authenticationSlice.data.config.service.enabled
+  );
+
+  console.log(enabledConfig);
 
   const fetchServiceAccounts = async () => {
     try {
@@ -47,6 +55,10 @@ const ServiceAccountsTabs = () => {
       throw error;
     }
   };
+
+  useEffect(() => {
+    dispatch(asyncGetAuthenticationConfig());
+  }, [dispatch]);
 
   useEffect(() => {
     fetchServiceAccounts();
@@ -168,20 +180,34 @@ const ServiceAccountsTabs = () => {
             variant={'contained'}
             color={'primary'}
             sx={{ width: 170 }}
+            disabled={!enabledConfig}
             onClick={handleGenerateNew}>
             Generate new Service Account
           </Button>
         </Box>
       </Box>
-      <DataTable
-        selectable={false}
-        sort={sort}
-        setSort={setSort}
-        headers={headers}
-        dsData={formatData(serviceAccounts)}
-        actions={actions}
-        handleAction={handleAction}
-      />
+      {!enabledConfig && (
+        <Typography textAlign="center" pt={20}>
+          Service config is currently disabled!
+        </Typography>
+      )}
+      {!serviceAccounts.length && (
+        <Typography textAlign="center" pt={20}>
+          No available service accounts
+        </Typography>
+      )}
+      {enabledConfig && serviceAccounts.length && (
+        <DataTable
+          selectable={false}
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          dsData={formatData(serviceAccounts)}
+          actions={actions}
+          handleAction={handleAction}
+        />
+      )}
+
       <ConfirmationDialog
         open={confirmation}
         handleClose={handleCloseConfirmation}
