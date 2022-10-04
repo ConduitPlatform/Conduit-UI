@@ -5,6 +5,7 @@ import {
   Cloud,
   Email,
   FormatAlignLeft,
+  Home,
   Notifications,
   Payment,
   People,
@@ -54,30 +55,32 @@ export const getSortedModules = (payloadModules: IModule[]) => {
 
 export const getModuleIcon = (moduleName: string) => {
   switch (moduleName) {
+    case 'home':
+      return <Home color={'inherit'} />;
     case 'authentication':
-      return <People color={'inherit'} width={24} height={24} />;
+      return <People color={'inherit'} />;
     case 'pushNotifications':
-      return <Notifications color={'inherit'} width={24} height={24} />;
+      return <Notifications color={'inherit'} />;
     case 'sms':
-      return <Sms color={'inherit'} width={24} height={24} />;
+      return <Sms color={'inherit'} />;
     case 'email':
-      return <Email color={'inherit'} width={24} height={24} />;
+      return <Email color={'inherit'} />;
     case 'storage':
-      return <Cloud color={'inherit'} width={24} height={24} />;
+      return <Cloud color={'inherit'} />;
     case 'settings':
-      return <Settings color={'inherit'} width={24} height={24} />;
+      return <Settings color={'inherit'} />;
     case 'chat':
-      return <Chat color={'inherit'} width={24} height={24} />;
+      return <Chat color={'inherit'} />;
     case 'forms':
-      return <FormatAlignLeft color={'inherit'} width={24} height={24} />;
+      return <FormatAlignLeft color={'inherit'} />;
     case 'payments':
-      return <Payment color={'inherit'} width={24} height={24} />;
+      return <Payment color={'inherit'} />;
     case 'router':
-      return <AltRoute color={'inherit'} width={24} height={24} />;
+      return <AltRoute color={'inherit'} />;
     case 'database':
-      return <Toc color={'inherit'} width={24} height={24} />;
+      return <Toc color={'inherit'} />;
     default:
-      return <ViewModule color={'inherit'} width={24} height={24} />;
+      return <ViewModule color={'inherit'} />;
   }
 };
 

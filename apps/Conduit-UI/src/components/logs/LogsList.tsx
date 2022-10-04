@@ -128,7 +128,7 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
         case 'debug':
           return 'blue';
         default:
-          return 'grey';
+          return 'gray';
       }
     };
 
@@ -136,10 +136,10 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
       const mainMessage = rowItem?.message.slice(0, rowItem?.message?.indexOf('{"'));
       const metaData = rowItem?.message?.slice(rowItem?.message?.indexOf('{"'));
 
-      if (metaData?.length > 1) {
-        const parsed = JSON?.parse(metaData);
+      try {
+        const parsed = JSON.parse(metaData);
         return { mainMessage: mainMessage, metaData: parsed };
-      } else {
+      } catch {
         return { mainMessage: mainMessage, metaData: undefined };
       }
     }, [rowItem?.message]);

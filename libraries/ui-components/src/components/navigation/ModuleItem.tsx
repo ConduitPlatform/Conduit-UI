@@ -7,15 +7,12 @@ import clsx from "clsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
   listItem: {
-    minHeight: theme.spacing(3),
     borderRadius: theme.spacing(0.5),
-    margin: theme.spacing(1),
     color:
       theme.palette.mode === "dark"
         ? theme.palette.common.white
         : theme.palette.common.black,
     borderWidth: 1,
-    padding: theme.spacing(1),
     "&:hover": {
       borderWidth: 1,
     },
