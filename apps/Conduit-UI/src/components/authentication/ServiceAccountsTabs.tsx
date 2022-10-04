@@ -7,13 +7,19 @@ import {
   createServiceAccount,
   refreshServiceAccount,
 } from '../../http/requests/SettingsRequests';
-import { ConfirmationDialog, DataTable } from '@conduitplatform/ui-components';
+import {
+  ConfirmationDialog,
+  DataTable,
+  LinkComponent,
+  RichTooltip,
+} from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
-import { Box } from '@mui/material';
+import { Box, Icon } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncGetAuthenticationConfig } from '../../redux/slices/authenticationSlice';
+import { Warning } from '@mui/icons-material';
 
 interface ServiceAccountsUI {
   _id: string;
@@ -24,6 +30,7 @@ interface ServiceAccountsUI {
 
 const ServiceAccountsTabs = () => {
   const dispatch = useAppDispatch();
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [serviceId, setServiceId] = useState<string>('');
@@ -41,8 +48,6 @@ const ServiceAccountsTabs = () => {
   const enabledConfig = useAppSelector(
     (state) => state.authenticationSlice.data.config.service.enabled
   );
-
-  console.log(enabledConfig);
 
   const fetchServiceAccounts = async () => {
     try {
@@ -166,11 +171,44 @@ const ServiceAccountsTabs = () => {
     });
   };
 
+  const MouseOverTooltip = () => {
+    setOpenTooltip(!openTooltip);
+  };
+
+  const MouseOutTooltip = () => {
+    setOpenTooltip(false);
+  };
+
   return (
     <>
       <Box pb={3} display="flex" justifyContent="space-between">
         <Box>
-          <Typography variant={'h6'}>All available Service Accounts</Typography>
+          <Box display="flex" gap={3} alignItems="center">
+            <Typography variant={'h6'}>All available Service Accounts</Typography>
+            {!enabledConfig && (
+              <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
+                <RichTooltip
+                  content={
+                    <Box display="flex" flexDirection="column" gap={1} p={2}>
+                      <Typography variant="body2">Services are currently disabled!</Typography>
+                      <Typography variant="body2">
+                        You can enable them via the
+                        <LinkComponent href="/authentication/config" underline={'none'}>
+                          <Button>config tab</Button>
+                        </LinkComponent>
+                      </Typography>
+                    </Box>
+                  }
+                  width="400px"
+                  open={openTooltip}
+                  onClose={MouseOutTooltip}>
+                  <Icon color="error">
+                    <Warning />
+                  </Icon>
+                </RichTooltip>
+              </Box>
+            )}
+          </Box>
           <Typography variant={'subtitle1'}>
             Create, delete, refresh your Service Accounts
           </Typography>
