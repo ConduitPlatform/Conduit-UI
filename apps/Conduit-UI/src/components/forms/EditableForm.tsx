@@ -127,11 +127,6 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
       }
     });
 
-    const emailFieldValue = getValues('emailField');
-
-    if (!arr.find((item) => item.value === emailFieldValue)) {
-      setValue('emailField', '');
-    }
     return arr;
   };
 
