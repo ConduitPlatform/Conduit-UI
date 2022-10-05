@@ -87,6 +87,10 @@ export const getRequestProm = (endpoint: string, params?: any): Promise<any> => 
   return _axios.get('/api/prometheus/api/v1' + endpoint, { params });
 };
 
+export const getRequestInfo = (): Promise<any> => {
+  return _axios.get('/api/info');
+};
+
 export const deleteRequest = (endpoint: string, params?: any): Promise<any> => {
   return _axios.delete('/api' + endpoint, { params });
 };

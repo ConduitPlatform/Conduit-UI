@@ -1,6 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 import { OptionsObject, SnackbarMessage } from 'notistack';
+import { getRequestInfo } from '../../http/requestsConfig';
 
 export interface INotification {
   message: SnackbarMessage;
@@ -10,12 +11,22 @@ export interface INotification {
 export type AppState = {
   loading: boolean;
   notifications: INotification[];
+  info?: Record<string, any>;
 };
 
 const initialState: AppState = {
   loading: false,
   notifications: [],
 };
+
+export const asyncGetInfo = createAsyncThunk('app/getInfo', async () => {
+  try {
+    const { data } = await getRequestInfo();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+});
 
 const appSlice = createSlice({
   name: 'app',
@@ -46,6 +57,11 @@ const appSlice = createSlice({
         (notification: { options: OptionsObject }) => notification.options.key !== action.payload
       );
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(asyncGetInfo.fulfilled, (state, action) => {
+      state.info = action.payload;
+    });
   },
 });
 
