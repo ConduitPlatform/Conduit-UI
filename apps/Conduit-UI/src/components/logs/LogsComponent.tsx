@@ -221,9 +221,11 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
     }
   }, [drawerHeight]);
 
-  const handleOpenDrawer = () => {
+  const handleOpenCloseDrawer = () => {
     if (drawerHeight === minDrawerHeight) {
       setDrawerHeight(defaultDrawerHeight);
+    } else {
+      setDrawerHeight(minDrawerHeight);
     }
   };
 
@@ -269,9 +271,9 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
               display: 'flex',
               userSelect: 'none',
               alignItems: 'center',
-              cursor: drawerHeight === minDrawerHeight ? 'pointer' : undefined,
+              cursor: 'pointer',
             }}
-            onClick={handleOpenDrawer}>
+            onClick={handleOpenCloseDrawer}>
             <ShortTextIcon sx={{ mr: 1 }} />
             Logs
           </Typography>

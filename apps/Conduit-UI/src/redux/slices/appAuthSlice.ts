@@ -5,7 +5,7 @@ import { asyncGetNotificationConfig, clearNotificationPageStore } from './notifi
 import { asyncGetStorageConfig, clearStoragePageStore } from './storageSlice';
 import { getAdminModulesRequest } from '../../http/requests/SettingsRequests';
 import { loginRequest, verifyTwoFARequest } from '../../http/requests/AppAuthRequests';
-import { clearAppNotifications, setAppLoading } from './appSlice';
+import { asyncGetInfo, clearAppNotifications, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { asyncGetEmailConfig, clearEmailPageStore } from './emailsSlice';
 import { asyncGetAuthenticationConfig, clearAuthenticationPageStore } from './authenticationSlice';
@@ -114,6 +114,7 @@ export const asyncGetAdminModules = createAsyncThunk(
 export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (arg, thunkAPI) => {
   thunkAPI.dispatch(setAppLoading(true));
   try {
+    thunkAPI.dispatch(asyncGetInfo());
     thunkAPI.dispatch(asyncGetAdminSettings());
     const resultAction = await thunkAPI.dispatch(asyncGetAdminModules());
     const originalPromiseResult = unwrapResult(resultAction);
