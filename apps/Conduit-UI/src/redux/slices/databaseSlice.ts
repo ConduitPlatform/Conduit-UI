@@ -11,6 +11,7 @@ import {
   setSchemaExtension,
   getSchemaOwners,
   getSchemaByIdRequest,
+  getSystemSchemasRequest,
 } from '../../http/requests/DatabaseRequests';
 import {
   createSchemaDocumentRequest,
@@ -58,6 +59,7 @@ export interface IDatabaseSlice {
       documents: any;
       documentsCount: number;
     };
+    systemSchemas: string[];
     schemasWithEndpoints: Schema[];
     customEndpoints: {
       endpoints: EndpointTypes[];
@@ -95,6 +97,7 @@ const initialState: IDatabaseSlice = {
       documents: [],
       documentsCount: 0,
     },
+    systemSchemas: [],
     schemasWithEndpoints: [],
     customEndpoints: {
       endpoints: [],
@@ -127,6 +130,24 @@ export const asyncGetSchemas = createAsyncThunk(
       return {
         results: data.schemas as Schema[],
         documentsCount: data.count as number,
+      };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetSystemSchemas = createAsyncThunk(
+  'database/getSystemSchemas',
+  async (params, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getSystemSchemasRequest();
+      thunkAPI.dispatch(setAppLoading(false));
+      return {
+        results: data.databaseSystemSchemas as string[],
       };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -789,6 +810,9 @@ const databaseSlice = createSlice({
         ...state.data.introspectionSchemas.schemaDocuments,
         ...action.payload.results,
       ];
+    });
+    builder.addCase(asyncGetSystemSchemas.fulfilled, (state, action) => {
+      state.data.systemSchemas = action.payload.results;
     });
   },
 });

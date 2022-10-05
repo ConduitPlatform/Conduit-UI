@@ -23,6 +23,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const [displayedSchema, setDisplayedSchema] = useState<Schema[]>([]);
   const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
+  console.log(endpoint);
+
   useEffect(() => {
     if (endpoint.selectedSchema) {
       setDisplayedSchema([]);
@@ -102,6 +104,8 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     [dispatch, drawer]
   );
 
+  console.log(endpoint.operation);
+
   const headers = [
     { title: '_id' },
     { title: 'Name' },
@@ -137,7 +141,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
               value={endpoint.operation}
               disabled={!editMode}
               onChange={handleOperationChange}>
-              <MenuItem aria-label="None" value="" />
+              <MenuItem aria-label="None" value="-1" />
               <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
               <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
               <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
@@ -151,7 +155,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
               size="small"
               variant="contained"
               color="primary"
-              disabled={!editMode}
+              disabled={!editMode || endpoint.operation === -1}
               endIcon={editMode && <Loop />}
               onClick={() => setDrawer(true)}>
               {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}

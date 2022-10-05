@@ -27,6 +27,11 @@ export const toggleSchemaByIdRequest = (_id: string) =>
 export const toggleMultipleSchemasRequest = (params: { ids: string[]; enabled: boolean }) =>
   postRequest(`/database/schemas/toggle`, { ...params });
 
+export const getSystemSchemasRequest = () => getRequest('/database/schemas/system');
+
+export const getAccesssibleSchemaFields = (_id: string, operation: number) =>
+  getRequest(`/schemas/${_id}/cms/operation/${operation}/details`);
+
 export const getDocumentsByNameRequest = (params: {
   name: string;
   skip: number;
