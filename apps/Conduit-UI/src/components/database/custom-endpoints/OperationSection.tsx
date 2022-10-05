@@ -11,6 +11,7 @@ import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
 import { Loop } from '@mui/icons-material';
 import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
 
 interface Props {
   createMode: boolean;
@@ -63,6 +64,12 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
       const selectedSchema = endpoint.selectedSchema;
       const fields = await getAccesssibleSchemaFields(selectedSchema, operation);
 
+      if (Object.keys(fields.data.accessibleFields).length === 0) {
+        dispatch(
+          enqueueInfoNotification('Current schema does not have accessible fields!', 'duplicate')
+        );
+      }
+
       const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
 
       if (
@@ -90,6 +97,12 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     const assignments: Assignment[] = [];
     const selectedSchema = changedSchema[0]._id;
     const fields = await getAccesssibleSchemaFields(selectedSchema, endpoint.operation);
+
+    if (Object.keys(fields.data.accessibleFields).length === 0) {
+      dispatch(
+        enqueueInfoNotification('Current schema does not have accessible fields!', 'duplicate')
+      );
+    }
 
     const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
 
