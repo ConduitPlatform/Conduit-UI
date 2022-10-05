@@ -1,9 +1,15 @@
 import { proxy, proxyLoki, proxyPrometheus } from '../../server/proxy';
 import http from 'http';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-const path = (req: http.IncomingMessage, res: http.ServerResponse) => {
+const path = (req: NextApiRequest, res: NextApiResponse) => {
   return new Promise((resolve, reject) => {
-    if (req.url?.match(/^\/api\/loki/)) {
+    if (req.url?.match(/^\/api\/info/)) {
+      res.status(200).json({
+        logsAvailable: process.env.LOKI_URL && process.env.LOKI_URL.length > 0,
+        metricsAvailable: !!(process.env.PROMETHEUS_URL && process.env.PROMETHEUS_URL.length > 0),
+      });
+    } else if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
 
       proxyLoki?.once('error', reject);

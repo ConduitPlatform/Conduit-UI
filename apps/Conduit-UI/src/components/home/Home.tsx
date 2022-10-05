@@ -57,6 +57,7 @@ const Home: React.FC = () => {
   const enabledModules = useAppSelector((state) => state.appAuthSlice?.data?.enabledModules);
   const SERVICE_API = useAppSelector((state) => state.routerSlice?.data?.config?.hostUrl);
   const CONDUIT_API = useAppSelector((state) => state.settingsSlice?.adminSettings?.hostUrl);
+  const { logsAvailable, metricsAvailable } = useAppSelector((state) => state.appSlice.info);
 
   const homePageFontSizeHeader = {
     fontSize: '2.5rem',
@@ -170,79 +171,81 @@ const Home: React.FC = () => {
         </Box>
         <Main>
           <Container maxWidth="xl" sx={{ marginBottom: 4 }}>
-            <Grid container spacing={2}>
-              <Grid item container spacing={2}>
-                <Grid item xs={6} sm={3}>
-                  <RequestsLatency module="home" modulesLength={enabledModules?.length} />
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <ModuleHealth module="home" />
-                </Grid>
-                {isEnabled('database') && (
+            {metricsAvailable ? (
+              <Grid container spacing={2}>
+                <Grid item container spacing={2}>
                   <Grid item xs={6} sm={3}>
-                    <MetricCount
-                      title="Schemas"
-                      expression="conduit_registered_schemas_total{imported='false'}[5m]"
-                    />
+                    <RequestsLatency module="home" modulesLength={enabledModules?.length} />
                   </Grid>
-                )}
-                {isEnabled('database') && (
                   <Grid item xs={6} sm={3}>
-                    <MetricCount
-                      title="Endpoints"
-                      expression="conduit_custom_endpoints_total[5m]"
-                    />
+                    <ModuleHealth module="home" />
                   </Grid>
-                )}
-                {/* {isEnabled('authentication') && (
+                  {isEnabled('database') && (
+                    <Grid item xs={6} sm={3}>
+                      <MetricCount
+                        title="Schemas"
+                        expression="conduit_registered_schemas_total{imported='false'}[5m]"
+                      />
+                    </Grid>
+                  )}
+                  {isEnabled('database') && (
+                    <Grid item xs={6} sm={3}>
+                      <MetricCount
+                        title="Endpoints"
+                        expression="conduit_custom_endpoints_total[5m]"
+                      />
+                    </Grid>
+                  )}
+                  {/* {isEnabled('authentication') && (
                 <Grid item xs={6} sm={3}>
                   <MetricCount title="Users" expression="" />
                 </Grid>
                 Missing prom endpoint
               )} */}
-                {isEnabled('chat') && (
-                  <Grid item xs={6} sm={3}>
-                    <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[5m]" />
-                  </Grid>
-                )}
-                {isEnabled('forms') && (
-                  <Grid item xs={6} sm={3}>
-                    <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
-                  </Grid>
-                )}
-                {isEnabled('email') && (
-                  <Grid item xs={6} sm={3}>
-                    <MetricCount
-                      title="Email templates"
-                      expression="conduit_email_templates_total[5m]"
-                    />
-                  </Grid>
-                )}
-                {isEnabled('storage') && (
-                  <Grid item xs={6} sm={3}>
-                    <MetricCount title="Files" expression="conduit_files_total[5m]" />
-                  </Grid>
-                )}
+                  {isEnabled('chat') && (
+                    <Grid item xs={6} sm={3}>
+                      <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[5m]" />
+                    </Grid>
+                  )}
+                  {isEnabled('forms') && (
+                    <Grid item xs={6} sm={3}>
+                      <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
+                    </Grid>
+                  )}
+                  {isEnabled('email') && (
+                    <Grid item xs={6} sm={3}>
+                      <MetricCount
+                        title="Email templates"
+                        expression="conduit_email_templates_total[5m]"
+                      />
+                    </Grid>
+                  )}
+                  {isEnabled('storage') && (
+                    <Grid item xs={6} sm={3}>
+                      <MetricCount title="Files" expression="conduit_files_total[5m]" />
+                    </Grid>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <ExtractQueryRangeGraph
+                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
+                    graphTitle="Total admin gRPC requests"
+                    label="Requests"
+                    hasControls={false}
+                    canZoom={false}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <ExtractQueryRangeGraph
+                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                    graphTitle="Internal gRPC requests"
+                    label="Requests"
+                    hasControls={false}
+                    canZoom={false}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <ExtractQueryRangeGraph
-                  expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                  graphTitle="Total admin gRPC requests"
-                  label="Requests"
-                  hasControls={false}
-                  canZoom={false}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <ExtractQueryRangeGraph
-                  expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                  graphTitle="Internal gRPC requests"
-                  label="Requests"
-                  hasControls={false}
-                  canZoom={false}
-                />
-              </Grid>
-            </Grid>
+            ) : null}
             <Grid pt={3} container spacing={2}>
               {isEnabled('authentication') ? (
                 <Grid item xs={6} md={4}>
@@ -402,7 +405,7 @@ const Home: React.FC = () => {
           transportsAdmin={transportsAdmin}
           transportsRouter={transportsRouter}
         />
-        <LogsComponent module={'core'} />
+        {logsAvailable ? <LogsComponent module={'core'} /> : null}
       </Box>
     </>
   );
