@@ -14,6 +14,7 @@ import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';
 import { useRouter } from 'next/router';
 import ReturnDialog from './ReturnDialog';
+import { useAppSelector } from '../../../../redux/store';
 
 export const headerHeight = 64;
 
@@ -47,6 +48,7 @@ const Header: FC<Props> = ({
   const router = useRouter();
   const theme = useTheme();
 
+  const { systemSchemas } = useAppSelector((state) => state.databaseSlice.data);
   const [schemaName, setSchemaName] = useState(name);
   const [schemaCrudOperations, setSchemaCrudOperations] = useState<ICrudOperations>({
     create: { enabled: false, authenticated: false },
@@ -74,10 +76,20 @@ const Header: FC<Props> = ({
     }
   }, [authentication, crudOperations, name, permissions]);
 
+  const reservedBySystemSchema = (value?: string) => {
+    if (systemSchemas.find((systemSchema: string) => systemSchema === value)) {
+      return true;
+    } else return false;
+  };
+
   const handleDataName = (value: string) => {
     const regex = /[^a-z0-9_]/gi;
     if (regex.test(value)) {
       dispatch(enqueueInfoNotification('The schema name can only contain alpharithmetics and _'));
+    }
+
+    if (reservedBySystemSchema(value)) {
+      dispatch(enqueueInfoNotification('Schema name is reserved by a system schema'));
     }
 
     setSchemaName(value.replace(/[^a-z0-9_]/gi, ''));
@@ -165,7 +177,7 @@ const Header: FC<Props> = ({
           color="primary"
           variant="outlined"
           onClick={() => handleData()}
-          disabled={!editableFields?.newTypeFields.length}>
+          disabled={!editableFields?.newTypeFields.length || reservedBySystemSchema(schemaName)}>
           <Box display="flex" gap={1} alignItems="center">
             <SaveIcon />
             <Typography>{introspection ? 'Finalize' : 'Save'}</Typography>

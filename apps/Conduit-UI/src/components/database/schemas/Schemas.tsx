@@ -224,7 +224,7 @@ const Schemas: FC = () => {
     }
 
     if (selectedTab === 0 && actualSchema) {
-      return <SchemaOverview schema={actualSchema} />;
+      return <SchemaOverview systemSchemas={systemSchemas} schema={actualSchema} />;
     }
 
     if (actualSchema && selectedTab === 1)
@@ -409,7 +409,11 @@ const Schemas: FC = () => {
           schema={actualSchema}
         />
       )}
-      <NewSchemaDialog open={newSchemaDialog} handleClose={() => setNewSchemaDialog(false)} />
+      <NewSchemaDialog
+        systemSchemas={systemSchemas}
+        open={newSchemaDialog}
+        handleClose={() => setNewSchemaDialog(false)}
+      />
     </>
   );
 };
