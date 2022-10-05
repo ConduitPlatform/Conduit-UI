@@ -30,7 +30,7 @@ export const toggleMultipleSchemasRequest = (params: { ids: string[]; enabled: b
 export const getSystemSchemasRequest = () => getRequest('/database/schemas/system');
 
 export const getAccesssibleSchemaFields = (_id: string, operation: number) =>
-  getRequest(`/schemas/${_id}/cms/operation/${operation}/details`);
+  getRequest(`/database/schemas/${_id}/cms/operation/${operation}/details`);
 
 export const getDocumentsByNameRequest = (params: {
   name: string;

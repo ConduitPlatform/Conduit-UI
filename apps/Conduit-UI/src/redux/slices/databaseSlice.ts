@@ -211,7 +211,7 @@ export const asyncGetSchemaOwners = createAsyncThunk(
 
 export const asyncGetSchemasDialog = createAsyncThunk(
   'database/getSchemasDialog',
-  async (params: Pagination & Search & { enabled?: boolean } & { owner: string[] }, thunkAPI) => {
+  async (params: Pagination & Search & { enabled?: boolean } & { owner?: string[] }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getSchemasRequest(params);
