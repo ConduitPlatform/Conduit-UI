@@ -11,12 +11,13 @@ export interface INotification {
 export type AppState = {
   loading: boolean;
   notifications: INotification[];
-  info?: Record<string, any>;
+  info: Record<string, any>;
 };
 
 const initialState: AppState = {
   loading: false,
   notifications: [],
+  info: {},
 };
 
 export const asyncGetInfo = createAsyncThunk('app/getInfo', async () => {

@@ -8,6 +8,7 @@ import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';
 import LogsComponent from '../../logs/LogsComponent';
 import { styled } from '@mui/material/styles';
 import { Description } from '@mui/icons-material';
+import { useAppSelector } from '../../../redux/store';
 
 interface Props {
   pathNames: string[];
@@ -50,19 +51,22 @@ const SharedLayout: FC<Props> = ({
   const router = useRouter();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('lg'));
-
+  const { logsAvailable, metricsAvailable } = useAppSelector((state) => state.appSlice.info);
   const [value, setValue] = useState(0);
   const [swaggerOpen, setSwaggerOpen] = useState<boolean>(false);
   const [graphQLOpen, setGraphQLOpen] = useState<boolean>(false);
 
+  const newLabels = metricsAvailable ? labels : labels.slice(1, labels?.length);
+  const newPathNames = metricsAvailable ? pathNames : pathNames.slice(1, labels?.length);
+
   useEffect(() => {
     if (!configActive) {
-      setValue(labels.length - 1);
+      setValue(newLabels.length - 1);
       return;
     }
-    const index = pathNames.findIndex((pathname: string) => pathname === router.pathname);
+    const index = newPathNames.findIndex((pathname: string) => pathname === router.pathname);
     setValue(index);
-  }, [router.pathname, pathNames]);
+  }, [router.pathname, newPathNames, configActive, newLabels.length]);
 
   const title = moduleTitle(module);
 
@@ -123,11 +127,11 @@ const SharedLayout: FC<Props> = ({
         </Box>
         <Main>
           <Tabs value={value} indicatorColor="primary" sx={{ mt: 2 }}>
-            {labels.map((label: { name: string; id: string }, index: number) => {
-              const disabled = !configActive ? index < labels.length - 1 : false;
+            {newLabels.map((label: { name: string; id: string }, index: number) => {
+              const disabled = !configActive ? index < newLabels.length - 1 : false;
               return (
                 <LinkComponent
-                  href={pathNames[index]}
+                  href={newPathNames[index]}
                   key={index}
                   underline={'none'}
                   disabled={disabled}>
@@ -187,7 +191,7 @@ const SharedLayout: FC<Props> = ({
         />
       </Box>
       <Box>{children}</Box>
-      {module === 'settings' ? null : <LogsComponent module={module} />}
+      {module === 'settings' ? null : logsAvailable ? <LogsComponent module={module} /> : null}
     </Box>
   );
 };
