@@ -62,6 +62,14 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     clientSecret: '',
   });
 
+  const [gitlab, setGitlab] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
   const [figma, setFigma] = useState<SignInTypes>({
     enabled: false,
     accountLinking: false,
@@ -185,6 +193,17 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
         });
       }
 
+      if (configData.gitlab) {
+        const gitlabData = configData.gitlab;
+        setGithub({
+          enabled: gitlabData.enabled,
+          accountLinking: gitlabData.accountLinking,
+          clientId: gitlabData.clientId || '',
+          redirect_uri: gitlabData.redirect_uri || '',
+          clientSecret: gitlabData.clientSecret || '',
+        });
+      }
+
       if (configData.microsoft) {
         const microsftData = configData.microsoft;
 
@@ -304,6 +323,18 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       />
     );
   }, [github, configData, handleData]);
+
+  const gitlabMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'gitlab'}
+        accProps={gitlab}
+        setAccProps={setGitlab}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [gitlab, configData, handleData]);
 
   const microsoftMemo = useMemo(() => {
     return (
@@ -431,6 +462,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       {slackMemo}
       {figmaMemo}
       {githubMemo}
+      {gitlabMemo}
       {microsoftMemo}
       {phoneMemo}
       {twoFaMemo}
