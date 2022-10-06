@@ -19,13 +19,18 @@ export const setSchemaExtension = (_id: string, data: any) =>
 export const getSchemaOwners = () => getRequest(`/database/schemas/owners`);
 
 export const deleteSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
-  return deleteRequest(`/database/schemas`, { params });
+  return deleteRequest(`/database/schemas`, params);
 };
 export const toggleSchemaByIdRequest = (_id: string) =>
   postRequest(`/database/schemas/${_id}/toggle`);
 
 export const toggleMultipleSchemasRequest = (params: { ids: string[]; enabled: boolean }) =>
   postRequest(`/database/schemas/toggle`, { ...params });
+
+export const getSystemSchemasRequest = () => getRequest('/database/schemas/system');
+
+export const getAccesssibleSchemaFields = (_id: string, operation: number) =>
+  getRequest(`/database/schemas/${_id}/cms/operation/${operation}/details`);
 
 export const getDocumentsByNameRequest = (params: {
   name: string;

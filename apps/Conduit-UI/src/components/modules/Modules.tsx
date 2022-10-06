@@ -31,6 +31,7 @@ const Modules: React.FC<Props> = ({
   const enabledChat = useAppSelector((state) => state.chatSlice.config.active);
   const enabledSms = useAppSelector((state) => state.smsSlice.data.config.active);
   const enabledPayments = useAppSelector((state) => state.paymentsSlice.data.config.active);
+  const { metricsAvailable } = useAppSelector((state) => state.appSlice.info);
 
   const handleDisabledClick = () => {
     dispatch(enqueueInfoNotification('Module currently disabled.', 'moduleDisabled'));
@@ -45,38 +46,64 @@ const Modules: React.FC<Props> = ({
 
   const moduleItem = useCallback(
     (name, index) => {
-      const configEnabled = (moduleName: string) => {
+      const handleCurrentUrl = (moduleName: string) => {
         switch (moduleName) {
           case 'authentication':
-            return enabledAuth ? '/authentication/dashboard' : '/authentication/config';
+            return !enabledAuth
+              ? '/authentication/config'
+              : metricsAvailable
+              ? '/authentication/dashboard'
+              : '/authentication/users';
           case 'email':
-            return enabledEmail ? '/email/dashboard' : '/email/config';
+            return !enabledEmail
+              ? '/email/config'
+              : metricsAvailable
+              ? '/email/dashboard'
+              : '/email/templates';
           case 'database':
-            return '/database/dashboard';
+            return metricsAvailable ? '/database/dashboard' : '/database/schemas';
           case 'storage':
-            return enabledStorage ? '/storage/dashboard' : '/storage/config';
+            return !enabledStorage
+              ? '/storage/config'
+              : metricsAvailable
+              ? '/storage/dashboard'
+              : '/storage/files';
           case 'settings':
             return '/settings/settings';
           case 'pushNotifications':
-            return enabledNotifications
+            return !enabledNotifications
+              ? '/push-notifications/config'
+              : metricsAvailable
               ? '/push-notifications/dashboard'
-              : '/push-notifications/config';
+              : '/push-notifications/send';
           case 'forms':
-            return enabledForms ? '/forms/dashboard' : '/forms/dashboard';
+            return !enabledForms
+              ? '/forms/config'
+              : metricsAvailable
+              ? '/forms/dashboard'
+              : '/forms/view';
           case 'payments':
-            return enabledPayments ? '/payments/dashboard' : 'payments/config';
+            return !enabledPayments
+              ? '/payments/config'
+              : metricsAvailable
+              ? '/payments/dashboard'
+              : '/payments/customers';
           case 'sms':
-            return enabledSms ? '/sms/dashboard' : '/sms/config';
+            return !enabledSms ? '/sms/config' : metricsAvailable ? '/sms/dashboard' : '/sms/send';
           case 'router':
-            return '/router/dashboard';
+            return metricsAvailable ? '/router/dashboard' : '/router/settings';
           case 'chat':
-            return enabledChat ? '/chat/dashboard' : '/chat/config';
+            return !enabledChat
+              ? '/chat/config'
+              : metricsAvailable
+              ? '/chat/dashboard'
+              : '/chat/rooms';
           default:
             return `/${moduleName}`;
         }
       };
 
-      const currentUrl = configEnabled(name);
+      const currentUrl = handleCurrentUrl(name);
       return (
         <LinkComponent href={currentUrl} key={index}>
           <ModuleItem

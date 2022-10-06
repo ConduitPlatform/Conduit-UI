@@ -16,7 +16,7 @@ const Custom = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(asyncGetSchemas({ skip: 0, limit: 50, enabled: true }));
+    dispatch(asyncGetSchemas({ skip: 0, limit: 200 }));
   }, [dispatch]);
 
   return <CustomEndpointsLayout />;

@@ -19,11 +19,17 @@ import JsonEditorComponent from '../../../common/JsonEditorComponent';
 
 interface Props {
   schema: Schema;
+  systemSchemas?: string[];
   introspection?: boolean;
   setIntrospectionModal?: (introspectionModal: boolean) => void;
 }
 
-export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospectionModal }) => {
+export const SchemaOverview: FC<Props> = ({
+  schema,
+  systemSchemas,
+  introspection,
+  setIntrospectionModal,
+}) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -136,15 +142,20 @@ export const SchemaOverview: FC<Props> = ({ schema, introspection, setIntrospect
             pr={3}
             pt={2}
             sx={{ minWidth: 280, flex: 1 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => goToSchemaEndpoints(schema.name)}>
-              Custom Endpoints
-            </Button>
-
-            {extractButtonsLeft()}
-            {extractButtonsRight()}
+            {!systemSchemas?.find((systemSchema) => schema.name === systemSchema) ? (
+              <>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => goToSchemaEndpoints(schema.name)}>
+                  Custom Endpoints
+                </Button>
+                {extractButtonsLeft()}
+                {extractButtonsRight()}
+              </>
+            ) : (
+              <Button disabled>System schemas cannot be modified</Button>
+            )}
           </Box>
         ) : (
           <Box pr={3} pt={2}>

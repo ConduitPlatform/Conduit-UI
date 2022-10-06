@@ -490,9 +490,13 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         const { _id } = selectedSchema;
         const editableSchemaFields = prepareFields(editableFields.newTypeFields);
         const editableSchema = {
-          crudOperations: crudOperations,
-          permissions,
           fields: { ...editableSchemaFields },
+          conduitOptions: {
+            cms: {
+              crudOperations,
+            },
+            permissions,
+          },
         };
 
         dispatch(asyncEditSchema({ _id, data: editableSchema }));
@@ -500,9 +504,13 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         const newSchemaFields = prepareFields(editableFields.newTypeFields);
         const newSchema = {
           name: name,
-          crudOperations: crudOperations,
-          permissions,
           fields: newSchemaFields,
+          conduitOptions: {
+            cms: {
+              crudOperations,
+            },
+            permissions,
+          },
         };
 
         dispatch(asyncCreateNewSchema(newSchema));
