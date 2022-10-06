@@ -222,7 +222,7 @@ export const asyncSendEmail = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await sendEmailRequest(dataToSend);
-      thunkAPI.dispatch(enqueueSuccessNotification('Email successfully sent!', ''));
+      thunkAPI.dispatch(enqueueSuccessNotification('Email successfully sent!'));
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {

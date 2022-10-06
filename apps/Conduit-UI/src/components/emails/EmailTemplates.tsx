@@ -25,10 +25,10 @@ import {
 import {
   ConfirmationDialog,
   DataTable,
-  RichTooltip,
   SideDrawerWrapper,
   TableActionsContainer,
   TableContainer,
+  ConduitTooltip,
 } from '@conduitplatform/ui-components';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -70,7 +70,6 @@ const EmailTemplates: React.FC = () => {
   const [importTemplate, setImportTemplate] = useState<boolean>(false);
   const [create, setCreate] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
 
   const debouncedSearch: string = useDebounce(search, 500);
 
@@ -271,14 +270,6 @@ const EmailTemplates: React.FC = () => {
     return 'Import an external template';
   };
 
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
-  };
-
   return (
     <Box>
       <TableActionsContainer>
@@ -298,41 +289,37 @@ const EmailTemplates: React.FC = () => {
               ),
             }}
           />
-          <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-            <RichTooltip
-              content={
-                <Box display="flex" flexDirection="column" gap={2} p={2}>
-                  <Typography variant="body2">
-                    Most web applications typically require a way to send e-mails to users. The
-                    Email module serves this very purpose. Below you can see a brief introduction to
-                    some of its features.
-                  </Typography>
-                  <Box display="flex" gap={2}>
-                    <a
-                      href="https://getconduit.dev/docs/modules/email/get-started#templates"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}>
-                      <Button variant="outlined">Templates</Button>
-                    </a>
-                    <a
-                      href="https://getconduit.dev/docs/modules/email/get-started#import-a-template"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}>
-                      <Button variant="outlined">Import a template</Button>
-                    </a>
-                  </Box>
+
+          <ConduitTooltip
+            title={
+              <Box display="flex" flexDirection="column" gap={2} p={2}>
+                <Typography variant="body2">
+                  Most web applications typically require a way to send e-mails to users. The Email
+                  module serves this very purpose. Below you can see a brief introduction to some of
+                  its features.
+                </Typography>
+                <Box display="flex" gap={2}>
+                  <a
+                    href="https://getconduit.dev/docs/modules/email/get-started#templates"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}>
+                    <Button variant="outlined">Templates</Button>
+                  </a>
+                  <a
+                    href="https://getconduit.dev/docs/modules/email/get-started#import-a-template"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}>
+                    <Button variant="outlined">Import a template</Button>
+                  </a>
                 </Box>
-              }
-              width="400px"
-              open={openTooltip}
-              onClose={MouseOutTooltip}>
-              <Icon>
-                <InfoOutlined />
-              </Icon>
-            </RichTooltip>
-          </Box>
+              </Box>
+            }>
+            <Icon>
+              <InfoOutlined />
+            </Icon>
+          </ConduitTooltip>
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           {selectedTemplates.length > 0 && (

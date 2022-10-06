@@ -7,12 +7,11 @@ import useDebounce from '../../../../hooks/useDebounce';
 import { useRouter } from 'next/router';
 import { Schema } from '../../../../models/database/CmsModels';
 import { SchemaOverview } from '../SchemaOverview/SchemaOverview';
-
 import IntrospectionSchemasList from './IntrospectionSchemasList';
 import IntrospectionModal from './IntrospectionModal';
 import InfiniteScrollLayout from '../../../InfiniteScrollLayout';
 import { asyncIntrospect } from '../../../../redux/slices/databaseSlice';
-import { RichTooltip } from '@conduitplatform/ui-components';
+import { ConduitTooltip } from '@conduitplatform/ui-components';
 
 const IntrospectionLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +23,6 @@ const IntrospectionLayout: FC = () => {
   const [schemaSearch, setSchemaSearch] = useState<string>('');
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
   const [schemaName, setSchemaName] = useState('');
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [introspectionModal, setIntrospectionModal] = useState<boolean>(false);
 
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
@@ -46,14 +44,6 @@ const IntrospectionLayout: FC = () => {
 
   const handleIntrospectSchemas = () => {
     dispatch(asyncIntrospect());
-  };
-
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
   };
 
   return (
@@ -78,34 +68,30 @@ const IntrospectionLayout: FC = () => {
                   ),
                 }}
               />
-              <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-                <RichTooltip
-                  content={
-                    <Box display="flex" flexDirection="column" gap={2} p={2}>
-                      <Typography variant="body2">
-                        Database Introspection allows you to conveniently import all or some of your
-                        schemas from an existing database without the need of manually creating each
-                        one. Schemas can be edited and verified through the schema editor.
-                      </Typography>
-                      <Box display="flex" justifyContent="flex-end">
-                        <a
-                          href="https://getconduit.dev/docs/modules/database/introspection"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ textDecoration: 'none' }}>
-                          <Button variant="outlined">Tell me more</Button>
-                        </a>
-                      </Box>
+
+              <ConduitTooltip
+                title={
+                  <Box display="flex" flexDirection="column" gap={2} p={2}>
+                    <Typography variant="body2">
+                      Database Introspection allows you to conveniently import all or some of your
+                      schemas from an existing database without the need of manually creating each
+                      one. Schemas can be edited and verified through the schema editor.
+                    </Typography>
+                    <Box display="flex" justifyContent="flex-end">
+                      <a
+                        href="https://getconduit.dev/docs/modules/database/introspection"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined">Tell me more</Button>
+                      </a>
                     </Box>
-                  }
-                  width="400px"
-                  open={openTooltip}
-                  onClose={MouseOutTooltip}>
-                  <Icon>
-                    <InfoOutlined />
-                  </Icon>
-                </RichTooltip>
-              </Box>
+                  </Box>
+                }>
+                <Icon>
+                  <InfoOutlined />
+                </Icon>
+              </ConduitTooltip>
             </Box>
           </Grid>
         </Grid>

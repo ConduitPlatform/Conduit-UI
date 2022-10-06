@@ -31,7 +31,11 @@ import { useAppSelector } from '../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
 import { Add, Edit, InfoOutlined, KeyboardArrowDown } from '@mui/icons-material';
 import UpdateSecurityClient from './UpdateSecurityClient';
-import { ConfigSaveSection, RichTooltip, SideDrawerWrapper } from '@conduitplatform/ui-components';
+import {
+  ConfigSaveSection,
+  SideDrawerWrapper,
+  ConduitTooltip,
+} from '@conduitplatform/ui-components';
 import ClientSecretDialog from './ClientSecretDialog';
 import { prepareSort } from '../../utils/prepareSort';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
@@ -63,7 +67,6 @@ const SecurityTab: React.FC = () => {
   });
   const [selectedClient, setSelectedClient] = useState<IClient>(emptyClient);
   const [edit, setEdit] = useState<boolean>(false);
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const { config } = useAppSelector((state) => state.routerSlice.data);
 
   const methods = useForm<IRouterConfig>({
@@ -122,14 +125,6 @@ const SecurityTab: React.FC = () => {
     setUpdateDialog(true);
   };
 
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
-  };
-
   const headCells = [
     { label: 'Client ID', sort: 'clientId' },
     { label: 'Alias', sort: 'alias' },
@@ -181,37 +176,31 @@ const SecurityTab: React.FC = () => {
               alignItems={'center'}>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography variant={'h6'}>Require Client ID / Validation</Typography>
-                <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-                  <RichTooltip
-                    content={
-                      <Box display="flex" flexDirection="column" gap={2} p={2}>
-                        <Typography variant="body2">
-                          Security client validation introduces an additional security layer for
-                          your application requests. Upon enabling this option any client requests
-                          going through your transport APIs are going to have to provide a client
-                          id/secret pair before their request can be forwarded to the appropriate
-                          module.
-                        </Typography>
-                        <Box display="flex" justifyContent="flex-end">
-                          <a
-                            href="https://getconduit.dev/docs/modules/router/security"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Take me to the docs</Button>
-                          </a>
-                        </Box>
+
+                <ConduitTooltip
+                  title={
+                    <Box display="flex" flexDirection="column" gap={2} p={2}>
+                      <Typography variant="body2">
+                        Security client validation introduces an additional security layer for your
+                        application requests. Upon enabling this option any client requests going
+                        through your transport APIs are going to have to provide a client id/secret
+                        pair before their request can be forwarded to the appropriate module.
+                      </Typography>
+                      <Box display="flex" justifyContent="flex-end">
+                        <a
+                          href="https://getconduit.dev/docs/modules/router/security"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Take me to the docs</Button>
+                        </a>
                       </Box>
-                    }
-                    width="400px"
-                    placement="bottom"
-                    open={openTooltip}
-                    onClose={MouseOutTooltip}>
-                    <Icon>
-                      <InfoOutlined />
-                    </Icon>
-                  </RichTooltip>
-                </Box>
+                    </Box>
+                  }>
+                  <Icon>
+                    <InfoOutlined />
+                  </Icon>
+                </ConduitTooltip>
               </Box>
               <FormInputSwitch {...register('security.clientValidation')} disabled={!edit} />
             </Box>

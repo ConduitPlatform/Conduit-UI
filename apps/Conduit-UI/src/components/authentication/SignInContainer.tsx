@@ -8,8 +8,8 @@ import {
 } from '../../models/authentication/AuthModels';
 import ReusableAccordion from './SignInMethod';
 import { Button, Icon, useTheme } from '@mui/material';
-import { RichTooltip } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
+import { ConduitTooltip } from '@conduitplatform/ui-components';
 
 interface Props {
   configData: IAuthenticationConfig;
@@ -18,8 +18,6 @@ interface Props {
 
 const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) => {
   const theme = useTheme();
-
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
 
   const [local, setLocal] = useState<SignInTypes>({
     enabled: false,
@@ -102,14 +100,6 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     enabled: false,
     redirect_uri: '',
   });
-
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
-  };
 
   useEffect(() => {
     if (configData) {
@@ -380,57 +370,52 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
           <Typography variant={'subtitle2'} color="common.white">
             Provider
           </Typography>
-          <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-            <RichTooltip
-              content={
-                <Box display="flex" flexDirection="column" gap={2} p={2}>
-                  <Typography variant="body2">
-                    The Authentication module supports multiple user authentication strategies. It
-                    supports local credential-based logins, while also providing integration for a
-                    plethora of third party providers through 0Auth2. Two-Factor cellular
-                    authentication is supported across any strategy. Local Authentication is enabled
-                    out of the box.
-                  </Typography>
-                  <Typography variant="body2">Tutorials</Typography>
-                  <Box display="flex" gap={2}>
-                    <Box>
-                      <a
-                        href="https://getconduit.dev/docs/modules/authentication/tutorials/local"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ textDecoration: 'none' }}>
-                        <Button variant="outlined">Local</Button>
-                      </a>
-                    </Box>
-                    <Box>
-                      <a
-                        href="https://getconduit.dev/docs/modules/authentication/tutorials/facebook"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ textDecoration: 'none' }}>
-                        <Button variant="outlined">Facebook</Button>
-                      </a>
-                    </Box>
-                    <Box>
-                      <a
-                        href="https://getconduit.dev/docs/modules/authentication/tutorials/google"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ textDecoration: 'none' }}>
-                        <Button variant="outlined">Google</Button>
-                      </a>
-                    </Box>
+          <ConduitTooltip
+            title={
+              <Box display="flex" flexDirection="column" gap={2} p={2}>
+                <Typography variant="body2">
+                  The Authentication module supports multiple user authentication strategies. It
+                  supports local credential-based logins, while also providing integration for a
+                  plethora of third party providers through 0Auth2. Two-Factor cellular
+                  authentication is supported across any strategy. Local Authentication is enabled
+                  out of the box.
+                </Typography>
+                <Typography variant="body2">Tutorials</Typography>
+                <Box display="flex" gap={2}>
+                  <Box>
+                    <a
+                      href="https://getconduit.dev/docs/modules/authentication/tutorials/local"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none' }}>
+                      <Button variant="outlined">Local</Button>
+                    </a>
+                  </Box>
+                  <Box>
+                    <a
+                      href="https://getconduit.dev/docs/modules/authentication/tutorials/facebook"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none' }}>
+                      <Button variant="outlined">Facebook</Button>
+                    </a>
+                  </Box>
+                  <Box>
+                    <a
+                      href="https://getconduit.dev/docs/modules/authentication/tutorials/google"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none' }}>
+                      <Button variant="outlined">Google</Button>
+                    </a>
                   </Box>
                 </Box>
-              }
-              width="400px"
-              open={openTooltip}
-              onClose={MouseOutTooltip}>
-              <Icon sx={{ color: 'common.white' }}>
-                <InfoOutlined />
-              </Icon>
-            </RichTooltip>
-          </Box>
+              </Box>
+            }>
+            <Icon sx={{ color: 'common.white' }}>
+              <InfoOutlined />
+            </Icon>
+          </ConduitTooltip>
         </Box>
         <Typography
           variant={'subtitle2'}

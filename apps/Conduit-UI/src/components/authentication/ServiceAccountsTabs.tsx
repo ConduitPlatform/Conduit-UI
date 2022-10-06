@@ -11,7 +11,7 @@ import {
   ConfirmationDialog,
   DataTable,
   LinkComponent,
-  RichTooltip,
+  ConduitTooltip,
 } from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
 import CreateServiceAccount from './CreateServiceAccount';
@@ -30,7 +30,6 @@ interface ServiceAccountsUI {
 
 const ServiceAccountsTabs = () => {
   const dispatch = useAppDispatch();
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [serviceId, setServiceId] = useState<string>('');
@@ -171,14 +170,6 @@ const ServiceAccountsTabs = () => {
     });
   };
 
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
-  };
-
   return (
     <>
       <Box pb={3} display="flex" justifyContent="space-between">
@@ -186,27 +177,22 @@ const ServiceAccountsTabs = () => {
           <Box display="flex" gap={3} alignItems="center">
             <Typography variant={'h6'}>All available Service Accounts</Typography>
             {!enabledConfig && (
-              <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-                <RichTooltip
-                  content={
-                    <Box display="flex" flexDirection="column" gap={1} p={2}>
-                      <Typography variant="body2">Services are currently disabled!</Typography>
-                      <Typography variant="body2">
-                        You can enable them via the
-                        <LinkComponent href="/authentication/config" underline={'none'}>
-                          <Button>config tab</Button>
-                        </LinkComponent>
-                      </Typography>
-                    </Box>
-                  }
-                  width="400px"
-                  open={openTooltip}
-                  onClose={MouseOutTooltip}>
-                  <Icon color="error">
-                    <Warning />
-                  </Icon>
-                </RichTooltip>
-              </Box>
+              <ConduitTooltip
+                title={
+                  <Box display="flex" flexDirection="column" gap={1} p={2}>
+                    <Typography variant="body2">Services are currently disabled!</Typography>
+                    <Typography variant="body2">
+                      You can enable them via the
+                      <LinkComponent href="/authentication/config" underline={'none'}>
+                        <Button>config tab</Button>
+                      </LinkComponent>
+                    </Typography>
+                  </Box>
+                }>
+                <Icon color="error">
+                  <Warning />
+                </Icon>
+              </ConduitTooltip>
             )}
           </Box>
           <Typography variant={'subtitle1'}>
