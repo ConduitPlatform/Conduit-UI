@@ -113,6 +113,13 @@ const initialState: IAuthenticationSlice = {
         redirect_uri: '',
         clientSecret: '',
       },
+      gitlab: {
+        accountLinking: false,
+        enabled: false,
+        clientId: '',
+        redirect_uri: '',
+        clientSecret: '',
+      },
       figma: {
         accountLinking: false,
         enabled: false,
