@@ -27,7 +27,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
-  const [selectedStep, setSelectedStep] = useState<string>('50');
+  const [selectedStep, setSelectedStep] = useState<string>('10m');
   const [detailedView, setDetailedView] = useState<boolean>(false);
 
   const data = useAppSelector((state) => state?.metricsSlice?.data?.genericMetric?.[expression]);
