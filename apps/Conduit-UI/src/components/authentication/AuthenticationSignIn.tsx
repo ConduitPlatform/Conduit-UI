@@ -70,9 +70,7 @@ const SignIn: React.FC = () => {
         },
       };
 
-      console.log(data);
-
-      // dispatch(asyncUpdateAuthenticationConfig(data));
+      dispatch(asyncUpdateAuthenticationConfig(data));
     }
   };
 
