@@ -43,6 +43,7 @@ export type SocialNameTypes =
   | 'microsoft'
   | 'slack'
   | 'github'
+  | 'gitlab'
   | 'figma'
   | 'phoneAuthentication'
   | 'twoFa'
@@ -83,6 +84,7 @@ export interface IAuthenticationConfig {
   local: SignInTypes;
   twitch: SignInTypes;
   github: SignInTypes;
+  gitlab: SignInTypes;
   figma: SignInTypes;
   slack: SignInTypes;
   microsoft: SignInTypes;
