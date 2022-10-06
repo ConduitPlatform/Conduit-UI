@@ -32,10 +32,10 @@ const DatabaseDashboard = () => {
             />
           </Grid>
         </Grid>
-        <Grid item md={12} lg={6}>
+        <Grid item xs={12} lg={6}>
           <TotalRequestsByModule module="database" />
         </Grid>
-        <Grid item md={12} lg={6}>
+        <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
             expression="rate(conduit_database_queries_total[10m])*100"
             graphTitle="Database queries"
