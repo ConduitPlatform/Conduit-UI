@@ -17,9 +17,10 @@ import { LinkComponent } from '@conduitplatform/ui-components';
 interface Props {
   open: boolean;
   handleClose: () => void;
+  systemSchemas: string[];
 }
 
-const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
+const NewSchemaDialog: FC<Props> = ({ open, handleClose, systemSchemas }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [typeName, setTypeName] = useState('');
@@ -35,6 +36,10 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
       );
     }
 
+    if (systemSchemas.find((systemSchema) => systemSchema === value)) {
+      dispatch(enqueueInfoNotification('This schema name is reserved by a system schema'));
+    }
+
     setTypeName(value.replace(/[^a-z0-9_]/gi, ''));
   };
 
@@ -46,6 +51,14 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
   const handleCloseClick = () => {
     setTypeName('');
     handleClose();
+  };
+
+  const isDisabled = () => {
+    if (systemSchemas.find((systemSchema) => systemSchema === typeName)) {
+      return true;
+    } else if (typeName === '') {
+      return true;
+    } else return false;
   };
 
   return (
@@ -78,7 +91,7 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose }) => {
               color="primary"
               sx={{ mb: 3 }}
               variant="contained"
-              disabled={typeName === ''}>
+              disabled={isDisabled()}>
               Create new Schema
             </Button>
           </LinkComponent>

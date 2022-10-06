@@ -122,6 +122,7 @@ const CustomEndpointsLayout: FC = () => {
   const initializeData = useCallback(() => {
     if (selectedEndpoint) {
       const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemaDocuments);
+
       let inputs = [];
       const queryGroup: any = [];
       let assignments = [];
@@ -380,8 +381,8 @@ const CustomEndpointsLayout: FC = () => {
             </Grid>
 
             <OperationSection
-              schemas={schemaDocuments}
               editMode={editMode}
+              createMode={createMode}
               availableSchemas={schemaDocuments}
             />
             {renderDetails()}

@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { findFieldsWithTypes, getAvailableFieldsOfSchema } from '../../../utils/cms';
+import { findFieldsWithTypes } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Schema } from '../../../models/database/CmsModels';
@@ -10,14 +10,16 @@ import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
 import { Loop } from '@mui/icons-material';
+import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
 
 interface Props {
-  schemas: any;
+  createMode: boolean;
   editMode: boolean;
   availableSchemas: Schema[];
 }
 
-const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) => {
+const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas }) => {
   const dispatch = useAppDispatch();
   const [drawer, setDrawer] = useState<boolean>(false);
   const [displayedSchema, setDisplayedSchema] = useState<Schema[]>([]);
@@ -31,8 +33,16 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
     }
   }, [endpoint.selectedSchema, availableSchemas]);
 
-  const handleOperationChange = (event: React.ChangeEvent<{ value: any }>) => {
+  useEffect(() => {
+    if (createMode) {
+      setDisplayedSchema([]);
+    }
+  }, [createMode]);
+
+  const handleOperationChange = async (event: React.ChangeEvent<{ value: any }>) => {
     const operation = Number(event.target.value);
+    setDisplayedSchema([]);
+    dispatch(setEndpointData({ selectedSchema: '' }));
     const assignments: Assignment[] = [];
     if (operation === 1) {
       if (endpoint.selectedSchema) {
@@ -49,13 +59,52 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
       }
     }
     dispatch(setEndpointData({ operation, assignments }));
+
+    if (endpoint.selectedSchema !== '') {
+      const selectedSchema = endpoint.selectedSchema;
+      const fields = await getAccesssibleSchemaFields(selectedSchema, operation);
+
+      if (Object.keys(fields.data.accessibleFields).length === 0) {
+        dispatch(
+          enqueueInfoNotification('Current schema does not have accessible fields!', 'duplicate')
+        );
+      }
+
+      const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
+
+      if (
+        endpoint.operation &&
+        (endpoint.operation === OperationsEnum.POST || endpoint.operation === OperationsEnum.PATCH)
+      ) {
+        const fieldKeys = Object.keys(fields);
+
+        fieldKeys.forEach((field) => {
+          const assignment: Assignment = {
+            schemaField: field,
+            action: 0,
+            assignmentField: { type: '', value: '' },
+          };
+
+          if (fields[field].required) assignments.push(assignment);
+        });
+      }
+      dispatch(setEndpointData({ selectedSchema, assignments }));
+      dispatch(setSchemaFields(fieldsWithTypes));
+    }
   };
 
-  const handleSchemaChange = (changedSchema: Schema[]) => {
+  const handleSchemaChange = async (changedSchema: Schema[]) => {
     const assignments: Assignment[] = [];
     const selectedSchema = changedSchema[0]._id;
-    const fields = getAvailableFieldsOfSchema(selectedSchema, schemas);
-    const fieldsWithTypes = findFieldsWithTypes(fields);
+    const fields = await getAccesssibleSchemaFields(selectedSchema, endpoint.operation);
+
+    if (Object.keys(fields.data.accessibleFields).length === 0) {
+      dispatch(
+        enqueueInfoNotification('Current schema does not have accessible fields!', 'duplicate')
+      );
+    }
+
+    const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
 
     if (
       endpoint.operation &&
@@ -96,7 +145,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const getData = useCallback(
     (params: Pagination & Search) => {
       if (drawer) {
-        dispatch(asyncGetSchemasDialog({ ...params, owner: ['database'] }));
+        dispatch(asyncGetSchemasDialog({ ...params, enabled: true }));
       }
     },
     [dispatch, drawer]
@@ -105,20 +154,23 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
   const headers = [
     { title: '_id' },
     { title: 'Name' },
-    { title: 'Can read' },
-    { title: 'Can update' },
-    { title: 'Can update' },
-    { title: 'Can delete' },
+    { title: 'Owner' },
+    { title: 'Read' },
+    { title: 'Create' },
+    { title: 'Update' },
+    { title: 'Delete' },
+    { title: '' },
   ];
 
   const formatSchemas = (schemasToFormat: Schema[]) => {
     return schemasToFormat?.map((d) => ({
       _id: d._id,
       name: d.name,
-      get: d.modelOptions.conduit.cms?.crudOperations.read.enabled,
-      post: d.modelOptions.conduit.cms?.crudOperations.create.enabled,
-      update: d.modelOptions.conduit.cms?.crudOperations.update.enabled,
-      delete: d.modelOptions.conduit.cms?.crudOperations.delete.enabled,
+      ownerModule: d.ownerModule.toString(),
+      get: d.modelOptions.conduit.cms?.crudOperations.read.enabled ?? false,
+      post: d.modelOptions.conduit.cms?.crudOperations.create.enabled ?? false,
+      update: d.modelOptions.conduit.cms?.crudOperations.update.enabled ?? false,
+      delete: d.modelOptions.conduit.cms?.crudOperations.delete.enabled ?? false,
     }));
   };
 
@@ -137,7 +189,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
               value={endpoint.operation}
               disabled={!editMode}
               onChange={handleOperationChange}>
-              <MenuItem aria-label="None" value="" />
+              <MenuItem aria-label="None" value="-1" />
               <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
               <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
               <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
@@ -151,7 +203,7 @@ const OperationSection: FC<Props> = ({ schemas, editMode, availableSchemas }) =>
               size="small"
               variant="contained"
               color="primary"
-              disabled={!editMode}
+              disabled={!editMode || endpoint.operation === -1}
               endIcon={editMode && <Loop />}
               onClick={() => setDrawer(true)}>
               {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
