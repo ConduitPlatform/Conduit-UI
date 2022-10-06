@@ -112,6 +112,10 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
   };
 
   const handleRemoveField = (id: string) => {
+    const emailFieldValue = getValues('emailField');
+    if (!inputFields.find((input) => input.key === emailFieldValue)) {
+      setValue('emailField', '');
+    }
     setInputFields((list) => list.filter((el) => el.id !== id));
   };
 
@@ -123,11 +127,6 @@ const EditableForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
       }
     });
 
-    const emailFieldValue = getValues('emailField');
-
-    if (!arr.find((item) => item.value === emailFieldValue)) {
-      setValue('emailField', '');
-    }
     return arr;
   };
 

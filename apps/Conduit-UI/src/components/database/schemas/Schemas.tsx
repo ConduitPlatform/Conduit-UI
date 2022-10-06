@@ -9,7 +9,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SchemaDataCard from './SchemaData/SchemaDataCard';
-import { ConfirmationDialog, RichTooltip } from '@conduitplatform/ui-components';
+import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import SchemaDataHeader from './SchemaData/SchemaDataHeader';
 import useParseQuery from './useParseQuery';
 import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
@@ -25,7 +25,7 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SchemaTabs } from './SchemaTabs';
 import { SchemaOverview } from './SchemaOverview/SchemaOverview';
 import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
-import { ConduitMultiSelect } from '@conduitplatform/ui-components';
+import { ConduitMultiSelect, ConduitTooltip } from '@conduitplatform/ui-components';
 import InfiniteScrollLayout from '../../InfiniteScrollLayout';
 
 const TabPanel: FC = ({ children }) => {
@@ -63,7 +63,6 @@ const Schemas: FC = () => {
     limit: 25,
   });
   const [search, setSearch] = useState<string>('');
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [objectView, setObjectView] = useState<boolean>(false);
   const [schemaSearch, setSchemaSearch] = useState<string>('');
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
@@ -165,14 +164,6 @@ const Schemas: FC = () => {
 
   const handleClose = () => {
     setCreateDialog(false);
-  };
-
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
   };
 
   const renderMainContent = () => {
@@ -292,44 +283,40 @@ const Schemas: FC = () => {
                       ),
                     }}
                   />
-                  <Box onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-                    <RichTooltip
-                      content={
-                        <Box display="flex" flexDirection="column" gap={2} p={2}>
-                          <Typography variant="body2">
-                            Custom content types are expressed as database schemas. Schemas contain
-                            fields of different types. Some of them are optional, while others are
-                            required. Some of them might even take a default value if nothing else
-                            is explicitly specified.
-                          </Typography>
-                          <Box display="flex" justifyContent="flex-end">
-                            <a
-                              href="https://getconduit.dev/docs/modules/database/get-started#documents-example"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ textDecoration: 'none' }}>
-                              <Button variant="outlined">Schemas</Button>
-                            </a>
-                          </Box>
-                          <Box display="flex" justifyContent="flex-end">
-                            <a
-                              href="https://getconduit.dev/docs/modules/database/get-started#documents-example"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ textDecoration: 'none' }}>
-                              <Button variant="outlined">Schema Data</Button>
-                            </a>
-                          </Box>
+
+                  <ConduitTooltip
+                    title={
+                      <Box display="flex" flexDirection="column" gap={2} p={2}>
+                        <Typography variant="body2">
+                          Custom content types are expressed as database schemas. Schemas contain
+                          fields of different types. Some of them are optional, while others are
+                          required. Some of them might even take a default value if nothing else is
+                          explicitly specified.
+                        </Typography>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/database/get-started#documents-example"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Schemas</Button>
+                          </a>
                         </Box>
-                      }
-                      width="400px"
-                      open={openTooltip}
-                      onClose={MouseOutTooltip}>
-                      <Icon>
-                        <InfoOutlined />
-                      </Icon>
-                    </RichTooltip>
-                  </Box>
+                        <Box display="flex" justifyContent="flex-end">
+                          <a
+                            href="https://getconduit.dev/docs/modules/database/get-started#documents-example"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined">Schema Data</Button>
+                          </a>
+                        </Box>
+                      </Box>
+                    }>
+                    <Icon>
+                      <InfoOutlined />
+                    </Icon>
+                  </ConduitTooltip>
                 </Box>
               </Grid>
               <Grid container item columnSpacing={9}>

@@ -7,11 +7,19 @@ import {
   createServiceAccount,
   refreshServiceAccount,
 } from '../../http/requests/SettingsRequests';
-import { ConfirmationDialog, DataTable } from '@conduitplatform/ui-components';
+import {
+  ConfirmationDialog,
+  DataTable,
+  LinkComponent,
+  ConduitTooltip,
+} from '@conduitplatform/ui-components';
 import GetServiceAccountToken from './GetServiceAccountToken';
 import CreateServiceAccount from './CreateServiceAccount';
 import { ServiceAccount } from '../../models/authentication/AuthModels';
-import { Box } from '@mui/material';
+import { Box, Icon } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { asyncGetAuthenticationConfig } from '../../redux/slices/authenticationSlice';
+import { Warning } from '@mui/icons-material';
 
 interface ServiceAccountsUI {
   _id: string;
@@ -21,6 +29,7 @@ interface ServiceAccountsUI {
 }
 
 const ServiceAccountsTabs = () => {
+  const dispatch = useAppDispatch();
   const [name, setName] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [serviceId, setServiceId] = useState<string>('');
@@ -35,6 +44,9 @@ const ServiceAccountsTabs = () => {
     asc: false,
     index: null,
   });
+  const enabledConfig = useAppSelector(
+    (state) => state.authenticationSlice.data.config.service.enabled
+  );
 
   const fetchServiceAccounts = async () => {
     try {
@@ -47,6 +59,10 @@ const ServiceAccountsTabs = () => {
       throw error;
     }
   };
+
+  useEffect(() => {
+    dispatch(asyncGetAuthenticationConfig());
+  }, [dispatch]);
 
   useEffect(() => {
     fetchServiceAccounts();
@@ -158,7 +174,27 @@ const ServiceAccountsTabs = () => {
     <>
       <Box pb={3} display="flex" justifyContent="space-between">
         <Box>
-          <Typography variant={'h6'}>All available Service Accounts</Typography>
+          <Box display="flex" gap={3} alignItems="center">
+            <Typography variant={'h6'}>All available Service Accounts</Typography>
+            {!enabledConfig && (
+              <ConduitTooltip
+                title={
+                  <Box display="flex" flexDirection="column" gap={1} p={2}>
+                    <Typography variant="body2">Services are currently disabled!</Typography>
+                    <Typography variant="body2">
+                      You can enable them via the
+                      <LinkComponent href="/authentication/config" underline={'none'}>
+                        <Button>config tab</Button>
+                      </LinkComponent>
+                    </Typography>
+                  </Box>
+                }>
+                <Icon color="error">
+                  <Warning />
+                </Icon>
+              </ConduitTooltip>
+            )}
+          </Box>
           <Typography variant={'subtitle1'}>
             Create, delete, refresh your Service Accounts
           </Typography>
@@ -168,20 +204,29 @@ const ServiceAccountsTabs = () => {
             variant={'contained'}
             color={'primary'}
             sx={{ width: 170 }}
+            disabled={!enabledConfig}
             onClick={handleGenerateNew}>
             Generate new Service Account
           </Button>
         </Box>
       </Box>
-      <DataTable
-        selectable={false}
-        sort={sort}
-        setSort={setSort}
-        headers={headers}
-        dsData={formatData(serviceAccounts)}
-        actions={actions}
-        handleAction={handleAction}
-      />
+      {serviceAccounts.length === 0 && (
+        <Typography textAlign="center" pt={20}>
+          No available service accounts
+        </Typography>
+      )}
+      {serviceAccounts.length > 0 && (
+        <DataTable
+          selectable={false}
+          sort={sort}
+          setSort={setSort}
+          headers={headers}
+          dsData={formatData(serviceAccounts)}
+          actions={actions}
+          handleAction={handleAction}
+        />
+      )}
+
       <ConfirmationDialog
         open={confirmation}
         handleClose={handleCloseConfirmation}

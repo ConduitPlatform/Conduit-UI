@@ -10,7 +10,7 @@ import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { asyncUpdateEmailConfig } from '../../redux/slices/emailsSlice';
-import { ConfigContainer, ConfigSaveSection, RichTooltip } from '@conduitplatform/ui-components';
+import { ConfigContainer, ConfigSaveSection, ConduitTooltip } from '@conduitplatform/ui-components';
 import { Button, Icon, useTheme } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
@@ -18,7 +18,6 @@ const EmailConfig: React.FC = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
-  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
 
   const { config } = useAppSelector((state) => state.emailsSlice.data);
@@ -58,14 +57,6 @@ const EmailConfig: React.FC = () => {
     },
     [dispatch]
   );
-
-  const MouseOverTooltip = () => {
-    setOpenTooltip(!openTooltip);
-  };
-
-  const MouseOutTooltip = () => {
-    setOpenTooltip(false);
-  };
 
   const renderSettingsFields = useMemo(() => {
     type FieldsTypes =
@@ -183,47 +174,43 @@ const EmailConfig: React.FC = () => {
               mb={1}>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography variant={'h6'}>Activate Email Module</Typography>
-                <Box display="flex" onMouseOver={MouseOverTooltip} onMouseOut={MouseOutTooltip}>
-                  <RichTooltip
-                    content={
-                      <Box display="flex" flexDirection="column" gap={2} p={2}>
-                        <Typography variant="body2">
-                          Since you have created an account on one of the Supported Providers
-                          (Mailgun, Sendgrid, Mandrill, Smtp), you need to configure the provider to
-                          proceed with the activation of the module.
-                        </Typography>
-                        <Box display="flex" gap={2}>
-                          <a
-                            href="https://getconduit.dev/docs/modules/email/config#mandrill"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Mandrill</Button>
-                          </a>
-                          <a
-                            href="https://getconduit.dev/docs/modules/email/config#sendgrid"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Sendgrid</Button>
-                          </a>
-                        </Box>
+
+                <ConduitTooltip
+                  title={
+                    <Box display="flex" flexDirection="column" gap={2} p={2}>
+                      <Typography variant="body2">
+                        Since you have created an account on one of the Supported Providers
+                        (Mailgun, Sendgrid, Mandrill, Smtp), you need to configure the provider to
+                        proceed with the activation of the module.
+                      </Typography>
+                      <Box display="flex" gap={2}>
+                        <a
+                          href="https://getconduit.dev/docs/modules/email/config#mandrill"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Mandrill</Button>
+                        </a>
+                        <a
+                          href="https://getconduit.dev/docs/modules/email/config#sendgrid"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Sendgrid</Button>
+                        </a>
                       </Box>
-                    }
-                    width="400px"
-                    open={openTooltip}
-                    onClose={MouseOutTooltip}>
-                    <Icon
-                      sx={{
-                        color:
-                          theme.palette.mode === 'dark'
-                            ? theme.palette.common.white
-                            : theme.palette.common.black,
-                      }}>
-                      <InfoOutlined />
-                    </Icon>
-                  </RichTooltip>
-                </Box>
+                    </Box>
+                  }>
+                  <Icon
+                    sx={{
+                      color:
+                        theme.palette.mode === 'dark'
+                          ? theme.palette.common.white
+                          : theme.palette.common.black,
+                    }}>
+                    <InfoOutlined />
+                  </Icon>
+                </ConduitTooltip>
               </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>

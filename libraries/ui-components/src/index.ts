@@ -23,7 +23,7 @@ import FieldIndicators from "./components/FieldIndicators";
 import StyledTreeItem from "./components/StyledTreeItem";
 import LinkComponent from "./components/LinkComponent";
 import GraphContainer from "./components/GraphContainer";
-import RichTooltip from "./components/RichTooltip";
+import ConduitTooltip from "./components/ConduitTooltip";
 
 export {
   ConduitMultiSelect,
@@ -51,5 +51,5 @@ export {
   StyledTreeItem,
   LinkComponent,
   GraphContainer,
-  RichTooltip,
+  ConduitTooltip,
 };

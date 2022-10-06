@@ -339,6 +339,21 @@ const AuthenticationConfig: React.FC = () => {
                       </>
                     )}
                   </Grid>
+                  <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+                  <Grid pb={2} item xs={12}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography px={3} variant={'h6'}>
+                        Service Accounts
+                      </Typography>
+                      <FormInputSwitch {...register('service.enabled', { disabled: !edit })} />
+                    </Box>
+                  </Grid>
+
+                  <Grid />
                 </Grid>
               </>
             )}
