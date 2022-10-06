@@ -9,6 +9,7 @@ import Containers from '../../assets/lotties/containers.json';
 import SendEmail from '../../assets/lotties/sendEmail.json';
 import Users from '../../assets/lotties/users.json';
 import Folders from '../../assets/lotties/folders.json';
+import SmsSent from '../../assets/lotties/smsSent.json';
 
 export const getLottieByTitle = (title: string) => {
   switch (title) {
@@ -36,6 +37,8 @@ export const getLottieByTitle = (title: string) => {
       return Schemas;
     case 'Logged in users':
       return Users;
+    case 'SMS Sent':
+      return SmsSent;
     default:
       return undefined;
   }

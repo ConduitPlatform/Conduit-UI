@@ -37,7 +37,7 @@ const DatabaseDashboard = () => {
         </Grid>
         <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
-            expression="rate(conduit_database_queries_total[10m])*100"
+            expression="sum(increase(conduit_database_queries_total[1h]))"
             graphTitle="Database queries"
             label="Queries"
           />
