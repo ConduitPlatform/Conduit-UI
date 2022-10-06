@@ -33,7 +33,7 @@ const MultipleMetricGraph: FC<Props> = ({
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
-  const [selectedStep, setSelectedStep] = useState<string>('10m');
+  const [selectedStep, setSelectedStep] = useState<string>('5m');
   const [detailedView, setDetailedView] = useState<boolean>(false);
 
   const totalData: Record<string, MetricsData> = useAppSelector(

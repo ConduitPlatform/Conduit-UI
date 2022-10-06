@@ -47,45 +47,6 @@ const MetricWidgetOptions: FC<Props> = ({
   // const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [simpleViewValue, setSimpleViewValue] = useState<string>('Last hour');
 
-  // const minDateOfStart = useMemo(() => {
-  //   return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
-  // }, [endDateValue]);
-
-  // const maxDateOfStart = useMemo(() => {
-  //   return endDateValue
-  //     ? moment(endDateValue).subtract(1, 'minutes')
-  //     : moment().subtract(1, 'minutes');
-  // }, [endDateValue]);
-
-  // const handleStartDateChange = (newValue: Moment | null) => {
-  //   setStartDateValue(newValue);
-  // };
-
-  // const handleClearStartDateTime = () => {
-  //   if (endDateValue && endDateValue.isBefore(moment().subtract(1, 'hours'))) {
-  //     setEndDateValue(null);
-  //   }
-  //   setStartDateValue(null);
-  // };
-
-  // const handleClearEndDateTime = () => {
-  //   if (startDateValue && startDateValue.isBefore(moment().subtract(30, 'days'))) {
-  //     setStartDateValue(moment().subtract(30, 'days'));
-  //   }
-  //   setEndDateValue(null);
-  // };
-
-  // const handleEndDateChange = (newValue: Moment | null) => {
-  //   setEndDateValue(newValue);
-  // };
-
-  // const handleChangeStep = (event: SelectChangeEvent<string>) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   setSelectedStep(value as string);
-  // };
-
   const handleChangeSimpleViewStep = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
@@ -94,41 +55,19 @@ const MetricWidgetOptions: FC<Props> = ({
     setSimpleViewValue(value);
 
     if (value === 'Last hour') {
-      setSelectedStep('10m');
+      setSelectedStep('5m');
       setStartDateValue(moment().subtract(1, 'hours'));
     } else if (value === 'Last 12h') {
-      setSelectedStep('120m');
+      setSelectedStep('5m');
       setStartDateValue(moment().subtract(12, 'hours'));
     } else if (value === 'Last 24h') {
-      setSelectedStep('240m');
+      setSelectedStep('5m');
       setStartDateValue(moment().subtract(24, 'hours'));
     } else if (value === 'Last week') {
-      setSelectedStep('1480m');
+      setSelectedStep('5m');
       setStartDateValue(moment().subtract(7, 'days'));
     }
   };
-
-  // const minDateOfEnd = useMemo(() => {
-  //   return startDateValue
-  //     ? moment(startDateValue).add(1, 'minutes')
-  //     : moment().subtract(59, 'minutes');
-  // }, [startDateValue]);
-
-  // const maxDateOfEnd = useMemo(() => {
-  //   return undefined;
-  // }, []);
-
-  // const handleChangeToSimple = () => {
-  //   setDetailedView(false);
-  //   setSimpleViewValue('Last hour');
-  //   setStartDateValue(moment().subtract(1, 'hours'));
-  //   setEndDateValue(moment());
-  //   setSelectedStep('10m');
-  // };
-
-  // const handleChangeToDetailed = () => {
-  //   setDetailedView(true);
-  // };
 
   const titleFontSizes = {
     [theme.breakpoints.down('lg')]: {
@@ -180,6 +119,67 @@ const MetricWidgetOptions: FC<Props> = ({
 };
 
 export default MetricWidgetOptions;
+
+// const minDateOfEnd = useMemo(() => {
+//   return startDateValue
+//     ? moment(startDateValue).add(1, 'minutes')
+//     : moment().subtract(59, 'minutes');
+// }, [startDateValue]);
+
+// const maxDateOfEnd = useMemo(() => {
+//   return undefined;
+// }, []);
+
+// const handleChangeToSimple = () => {
+//   setDetailedView(false);
+//   setSimpleViewValue('Last hour');
+//   setStartDateValue(moment().subtract(1, 'hours'));
+//   setEndDateValue(moment());
+//   setSelectedStep('10m');
+// };
+
+// const handleChangeToDetailed = () => {
+//   setDetailedView(true);
+// };
+
+// const minDateOfStart = useMemo(() => {
+//   return endDateValue ? moment(endDateValue).subtract(1, 'years') : moment().subtract(1, 'years');
+// }, [endDateValue]);
+
+// const maxDateOfStart = useMemo(() => {
+//   return endDateValue
+//     ? moment(endDateValue).subtract(1, 'minutes')
+//     : moment().subtract(1, 'minutes');
+// }, [endDateValue]);
+
+// const handleStartDateChange = (newValue: Moment | null) => {
+//   setStartDateValue(newValue);
+// };
+
+// const handleClearStartDateTime = () => {
+//   if (endDateValue && endDateValue.isBefore(moment().subtract(1, 'hours'))) {
+//     setEndDateValue(null);
+//   }
+//   setStartDateValue(null);
+// };
+
+// const handleClearEndDateTime = () => {
+//   if (startDateValue && startDateValue.isBefore(moment().subtract(30, 'days'))) {
+//     setStartDateValue(moment().subtract(30, 'days'));
+//   }
+//   setEndDateValue(null);
+// };
+
+// const handleEndDateChange = (newValue: Moment | null) => {
+//   setEndDateValue(newValue);
+// };
+
+// const handleChangeStep = (event: SelectChangeEvent<string>) => {
+//   const {
+//     target: { value },
+//   } = event;
+//   setSelectedStep(value as string);
+// };
 
 {
   /* <Box display="flex" px={1} gap={2}>

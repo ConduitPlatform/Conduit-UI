@@ -18,7 +18,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
 
   const [startDateValue, setStartDateValue] = useState<Moment | null>(null);
   const [endDateValue, setEndDateValue] = useState<Moment | null>(null);
-  const [selectedStep, setSelectedStep] = useState<string>('10m');
+  const [selectedStep, setSelectedStep] = useState<string>('5m');
   const [detailedView, setDetailedView] = useState<boolean>(false);
 
   const data = useAppSelector((state) => state?.metricsSlice?.data?.moduleTotalRequests?.[module]);
