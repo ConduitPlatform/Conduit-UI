@@ -758,6 +758,7 @@ const databaseSlice = createSlice({
       state.data.schemas.schemasCount = state.data.schemas.schemasCount - action.payload.ids.length;
     });
     builder.addCase(asyncDeleteSelectedSchemas.fulfilled, (state, action) => {
+      state.data.schemas.schemasCount = state.data.schemas.schemasCount - 1;
       state.data.schemas.schemaDocuments = state.data.schemas.schemaDocuments.filter(
         (schema) => !action.payload.includes(schema._id)
       );

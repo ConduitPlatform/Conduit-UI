@@ -9,6 +9,7 @@ import Microsoft from '../assets/svgs/providers/microsoft.svg';
 import Phone from '../assets/svgs/providers/phone.svg';
 import Refresh from '../assets/svgs/providers/refresh.svg';
 import MagicLink from '../assets/svgs/providers/magicLink.svg';
+import GitLab from '../assets/svgs/providers/gitlab.svg';
 
 export const extractProviderIcon = (name: string) => {
   switch (name) {
@@ -34,6 +35,8 @@ export const extractProviderIcon = (name: string) => {
       return Refresh;
     case 'magic_link':
       return MagicLink;
+    case 'gitlab':
+      return GitLab;
     default:
       return Github;
   }
@@ -63,6 +66,8 @@ export const extractProviderName = (name: string) => {
       return 'Two Factor Authentication';
     case 'magic_link':
       return 'Magic Link';
+    case 'gitlab':
+      return 'GitLab';
     default:
       return 'Local';
   }
