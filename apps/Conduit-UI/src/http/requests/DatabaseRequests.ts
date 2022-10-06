@@ -19,7 +19,7 @@ export const setSchemaExtension = (_id: string, data: any) =>
 export const getSchemaOwners = () => getRequest(`/database/schemas/owners`);
 
 export const deleteSchemasRequest = (params: { ids: string[]; deleteData: boolean }) => {
-  return deleteRequest(`/database/schemas`, { params });
+  return deleteRequest(`/database/schemas`, params);
 };
 export const toggleSchemaByIdRequest = (_id: string) =>
   postRequest(`/database/schemas/${_id}/toggle`);
