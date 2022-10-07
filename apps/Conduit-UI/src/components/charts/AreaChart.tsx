@@ -82,12 +82,16 @@ const AreaChart: FC<Props> = ({
       mode: theme.palette.mode === 'dark' ? 'dark' : 'light',
       palette: theme.palette.mode === 'dark' ? 'palette4' : 'palette2',
     },
+
     xaxis: {
       type: 'datetime',
       categories: timestamps ?? [],
+      tooltip: {
+        enabled: false,
+      },
       labels: {
-        datetimeUTC: false,
         format: 'HH:mm',
+        datetimeUTC: false,
       },
     },
     fill: {

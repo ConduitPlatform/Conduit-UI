@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, Grid } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import RequestsLatency from '../metrics/RequestLatency';
@@ -21,14 +21,14 @@ const DatabaseDashboard = () => {
             <MetricCount
               small
               title="Unimported Schemas"
-              expression="conduit_registered_schemas_total{imported='false'}[5m]"
+              expression="conduit_registered_schemas_total{imported='false'}[10m]"
             />
           </Grid>
           <Grid item md={3} sm={6} xs={6}>
             <MetricCount
               small
               title="Imported Schemas"
-              expression="conduit_registered_schemas_total{imported='true'}[5m]"
+              expression="conduit_registered_schemas_total{imported='true'}[10m]"
             />
           </Grid>
         </Grid>
@@ -37,7 +37,7 @@ const DatabaseDashboard = () => {
         </Grid>
         <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
-            expression="sum(increase(conduit_database_queries_total[1h]))"
+            expression="sum(increase(conduit_database_queries_total[10m]))"
             graphTitle="Database queries"
             label="Queries"
           />

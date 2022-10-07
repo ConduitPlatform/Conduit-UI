@@ -37,8 +37,8 @@ export const getModuleLatency = (body: {
   return getRequestProm('/query', {
     query:
       body.module !== 'home'
-        ? `avg_over_time(conduit_grpc_request_latency_seconds{job="${body.module}"}[5m])`
-        : `sum(avg_over_time(conduit_grpc_request_latency_seconds[5m]))`,
+        ? `avg_over_time(conduit_grpc_request_latency_seconds{job="${body.module}"}[10m])`
+        : `sum(avg_over_time(conduit_grpc_request_latency_seconds[10m]))`,
   });
 };
 
