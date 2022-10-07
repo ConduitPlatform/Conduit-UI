@@ -1,4 +1,4 @@
-import { Box, Skeleton, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import MetricsWidget from './MetricsWidget';
 import heartbeat from '../../assets/lotties/heartbeat.json';
 import LottieForWidget from './LottieForWidget';
+import MetricWidgetSkeleton from './MetricsWidgetSkeleton';
 
 interface Props {
   module: ModulesTypes;
@@ -60,7 +61,7 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
               color="primary"
               variant="h4"
               sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}>
-              <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
+              <MetricWidgetSkeleton />
             </Typography>
           )}
           {health && !loading && (

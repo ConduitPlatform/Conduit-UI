@@ -401,52 +401,54 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
           <Typography variant={'subtitle2'} color="common.white">
             Provider
           </Typography>
-          <ConduitTooltip
-            title={
-              <Box display="flex" flexDirection="column" gap={2} p={2}>
-                <Typography variant="body2">
-                  The Authentication module supports multiple user authentication strategies. It
-                  supports local credential-based logins, while also providing integration for a
-                  plethora of third party providers through 0Auth2. Two-Factor cellular
-                  authentication is supported across any strategy. Local Authentication is enabled
-                  out of the box.
-                </Typography>
-                <Typography variant="body2">Tutorials</Typography>
-                <Box display="flex" gap={2}>
-                  <Box>
-                    <a
-                      href="https://getconduit.dev/docs/modules/authentication/tutorials/local"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}>
-                      <Button variant="outlined">Local</Button>
-                    </a>
-                  </Box>
-                  <Box>
-                    <a
-                      href="https://getconduit.dev/docs/modules/authentication/tutorials/facebook"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}>
-                      <Button variant="outlined">Facebook</Button>
-                    </a>
-                  </Box>
-                  <Box>
-                    <a
-                      href="https://getconduit.dev/docs/modules/authentication/tutorials/google"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}>
-                      <Button variant="outlined">Google</Button>
-                    </a>
+          <Box>
+            <ConduitTooltip
+              title={
+                <Box display="flex" flexDirection="column" gap={2} p={2}>
+                  <Typography variant="body2">
+                    The Authentication module supports multiple user authentication strategies. It
+                    supports local credential-based logins, while also providing integration for a
+                    plethora of third party providers through 0Auth2. Two-Factor cellular
+                    authentication is supported across any strategy. Local Authentication is enabled
+                    out of the box.
+                  </Typography>
+                  <Typography variant="body2">Tutorials</Typography>
+                  <Box display="flex" gap={2}>
+                    <Box>
+                      <a
+                        href="https://getconduit.dev/docs/modules/authentication/tutorials/local"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined">Local</Button>
+                      </a>
+                    </Box>
+                    <Box>
+                      <a
+                        href="https://getconduit.dev/docs/modules/authentication/tutorials/facebook"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined">Facebook</Button>
+                      </a>
+                    </Box>
+                    <Box>
+                      <a
+                        href="https://getconduit.dev/docs/modules/authentication/tutorials/google"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined">Google</Button>
+                      </a>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            }>
-            <Icon sx={{ color: 'common.white' }}>
-              <InfoOutlined />
-            </Icon>
-          </ConduitTooltip>
+              }>
+              <Icon sx={{ color: 'common.white' }}>
+                <InfoOutlined />
+              </Icon>
+            </ConduitTooltip>
+          </Box>
         </Box>
         <Typography
           variant={'subtitle2'}
