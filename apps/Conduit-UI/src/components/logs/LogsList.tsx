@@ -75,8 +75,81 @@ const MessageItem = ({
   );
 };
 
+interface MessageItemAccordionProps {
+  expandable: {
+    mainMessage: string;
+    metaData?: string;
+    expanded?: boolean;
+    setExpanded?: () => void;
+  };
+  rowItem: LogsData;
+  handleBackgroundBubble: () => CSSProperties | string;
+  logsDateText: CSSProperties;
+  handleBackgroundLabel: () => string;
+}
+
+const MessageItemAccordion = ({
+  expandable,
+  rowItem,
+  handleBackgroundBubble,
+  logsDateText,
+  handleBackgroundLabel,
+}: MessageItemAccordionProps) => {
+  return (
+    <Accordion
+      expanded={expandable?.expanded}
+      onChange={expandable?.setExpanded}
+      elevation={0}
+      disableGutters
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        padding: 0,
+        '&.MuiAccordion-gutters': {
+          padding: 0,
+          margin: 0,
+        },
+      }}>
+      <AccordionSummary
+        sx={{
+          '&.MuiAccordionSummary-root': { minHeight: 'unset', justifyContent: 'flex-start' },
+          '.MuiAccordionSummary-content': {
+            margin: 0,
+            padding: 0,
+            flexGrow: 0,
+          },
+          padding: 0,
+          '.MuiAccordionSummary-expandIconWrapper': { marginLeft: 1 },
+        }}
+        expandIcon={<ExpandMoreIcon color={'disabled'} />}
+        aria-controls="panel2a-content"
+        id="panel2a-header">
+        {MessageItem({
+          message: expandable?.mainMessage,
+          rowItem: rowItem,
+          handleBackgroundBubble: handleBackgroundBubble,
+          logsDateText: logsDateText,
+          handleBackgroundLabel: handleBackgroundLabel,
+        })}
+      </AccordionSummary>
+      <AccordionDetails>
+        <JsonEditorComponent
+          placeholder={expandable?.metaData}
+          viewOnly
+          height="100%"
+          width="100%"
+          confirmGood={false}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
 interface Props {
   data: LogsData[];
+  expandedMessages: number[];
+  setExpandedMessages: (itemIndex: number) => void;
 }
 
 interface ListRowProps {
@@ -90,7 +163,7 @@ const createItemData = memoize((logs, count) => ({
 
 const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
   const colorHash = new ColorHash();
-  const { data } = props;
+  const { data, expandedMessages, setExpandedMessages } = props;
   const theme = useTheme();
 
   const logsDateText = {
@@ -132,72 +205,41 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
       }
     };
 
-    const expandable = useMemo(() => {
+    const expandable: MessageItemAccordionProps['expandable'] = useMemo(() => {
       const mainMessage = rowItem?.message.slice(0, rowItem?.message?.indexOf('{"'));
       const metaData = rowItem?.message?.slice(rowItem?.message?.indexOf('{"'));
+      const expanded = expandedMessages?.includes(index);
+      const setExpanded = () => setExpandedMessages(index);
 
       try {
         const parsed = JSON.parse(metaData);
-        return { mainMessage: mainMessage, metaData: parsed };
+        return {
+          mainMessage: mainMessage,
+          metaData: parsed,
+          expanded: expanded,
+          setExpanded: setExpanded,
+        };
       } catch {
-        return { mainMessage: mainMessage, metaData: undefined };
+        return {
+          mainMessage: mainMessage,
+        };
       }
-    }, [rowItem?.message]);
+    }, [index, rowItem?.message]);
 
-    return expandable?.metaData ? (
-      <Accordion
-        elevation={0}
-        disableGutters
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          padding: 0,
-          '&.MuiAccordion-gutters': {
-            padding: 0,
-            margin: 0,
-          },
-        }}>
-        <AccordionSummary
-          sx={{
-            '&.MuiAccordionSummary-root': { minHeight: 'unset', justifyContent: 'flex-start' },
-            '.MuiAccordionSummary-content': {
-              margin: 0,
-              padding: 0,
-              flexGrow: 0,
-            },
-            padding: 0,
-            '.MuiAccordionSummary-expandIconWrapper': { marginLeft: 1 },
-          }}
-          expandIcon={<ExpandMoreIcon color={'disabled'} />}
-          aria-controls="panel2a-content"
-          id="panel2a-header">
-          {MessageItem({
-            message: expandable?.mainMessage,
-            rowItem: rowItem,
-            handleBackgroundBubble: handleBackgroundBubble,
-            logsDateText: logsDateText,
-            handleBackgroundLabel: handleBackgroundLabel,
-          })}
-        </AccordionSummary>
-        <AccordionDetails>
-          <JsonEditorComponent
-            placeholder={expandable?.metaData}
-            viewOnly
-            height="100%"
-            width="100%"
-            confirmGood={false}
-          />
-        </AccordionDetails>
-      </Accordion>
-    ) : (
-      MessageItem({
-        rowItem: rowItem,
-        handleBackgroundBubble: handleBackgroundBubble,
-        logsDateText: logsDateText,
-        handleBackgroundLabel: handleBackgroundLabel,
-      })
-    );
+    return expandable?.metaData
+      ? MessageItemAccordion({
+          expandable: expandable,
+          rowItem: rowItem,
+          handleBackgroundBubble: handleBackgroundBubble,
+          logsDateText: logsDateText,
+          handleBackgroundLabel: handleBackgroundLabel,
+        })
+      : MessageItem({
+          rowItem: rowItem,
+          handleBackgroundBubble: handleBackgroundBubble,
+          logsDateText: logsDateText,
+          handleBackgroundLabel: handleBackgroundLabel,
+        });
   };
 
   const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
