@@ -110,7 +110,7 @@ const NotificationConfig: FC = () => {
                 mb: 1,
               }}>
               <Box display="flex" alignItems="center" gap={2}>
-                <Typography variant={'h6'}>Activate Notifications Module</Typography>
+                <Typography variant={'h6'}>Activate Push Notifications Module</Typography>
                 <ConduitTooltip
                   title={
                     <Box display="flex" flexDirection="column" gap={2} p={2}>
