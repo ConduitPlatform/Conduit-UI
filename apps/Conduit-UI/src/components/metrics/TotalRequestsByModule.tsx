@@ -33,8 +33,8 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         module,
         startDate: startDateValue
           ? startDateValue.valueOf() / 1000
-          : moment().subtract(1, 'hours').unix(),
-        endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().unix(),
+          : moment().subtract(1, 'hour').unix(),
+        endDate: endDateValue ? endDateValue.valueOf() / 1000 : moment().add(1, 'hour').unix(),
         step: selectedStep,
       })
     );

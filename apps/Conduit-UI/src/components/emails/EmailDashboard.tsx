@@ -21,11 +21,11 @@ const EmailDashboard = () => {
             <MetricCount
               small
               title="Email templates"
-              expression="conduit_email_templates_total[5m]"
+              expression="conduit_email_templates_total[10m]"
             />
           </Grid>
           <Grid item xs={6} sm={3}>
-            <MetricCount small title="Sent emails" expression="conduit_emails_sent_total[5m]" />
+            <MetricCount small title="Sent emails" expression="conduit_emails_sent_total[10m]" />
           </Grid>
         </Grid>
         <Grid item xs={12}>

@@ -1,11 +1,12 @@
 import React, { FC, useEffect } from 'react';
-import { Skeleton, Typography, useTheme } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleLatency } from '../../redux/slices/metricsSlice';
 import latencyLottie from '../../assets/lotties/latency.json';
 import MetricsWidget from './MetricsWidget';
 import LottieForWidget from './LottieForWidget';
+import MetricWidgetSkeleton from './MetricsWidgetSkeleton';
 
 interface Props {
   module: ModulesTypes;
@@ -64,11 +65,7 @@ const RequestsLatency: FC<Props> = ({ module, modulesLength, small }) => {
           color="primary"
           variant="h4"
           sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
-          {loading ? (
-            <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
-          ) : (
-            `${latency?.toFixed(1)}ms`
-          )}
+          {loading ? <MetricWidgetSkeleton /> : `${latency?.toFixed(1)}ms`}
         </Typography>
       }
       title="Latency"

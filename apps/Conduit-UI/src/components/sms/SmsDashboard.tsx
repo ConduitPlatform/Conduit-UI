@@ -1,9 +1,9 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
-import ExtractQueryRangeGraph from '../metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../metrics/TotalRequestsByModule';
 import RequestsLatency from '../metrics/RequestLatency';
 import ModuleHealth from '../metrics/ModuleHealth';
+import MetricCount from '../metrics/MetricCount';
 
 const SmsDashboard = () => {
   return (
@@ -16,17 +16,13 @@ const SmsDashboard = () => {
           <Grid item sm={2} xs={12}>
             <ModuleHealth small module="sms" />
           </Grid>
+          <Grid item sm={2} xs={12}>
+            <MetricCount small title="SMS Sent" expression="conduit_sms_sent_total[5m]" />
+          </Grid>
         </Grid>
         <Grid container item spacing={2}>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12}>
             <TotalRequestsByModule module="sms" />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <ExtractQueryRangeGraph
-              expression="sum(increase(conduit_forms_total[10m]))"
-              graphTitle="Total sms sent"
-              label="Sms sent"
-            />
           </Grid>
         </Grid>
       </Grid>

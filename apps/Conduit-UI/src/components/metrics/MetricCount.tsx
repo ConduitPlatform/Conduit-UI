@@ -1,4 +1,4 @@
-import { Skeleton, Typography, useTheme } from '@mui/material';
+import { Typography, useMediaQuery, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { asyncGetCounter } from '../../redux/slices/metricsSlice';
@@ -6,6 +6,7 @@ import { useAppSelector } from '../../redux/store';
 import LottieForWidget from './LottieForWidget';
 import MetricsWidget from './MetricsWidget';
 import { getLottieByTitle } from './getLottieByTitle';
+import MetricWidgetSkeleton from './MetricsWidgetSkeleton';
 
 interface Props {
   expression: string;
@@ -63,11 +64,7 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
           color="primary"
           variant="h4"
           sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
-          {loading ? (
-            <Skeleton variant="rectangular" width="90px" sx={{ borderRadius: 12 }} />
-          ) : (
-            counter
-          )}
+          {loading ? <MetricWidgetSkeleton /> : counter}
         </Typography>
       }
       title={title}

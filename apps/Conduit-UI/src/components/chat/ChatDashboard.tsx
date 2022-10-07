@@ -18,7 +18,7 @@ const ChatDashboard = () => {
             <ModuleHealth small module="chat" />
           </Grid>
           <Grid item xs={6} sm={2}>
-            <MetricCount small title="Chat rooms" expression="conduit_chat_rooms_total[1h]" />
+            <MetricCount small title="Chat rooms" expression="conduit_chat_rooms_total[10m]" />
           </Grid>
         </Grid>
         <Grid item xs={12} lg={6}>
