@@ -43,8 +43,6 @@ const MetricWidgetOptions: FC<Props> = ({
 }) => {
   const theme = useTheme();
 
-  // const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
-  // const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [simpleViewValue, setSimpleViewValue] = useState<string>('Last hour');
 
   const handleChangeSimpleViewStep = (event: SelectChangeEvent<string>) => {
@@ -55,16 +53,16 @@ const MetricWidgetOptions: FC<Props> = ({
     setSimpleViewValue(value);
 
     if (value === 'Last hour') {
-      setSelectedStep('5m');
+      setSelectedStep('10m');
       setStartDateValue(moment().subtract(1, 'hours'));
     } else if (value === 'Last 12h') {
-      setSelectedStep('1h');
+      setSelectedStep('30m');
       setStartDateValue(moment().subtract(12, 'hours'));
     } else if (value === 'Last 24h') {
-      setSelectedStep('2h');
+      setSelectedStep('1h');
       setStartDateValue(moment().subtract(24, 'hours'));
     } else if (value === 'Last week') {
-      setSelectedStep('14h');
+      setSelectedStep('12h');
       setStartDateValue(moment().subtract(7, 'days'));
     }
   };
@@ -103,22 +101,15 @@ const MetricWidgetOptions: FC<Props> = ({
             ))}
           </Select>
         </FormControl>
-        {/* <Tooltip title="The step on the simple view defaults to 10m">
-          <Icon sx={{ mb: '8px' }}>
-            <InfoOutlined />
-          </Icon>
-        </Tooltip> */}
-        {/* <Tooltip title="Expanded view">
-          <IconButton color="primary" onClick={() => handleChangeToDetailed()}>
-            <ArrowBackIosNew />
-          </IconButton>
-        </Tooltip> */}
       </Box>
     </Box>
   );
 };
 
 export default MetricWidgetOptions;
+
+// const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState<boolean>(false);
+// const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
 
 // const minDateOfEnd = useMemo(() => {
 //   return startDateValue
@@ -292,4 +283,19 @@ export default MetricWidgetOptions;
             </IconButton>
           </Tooltip>
         </Box> */
+}
+
+{
+  /* <Tooltip title="The step on the simple view defaults to 10m">
+          <Icon sx={{ mb: '8px' }}>
+            <InfoOutlined />
+          </Icon>
+        </Tooltip> */
+}
+{
+  /* <Tooltip title="Expanded view">
+          <IconButton color="primary" onClick={() => handleChangeToDetailed()}>
+            <ArrowBackIosNew />
+          </IconButton>
+        </Tooltip> */
 }
