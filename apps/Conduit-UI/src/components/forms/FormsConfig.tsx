@@ -7,10 +7,14 @@ import { IFormsConfig } from '../../models/forms/FormsModels';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncEditFormsConfig } from '../../redux/slices/formsSlice';
-import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConduitTooltip, ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import Button from '@mui/material/Button';
+import { Icon, useTheme } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 
 const FormsConfig: React.FC = () => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const [edit, setEdit] = useState<boolean>(false);
 
@@ -56,10 +60,41 @@ const FormsConfig: React.FC = () => {
               display={'inline-flex'}
               justifyContent={'space-between'}
               alignItems={'center'}>
-              <Typography variant={'h6'}>Activate Forms Module</Typography>
+              <Box display="flex" alignItems="center" gap={2}>
+                <Typography variant={'h6'}>Activate Forms Module</Typography>
+
+                <ConduitTooltip
+                  title={
+                    <Box display="flex" flexDirection="column" gap={2} p={2}>
+                      <Typography variant="body2">
+                        To see more information regarding the Forms config, please visit our docs
+                      </Typography>
+                      <Box display="flex" justifyContent="flex-end">
+                        <a
+                          href="https://getconduit.dev/docs/modules/forms/config"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none' }}>
+                          <Button variant="outlined">Take me there</Button>
+                        </a>
+                      </Box>
+                    </Box>
+                  }>
+                  <Icon
+                    sx={{
+                      display: 'flex',
+                      color:
+                        theme.palette.mode === 'dark'
+                          ? theme.palette.common.white
+                          : theme.palette.common.black,
+                    }}>
+                    <InfoOutlined />
+                  </Icon>
+                </ConduitTooltip>
+              </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
-            <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
+            <Grid container sx={{ pl: 4, mb: 1 }}>
               {isActive && (
                 <Grid item xs={12}>
                   <Box

@@ -189,7 +189,7 @@ const ServiceAccountsTabs = () => {
                     </Typography>
                   </Box>
                 }>
-                <Icon color="error">
+                <Icon color="error" sx={{ display: 'flex' }}>
                   <Warning />
                 </Icon>
               </ConduitTooltip>

@@ -8,8 +8,8 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { asyncPutSmsConfig } from '../../redux/slices/smsSlice';
-import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
-import { Box, Icon, Tooltip, useTheme } from '@mui/material';
+import { ConduitTooltip, ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { Box, Icon, useTheme } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 
 const SmsConfig: React.FC = () => {
@@ -92,7 +92,7 @@ const SmsConfig: React.FC = () => {
             <Grid container item xs={12} justifyContent="space-between" alignItems={'center'}>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography variant={'h6'}>Activate SMS Module</Typography>
-                <Tooltip title="SMS configuration documentation">
+                <ConduitTooltip title={'SMS configuration documentation'}>
                   <a
                     href="https://getconduit.dev/docs/modules/sms/config"
                     target="_blank"
@@ -100,6 +100,7 @@ const SmsConfig: React.FC = () => {
                     style={{ textDecoration: 'none' }}>
                     <Icon
                       sx={{
+                        display: 'flex',
                         color:
                           theme.palette.mode === 'dark'
                             ? theme.palette.common.white
@@ -108,7 +109,7 @@ const SmsConfig: React.FC = () => {
                       <InfoOutlined />
                     </Icon>
                   </a>
-                </Tooltip>
+                </ConduitTooltip>
               </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Grid>

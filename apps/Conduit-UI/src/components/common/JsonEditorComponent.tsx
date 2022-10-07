@@ -35,7 +35,6 @@ const JsonEditorComponent: React.FC<JsonEditorComponentProps> = ({
       colors={{
         default:
           theme.palette.mode === 'dark' ? theme.palette.grey['300'] : theme.palette.grey['600'],
-        // default: theme.palette.common.black,
         background: theme.palette.background.paper,
         background_warning: theme.palette.background.paper,
         keys:

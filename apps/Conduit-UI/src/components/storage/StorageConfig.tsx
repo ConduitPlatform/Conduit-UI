@@ -113,7 +113,7 @@ const StorageConfig: React.FC = () => {
                     </Box>
                   </Box>
                 }>
-                <Icon>
+                <Icon sx={{ display: 'flex' }}>
                   <InfoOutlined />
                 </Icon>
               </ConduitTooltip>

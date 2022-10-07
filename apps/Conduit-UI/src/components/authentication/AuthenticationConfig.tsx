@@ -9,9 +9,9 @@ import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncUpdateAuthenticationConfig } from '../../redux/slices/authenticationSlice';
-import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { ConduitTooltip, ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon, Tooltip, useTheme } from '@mui/material';
+import { Icon, useTheme } from '@mui/material';
 
 const AuthenticationConfig: React.FC = () => {
   const theme = useTheme();
@@ -79,7 +79,7 @@ const AuthenticationConfig: React.FC = () => {
               alignItems={'center'}>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography variant={'h6'}>Activate Authentication Module</Typography>
-                <Tooltip title="Authentication configuration documentation">
+                <ConduitTooltip title={'Authentication configuration documentation'}>
                   <a
                     href="https://getconduit.dev/docs/modules/authentication/config"
                     target="_blank"
@@ -87,6 +87,7 @@ const AuthenticationConfig: React.FC = () => {
                     style={{ textDecoration: 'none' }}>
                     <Icon
                       sx={{
+                        display: 'flex',
                         color:
                           theme.palette.mode === 'dark'
                             ? theme.palette.common.white
@@ -95,11 +96,11 @@ const AuthenticationConfig: React.FC = () => {
                       <InfoOutlined />
                     </Icon>
                   </a>
-                </Tooltip>
+                </ConduitTooltip>
               </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
-            <Grid container spacing={2} sx={{ padding: 3 }}>
+            <Grid container spacing={2} sx={{ marginTop: 2, paddingX: 3 }}>
               {isActive && (
                 <>
                   <Grid item xs={12}>

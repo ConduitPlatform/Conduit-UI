@@ -100,33 +100,37 @@ const EmailConfig: React.FC = () => {
 
     return (
       <>
-        <Grid item xs={12}>
+        <Grid item xs={12} mb={1}>
           <Typography variant={'h6'}>Transport</Typography>
         </Grid>
-        <Grid item md={6} xs={12}>
-          <FormInputSelect
-            {...register('transport', { disabled: !edit })}
-            label="Transport Provider"
-            options={providers.map((provider) => ({
-              label: provider.label,
-              value: provider.name,
-            }))}
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <FormInputText
-            {...register('sendingDomain', { disabled: !edit })}
-            label="Sending Domain"
-          />
+        <Grid container item spacing={2}>
+          <Grid item md={6} xs={12}>
+            <FormInputSelect
+              {...register('transport', { disabled: !edit })}
+              label="Transport Provider"
+              options={providers.map((provider) => ({
+                label: provider.label,
+                value: provider.name,
+              }))}
+            />
+          </Grid>
+          <Grid item md={6} xs={12}>
+            <FormInputText
+              {...register('sendingDomain', { disabled: !edit })}
+              label="Sending Domain"
+            />
+          </Grid>
         </Grid>
         <Grid item md={12} xs={12}>
           <Divider sx={{ marginY: 2 }} variant={'fullWidth'} />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant={'h6'}>Transport settings</Typography>
+          <Typography variant={'h6'} mb={1}>
+            Transport settings
+          </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Grid container spacing={2} item>
+          <Grid container spacing={2}>
             {Object.keys(fields)?.map((field) => {
               if (transportProvider === 'smtp' && field === 'auth') {
                 return Object.keys(fields?.[field])?.map((childField) => {
@@ -174,7 +178,6 @@ const EmailConfig: React.FC = () => {
               mb={1}>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography variant={'h6'}>Activate Email Module</Typography>
-
                 <ConduitTooltip
                   title={
                     <Box display="flex" flexDirection="column" gap={2} p={2}>
@@ -203,6 +206,7 @@ const EmailConfig: React.FC = () => {
                   }>
                   <Icon
                     sx={{
+                      display: 'flex',
                       color:
                         theme.palette.mode === 'dark'
                           ? theme.palette.common.white
@@ -214,7 +218,7 @@ const EmailConfig: React.FC = () => {
               </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
-            <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
+            <Grid container columnSpacing={2} sx={{ pl: 4, mb: 1 }}>
               {isActive && renderSettingsFields}
             </Grid>
             <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
