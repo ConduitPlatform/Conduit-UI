@@ -2,6 +2,71 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.15.0-rc.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.14.1...v0.15.0-rc.0) (2022-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **Authentication:** config refactor (#156)
+* **Tokens:** changed JWT to Bearer token as support was dropped (#123)
+
+### Features
+
+* admin and client routes metrics ([#146](https://github.com/ConduitPlatform/Conduit-UI/issues/146)) ([c0f3b53](https://github.com/ConduitPlatform/Conduit-UI/commit/c0f3b536378bf784dc461c202e013053ddd0388f))
+* **admin:** Two factor authentication  ([#143](https://github.com/ConduitPlatform/Conduit-UI/issues/143)) ([3c3c9af](https://github.com/ConduitPlatform/Conduit-UI/commit/3c3c9afc822abb37ba8150c0c5102964f20d7b86))
+* **Authentication:** magic link sign in method added ([#159](https://github.com/ConduitPlatform/Conduit-UI/issues/159)) ([fe79398](https://github.com/ConduitPlatform/Conduit-UI/commit/fe7939885cd142555d2c333ff46b8253c0d75dd4))
+* Database rework  ([2192a04](https://github.com/ConduitPlatform/Conduit-UI/commit/2192a043082e5e12e0c57190af9b56e1e86b2f6f))
+* **Documentation:** documentation tooltips / buttons ([#145](https://github.com/ConduitPlatform/Conduit-UI/issues/145)) ([99f376a](https://github.com/ConduitPlatform/Conduit-UI/commit/99f376a610660127fef1d5784a5e574526f24153))
+* Extract metrics to redux ([#141](https://github.com/ConduitPlatform/Conduit-UI/issues/141)) ([2db71dc](https://github.com/ConduitPlatform/Conduit-UI/commit/2db71dc785900f703d7ffd7c42b8865219b93a3b))
+* handle offline module navigation, redirect to home ([#157](https://github.com/ConduitPlatform/Conduit-UI/issues/157)) ([e2639d2](https://github.com/ConduitPlatform/Conduit-UI/commit/e2639d2409e3c5ec669a1413542420458036484d))
+* lists loading footer ([#135](https://github.com/ConduitPlatform/Conduit-UI/issues/135)) ([38f2551](https://github.com/ConduitPlatform/Conduit-UI/commit/38f25514e4ee3466e13b1d80ad7a9d939ea001dd))
+* logs ([75e8634](https://github.com/ConduitPlatform/Conduit-UI/commit/75e8634378872edb29b09ecdbf98f0242a2d741b))
+* logs expandable ([#148](https://github.com/ConduitPlatform/Conduit-UI/issues/148)) ([f6ff84a](https://github.com/ConduitPlatform/Conduit-UI/commit/f6ff84a333127cf630966218ab4e9ce60776dbeb))
+* logs list live reload button and functionality ([#137](https://github.com/ConduitPlatform/Conduit-UI/issues/137)) ([798664f](https://github.com/ConduitPlatform/Conduit-UI/commit/798664fc3c566ee2eec56bb6273bfa707c7dc55f))
+* Logs metrics availability ([#165](https://github.com/ConduitPlatform/Conduit-UI/issues/165)) ([fb296c7](https://github.com/ConduitPlatform/Conduit-UI/commit/fb296c73204c68f0c148ec2c84304833036a8cb1))
+* logs open drawer with title press  ([ed95b43](https://github.com/ConduitPlatform/Conduit-UI/commit/ed95b431115c61ce1f48ada844198cb5085cd2a3))
+* **Lotties:** added lotties to metric widgets ([#153](https://github.com/ConduitPlatform/Conduit-UI/issues/153)) ([c744562](https://github.com/ConduitPlatform/Conduit-UI/commit/c7445620ec2b9a0ee138679cdadfdd3a130f0057))
+* **Lotties:** changed widget icon for endpoint, module health and schemas ([#155](https://github.com/ConduitPlatform/Conduit-UI/issues/155)) ([8f206d5](https://github.com/ConduitPlatform/Conduit-UI/commit/8f206d5e5ab86a29e355ab7aebf697a3cddf5ca0))
+* Metrics dashboards ([#126](https://github.com/ConduitPlatform/Conduit-UI/issues/126)) ([d368b0a](https://github.com/ConduitPlatform/Conduit-UI/commit/d368b0a014f0918c16b20cf264e31c49166c124e))
+* Metrics styling updates ([#147](https://github.com/ConduitPlatform/Conduit-UI/issues/147)) ([816f2dd](https://github.com/ConduitPlatform/Conduit-UI/commit/816f2dd33e096c97b1f6fcff174402f01e2a2a74))
+* modules refresh button ([#139](https://github.com/ConduitPlatform/Conduit-UI/issues/139)) ([f93fc40](https://github.com/ConduitPlatform/Conduit-UI/commit/f93fc405a698810210b265488153d2350c230a36))
+* react hook form register ([7fe1e6b](https://github.com/ConduitPlatform/Conduit-UI/commit/7fe1e6bc86121a691fc72382890dcf85dfe5b4dc))
+* swipeable logs drawer ([3cf2361](https://github.com/ConduitPlatform/Conduit-UI/commit/3cf2361741b8d8565fc15f16dea163c118d0f11b))
+* Theming options ([#129](https://github.com/ConduitPlatform/Conduit-UI/issues/129)) ([1769741](https://github.com/ConduitPlatform/Conduit-UI/commit/17697411399c502717973cba1a0a3fe83acaa8f0))
+* UI consistency ([#170](https://github.com/ConduitPlatform/Conduit-UI/issues/170)) ([6756378](https://github.com/ConduitPlatform/Conduit-UI/commit/675637856b3ab7ba64d7b81fa7f96e18bfc353d8))
+* Virtuoso list ([#132](https://github.com/ConduitPlatform/Conduit-UI/issues/132)) ([0fc8400](https://github.com/ConduitPlatform/Conduit-UI/commit/0fc8400bac8a9e81d1aa4bf0f0b4313cee937c87))
+
+
+### Bug Fixes
+
+* 404 errors on disabled modules ([4a36c59](https://github.com/ConduitPlatform/Conduit-UI/commit/4a36c59938a0c043186c9d2223952c9f23e0dadd))
+* **Authentication:** config refactor ([#156](https://github.com/ConduitPlatform/Conduit-UI/issues/156)) ([080c9c6](https://github.com/ConduitPlatform/Conduit-UI/commit/080c9c633924e58bc6d81176885c6143c4593e63))
+* chat request populate field, chat message user ([#136](https://github.com/ConduitPlatform/Conduit-UI/issues/136)) ([864559c](https://github.com/ConduitPlatform/Conduit-UI/commit/864559c4e708f4f86a1004e1a8e45302c7b6fbd8))
+* chat styles ([#134](https://github.com/ConduitPlatform/Conduit-UI/issues/134)) ([eef3f7d](https://github.com/ConduitPlatform/Conduit-UI/commit/eef3f7dea7543caff0379ab93a03e7fec1784c92))
+* close logs component by clicking title ([#164](https://github.com/ConduitPlatform/Conduit-UI/issues/164)) ([5f385d1](https://github.com/ConduitPlatform/Conduit-UI/commit/5f385d1e56ce80dff68fdecb21666cbda5b8a11d))
+* delete schema counter ([#168](https://github.com/ConduitPlatform/Conduit-UI/issues/168)) ([0d7deaf](https://github.com/ConduitPlatform/Conduit-UI/commit/0d7deaf02f81508c42c4055dbc816d08228d680a))
+* delete schema request params ([#167](https://github.com/ConduitPlatform/Conduit-UI/issues/167)) ([96fe576](https://github.com/ConduitPlatform/Conduit-UI/commit/96fe576b2c3d8594aed3d284e36fdb0c1813f867))
+* disabled module duplicate snackbar ([#140](https://github.com/ConduitPlatform/Conduit-UI/issues/140)) ([04a9e78](https://github.com/ConduitPlatform/Conduit-UI/commit/04a9e7823c75d3ad79d055b4cc18e34d72086b75))
+* empty list message, widget height ([#144](https://github.com/ConduitPlatform/Conduit-UI/issues/144)) ([ea13c9e](https://github.com/ConduitPlatform/Conduit-UI/commit/ea13c9e5b30c47e7c3b5d086180ce9ba72db9a27))
+* General Fixes ([#163](https://github.com/ConduitPlatform/Conduit-UI/issues/163)) ([8138434](https://github.com/ConduitPlatform/Conduit-UI/commit/8138434163065cc71f426dba359f8b8d171e9ecf))
+* **Latency:** Home latency fix ([#149](https://github.com/ConduitPlatform/Conduit-UI/issues/149)) ([aa44639](https://github.com/ConduitPlatform/Conduit-UI/commit/aa446392d6171629d4ca1e0e86bee7a3c5063d4b))
+* log colors ([74eeb8c](https://github.com/ConduitPlatform/Conduit-UI/commit/74eeb8c8d0615624db8719a6445d8399484153c5))
+* logs component drag issue ([#158](https://github.com/ConduitPlatform/Conduit-UI/issues/158)) ([2e03af6](https://github.com/ConduitPlatform/Conduit-UI/commit/2e03af6f6c3e62614db852aebb8f3b14f29f2bee))
+* logs component responsiveness ([#142](https://github.com/ConduitPlatform/Conduit-UI/issues/142)) ([8b52d52](https://github.com/ConduitPlatform/Conduit-UI/commit/8b52d52a5ed80e600eac3fbff402dbfe0a2acc50))
+* logs drawer ([39268dd](https://github.com/ConduitPlatform/Conduit-UI/commit/39268dd7d0e4781b1c26094db82db08499171333))
+* logs drawer max height ([#122](https://github.com/ConduitPlatform/Conduit-UI/issues/122)) ([067f419](https://github.com/ConduitPlatform/Conduit-UI/commit/067f4192554806d8231792b308baaeba7046bc15))
+* **Metrics:** metric improvements ([#172](https://github.com/ConduitPlatform/Conduit-UI/issues/172)) ([0bd1720](https://github.com/ConduitPlatform/Conduit-UI/commit/0bd17204496be508ef15b4cb1c665d90f6c522d1))
+* parameters of requests ([#125](https://github.com/ConduitPlatform/Conduit-UI/issues/125)) ([19de1f1](https://github.com/ConduitPlatform/Conduit-UI/commit/19de1f188b31da5112959d407e02e23e13e13a6b))
+* phone number regular expression ([#133](https://github.com/ConduitPlatform/Conduit-UI/issues/133)) ([3530d8a](https://github.com/ConduitPlatform/Conduit-UI/commit/3530d8a8901d9f92c53bf4d6cdaf568b6b04924b))
+* prometheus url ([#127](https://github.com/ConduitPlatform/Conduit-UI/issues/127)) ([02a2fce](https://github.com/ConduitPlatform/Conduit-UI/commit/02a2fce0ab131cd0814a518efd2fe0ad65188371))
+* remove instance from logs ([#124](https://github.com/ConduitPlatform/Conduit-UI/issues/124)) ([781b4e6](https://github.com/ConduitPlatform/Conduit-UI/commit/781b4e6769e0d24d6bf5f0d312c86c1ce041f8d3))
+* removed settings page loader ([#161](https://github.com/ConduitPlatform/Conduit-UI/issues/161)) ([12c0008](https://github.com/ConduitPlatform/Conduit-UI/commit/12c0008c5e81dead34fcac0e123736d73c834d66))
+* **settings:** fixed a bug where settings page was not accessible ([#160](https://github.com/ConduitPlatform/Conduit-UI/issues/160)) ([9ae3b4a](https://github.com/ConduitPlatform/Conduit-UI/commit/9ae3b4a6d9b0bb012e3a2f3cdfacf2feb7ee2575))
+* **SignIn:** added gitlab to providers ([#169](https://github.com/ConduitPlatform/Conduit-UI/issues/169)) ([309024b](https://github.com/ConduitPlatform/Conduit-UI/commit/309024be578c24f856f685b9e34e947c3813b9d3))
+* storage viewpager issue ([#154](https://github.com/ConduitPlatform/Conduit-UI/issues/154)) ([1766608](https://github.com/ConduitPlatform/Conduit-UI/commit/17666086a14849ce7bf7a9d861dc8f66a59ff364))
+* swagger & graphql modal urls  ([2b8cc58](https://github.com/ConduitPlatform/Conduit-UI/commit/2b8cc5858159c7f690286f5bc8cef91d217a918a))
+* **Tokens:** changed JWT to Bearer token as support was dropped ([#123](https://github.com/ConduitPlatform/Conduit-UI/issues/123)) ([2da043a](https://github.com/ConduitPlatform/Conduit-UI/commit/2da043a705cbb30cb53cf2fd85b95e0c504938fa))
+
 ### [0.14.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.14.0...v0.14.1) (2022-07-24)
 
 
