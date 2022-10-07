@@ -56,13 +56,13 @@ const MetricWidgetOptions: FC<Props> = ({
       setSelectedStep('10m');
       setStartDateValue(moment().subtract(1, 'hours'));
     } else if (value === 'Last 12h') {
-      setSelectedStep('1h');
+      setSelectedStep('30m');
       setStartDateValue(moment().subtract(12, 'hours'));
     } else if (value === 'Last 24h') {
-      setSelectedStep('2h');
+      setSelectedStep('1h');
       setStartDateValue(moment().subtract(24, 'hours'));
     } else if (value === 'Last week') {
-      setSelectedStep('14h');
+      setSelectedStep('8h');
       setStartDateValue(moment().subtract(7, 'days'));
     }
   };

@@ -184,7 +184,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       if (configData.github) {
         const githubData = configData.github;
 
-        setGithub({
+        setGitlab({
           enabled: githubData.enabled,
           accountLinking: githubData.accountLinking,
           clientId: githubData.clientId || '',

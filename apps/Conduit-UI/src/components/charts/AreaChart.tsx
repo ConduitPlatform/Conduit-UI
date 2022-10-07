@@ -74,6 +74,9 @@ const AreaChart: FC<Props> = ({
     dataLabels: {
       enabled: false,
     },
+    tooltip: {
+      x: { show: true, format: 'dd MMM HH:mm' },
+    },
     title: {
       text: graphTitle ?? '',
       align: 'left',
@@ -93,6 +96,8 @@ const AreaChart: FC<Props> = ({
         format: 'HH:mm',
         datetimeUTC: false,
       },
+      axisTicks: { show: true },
+      tickAmount: 10,
     },
     fill: {
       type: 'gradient',

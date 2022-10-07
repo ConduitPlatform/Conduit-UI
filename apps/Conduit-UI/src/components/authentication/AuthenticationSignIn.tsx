@@ -5,10 +5,10 @@ import {
   asyncUpdateAuthenticationConfig,
 } from '../../redux/slices/authenticationSlice';
 import { SignInTypes, SocialNameTypes } from '../../models/authentication/AuthModels';
-import AuthAccordion from './SignInContainer';
+import SignInContainer from './SignInContainer';
 import Typography from '@mui/material/Typography';
 
-const SignIn: React.FC = () => {
+const AuthenticationSignIn: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
@@ -77,7 +77,7 @@ const SignIn: React.FC = () => {
   return (
     <div>
       {config ? (
-        <AuthAccordion configData={config} handleData={handleConfigChange} />
+        <SignInContainer configData={config} handleData={handleConfigChange} />
       ) : (
         <Typography>No config available</Typography>
       )}
@@ -85,4 +85,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default AuthenticationSignIn;
