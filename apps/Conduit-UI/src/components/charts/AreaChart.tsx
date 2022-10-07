@@ -86,7 +86,8 @@ const AreaChart: FC<Props> = ({
       type: 'datetime',
       categories: timestamps ?? [],
       labels: {
-        format: 'hh:mm',
+        datetimeUTC: false,
+        format: 'HH:mm',
       },
     },
     fill: {
