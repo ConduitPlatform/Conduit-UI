@@ -7,9 +7,9 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { asyncPutChatConfig } from '../../redux/slices/chatSlice';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
+import { ConfigSaveSection, ConfigContainer, ConduitTooltip } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon, Tooltip, useTheme } from '@mui/material';
+import { Icon, useTheme } from '@mui/material';
 
 const ChatConfig: React.FC = () => {
   const theme = useTheme();
@@ -58,7 +58,7 @@ const ChatConfig: React.FC = () => {
               alignItems={'center'}>
               <Box display="flex" alignItems="center" gap={2}>
                 <Typography variant={'h6'}>Activate Chat Module</Typography>
-                <Tooltip title="Chat configuration documentation">
+                <ConduitTooltip title={'Chat configuration documentation'}>
                   <a
                     href="https://getconduit.dev/docs/modules/chat/config"
                     target="_blank"
@@ -66,6 +66,7 @@ const ChatConfig: React.FC = () => {
                     style={{ textDecoration: 'none' }}>
                     <Icon
                       sx={{
+                        display: 'flex',
                         color:
                           theme.palette.mode === 'dark'
                             ? theme.palette.common.white
@@ -74,7 +75,7 @@ const ChatConfig: React.FC = () => {
                       <InfoOutlined />
                     </Icon>
                   </a>
-                </Tooltip>
+                </ConduitTooltip>
               </Box>
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>

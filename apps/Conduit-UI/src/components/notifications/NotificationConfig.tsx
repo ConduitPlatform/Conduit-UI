@@ -110,8 +110,7 @@ const NotificationConfig: FC = () => {
                 mb: 1,
               }}>
               <Box display="flex" alignItems="center" gap={2}>
-                <Typography variant={'h6'}>Activate Authentication Module</Typography>
-
+                <Typography variant={'h6'}>Activate Push Notifications Module</Typography>
                 <ConduitTooltip
                   title={
                     <Box display="flex" flexDirection="column" gap={2} p={2}>
@@ -132,6 +131,7 @@ const NotificationConfig: FC = () => {
                   }>
                   <Icon
                     sx={{
+                      display: 'flex',
                       color:
                         theme.palette.mode === 'dark'
                           ? theme.palette.common.white
@@ -144,7 +144,7 @@ const NotificationConfig: FC = () => {
               <FormInputSwitch {...register('active', { disabled: !edit })} />
             </Box>
             {isActive && (
-              <Grid container spacing={2} sx={{ p: 3 }}>
+              <Grid container spacing={2} sx={{ mt: 3 }}>
                 <Grid container item alignContent={'center'} md={6} xs={12}>
                   <FormInputSelect
                     {...register('providerName', { disabled: !edit })}
