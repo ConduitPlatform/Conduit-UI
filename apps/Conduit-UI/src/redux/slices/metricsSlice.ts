@@ -92,7 +92,7 @@ export const asyncGetGenericMetricQueryRange = createAsyncThunk(
       return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+
       throw error;
     }
   }
@@ -117,7 +117,6 @@ export const asyncGetMetricsQuery = createAsyncThunk(
       return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -138,7 +137,6 @@ export const asyncGetModuleHealth = createAsyncThunk(
       return data.data.result[0].values[0][1] === '1';
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -165,11 +163,9 @@ export const asyncGetModuleLatency = createAsyncThunk(
       } else if (body.module !== 'home') {
         finalizedLatency = data.data.result[0].value[1] * 1000;
       }
-
       return finalizedLatency;
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -191,7 +187,6 @@ export const asyncGetCounter = createAsyncThunk(
       return data.data.result[0].values[0][1];
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
