@@ -1,4 +1,4 @@
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { asyncGetModuleHealth } from '../../redux/slices/metricsSlice';
@@ -50,36 +50,28 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
     );
   }, [dispatch, module]);
 
+  const extractContent = () => {
+    if (loading) {
+      return <MetricWidgetSkeleton />;
+    } else if (!loading && health) {
+      return 'Good';
+    } else if (!loading && health === false) {
+      return 'Critical';
+    } else return 'No data';
+  };
+
   return (
     <MetricsWidget
       small={small}
       icon={!loading && <LottieForWidget small={small} lottieFile={heartbeat} />}
       metric={
         <Box display="flex" gap={1} alignItems="center">
-          {loading && (
-            <Typography
-              color="primary"
-              variant="h4"
-              sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}>
-              <MetricWidgetSkeleton />
-            </Typography>
-          )}
-          {health && !loading && (
-            <Typography
-              color="primary"
-              variant="h4"
-              sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}>
-              Good
-            </Typography>
-          )}
-          {!health && !loading && (
-            <Typography
-              color="error"
-              variant="h4"
-              sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}>
-              Critical
-            </Typography>
-          )}
+          <Typography
+            color={!loading && health === false ? 'error' : 'primary'}
+            variant="h4"
+            sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}>
+            {extractContent()}
+          </Typography>
         </Box>
       }
       title="Health"

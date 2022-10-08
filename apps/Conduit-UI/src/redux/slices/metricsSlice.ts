@@ -219,6 +219,9 @@ const metricsSlice = createSlice({
     builder.addCase(asyncGetModuleHealth.pending, (state, action) => {
       state.meta.moduleHealthLoading[action.meta.arg.module] = true;
     });
+    builder.addCase(asyncGetModuleHealth.rejected, (state, action) => {
+      state.meta.moduleHealthLoading[action.meta.arg.module] = false;
+    });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
       state.data.moduleHealth[action.meta.arg.module] = action.payload;
       state.meta.moduleHealthLoading[action.meta.arg.module] = false;
@@ -231,6 +234,9 @@ const metricsSlice = createSlice({
         state.data.moduleLatency[action.meta.arg.module] = action.payload;
         state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
       }
+    });
+    builder.addCase(asyncGetModuleLatency.rejected, (state, action) => {
+      state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
     });
     builder.addCase(asyncGetCounter.pending, (state, action) => {
       state.meta.metricCounterLoading[action.meta.arg.expression] = true;

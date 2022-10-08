@@ -56,20 +56,30 @@ const RequestsLatency: FC<Props> = ({ module, modulesLength, small }) => {
     );
   }, [dispatch, module, modulesLength]);
 
+  const extractContent = () => {
+    if (loading) {
+      return <MetricWidgetSkeleton />;
+    } else if (!loading && latency) {
+      return `${latency?.toFixed(1)}ms`;
+    } else return 'No data';
+  };
+
   return (
-    <MetricsWidget
-      icon={!loading && <LottieForWidget small={small} lottieFile={latencyLottie} />}
-      small={small}
-      metric={
-        <Typography
-          color="primary"
-          variant="h4"
-          sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
-          {loading ? <MetricWidgetSkeleton /> : `${latency?.toFixed(1)}ms`}
-        </Typography>
-      }
-      title="Latency"
-    />
+    <>
+      <MetricsWidget
+        icon={!loading && <LottieForWidget small={small} lottieFile={latencyLottie} />}
+        small={small}
+        metric={
+          <Typography
+            color="primary"
+            variant="h4"
+            sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
+            {extractContent()}
+          </Typography>
+        }
+        title="Latency"
+      />
+    </>
   );
 };
 
