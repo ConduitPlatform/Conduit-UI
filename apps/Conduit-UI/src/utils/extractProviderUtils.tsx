@@ -7,7 +7,7 @@ import Github from '../assets/svgs/providers/github.svg';
 import Slack from '../assets/svgs/providers/slack.svg';
 import Microsoft from '../assets/svgs/providers/microsoft.svg';
 import Phone from '../assets/svgs/providers/phone.svg';
-import Refresh from '../assets/svgs/providers/refresh.svg';
+import Lock from '../assets/svgs/providers/lock.svg';
 import MagicLink from '../assets/svgs/providers/magicLink.svg';
 import GitLab from '../assets/svgs/providers/gitlab.svg';
 
@@ -32,7 +32,7 @@ export const extractProviderIcon = (name: string) => {
     case 'phoneAuthentication':
       return Phone;
     case 'twoFa':
-      return Refresh;
+      return Lock;
     case 'magic_link':
       return MagicLink;
     case 'gitlab':
