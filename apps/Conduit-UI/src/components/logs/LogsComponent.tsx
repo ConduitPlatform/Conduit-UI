@@ -235,13 +235,13 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   };
 
   const handleSetExpandedMessages = useCallback(
-    (itemIndex: number) => {
+    (timestamp: number) => {
       const newExpandedMessages = [...expandedMessages];
-      if (expandedMessages.includes(itemIndex)) {
-        const index = expandedMessages.findIndex((newId) => newId === itemIndex);
+      if (expandedMessages.includes(timestamp)) {
+        const index = expandedMessages.findIndex((newId) => newId === timestamp);
         newExpandedMessages.splice(index, 1);
       } else {
-        newExpandedMessages.push(itemIndex);
+        newExpandedMessages.push(timestamp);
       }
       setExpandedMessages(newExpandedMessages);
     },

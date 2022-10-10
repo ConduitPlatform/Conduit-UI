@@ -149,7 +149,7 @@ const MessageItemAccordion = ({
 interface Props {
   data: LogsData[];
   expandedMessages: number[];
-  setExpandedMessages: (itemIndex: number) => void;
+  setExpandedMessages: (timestamp: number) => void;
 }
 
 interface ListRowProps {
@@ -161,10 +161,13 @@ const createItemData = memoize((logs, count) => ({
   count,
 }));
 
+const followOutput = true;
+const overscanNumber = 100;
+
 const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
+  const theme = useTheme();
   const colorHash = new ColorHash();
   const { data, expandedMessages, setExpandedMessages } = props;
-  const theme = useTheme();
 
   const logsDateText = {
     fontSize: '1rem',
@@ -208,8 +211,8 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
     const expandable: MessageItemAccordionProps['expandable'] = useMemo(() => {
       const mainMessage = rowItem?.message.slice(0, rowItem?.message?.indexOf('{"'));
       const metaData = rowItem?.message?.slice(rowItem?.message?.indexOf('{"'));
-      const expanded = expandedMessages?.includes(index);
-      const setExpanded = () => setExpandedMessages(index);
+      const expanded = expandedMessages?.includes(rowItem?.timestamp);
+      const setExpanded = () => setExpandedMessages(rowItem?.timestamp);
 
       try {
         const parsed = JSON.parse(metaData);
@@ -224,7 +227,7 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
           mainMessage: mainMessage,
         };
       }
-    }, [index, rowItem?.message]);
+    }, [rowItem?.message, rowItem?.timestamp]);
 
     return expandable?.metaData
       ? MessageItemAccordion({
@@ -277,9 +280,9 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
       ref={ref}
       style={{ flex: '1 1 auto', overscrollBehavior: 'contain' }}
       totalCount={count}
-      overscan={100}
+      overscan={overscanNumber}
       itemContent={(index) => <ListRow index={index} />}
-      followOutput={true}
+      followOutput={followOutput}
       components={MUIComponents}
       computeItemKey={(index, item) => `log-${item?.timestamp}${index}`}
     />
