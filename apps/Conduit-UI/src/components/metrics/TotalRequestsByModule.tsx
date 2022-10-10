@@ -52,7 +52,7 @@ const TotalRequestsByModule: FC<Props> = ({ module }) => {
         steps={steps}
         detailedView={detailedView}
         setDetailedView={setDetailedView}
-        graphTitle={'Module requests'}
+        graphTitle={'Module Requests'}
       />
       <AreaChart
         label={'total requests'}

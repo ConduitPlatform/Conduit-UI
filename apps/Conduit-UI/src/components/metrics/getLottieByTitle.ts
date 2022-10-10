@@ -15,9 +15,9 @@ export const getLottieByTitle = (title: string) => {
   switch (title) {
     case 'Folders':
       return Folders;
-    case 'Email templates':
+    case 'Email Templates':
       return Email;
-    case 'Chat rooms':
+    case 'Chat Rooms':
       return Chat;
     case 'Endpoints':
       return Endpoints;
@@ -31,11 +31,11 @@ export const getLottieByTitle = (title: string) => {
       return Containers;
     case 'Size (bytes)':
       return Size;
-    case 'Sent emails':
+    case 'Sent Emails':
       return SendEmail;
     case 'Schemas':
       return Schemas;
-    case 'Logged in users':
+    case 'Logged-in Users':
       return Users;
     case 'SMS Sent':
       return SmsSent;

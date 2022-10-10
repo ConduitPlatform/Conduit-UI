@@ -204,7 +204,7 @@ const Home: React.FC = () => {
               )} */}
                   {isEnabled('chat') && (
                     <Grid item xs={6} sm={3}>
-                      <MetricCount title="Chat rooms" expression="conduit_chat_rooms_total[5m]" />
+                      <MetricCount title="Chat Rooms" expression="conduit_chat_rooms_total[5m]" />
                     </Grid>
                   )}
                   {isEnabled('forms') && (
@@ -215,7 +215,7 @@ const Home: React.FC = () => {
                   {isEnabled('email') && (
                     <Grid item xs={6} sm={3}>
                       <MetricCount
-                        title="Email templates"
+                        title="Email Templates"
                         expression="conduit_email_templates_total[5m]"
                       />
                     </Grid>
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                   <ExtractQueryRangeGraph
                     expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
-                    graphTitle="Total admin gRPC requests"
+                    graphTitle="Total Admin gRPC Requests"
                     label="Requests"
                     hasControls={false}
                     canZoom={false}
@@ -238,7 +238,7 @@ const Home: React.FC = () => {
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                   <ExtractQueryRangeGraph
                     expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
-                    graphTitle="Internal gRPC requests"
+                    graphTitle="Internal gRPC Requests"
                     label="Requests"
                     hasControls={false}
                     canZoom={false}

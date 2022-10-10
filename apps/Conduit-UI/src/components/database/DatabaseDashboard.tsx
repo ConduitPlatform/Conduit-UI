@@ -20,7 +20,7 @@ const DatabaseDashboard = () => {
           <Grid item md={3} sm={6} xs={6}>
             <MetricCount
               small
-              title="Unimported Schemas"
+              title="Conduit Schemas"
               expression="conduit_registered_schemas_total{imported='false'}[10m]"
             />
           </Grid>
@@ -38,7 +38,7 @@ const DatabaseDashboard = () => {
         <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
             expression="sum(increase(conduit_database_queries_total[10m]))"
-            graphTitle="Database queries"
+            graphTitle="Database Queries"
             label="Queries"
           />
         </Grid>

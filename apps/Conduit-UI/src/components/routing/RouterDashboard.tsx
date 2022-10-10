@@ -39,7 +39,7 @@ const RouterDashboard = () => {
             label="Requests"
             expressionsRoutes={expressionClientRoutes}
             hasControls={false}
-            graphTitle={'Client routes'}
+            graphTitle={'Client Routes'}
           />
         </Grid>
         <Grid item xs={12} lg={6}>
@@ -48,7 +48,7 @@ const RouterDashboard = () => {
         <Grid item md={12} lg={6}>
           <ExtractQueryRangeGraph
             expression="sum(increase(conduit_registered_routes_total[1h]))"
-            graphTitle="Registered routes"
+            graphTitle="Registered Routes"
             label="Routes"
           />
         </Grid>
