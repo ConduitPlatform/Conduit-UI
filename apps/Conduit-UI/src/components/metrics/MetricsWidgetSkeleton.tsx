@@ -8,7 +8,7 @@ const MetricWidgetSkeleton = () => {
   const skeletonWidth = () => {
     if (sm) {
       return '40px';
-    } else return '90px';
+    } else return '80px';
   };
 
   return <Skeleton variant="rectangular" width={skeletonWidth()} sx={{ borderRadius: 12 }} />;

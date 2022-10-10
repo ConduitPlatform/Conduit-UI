@@ -92,6 +92,7 @@ const StorageCreateDrawer: FC<Props> = ({
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
+                  validate: (value) => (value !== '' ? true : false),
                 })}
                 label="Name"
               />
