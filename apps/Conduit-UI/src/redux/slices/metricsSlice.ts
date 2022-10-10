@@ -92,7 +92,7 @@ export const asyncGetGenericMetricQueryRange = createAsyncThunk(
       return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
+
       throw error;
     }
   }
@@ -117,7 +117,6 @@ export const asyncGetMetricsQuery = createAsyncThunk(
       return prepareData(data);
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -138,7 +137,6 @@ export const asyncGetModuleHealth = createAsyncThunk(
       return data.data.result[0].values[0][1] === '1';
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -165,11 +163,9 @@ export const asyncGetModuleLatency = createAsyncThunk(
       } else if (body.module !== 'home') {
         finalizedLatency = data.data.result[0].value[1] * 1000;
       }
-
       return finalizedLatency;
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -191,7 +187,6 @@ export const asyncGetCounter = createAsyncThunk(
       return data.data.result[0].values[0][1];
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${error?.data?.error}`));
       throw error;
     }
   }
@@ -219,6 +214,9 @@ const metricsSlice = createSlice({
     builder.addCase(asyncGetModuleHealth.pending, (state, action) => {
       state.meta.moduleHealthLoading[action.meta.arg.module] = true;
     });
+    builder.addCase(asyncGetModuleHealth.rejected, (state, action) => {
+      state.meta.moduleHealthLoading[action.meta.arg.module] = false;
+    });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
       state.data.moduleHealth[action.meta.arg.module] = action.payload;
       state.meta.moduleHealthLoading[action.meta.arg.module] = false;
@@ -232,11 +230,17 @@ const metricsSlice = createSlice({
         state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
       }
     });
+    builder.addCase(asyncGetModuleLatency.rejected, (state, action) => {
+      state.meta.moduleLatencyLoading[action.meta.arg.module] = false;
+    });
     builder.addCase(asyncGetCounter.pending, (state, action) => {
       state.meta.metricCounterLoading[action.meta.arg.expression] = true;
     });
     builder.addCase(asyncGetCounter.fulfilled, (state, action) => {
       state.data.metricCounter[action.meta.arg.expression] = action.payload;
+      state.meta.metricCounterLoading[action.meta.arg.expression] = false;
+    });
+    builder.addCase(asyncGetCounter.rejected, (state, action) => {
       state.meta.metricCounterLoading[action.meta.arg.expression] = false;
     });
   },
