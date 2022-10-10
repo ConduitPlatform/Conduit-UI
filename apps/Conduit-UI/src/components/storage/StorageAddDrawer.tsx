@@ -98,7 +98,16 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
               />
             </Grid>
             <Grid item sm={12}>
-              <FormInputText {...register('name')} label="File name" />
+              <FormInputText
+                {...register('name', {
+                  pattern: {
+                    value: noSpacesOrSpecialChars,
+                    message: 'No spaces or special characters allowed!',
+                  },
+                  validate: (value) => (value !== '' ? true : false),
+                })}
+                label="File name"
+              />
             </Grid>
             <Grid item sm={12}>
               <FormInputSelect
@@ -114,6 +123,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
+                  validate: (value) => (value !== '' ? true : false),
                 })}
                 label="Folder name"
               />
