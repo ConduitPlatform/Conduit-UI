@@ -19,9 +19,6 @@ const LottieForWidget: FC<Props> = ({ small, lottieFile }) => {
     loop: true,
     autoplay: true,
     animationData: lottieFile,
-    rendererSettings: {
-      preserveAspectRatio: 'xMid slice',
-    },
   };
 
   const extractSizing = () => {
