@@ -240,6 +240,9 @@ const metricsSlice = createSlice({
       state.data.metricCounter[action.meta.arg.expression] = action.payload;
       state.meta.metricCounterLoading[action.meta.arg.expression] = false;
     });
+    builder.addCase(asyncGetCounter.rejected, (state, action) => {
+      state.meta.metricCounterLoading[action.meta.arg.expression] = false;
+    });
   },
 });
 

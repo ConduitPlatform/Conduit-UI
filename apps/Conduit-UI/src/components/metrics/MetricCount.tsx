@@ -55,6 +55,16 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
     );
   }, [dispatch, expression]);
 
+  const extractContent = () => {
+    if (loading) {
+      return <MetricWidgetSkeleton />;
+    } else if (!loading && counter) {
+      return counter;
+    } else if (!loading && counter === undefined) {
+      return 'Critical';
+    } else return 'No data';
+  };
+
   return (
     <MetricsWidget
       small={small}
@@ -64,7 +74,7 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
           color="primary"
           variant="h4"
           sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
-          {loading ? <MetricWidgetSkeleton /> : counter}
+          {extractContent()}
         </Typography>
       }
       title={title}
