@@ -58,6 +58,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState<boolean>(false);
   const [drawerHeight, setDrawerHeight] = useState<number>(minDrawerHeight);
   const [liveReloadChecked, setLiveReloadChecked] = useState<boolean>(false);
+  const [expandedMessages, setExpandedMessages] = useState<number[]>([]);
 
   const drawerHeaderRef = useRef<HTMLDivElement>();
 
@@ -232,6 +233,20 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   const handleChangeLiveReload = (bool: ChangeEvent<HTMLInputElement>) => {
     setLiveReloadChecked(bool.target.checked);
   };
+
+  const handleSetExpandedMessages = useCallback(
+    (timestamp: number) => {
+      const newExpandedMessages = [...expandedMessages];
+      if (expandedMessages.includes(timestamp)) {
+        const index = expandedMessages.findIndex((newId) => newId === timestamp);
+        newExpandedMessages.splice(index, 1);
+      } else {
+        newExpandedMessages.push(timestamp);
+      }
+      setExpandedMessages(newExpandedMessages);
+    },
+    [expandedMessages]
+  );
 
   return (
     <SwipeableDrawer
@@ -531,7 +546,12 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
             paddingX: 1,
             mt: 1,
           }}>
-          <LogsList data={values} ref={listRef} />
+          <LogsList
+            data={values}
+            ref={listRef}
+            expandedMessages={expandedMessages}
+            setExpandedMessages={handleSetExpandedMessages}
+          />
         </Box>
       </Box>
     </SwipeableDrawer>

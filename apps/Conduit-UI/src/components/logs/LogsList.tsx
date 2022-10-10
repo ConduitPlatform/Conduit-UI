@@ -75,8 +75,81 @@ const MessageItem = ({
   );
 };
 
+interface MessageItemAccordionProps {
+  expandable: {
+    mainMessage: string;
+    metaData?: string;
+    expanded?: boolean;
+    setExpanded?: () => void;
+  };
+  rowItem: LogsData;
+  handleBackgroundBubble: () => CSSProperties | string;
+  logsDateText: CSSProperties;
+  handleBackgroundLabel: () => string;
+}
+
+const MessageItemAccordion = ({
+  expandable,
+  rowItem,
+  handleBackgroundBubble,
+  logsDateText,
+  handleBackgroundLabel,
+}: MessageItemAccordionProps) => {
+  return (
+    <Accordion
+      expanded={expandable?.expanded}
+      onChange={expandable?.setExpanded}
+      elevation={0}
+      disableGutters
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        padding: 0,
+        '&.MuiAccordion-gutters': {
+          padding: 0,
+          margin: 0,
+        },
+      }}>
+      <AccordionSummary
+        sx={{
+          '&.MuiAccordionSummary-root': { minHeight: 'unset', justifyContent: 'flex-start' },
+          '.MuiAccordionSummary-content': {
+            margin: 0,
+            padding: 0,
+            flexGrow: 0,
+          },
+          padding: 0,
+          '.MuiAccordionSummary-expandIconWrapper': { marginLeft: 1 },
+        }}
+        expandIcon={<ExpandMoreIcon color={'disabled'} />}
+        aria-controls="panel2a-content"
+        id="panel2a-header">
+        {MessageItem({
+          message: expandable?.mainMessage,
+          rowItem: rowItem,
+          handleBackgroundBubble: handleBackgroundBubble,
+          logsDateText: logsDateText,
+          handleBackgroundLabel: handleBackgroundLabel,
+        })}
+      </AccordionSummary>
+      <AccordionDetails>
+        <JsonEditorComponent
+          placeholder={expandable?.metaData}
+          viewOnly
+          height="100%"
+          width="100%"
+          confirmGood={false}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
 interface Props {
   data: LogsData[];
+  expandedMessages: number[];
+  setExpandedMessages: (timestamp: number) => void;
 }
 
 interface ListRowProps {
@@ -88,10 +161,13 @@ const createItemData = memoize((logs, count) => ({
   count,
 }));
 
+const followOutput = true;
+const overscanNumber = 100;
+
 const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
-  const colorHash = new ColorHash();
-  const { data } = props;
   const theme = useTheme();
+  const colorHash = new ColorHash();
+  const { data, expandedMessages, setExpandedMessages } = props;
 
   const logsDateText = {
     fontSize: '1rem',
@@ -132,72 +208,41 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
       }
     };
 
-    const expandable = useMemo(() => {
+    const expandable: MessageItemAccordionProps['expandable'] = useMemo(() => {
       const mainMessage = rowItem?.message.slice(0, rowItem?.message?.indexOf('{"'));
       const metaData = rowItem?.message?.slice(rowItem?.message?.indexOf('{"'));
+      const expanded = expandedMessages?.includes(rowItem?.timestamp);
+      const setExpanded = () => setExpandedMessages(rowItem?.timestamp);
 
       try {
         const parsed = JSON.parse(metaData);
-        return { mainMessage: mainMessage, metaData: parsed };
+        return {
+          mainMessage: mainMessage,
+          metaData: parsed,
+          expanded: expanded,
+          setExpanded: setExpanded,
+        };
       } catch {
-        return { mainMessage: mainMessage, metaData: undefined };
+        return {
+          mainMessage: mainMessage,
+        };
       }
-    }, [rowItem?.message]);
+    }, [rowItem?.message, rowItem?.timestamp]);
 
-    return expandable?.metaData ? (
-      <Accordion
-        elevation={0}
-        disableGutters
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          padding: 0,
-          '&.MuiAccordion-gutters': {
-            padding: 0,
-            margin: 0,
-          },
-        }}>
-        <AccordionSummary
-          sx={{
-            '&.MuiAccordionSummary-root': { minHeight: 'unset', justifyContent: 'flex-start' },
-            '.MuiAccordionSummary-content': {
-              margin: 0,
-              padding: 0,
-              flexGrow: 0,
-            },
-            padding: 0,
-            '.MuiAccordionSummary-expandIconWrapper': { marginLeft: 1 },
-          }}
-          expandIcon={<ExpandMoreIcon color={'disabled'} />}
-          aria-controls="panel2a-content"
-          id="panel2a-header">
-          {MessageItem({
-            message: expandable?.mainMessage,
-            rowItem: rowItem,
-            handleBackgroundBubble: handleBackgroundBubble,
-            logsDateText: logsDateText,
-            handleBackgroundLabel: handleBackgroundLabel,
-          })}
-        </AccordionSummary>
-        <AccordionDetails>
-          <JsonEditorComponent
-            placeholder={expandable?.metaData}
-            viewOnly
-            height="100%"
-            width="100%"
-            confirmGood={false}
-          />
-        </AccordionDetails>
-      </Accordion>
-    ) : (
-      MessageItem({
-        rowItem: rowItem,
-        handleBackgroundBubble: handleBackgroundBubble,
-        logsDateText: logsDateText,
-        handleBackgroundLabel: handleBackgroundLabel,
-      })
-    );
+    return expandable?.metaData
+      ? MessageItemAccordion({
+          expandable: expandable,
+          rowItem: rowItem,
+          handleBackgroundBubble: handleBackgroundBubble,
+          logsDateText: logsDateText,
+          handleBackgroundLabel: handleBackgroundLabel,
+        })
+      : MessageItem({
+          rowItem: rowItem,
+          handleBackgroundBubble: handleBackgroundBubble,
+          logsDateText: logsDateText,
+          handleBackgroundLabel: handleBackgroundLabel,
+        });
   };
 
   const MUIList: Components['List'] = forwardRef(({ children, style }, ref) => {
@@ -235,9 +280,9 @@ const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
       ref={ref}
       style={{ flex: '1 1 auto', overscrollBehavior: 'contain' }}
       totalCount={count}
-      overscan={100}
+      overscan={overscanNumber}
       itemContent={(index) => <ListRow index={index} />}
-      followOutput={true}
+      followOutput={followOutput}
       components={MUIComponents}
       computeItemKey={(index, item) => `log-${item?.timestamp}${index}`}
     />
