@@ -51,7 +51,9 @@ const CustomDrawer: React.FC<Props> = ({ itemSelected, ...rest }) => {
           justifyContent: 'center',
           mt: 4,
         }}>
-        <Image src={smallScreen ? ConduitLogoMini : ConduitLogo} alt="conduit-logo" />
+        <LinkComponent href="/">
+          <Image src={smallScreen ? ConduitLogoMini : ConduitLogo} alt="conduit-logo" />
+        </LinkComponent>
       </ListItem>
       <Box
         sx={{
