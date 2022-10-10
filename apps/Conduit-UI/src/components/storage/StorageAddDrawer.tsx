@@ -8,6 +8,8 @@ import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { noSpacesOrSpecialChars } from '../../utils/validations';
+import { useAppDispatch } from '../../redux/store';
+import { enqueueInfoNotification } from '../../utils/useNotifier';
 
 interface Props {
   open: boolean;
@@ -25,6 +27,7 @@ interface FormData {
 }
 
 const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddFile, path }) => {
+  const dispatch = useAppDispatch();
   const [fileName, setFileName] = useState('');
   const [fileData, setFileData] = useState<{ data: string; mimeType: string }>({
     data: '',
@@ -57,6 +60,10 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
   };
 
   const handleAdd = (data: FormData) => {
+    if (fileData.data === '' && fileData.mimeType === '') {
+      dispatch(enqueueInfoNotification('Please upload a file to procceed!'));
+      return;
+    }
     closeDrawer();
     const sendFileData = {
       ...data,
@@ -66,6 +73,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
     };
 
     setInitialFileData();
+
     handleAddFile(sendFileData);
   };
 
