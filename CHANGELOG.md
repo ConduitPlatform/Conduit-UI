@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.15.0-rc.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.0-rc.0...v0.15.0-rc.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* **App:** minor bug fixes, code improvements ([#173](https://github.com/ConduitPlatform/Conduit-UI/issues/173)) ([c3bf0cd](https://github.com/ConduitPlatform/Conduit-UI/commit/c3bf0cde1df8db0e92685dc1d5e723e59a3026ec))
+* logs list expanded messages hide issue ([#171](https://github.com/ConduitPlatform/Conduit-UI/issues/171)) ([7eee0e0](https://github.com/ConduitPlatform/Conduit-UI/commit/7eee0e0b8194360f83eeb73e129f110d867abbb4))
+* **Storage, Metrics:** required fields, capitalization ([#174](https://github.com/ConduitPlatform/Conduit-UI/issues/174)) ([5e7e8f4](https://github.com/ConduitPlatform/Conduit-UI/commit/5e7e8f443fec83dc5062af47131608f4bd16077a))
+
 ## [0.15.0-rc.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.14.1...v0.15.0-rc.0) (2022-10-07)
 
 
