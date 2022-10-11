@@ -170,7 +170,7 @@ export const SchemaOverview: FC<Props> = ({
           </Box>
         )}
       </Box>
-      <Grid container spacing={3} overflow={'hidden'}>
+      <Grid container spacing={3} overflow={'hidden'} sx={{ height: '100%' }}>
         <Grid
           item
           xs={12}

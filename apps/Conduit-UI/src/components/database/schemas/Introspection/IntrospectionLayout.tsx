@@ -108,9 +108,13 @@ const IntrospectionLayout: FC = () => {
         <>
           <Box
             sx={{
+              display: 'flex',
+              flex: 1,
+              flexFlow: 'column',
               width: '100%',
               overflow: 'hidden',
               borderRadius: 4,
+              height: '100%',
             }}>
             {actualSchema ? (
               <SchemaOverview

@@ -1,4 +1,4 @@
-import { Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 import React, { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { asyncGetCounter } from '../../redux/slices/metricsSlice';

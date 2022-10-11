@@ -42,7 +42,7 @@ const InfiniteScrollLayout: React.FC<Props> = ({
           </Button>
         ) : null}
       </Box>
-      <Box sx={{ mb: 2, overflow: 'auto' }} width={'100%'}>
+      <Box sx={{ overflow: 'auto' }} width={'100%'}>
         {infoComponent}
       </Box>
     </Box>
