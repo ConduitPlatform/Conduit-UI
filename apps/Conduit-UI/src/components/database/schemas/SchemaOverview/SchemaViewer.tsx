@@ -77,11 +77,12 @@ const SchemaViewer: FC<Props> = ({
       <Paper
         elevation={0}
         sx={{
-          maxHeight: '65vh',
+          height: '64vh',
           border: '1px',
-          padding: 4,
-          minHeight: 65,
+          paddingX: 3,
+          paddingY: 1,
           borderRadius: '4px',
+          overflow: 'auto',
         }}>
         {data &&
           Array.isArray(data[dataKey]) &&

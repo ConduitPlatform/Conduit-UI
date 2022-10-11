@@ -371,6 +371,9 @@ const Schemas: FC = () => {
               display: 'flex',
               flexDirection: 'column',
               width: '100%',
+              overflow: 'hidden',
+              height: '100%',
+              flex: 1,
             }}>
             <SchemaTabs handleChange={handleTabChange} value={selectedTab} />
             {prepareNavigation()}

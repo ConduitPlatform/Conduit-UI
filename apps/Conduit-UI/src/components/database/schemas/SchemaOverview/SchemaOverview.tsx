@@ -170,18 +170,19 @@ export const SchemaOverview: FC<Props> = ({
           </Box>
         )}
       </Box>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} overflow={'hidden'}>
         <Grid
           item
           xs={12}
           sx={{
-            padding: 1,
+            padding: 3,
             mt: 1,
+            overflow: 'hidden',
           }}>
           <Box
             height="100%"
             sx={{
-              overflow: 'auto',
+              overflow: 'hidden',
               background: theme.palette.background.paper,
               borderRadius: 4,
             }}>
@@ -193,7 +194,6 @@ export const SchemaOverview: FC<Props> = ({
               <JsonEditorComponent
                 placeholder={schema?.fields}
                 viewOnly
-                height="100%"
                 width="100%"
                 confirmGood={false}
               />
