@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Grid, Box, Button, useTheme } from '@mui/material';
+import { Grid, Box, Button } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
 import { ExtractSchemaInfo } from '../../../../utils/ExtractSchemaInfo';
 import { useRouter } from 'next/router';
@@ -32,7 +32,6 @@ export const SchemaOverview: FC<Props> = ({
 }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const theme = useTheme();
   const [selectedSchemaForAction, setSelectedSchemaForAction] = useState<{
     data: any;
     action: actions;
@@ -170,35 +169,48 @@ export const SchemaOverview: FC<Props> = ({
           </Box>
         )}
       </Box>
-      <Grid container spacing={3}>
+      <Grid
+        container
+        sx={{
+          display: 'flex',
+          flex: 1,
+          height: '100%',
+          mt: 1,
+          mb: 2,
+          overflow: 'hidden',
+        }}>
         <Grid
           item
           xs={12}
           sx={{
-            padding: 1,
-            mt: 1,
+            height: '100%',
+            paddingRight: 3,
+            overflow: 'hidden',
+            borderRadius: 4,
           }}>
-          <Box
-            height="100%"
+          <Grid
+            item
             sx={{
-              overflow: 'auto',
-              background: theme.palette.background.paper,
-              borderRadius: 4,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
             }}>
             {objectView ? (
               Object.keys({ newTypeFields: formattedFields }).map((dataKey, i) => (
                 <SchemaViewer dataKey={dataKey} data={{ newTypeFields: formattedFields }} key={i} />
               ))
             ) : (
-              <JsonEditorComponent
-                placeholder={schema?.fields}
-                viewOnly
-                height="100%"
-                width="100%"
-                confirmGood={false}
-              />
+              <Box sx={{ borderRadius: 4, overflow: 'auto', height: '100%' }}>
+                <JsonEditorComponent
+                  placeholder={schema?.fields}
+                  viewOnly
+                  height="100%"
+                  width="100%"
+                  confirmGood={false}
+                />
+              </Box>
             )}
-          </Box>
+          </Grid>
         </Grid>
       </Grid>
       <SideDrawerWrapper

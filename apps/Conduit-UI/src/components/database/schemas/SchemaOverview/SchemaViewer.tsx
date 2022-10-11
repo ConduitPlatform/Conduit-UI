@@ -73,16 +73,8 @@ const SchemaViewer: FC<Props> = ({
   };
 
   return (
-    <Box {...rest}>
-      <Paper
-        elevation={0}
-        sx={{
-          maxHeight: '65vh',
-          border: '1px',
-          padding: 4,
-          minHeight: 65,
-          borderRadius: '4px',
-        }}>
+    <Box {...rest} sx={{ borderRadius: 4, overflow: 'hidden', height: '100%' }}>
+      <Paper elevation={0} sx={{ overflow: 'auto', height: '100%', padding: 2 }}>
         {data &&
           Array.isArray(data[dataKey]) &&
           data[dataKey].length > 0 &&
@@ -93,7 +85,6 @@ const SchemaViewer: FC<Props> = ({
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 padding: 1,
-                mb: 1,
               }}>
               <Grid container alignItems="center">
                 <Grid item xs={editable ? 3 : 6}>

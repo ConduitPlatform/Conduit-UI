@@ -125,6 +125,7 @@ const Modules: React.FC<Props> = ({
       enabledSms,
       enabledStorage,
       itemSelected,
+      metricsAvailable,
       smallScreen,
     ]
   );
