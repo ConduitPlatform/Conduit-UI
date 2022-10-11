@@ -4,6 +4,7 @@ import ListItemText from "@mui/material/ListItemText";
 import makeStyles from "@mui/styles/makeStyles";
 import { ListItem, Theme, Tooltip, useTheme } from "@mui/material";
 import clsx from "clsx";
+import {alpha} from "@mui/material/styles";
 
 const useStyles = makeStyles((theme: Theme) => ({
   listItem: {
@@ -14,9 +15,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         : theme.palette.common.black,
     borderWidth: 1,
     "&:hover": {
+      background: alpha(theme.palette.primary.dark,0.2),
       borderWidth: 1,
     },
     "&:focus": {
+      background: alpha(theme.palette.primary.dark,0.2),
       borderWidth: 1,
     },
     "&.Mui-selected": {
