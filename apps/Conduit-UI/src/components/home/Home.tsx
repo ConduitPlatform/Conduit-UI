@@ -109,7 +109,7 @@ const Home: React.FC = () => {
       <Head>
         <title>Conduit - App</title>
       </Head>
-      <Box sx={{ height: '100vh', p: 4 }}>
+      <Box sx={{ height: '100vh', p: 2 }}>
         <Box
           p={2}
           display={'flex'}

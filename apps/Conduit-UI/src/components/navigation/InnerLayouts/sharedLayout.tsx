@@ -77,9 +77,10 @@ const SharedLayout: FC<Props> = ({
   return (
     <Box sx={{ height: '100vh', p: 4 }}>
       <Box sx={{ mb: 2 }}>
-        <Box display="flex" alignItems="center">
+        <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant={'h4'}>{title}</Typography>
           <Box display="flex" alignItems="center">
+            <Box px={3}>{loader}</Box>
             {module !== 'settings' && (
               <Box whiteSpace={'nowrap'}>
                 {noSwagger ? null : (
@@ -122,7 +123,6 @@ const SharedLayout: FC<Props> = ({
                 )}
               </Box>
             )}
-            <Box px={3}>{loader}</Box>
           </Box>
         </Box>
         <Main>

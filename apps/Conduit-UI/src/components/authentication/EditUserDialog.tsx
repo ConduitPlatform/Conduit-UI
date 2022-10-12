@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { asyncEditUser } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
