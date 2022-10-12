@@ -444,7 +444,10 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
                   </Box>
                 </Box>
               }>
-              <Icon sx={{ color: 'common.white' }}>
+              <Icon
+                sx={{
+                  color: theme.palette.common.white,
+                }}>
                 <InfoOutlined />
               </Icon>
             </ConduitTooltip>
