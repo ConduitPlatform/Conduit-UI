@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-
 import { AuthUser } from '../../models/authentication/AuthModels';
 import { asyncEditUser } from '../../redux/slices/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
@@ -16,6 +15,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputCheckBox } from '../common/FormComponents/FormInputCheckbox';
 import { emailRegExp, phoneNumberRegExp } from '../../utils/validations';
+import { InputAdornment } from '@mui/material';
+import { Person, Phone } from '@mui/icons-material';
 
 interface Props {
   data: AuthUser;
@@ -79,6 +80,15 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 spacing={2}>
                 <Grid item sm={12}>
                   <FormInputText
+                    textFieldProps={{
+                      InputProps: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Person color="primary" />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
                     {...register('email', {
                       required: 'Email is required',
                       pattern: {
@@ -91,6 +101,15 @@ const EditUserDialog: React.FC<Props> = ({ data, open, handleClose }) => {
                 </Grid>
                 <Grid item sm={12}>
                   <FormInputText
+                    textFieldProps={{
+                      InputProps: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Phone color="primary" />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
                     {...register('phoneNumber', {
                       pattern: {
                         value: phoneNumberRegExp,

@@ -314,7 +314,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
 
         <Box display={'flex'} flex={1} justifyContent={'flex-end'}>
           {drawerHeight <= minDrawerHeight ? (
-            <IconButton onClick={() => setDrawerHeight(defaultDrawerHeight)} size={'small'}>
+            <IconButton onClick={() => setDrawerHeight(window.innerHeight)} size={'small'}>
               <ExpandLessIcon fontSize={'small'} />
             </IconButton>
           ) : (

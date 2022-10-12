@@ -21,6 +21,8 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
     (state) => state?.metricsSlice?.meta?.moduleHealthLoading?.[module]
   );
 
+  console.log(health);
+
   const healthFontSize = {
     [theme.breakpoints.down('lg')]: {
       fontSize: '1.2rem',
@@ -57,7 +59,7 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
       return 'Good';
     } else if (!loading && health === false) {
       return 'Critical';
-    } else return 'No data';
+    } else if (!loading && health === undefined) return 'No data';
   };
 
   return (

@@ -1,7 +1,6 @@
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
-import { enqueueErrorNotification } from '../../utils/useNotifier';
 import {
   MetricsData,
   MetricsLogsData,
@@ -22,7 +21,7 @@ interface IMetricsSlice {
     genericMetric: Record<string, MetricsData>;
     metricCounter: Record<string, number>;
     moduleTotalRequests: Record<ModulesTypes, MetricsData>;
-    moduleHealth: Record<ModulesTypes, boolean>;
+    moduleHealth: Record<ModulesTypes, boolean | undefined>;
     moduleLatency: Record<ModulesTypes, number>;
   };
   meta: {
@@ -39,7 +38,7 @@ const initialState: IMetricsSlice = {
     genericMetric: {} as Record<string, MetricsData>,
     metricCounter: {} as Record<string, number>,
     moduleTotalRequests: {} as Record<ModulesTypes, MetricsData>,
-    moduleHealth: {} as Record<ModulesTypes, boolean>,
+    moduleHealth: {} as Record<ModulesTypes, boolean | undefined>,
     moduleLatency: {} as Record<ModulesTypes, number>,
   },
   meta: {
@@ -134,7 +133,7 @@ export const asyncGetModuleHealth = createAsyncThunk(
     try {
       const { data } = await getModuleHealth(body);
       thunkAPI.dispatch(setAppLoading(false));
-      return data.data.result[0].values[0][1] === '1';
+      return data.data.result[0].values[0][1];
     } catch (error: any) {
       thunkAPI.dispatch(setAppLoading(false));
       throw error;
@@ -218,7 +217,13 @@ const metricsSlice = createSlice({
       state.meta.moduleHealthLoading[action.meta.arg.module] = false;
     });
     builder.addCase(asyncGetModuleHealth.fulfilled, (state, action) => {
-      state.data.moduleHealth[action.meta.arg.module] = action.payload;
+      if (action.payload === '1') {
+        state.data.moduleHealth[action.meta.arg.module] = true;
+      } else if (action.payload === '0') {
+        state.data.moduleHealth[action.meta.arg.module] = false;
+      } else {
+        state.data.moduleHealth[action.meta.arg.module] = undefined;
+      }
       state.meta.moduleHealthLoading[action.meta.arg.module] = false;
     });
     builder.addCase(asyncGetModuleLatency.pending, (state, action) => {
