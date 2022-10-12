@@ -192,7 +192,6 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   }, [startDateValue]);
 
   const handleMouseMove = useCallback((e) => {
-    console.log(window.innerHeight);
     const newHeight =
       window?.innerHeight -
       e?.clientY +
