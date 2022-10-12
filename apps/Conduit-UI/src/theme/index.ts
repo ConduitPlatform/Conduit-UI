@@ -12,7 +12,7 @@ const paletteDark: PaletteOptions = {
   mode: 'dark',
   primary: {
     main: primary,
-    contrastText: '#F2F2F2',
+    contrastText: '#000000',
   },
   secondary: {
     main: secondary,
