@@ -65,38 +65,32 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
   const listRef = useRef<VirtuosoHandle>(null);
   const smallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const requestDebounce = useCallback(
-    debounce(() => {
-      dispatch(
-        asyncGetQueryRange({
-          module: module,
-          levels: selectedLevels,
-          startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
-          endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
-          limit: selectedLimit,
-        })
-      );
-      dispatch(
-        asyncGetLevels({
-          startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
-          endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
-        })
-      );
-    }, 1000),
+  const requestDebounce = useMemo(
+    () =>
+      debounce(() => {
+        dispatch(
+          asyncGetQueryRange({
+            module: module,
+            levels: selectedLevels,
+            startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+            endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
+            limit: selectedLimit,
+          })
+        );
+        dispatch(
+          asyncGetLevels({
+            startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+            endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
+          })
+        );
+      }, 1000),
     [dispatch, module, selectedLevels, startDateValue, endDateValue, selectedLimit]
   );
 
   useEffect(() => {
     requestDebounce();
-  }, [
-    dispatch,
-    endDateValue,
-    module,
-    requestDebounce,
-    selectedLevels,
-    selectedLimit,
-    startDateValue,
-  ]);
+    return () => requestDebounce.cancel();
+  }, [requestDebounce]);
 
   useEffect(() => {
     listRef?.current?.scrollToIndex({
@@ -123,20 +117,21 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
     setSelectedLimit(newValue?.target?.value as number);
   };
 
-  const refreshRequest = useCallback(
-    throttle(
-      () =>
-        dispatch(
-          asyncGetQueryRange({
-            module: module,
-            levels: selectedLevels,
-            startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
-            endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
-            limit: selectedLimit,
-          })
-        ),
-      1000
-    ),
+  const refreshRequest = useMemo(
+    () =>
+      throttle(
+        () =>
+          dispatch(
+            asyncGetQueryRange({
+              module: module,
+              levels: selectedLevels,
+              startDate: startDateValue ? startDateValue.valueOf() * 1000000 : undefined,
+              endDate: endDateValue ? endDateValue.valueOf() * 1000000 : undefined,
+              limit: selectedLimit,
+            })
+          ),
+        1000
+      ),
     [dispatch, module, selectedLevels, startDateValue, endDateValue, selectedLimit]
   );
 
