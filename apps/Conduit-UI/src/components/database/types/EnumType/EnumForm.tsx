@@ -1,3 +1,5 @@
+import { Add } from '@mui/icons-material';
+import { Chip, IconButton, InputAdornment } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -10,7 +12,7 @@ import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { IDrawerData, IEnumData } from '../../../../models/database/BuildTypesModels';
 import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
@@ -37,9 +39,17 @@ const EnumForm: FC<IProps> = ({
     type: selectedItem ? selectedItem.type : drawerData.type,
     select: selectedItem ? selectedItem.select : true,
     required: selectedItem ? selectedItem.required : false,
-    enumValues: selectedItem ? selectedItem.enumValues : '',
+    enumValues: selectedItem ? selectedItem.enumValues : [],
     isEnum: selectedItem ? selectedItem.isEnum : true,
   });
+
+  const [newEnumValue, setNewEnumValue] = useState<string>('');
+  const [enumValues, setEnumValues] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (selectedItem?.enumValues)
+      setEnumValues(JSON.parse(JSON.stringify(selectedItem.enumValues)));
+  }, [selectedItem]);
 
   const handleFieldName = (event: { target: { value: string } }) => {
     setSimpleData({ ...simpleData, name: event.target.value.split(' ').join('') });
@@ -57,12 +67,17 @@ const EnumForm: FC<IProps> = ({
     setSimpleData({ ...simpleData, select: !simpleData.select });
   };
 
-  const handleOptions = (event: { target: { value: string } }) => {
-    setSimpleData({ ...simpleData, enumValues: event.target.value });
+  const handleAddEnum = () => {
+    setEnumValues([...enumValues, newEnumValue]);
+    setNewEnumValue('');
   };
 
+  const handleRemoveEnum = () => {};
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    onSubmit(simpleData);
+    const finalizedData = { ...simpleData, enumValues };
+
+    onSubmit(finalizedData);
     event.preventDefault();
   };
 
@@ -97,19 +112,26 @@ const EnumForm: FC<IProps> = ({
         </Select>
         <FormHelperText>Select the type of enum values</FormHelperText>
       </FormControl>
+
       <TextField
-        id="Options"
-        label="Options"
-        multiline
-        rows="4"
-        onChange={handleOptions}
-        value={simpleData.enumValues}
-        variant="outlined"
-        sx={{ mb: 1 }}
-        fullWidth
-        required
-        helperText={'(Define one option per line)'}
+        label="Add enum value"
+        value={newEnumValue}
+        onChange={(e) => setNewEnumValue(e.target.value)}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton disabled={newEnumValue === ''} onClick={() => handleAddEnum()}>
+                <Add />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
+      <Box display="flex" flexWrap="wrap" gap={1} p={1}>
+        {enumValues.map((enumValue, index) => (
+          <Chip key={index} label={enumValue} />
+        ))}
+      </Box>
 
       <Box width={'100%'}>
         <Grid container>
