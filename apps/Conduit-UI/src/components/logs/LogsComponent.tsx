@@ -100,11 +100,9 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
 
   useEffect(() => {
     listRef?.current?.scrollToIndex({
-      index: values?.length - 1,
-      align: 'start',
-      behavior: 'auto',
+      index: 'LAST',
     });
-  }, [values]);
+  }, [selectedLimit, selectedLevels, startDateValue, endDateValue]);
 
   const handleChangeLevels = (event: SelectChangeEvent<unknown>) => {
     const {
@@ -144,6 +142,9 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
 
   const handleRefresh = useCallback(() => {
     refreshRequest();
+    listRef?.current?.scrollToIndex({
+      index: 'LAST',
+    });
   }, [refreshRequest]);
 
   useEffect(() => {
@@ -550,6 +551,7 @@ const LogsComponent: React.FC<Props> = ({ module }) => {
             data={values}
             ref={listRef}
             expandedMessages={expandedMessages}
+            followOutput={!liveReloadChecked}
             setExpandedMessages={handleSetExpandedMessages}
           />
         </Box>

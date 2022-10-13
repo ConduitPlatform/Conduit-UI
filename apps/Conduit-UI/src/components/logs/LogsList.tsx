@@ -150,6 +150,7 @@ interface Props {
   data: LogsData[];
   expandedMessages: number[];
   setExpandedMessages: (timestamp: number) => void;
+  followOutput?: boolean;
 }
 
 interface ListRowProps {
@@ -161,13 +162,12 @@ const createItemData = memoize((logs, count) => ({
   count,
 }));
 
-const followOutput = true;
 const overscanNumber = 100;
 
 const LogsList = forwardRef<VirtuosoHandle, Props>((props, ref) => {
   const theme = useTheme();
   const colorHash = new ColorHash();
-  const { data, expandedMessages, setExpandedMessages } = props;
+  const { data, expandedMessages, setExpandedMessages, followOutput = true } = props;
 
   const logsDateText = {
     fontSize: '1rem',
