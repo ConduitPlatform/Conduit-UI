@@ -14,6 +14,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { FC, useEffect, useState } from 'react';
 import { IDrawerData, IEnumData } from '../../../../models/database/BuildTypesModels';
+import { useAppDispatch } from '../../../../redux/store';
+import { enqueueInfoNotification } from '../../../../utils/useNotifier';
 import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {
@@ -34,6 +36,7 @@ const EnumForm: FC<IProps> = ({
   disabledProps,
   ...rest
 }) => {
+  const dispatch = useAppDispatch();
   const [simpleData, setSimpleData] = useState({
     name: selectedItem ? selectedItem.name : '',
     type: selectedItem ? selectedItem.type : drawerData.type,
@@ -68,11 +71,18 @@ const EnumForm: FC<IProps> = ({
   };
 
   const handleAddEnum = () => {
+    if (enumValues.includes(newEnumValue)) {
+      dispatch(enqueueInfoNotification(`Duplicate enum ${newEnumValue}`));
+      return;
+    }
     setEnumValues([...enumValues, newEnumValue]);
     setNewEnumValue('');
   };
 
-  const handleRemoveEnum = () => {};
+  const handleRemoveEnum = (value: string) => {
+    const newArray = enumValues.filter((enumValue) => enumValue !== value);
+    setEnumValues([...newArray]);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const finalizedData = { ...simpleData, enumValues };
@@ -115,6 +125,7 @@ const EnumForm: FC<IProps> = ({
 
       <TextField
         label="Add enum value"
+        fullWidth
         value={newEnumValue}
         onChange={(e) => setNewEnumValue(e.target.value)}
         InputProps={{
@@ -129,7 +140,12 @@ const EnumForm: FC<IProps> = ({
       />
       <Box display="flex" flexWrap="wrap" gap={1} p={1}>
         {enumValues.map((enumValue, index) => (
-          <Chip key={index} label={enumValue} />
+          <Chip
+            color="primary"
+            key={index}
+            label={enumValue}
+            onDelete={() => handleRemoveEnum(enumValue)}
+          />
         ))}
       </Box>
 
