@@ -42,15 +42,8 @@ const RouterDashboard = () => {
             graphTitle={'Client Routes'}
           />
         </Grid>
-        <Grid item xs={12} lg={6}>
+        <Grid item xs={12}>
           <TotalRequestsByModule module="router" />
-        </Grid>
-        <Grid item md={12} lg={6}>
-          <ExtractQueryRangeGraph
-            expression="sum(increase(conduit_registered_routes_total[1h]))"
-            graphTitle="Registered Routes"
-            label="Routes"
-          />
         </Grid>
       </Grid>
     </Container>
