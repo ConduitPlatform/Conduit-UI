@@ -138,7 +138,7 @@ const EnumForm: FC<IProps> = ({
           ),
         }}
       />
-      <Box display="flex" flexWrap="wrap" gap={1} p={1}>
+      <Box display="flex" flexWrap="wrap" gap={1} p={2}>
         {enumValues.map((enumValue, index) => (
           <Chip
             color="primary"
@@ -210,8 +210,8 @@ const EnumForm: FC<IProps> = ({
         </Grid>
       </Box>
 
-      <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
+      <Box display={'flex'} gap={2} width={'100%'}>
+        <Button variant="contained" color="primary" type="submit">
           OK
         </Button>
         <Button onClick={onClose} variant="outlined">
