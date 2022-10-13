@@ -230,8 +230,8 @@ const SimpleForm: FC<IProps> = ({
         </Grid>
       </Box>
 
-      <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 3 }}>
+      <Box display={'flex'} gap={2} width={'100%'}>
+        <Button variant="contained" color="primary" type="submit">
           OK
         </Button>
         <Button variant="outlined" onClick={onClose}>

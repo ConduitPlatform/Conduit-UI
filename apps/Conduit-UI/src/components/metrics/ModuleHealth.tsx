@@ -21,8 +21,6 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
     (state) => state?.metricsSlice?.meta?.moduleHealthLoading?.[module]
   );
 
-  console.log(health);
-
   const healthFontSize = {
     [theme.breakpoints.down('lg')]: {
       fontSize: '1.2rem',

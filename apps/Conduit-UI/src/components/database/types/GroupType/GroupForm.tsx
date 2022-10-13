@@ -163,8 +163,8 @@ const GroupForm: FC<IProps> = ({
         </Grid>
       </Grid>
 
-      <Box display={'flex'} width={'100%'}>
-        <Button variant="contained" color="primary" type="submit" sx={{ marginRight: 4 }}>
+      <Box display={'flex'} gap={2} width={'100%'}>
+        <Button variant="contained" color="primary" type="submit">
           OK
         </Button>
         <Button variant="outlined" onClick={onClose}>
