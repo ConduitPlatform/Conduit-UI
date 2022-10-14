@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
+import { Button, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes } from '../../../utils/cms';
 import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
@@ -12,6 +12,7 @@ import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
 import { Loop } from '@mui/icons-material';
 import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
+import { ConduitCheckbox } from '@conduitplatform/ui-components';
 
 interface Props {
   createMode: boolean;
@@ -215,7 +216,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           <Grid item>
             <FormControlLabel
               control={
-                <Checkbox
+                <ConduitCheckbox
                   size="small"
                   disabled={!editMode}
                   color={'primary'}
@@ -232,7 +233,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
               <Grid item sx={{ flex: 0 }}>
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <ConduitCheckbox
                       size="small"
                       disabled={!editMode}
                       color={'primary'}
@@ -247,7 +248,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
               <Grid item sx={{ flex: 0 }}>
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <ConduitCheckbox
                       size="small"
                       disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
                       color={'primary'}

@@ -10,7 +10,6 @@ import {
   MenuItem,
   Select,
   TextField,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -24,7 +23,11 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
+import {
+  ConduitMultiSelect,
+  ConduitTooltip,
+  ConfirmationDialog,
+} from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
@@ -448,7 +451,7 @@ const CustomEndpointsLayout: FC = () => {
                   values={schemas}
                   sortBy="name"
                 />
-                <Tooltip title="Custom Endpoints Documentation">
+                <ConduitTooltip title="Custom Endpoints Documentation">
                   <a
                     href="https://getconduit.dev/docs/modules/database/tutorials/custom_endpoints"
                     target="_blank"
@@ -464,7 +467,7 @@ const CustomEndpointsLayout: FC = () => {
                       <InfoOutlined />
                     </Icon>
                   </a>
-                </Tooltip>
+                </ConduitTooltip>
               </Box>
             </Grid>
           </Grid>

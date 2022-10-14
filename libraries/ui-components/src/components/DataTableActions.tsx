@@ -9,7 +9,7 @@ import Upload from "@mui/icons-material/CloudUpload";
 import Sync from "@mui/icons-material/Sync";
 import ReplyAll from "@mui/icons-material/ReplyAll";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import { Add } from "@mui/icons-material";
+import { Add, DeleteTwoTone } from "@mui/icons-material";
 
 interface Action {
   title: string;
@@ -32,7 +32,7 @@ const DataTableActions: React.FC<Props> = ({
   const handleActions = (action: Action) => {
     switch (action.type) {
       case "delete":
-        return <DeleteIcon color="error" />;
+        return <DeleteTwoTone color="error" />;
       case "edit":
         return <EditIcon color={editDisabled ? "disabled" : "primary"} />;
       case "block/unblock":

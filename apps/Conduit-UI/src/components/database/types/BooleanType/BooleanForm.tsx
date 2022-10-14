@@ -1,7 +1,6 @@
 import React, { FC, MouseEventHandler, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
@@ -272,7 +271,7 @@ const BooleanForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={booleanData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"

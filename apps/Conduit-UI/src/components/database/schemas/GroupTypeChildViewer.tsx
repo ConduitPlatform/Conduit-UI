@@ -2,12 +2,12 @@ import Box from '@mui/material/Box';
 import React, { FC } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import GroupIcon from '@mui/icons-material/PlaylistAdd';
-import { FieldIndicators } from '@conduitplatform/ui-components';
+import { ConduitCheckbox, FieldIndicators } from '@conduitplatform/ui-components';
 import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../models/database/BuildTypesModels';
 import { SimpleGroupTypeViewer } from '../types/SimpleType/SimpleTypeViewer';
 import { BooleanGroupTypeViewer } from '../types/BooleanType/BooleanTypeViewer';
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { FormControlLabel, FormGroup } from '@mui/material';
 import { isArray } from 'lodash';
 import { Schema } from '../../../models/database/CmsModels';
 
@@ -182,7 +182,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
               <Tooltip title="Selected field">
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <ConduitCheckbox
                       size="small"
                       checked={item.select}
                       onChange={() => handleEditSubGroup(item.name, 'select')}
@@ -194,7 +194,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
               <Tooltip title="Unique field">
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <ConduitCheckbox
                       size="small"
                       onChange={() => handleEditSubGroup(item.name, 'unique')}
                     />
@@ -205,7 +205,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
               <Tooltip title="Required field">
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <ConduitCheckbox
                       onChange={() => handleEditSubGroup(item.name, 'required')}
                       size="small"
                     />
@@ -240,7 +240,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
                       <Tooltip title="Selected field">
                         <FormControlLabel
                           control={
-                            <Checkbox
+                            <ConduitCheckbox
                               onChange={() =>
                                 handleEditGrpItem(groupItem.name, item.name, 'select')
                               }
@@ -254,7 +254,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
                       <Tooltip title="Unique field">
                         <FormControlLabel
                           control={
-                            <Checkbox
+                            <ConduitCheckbox
                               onChange={() =>
                                 handleEditGrpItem(groupItem.name, item.name, 'unique')
                               }
@@ -268,7 +268,7 @@ const GroupTypeChildViewer: FC<IProps> = ({
                       <Tooltip title="Required field">
                         <FormControlLabel
                           control={
-                            <Checkbox
+                            <ConduitCheckbox
                               onChange={() =>
                                 handleEditGrpItem(groupItem.name, item.name, 'required')
                               }

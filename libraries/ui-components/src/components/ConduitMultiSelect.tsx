@@ -1,5 +1,4 @@
 import {
-  Checkbox,
   FormControl,
   FormControlProps,
   InputLabel,
@@ -9,6 +8,7 @@ import {
   SelectProps,
 } from "@mui/material";
 import React, { FC } from "react";
+import ConduitCheckbox from "./ConduitCheckbox";
 
 interface Props {
   values: string[];
@@ -49,7 +49,7 @@ const ConduitMultiSelect: FC<Props> = ({
         {options &&
           options.map((option: any) => (
             <MenuItem key={option} value={sortBy ? option[sortBy] : option}>
-              <Checkbox
+              <ConduitCheckbox
                 checked={values.indexOf(sortBy ? option[sortBy] : option) > -1}
               />
               <ListItemText primary={sortBy ? option[sortBy] : option} />

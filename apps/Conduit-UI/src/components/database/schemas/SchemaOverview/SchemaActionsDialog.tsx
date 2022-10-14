@@ -15,6 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { isArray } from 'lodash';
 import { Schema } from '../../../../models/database/CmsModels';
 import { SchemaUI } from '../../../../models/database/CmsModels';
+import { ConduitCheckbox } from '@conduitplatform/ui-components';
 
 interface Props {
   open: boolean;
@@ -91,12 +92,15 @@ const SchemaActionsDialog: FC<Props> = ({
             <FormGroup>
               <FormControlLabel
                 disabled
-                control={<Checkbox defaultChecked />}
+                control={<ConduitCheckbox defaultChecked />}
                 label="Selected schema will be deleted"
               />
               <FormControlLabel
                 control={
-                  <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
+                  <ConduitCheckbox
+                    onClick={() => setDeleteData(!deleteData)}
+                    checked={deleteData}
+                  />
                 }
                 label="Delete schema data"
               />
@@ -110,12 +114,15 @@ const SchemaActionsDialog: FC<Props> = ({
             <FormGroup>
               <FormControlLabel
                 disabled
-                control={<Checkbox defaultChecked />}
+                control={<ConduitCheckbox defaultChecked />}
                 label="Selected schemas will be deleted"
               />
               <FormControlLabel
                 control={
-                  <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
+                  <ConduitCheckbox
+                    onClick={() => setDeleteData(!deleteData)}
+                    checked={deleteData}
+                  />
                 }
                 label="Delete schema data"
               />

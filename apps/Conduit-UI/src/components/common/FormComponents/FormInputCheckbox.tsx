@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Controller, ControllerProps, useFormContext } from 'react-hook-form';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { FormControlLabel } from '@mui/material';
+import { ConduitCheckbox } from '@conduitplatform/ui-components';
 
 interface FormCheckboxProps {
   name: string;
@@ -20,7 +21,7 @@ export const FormInputCheckBox = forwardRef((props: FormCheckboxProps) => {
       render={({ field }) => (
         <FormControlLabel
           control={
-            <Checkbox {...field} color="primary" checked={field.value} disabled={disabled} />
+            <ConduitCheckbox {...field} color="primary" checked={field.value} disabled={disabled} />
           }
           label={label}
         />

@@ -8,9 +8,10 @@ import RelationTypeViewer from '../../types/RelationType/RelationTypeViewer';
 import BooleanTypeViewer from '../../types/BooleanType/BooleanTypeViewer';
 import ObjectIdTypeViewer from '../../types/ObjectIdType/ObjectIdTypeViewer';
 import SimpleTypeViewer from '../../types/SimpleType/SimpleTypeViewer';
-import { Checkbox, FormControlLabel, FormGroup, Grid, Paper, Tooltip } from '@mui/material';
+import { FormControlLabel, FormGroup, Grid, Paper, Tooltip } from '@mui/material';
 import { Schema } from '../../../../models/database/CmsModels';
 import JSONTypeViewer from '../../types/JSONType/JSONTypeViewer';
+import { ConduitCheckbox } from '@conduitplatform/ui-components';
 
 interface Props extends BoxProps {
   dataKey: any;
@@ -104,7 +105,7 @@ const SchemaViewer: FC<Props> = ({
                         <Tooltip title="Selected field">
                           <FormControlLabel
                             control={
-                              <Checkbox
+                              <ConduitCheckbox
                                 checked={item.select}
                                 onChange={() => handleChangeField(item.name, 'select')}
                                 size="small"
@@ -116,7 +117,7 @@ const SchemaViewer: FC<Props> = ({
                         <Tooltip title="Unique field">
                           <FormControlLabel
                             control={
-                              <Checkbox
+                              <ConduitCheckbox
                                 checked={item.unique}
                                 onChange={() => handleChangeField(item.name, 'unique')}
                                 size="small"
@@ -128,7 +129,7 @@ const SchemaViewer: FC<Props> = ({
                         <Tooltip title="Required field">
                           <FormControlLabel
                             control={
-                              <Checkbox
+                              <ConduitCheckbox
                                 checked={item.required}
                                 size="small"
                                 onChange={() => handleChangeField(item.name, 'required')}

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
@@ -211,7 +210,7 @@ const JSONForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={jsonData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"

@@ -1,7 +1,6 @@
 import React, { FC, Fragment } from 'react';
 import {
   Box,
-  Checkbox,
   FormControlLabel,
   Grid,
   IconButton,
@@ -13,6 +12,7 @@ import InputLocationEnum from '../../../models/InputLocationEnum';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { Input } from '../../../models/customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../../../models/OperationsEnum';
+import { ConduitCheckbox } from '@conduitplatform/ui-components';
 
 interface Props {
   editMode: boolean;
@@ -150,7 +150,7 @@ const EndpointInputs: FC<Props> = ({
           <Box>
             <FormControlLabel
               control={
-                <Checkbox
+                <ConduitCheckbox
                   color={'primary'}
                   checked={input.array}
                   onChange={(event) => handleInputIsArray(event, index)}
@@ -163,7 +163,7 @@ const EndpointInputs: FC<Props> = ({
             />
             <FormControlLabel
               control={
-                <Checkbox
+                <ConduitCheckbox
                   color={'primary'}
                   checked={input.optional}
                   onChange={(event) => handleInputIsOptional(event, index)}

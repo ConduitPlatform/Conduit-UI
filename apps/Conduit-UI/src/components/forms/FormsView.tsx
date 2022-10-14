@@ -266,9 +266,9 @@ const FormsView: React.FC = () => {
           {selectedForms.length > 0 && (
             <IconButton
               aria-label="delete"
-              color="primary"
+              color="error"
               onClick={() => setOpenDeleteForms(true)}
-              size="large">
+              size="small">
               <Tooltip title="Delete multiple forms">
                 <DeleteTwoTone />
               </Tooltip>

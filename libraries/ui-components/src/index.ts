@@ -24,6 +24,7 @@ import StyledTreeItem from "./components/StyledTreeItem";
 import LinkComponent from "./components/LinkComponent";
 import GraphContainer from "./components/GraphContainer";
 import ConduitTooltip from "./components/ConduitTooltip";
+import ConduitCheckbox from "./components/ConduitCheckbox";
 
 export {
   ConduitMultiSelect,
@@ -52,4 +53,5 @@ export {
   LinkComponent,
   GraphContainer,
   ConduitTooltip,
+  ConduitCheckbox
 };

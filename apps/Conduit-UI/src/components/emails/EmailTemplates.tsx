@@ -325,9 +325,9 @@ const EmailTemplates: React.FC = () => {
           {selectedTemplates.length > 0 && (
             <IconButton
               aria-label="delete"
-              color="primary"
+              color="error"
               onClick={() => setOpenDeleteTemplates(true)}
-              size="large">
+              size="small">
               <Tooltip title="Delete multiple templates">
                 <DeleteTwoTone />
               </Tooltip>

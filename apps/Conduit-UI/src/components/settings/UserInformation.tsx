@@ -12,10 +12,9 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import ConduitCheckbox from '../authentication/ConduitCheckbox';
 import twoFA from '../../assets/svgs/twoFA.svg';
 import { postRequest, putRequest } from '../../http/requestsConfig';
-import { SideDrawerWrapper } from '@conduitplatform/ui-components';
+import { ConduitCheckbox, SideDrawerWrapper } from '@conduitplatform/ui-components';
 import Image from 'next/image';
 import { useDispatch } from 'react-redux';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';

@@ -20,10 +20,9 @@ import {
   TableContainer,
 } from '@conduitplatform/ui-components';
 import SearchFilter from './SearchFilter';
-import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { AddCircle } from '@mui/icons-material';
+import { AddCircle, DeleteTwoTone } from '@mui/icons-material';
 import AuthUsers from './AuthUsers';
 import NewUserModal from './AddUserDrawer';
 import {
@@ -241,44 +240,48 @@ const Users: React.FC = () => {
           filter={filter}
           handleFilterChange={handleFilterChange}
         />
-        {selectedUsers.length > 1 && (
-          <ButtonGroup size="small" variant="contained" color="primary" sx={{ mr: 1 }}>
-            <IconButton
-              aria-label="block"
-              onClick={() =>
-                setOpenBlockUI({
-                  open: true,
-                  multiple: true,
-                })
-              }
-              size="large">
-              <Tooltip title="Block multiple users">
-                <BlockIcon />
-              </Tooltip>
-            </IconButton>
-            <IconButton
-              aria-label="delete"
-              onClick={() =>
-                setOpenDeleteUser({
-                  open: true,
-                  multiple: true,
-                })
-              }
-              size="large">
-              <Tooltip title="Delete multiple users">
-                <DeleteIcon />
-              </Tooltip>
-            </IconButton>
-          </ButtonGroup>
-        )}
-        <Button
-          sx={{ whiteSpace: 'nowrap', ml: 1 }}
-          color="primary"
-          variant="contained"
-          endIcon={<AddCircle />}
-          onClick={() => setDrawer(true)}>
-          ADD USER
-        </Button>
+        <Box display="flex" gap={2} alignItems="center">
+          {selectedUsers.length > 1 && (
+            <>
+              <IconButton
+                color="error"
+                aria-label="block"
+                size="small"
+                onClick={() =>
+                  setOpenBlockUI({
+                    open: true,
+                    multiple: true,
+                  })
+                }>
+                <Tooltip title="Block multiple users">
+                  <BlockIcon />
+                </Tooltip>
+              </IconButton>
+              <IconButton
+                color="error"
+                size="small"
+                aria-label="delete"
+                onClick={() =>
+                  setOpenDeleteUser({
+                    open: true,
+                    multiple: true,
+                  })
+                }>
+                <Tooltip title="Delete multiple users">
+                  <DeleteTwoTone />
+                </Tooltip>
+              </IconButton>
+            </>
+          )}
+          <Button
+            sx={{ whiteSpace: 'nowrap', ml: 1 }}
+            color="primary"
+            variant="contained"
+            endIcon={<AddCircle />}
+            onClick={() => setDrawer(true)}>
+            ADD USER
+          </Button>
+        </Box>
       </TableActionsContainer>
       <TableContainer
         handlePageChange={handlePageChange}

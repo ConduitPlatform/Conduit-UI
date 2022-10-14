@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -18,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { IDrawerData, IRelationData } from '../../../../models/database/BuildTypesModels';
 import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 import { Schema } from '../../../../models/database/CmsModels';
+import { ConduitCheckbox } from '@conduitplatform/ui-components';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -193,7 +193,7 @@ const RelationForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={simpleData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"
@@ -222,7 +222,7 @@ const RelationForm: FC<IProps> = ({
           MenuProps={MenuProps}>
           {availableSchemas.map((schema: any) => (
             <MenuItem key={schema.name} value={schema.name}>
-              <Checkbox checked={simpleData.model === schema.name} color={'primary'} />
+              <ConduitCheckbox checked={simpleData.model === schema.name} color={'primary'} />
               <ListItemText primary={schema.name} />
             </MenuItem>
           ))}
