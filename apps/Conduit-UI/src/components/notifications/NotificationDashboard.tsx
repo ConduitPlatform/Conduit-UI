@@ -8,10 +8,10 @@ const NotificationDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={3}>
+        <Grid item xs={6} sm={3}>
           <RequestsLatency small module="pushNotifications" />
         </Grid>
-        <Grid item xs={12} sm={3}>
+        <Grid item xs={6} sm={3}>
           <ModuleHealth small module="pushNotifications" />
         </Grid>
         <Grid item xs={12}>

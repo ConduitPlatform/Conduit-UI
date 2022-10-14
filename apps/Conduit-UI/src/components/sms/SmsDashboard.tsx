@@ -9,14 +9,14 @@ const SmsDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container gap={2}>
-        <Grid item container rowSpacing={1} columnSpacing={1.5}>
-          <Grid item sm={3} xs={12}>
+        <Grid item container rowSpacing={1} columnSpacing={2}>
+          <Grid item sm={3} xs={6}>
             <RequestsLatency small module="sms" />
           </Grid>
-          <Grid item sm={3} xs={12}>
+          <Grid item sm={3} xs={6}>
             <ModuleHealth small module="sms" />
           </Grid>
-          <Grid item sm={3} xs={12}>
+          <Grid item sm={3} xs={6}>
             <MetricCount small title="SMS Sent" expression="conduit_sms_sent_total[5m]" />
           </Grid>
         </Grid>

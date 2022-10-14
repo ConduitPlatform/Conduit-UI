@@ -10,7 +10,7 @@ const ChatDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+        <Grid item container rowSpacing={1} columnSpacing={2}>
           <Grid item xs={6} sm={3}>
             <RequestsLatency small module="chat" />
           </Grid>
