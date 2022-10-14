@@ -9,7 +9,7 @@ const StorageDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item container rowSpacing={1} columnSpacing={1.5}>
+        <Grid item container rowSpacing={1} columnSpacing={2}>
           <Grid item md={2} sm={6} xs={6}>
             <RequestsLatency small module="storage" />
           </Grid>

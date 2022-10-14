@@ -26,11 +26,11 @@ const RouterDashboard = () => {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={2}>
-        <Grid item container rowSpacing={1} columnSpacing={1.5}>
-          <Grid item xs={6} sm={2}>
+        <Grid item container rowSpacing={1} columnSpacing={2}>
+          <Grid item xs={6} sm={3}>
             <RequestsLatency small module="router" />
           </Grid>
-          <Grid item xs={6} sm={2}>
+          <Grid item xs={6} sm={3}>
             <ModuleHealth small module="router" />
           </Grid>
         </Grid>
@@ -45,7 +45,7 @@ const RouterDashboard = () => {
         <Grid item xs={12} lg={6}>
           <TotalRequestsByModule module="router" />
         </Grid>
-        <Grid item md={12} lg={6}>
+        <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
             expression="sum(increase(conduit_registered_routes_total[1h]))"
             graphTitle="Registered Routes"

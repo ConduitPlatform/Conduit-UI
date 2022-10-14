@@ -65,21 +65,20 @@ const RequestsLatency: FC<Props> = ({ module, modulesLength, small }) => {
   };
 
   return (
-    <>
-      <MetricsWidget
-        icon={!loading && <LottieForWidget small={small} lottieFile={latencyLottie} />}
-        small={small}
-        metric={
-          <Typography
-            color="primary"
-            variant="h4"
-            sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
-            {extractContent()}
-          </Typography>
-        }
-        title="Latency"
-      />
-    </>
+    <MetricsWidget
+      icon={!loading && <LottieForWidget small={small} lottieFile={latencyLottie} />}
+      small={small}
+      metric={
+        <Typography
+          color="primary"
+          variant="h4"
+          noWrap={true}
+          sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
+          {extractContent()}
+        </Typography>
+      }
+      title="Latency"
+    />
   );
 };
 
