@@ -73,7 +73,8 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
         <Typography
           color="primary"
           variant="h4"
-          sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}>
+          sx={{ fontSize: small ? latencyFontSizeSmall : latencyFontSize }}
+          noWrap={true}>
           {extractContent()}
         </Typography>
       }

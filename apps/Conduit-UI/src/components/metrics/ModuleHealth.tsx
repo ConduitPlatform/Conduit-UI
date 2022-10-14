@@ -69,7 +69,8 @@ const ModuleHealth: FC<Props> = ({ module, small }) => {
           <Typography
             color={!loading && health === false ? 'error' : 'primary'}
             variant="h4"
-            sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}>
+            sx={{ fontSize: small ? healthFontSizeSmall : healthFontSize }}
+            noWrap={true}>
             {extractContent()}
           </Typography>
         </Box>

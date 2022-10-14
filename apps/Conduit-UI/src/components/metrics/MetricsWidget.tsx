@@ -50,7 +50,9 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
               {icon}
             </Box>
           </Box>
-          <Typography sx={{ fontSize: fontSizes }}>{title}</Typography>
+          <Typography sx={{ fontSize: fontSizes }} noWrap={true}>
+            {title}
+          </Typography>
         </Paper>
       ) : (
         <Paper
@@ -70,7 +72,9 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
               {icon}
             </Box>
           </Box>
-          <Typography sx={{ fontSize: fontSizesSmall }}>{title}</Typography>
+          <Typography sx={{ fontSize: fontSizesSmall }} noWrap={true}>
+            {title}
+          </Typography>
         </Paper>
       )}
     </>
