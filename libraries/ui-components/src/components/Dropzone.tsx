@@ -48,10 +48,13 @@ const Dropzone: FC<Props> = ({
       return <Typography variant="body1">Drop the files here ...</Typography>;
     }
     return (
+    <>
       <Typography variant="body1">
-        {"Drag 'n' drop some files here, or click to select files"}
+        {"Drag & Drop"}
       </Typography>
-    );
+      <Typography variant="body1">{"or click to select file"}</Typography>
+    </>
+  );
   };
 
   const prepareDropzonePreview = () => {
@@ -99,12 +102,12 @@ const Dropzone: FC<Props> = ({
           height: 240,
           padding: [0, 4],
           display: 'flex',
+          flexDirection:'column',
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'grey',
           textAlign: 'center',
           position: 'relative',
-
           cursor: 'pointer',
           borderWidth: 1,
           borderStyle: 'dotted',
