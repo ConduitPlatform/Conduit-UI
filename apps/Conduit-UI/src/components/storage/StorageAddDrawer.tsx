@@ -5,7 +5,6 @@ import { SideDrawerWrapper, Dropzone } from '@conduitplatform/ui-components';
 import { IContainer, IStorageFile } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { noSpacesOrSpecialChars } from '../../utils/validations';
 import { useAppDispatch } from '../../redux/store';
@@ -26,7 +25,13 @@ interface FormData {
   isPublic: boolean;
 }
 
-const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddFile, path }) => {
+const StorageAddDrawer: FC<Props> = ({
+  open,
+  closeDrawer,
+  // containers,
+  handleAddFile,
+  path,
+}) => {
   const dispatch = useAppDispatch();
   const [fileName, setFileName] = useState('');
   const [fileData, setFileData] = useState<{ data: string; mimeType: string }>({
@@ -39,7 +44,7 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
       return { name: '', folder: '', container: '', isPublic: false };
     }, []),
   });
-  const { reset, setValue, register } = methods;
+  const { watch, reset, setValue, register } = methods;
 
   useEffect(() => {
     setValue('container', path[0]);
@@ -85,12 +90,6 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
     setValue('name', name);
   };
 
-  const extractContainers = () => {
-    return containers.map((container) => {
-      return { label: container.name, value: container.name };
-    });
-  };
-
   return (
     <SideDrawerWrapper title={'Add File'} open={open} closeDrawer={() => closeDrawer()} width={512}>
       <FormProvider {...methods}>
@@ -112,29 +111,16 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
-                  validate: (value) => (value !== '' ? true : false),
+                  validate: (value) => value !== '',
                 })}
                 label="File name"
               />
             </Grid>
             <Grid item sm={12}>
-              <FormInputSelect
-                options={extractContainers()}
-                label="Container"
-                {...register('container')}
-              />
+              <Typography>Container: {watch()?.container}</Typography>
             </Grid>
             <Grid item sm={12}>
-              <FormInputText
-                {...register('folder', {
-                  pattern: {
-                    value: noSpacesOrSpecialChars,
-                    message: 'No spaces or special characters allowed!',
-                  },
-                  validate: (value) => (value !== '' ? true : false),
-                })}
-                label="Folder name"
-              />
+              <Typography>Folder: {watch()?.folder}</Typography>
             </Grid>
             <Grid item sm={12}>
               <Typography variant="subtitle1">Public</Typography>

@@ -1,13 +1,14 @@
 import React, { FC, useEffect } from 'react';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import { CreateFormSelected, IContainer, ICreateForm } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { noSpacesOrSpecialChars } from '../../utils/validations';
+import FolderIcon from '@mui/icons-material/Folder';
+import StorageIcon from '@mui/icons-material/Storage';
 
 interface Props {
   data: { open: boolean; type: CreateFormSelected };
@@ -22,24 +23,30 @@ interface FormProps {
   name: string;
   container?: string;
   isPublic: boolean;
+  folder: string;
 }
 
 const StorageCreateDrawer: FC<Props> = ({
   data,
   closeDrawer,
-  containers,
+  // containers,
   handleCreateFolder,
   handleCreateContainer,
   path,
 }) => {
   const methods = useForm<FormProps>({
-    defaultValues: { name: '', container: '', isPublic: false },
+    defaultValues: { name: '', folder: '', container: '', isPublic: false },
   });
-  const { reset, setValue, register } = methods;
+  const theme = useTheme();
+  const { watch, reset, setValue, register } = methods;
 
   useEffect(() => {
     if (data.type === CreateFormSelected.folder) {
       setValue('container', path[0]);
+      const pathCopy = [...path];
+      pathCopy.shift();
+      const folderParentName = pathCopy.join('/');
+      setValue('folder', folderParentName);
     }
   }, [path, data.type, setValue]);
 
@@ -70,12 +77,6 @@ const StorageCreateDrawer: FC<Props> = ({
     closeDrawer();
   };
 
-  const extractContainers = () => {
-    return containers.map((container) => {
-      return { label: container.name, value: container.name };
-    });
-  };
-
   return (
     <SideDrawerWrapper
       title={`Create ${data.type}`}
@@ -92,23 +93,28 @@ const StorageCreateDrawer: FC<Props> = ({
                     value: noSpacesOrSpecialChars,
                     message: 'No spaces or special characters allowed!',
                   },
-                  validate: (value) => (value !== '' ? true : false),
+                  validate: (value) => value !== '',
                 })}
                 label="Name"
               />
             </Grid>
             {data.type === CreateFormSelected.folder && (
               <Grid item sm={12}>
-                <FormInputSelect
-                  options={extractContainers()}
-                  label="Container"
-                  {...register('container')}
-                />
+                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                  <StorageIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                  {watch()?.container}
+                </Typography>
               </Grid>
             )}
+            <Grid item sm={12}>
+              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                <FolderIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                {watch()?.folder}
+              </Typography>
+            </Grid>
             <Grid item sm={12} display={'flex'} alignItems={'center'} whiteSpace={'nowrap'}>
               <Typography variant="subtitle1" mr={2}>
-                Is Public
+                Public
               </Typography>
               <FormInputSwitch {...register('isPublic')} />
             </Grid>

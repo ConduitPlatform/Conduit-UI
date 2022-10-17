@@ -192,6 +192,7 @@ const StorageTable: FC<Props> = ({
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
+            disabled={path !== '/'}
             startIcon={<AddCircleOutline />}
             onClick={() => handleCreateContainer()}>
             Create Container

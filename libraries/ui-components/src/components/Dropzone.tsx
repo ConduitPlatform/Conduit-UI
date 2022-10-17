@@ -38,6 +38,8 @@ const Dropzone: FC<Props> = ({
     onDrop: (acceptedFiles) => {
       handleSetFile(acceptedFiles[0]);
     },
+      multiple: true,
+      maxFiles: 2,
   });
 
   const { ...rootProps } = getRootProps();
