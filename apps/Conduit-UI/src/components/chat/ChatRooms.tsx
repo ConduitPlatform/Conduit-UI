@@ -65,10 +65,11 @@ const ChatRooms: React.FC = () => {
         elevation={0}
         sx={{
           display: 'flex',
-          height: '80vh',
+          height: '78vh',
           padding: 2,
           borderRadius: 4,
           backgroundColor: 'rgba(0,0,0,0.05)',
+          mb: 2,
         }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', width: 220 }}>
           <TextField

@@ -113,7 +113,7 @@ const SchemaDataHeader: FC<Props> = ({
           }}
           error={isSearchError()}
         />
-        <Box sx={{ display: 'flex', gap: 2, pt: 1 }}>
+        <Box sx={{ display: 'flex', gap: 2, pt: 1, pr: 2 }}>
           <Button disabled={disabled} color="primary" size={'small'} onClick={() => onRefresh()}>
             <Refresh />
             Refresh
@@ -133,6 +133,7 @@ const SchemaDataHeader: FC<Props> = ({
           display: 'flex',
           alignItems: 'center',
           pb: 2,
+          pr: 2,
         }}>
         <ButtonContainer onClick={() => setObjectView(false)}>
           <AccountTree color={objectView ? 'inherit' : 'primary'} />

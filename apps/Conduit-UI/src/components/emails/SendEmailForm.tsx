@@ -11,7 +11,7 @@ import { asyncGetEmailTemplates, asyncSendEmail } from '../../redux/slices/email
 import { Pagination, Search } from '../../models/http/HttpModels';
 import TableDialog from '../common/TableDialog';
 import { SelectedElements } from '@conduitplatform/ui-components';
-import { formatData, headers } from '../../components/emails/FormatTemplatesHelper';
+import { formatData, headers } from './FormatTemplatesHelper';
 import { emailRegExp } from '../../utils/validations';
 
 interface FormProps {
@@ -208,7 +208,7 @@ const SendEmailForm: React.FC = () => {
                   </Grid>
                 ))}
               </Grid>
-              <Grid item container justifyContent="flex-end" xs={12}>
+              <Grid container justifyContent="flex-end" xs={12}>
                 <Box marginTop={3}>
                   <Button
                     variant="outlined"

@@ -45,7 +45,9 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
             borderRadius: '24px',
           }}>
           <Box display="flex" justifyContent="space-between">
-            <Box>{metric}</Box>
+            <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              {metric}
+            </Box>
             <Box display="flex" justifyContent="flex-end">
               {icon}
             </Box>
@@ -65,7 +67,9 @@ const MetricsWidget: FC<Props> = ({ metric, title, small, icon }) => {
             borderRadius: '16px',
           }}>
           <Box display="flex" justifyContent="space-between">
-            <Box>{metric}</Box>
+            <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              {metric}
+            </Box>
             <Box display="flex" justifyContent="flex-end">
               {icon}
             </Box>

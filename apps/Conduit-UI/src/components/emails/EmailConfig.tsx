@@ -122,7 +122,7 @@ const EmailConfig: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item md={12} xs={12}>
-          <Divider sx={{ marginY: 2 }} variant={'fullWidth'} />
+          <Divider sx={{ mt: 3, mb: 2 }} variant={'fullWidth'} flexItem />
         </Grid>
         <Grid item xs={12}>
           <Typography variant={'h6'} mb={1}>
