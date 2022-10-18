@@ -1,14 +1,16 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper, Dropzone } from '@conduitplatform/ui-components';
 import { IContainer, IStorageFile } from '../../models/storage/StorageModels';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { noSpacesOrSpecialChars } from '../../utils/validations';
+import { validFileName } from '../../utils/validations';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
+import StorageIcon from '@mui/icons-material/Storage';
+import FolderIcon from '@mui/icons-material/Folder';
 
 interface Props {
   open: boolean;
@@ -33,6 +35,7 @@ const StorageAddDrawer: FC<Props> = ({
   path,
 }) => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
   const [fileName, setFileName] = useState('');
   const [fileData, setFileData] = useState<{ data: string; mimeType: string }>({
     data: '',
@@ -95,7 +98,21 @@ const StorageAddDrawer: FC<Props> = ({
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(handleAdd)}>
           <Grid container spacing={2}>
-            <Grid item sm={12}>
+            <Grid item>
+              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                <StorageIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                {watch()?.container}
+              </Typography>
+            </Grid>
+            {watch()?.folder ? (
+              <Grid item>
+                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                  <FolderIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                  {watch()?.folder}
+                </Typography>
+              </Grid>
+            ) : null}
+            <Grid item xs={12}>
               <Dropzone
                 mimeType={fileData.mimeType}
                 fileName={fileName}
@@ -104,11 +121,11 @@ const StorageAddDrawer: FC<Props> = ({
                 setFile={handleSetFile}
               />
             </Grid>
-            <Grid item sm={12}>
+            <Grid item xs={12}>
               <FormInputText
                 {...register('name', {
                   pattern: {
-                    value: noSpacesOrSpecialChars,
+                    value: validFileName,
                     message: 'No spaces or special characters allowed!',
                   },
                   validate: (value) => value !== '',
@@ -116,14 +133,10 @@ const StorageAddDrawer: FC<Props> = ({
                 label="File name"
               />
             </Grid>
-            <Grid item sm={12}>
-              <Typography>Container: {watch()?.container}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography>Folder: {watch()?.folder}</Typography>
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="subtitle1">Public</Typography>
+            <Grid item sm={12} display={'flex'} alignItems={'center'}>
+              <Typography variant="subtitle1" sx={{ mr: 1 }}>
+                Public
+              </Typography>
               <FormInputSwitch {...register('isPublic')} />
             </Grid>
             <Grid container item>

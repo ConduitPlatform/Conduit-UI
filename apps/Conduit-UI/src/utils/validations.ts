@@ -8,3 +8,5 @@ export const emailRegExp =
 export const phoneNumberRegExp = /^([+]?)[0-9]{4,12}$/;
 
 export const noSpacesOrSpecialChars = /^(\d|\w)+[^\s]$/;
+
+export const validFileName = /^[-\w^&'@{}[\],$=!#().%+~ ]+$/;

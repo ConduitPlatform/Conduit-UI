@@ -6,7 +6,7 @@ import { CreateFormSelected, IContainer, ICreateForm } from '../../models/storag
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { noSpacesOrSpecialChars } from '../../utils/validations';
+import { validFileName } from '../../utils/validations';
 import FolderIcon from '@mui/icons-material/Folder';
 import StorageIcon from '@mui/icons-material/Storage';
 
@@ -86,31 +86,34 @@ const StorageCreateDrawer: FC<Props> = ({
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(handleSave)}>
           <Grid container spacing={2}>
-            <Grid item width={'100%'}>
-              <FormInputText
-                {...register('name', {
-                  pattern: {
-                    value: noSpacesOrSpecialChars,
-                    message: 'No spaces or special characters allowed!',
-                  },
-                  validate: (value) => value !== '',
-                })}
-                label="Name"
-              />
-            </Grid>
             {data.type === CreateFormSelected.folder && (
-              <Grid item sm={12}>
+              <Grid item>
                 <Typography sx={{ display: 'flex', alignItems: 'center' }}>
                   <StorageIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
                   {watch()?.container}
                 </Typography>
               </Grid>
             )}
-            <Grid item sm={12}>
-              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                <FolderIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
-                {watch()?.folder}
-              </Typography>
+            {watch()?.folder ? (
+              <Grid item>
+                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                  <FolderIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                  {watch()?.folder}
+                </Typography>
+              </Grid>
+            ) : null}
+
+            <Grid item width={'100%'}>
+              <FormInputText
+                {...register('name', {
+                  pattern: {
+                    value: validFileName,
+                    message: 'No spaces or special characters allowed!',
+                  },
+                  validate: (value) => value !== '',
+                })}
+                label="Name"
+              />
             </Grid>
             <Grid item sm={12} display={'flex'} alignItems={'center'} whiteSpace={'nowrap'}>
               <Typography variant="subtitle1" mr={2}>
