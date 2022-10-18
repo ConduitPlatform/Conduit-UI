@@ -72,6 +72,7 @@ const StorageTable: FC<Props> = ({
   const dispatch = useAppDispatch();
   const appLoading = useAppSelector((state) => state.appSlice.loading);
   const fileUrl = useAppSelector((state) => state.storageSlice.data.selectedFileUrl);
+  const configProvider = useAppSelector((state) => state.storageSlice.data?.config?.provider);
 
   const [downloadModal, setDownloadModal] = useState<IStorageFileData | undefined>(undefined);
 
@@ -138,9 +139,18 @@ const StorageTable: FC<Props> = ({
     const file = containerData.find((itemFile: ContainerDataProps) => {
       return itemFile.name === item;
     });
-    if (containerData.length > 0 && file && 'isFile' in file && file.isFile) {
+    if (
+      containerData.length > 0 &&
+      file &&
+      'isFile' in file &&
+      file.isFile &&
+      configProvider !== 'local'
+    ) {
       setDownloadModal(file);
       dispatch(asyncSetSelectedStorageFile(file));
+      return;
+    }
+    if (configProvider === 'local' && file) {
       return;
     }
     //to be replaced with next dynamic router
