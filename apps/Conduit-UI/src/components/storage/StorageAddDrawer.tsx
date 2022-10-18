@@ -3,7 +3,7 @@ import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper, Dropzone } from '@conduitplatform/ui-components';
 import { IContainer, IStorageFile } from '../../models/storage/StorageModels';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { validFileName } from '../../utils/validations';
@@ -47,7 +47,17 @@ const StorageAddDrawer: FC<Props> = ({
       return { name: '', folder: '', container: '', isPublic: false };
     }, []),
   });
-  const { watch, reset, setValue, register } = methods;
+  const { control, reset, setValue, register } = methods;
+
+  const containerName = useWatch({
+    control,
+    name: 'container',
+  });
+
+  const folderName = useWatch({
+    control,
+    name: 'folder',
+  });
 
   useEffect(() => {
     setValue('container', path[0]);
@@ -101,14 +111,14 @@ const StorageAddDrawer: FC<Props> = ({
             <Grid item>
               <Typography sx={{ display: 'flex', alignItems: 'center' }}>
                 <StorageIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
-                {watch()?.container}
+                {containerName}
               </Typography>
             </Grid>
-            {watch()?.folder ? (
+            {folderName ? (
               <Grid item>
                 <Typography sx={{ display: 'flex', alignItems: 'center' }}>
                   <FolderIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
-                  {watch()?.folder}
+                  {folderName}
                 </Typography>
               </Grid>
             ) : null}
