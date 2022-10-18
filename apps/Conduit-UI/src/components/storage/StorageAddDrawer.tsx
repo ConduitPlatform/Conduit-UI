@@ -47,16 +47,27 @@ const StorageAddDrawer: FC<Props> = ({
       return { name: '', folder: '', container: '', isPublic: false };
     }, []),
   });
-  const { control, reset, setValue, register } = methods;
+  const { control, reset, setValue, clearErrors, setError, register, getFieldState, formState } =
+    methods;
+
+  const { error } = getFieldState('name', formState); // It is subscribed now and reactive to error state updated
+
+  const nameWatch = useWatch({
+    control,
+    name: 'name',
+    defaultValue: '',
+  });
 
   const containerName = useWatch({
     control,
     name: 'container',
+    defaultValue: '',
   });
 
   const folderName = useWatch({
     control,
     name: 'folder',
+    defaultValue: '',
   });
 
   useEffect(() => {
@@ -95,12 +106,41 @@ const StorageAddDrawer: FC<Props> = ({
     handleAddFile(sendFileData);
   };
 
+  const transformFileName = (fileName: string) => {
+    let finalValue = fileName;
+    if (finalValue?.includes(' ')) {
+      finalValue = finalValue?.replaceAll(' ', '_');
+    }
+    return finalValue;
+  };
+
   const handleSetFile = (data: string, mimeType: string, name: string) => {
     setFileData({
       data: data,
       mimeType: mimeType,
     });
-    setValue('name', name);
+    setValue('name', transformFileName(name));
+  };
+
+  const handleChangeInput = (event: any) => {
+    const finalValue = transformFileName(event?.target?.value);
+
+    if (finalValue?.length > 0 && !finalValue?.match(validFileName)) {
+      setError('name', { type: 'custom', message: 'No special characters allowed!' });
+    } else {
+      clearErrors('name');
+    }
+    setValue('name', finalValue);
+  };
+
+  const handleDisableAdd = useMemo(
+    () => fileData.data === '' || fileData.mimeType === '' || nameWatch?.length === 0 || !!error,
+    [error, fileData, nameWatch?.length]
+  );
+
+  const handleSetAutoFileName = (str: string) => {
+    const newFileName = transformFileName(str);
+    setFileName(newFileName);
   };
 
   return (
@@ -126,7 +166,7 @@ const StorageAddDrawer: FC<Props> = ({
               <Dropzone
                 mimeType={fileData.mimeType}
                 fileName={fileName}
-                setFileName={setFileName}
+                setFileName={handleSetAutoFileName}
                 file={fileData.data}
                 setFile={handleSetFile}
               />
@@ -134,6 +174,7 @@ const StorageAddDrawer: FC<Props> = ({
             <Grid item xs={12}>
               <FormInputText
                 {...register('name', {
+                  onChange: handleChangeInput,
                   pattern: {
                     value: validFileName,
                     message: 'No spaces or special characters allowed!',
@@ -156,7 +197,11 @@ const StorageAddDrawer: FC<Props> = ({
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" color="primary" type="submit">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={handleDisableAdd}>
                   Add
                 </Button>
               </Grid>

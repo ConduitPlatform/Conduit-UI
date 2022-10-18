@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
@@ -38,16 +38,28 @@ const StorageCreateDrawer: FC<Props> = ({
     defaultValues: { name: '', folder: '', container: '', isPublic: false },
   });
   const theme = useTheme();
-  const { control, reset, setValue, register } = methods;
+
+  const { control, reset, setValue, clearErrors, setError, register, getFieldState, formState } =
+    methods;
+
+  const { error } = getFieldState('name', formState); // It is subscribed now and reactive to error state updated
+
+  const nameWatch = useWatch({
+    control,
+    name: 'name',
+    defaultValue: '',
+  });
 
   const containerName = useWatch({
     control,
     name: 'container',
+    defaultValue: '',
   });
 
   const folderName = useWatch({
     control,
     name: 'folder',
+    defaultValue: '',
   });
 
   useEffect(() => {
@@ -87,6 +99,30 @@ const StorageCreateDrawer: FC<Props> = ({
     closeDrawer();
   };
 
+  const transformFileName = (fileName: string) => {
+    let finalValue = fileName;
+    if (finalValue?.includes(' ')) {
+      finalValue = finalValue?.replaceAll(' ', '_');
+    }
+    return finalValue;
+  };
+
+  const handleChangeInput = (event: any) => {
+    const finalValue = transformFileName(event?.target?.value);
+
+    if (finalValue?.length > 0 && !finalValue?.match(validFileName)) {
+      setError('name', { type: 'custom', message: 'No special characters allowed!' });
+    } else {
+      clearErrors('name');
+    }
+    setValue('name', finalValue);
+  };
+
+  const handleDisableAdd = useMemo(
+    () => nameWatch?.length === 0 || !!error,
+    [error, nameWatch?.length]
+  );
+
   return (
     <SideDrawerWrapper
       title={`Create ${data.type}`}
@@ -116,6 +152,7 @@ const StorageCreateDrawer: FC<Props> = ({
             <Grid item width={'100%'}>
               <FormInputText
                 {...register('name', {
+                  onChange: handleChangeInput,
                   pattern: {
                     value: validFileName,
                     message: 'No spaces or special characters allowed!',
@@ -138,7 +175,11 @@ const StorageCreateDrawer: FC<Props> = ({
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" color="primary" type="submit">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={handleDisableAdd}>
                   Save
                 </Button>
               </Grid>
