@@ -239,9 +239,8 @@ const StorageTable: FC<Props> = ({
         placeholder={placeholder}
       />
       {!placeholder && (
-        <Grid container sx={{ marginTop: '-8px' }}>
-          <Grid item xs={7} />
-          <Grid item xs={5}>
+        <Grid container sx={{ justifyContent: 'flex-end', marginTop: '-8px' }}>
+          <Grid item>
             <Paginator
               handlePageChange={handlePageChange}
               limit={limit}
