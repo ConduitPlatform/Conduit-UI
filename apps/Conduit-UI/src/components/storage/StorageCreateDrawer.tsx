@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { ChangeEvent, FC, useEffect, useMemo } from 'react';
 import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
@@ -107,7 +107,7 @@ const StorageCreateDrawer: FC<Props> = ({
     return finalValue;
   };
 
-  const handleChangeInput = (event: any) => {
+  const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
     const finalValue = transformFileName(event?.target?.value);
 
     if (finalValue?.length > 0 && !finalValue?.match(validFileName)) {
