@@ -72,6 +72,7 @@ const StorageTable: FC<Props> = ({
   const dispatch = useAppDispatch();
   const appLoading = useAppSelector((state) => state.appSlice.loading);
   const fileUrl = useAppSelector((state) => state.storageSlice.data.selectedFileUrl);
+  const configProvider = useAppSelector((state) => state.storageSlice.data?.config?.provider);
 
   const [downloadModal, setDownloadModal] = useState<IStorageFileData | undefined>(undefined);
 
@@ -138,9 +139,18 @@ const StorageTable: FC<Props> = ({
     const file = containerData.find((itemFile: ContainerDataProps) => {
       return itemFile.name === item;
     });
-    if (containerData.length > 0 && file && 'isFile' in file && file.isFile) {
+    if (
+      containerData.length > 0 &&
+      file &&
+      'isFile' in file &&
+      file.isFile &&
+      configProvider !== 'local'
+    ) {
       setDownloadModal(file);
       dispatch(asyncSetSelectedStorageFile(file));
+      return;
+    }
+    if (configProvider === 'local' && file) {
       return;
     }
     //to be replaced with next dynamic router
@@ -192,6 +202,7 @@ const StorageTable: FC<Props> = ({
             variant="contained"
             color="primary"
             sx={{ mr: 2 }}
+            disabled={path !== '/'}
             startIcon={<AddCircleOutline />}
             onClick={() => handleCreateContainer()}>
             Create Container
@@ -228,9 +239,8 @@ const StorageTable: FC<Props> = ({
         placeholder={placeholder}
       />
       {!placeholder && (
-        <Grid container sx={{ marginTop: '-8px' }}>
-          <Grid item xs={7} />
-          <Grid item xs={5}>
+        <Grid container sx={{ justifyContent: 'flex-end', marginTop: '-8px' }}>
+          <Grid item>
             <Paginator
               handlePageChange={handlePageChange}
               limit={limit}

@@ -1,15 +1,16 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Button, Grid } from '@mui/material';
+import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
+import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper, Dropzone } from '@conduitplatform/ui-components';
 import { IContainer, IStorageFile } from '../../models/storage/StorageModels';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputText } from '../common/FormComponents/FormInputText';
-import { FormInputSelect } from '../common/FormComponents/FormInputSelect';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
-import { noSpacesOrSpecialChars } from '../../utils/validations';
+import { validFileName } from '../../utils/validations';
 import { useAppDispatch } from '../../redux/store';
 import { enqueueInfoNotification } from '../../utils/useNotifier';
+import StorageIcon from '@mui/icons-material/Storage';
+import FolderIcon from '@mui/icons-material/Folder';
 
 interface Props {
   open: boolean;
@@ -26,8 +27,15 @@ interface FormData {
   isPublic: boolean;
 }
 
-const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddFile, path }) => {
+const StorageAddDrawer: FC<Props> = ({
+  open,
+  closeDrawer,
+  // containers,
+  handleAddFile,
+  path,
+}) => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
   const [fileName, setFileName] = useState('');
   const [fileData, setFileData] = useState<{ data: string; mimeType: string }>({
     data: '',
@@ -39,7 +47,28 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
       return { name: '', folder: '', container: '', isPublic: false };
     }, []),
   });
-  const { reset, setValue, register } = methods;
+  const { control, reset, setValue, clearErrors, setError, register, getFieldState, formState } =
+    methods;
+
+  const { error } = getFieldState('name', formState); // It is subscribed now and reactive to error state updated
+
+  const nameWatch = useWatch({
+    control,
+    name: 'name',
+    defaultValue: '',
+  });
+
+  const containerName = useWatch({
+    control,
+    name: 'container',
+    defaultValue: '',
+  });
+
+  const folderName = useWatch({
+    control,
+    name: 'folder',
+    defaultValue: '',
+  });
 
   useEffect(() => {
     setValue('container', path[0]);
@@ -77,18 +106,41 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
     handleAddFile(sendFileData);
   };
 
+  const transformFileName = (fileName: string) => {
+    let finalValue = fileName;
+    if (finalValue?.includes(' ')) {
+      finalValue = finalValue?.replaceAll(' ', '_');
+    }
+    return finalValue;
+  };
+
   const handleSetFile = (data: string, mimeType: string, name: string) => {
     setFileData({
       data: data,
       mimeType: mimeType,
     });
-    setValue('name', name);
+    setValue('name', transformFileName(name));
   };
 
-  const extractContainers = () => {
-    return containers.map((container) => {
-      return { label: container.name, value: container.name };
-    });
+  const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const finalValue = transformFileName(event?.target?.value);
+
+    if (finalValue?.length > 0 && !finalValue?.match(validFileName)) {
+      setError('name', { type: 'custom', message: 'No special characters allowed!' });
+    } else {
+      clearErrors('name');
+    }
+    setValue('name', finalValue);
+  };
+
+  const handleDisableAdd = useMemo(
+    () => fileData.data === '' || fileData.mimeType === '' || nameWatch?.length === 0 || !!error,
+    [error, fileData, nameWatch?.length]
+  );
+
+  const handleSetAutoFileName = (str: string) => {
+    const newFileName = transformFileName(str);
+    setFileName(newFileName);
   };
 
   return (
@@ -96,48 +148,46 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(handleAdd)}>
           <Grid container spacing={2}>
-            <Grid item sm={12}>
+            <Grid item>
+              <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                <StorageIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                {containerName}
+              </Typography>
+            </Grid>
+            {folderName ? (
+              <Grid item>
+                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                  <FolderIcon sx={{ color: theme.palette.primary.dark, mr: 1 }} />
+                  {folderName}
+                </Typography>
+              </Grid>
+            ) : null}
+            <Grid item xs={12}>
               <Dropzone
                 mimeType={fileData.mimeType}
                 fileName={fileName}
-                setFileName={setFileName}
+                setFileName={handleSetAutoFileName}
                 file={fileData.data}
                 setFile={handleSetFile}
               />
             </Grid>
-            <Grid item sm={12}>
+            <Grid item xs={12}>
               <FormInputText
                 {...register('name', {
+                  onChange: handleChangeInput,
                   pattern: {
-                    value: noSpacesOrSpecialChars,
+                    value: validFileName,
                     message: 'No spaces or special characters allowed!',
                   },
-                  validate: (value) => (value !== '' ? true : false),
+                  validate: (value) => value !== '',
                 })}
                 label="File name"
               />
             </Grid>
-            <Grid item sm={12}>
-              <FormInputSelect
-                options={extractContainers()}
-                label="Container"
-                {...register('container')}
-              />
-            </Grid>
-            <Grid item sm={12}>
-              <FormInputText
-                {...register('folder', {
-                  pattern: {
-                    value: noSpacesOrSpecialChars,
-                    message: 'No spaces or special characters allowed!',
-                  },
-                  validate: (value) => (value !== '' ? true : false),
-                })}
-                label="Folder name"
-              />
-            </Grid>
-            <Grid item sm={12}>
-              <Typography variant="subtitle1">Public</Typography>
+            <Grid item sm={12} display={'flex'} alignItems={'center'}>
+              <Typography variant="subtitle1" sx={{ mr: 1 }}>
+                Public
+              </Typography>
               <FormInputSwitch {...register('isPublic')} />
             </Grid>
             <Grid container item>
@@ -147,7 +197,11 @@ const StorageAddDrawer: FC<Props> = ({ open, closeDrawer, containers, handleAddF
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" color="primary" type="submit">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  disabled={handleDisableAdd}>
                   Add
                 </Button>
               </Grid>
