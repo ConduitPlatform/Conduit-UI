@@ -49,7 +49,13 @@ _axios.interceptors.response.use(
   (error) => {
     if (error.response.status === 401) {
       const reduxStore = getCurrentStore();
-      if (reduxStore) {
+      if (
+        reduxStore &&
+        !(
+          error?.response?.config?.url?.match(/^\/api\/loki/) ||
+          error?.response?.config?.url?.match(/^\/api\/prometheus/)
+        )
+      ) {
         reduxStore.dispatch(asyncLogout());
       }
     }
