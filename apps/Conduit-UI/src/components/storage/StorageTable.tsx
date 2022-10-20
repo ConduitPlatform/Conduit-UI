@@ -1,11 +1,10 @@
-import React, { FC, useState } from 'react';
-import { Button, Grid, Typography } from '@mui/material';
+import React, { ChangeEvent, FC, useMemo, useState } from 'react';
+import { Button, Grid, TextField, Typography, InputAdornment } from '@mui/material';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import { DataTable } from '@conduitplatform/ui-components';
+import { DataTable, Paginator, StorageDownloadDialog } from '@conduitplatform/ui-components';
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { Paginator } from '@conduitplatform/ui-components';
 import {
   ContainerDataProps,
   IStorageContainerData,
@@ -13,7 +12,7 @@ import {
 } from '../../models/storage/StorageModels';
 import { asyncSetSelectedStorageFile } from '../../redux/slices/storageSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { StorageDownloadDialog } from '@conduitplatform/ui-components';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface IContainerTable {
   icon: JSX.Element;
@@ -51,6 +50,8 @@ interface Props {
   page: number;
   count: number;
   placeholder?: string;
+  search: string;
+  setSearch: (value: string) => void;
 }
 
 const StorageTable: FC<Props> = ({
@@ -68,6 +69,8 @@ const StorageTable: FC<Props> = ({
   page,
   count,
   placeholder,
+  search,
+  setSearch,
 }) => {
   const dispatch = useAppDispatch();
   const appLoading = useAppSelector((state) => state.appSlice.loading);
@@ -172,9 +175,22 @@ const StorageTable: FC<Props> = ({
     handlePathClick(`${path}${item}`);
   };
 
+  const searchLabel = useMemo(() => {
+    return path.split('/').at(-1);
+  }, [path]);
+
+  const handleChangeSearchValue = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearch(event?.target?.value?.replaceAll(' ', ''));
+  };
+
   return (
     <>
-      <Grid container item xs={12} sx={{ justifyContent: 'space-between', marginBottom: 1 }}>
+      <Grid
+        container
+        item
+        xs={12}
+        gap={1}
+        sx={{ justifyContent: 'space-between', marginBottom: 1, alignItems: 'center' }}>
         <Grid item sx={{ display: 'flex' }}>
           {path.split('/').map((item, index) => {
             return (
@@ -196,6 +212,30 @@ const StorageTable: FC<Props> = ({
               </Typography>
             );
           })}
+        </Grid>
+        <Grid
+          item
+          sx={{
+            display: 'flex',
+            flex: 1,
+            minWidth: 120,
+          }}>
+          <TextField
+            disabled={path === '/'}
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={handleChangeSearchValue}
+            label={searchLabel}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
         </Grid>
         <Grid item>
           <Button
