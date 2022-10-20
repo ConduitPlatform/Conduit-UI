@@ -13,9 +13,6 @@ import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
 //   masterkey: process.env.IS_DEV ? process.env.MASTER_KEY : MASTER_KEY,
 // };
 
-const lokiUrl = '/api/loki';
-const prometheusUrl = '/api/prometheus/api/v1';
-
 const _axios = axios.create({
   baseURL: '', //localhost
   timeoutErrorMessage: 'Request took long to complete, times up!',
@@ -55,8 +52,8 @@ _axios.interceptors.response.use(
       if (
         reduxStore &&
         !(
-          error?.response?.config?.url?.includes(lokiUrl) ||
-          error?.response?.config?.url?.includes(prometheusUrl)
+          error?.response?.config?.url?.match(/^\/api\/loki/) ||
+          error?.response?.config?.url?.match(/^\/api\/prometheus/)
         )
       ) {
         reduxStore.dispatch(asyncLogout());
