@@ -136,8 +136,8 @@ const StorageTable: FC<Props> = ({
 
   const actions = [deleteAction];
 
-  const containerHeaders = [{ title: '' }, { title: 'Name' }, { title: 'is Public' }];
-  const headers = [{ title: '' }, { title: 'Name' }, { title: 'is Public' }, { title: 'mimeType' }];
+  const containerHeaders = [{ title: '' }, { title: 'Name' }, { title: 'Public' }];
+  const headers = [{ title: '' }, { title: 'Name' }, { title: 'Public' }, { title: 'mimeType' }];
 
   const onPathClick = (item: string, index?: number) => {
     const file = containerData.find((itemFile: ContainerDataProps) => {
