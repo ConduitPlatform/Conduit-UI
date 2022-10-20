@@ -99,12 +99,12 @@ const DataTableRows: React.FC<Props> = ({
         </TableCell>
         {Object.keys(row).map((item, j) => (
           <TableCell
+            align="left"
             sx={{
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
-              width: '350px',
-              maxWidth: '350px',
+              width: item?.length > 0 ? '40px' :  '350px',
             }}
             key={`row ${j}`}>
             {getValue(row[item])}
