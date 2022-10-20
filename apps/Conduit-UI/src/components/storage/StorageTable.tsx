@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 import { Button, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
 import { DataTable } from '@conduitplatform/ui-components';
@@ -171,6 +171,10 @@ const StorageTable: FC<Props> = ({
     return path.split('/').at(-1);
   }, [path]);
 
+  const handleChangeSearchValue = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearch(event?.target?.value?.replaceAll(' ', '_'));
+  };
+
   return (
     <>
       <Grid
@@ -214,7 +218,7 @@ const StorageTable: FC<Props> = ({
             variant="outlined"
             name="Search"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleChangeSearchValue}
             label={searchLabel}
             InputProps={{
               startAdornment: (

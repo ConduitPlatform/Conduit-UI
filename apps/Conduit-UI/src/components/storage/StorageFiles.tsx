@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import StorageTable from './StorageTable';
 import {
@@ -17,6 +17,9 @@ import StorageCreateDrawer from './StorageCreateDrawer';
 import StorageAddDrawer from './StorageAddDrawer';
 import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import { CreateFormSelected, ICreateForm, IStorageFile } from '../../models/storage/StorageModels';
+import { debounce } from 'lodash';
+
+const debounceTime = 500;
 
 const StorageFiles = () => {
   const dispatch = useAppDispatch();
@@ -48,26 +51,34 @@ const StorageFiles = () => {
   const [placeholder, setPlaceholder] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
-  const getContainers = useCallback(() => {
-    dispatch(asyncGetStorageContainers({ skip, limit }));
-  }, [dispatch, limit, skip]);
+  const getContainers = useMemo(
+    () =>
+      debounce(() => {
+        if (path === '/') dispatch(asyncGetStorageContainers({ skip, limit }));
+      }, debounceTime),
+    [dispatch, limit, skip, path]
+  );
 
-  const getContainerData = useCallback(() => {
-    if (filteredPath.length < 1) {
-      dispatch(clearStorageContainerData());
-      dispatch(setContainerDataEmpty(false));
-      return;
-    }
-    dispatch(
-      asyncGetStorageContainerData({
-        skip: skip,
-        limit: limit,
-        container: filteredPath[0],
-        parent: filteredPath.length > 1 ? filteredPath.slice(1).join('/') : '',
-        search: search ? search : undefined,
-      })
-    );
-  }, [dispatch, filteredPath, limit, search, skip]);
+  const getContainerData = useMemo(
+    () =>
+      debounce(() => {
+        if (filteredPath.length < 1) {
+          dispatch(clearStorageContainerData());
+          dispatch(setContainerDataEmpty(false));
+          return;
+        }
+        dispatch(
+          asyncGetStorageContainerData({
+            skip: skip,
+            limit: limit,
+            container: filteredPath[0],
+            parent: filteredPath.length > 1 ? filteredPath.slice(1).join('/') : '',
+            search: search,
+          })
+        );
+      }, debounceTime),
+    [dispatch, filteredPath, limit, search, skip]
+  );
 
   useEffect(() => {
     if (filteredPath.length < 1) {
@@ -95,8 +106,13 @@ const StorageFiles = () => {
 
   useEffect(() => {
     getContainers();
+    return () => getContainers.cancel();
+  }, [getContainers]);
+
+  useEffect(() => {
     getContainerData();
-  }, [getContainerData, getContainers, skip, limit]);
+    return () => getContainerData.cancel();
+  }, [getContainerData]);
 
   useEffect(() => {
     setPage(0);

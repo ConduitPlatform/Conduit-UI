@@ -153,7 +153,7 @@ export const asyncGetStorageContainers = createAsyncThunk(
 export const asyncGetStorageContainerData = createAsyncThunk(
   'storage/getStorageContainerData',
   async (
-    params: { skip: number; limit: number; container: string; parent: string; search?: string },
+    params: { skip: number; limit: number; container: string; parent: string; search: string },
     thunkAPI
   ) => {
     thunkAPI.dispatch(setAppLoading(true));
@@ -163,7 +163,7 @@ export const asyncGetStorageContainerData = createAsyncThunk(
         limit: params.limit,
         container: params.container,
         parent: params.parent ? params.parent : undefined,
-        search: params.search,
+        search: params.search ? params.search : undefined,
       };
       const { data: folderData } = await getStorageFolders(folderParams);
       const folderLength = folderData.folders.length;
