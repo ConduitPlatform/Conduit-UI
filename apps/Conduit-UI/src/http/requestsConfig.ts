@@ -13,7 +13,7 @@ import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
 //   masterkey: process.env.IS_DEV ? process.env.MASTER_KEY : MASTER_KEY,
 // };
 
-const lokiUrl = '/api/loki/loki/api/v1';
+const lokiUrl = '/api/loki';
 const prometheusUrl = '/api/prometheus/api/v1';
 
 const _axios = axios.create({
