@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.15.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.0-rc.1...v0.15.0) (2022-10-21)
+
+
+### Features
+
+* storage search ([#184](https://github.com/ConduitPlatform/Conduit-UI/issues/184)) ([e9b1b9d](https://github.com/ConduitPlatform/Conduit-UI/commit/e9b1b9d0cfe4b40172f8f37ca07c223afb52006f))
+
+
+### Bug Fixes
+
+* **Enums:** restructured enum field editing ([#177](https://github.com/ConduitPlatform/Conduit-UI/issues/177)) ([b13923d](https://github.com/ConduitPlatform/Conduit-UI/commit/b13923d8d90ce28cbafaa95a80a7b52a8e20499c))
+* issues ([#186](https://github.com/ConduitPlatform/Conduit-UI/issues/186)) ([23cc668](https://github.com/ConduitPlatform/Conduit-UI/commit/23cc668e4c581e5c53977afad906cbb1714a4575))
+* Logout issue ([#185](https://github.com/ConduitPlatform/Conduit-UI/issues/185)) ([d53d4a7](https://github.com/ConduitPlatform/Conduit-UI/commit/d53d4a7bbd56b5e0707a5db2b7c686e3ba9ddb9b))
+* logs list debounce double requests ([#179](https://github.com/ConduitPlatform/Conduit-UI/issues/179)) ([7f485d4](https://github.com/ConduitPlatform/Conduit-UI/commit/7f485d48d796c2657398a773511af911ffcd60c6))
+* logs list scroll to bottom ([#178](https://github.com/ConduitPlatform/Conduit-UI/issues/178)) ([daa07a4](https://github.com/ConduitPlatform/Conduit-UI/commit/daa07a4c523179319f06604ae37312b11a39843f))
+* Metrics cards sizes and spacing ([#180](https://github.com/ConduitPlatform/Conduit-UI/issues/180)) ([68fe400](https://github.com/ConduitPlatform/Conduit-UI/commit/68fe400c4b802759d0680290e7d0238bbf6753ae))
+* storage fixes ([#181](https://github.com/ConduitPlatform/Conduit-UI/issues/181)) ([ce74e7f](https://github.com/ConduitPlatform/Conduit-UI/commit/ce74e7f199b92c85f5dfb7135cb89b8b69dd50eb))
+* Styling changes ([#176](https://github.com/ConduitPlatform/Conduit-UI/issues/176)) ([f94e93f](https://github.com/ConduitPlatform/Conduit-UI/commit/f94e93f8e8fe03e185f16bc70c3c3c25dbf0bac6))
+* UI fixes ([#175](https://github.com/ConduitPlatform/Conduit-UI/issues/175)) ([53db312](https://github.com/ConduitPlatform/Conduit-UI/commit/53db312cccbb80b50de96ef568b02398104729cc))
+
 ## [0.15.0-rc.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.0-rc.0...v0.15.0-rc.1) (2022-10-11)
 
 
