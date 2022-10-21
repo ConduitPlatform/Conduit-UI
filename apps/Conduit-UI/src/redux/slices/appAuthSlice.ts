@@ -184,8 +184,8 @@ const appAuthSlice = createSlice({
     builder.addCase(asyncLogout.fulfilled, (state) => {
       removeCookie('Bearer');
       state.data.token = '';
-      state.data.enabledModules = [];
-      state.data.disabledModules = [];
+      state.data.enabledModules = undefined;
+      state.data.disabledModules = undefined;
       Router.replace('/login').catch(console.log);
     });
   },

@@ -1,5 +1,4 @@
 import { proxy, proxyLoki, proxyPrometheus } from '../../server/proxy';
-import http from 'http';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const path = (req: NextApiRequest, res: NextApiResponse) => {
@@ -12,13 +11,13 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
     } else if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
 
-      proxyLoki?.once('error', reject);
+      proxyLoki?.on('error', reject);
 
       proxyLoki?.web(req, res);
     } else if (req.url?.match(/^\/api\/prometheus/)) {
       req.url = req.url?.replace(/^\/api\/prometheus/, '');
 
-      proxyPrometheus?.once('error', reject);
+      proxyPrometheus?.on('error', reject);
 
       proxyPrometheus?.web(req, res);
     } else {
@@ -44,7 +43,7 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
        * it is so important. if you don't reject the promise,
        * you're facing the stalled requests issue.
        */
-      proxy.once('error', reject);
+      proxy.on('error', reject);
 
       proxy.web(req, res);
     }
