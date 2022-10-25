@@ -13,6 +13,8 @@ const AuthenticationSignIn: React.FC = () => {
 
   const { config } = useAppSelector((state) => state.authenticationSlice.data);
 
+  console.log(config);
+
   useEffect(() => {
     dispatch(asyncGetAuthenticationConfig());
   }, [dispatch]);

@@ -127,6 +127,13 @@ const initialState: IAuthenticationSlice = {
         redirect_uri: '',
         clientSecret: '',
       },
+      linkedin: {
+        accountLinking: false,
+        enabled: false,
+        clientId: '',
+        redirect_uri: '',
+        clientSecret: '',
+      },
       reddit: {
         accountLinking: false,
         enabled: false,

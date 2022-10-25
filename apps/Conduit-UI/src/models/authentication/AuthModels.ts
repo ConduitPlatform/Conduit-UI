@@ -42,6 +42,7 @@ export type SocialNameTypes =
   | 'local'
   | 'bitbucket'
   | 'reddit'
+  | 'linkedin'
   | 'twitter'
   | 'apple'
   | 'google'
@@ -101,6 +102,7 @@ export interface IAuthenticationConfig {
   apple: SignInTypes;
   reddit: SignInTypes;
   bitbucket: SignInTypes;
+  linkedin: SignInTypes;
   twitter: SignInTypes;
   accessTokens: {
     cookieOptions: CookieOptions;

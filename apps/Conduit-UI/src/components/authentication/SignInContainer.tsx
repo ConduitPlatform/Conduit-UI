@@ -118,6 +118,14 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     clientSecret: '',
   });
 
+  const [linkedin, setLinkedin] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
   const [apple, setApple] = useState<SignInTypes>({
     enabled: false,
     accountLinking: false,
@@ -268,6 +276,17 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
           clientId: redditData.clientId || '',
           redirect_uri: redditData.redirect_uri || '',
           clientSecret: redditData.clientSecret || '',
+        });
+      }
+
+      if (configData.linkedin) {
+        const linkedinData = configData.linkedin;
+        setReddit({
+          enabled: linkedinData.enabled,
+          accountLinking: linkedinData.accountLinking,
+          clientId: linkedinData.clientId || '',
+          redirect_uri: linkedinData.redirect_uri || '',
+          clientSecret: linkedinData.clientSecret || '',
         });
       }
 
@@ -452,6 +471,18 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     );
   }, [twitter, configData, handleData]);
 
+  const linkedinMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'linkedin'}
+        accProps={linkedin}
+        setAccProps={setLinkedin}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [linkedin, configData, handleData]);
+
   const appleMemo = useMemo(() => {
     return (
       <ReusableAccordion
@@ -600,6 +631,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       {githubMemo}
       {gitlabMemo}
       {bitbucketMemo}
+      {linkedinMemo}
       {microsoftMemo}
       {phoneMemo}
       {twoFaMemo}
