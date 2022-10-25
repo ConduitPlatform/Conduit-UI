@@ -281,7 +281,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
 
       if (configData.linkedin) {
         const linkedinData = configData.linkedin;
-        setReddit({
+        setLinkedin({
           enabled: linkedinData.enabled,
           accountLinking: linkedinData.accountLinking,
           clientId: linkedinData.clientId || '',
