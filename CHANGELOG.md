@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.0...v0.15.1) (2022-10-25)
+
+
+### Features
+
+* **Providers:** addition of Twitter, LinkedIn, Apple, Reddit, BitBucket ([#187](https://github.com/ConduitPlatform/Conduit-UI/issues/187)) ([71f53b6](https://github.com/ConduitPlatform/Conduit-UI/commit/71f53b6817265607a32f5aad15ae1e28375e992a))
+
 ## [0.15.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.0-rc.1...v0.15.0) (2022-10-21)
 
 
