@@ -48,6 +48,7 @@ const SignInMethod: React.FC<Props> = ({ setAccProps, name, handleData, configDa
 
   const handleSubmit = (type: SocialNameTypes, data: SignInTypes) => {
     handleData(type, data);
+    setExpanded(false);
   };
 
   const isFieldDisabled = (key?: string) => {

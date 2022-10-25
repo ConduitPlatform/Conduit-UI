@@ -33,10 +33,18 @@ export interface SignInTypes {
   methods?: { authenticator?: boolean; sms?: boolean };
   authenticator?: boolean;
   sms?: boolean;
+  keyId?: string;
+  privateKey?: string;
+  teamId?: string;
 }
 
 export type SocialNameTypes =
   | 'local'
+  | 'bitbucket'
+  | 'reddit'
+  | 'linkedin'
+  | 'twitter'
+  | 'apple'
   | 'google'
   | 'facebook'
   | 'twitch'
@@ -91,6 +99,11 @@ export interface IAuthenticationConfig {
   service: SignInTypes;
   magic_link: SignInTypes;
   twoFa: SignInTypes;
+  apple: SignInTypes;
+  reddit: SignInTypes;
+  bitbucket: SignInTypes;
+  linkedin: SignInTypes;
+  twitter: SignInTypes;
   accessTokens: {
     cookieOptions: CookieOptions;
     jwtSecret: string;

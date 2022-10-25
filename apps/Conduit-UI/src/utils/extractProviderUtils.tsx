@@ -10,6 +10,11 @@ import Phone from '../assets/svgs/providers/phone.svg';
 import Lock from '../assets/svgs/providers/lock.svg';
 import MagicLink from '../assets/svgs/providers/magicLink.svg';
 import GitLab from '../assets/svgs/providers/gitlab.svg';
+import Apple from '../assets/svgs/providers/apple.svg';
+import BitBucket from '../assets/svgs/providers/bitbucket.svg';
+import Reddit from '../assets/svgs/providers/reddit.svg';
+import Twitter from '../assets/svgs/providers/twitter.svg';
+import LinkedIn from '../assets/svgs/providers/linkedin.svg';
 
 export const extractProviderIcon = (name: string) => {
   switch (name) {
@@ -37,6 +42,16 @@ export const extractProviderIcon = (name: string) => {
       return MagicLink;
     case 'gitlab':
       return GitLab;
+    case 'reddit':
+      return Reddit;
+    case 'apple':
+      return Apple;
+    case 'bitbucket':
+      return BitBucket;
+    case 'twitter':
+      return Twitter;
+    case 'linkedin':
+      return LinkedIn;
     default:
       return Github;
   }
@@ -60,6 +75,14 @@ export const extractProviderName = (name: string) => {
       return 'slack';
     case 'microsoft':
       return 'Microsoft';
+    case 'apple':
+      return 'Apple';
+    case 'twitter':
+      return 'Twitter';
+    case 'bitbucket':
+      return 'BitBucket';
+    case 'reddit':
+      return 'Reddit';
     case 'phoneAuthentication':
       return 'Phone';
     case 'twoFa':
@@ -68,6 +91,8 @@ export const extractProviderName = (name: string) => {
       return 'Magic Link';
     case 'gitlab':
       return 'GitLab';
+    case 'linkedin':
+      return 'LinkedIn';
     default:
       return 'Local';
   }
