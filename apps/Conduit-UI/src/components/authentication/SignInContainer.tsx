@@ -94,6 +94,39 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     clientSecret: '',
   });
 
+  const [twitter, setTwitter] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [bitbucket, setBitbucket] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [reddit, setReddit] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    redirect_uri: '',
+    clientSecret: '',
+  });
+
+  const [apple, setApple] = useState<SignInTypes>({
+    enabled: false,
+    accountLinking: false,
+    clientId: '',
+    keyId: '',
+    privateKey: '',
+    teamId: '',
+  });
+
   const [phoneAuthentication, setPhoneAuthentication] = useState<{ enabled: boolean }>({
     enabled: false,
   });
@@ -201,6 +234,51 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
           clientId: gitlabData.clientId || '',
           redirect_uri: gitlabData.redirect_uri || '',
           clientSecret: gitlabData.clientSecret || '',
+        });
+      }
+
+      if (configData.twitter) {
+        const twitterData = configData.twitter;
+        setTwitter({
+          enabled: twitterData.enabled,
+          accountLinking: twitterData.accountLinking,
+          clientId: twitterData.clientId || '',
+          redirect_uri: twitterData.redirect_uri || '',
+          clientSecret: twitterData.clientSecret || '',
+        });
+      }
+
+      if (configData.bitbucket) {
+        const bitbucketData = configData.bitbucket;
+        setBitbucket({
+          enabled: bitbucketData.enabled,
+          accountLinking: bitbucketData.accountLinking,
+          clientId: bitbucketData.clientId || '',
+          redirect_uri: bitbucketData.redirect_uri || '',
+          clientSecret: bitbucketData.clientSecret || '',
+        });
+      }
+
+      if (configData.reddit) {
+        const redditData = configData.reddit;
+        setReddit({
+          enabled: redditData.enabled,
+          accountLinking: redditData.accountLinking,
+          clientId: redditData.clientId || '',
+          redirect_uri: redditData.redirect_uri || '',
+          clientSecret: redditData.clientSecret || '',
+        });
+      }
+
+      if (configData.apple) {
+        const appleData = configData.apple;
+        setApple({
+          enabled: appleData.enabled,
+          accountLinking: appleData.accountLinking,
+          clientId: appleData.clientId,
+          keyId: appleData.keyId || '',
+          privateKey: appleData.privateKey || '',
+          teamId: appleData.teamId || '',
         });
       }
 
@@ -336,6 +414,54 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
     );
   }, [gitlab, configData, handleData]);
 
+  const bitbucketMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'bitbucket'}
+        accProps={bitbucket}
+        setAccProps={setBitbucket}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [bitbucket, configData, handleData]);
+
+  const redditMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'reddit'}
+        accProps={reddit}
+        setAccProps={setReddit}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [reddit, configData, handleData]);
+
+  const twitterMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'twitter'}
+        accProps={twitter}
+        setAccProps={setTwitter}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [twitter, configData, handleData]);
+
+  const appleMemo = useMemo(() => {
+    return (
+      <ReusableAccordion
+        name={'apple'}
+        accProps={apple}
+        setAccProps={setApple}
+        configData={configData}
+        handleData={handleData}
+      />
+    );
+  }, [apple, configData, handleData]);
+
   const microsoftMemo = useMemo(() => {
     return (
       <ReusableAccordion
@@ -463,11 +589,15 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
       {localMemo}
       {googleMemo}
       {facebookMemo}
+      {appleMemo}
+      {twitterMemo}
+      {redditMemo}
       {twitchMemo}
       {slackMemo}
       {figmaMemo}
       {githubMemo}
       {gitlabMemo}
+      {bitbucketMemo}
       {microsoftMemo}
       {phoneMemo}
       {twoFaMemo}
