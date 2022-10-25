@@ -121,6 +121,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
   const [apple, setApple] = useState<SignInTypes>({
     enabled: false,
     accountLinking: false,
+    redirect_uri: '',
     clientId: '',
     keyId: '',
     privateKey: '',
@@ -275,6 +276,7 @@ const SignInContainer: React.FC<Props> = ({ configData, handleData, ...rest }) =
         setApple({
           enabled: appleData.enabled,
           accountLinking: appleData.accountLinking,
+          redirect_uri: appleData.redirect_uri,
           clientId: appleData.clientId,
           keyId: appleData.keyId || '',
           privateKey: appleData.privateKey || '',
