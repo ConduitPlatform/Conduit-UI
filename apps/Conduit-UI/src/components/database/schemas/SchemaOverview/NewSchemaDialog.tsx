@@ -78,14 +78,14 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose, systemSchemas }) => {
               onChange={(event) => handleTypeName(event.target.value)}
               onKeyPress={(event) => {
                 if (event.key === 'Enter' && typeName !== '') {
-                  router.push(`schemas/${typeName}`);
+                  router.push(`schemas/${typeName}?isNew=true`);
                 }
               }}
             />
           </Box>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
-          <LinkComponent href={`schemas/${typeName}`} underline={'none'}>
+          <LinkComponent href={`schemas/${typeName}?isNew=true`} underline={'none'}>
             <Button
               onClick={handleAddType}
               color="primary"
