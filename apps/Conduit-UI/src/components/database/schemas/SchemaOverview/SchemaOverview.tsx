@@ -63,7 +63,7 @@ export const SchemaOverview: FC<Props> = ({
       })
     );
     setSelectedSchemaForAction({ data: {}, action: '' });
-
+    router.push(`/database/schemas`, undefined, { shallow: true });
     setOpenDialog(false);
   };
 
