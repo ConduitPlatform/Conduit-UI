@@ -64,6 +64,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { id } = router.query;
+  const { isNew } = router.query;
   resetServerContext();
   const theme = useTheme();
 
@@ -104,8 +105,8 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
-    if (!introspection && id) dispatch(asyncGetSchemaById({ id, noError: true }));
-  }, [dispatch, introspection, id]);
+    if (!introspection && id && !isNew) dispatch(asyncGetSchemaById({ id, noError: true }));
+  }, [dispatch, introspection, id, isNew]);
 
   useEffect(() => {
     if (introspection && id) {
