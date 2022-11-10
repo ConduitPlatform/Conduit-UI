@@ -79,6 +79,11 @@ const StorageTable: FC<Props> = ({
 
   const [downloadModal, setDownloadModal] = useState<IStorageFileData | undefined>(undefined);
 
+  console.log(path);
+
+  console.log(containers);
+  console.log(containerData);
+
   const formatData = () => {
     if (path === '/')
       return containers.map((item: IStorageContainerData) => {
