@@ -13,6 +13,9 @@ export const postSchemaRequest = (data: any) => postRequest(`/database/schemas`,
 export const patchSchemaRequest = (_id: string, data: any) =>
   patchRequest(`/database/schemas/${_id}`, { ...data });
 
+export const postSchemaIndexRequest = (_id: string, data: any) =>
+  patchRequest(`/database/schemas/${_id}/indexes`, { ...data });
+
 export const setSchemaExtension = (_id: string, data: any) =>
   postRequest(`/database/schemas/${_id}/extensions/`, { fields: data });
 

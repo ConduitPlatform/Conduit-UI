@@ -12,6 +12,7 @@ import {
   getSchemaOwners,
   getSchemaByIdRequest,
   getSystemSchemasRequest,
+  postSchemaIndexRequest,
 } from '../../http/requests/DatabaseRequests';
 import {
   createSchemaDocumentRequest,
@@ -235,6 +236,23 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
     try {
       const { data } = await postSchemaRequest(dataForSchema);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created ${dataForSchema.name}`));
+      thunkAPI.dispatch(setAppLoading(false));
+      return data as Schema;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncCreateSchemaIndexes = createAsyncThunk<Schema, any>(
+  'database/createSchemaIndexes',
+  async (params: { id: string; data: any }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await postSchemaIndexRequest(params.id, params.data);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
       thunkAPI.dispatch(setAppLoading(false));
       return data as Schema;
     } catch (error) {
