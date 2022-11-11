@@ -17,9 +17,12 @@ import {
 } from '@mui/material';
 import React, { FC, useState, useEffect } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { Schema } from '../../../../models/database/CmsModels';
-import { asyncGetSchemaIndexes } from '../../../../redux/slices/databaseSlice';
-import { useAppDispatch, useAppSelector } from '../../../../redux/store';
+import { Schema } from '../../../../../models/database/CmsModels';
+import {
+  asyncGetDatabaseType,
+  asyncGetSchemaIndexes,
+} from '../../../../../redux/slices/databaseSlice';
+import { useAppDispatch, useAppSelector } from '../../../../../redux/store';
 import IndexCard from './IndexCard';
 
 interface Props {
@@ -82,7 +85,8 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const { schemaIndexes } = useAppSelector((state) => state.databaseSlice.data);
+  const { schemaIndexes, typeOfDb } = useAppSelector((state) => state.databaseSlice.data);
+
   const [indexName, setIndexName] = useState<string>('');
   const [inputFields, setInputFields] = useState<{ id: string; field: string; type: string }[]>([
     { id: uuidV4(), field: '', type: '' },
@@ -90,7 +94,10 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
   const [postgresType, setPostgresType] = useState<string>('');
 
   useEffect(() => {
-    open && dispatch(asyncGetSchemaIndexes(schema._id));
+    if (open) {
+      dispatch(asyncGetSchemaIndexes(schema._id));
+      dispatch(asyncGetDatabaseType(schema._id));
+    }
   }, [dispatch, schema._id, open]);
 
   const handleAddField = () => {
@@ -128,16 +135,18 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
     setIndexName('');
   };
 
+  const handleCloseDrawer = () => {
+    setInputFields([{ id: uuidV4(), field: '', type: '' }]);
+    setOpen(false);
+  };
+
   return (
     <SideDrawerWrapper
       title={`Schema ${schema?.name} indexes`}
       minWidth={600}
       maxWidth={600}
       open={open}
-      closeDrawer={() => setOpen(false)}>
-      <Box pt={4} pb={2}>
-        <Typography textAlign="center">Create index</Typography>
-      </Box>
+      closeDrawer={handleCloseDrawer}>
       {!indexes.length && (
         <Typography pt={10} textAlign="center">
           There are currently no indexes for this Schema
@@ -231,7 +240,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
                   )}
                   <CustomizedGrid item xs={1}>
                     <IconButton
-                      color="primary"
+                      color="error"
                       size="small"
                       aria-label="delete"
                       onClick={() => handleRemoveField(inputField.id)}>

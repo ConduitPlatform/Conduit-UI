@@ -16,7 +16,7 @@ import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import Data from '../../../../assets/svgs/data.svg';
 import Image from 'next/image';
 import JsonEditorComponent from '../../../common/JsonEditorComponent';
-import SchemaIndexesDrawer from './SchemaIndexesDrawer';
+import SchemaIndexesDrawer from './Indexes/SchemaIndexesDrawer';
 import { Numbers } from '@mui/icons-material';
 
 interface Props {
