@@ -15,9 +15,11 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import { Schema } from '../../../../models/database/CmsModels';
+import { asyncGetSchemaIndexes } from '../../../../redux/slices/databaseSlice';
+import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import IndexCard from './IndexCard';
 
 interface Props {
@@ -72,15 +74,24 @@ const postgresIndexTypes = [
   { value: 'BRIN', label: 'BRIN' },
 ];
 
-const databaseType: 'postgres' | 'mongodb' = 'mongodb';
+type databaseTyped = 'postgres' | 'mongodb';
+
+const databaseType: databaseTyped = 'mongodb';
 
 const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
+
+  const { schemaIndexes } = useAppSelector((state) => state.databaseSlice.data);
   const [indexName, setIndexName] = useState<string>('');
   const [inputFields, setInputFields] = useState<{ id: string; field: string; type: string }[]>([
     { id: uuidV4(), field: '', type: '' },
   ]);
   const [postgresType, setPostgresType] = useState<string>('');
+
+  useEffect(() => {
+    open && dispatch(asyncGetSchemaIndexes(schema._id));
+  }, [dispatch, schema._id, open]);
 
   const handleAddField = () => {
     setInputFields([...inputFields, { id: uuidV4(), field: '', type: '' }]);
@@ -108,6 +119,11 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
   };
 
   const handleCreateIndex = () => {
+    if (databaseType === 'mongodb') {
+      console.log('dispatching mongodb creation of index here');
+    } else if (databaseType === 'postgres') {
+      console.log('dispatching postgres creation of index here');
+    }
     setInputFields([{ id: uuidV4(), field: '', type: '' }]);
     setIndexName('');
   };
@@ -135,7 +151,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
         }}>
         <Grid container spacing={2}>
           <Grid item container xs={12} spacing={2}>
-            <Grid item xs={databaseType === 'postgres' ? 6 : 12}>
+            <Grid item xs={databaseType === 'po' ? 6 : 12}>
               <TextField
                 fullWidth
                 value={indexName}

@@ -14,7 +14,15 @@ export const patchSchemaRequest = (_id: string, data: any) =>
   patchRequest(`/database/schemas/${_id}`, { ...data });
 
 export const postSchemaIndexRequest = (_id: string, data: any) =>
-  patchRequest(`/database/schemas/${_id}/indexes`, { ...data });
+  postRequest(`/database/schemas/${_id}/indexes`, { ...data });
+
+//TODO two below, pending requests
+
+export const getSchemaIndexesRequest = (_id: string) =>
+  getRequest(`/database/schemas/${_id}/indexes`);
+
+export const deleteSchemaIndexRequest = (_id: string, data: any) =>
+  deleteRequest(`/database/schemas/${_id}/indexes`, { ...data });
 
 export const setSchemaExtension = (_id: string, data: any) =>
   postRequest(`/database/schemas/${_id}/extensions/`, { fields: data });

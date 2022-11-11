@@ -18,6 +18,10 @@ interface Props {
 const IndexCard: FC<Props> = ({ index }) => {
   const theme = useTheme();
 
+  const handleDeleteIndex = () => {
+    console.log('deleted');
+  };
+
   return (
     <Card
       elevation={0}
@@ -36,7 +40,7 @@ const IndexCard: FC<Props> = ({ index }) => {
           padding: 0.5,
           paddingBottom: 0,
         }}>
-        <IconButton onClick={() => console.log('delete')} sx={{ p: 1 }} size="large">
+        <IconButton onClick={() => handleDeleteIndex()} sx={{ p: 1 }} size="large">
           <Close />
         </IconButton>
       </Box>
@@ -46,8 +50,8 @@ const IndexCard: FC<Props> = ({ index }) => {
           Fields:
           {
             <Box display="flex" gap={1} flexWrap="wrap">
-              {index.fields.map((item: string, index: number) => (
-                <Chip key={index} label={item} />
+              {index.fields.map((item: string, indexForChip: number) => (
+                <Chip key={indexForChip} label={`${item}: ${index.types[indexForChip]}`} />
               ))}
             </Box>
           }

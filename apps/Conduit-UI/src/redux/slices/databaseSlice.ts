@@ -13,6 +13,8 @@ import {
   getSchemaByIdRequest,
   getSystemSchemasRequest,
   postSchemaIndexRequest,
+  getSchemaIndexesRequest,
+  deleteSchemaIndexRequest,
 } from '../../http/requests/DatabaseRequests';
 import {
   createSchemaDocumentRequest,
@@ -74,6 +76,7 @@ export interface IDatabaseSlice {
     count: number;
     config: any;
     selectedSchema: Schema | null;
+    schemaIndexes: any;
     introspectionStatus: IntrospectionStatus;
   };
 }
@@ -112,6 +115,7 @@ const initialState: IDatabaseSlice = {
     count: 0,
     config: null,
     selectedSchema: null,
+    schemaIndexes: [],
     introspectionStatus: {
       foreignSchemaCount: 0,
       foreignSchemas: [],
@@ -246,12 +250,46 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
   }
 );
 
-export const asyncCreateSchemaIndexes = createAsyncThunk<Schema, any>(
+export const asyncCreateSchemaIndex = createAsyncThunk<Schema, any>(
   'database/createSchemaIndexes',
   async (params: { id: string; data: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await postSchemaIndexRequest(params.id, params.data);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
+      thunkAPI.dispatch(setAppLoading(false));
+      return data as Schema;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetSchemaIndexes = createAsyncThunk<Schema, any>(
+  'database/getSchemaIndexes',
+  async (params: { id: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getSchemaIndexesRequest(params.id);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
+      thunkAPI.dispatch(setAppLoading(false));
+      return data as Schema;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteSchemaIndexes = createAsyncThunk<Schema, any>(
+  'database/getSchemaIndexes',
+  async (params: { id: string; data: any }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await deleteSchemaIndexRequest(params.id, params.data);
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
       thunkAPI.dispatch(setAppLoading(false));
       return data as Schema;
@@ -830,8 +868,15 @@ const databaseSlice = createSlice({
         ...action.payload.results,
       ];
     });
+    //TODO add actual implementation when ednpoints are ready
     builder.addCase(asyncGetSystemSchemas.fulfilled, (state, action) => {
       state.data.systemSchemas = action.payload.results;
+    });
+    builder.addCase(asyncGetSchemaIndexes.fulfilled, (state, action) => {
+      state.data.schemaIndexes = action.payload;
+    });
+    builder.addCase(asyncCreateSchemaIndex.fulfilled, (state, action) => {
+      state.data.schemaIndexes = action.payload;
     });
   },
 });
