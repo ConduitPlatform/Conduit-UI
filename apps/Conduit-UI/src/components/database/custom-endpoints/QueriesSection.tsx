@@ -15,7 +15,7 @@ interface Props {
 const QueriesSection: FC<Props> = ({ editMode }) => {
   const dispatch = useAppDispatch();
 
-  const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
+  const { endpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   const handleQueryChanges = (queries: any) => {
     dispatch(setEndpointData({ queries }));
@@ -156,7 +156,6 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
         handleAddNode={handleAddNode}
         handleRemoveNode={handleRemoveNode}
         handleAddQuery={handleAddQuery}
-        availableFieldsOfSchema={schemaFields}
         handleChangeNodeOperator={handleChangeNodeOperator}
       />
       <Grid item xs={12} sx={{ textAlign: 'center' }}>

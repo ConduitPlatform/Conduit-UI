@@ -33,8 +33,8 @@ import InputsSection from './InputsSection';
 import { v4 as uuidv4 } from 'uuid';
 import {
   endpointCleanSlate,
+  setCompiledSchemaFields,
   setEndpointData,
-  setSchemaFields,
   setSelectedEndPoint,
 } from '../../../redux/slices/customEndpointsSlice';
 import { Schema } from '../../../models/database/CmsModels';
@@ -122,6 +122,7 @@ const CustomEndpointsLayout: FC = () => {
   const initializeData = useCallback(() => {
     if (selectedEndpoint) {
       const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemaDocuments);
+      console.log(fields);
 
       let inputs = [];
       const queryGroup: any = [];
@@ -191,8 +192,8 @@ const CustomEndpointsLayout: FC = () => {
           assignments,
         })
       );
-      //TODO :: fix request and redux dispatch
-      dispatch(setSchemaFields(fieldsWithTypes));
+
+      dispatch(setCompiledSchemaFields(fieldsWithTypes));
     }
   }, [dispatch, schemaDocuments, selectedEndpoint]);
 

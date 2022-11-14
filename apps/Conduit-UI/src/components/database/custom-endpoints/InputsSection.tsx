@@ -13,7 +13,9 @@ interface Props {
 const InputsSection: FC<Props> = ({ editMode }) => {
   const dispatch = useAppDispatch();
 
-  const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
+  const { endpoint, compiledSchemaFields } = useAppSelector(
+    (state) => state.customEndpointsSlice.data
+  );
 
   const handleAddInput = () => {
     const input = {
@@ -27,7 +29,7 @@ const InputsSection: FC<Props> = ({ editMode }) => {
   };
 
   const maxInputs = () => {
-    return endpoint.inputs.length === schemaFields.length;
+    return endpoint.inputs.length === compiledSchemaFields.length;
   };
 
   const deconstructQueries = (queries: any) => {

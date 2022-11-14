@@ -3,9 +3,9 @@ import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes } from '../../../utils/cms';
 import {
+  setAccessibleSchemaFields,
+  setCompiledSchemaFields,
   setEndpointData,
-  setSchemaCompiledFields,
-  setSchemaFields,
 } from '../../../redux/slices/customEndpointsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Schema } from '../../../models/database/CmsModels';
@@ -98,8 +98,8 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
         });
       }
       dispatch(setEndpointData({ selectedSchema, assignments }));
-      dispatch(setSchemaFields(fieldsWithTypes));
-      dispatch(setSchemaCompiledFields(compiledFieldsWithTypes));
+      dispatch(setAccessibleSchemaFields(fieldsWithTypes));
+      dispatch(setCompiledSchemaFields(compiledFieldsWithTypes));
     }
   };
 
@@ -118,6 +118,9 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
     const compiledFieldsWithTypes = findFieldsWithTypes(schema.data.compiledFields);
 
+    console.log('fieldsWithTypes:', fieldsWithTypes);
+    console.log('compiledFieldsWithTypes', compiledFieldsWithTypes);
+
     if (
       endpoint.operation &&
       (endpoint.operation === OperationsEnum.POST || endpoint.operation === OperationsEnum.PATCH)
@@ -135,8 +138,8 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
       });
     }
     dispatch(setEndpointData({ selectedSchema, assignments }));
-    dispatch(setSchemaFields(fieldsWithTypes));
-    dispatch(setSchemaCompiledFields(compiledFieldsWithTypes));
+    dispatch(setAccessibleSchemaFields(fieldsWithTypes));
+    dispatch(setCompiledSchemaFields(compiledFieldsWithTypes));
   };
 
   const handleAuthenticationChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
