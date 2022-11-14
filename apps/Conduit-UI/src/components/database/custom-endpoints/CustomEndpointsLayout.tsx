@@ -191,6 +191,7 @@ const CustomEndpointsLayout: FC = () => {
           assignments,
         })
       );
+      //TODO :: fix request and redux dispatch
       dispatch(setSchemaFields(fieldsWithTypes));
     }
   }, [dispatch, schemaDocuments, selectedEndpoint]);

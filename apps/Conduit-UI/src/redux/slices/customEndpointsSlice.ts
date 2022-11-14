@@ -24,6 +24,7 @@ interface ICustomEndpointSlice {
       updatedAt?: string;
     };
     schemaFields: [];
+    schemaCompiledFields: [];
     selectedEndpoint: any;
     endpointsWithSchemas: string[];
   };
@@ -44,6 +45,7 @@ const initialState: ICustomEndpointSlice = {
       assignments: [],
     },
     schemaFields: [],
+    schemaCompiledFields: [],
     selectedEndpoint: undefined,
     endpointsWithSchemas: [],
   },
@@ -59,6 +61,9 @@ const customEndpointsSlice = createSlice({
     setSchemaFields(state, action) {
       state.data.schemaFields = action.payload;
     },
+    setSchemaCompiledFields(state, action) {
+      state.data.schemaCompiledFields = action.payload;
+    },
     setEndpointData(state, action) {
       state.data.endpoint = { ...state.data.endpoint, ...action.payload };
     },
@@ -69,5 +74,10 @@ const customEndpointsSlice = createSlice({
 });
 
 export default customEndpointsSlice.reducer;
-export const { setSelectedEndPoint, setSchemaFields, setEndpointData, endpointCleanSlate } =
-  customEndpointsSlice.actions;
+export const {
+  setSelectedEndPoint,
+  setSchemaFields,
+  setSchemaCompiledFields,
+  setEndpointData,
+  endpointCleanSlate,
+} = customEndpointsSlice.actions;

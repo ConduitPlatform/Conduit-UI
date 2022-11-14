@@ -301,7 +301,7 @@ const CustomQueryRow: FC<Props> = ({
 
   const prepareOptions = (comparisonField?: boolean) => {
     return availableFieldsOfSchema.map((field: any, index: number) => {
-      if (typeof field.type === 'string' || Array.isArray(field.type)) {
+      if (typeof field.type === 'string' || Array.isArray(field.type) || field.name === '_id') {
         return (
           <MenuItem
             className={comparisonField ? classes.item : classes.schemaItem}

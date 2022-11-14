@@ -4,7 +4,7 @@ const getAvailableFieldsOfSchema = (schemaSelected: any, schemas: any) => {
   if (schemaSelected) {
     const found = schemas.find((schema: any) => schema._id === schemaSelected);
     if (found) {
-      return found.fields;
+      return found.compiledFields;
     }
     return {};
   }
