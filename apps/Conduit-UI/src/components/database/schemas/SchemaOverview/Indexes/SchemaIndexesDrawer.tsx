@@ -17,12 +17,16 @@ import {
 } from '@mui/material';
 import React, { FC, useState, useEffect } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { Schema } from '../../../../../models/database/CmsModels';
+import { Schema, SchemaIndex } from '../../../../../models/database/CmsModels';
 import {
+  asyncCreateSchemaIndex,
+  asyncDeleteSchemaIndexes,
   asyncGetDatabaseType,
   asyncGetSchemaIndexes,
+  clearSelectedIndexes,
 } from '../../../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../../redux/store';
+import { enqueueInfoNotification } from '../../../../../utils/useNotifier';
 import IndexCard from './IndexCard';
 
 interface Props {
@@ -39,28 +43,9 @@ const CustomizedGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
 }));
 
-const indexes = [
-  {
-    fields: ['email', 'hashedPassword'],
-    types: [1, -1],
-    options: {
-      name: 'MongoCompoundIndex',
-    },
-  },
-
-  {
-    fields: ['hashedPassword'],
-    types: ['hashed'],
-    options: {
-      unique: true,
-      name: 'MongoHashedIndex',
-    },
-  },
-];
-
 const mongoDbIndexTypes = [
-  { value: '1', label: 'Ascending' },
-  { value: '-1', label: 'Descending' },
+  { value: 1, label: 'Ascending' },
+  { value: -1, label: 'Descending' },
   { value: '2d', label: '2d' },
   { value: '2dsphere', label: '2dsphere' },
   { value: 'geoHaystack', label: 'GeoHaystack' },
@@ -77,26 +62,21 @@ const postgresIndexTypes = [
   { value: 'BRIN', label: 'BRIN' },
 ];
 
-type databaseTyped = 'postgres' | 'mongodb';
-
-const databaseType: databaseTyped = 'mongodb';
-
 const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
   const { schemaIndexes, typeOfDb } = useAppSelector((state) => state.databaseSlice.data);
-
   const [indexName, setIndexName] = useState<string>('');
+  const [postgresType, setPostgresType] = useState<string>('');
   const [inputFields, setInputFields] = useState<{ id: string; field: string; type: string }[]>([
     { id: uuidV4(), field: '', type: '' },
   ]);
-  const [postgresType, setPostgresType] = useState<string>('');
 
   useEffect(() => {
     if (open) {
-      dispatch(asyncGetSchemaIndexes(schema._id));
-      dispatch(asyncGetDatabaseType(schema._id));
+      dispatch(asyncGetSchemaIndexes({ id: schema._id }));
+      dispatch(asyncGetDatabaseType());
     }
   }, [dispatch, schema._id, open]);
 
@@ -126,10 +106,45 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
   };
 
   const handleCreateIndex = () => {
-    if (databaseType === 'mongodb') {
-      console.log('dispatching mongodb creation of index here');
-    } else if (databaseType === 'postgres') {
-      console.log('dispatching postgres creation of index here');
+    if (indexName === '') {
+      dispatch(enqueueInfoNotification('You have to specify a name for your index!'));
+      return;
+    }
+
+    const formattedFields = inputFields.map((item) => item.field);
+
+    if (typeOfDb === 'MongoDB') {
+      const formattedTypes = inputFields.map((item) => item.type);
+
+      const formattedValues = {
+        indexes: [
+          {
+            fields: formattedFields,
+            types: formattedTypes,
+            options: {
+              name: indexName,
+            },
+          },
+        ],
+      };
+      dispatch(asyncCreateSchemaIndex({ id: schema._id, data: formattedValues }));
+    } else if (typeOfDb === 'PostgreSQL') {
+      if (postgresType) {
+        dispatch(enqueueInfoNotification('You have to specify a type for your indexes!'));
+        return;
+      }
+      const formattedValues = {
+        indexes: [
+          {
+            fields: formattedFields,
+            types: postgresType,
+            options: {
+              name: indexName,
+            },
+          },
+        ],
+      };
+      dispatch(asyncCreateSchemaIndex({ id: schema._id, data: formattedValues }));
     }
     setInputFields([{ id: uuidV4(), field: '', type: '' }]);
     setIndexName('');
@@ -137,7 +152,12 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
 
   const handleCloseDrawer = () => {
     setInputFields([{ id: uuidV4(), field: '', type: '' }]);
+    dispatch(clearSelectedIndexes());
     setOpen(false);
+  };
+
+  const handleDeleteIndex = (name: string) => {
+    dispatch(asyncDeleteSchemaIndexes({ id: schema._id, names: [name] }));
   };
 
   return (
@@ -147,7 +167,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
       maxWidth={600}
       open={open}
       closeDrawer={handleCloseDrawer}>
-      {!indexes.length && (
+      {!schemaIndexes.length && (
         <Typography pt={10} textAlign="center">
           There are currently no indexes for this Schema
         </Typography>
@@ -160,7 +180,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
         }}>
         <Grid container spacing={2}>
           <Grid item container xs={12} spacing={2}>
-            <Grid item xs={databaseType === 'po' ? 6 : 12}>
+            <Grid item xs={typeOfDb === 'PostgreSQL' ? 6 : 12}>
               <TextField
                 fullWidth
                 value={indexName}
@@ -168,7 +188,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
                 label="Index name"
               />
             </Grid>
-            {databaseType === 'postgres' && (
+            {typeOfDb === 'PostgreSQL' && (
               <Grid item xs={6}>
                 <FormControl fullWidth sx={{ minWidth: 200 }}>
                   <InputLabel>Type</InputLabel>
@@ -199,7 +219,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
             {inputFields.map((inputField, index: number) => {
               return (
                 <Grid key={index} container spacing={1} sx={{ mt: 0.2 }}>
-                  <CustomizedGrid item xs={databaseType !== 'postgres' ? 6 : 11}>
+                  <CustomizedGrid item xs={typeOfDb !== 'PostgreSQL' ? 6 : 11}>
                     <FormControl fullWidth sx={{ minWidth: 200 }}>
                       <InputLabel>Field</InputLabel>
                       <Select
@@ -218,7 +238,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
                       </Select>
                     </FormControl>
                   </CustomizedGrid>
-                  {databaseType !== 'postgres' && (
+                  {typeOfDb !== 'PostgreSQL' && (
                     <CustomizedGrid item xs={5}>
                       <FormControl sx={{ minWidth: 200 }}>
                         <InputLabel>Type</InputLabel>
@@ -253,20 +273,20 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
           </Grid>
         </Grid>
         <Box pt={2} display="flex" justifyContent="flex-end">
-          <Button variant="contained" onClick={handleCreateIndex}>
+          <Button variant="contained" onClick={() => handleCreateIndex()}>
             Create index
           </Button>
         </Box>
       </Box>
-      {indexes.length && (
+      {schemaIndexes.length > 0 && (
         <Box>
           <Typography textAlign="center" pt={4} pb={2}>
             Indexes
           </Typography>
           <Grid container spacing={2}>
-            {indexes.map((index, key) => (
+            {schemaIndexes.map((index: SchemaIndex, key: number) => (
               <Grid key={key} item xs={12}>
-                <IndexCard index={index} />
+                <IndexCard handleDeleteIndex={handleDeleteIndex} index={index} />
               </Grid>
             ))}
           </Grid>

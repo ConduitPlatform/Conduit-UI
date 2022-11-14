@@ -10,17 +10,16 @@ import {
   useTheme,
 } from '@mui/material';
 import React, { FC } from 'react';
+import { SchemaIndex } from '../../../../../models/database/CmsModels';
+import { asyncDeleteSchemaIndexes } from '../../../../../redux/slices/databaseSlice';
 
 interface Props {
-  index: any;
+  index: SchemaIndex;
+  handleDeleteIndex: (name: string) => void;
 }
 
-const IndexCard: FC<Props> = ({ index }) => {
+const IndexCard: FC<Props> = ({ index, handleDeleteIndex }) => {
   const theme = useTheme();
-
-  const handleDeleteIndex = () => {
-    console.log('deleted');
-  };
 
   return (
     <Card
@@ -40,7 +39,10 @@ const IndexCard: FC<Props> = ({ index }) => {
           padding: 0.5,
           paddingBottom: 0,
         }}>
-        <IconButton onClick={() => handleDeleteIndex()} sx={{ p: 1 }} size="large">
+        <IconButton
+          onClick={() => handleDeleteIndex(index.options.name)}
+          sx={{ p: 1 }}
+          size="large">
           <Close />
         </IconButton>
       </Box>

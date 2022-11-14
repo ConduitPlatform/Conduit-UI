@@ -3,6 +3,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   asyncCreateSchemaDocument,
   asyncDeleteSchemaDocument,
+  asyncGetDatabaseType,
   asyncGetSchemaDocuments,
   asyncGetSchemaOwners,
   asyncGetSystemSchemas,
@@ -74,6 +75,10 @@ const Schemas: FC = () => {
 
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(asyncGetDatabaseType());
   }, [dispatch]);
 
   useEffect(() => {

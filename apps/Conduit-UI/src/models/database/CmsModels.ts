@@ -2,6 +2,15 @@
 //We need further testing
 import { OperationsEnum } from '../OperationsEnum';
 
+export interface SchemaIndex {
+  fields: string[];
+  options: {
+    name: string;
+    unique?: boolean;
+  };
+  types: string[] | number[] | string;
+}
+
 export interface Schema {
   _id: string;
   modelOptions: {
