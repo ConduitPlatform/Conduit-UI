@@ -142,7 +142,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
 
   return (
     <SideDrawerWrapper
-      title={`Schema ${schema?.name} indexes`}
+      title={`Indexes for Schema: ${schema?.name}`}
       minWidth={600}
       maxWidth={600}
       open={open}
