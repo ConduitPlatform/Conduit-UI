@@ -53,7 +53,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     const assignments: Assignment[] = [];
     if (operation === 1) {
       if (endpoint.selectedSchema) {
-        if (schemaFields.length > 0) {
+        if (schemaFields?.length > 0) {
           schemaFields.forEach((field: string) => {
             const assignment: Assignment = {
               schemaField: field,
@@ -117,9 +117,6 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
 
     const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
     const compiledFieldsWithTypes = findFieldsWithTypes(schema.data.compiledFields);
-
-    console.log('fieldsWithTypes:', fieldsWithTypes);
-    console.log('compiledFieldsWithTypes', compiledFieldsWithTypes);
 
     if (
       endpoint.operation &&

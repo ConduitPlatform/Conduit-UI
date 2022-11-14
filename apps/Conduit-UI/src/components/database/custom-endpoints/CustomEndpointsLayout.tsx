@@ -17,7 +17,7 @@ import {
 import { Delete, Edit, InfoOutlined, Search } from '@mui/icons-material';
 import {
   findFieldsWithTypes,
-  getAvailableFieldsOfSchema,
+  getCompiledFieldsOfSchema,
   hasInvalidAssignments,
   hasInvalidInputs,
   hasInvalidQueries,
@@ -33,6 +33,7 @@ import InputsSection from './InputsSection';
 import { v4 as uuidv4 } from 'uuid';
 import {
   endpointCleanSlate,
+  setAccessibleSchemaFields,
   setCompiledSchemaFields,
   setEndpointData,
   setSelectedEndPoint,
@@ -52,6 +53,7 @@ import { useRouter } from 'next/router';
 import useDebounce from '../../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import EndpointsList from './EndpointsList';
+import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -119,10 +121,18 @@ const CustomEndpointsLayout: FC = () => {
     }
   };
 
-  const initializeData = useCallback(() => {
+  const initializeData = useCallback(async () => {
     if (selectedEndpoint) {
-      const fields = getAvailableFieldsOfSchema(selectedEndpoint.selectedSchema, schemaDocuments);
-      console.log(fields);
+      const fields = getCompiledFieldsOfSchema(selectedEndpoint.selectedSchema, schemaDocuments);
+
+      const {
+        data: { accessibleFields },
+      } = await getAccesssibleSchemaFields(
+        selectedEndpoint.selectedSchema,
+        selectedEndpoint.operation
+      );
+
+      const accessibleFieldsWithTypes = findFieldsWithTypes(accessibleFields);
 
       let inputs = [];
       const queryGroup: any = [];
@@ -194,6 +204,7 @@ const CustomEndpointsLayout: FC = () => {
       );
 
       dispatch(setCompiledSchemaFields(fieldsWithTypes));
+      dispatch(setAccessibleSchemaFields(accessibleFieldsWithTypes));
     }
   }, [dispatch, schemaDocuments, selectedEndpoint]);
 
