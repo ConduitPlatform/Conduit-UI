@@ -13,8 +13,8 @@ export const postSchemaRequest = (data: any) => postRequest(`/database/schemas`,
 export const patchSchemaRequest = (_id: string, data: any) =>
   patchRequest(`/database/schemas/${_id}`, { ...data });
 
-export const postSchemaIndexRequest = (_id: string, data: any) =>
-  postRequest(`/database/schemas/${_id}/indexes`, { data });
+export const postSchemaIndexRequest = (_id: string, indexes: any) =>
+  postRequest(`/database/schemas/${_id}/indexes`, indexes);
 
 export const getSchemaIndexesRequest = (_id: string) =>
   getRequest(`/database/schemas/${_id}/indexes`);
