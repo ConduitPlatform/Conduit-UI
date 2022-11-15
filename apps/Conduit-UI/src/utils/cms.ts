@@ -1,10 +1,11 @@
 import { isArray } from 'lodash';
 
-const getAvailableFieldsOfSchema = (schemaSelected: any, schemas: any) => {
+const getCompiledFieldsOfSchema = (schemaSelected: any, schemas: any) => {
   if (schemaSelected) {
     const found = schemas.find((schema: any) => schema._id === schemaSelected);
+
     if (found) {
-      return found.fields;
+      return found.compiledFields;
     }
     return {};
   }
@@ -191,7 +192,7 @@ const prepareQuery = (selectedQueries: any) => {
 
 export {
   findFieldsWithTypes,
-  getAvailableFieldsOfSchema,
+  getCompiledFieldsOfSchema,
   hasInvalidQueries,
   hasInvalidAssignments,
   hasInvalidInputs,

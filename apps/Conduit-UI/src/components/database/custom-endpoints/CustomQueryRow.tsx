@@ -15,7 +15,7 @@ import ConditionsEnum from '../../../models/ConditionsEnum';
 import { isArray } from 'lodash';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../../utils/cms';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
-import { useAppDispatch } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -74,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   index: number;
   query: any;
-  availableFieldsOfSchema: any;
   selectedInputs: {
     array: boolean;
     location: number;
@@ -94,7 +93,7 @@ interface Props {
 const CustomQueryRow: FC<Props> = ({
   index,
   query,
-  availableFieldsOfSchema,
+
   selectedInputs,
   editMode,
   handleQueryFieldChange,
@@ -108,11 +107,15 @@ const CustomQueryRow: FC<Props> = ({
   const dispatch = useAppDispatch();
   const [schemaType, setSchemaType] = useState('');
 
+  const { compiledSchemaFields, accessibleSchemaFields } = useAppSelector(
+    (state) => state.customEndpointsSlice.data
+  );
+
   useEffect(() => {
     if (typeof query.schemaField === 'string') {
       if (query.schemaField.indexOf('.') !== -1) {
         const splitQuery = query.schemaField.split('.');
-        const foundInnerSchema = availableFieldsOfSchema.find(
+        const foundInnerSchema = compiledSchemaFields.find(
           (field: any) => field.name === splitQuery[0]
         );
         if (foundInnerSchema.type) {
@@ -123,7 +126,7 @@ const CustomQueryRow: FC<Props> = ({
         }
         return;
       } else {
-        const foundSchema = availableFieldsOfSchema.find(
+        const foundSchema = compiledSchemaFields.find(
           (schema: any) => schema.name === query.schemaField
         );
         if (foundSchema && Array.isArray(foundSchema.type)) {
@@ -133,7 +136,7 @@ const CustomQueryRow: FC<Props> = ({
         }
       }
     }
-  }, [availableFieldsOfSchema, query.schemaField]);
+  }, [compiledSchemaFields, query.schemaField]);
 
   const isValueInputIncompatible = (type: any) => {
     if (isArray(type) && schemaType === 'Array') {
@@ -163,7 +166,7 @@ const CustomQueryRow: FC<Props> = ({
 
   const isSchemaIncompatible = (isComparisonField: any, schemaName: string) => {
     if (isComparisonField) {
-      return isValueIncompatible(schemaName, schemaType, availableFieldsOfSchema);
+      return isValueIncompatible(schemaName, schemaType, compiledSchemaFields);
     }
   };
 
@@ -215,7 +218,7 @@ const CustomQueryRow: FC<Props> = ({
     if (!isComparisonField) {
       return suffix;
     } else {
-      return `${suffix} (${getTypeOfValue(item, availableFieldsOfSchema)})`;
+      return `${suffix} (${getTypeOfValue(item, compiledSchemaFields)})`;
     }
   };
 
@@ -299,20 +302,37 @@ const CustomQueryRow: FC<Props> = ({
     }
   };
 
-  const prepareOptions = (comparisonField?: boolean) => {
-    return availableFieldsOfSchema.map((field: any, index: number) => {
-      if (typeof field.type === 'string' || Array.isArray(field.type)) {
+  const prepareOptions = () => {
+    return accessibleSchemaFields.map((field: any, index: number) => {
+      if (typeof field.type === 'string' || Array.isArray(field.type) || field.name === '_id') {
         return (
           <MenuItem
-            className={comparisonField ? classes.item : classes.schemaItem}
-            disabled={isSchemaIncompatible(comparisonField, `${field.name}`)}
+            className={classes.item}
+            disabled={isSchemaIncompatible(true, `${field.name}`)}
             key={`idxO-${index}-field`}
-            value={getSchemaValue(comparisonField, field.name)}>
-            {comparisonField ? field.name + isOuterFieldArray(field.type) : field.name}
+            value={getSchemaValue(true, field.name)}>
+            {field.name + isOuterFieldArray(field.type)}
           </MenuItem>
         );
       }
-      return getSubFields(field, comparisonField);
+      return getSubFields(field, true);
+    });
+  };
+
+  const prepareSchemaFieldOptions = () => {
+    return compiledSchemaFields.map((field: any, index: number) => {
+      if (typeof field.type === 'string' || Array.isArray(field.type) || field.name === '_id') {
+        return (
+          <MenuItem
+            className={classes.schemaItem}
+            disabled={isSchemaIncompatible(false, `${field.name}`)}
+            key={`idxO-${index}-field`}
+            value={getSchemaValue(false, field.name)}>
+            {field.name}
+          </MenuItem>
+        );
+      }
+      return getSubFields(field, false);
     });
   };
 
@@ -332,7 +352,7 @@ const CustomQueryRow: FC<Props> = ({
               handleQueryFieldChange(event, index);
             }}>
             <MenuItem aria-label="None" value="" />
-            {prepareOptions()}
+            {prepareSchemaFieldOptions()}
           </TextField>
         </Grid>
         <Grid item xs={3}>
@@ -401,7 +421,7 @@ const CustomQueryRow: FC<Props> = ({
             <MenuItem disabled className={classes.group}>
               Schema Fields
             </MenuItem>
-            {prepareOptions(true)}
+            {prepareOptions()}
             <MenuItem disabled className={classes.group}>
               Input Fields {!selectedInputs.length && '(none available)'}
             </MenuItem>

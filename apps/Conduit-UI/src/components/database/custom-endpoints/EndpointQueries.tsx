@@ -18,7 +18,6 @@ interface Props {
   handleAddNode: (nodeId: any) => void;
   handleRemoveNode: (nodeId: any) => void;
   setSelectedQueries: (queries: any) => void;
-  availableFieldsOfSchema: any;
   handleChangeNodeOperator: (nodeId: any, oldOperator: any, newOperator: any) => void;
 }
 
@@ -31,7 +30,6 @@ const EndpointQueries: FC<Props> = ({
   handleAddNode,
   handleRemoveNode,
   setSelectedQueries,
-  availableFieldsOfSchema,
   handleChangeNodeOperator,
 }) => {
   const [expanded, setExpanded] = useState<string[]>([]);
@@ -260,7 +258,6 @@ const EndpointQueries: FC<Props> = ({
               <CustomQueryRow
                 query={node}
                 index={node._id}
-                availableFieldsOfSchema={availableFieldsOfSchema}
                 selectedInputs={selectedInputs}
                 editMode={editMode}
                 handleQueryFieldChange={handleQueryFieldChange}

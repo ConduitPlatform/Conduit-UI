@@ -14,7 +14,9 @@ interface Props {
 const AssignmentsSection: FC<Props> = ({ editMode }) => {
   const dispatch = useAppDispatch();
 
-  const { endpoint, schemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
+  const { endpoint, accessibleSchemaFields } = useAppSelector(
+    (state) => state.customEndpointsSlice.data
+  );
 
   const handleAddAssignment = () => {
     const assignment: Assignment = {
@@ -45,14 +47,14 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
         selectedInputs={endpoint.inputs}
         selectedAssignments={endpoint.assignments}
         setSelectedAssignments={handleAssignmentChanges}
-        availableFieldsOfSchema={schemaFields}
+        availableFieldsOfSchema={accessibleSchemaFields}
       />
       <Grid item xs={12} sx={{ textAlign: 'center' }}>
         <Button
           disabled={
             !editMode ||
             (endpoint.operation === OperationsEnum.POST &&
-              schemaFields.length <= endpoint.assignments.length)
+              accessibleSchemaFields.length <= endpoint.assignments.length)
           }
           variant="text"
           color={'primary'}
