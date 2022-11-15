@@ -275,7 +275,7 @@ const EndpointQueries: FC<Props> = ({
   };
 
   return (
-    <Box padding={2} width={'100%'}>
+    <Box width={'100%'}>
       <TreeView
         expanded={expanded}
         sx={{ flexGrow: 1, overflowY: 'auto', padding: 0.1 }}

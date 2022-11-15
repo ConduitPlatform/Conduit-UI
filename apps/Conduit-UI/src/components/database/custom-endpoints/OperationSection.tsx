@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes } from '../../../utils/cms';
 import {
@@ -188,94 +188,82 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
   };
 
   return (
-    <>
-      <Grid item container spacing={2} xs={12} wrap={'nowrap'} justifyContent={'space-between'}>
-        <Grid item container sx={{ alignItems: 'center', flex: 1 }} spacing={2}>
-          <Grid item container sx={{ flex: 0 }}>
-            <TextField
-              select
-              fullWidth
+    <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box display="flex" gap={3} alignItems="center">
+        <TextField
+          select
+          fullWidth
+          size="small"
+          label={'Select Operation'}
+          variant="outlined"
+          sx={{ minWidth: 170 }}
+          value={endpoint.operation}
+          disabled={!editMode}
+          onChange={handleOperationChange}>
+          <MenuItem aria-label="None" value="-1" />
+          <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
+          <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
+          <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
+          <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
+          <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
+        </TextField>
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={!editMode || endpoint.operation === -1}
+          endIcon={editMode && <Loop />}
+          onClick={() => setDrawer(true)}>
+          {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
+        </Button>
+      </Box>
+      <Box>
+        <FormControlLabel
+          control={
+            <Checkbox
               size="small"
-              label={'Select Operation'}
-              variant="outlined"
-              sx={{ minWidth: 170 }}
-              value={endpoint.operation}
               disabled={!editMode}
-              onChange={handleOperationChange}>
-              <MenuItem aria-label="None" value="-1" />
-              <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
-              <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
-              <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
-              <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
-              <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
-            </TextField>
-          </Grid>
+              color={'primary'}
+              checked={endpoint.authentication}
+              onChange={handleAuthenticationChange}
+              name="authentication"
+            />
+          }
+          label="Authenticated"
+        />
 
-          <Grid item sx={{ flex: 1 }}>
-            <Button
-              size="small"
-              variant="contained"
-              color="primary"
-              disabled={!editMode || endpoint.operation === -1}
-              endIcon={editMode && <Loop />}
-              onClick={() => setDrawer(true)}>
-              {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
-            </Button>
-          </Grid>
-        </Grid>
-
-        <Grid container item spacing={2} sx={{ flex: 1, pr: 1 }} justifyContent={'flex-end'}>
-          <Grid item>
+        {endpoint.operation === OperationsEnum.GET && (
+          <>
             <FormControlLabel
               control={
                 <Checkbox
                   size="small"
                   disabled={!editMode}
                   color={'primary'}
-                  checked={endpoint.authentication}
-                  onChange={handleAuthenticationChange}
-                  name="authentication"
+                  checked={endpoint.paginated}
+                  onChange={handlePaginatedChange}
+                  name="paginated"
                 />
               }
-              label="Authenticated"
+              label="Paginated"
             />
-          </Grid>
-          {endpoint.operation === OperationsEnum.GET && (
-            <>
-              <Grid item sx={{ flex: 0 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode}
-                      color={'primary'}
-                      checked={endpoint.paginated}
-                      onChange={handlePaginatedChange}
-                      name="paginated"
-                    />
-                  }
-                  label="Paginated"
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                  color={'primary'}
+                  checked={endpoint.sorted}
+                  onChange={handleSortedChange}
+                  name="sorted"
                 />
-              </Grid>
-              <Grid item sx={{ flex: 0 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                      color={'primary'}
-                      checked={endpoint.sorted}
-                      onChange={handleSortedChange}
-                      name="sorted"
-                    />
-                  }
-                  label="Sorted"
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
-      </Grid>
+              }
+              label="Sorted"
+            />
+          </>
+        )}
+      </Box>
       {editMode && (
         <TableDialog
           open={drawer}
@@ -294,7 +282,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           externalElements={displayedSchema}
         />
       )}
-    </>
+    </Box>
   );
 };
 

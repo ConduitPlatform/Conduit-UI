@@ -367,48 +367,45 @@ const CustomEndpointsLayout: FC = () => {
       );
     } else {
       return (
-        <Box>
-          <Grid container sx={{ alignItems: 'center', pt: 2 }} spacing={2} alignItems="flex-end">
-            <Grid item container xs={12} justifyContent={'space-between'} wrap={'nowrap'}>
-              <Grid item sx={{ flex: 1, maxWidth: 360 }}>
-                <Box display="flex" gap={2} alignItems="center">
-                  <TextField
-                    size="small"
-                    disabled={!editMode}
-                    fullWidth
-                    variant={'outlined'}
-                    label={'Name'}
-                    value={endpoint.name}
-                    onChange={handleNameChange}
-                  />
-                  <InformationTooltip />
-                </Box>
-              </Grid>
-              <Grid item>
-                {!editMode && (
-                  <IconButton aria-label="delete" onClick={handleDeleteClick} size="large">
-                    <Delete color="error" />
-                  </IconButton>
-                )}
-                {!editMode && (
-                  <IconButton
-                    color="primary"
-                    aria-label="edit"
-                    onClick={handleEditClick}
-                    size="large">
-                    <Edit />
-                  </IconButton>
-                )}
-              </Grid>
-            </Grid>
-
-            <OperationSection
-              editMode={editMode}
-              createMode={createMode}
-              availableSchemas={schemaDocuments}
+        <Box display="flex" pt={2} gap={1} flexDirection="column">
+          <Box display="flex" gap={2} alignItems="center">
+            <TextField
+              size="small"
+              disabled={!editMode}
+              variant={'outlined'}
+              label={'Name'}
+              value={endpoint.name}
+              onChange={handleNameChange}
             />
-            {renderDetails()}
-          </Grid>
+            <InformationTooltip />
+            <Box display="flex" justifyContent="flex-end" width="100%">
+              {!editMode && (
+                <IconButton
+                  disableRipple
+                  aria-label="delete"
+                  onClick={handleDeleteClick}
+                  size="large">
+                  <Delete color="error" />
+                </IconButton>
+              )}
+              {!editMode && (
+                <IconButton
+                  disableRipple
+                  color="primary"
+                  aria-label="edit"
+                  onClick={handleEditClick}
+                  size="large">
+                  <Edit />
+                </IconButton>
+              )}
+            </Box>
+          </Box>
+          <OperationSection
+            editMode={editMode}
+            createMode={createMode}
+            availableSchemas={schemaDocuments}
+          />
+          {renderDetails()}
           {renderSaveSection()}
         </Box>
       );

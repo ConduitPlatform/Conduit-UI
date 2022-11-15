@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid, Typography } from '@mui/material';
 import EndpointQueries from './EndpointQueries';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
@@ -138,15 +138,9 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
   };
 
   return (
-    <>
-      <Grid item xs={6}>
-        <Typography>
-          <strong>Queries</strong>
-        </Typography>
-      </Grid>
-      <Grid item xs={12} sx={{ padding: '0' }}>
-        <Divider />
-      </Grid>
+    <Box>
+      <Typography fontWeight="bold">Queries</Typography>
+      <Divider sx={{ mb: 2 }} />
       <EndpointQueries
         editMode={editMode}
         selectedInputs={endpoint.inputs}
@@ -158,7 +152,7 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
         handleAddQuery={handleAddQuery}
         handleChangeNodeOperator={handleChangeNodeOperator}
       />
-      <Grid item xs={12} sx={{ textAlign: 'center' }}>
+      <Box display="flex" justifyContent="center">
         <Button
           disabled={!editMode}
           variant="text"
@@ -168,8 +162,8 @@ const QueriesSection: FC<Props> = ({ editMode }) => {
           onClick={handleAddParentNode}>
           Add query
         </Button>
-      </Grid>
-    </>
+      </Box>
+    </Box>
   );
 };
 

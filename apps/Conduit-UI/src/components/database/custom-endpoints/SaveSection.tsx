@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, Grid } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 interface Props {
   editMode: boolean;
@@ -19,23 +19,18 @@ const SaveSection: FC<Props> = ({
   handleCancelClick,
 }) => {
   return (
-    <Grid container justifyContent="flex-end" spacing={1} sx={{ pt: 4 }}>
-      <Grid item xs={3} md={1}>
-        <Button onClick={handleCancelClick} variant="outlined">
-          Cancel
-        </Button>
-      </Grid>
-
-      <Grid item xs={3} md={1}>
-        <Button
-          disabled={disableSubmit}
-          variant="contained"
-          color="primary"
-          onClick={createMode ? handleCreateClick : editMode ? handleSaveClick : ''}>
-          {createMode ? 'Create' : editMode ? 'Save' : ''}
-        </Button>
-      </Grid>
-    </Grid>
+    <Box display="flex" width="100%" justifyContent="flex-end" gap={2} px={4}>
+      <Button onClick={handleCancelClick} variant="outlined">
+        Cancel
+      </Button>
+      <Button
+        disabled={disableSubmit}
+        variant="contained"
+        color="primary"
+        onClick={createMode ? handleCreateClick : editMode ? handleSaveClick : ''}>
+        {createMode ? 'Create' : editMode ? 'Save' : ''}
+      </Button>
+    </Box>
   );
 };
 
