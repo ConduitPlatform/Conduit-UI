@@ -27,7 +27,11 @@ export const isValueIncompatible = (
         if (isArray(innerSchemaType) && externalInputType === 'Array') {
           return false;
         }
-        if (innerSchemaType === externalInputType) return false;
+        if (
+          innerSchemaType === externalInputType ||
+          (innerSchemaType === 'Relation' && externalInputType === 'ObjectId')
+        )
+          return false;
         return true;
       }
       return;
@@ -40,7 +44,11 @@ export const isValueIncompatible = (
         if (isArray(foundSchema.type) && externalInputType === 'Array') {
           return false;
         }
-        if (foundSchema?.type === externalInputType) return false;
+        if (
+          foundSchema?.type === externalInputType ||
+          (foundSchema?.type === 'Relation' && externalInputType === 'ObjectId')
+        )
+          return false;
         return true;
       }
     }
