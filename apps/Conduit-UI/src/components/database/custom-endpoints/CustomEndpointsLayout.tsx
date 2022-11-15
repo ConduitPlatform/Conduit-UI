@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   Box,
+  Button,
   FormControl,
   Grid,
   Icon,
@@ -24,7 +25,11 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
+import {
+  ConduitMultiSelect,
+  ConduitTooltip,
+  ConfirmationDialog,
+} from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
@@ -54,6 +59,7 @@ import useDebounce from '../../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import EndpointsList from './EndpointsList';
 import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
+import InformationTooltip from './InformationTooltip';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -365,15 +371,18 @@ const CustomEndpointsLayout: FC = () => {
           <Grid container sx={{ alignItems: 'center', pt: 2 }} spacing={2} alignItems="flex-end">
             <Grid item container xs={12} justifyContent={'space-between'} wrap={'nowrap'}>
               <Grid item sx={{ flex: 1, maxWidth: 360 }}>
-                <TextField
-                  size="small"
-                  disabled={!editMode}
-                  fullWidth
-                  variant={'outlined'}
-                  label={'Name'}
-                  value={endpoint.name}
-                  onChange={handleNameChange}
-                />
+                <Box display="flex" gap={2} alignItems="center">
+                  <TextField
+                    size="small"
+                    disabled={!editMode}
+                    fullWidth
+                    variant={'outlined'}
+                    label={'Name'}
+                    value={endpoint.name}
+                    onChange={handleNameChange}
+                  />
+                  <InformationTooltip />
+                </Box>
               </Grid>
               <Grid item>
                 {!editMode && (
