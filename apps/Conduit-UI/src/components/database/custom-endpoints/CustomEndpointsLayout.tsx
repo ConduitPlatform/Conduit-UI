@@ -1,37 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  Icon,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { Delete, Edit, InfoOutlined, Search } from '@mui/icons-material';
-import {
-  disableSubmit,
-  findFieldsWithTypes,
-  getCompiledFieldsOfSchema,
-  hasInvalidAssignments,
-  hasInvalidInputs,
-  hasInvalidQueries,
-  prepareQuery,
-} from '../../../utils/cms';
-import { OperationsEnum } from '../../../models/OperationsEnum';
-import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
-import OperationSection from './OperationSection';
-import SaveSection from './SaveSection';
-import QueriesSection from './QueriesSection';
-import AssignmentsSection from './AssignmentsSection';
-import InputsSection from './InputsSection';
+import { findFieldsWithTypes, getCompiledFieldsOfSchema, prepareQuery } from '../../../utils/cms';
+import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import { v4 as uuidv4 } from 'uuid';
 import {
   endpointCleanSlate,
@@ -47,30 +16,24 @@ import {
   asyncDeleteCustomEndpoints,
   asyncGetSchemasWithEndpoints,
   asyncUpdateCustomEndpoints,
-  setEndpointsOperation,
-  setEndpointsSearch,
 } from '../../../redux/slices/databaseSlice';
 import InfiniteScrollLayout from '../../InfiniteScrollLayout';
 import { useRouter } from 'next/router';
-import useDebounce from '../../../hooks/useDebounce';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import EndpointsList from './EndpointsList';
 import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
-import InformationTooltip from './InformationTooltip';
+import ListActions from './ListActions';
+import MainContent from './MainContent';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
-  const theme = useTheme();
+
   const router = useRouter();
   const { schema } = router.query;
-
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
-  const [search, setSearch] = useState('');
   const [schemas, setSchemas] = useState<string[]>([]);
-  const debouncedSearch = useDebounce(search, 500);
-
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
   const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
   const { filters } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
@@ -78,10 +41,6 @@ const CustomEndpointsLayout: FC = () => {
   const {
     schemas: { schemaDocuments },
   } = useAppSelector((state) => state.databaseSlice.data);
-
-  useEffect(() => {
-    dispatch(setEndpointsSearch(debouncedSearch));
-  }, [debouncedSearch, dispatch]);
 
   useEffect(() => {
     dispatch(asyncGetSchemasWithEndpoints());
@@ -281,169 +240,16 @@ const CustomEndpointsLayout: FC = () => {
     dispatch(setEndpointData({ name: event.target.value }));
   };
 
-  const renderSaveSection = () => {
-    if (!editMode && !createMode) {
-      return null;
-    }
-
-    return (
-      <SaveSection
-        editMode={editMode}
-        createMode={createMode}
-        disableSubmit={disableSubmit(endpoint)}
-        handleSaveClick={() => handleSubmit(true)}
-        handleCreateClick={() => handleSubmit(false)}
-        handleCancelClick={handleCancelClick}
-      />
-    );
-  };
-
-  const renderDetails = () => {
-    if (!endpoint.selectedSchema || endpoint.operation === -1) return null;
-    return (
-      <>
-        <InputsSection editMode={editMode} />
-        {endpoint.operation !== OperationsEnum.POST && <QueriesSection editMode={editMode} />}
-        {(endpoint.operation === OperationsEnum.PUT ||
-          endpoint.operation === OperationsEnum.POST ||
-          endpoint.operation === OperationsEnum.PATCH) && (
-          <AssignmentsSection editMode={editMode} />
-        )}
-      </>
-    );
-  };
-
-  const renderMainContent = () => {
-    if (!selectedEndpoint && !createMode) {
-      return (
-        <Box sx={{ marginTop: '100px', textAlign: 'center' }}>
-          <Typography variant="h6">Select an endpoint to view more</Typography>
-        </Box>
-      );
-    } else {
-      return (
-        <Box display="flex" pt={2} gap={2} flexDirection="column">
-          <Box display="flex" gap={2} alignItems="center">
-            <TextField
-              size="small"
-              sx={{ maxWidth: 300 }}
-              fullWidth
-              disabled={!editMode}
-              variant={'outlined'}
-              label={'Name'}
-              value={endpoint.name}
-              onChange={handleNameChange}
-            />
-            <InformationTooltip />
-            <Box display="flex" justifyContent="flex-end" width="100%">
-              {!editMode && (
-                <IconButton
-                  disableRipple
-                  aria-label="delete"
-                  onClick={handleDeleteClick}
-                  size="large">
-                  <Delete color="error" />
-                </IconButton>
-              )}
-              {!editMode && (
-                <IconButton
-                  disableRipple
-                  color="primary"
-                  aria-label="edit"
-                  onClick={handleEditClick}
-                  size="large">
-                  <Edit />
-                </IconButton>
-              )}
-            </Box>
-          </Box>
-          <OperationSection
-            editMode={editMode}
-            createMode={createMode}
-            availableSchemas={schemaDocuments}
-          />
-          {renderDetails()}
-          {renderSaveSection()}
-        </Box>
-      );
-    }
-  };
-
   return (
     <>
       <InfiniteScrollLayout
         listActions={
-          <Grid spacing={2} container item>
-            <Grid item sm={6}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                name="Search"
-                size="small"
-                label="Find endpoint"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item sm={6}>
-              <FormControl size="small" fullWidth variant="outlined" sx={{ minWidth: 120 }}>
-                <InputLabel id="operation">Operation</InputLabel>
-                <Select
-                  sx={{ borderRadius: 2 }}
-                  label="Provider"
-                  labelId="operation"
-                  value={filters.operation}
-                  onChange={(event) => {
-                    dispatch(setEndpointsOperation(event.target.value as number));
-                  }}>
-                  <MenuItem value={-2}>
-                    <em>All</em>
-                  </MenuItem>
-                  <MenuItem value={0}>GET</MenuItem>
-                  <MenuItem value={1}>POST</MenuItem>
-                  <MenuItem value={2}>PUT</MenuItem>
-                  <MenuItem value={3}>DELETE</MenuItem>
-                  <MenuItem value={4}>PATCH</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item sm={12}>
-              <Box display="flex" gap={1} alignItems="center">
-                <ConduitMultiSelect
-                  formControlProps={{ fullWidth: true }}
-                  handleChange={handleFilterChange}
-                  label="Schemas"
-                  options={schemasWithEndpoints}
-                  values={schemas}
-                  sortBy="name"
-                />
-                <Tooltip title="Custom Endpoints Documentation">
-                  <a
-                    href="https://getconduit.dev/docs/modules/database/tutorials/custom_endpoints"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}>
-                    <Icon
-                      sx={{
-                        color:
-                          theme.palette.mode === 'dark'
-                            ? theme.palette.common.white
-                            : theme.palette.common.black,
-                      }}>
-                      <InfoOutlined />
-                    </Icon>
-                  </a>
-                </Tooltip>
-              </Box>
-            </Grid>
-          </Grid>
+          <ListActions
+            filters={filters}
+            handleFilterChange={handleFilterChange}
+            schemas={schemas}
+            schemasWithEndpoints={schemasWithEndpoints}
+          />
         }
         list={
           <EndpointsList
@@ -453,7 +259,19 @@ const CustomEndpointsLayout: FC = () => {
             selectedSchemas={schemas}
           />
         }
-        infoComponent={renderMainContent()}
+        infoComponent={
+          <MainContent
+            createMode={createMode}
+            editMode={editMode}
+            endpoint={endpoint}
+            handleCancelClick={handleCancelClick}
+            handleDeleteClick={handleDeleteClick}
+            handleEditClick={handleEditClick}
+            handleNameChange={handleNameChange}
+            handleSubmit={handleSubmit}
+            schemaDocuments={schemaDocuments}
+          />
+        }
         buttonText={'create endpoint'}
         buttonClick={handleAddNewEndpoint}
       />
