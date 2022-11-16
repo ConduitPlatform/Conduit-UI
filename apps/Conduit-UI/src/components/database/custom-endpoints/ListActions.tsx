@@ -8,6 +8,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
   Tooltip,
   useTheme,
@@ -15,22 +16,20 @@ import {
 import { ConduitMultiSelect } from '@conduitplatform/ui-components';
 import { InfoOutlined, Search } from '@mui/icons-material';
 import { useAppDispatch } from '../../../redux/store';
-import { Schema } from '../../../models/database/CmsModels';
+import { Filters, Schema } from '../../../models/database/CmsModels';
 import { setEndpointsOperation, setEndpointsSearch } from '../../../redux/slices/databaseSlice';
 import useDebounce from '../../../hooks/useDebounce';
 
 interface Props {
-  filters: any;
+  filters: Filters;
   schemasWithEndpoints: Schema[];
   schemas: any;
-  handleFilterChange: any;
+  handleFilterChange: (event: SelectChangeEvent) => void;
 }
 
 const ListActions: FC<Props> = ({ filters, schemasWithEndpoints, handleFilterChange, schemas }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-
-  console.log(filters);
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
