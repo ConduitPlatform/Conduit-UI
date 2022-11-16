@@ -3,6 +3,8 @@ import { Box, IconButton, TextField } from '@mui/material';
 import React, { FC } from 'react';
 import { Endpoint } from '../../../models/customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../../../models/OperationsEnum';
+import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
+import { useAppDispatch } from '../../../redux/store';
 import { disableSubmit } from '../../../utils/cms';
 import AssignmentsSection from './AssignmentsSection';
 import InformationTooltip from './InformationTooltip';
@@ -16,11 +18,10 @@ interface Props {
   editMode: boolean;
   createMode: boolean;
   schemaDocuments: any;
-  handleEditClick: any;
-  handleDeleteClick: any;
-  handleCancelClick: any;
-  handleNameChange: any;
-  handleSubmit: any;
+  handleEditClick: () => void;
+  handleDeleteClick: () => void;
+  handleCancelClick: () => void;
+  handleSubmit: (edit: boolean) => void;
 }
 
 const MainContent: FC<Props> = ({
@@ -31,9 +32,15 @@ const MainContent: FC<Props> = ({
   handleEditClick,
   handleCancelClick,
   handleDeleteClick,
-  handleNameChange,
+
   handleSubmit,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const handleNameChange = (event: any) => {
+    dispatch(setEndpointData({ name: event.target.value }));
+  };
+
   const renderDetails = () => {
     if (!endpoint.selectedSchema || endpoint.operation === -1) return null;
     return (

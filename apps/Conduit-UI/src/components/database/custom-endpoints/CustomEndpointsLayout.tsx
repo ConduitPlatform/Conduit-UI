@@ -27,13 +27,14 @@ import MainContent from './MainContent';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
-
   const router = useRouter();
   const { schema } = router.query;
+
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
   const [schemas, setSchemas] = useState<string[]>([]);
+
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
   const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
   const { filters } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
@@ -63,25 +64,6 @@ const CustomEndpointsLayout: FC = () => {
       }
     }
   }, [schema, dispatch, router, schemasWithEndpoints]);
-
-  const handleListItemSelect = (endpoint: any) => {
-    dispatch(setSelectedEndPoint(endpoint));
-    dispatch(setEndpointData({ ...endpoint }));
-    setCreateMode(false);
-  };
-
-  const handleAddNewEndpoint = () => {
-    dispatch(endpointCleanSlate());
-    setEditMode(true);
-    setCreateMode(true);
-  };
-
-  const handleFilterChange = (event: any) => {
-    setSchemas(event.target.value);
-    if (schema) {
-      router.replace('/database/custom', undefined, { shallow: true });
-    }
-  };
 
   const initializeData = useCallback(async () => {
     if (selectedEndpoint) {
@@ -174,6 +156,25 @@ const CustomEndpointsLayout: FC = () => {
     initializeData();
   }, [initializeData]);
 
+  const handleListItemSelect = (endpoint: any) => {
+    dispatch(setSelectedEndPoint(endpoint));
+    dispatch(setEndpointData({ ...endpoint }));
+    setCreateMode(false);
+  };
+
+  const handleAddNewEndpoint = () => {
+    dispatch(endpointCleanSlate());
+    setEditMode(true);
+    setCreateMode(true);
+  };
+
+  const handleFilterChange = (event: any) => {
+    setSchemas(event.target.value);
+    if (schema) {
+      router.replace('/database/custom', undefined, { shallow: true });
+    }
+  };
+
   const handleConfirmationDialogClose = () => {
     setConfirmationOpen(false);
   };
@@ -185,6 +186,18 @@ const CustomEndpointsLayout: FC = () => {
   const handleEditClick = () => {
     setEditMode(true);
     setCreateMode(false);
+  };
+
+  const handleCancelClick = () => {
+    setCreateMode(false);
+    setEditMode(false);
+    initializeData();
+  };
+
+  const handleDeleteConfirmed = () => {
+    handleConfirmationDialogClose();
+    dispatch(setSelectedEndPoint(undefined));
+    dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
   };
 
   const handleSubmit = (edit = false) => {
@@ -224,22 +237,6 @@ const CustomEndpointsLayout: FC = () => {
     setEditMode(false);
   };
 
-  const handleCancelClick = () => {
-    setCreateMode(false);
-    setEditMode(false);
-    initializeData();
-  };
-
-  const handleDeleteConfirmed = () => {
-    handleConfirmationDialogClose();
-    dispatch(setSelectedEndPoint(undefined));
-    dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
-  };
-
-  const handleNameChange = (event: any) => {
-    dispatch(setEndpointData({ name: event.target.value }));
-  };
-
   return (
     <>
       <InfiniteScrollLayout
@@ -267,7 +264,6 @@ const CustomEndpointsLayout: FC = () => {
             handleCancelClick={handleCancelClick}
             handleDeleteClick={handleDeleteClick}
             handleEditClick={handleEditClick}
-            handleNameChange={handleNameChange}
             handleSubmit={handleSubmit}
             schemaDocuments={schemaDocuments}
           />
