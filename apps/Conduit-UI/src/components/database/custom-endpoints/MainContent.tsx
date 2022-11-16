@@ -1,11 +1,16 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Box, IconButton, TextField } from '@mui/material';
-import React, { FC } from 'react';
+import { Box, Button, IconButton, TextField } from '@mui/material';
+import React, { FC, useState } from 'react';
 import { Endpoint } from '../../../models/customEndpoints/customEndpointsModels';
+import { Filters, Schema } from '../../../models/database/CmsModels';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
-import { useAppDispatch } from '../../../redux/store';
-import { disableSubmit } from '../../../utils/cms';
+import { setEndpointData, setSelectedEndPoint } from '../../../redux/slices/customEndpointsSlice';
+import {
+  asyncCreateCustomEndpoints,
+  asyncUpdateCustomEndpoints,
+} from '../../../redux/slices/databaseSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { disableSubmit, prepareQuery } from '../../../utils/cms';
 import AssignmentsSection from './AssignmentsSection';
 import InformationTooltip from './InformationTooltip';
 import InputsSection from './InputsSection';
@@ -15,30 +20,87 @@ import SaveSection from './SaveSection';
 
 interface Props {
   endpoint: Endpoint;
-  editMode: boolean;
   createMode: boolean;
+  setCreateMode: (createMode: boolean) => void;
+  editMode: boolean;
+  setEditMode: (editMode: boolean) => void;
+  setConfirmationOpen: (confirmationOpen: boolean) => void;
   schemaDocuments: any;
-  handleEditClick: () => void;
-  handleDeleteClick: () => void;
-  handleCancelClick: () => void;
-  handleSubmit: (edit: boolean) => void;
+  selectedEndpoint: Endpoint;
+  filters: Filters;
+  initializeData: () => void;
 }
 
 const MainContent: FC<Props> = ({
   endpoint,
-  editMode,
   createMode,
+  setCreateMode,
+  editMode,
+  setEditMode,
+  setConfirmationOpen,
   schemaDocuments,
-  handleEditClick,
-  handleCancelClick,
-  handleDeleteClick,
-
-  handleSubmit,
+  selectedEndpoint,
+  filters,
+  initializeData,
 }) => {
   const dispatch = useAppDispatch();
 
+  const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
+
   const handleNameChange = (event: any) => {
     dispatch(setEndpointData({ name: event.target.value }));
+  };
+
+  const handleSubmit = (edit = false) => {
+    const schemaToSubmit = schemaDocuments.find(
+      (schemaDocument: Schema) => schemaDocument._id === endpoint.selectedSchema
+    );
+
+    const query = prepareQuery(endpoint.queries);
+
+    const data = {
+      name: endpoint.name,
+      operation: Number(endpoint.operation),
+      selectedSchema: schemaToSubmit?._id,
+      authentication: endpoint.authentication,
+      paginated: endpoint.paginated,
+      sorted: endpoint.sorted,
+      inputs: endpoint.inputs,
+      query,
+      assignments: endpoint.assignments,
+    };
+
+    if (edit) {
+      const _id = selectedEndpoint._id;
+      dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
+      dispatch(setSelectedEndPoint(''));
+    } else {
+      dispatch(
+        asyncCreateCustomEndpoints({
+          endpointData: data,
+          filters,
+          endpointsLength: endpoints.length,
+        })
+      );
+      dispatch(setSelectedEndPoint(''));
+    }
+    setCreateMode(false);
+    setEditMode(false);
+  };
+
+  const handleDeleteClick = () => {
+    setConfirmationOpen(true);
+  };
+
+  const handleEditClick = () => {
+    setEditMode(true);
+    setCreateMode(false);
+  };
+
+  const handleCancelClick = () => {
+    setCreateMode(false);
+    setEditMode(false);
+    initializeData();
   };
 
   const renderDetails = () => {
@@ -69,19 +131,14 @@ const MainContent: FC<Props> = ({
           onChange={handleNameChange}
         />
         <InformationTooltip />
-        <Box display="flex" justifyContent="flex-end" width="100%">
+        <Box display="flex" px={3} gap={2} justifyContent="flex-end" width="100%">
           {!editMode && (
-            <IconButton disableRipple aria-label="delete" onClick={handleDeleteClick} size="large">
+            <IconButton aria-label="delete" onClick={handleDeleteClick} size="small">
               <Delete color="error" />
             </IconButton>
           )}
           {!editMode && (
-            <IconButton
-              disableRipple
-              color="primary"
-              aria-label="edit"
-              onClick={handleEditClick}
-              size="large">
+            <IconButton color="primary" aria-label="edit" onClick={handleEditClick} size="small">
               <Edit />
             </IconButton>
           )}

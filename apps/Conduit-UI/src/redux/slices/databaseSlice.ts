@@ -25,7 +25,12 @@ import {
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
 } from '../../http/requests/CustomEndpointsRequests';
-import { EndpointTypes, IntrospectionStatus, Schema } from '../../models/database/CmsModels';
+import {
+  EndpointTypes,
+  Filters,
+  IntrospectionStatus,
+  Schema,
+} from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
@@ -64,10 +69,7 @@ export interface IDatabaseSlice {
     customEndpoints: {
       endpoints: EndpointTypes[];
       count: number;
-      filters: {
-        search: string;
-        operation: number;
-      };
+      filters: Filters;
     };
     schemaOwners: [];
     count: number;

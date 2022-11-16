@@ -30,6 +30,8 @@ const ListActions: FC<Props> = ({ filters, schemasWithEndpoints, handleFilterCha
   const theme = useTheme();
   const dispatch = useAppDispatch();
 
+  console.log(filters);
+
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 

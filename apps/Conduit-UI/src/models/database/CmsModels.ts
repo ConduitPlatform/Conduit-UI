@@ -126,3 +126,8 @@ export interface IntrospectionStatus {
   importedSchemas: string[];
   importedSchemaCount: number;
 }
+
+export interface Filters {
+  search: string;
+  operation: number;
+}

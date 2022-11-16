@@ -188,7 +188,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
   };
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Box display="flex" justifyContent="space-between" alignItems="center" gap={2} flexWrap="wrap">
       <Box display="flex" gap={3} alignItems="center">
         <TextField
           select
@@ -213,12 +213,11 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           variant="contained"
           color="primary"
           disabled={!editMode || endpoint.operation === -1}
-          endIcon={editMode && <Loop />}
           onClick={() => setDrawer(true)}>
           {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
         </Button>
       </Box>
-      <Box>
+      <Box display="flex" justifyContent="flex-end">
         <FormControlLabel
           control={
             <Checkbox

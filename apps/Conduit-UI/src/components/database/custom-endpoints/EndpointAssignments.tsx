@@ -285,7 +285,7 @@ const EndpointAssignments: FC<Props> = ({
 
   return selectedAssignments.map((assignment: Assignment, index: number) => (
     <Fragment key={`assignment-${index}`}>
-      <Grid item container xs={12} spacing={3} alignItems="center" justifyContent="center">
+      <Grid item container xs={12} spacing={3} pb={4} alignItems="center" justifyContent="center">
         <Grid item xs={4}>
           <Box display="flex" alignItems="center" gap={2}>
             <Typography>{index + 1}.</Typography>

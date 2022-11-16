@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { findFieldsWithTypes, getCompiledFieldsOfSchema, prepareQuery } from '../../../utils/cms';
+import { findFieldsWithTypes, getCompiledFieldsOfSchema } from '../../../utils/cms';
 import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -12,10 +12,8 @@ import {
 import { Schema } from '../../../models/database/CmsModels';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import {
-  asyncCreateCustomEndpoints,
   asyncDeleteCustomEndpoints,
   asyncGetSchemasWithEndpoints,
-  asyncUpdateCustomEndpoints,
 } from '../../../redux/slices/databaseSlice';
 import InfiniteScrollLayout from '../../InfiniteScrollLayout';
 import { useRouter } from 'next/router';
@@ -38,7 +36,7 @@ const CustomEndpointsLayout: FC = () => {
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
   const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
   const { filters } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
-  const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
+
   const {
     schemas: { schemaDocuments },
   } = useAppSelector((state) => state.databaseSlice.data);
@@ -162,12 +160,6 @@ const CustomEndpointsLayout: FC = () => {
     setCreateMode(false);
   };
 
-  const handleAddNewEndpoint = () => {
-    dispatch(endpointCleanSlate());
-    setEditMode(true);
-    setCreateMode(true);
-  };
-
   const handleFilterChange = (event: any) => {
     setSchemas(event.target.value);
     if (schema) {
@@ -179,62 +171,16 @@ const CustomEndpointsLayout: FC = () => {
     setConfirmationOpen(false);
   };
 
-  const handleDeleteClick = () => {
-    setConfirmationOpen(true);
-  };
-
-  const handleEditClick = () => {
-    setEditMode(true);
-    setCreateMode(false);
-  };
-
-  const handleCancelClick = () => {
-    setCreateMode(false);
-    setEditMode(false);
-    initializeData();
-  };
-
   const handleDeleteConfirmed = () => {
     handleConfirmationDialogClose();
     dispatch(setSelectedEndPoint(undefined));
     dispatch(asyncDeleteCustomEndpoints({ _id: selectedEndpoint._id }));
   };
 
-  const handleSubmit = (edit = false) => {
-    const schemaToSubmit = schemaDocuments.find(
-      (schemaDocument: Schema) => schemaDocument._id === endpoint.selectedSchema
-    );
-
-    const query = prepareQuery(endpoint.queries);
-
-    const data = {
-      name: endpoint.name,
-      operation: Number(endpoint.operation),
-      selectedSchema: schemaToSubmit?._id,
-      authentication: endpoint.authentication,
-      paginated: endpoint.paginated,
-      sorted: endpoint.sorted,
-      inputs: endpoint.inputs,
-      query,
-      assignments: endpoint.assignments,
-    };
-
-    if (edit) {
-      const _id = selectedEndpoint._id;
-      dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
-      dispatch(setSelectedEndPoint(''));
-    } else {
-      dispatch(
-        asyncCreateCustomEndpoints({
-          endpointData: data,
-          filters,
-          endpointsLength: endpoints.length,
-        })
-      );
-      dispatch(setSelectedEndPoint(''));
-    }
-    setCreateMode(false);
-    setEditMode(false);
+  const handleAddNewEndpoint = () => {
+    dispatch(endpointCleanSlate());
+    setEditMode(true);
+    setCreateMode(true);
   };
 
   return (
@@ -259,16 +205,18 @@ const CustomEndpointsLayout: FC = () => {
         infoComponent={
           <MainContent
             createMode={createMode}
+            setCreateMode={setCreateMode}
             editMode={editMode}
+            setEditMode={setEditMode}
             endpoint={endpoint}
-            handleCancelClick={handleCancelClick}
-            handleDeleteClick={handleDeleteClick}
-            handleEditClick={handleEditClick}
-            handleSubmit={handleSubmit}
             schemaDocuments={schemaDocuments}
+            selectedEndpoint={selectedEndpoint}
+            filters={filters}
+            setConfirmationOpen={setConfirmationOpen}
+            initializeData={initializeData}
           />
         }
-        buttonText={'create endpoint'}
+        buttonText="create endpoint"
         buttonClick={handleAddNewEndpoint}
       />
       <ConfirmationDialog
