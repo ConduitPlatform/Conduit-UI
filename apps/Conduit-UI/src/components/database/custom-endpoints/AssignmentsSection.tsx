@@ -34,7 +34,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
   return (
     <Box>
       <Typography fontWeight="bold">Assignments</Typography>
-      <Divider sx={{ mb: 2 }} />
+      <Divider sx={{ mb: 4 }} />
       <EndpointAssignments
         editMode={editMode}
         selectedInputs={endpoint.inputs}

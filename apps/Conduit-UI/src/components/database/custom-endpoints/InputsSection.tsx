@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Button, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EndpointInputs from './EndpointInputs';
 import { setEndpointData } from '../../../redux/slices/customEndpointsSlice';
@@ -100,7 +100,6 @@ const InputsSection: FC<Props> = ({ editMode }) => {
     <Box>
       <Typography fontWeight="bold">Inputs</Typography>
       <Divider sx={{ mb: 2 }} />
-
       <EndpointInputs
         editMode={editMode}
         operationType={endpoint && endpoint.operation}
@@ -108,7 +107,6 @@ const InputsSection: FC<Props> = ({ editMode }) => {
         setSelectedInputs={handleInputsChanges}
         handleRemoveInput={handleRemoveInput}
       />
-
       <Box display="flex" justifyContent="center">
         <Button
           disabled={!editMode || maxInputs()}

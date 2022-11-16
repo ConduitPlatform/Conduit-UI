@@ -322,10 +322,12 @@ const CustomEndpointsLayout: FC = () => {
       );
     } else {
       return (
-        <Box display="flex" pt={2} gap={1} flexDirection="column">
+        <Box display="flex" pt={2} gap={2} flexDirection="column">
           <Box display="flex" gap={2} alignItems="center">
             <TextField
               size="small"
+              sx={{ maxWidth: 300 }}
+              fullWidth
               disabled={!editMode}
               variant={'outlined'}
               label={'Name'}

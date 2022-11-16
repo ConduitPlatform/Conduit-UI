@@ -196,7 +196,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           size="small"
           label={'Select Operation'}
           variant="outlined"
-          sx={{ minWidth: 170 }}
+          sx={{ minWidth: 220 }}
           value={endpoint.operation}
           disabled={!editMode}
           onChange={handleOperationChange}>
@@ -208,6 +208,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
         </TextField>
         <Button
+          fullWidth
           size="small"
           variant="contained"
           color="primary"

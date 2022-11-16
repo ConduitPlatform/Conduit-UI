@@ -88,20 +88,20 @@ const EndpointInputs: FC<Props> = ({
   return selectedInputs.map((input: Input, index: number) => (
     <Fragment key={`input-${index}`}>
       <Grid item container xs={12} spacing={3} alignItems="center" justifyContent="center">
-        <Grid item xs={1} key={index}>
-          <Typography>{index + 1}.</Typography>
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder={'Input name'}
-            fullWidth
-            label="Input name"
-            disabled={!editMode}
-            value={input.name}
-            onChange={(event) => handleInputNameChange(event, index)}
-          />
+        <Grid item xs={4}>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography>{index + 1}.</Typography>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder={'Input name'}
+              fullWidth
+              label="Input name"
+              disabled={!editMode}
+              value={input.name}
+              onChange={(event) => handleInputNameChange(event, index)}
+            />
+          </Box>
         </Grid>
         <Grid item xs={2}>
           <TextField
