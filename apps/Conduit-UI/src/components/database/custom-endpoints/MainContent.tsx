@@ -1,6 +1,6 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Box, Button, IconButton, TextField } from '@mui/material';
-import React, { FC, useState } from 'react';
+import { Box, IconButton, TextField } from '@mui/material';
+import React, { FC } from 'react';
 import { Endpoint } from '../../../models/customEndpoints/customEndpointsModels';
 import { Filters, Schema } from '../../../models/database/CmsModels';
 import { OperationsEnum } from '../../../models/OperationsEnum';

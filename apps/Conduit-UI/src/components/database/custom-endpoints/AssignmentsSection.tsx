@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Button, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EndpointAssignments from './EndpointAssignments';

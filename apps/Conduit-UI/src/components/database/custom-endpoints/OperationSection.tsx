@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes } from '../../../utils/cms';
 import {
@@ -13,7 +13,6 @@ import { Assignment } from '../../../models/customEndpoints/customEndpointsModel
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
-import { Loop } from '@mui/icons-material';
 import {
   getAccesssibleSchemaFields,
   getSchemaByIdRequest,

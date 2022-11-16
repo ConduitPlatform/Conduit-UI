@@ -107,9 +107,7 @@ const CustomQueryRow: FC<Props> = ({
   const dispatch = useAppDispatch();
   const [schemaType, setSchemaType] = useState('');
 
-  const { compiledSchemaFields, accessibleSchemaFields } = useAppSelector(
-    (state) => state.customEndpointsSlice.data
-  );
+  const { compiledSchemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   useEffect(() => {
     if (typeof query.schemaField === 'string') {
