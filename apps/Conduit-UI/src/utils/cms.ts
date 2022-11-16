@@ -1,4 +1,6 @@
 import { isArray } from 'lodash';
+import { Endpoint } from '../models/customEndpoints/customEndpointsModels';
+import { OperationsEnum } from '../models/OperationsEnum';
 
 const getCompiledFieldsOfSchema = (schemaSelected: any, schemas: any) => {
   if (schemaSelected) {
@@ -198,6 +200,48 @@ const prepareQuery = (selectedQueries: any) => {
   return query;
 };
 
+const disableSubmit = (endpoint: Endpoint) => {
+  if (!endpoint.name) return true;
+  if (!endpoint.selectedSchema) return true;
+  if (endpoint.operation === -1) return true;
+
+  let invalidQueries;
+  let invalidAssignments;
+
+  if (endpoint.operation === OperationsEnum.POST) {
+    if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
+    invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+  }
+  if (endpoint.operation === OperationsEnum.PUT) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+    if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
+    invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+  }
+  if (endpoint.operation === OperationsEnum.PATCH) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+    if (!endpoint.assignments || endpoint.assignments.length < 1) return true;
+    invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+  }
+  if (endpoint.operation === OperationsEnum.DELETE) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+  }
+  if (endpoint.operation === OperationsEnum.GET) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+  }
+
+  if (invalidQueries || invalidAssignments) {
+    return true;
+  }
+  const invalidInputs = hasInvalidInputs(endpoint.inputs);
+  if (invalidInputs) {
+    return true;
+  }
+};
+
 export {
   findFieldsWithTypes,
   getCompiledFieldsOfSchema,
@@ -206,4 +250,5 @@ export {
   hasInvalidInputs,
   recursiveNodeIteration,
   prepareQuery,
+  disableSubmit,
 };

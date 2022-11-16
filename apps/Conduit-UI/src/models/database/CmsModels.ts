@@ -1,5 +1,6 @@
 //TODO schemas, schemaDocuments, customEndpoints, config, schemaFields, queries
 //We need further testing
+import { Assignment } from '../customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../OperationsEnum';
 
 export interface Schema {

@@ -1,28 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { EndpointInputs } from '../../models/database/CmsModels';
-import { Assignment } from '../../models/customEndpoints/customEndpointsModels';
-
-// TODO create proper Interface for the slices' initial state
+import { Endpoint } from '../../models/customEndpoints/customEndpointsModels';
 
 interface ICustomEndpointSlice {
   data: {
-    endpoint: {
-      _id: string;
-      name: string;
-      operation: any;
-      selectedSchema: string;
-      authentication: boolean;
-      paginated?: boolean;
-      sorted?: boolean;
-      inputs: EndpointInputs[];
-      queries: [];
-      assignments: Assignment[];
-      enabled?: boolean;
-      selectedSchemaName?: string;
-      returns?: string;
-      createdAt?: string;
-      updatedAt?: string;
-    };
+    endpoint: Endpoint;
     accessibleSchemaFields: [];
     compiledSchemaFields: [];
     selectedEndpoint: any;

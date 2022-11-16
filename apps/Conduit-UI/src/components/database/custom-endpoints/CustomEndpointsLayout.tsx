@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { Delete, Edit, InfoOutlined, Search } from '@mui/icons-material';
 import {
+  disableSubmit,
   findFieldsWithTypes,
   getCompiledFieldsOfSchema,
   hasInvalidAssignments,
@@ -25,11 +26,7 @@ import {
   prepareQuery,
 } from '../../../utils/cms';
 import { OperationsEnum } from '../../../models/OperationsEnum';
-import {
-  ConduitMultiSelect,
-  ConduitTooltip,
-  ConfirmationDialog,
-} from '@conduitplatform/ui-components';
+import { ConduitMultiSelect, ConfirmationDialog } from '@conduitplatform/ui-components';
 import OperationSection from './OperationSection';
 import SaveSection from './SaveSection';
 import QueriesSection from './QueriesSection';
@@ -284,48 +281,6 @@ const CustomEndpointsLayout: FC = () => {
     dispatch(setEndpointData({ name: event.target.value }));
   };
 
-  const disableSubmit = () => {
-    if (!endpoint.name) return true;
-    if (!endpoint.selectedSchema) return true;
-    if (endpoint.operation === -1) return true;
-
-    let invalidQueries;
-    let invalidAssignments;
-
-    if (endpoint.operation === OperationsEnum.POST) {
-      if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
-      invalidAssignments = hasInvalidAssignments(endpoint.assignments);
-    }
-    if (endpoint.operation === OperationsEnum.PUT) {
-      if (!endpoint.queries || endpoint.queries.length === 0) return true;
-      invalidQueries = hasInvalidQueries(endpoint.queries);
-      if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
-      invalidAssignments = hasInvalidAssignments(endpoint.assignments);
-    }
-    if (endpoint.operation === OperationsEnum.PATCH) {
-      if (!endpoint.queries || endpoint.queries.length === 0) return true;
-      invalidQueries = hasInvalidQueries(endpoint.queries);
-      if (!endpoint.assignments || endpoint.assignments.length < 1) return true;
-      invalidAssignments = hasInvalidAssignments(endpoint.assignments);
-    }
-    if (endpoint.operation === OperationsEnum.DELETE) {
-      if (!endpoint.queries || endpoint.queries.length === 0) return true;
-      invalidQueries = hasInvalidQueries(endpoint.queries);
-    }
-    if (endpoint.operation === OperationsEnum.GET) {
-      if (!endpoint.queries || endpoint.queries.length === 0) return true;
-      invalidQueries = hasInvalidQueries(endpoint.queries);
-    }
-
-    if (invalidQueries || invalidAssignments) {
-      return true;
-    }
-    const invalidInputs = hasInvalidInputs(endpoint.inputs);
-    if (invalidInputs) {
-      return true;
-    }
-  };
-
   const renderSaveSection = () => {
     if (!editMode && !createMode) {
       return null;
@@ -335,7 +290,7 @@ const CustomEndpointsLayout: FC = () => {
       <SaveSection
         editMode={editMode}
         createMode={createMode}
-        disableSubmit={disableSubmit()}
+        disableSubmit={disableSubmit(endpoint)}
         handleSaveClick={() => handleSubmit(true)}
         handleCreateClick={() => handleSubmit(false)}
         handleCancelClick={handleCancelClick}
