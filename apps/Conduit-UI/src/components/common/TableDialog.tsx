@@ -118,6 +118,12 @@ const TableDialog: React.FC<Props> = ({
       fullWidth
       maxWidth="lg"
       open={open}
+      PaperProps={{
+        sx: {
+          height: '93vh',
+          borderRadius: '16px',
+        },
+      }}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
