@@ -107,9 +107,7 @@ const CustomQueryRow: FC<Props> = ({
   const dispatch = useAppDispatch();
   const [schemaType, setSchemaType] = useState('');
 
-  const { compiledSchemaFields, accessibleSchemaFields } = useAppSelector(
-    (state) => state.customEndpointsSlice.data
-  );
+  const { compiledSchemaFields } = useAppSelector((state) => state.customEndpointsSlice.data);
 
   useEffect(() => {
     if (typeof query.schemaField === 'string') {
@@ -303,7 +301,7 @@ const CustomQueryRow: FC<Props> = ({
   };
 
   const prepareOptions = () => {
-    return accessibleSchemaFields.map((field: any, index: number) => {
+    return compiledSchemaFields.map((field: any, index: number) => {
       if (typeof field.type === 'string' || Array.isArray(field.type) || field.name === '_id') {
         return (
           <MenuItem

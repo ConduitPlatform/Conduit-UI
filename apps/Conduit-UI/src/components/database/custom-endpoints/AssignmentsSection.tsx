@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EndpointAssignments from './EndpointAssignments';
@@ -32,16 +32,9 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
   };
 
   return (
-    <>
-      <Grid item xs={6}>
-        <Typography>
-          <strong>Assignments</strong>
-        </Typography>
-      </Grid>
-
-      <Grid item xs={12} sx={{ paddingBottom: 1 }}>
-        <Divider />
-      </Grid>
+    <Box>
+      <Typography fontWeight="bold">Assignments</Typography>
+      <Divider sx={{ mb: 4 }} />
       <EndpointAssignments
         editMode={editMode}
         selectedInputs={endpoint.inputs}
@@ -49,7 +42,7 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
         setSelectedAssignments={handleAssignmentChanges}
         availableFieldsOfSchema={accessibleSchemaFields}
       />
-      <Grid item xs={12} sx={{ textAlign: 'center' }}>
+      <Box display="flex" justifyContent="center">
         <Button
           disabled={
             !editMode ||
@@ -63,8 +56,8 @@ const AssignmentsSection: FC<Props> = ({ editMode }) => {
           onClick={handleAddAssignment}>
           Add assignment
         </Button>
-      </Grid>
-    </>
+      </Box>
+    </Box>
   );
 };
 

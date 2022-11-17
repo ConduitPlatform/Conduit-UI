@@ -25,7 +25,12 @@ import {
   getCustomEndpointsRequest,
   getSchemasWithEndpoints,
 } from '../../http/requests/CustomEndpointsRequests';
-import { EndpointTypes, IntrospectionStatus, Schema } from '../../models/database/CmsModels';
+import {
+  EndpointTypes,
+  Filters,
+  IntrospectionStatus,
+  Schema,
+} from '../../models/database/CmsModels';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
@@ -64,10 +69,7 @@ export interface IDatabaseSlice {
     customEndpoints: {
       endpoints: EndpointTypes[];
       count: number;
-      filters: {
-        search: string;
-        operation: number;
-      };
+      filters: Filters;
     };
     schemaOwners: [];
     count: number;
@@ -487,43 +489,6 @@ export const asyncAddCustomEndpoints = createAsyncThunk(
   }
 );
 
-export const asyncUpdateCustomEndpoints = createAsyncThunk(
-  'database/updateEndpoints',
-  async (params: { _id: string; endpointData: any }, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(
-        enqueueSuccessNotification(`Endpoint ${params.endpointData.name} edited! `)
-      );
-      thunkAPI.dispatch(setAppLoading(false));
-      return data;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
-export const asyncDeleteCustomEndpoints = createAsyncThunk(
-  'database/deleteEndpoints',
-  async (params: { _id: string }, thunkAPI) => {
-    thunkAPI.dispatch(setAppLoading(true));
-    try {
-      await deleteCustomEndpointsRequest(params._id);
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueSuccessNotification(`Endpoint deleted! `));
-      return params._id;
-    } catch (error) {
-      thunkAPI.dispatch(setAppLoading(false));
-      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
-      throw error;
-    }
-  }
-);
-
 export const asyncCreateCustomEndpoints = createAsyncThunk(
   'database/createEndpoints',
   async (
@@ -559,7 +524,60 @@ export const asyncCreateCustomEndpoints = createAsyncThunk(
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Endpoint ${params.endpointData.name} created! `)
       );
+
       thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncUpdateCustomEndpoints = createAsyncThunk(
+  'database/updateEndpoints',
+  async (
+    params: {
+      _id: string;
+      endpointData: any;
+      filters: { search: string; operation: number };
+      endpointsLength: number;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await editCustomEndpointsRequest(params._id, params.endpointData);
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(
+        enqueueSuccessNotification(`Endpoint ${params.endpointData.name} edited! `)
+      );
+      const getEndpointsParams = {
+        skip: 0,
+        limit: params.endpointsLength,
+        search: params.filters.search,
+        operation: params.filters.operation !== -2 ? params.filters.operation : undefined,
+      };
+      thunkAPI.dispatch(asyncSetCustomEndpoints(getEndpointsParams));
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteCustomEndpoints = createAsyncThunk(
+  'database/deleteEndpoints',
+  async (params: { _id: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await deleteCustomEndpointsRequest(params._id);
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Endpoint deleted! `));
+      return params._id;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
