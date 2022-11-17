@@ -41,6 +41,7 @@ interface Props extends PaperProps {
   tableRowProps?: TableRowProps;
   placeholder?: string;
   disableMultiSelect?: any;
+  disableSelectAllButton?: boolean;
 }
 
 const DataTable: React.FC<Props> = ({
@@ -60,6 +61,7 @@ const DataTable: React.FC<Props> = ({
   tableRowProps,
   placeholder,
   disableMultiSelect,
+  disableSelectAllButton,
   ...rest
 }) => {
   const onSelectedField = (index: string) => {
@@ -98,6 +100,25 @@ const DataTable: React.FC<Props> = ({
     return "desc";
   };
 
+  const showCheckAllCheckbox = () => {
+    if (disableSelectAllButton) {
+      return null;
+    } else if (!collapsible && selectable) {
+      return (
+        <Checkbox
+          color="primary"
+          disabled={disableMultiSelect}
+          onChange={onMenuItemSelectAll}
+          checked={selectedItems?.length === dsData.length}
+          indeterminate={
+            selectedItems?.length > 0 && selectedItems?.length < dsData.length
+          }
+          indeterminateIcon={<IndeterminateCheckBox color="primary" />}
+        />
+      );
+    }
+  };
+
   return (
     <TableContainer
       sx={
@@ -116,19 +137,7 @@ const DataTable: React.FC<Props> = ({
               align="left"
               padding="none"
             >
-              {!collapsible && selectable && (
-                <Checkbox
-                  color="primary"
-                  disabled={disableMultiSelect}
-                  onChange={onMenuItemSelectAll}
-                  checked={selectedItems?.length === dsData.length}
-                  indeterminate={
-                    selectedItems?.length > 0 &&
-                    selectedItems?.length < dsData.length
-                  }
-                  indeterminateIcon={<IndeterminateCheckBox color="primary" />}
-                />
-              )}
+              {showCheckAllCheckbox()}
             </TableCell>
             {headers.map((header: any, idx: number) => (
               <TableCell
