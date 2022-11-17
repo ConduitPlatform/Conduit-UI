@@ -10,6 +10,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Skeleton,
   styled,
   TextField,
   Typography,
@@ -170,11 +171,6 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
       maxWidth={600}
       open={open}
       closeDrawer={handleCloseDrawer}>
-      {!schemaIndexesLoading && !schemaIndexes.length && (
-        <Typography pt={10} textAlign="center">
-          There are currently no indexes for this Schema
-        </Typography>
-      )}
       <Box
         sx={{
           background: theme.palette.mode === 'dark' ? '#262840' : '#F2F2F2',
@@ -219,6 +215,11 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
             </Box>
           </Grid>
           <Grid item sm={12}>
+            {!schemaIndexesLoading && !schemaIndexes.length && (
+              <Typography pt={10} textAlign="center">
+                There are currently no indexes for this Schema
+              </Typography>
+            )}
             {inputFields.map((inputField, index: number) => {
               return (
                 <Grid key={index} container spacing={1} sx={{ mt: 0.2 }}>
@@ -282,14 +283,22 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
         </Box>
       </Box>
       {!schemaIndexesLoading && schemaIndexes.length > 0 && (
-        <Box>
-          <Typography textAlign="center" pt={4} pb={2}>
-            Indexes
-          </Typography>
+        <Box pt={4}>
           <Grid container spacing={2}>
             {schemaIndexes.map((index: SchemaIndex, key: number) => (
               <Grid key={key} item xs={12}>
                 <IndexCard handleDeleteIndex={handleDeleteIndex} index={index} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
+      {schemaIndexesLoading && (
+        <Box pt={4}>
+          <Grid container spacing={2}>
+            {[1, 1, 1].map((item, key: number) => (
+              <Grid height="120px" key={key} item xs={12}>
+                <Skeleton sx={{ height: '100%', borderRadius: '16px' }} variant="rectangular" />
               </Grid>
             ))}
           </Grid>

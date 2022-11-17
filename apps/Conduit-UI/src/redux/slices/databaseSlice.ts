@@ -258,13 +258,12 @@ export const asyncCreateNewSchema = createAsyncThunk<Schema, any>(
   }
 );
 
-export const asyncCreateSchemaIndex = createAsyncThunk(
-  'database/createSchemaIndexes',
-  async (params: { id: string; data: any }, thunkAPI) => {
+export const asyncGetSchemaIndexes = createAsyncThunk(
+  'database/getSchemaIndexes',
+  async (params: { id: string }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await postSchemaIndexRequest(params.id, params.data);
-      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
+      const { data } = await getSchemaIndexesRequest(params.id);
       thunkAPI.dispatch(setAppLoading(false));
       return data as any;
     } catch (error) {
@@ -275,12 +274,14 @@ export const asyncCreateSchemaIndex = createAsyncThunk(
   }
 );
 
-export const asyncGetSchemaIndexes = createAsyncThunk(
-  'database/getSchemaIndexes',
-  async (params: { id: string }, thunkAPI) => {
+export const asyncCreateSchemaIndex = createAsyncThunk(
+  'database/createSchemaIndexes',
+  async (params: { id: string; data: any }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await getSchemaIndexesRequest(params.id);
+      const { data } = await postSchemaIndexRequest(params.id, params.data);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
+      thunkAPI.dispatch(asyncGetSchemaIndexes({ id: params.id }));
       thunkAPI.dispatch(setAppLoading(false));
       return data as any;
     } catch (error) {
