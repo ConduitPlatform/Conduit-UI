@@ -30,7 +30,7 @@ const EndpointInputs: FC<Props> = ({
   handleRemoveInput,
 }) => {
   const handleInputNameChange = (event: React.ChangeEvent<{ value: any }>, index: number) => {
-    const value = event.target.value;
+    const value = event.target.value.replace(/[^a-z0-9_]/gi, '');
     const currentInputs = selectedInputs.slice();
     const input = { ...currentInputs[index] };
 
