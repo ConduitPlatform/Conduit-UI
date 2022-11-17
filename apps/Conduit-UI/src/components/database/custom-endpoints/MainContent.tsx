@@ -11,6 +11,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { disableSubmit, prepareQuery } from '../../../utils/cms';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import AssignmentsSection from './AssignmentsSection';
 import InformationTooltip from './InformationTooltip';
 import InputsSection from './InputsSection';
@@ -48,7 +49,13 @@ const MainContent: FC<Props> = ({
   const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
 
   const handleNameChange = (event: any) => {
-    dispatch(setEndpointData({ name: event.target.value }));
+    const regex = /[^a-z0-9_]/gi;
+    if (regex.test(event.target.value)) {
+      dispatch(
+        enqueueInfoNotification('Endpoint name can only contain alpharithmetics and _', 'duplicate')
+      );
+    }
+    dispatch(setEndpointData({ name: event.target.value.replace(regex, '') }));
   };
 
   const handleSubmit = (edit = false) => {
