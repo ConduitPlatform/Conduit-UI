@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Box, IconButton, TextField } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import React, { FC } from 'react';
 import { Endpoint } from '../../../models/customEndpoints/customEndpointsModels';
 import { Filters, Schema } from '../../../models/database/CmsModels';
@@ -72,7 +72,14 @@ const MainContent: FC<Props> = ({
 
     if (edit) {
       const _id = selectedEndpoint._id;
-      dispatch(asyncUpdateCustomEndpoints({ _id, endpointData: data }));
+      dispatch(
+        asyncUpdateCustomEndpoints({
+          _id,
+          endpointData: data,
+          filters,
+          endpointsLength: endpoints.length,
+        })
+      );
       dispatch(setSelectedEndPoint(''));
     } else {
       dispatch(
@@ -82,7 +89,6 @@ const MainContent: FC<Props> = ({
           endpointsLength: endpoints.length,
         })
       );
-      dispatch(setSelectedEndPoint(''));
     }
     setCreateMode(false);
     setEditMode(false);
@@ -131,16 +137,26 @@ const MainContent: FC<Props> = ({
           onChange={handleNameChange}
         />
         <InformationTooltip />
-        <Box display="flex" px={3} gap={2} justifyContent="flex-end" width="100%">
+        <Box display="flex" px={2} gap={2} justifyContent="flex-end" width="100%">
           {!editMode && (
-            <IconButton aria-label="delete" onClick={handleDeleteClick} size="small">
-              <Delete color="error" />
-            </IconButton>
+            <Button
+              variant="outlined"
+              color="error"
+              aria-label="delete"
+              onClick={handleDeleteClick}
+              size="small">
+              <Delete />
+            </Button>
           )}
           {!editMode && (
-            <IconButton color="primary" aria-label="edit" onClick={handleEditClick} size="small">
+            <Button
+              variant="outlined"
+              color="primary"
+              aria-label="edit"
+              onClick={handleEditClick}
+              size="small">
               <Edit />
-            </IconButton>
+            </Button>
           )}
         </Box>
       </Box>
