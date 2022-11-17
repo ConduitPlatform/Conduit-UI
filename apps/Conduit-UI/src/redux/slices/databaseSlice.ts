@@ -82,7 +82,7 @@ export interface IDatabaseSlice {
     count: number;
     config: any;
     selectedSchema: Schema | null;
-    schemaIndexes: SchemaIndex[];
+    indexes: { schemaIndexesLoading: boolean; schemaIndexes: SchemaIndex[] };
     typeOfDb: 'MongoDB' | 'PostgreSQL';
     introspectionStatus: IntrospectionStatus;
   };
@@ -122,7 +122,7 @@ const initialState: IDatabaseSlice = {
     count: 0,
     config: null,
     selectedSchema: null,
-    schemaIndexes: [],
+    indexes: { schemaIndexesLoading: false, schemaIndexes: [] },
     typeOfDb: 'MongoDB',
     introspectionStatus: {
       foreignSchemaCount: 0,
@@ -804,7 +804,7 @@ const databaseSlice = createSlice({
       state.data.customEndpoints.filters.operation = action.payload;
     },
     clearSelectedIndexes(state) {
-      state.data.schemaIndexes = [];
+      state.data.indexes.schemaIndexes = [];
     },
   },
   extraReducers: (builder) => {
@@ -900,16 +900,21 @@ const databaseSlice = createSlice({
     });
 
     builder.addCase(asyncGetSchemaIndexes.fulfilled, (state, action) => {
-      state.data.schemaIndexes = action.payload;
+      state.data.indexes.schemaIndexes = action.payload;
+      state.data.indexes.schemaIndexesLoading = false;
+    });
+
+    builder.addCase(asyncGetSchemaIndexes.pending, (state, action) => {
+      state.data.indexes.schemaIndexesLoading = true;
     });
 
     builder.addCase(asyncDeleteSchemaIndexes.fulfilled, (state, action) => {
-      state.data.schemaIndexes = state.data.schemaIndexes.filter(
+      state.data.indexes.schemaIndexes = state.data.indexes.schemaIndexes.filter(
         (item) => item.options.name !== action.payload
       );
     });
     builder.addCase(asyncCreateSchemaIndex.fulfilled, (state, action) => {
-      state.data.schemaIndexes = action.payload;
+      state.data.indexes.schemaIndexes = action.payload;
     });
     builder.addCase(asyncGetDatabaseType.fulfilled, (state, action) => {
       state.data.typeOfDb = action.payload.result;

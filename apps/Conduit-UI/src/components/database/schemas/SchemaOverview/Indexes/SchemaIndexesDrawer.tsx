@@ -66,7 +66,10 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const { schemaIndexes, typeOfDb } = useAppSelector((state) => state.databaseSlice.data);
+  const {
+    indexes: { schemaIndexes, schemaIndexesLoading },
+    typeOfDb,
+  } = useAppSelector((state) => state.databaseSlice.data);
   const [indexName, setIndexName] = useState<string>('');
   const [postgresType, setPostgresType] = useState<string>('');
   const [inputFields, setInputFields] = useState<{ id: string; field: string; type: string }[]>([
@@ -167,7 +170,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
       maxWidth={600}
       open={open}
       closeDrawer={handleCloseDrawer}>
-      {!schemaIndexes.length && (
+      {!schemaIndexesLoading && !schemaIndexes.length && (
         <Typography pt={10} textAlign="center">
           There are currently no indexes for this Schema
         </Typography>
@@ -278,7 +281,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
           </Button>
         </Box>
       </Box>
-      {schemaIndexes.length > 0 && (
+      {!schemaIndexesLoading && schemaIndexes.length > 0 && (
         <Box>
           <Typography textAlign="center" pt={4} pb={2}>
             Indexes
