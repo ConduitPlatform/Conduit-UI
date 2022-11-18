@@ -141,6 +141,7 @@ const StorageConfig: React.FC = () => {
                     <FormInputText
                       {...register('azure.connectionString', { disabled: !edit })}
                       label="Connection String"
+                      textFieldProps={{ type: 'password' }}
                     />
                   </Grid>
                 )}
@@ -172,6 +173,7 @@ const StorageConfig: React.FC = () => {
                       <FormInputText
                         {...register('aws.secretAccessKey', { disabled: !edit })}
                         label="Secret Access Key"
+                        textFieldProps={{ type: 'password' }}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
@@ -200,6 +202,7 @@ const StorageConfig: React.FC = () => {
                       <FormInputText
                         {...register('aliyun.accessKeyId', { disabled: !edit })}
                         label="Access Key Id"
+                        textFieldProps={{ type: 'password' }}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
