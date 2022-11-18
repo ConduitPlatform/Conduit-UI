@@ -81,7 +81,6 @@ const DataTableRows: React.FC<Props> = ({
       return (
         <Checkbox
           color="primary"
-          disabled={row.owner && row.owner !== "cms"}
           checked={isItemSelected()}
           onChange={() => onMenuItemSelect(row._id)}
         />
@@ -96,12 +95,6 @@ const DataTableRows: React.FC<Props> = ({
           {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
         </IconButton>
       );
-  };
-
-  const extractSchemasActions = () => {
-    if (row.owner && row.owner !== "cms") {
-      return [{ title: "Extend", type: "extend" }];
-    } else return actions;
   };
 
   return (
@@ -130,7 +123,7 @@ const DataTableRows: React.FC<Props> = ({
         ))}
         <TableCell key={`action-${row}`} align={"right"}>
           <DataTableActions
-            actions={extractSchemasActions()}
+            actions={actions}
             onActionClick={(action) => onMenuItemClick(action, row)}
             isBlocked={!row.Active}
             editDisabled={selectedItems.length > 1}
