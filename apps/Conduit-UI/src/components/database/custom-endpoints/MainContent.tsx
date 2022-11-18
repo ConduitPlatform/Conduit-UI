@@ -130,6 +130,7 @@ const MainContent: FC<Props> = ({
       </>
     );
   };
+
   return (
     <Box display="flex" pt={2} gap={2} flexDirection="column">
       <Box display="flex" gap={2} alignItems="center">

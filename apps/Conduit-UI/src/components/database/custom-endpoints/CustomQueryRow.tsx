@@ -139,6 +139,11 @@ const CustomQueryRow: FC<Props> = ({
     if (isArray(type) && schemaType === 'Array') {
       return false;
     }
+
+    if (type === 'ObjectId' && schemaType === 'Relation') {
+      return false;
+    }
+
     if (schemaType !== type) {
       return true;
     }
