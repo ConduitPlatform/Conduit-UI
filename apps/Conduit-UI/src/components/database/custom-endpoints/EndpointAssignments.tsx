@@ -369,7 +369,8 @@ const EndpointAssignments: FC<Props> = ({
                 disabled={isValueIncompatible(
                   assignment.schemaField,
                   input.type,
-                  availableFieldsOfSchema
+                  availableFieldsOfSchema,
+                  input.array
                 )}
                 sx={{ paddingLeft: 4 }}
                 key={`idx-${index}-input`}

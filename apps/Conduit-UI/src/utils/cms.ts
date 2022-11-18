@@ -16,7 +16,8 @@ const getCompiledFieldsOfSchema = (schemaSelected: any, schemas: any) => {
 export const isValueIncompatible = (
   fieldName: string,
   externalInputType: string,
-  availableFieldsOfSchema: any
+  availableFieldsOfSchema: any,
+  isExternalInputArray?: boolean
 ) => {
   if (typeof fieldName === 'string') {
     if (fieldName.indexOf('.') !== -1) {
@@ -43,7 +44,10 @@ export const isValueIncompatible = (
       );
 
       if (foundSchema && foundSchema.type) {
-        if (isArray(foundSchema.type) && externalInputType === 'Array') {
+        if (
+          (isArray(foundSchema.type) && externalInputType === 'Array') ||
+          (isArray(foundSchema.type) && isExternalInputArray)
+        ) {
           return false;
         }
         if (
@@ -92,6 +96,7 @@ export const extractInputValueType = (type: any) => {
   if (type === undefined) {
     return '';
   }
+
   if (isArray(type)) {
     return '(Array)';
   }
@@ -213,9 +218,7 @@ const disableSubmit = (endpoint: Endpoint) => {
     invalidAssignments = hasInvalidAssignments(endpoint.assignments);
   }
   if (endpoint.operation === OperationsEnum.PUT) {
-    if (!endpoint.queries || endpoint.queries.length === 0) return true;
-    invalidQueries = hasInvalidQueries(endpoint.queries);
-    if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
+    if (endpoint.assignments?.length > 0) return true;
     invalidAssignments = hasInvalidAssignments(endpoint.assignments);
   }
   if (endpoint.operation === OperationsEnum.PATCH) {
