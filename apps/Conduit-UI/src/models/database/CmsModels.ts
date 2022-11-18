@@ -25,6 +25,7 @@ export interface Schema {
   name: string;
   ownerModule: string;
   extensions: any[];
+  compiledFields: any;
   fields: any;
   createdAt: string;
   updatedAt: string;

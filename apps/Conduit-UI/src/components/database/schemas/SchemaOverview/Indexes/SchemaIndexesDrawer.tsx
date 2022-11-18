@@ -88,7 +88,11 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
     setInputFields([...inputFields, { id: uuidV4(), field: '', type: '' }]);
   };
 
-  const formattedSchemaFields = Object.keys(schema.fields);
+  const nonUniqueSchemaFields = Object.entries(schema.compiledFields).filter(
+    (value: any) => !value?.unique
+  );
+
+  const formattedSchemaFields = nonUniqueSchemaFields.map((item) => item[0]);
 
   const handleFieldsChange = (id: string) => (evt: any) => {
     const { value } = evt.target;
