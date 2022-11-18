@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.3](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.2...v0.15.3) (2022-11-18)
+
+
+### Features
+
+* **SchemaIndexes:** added indexes editing for schemas ([#195](https://github.com/ConduitPlatform/Conduit-UI/issues/195)) ([40301d5](https://github.com/ConduitPlatform/Conduit-UI/commit/40301d5421e5cd7721707c2a5dab483cd82a23a9))
+
+
+### Bug Fixes
+
+* **App:** General qol fixes ([#196](https://github.com/ConduitPlatform/Conduit-UI/issues/196)) ([ea1db9b](https://github.com/ConduitPlatform/Conduit-UI/commit/ea1db9bbfba699aa1cc2a677a162ed3e6994ff2b))
+
 ### [0.15.2](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.1...v0.15.2) (2022-11-17)
 
 
