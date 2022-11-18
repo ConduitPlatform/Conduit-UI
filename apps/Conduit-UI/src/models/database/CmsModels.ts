@@ -1,7 +1,15 @@
 //TODO schemas, schemaDocuments, customEndpoints, config, schemaFields, queries
 //We need further testing
-import { Assignment } from '../customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../OperationsEnum';
+
+export interface SchemaIndex {
+  fields: string[];
+  options: {
+    name: string;
+    unique?: boolean;
+  };
+  types: string[] | number[] | string;
+}
 
 export interface Schema {
   _id: string;
@@ -17,6 +25,7 @@ export interface Schema {
   name: string;
   ownerModule: string;
   extensions: any[];
+  compiledFields: any;
   fields: any;
   createdAt: string;
   updatedAt: string;

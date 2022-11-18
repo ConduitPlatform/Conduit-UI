@@ -16,6 +16,8 @@ import { SideDrawerWrapper } from '@conduitplatform/ui-components';
 import Data from '../../../../assets/svgs/data.svg';
 import Image from 'next/image';
 import JsonEditorComponent from '../../../common/JsonEditorComponent';
+import SchemaIndexesDrawer from './Indexes/SchemaIndexesDrawer';
+import { Numbers } from '@mui/icons-material';
 
 interface Props {
   schema: Schema;
@@ -42,6 +44,7 @@ export const SchemaOverview: FC<Props> = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [objectView, setObjectView] = useState(true);
   const [infoDrawer, setInfoDrawer] = useState(false);
+  const [indexDrawer, setIndexDrawer] = useState(false);
 
   const handleEditClick = (id: string) => {
     router.push({
@@ -130,6 +133,9 @@ export const SchemaOverview: FC<Props> = ({
             variant="outlined"
             startIcon={<InfoOutlinedIcon />}>
             Schema Info
+          </Button>
+          <Button onClick={() => setIndexDrawer(true)} variant="outlined" startIcon={<Numbers />}>
+            Schema Indexes
           </Button>
         </Box>
 
@@ -229,6 +235,7 @@ export const SchemaOverview: FC<Props> = ({
         handleDelete={handleDeleteSchema}
         selectedSchema={selectedSchemaForAction}
       />
+      <SchemaIndexesDrawer open={indexDrawer} setOpen={setIndexDrawer} schema={schema} />
     </>
   );
 };

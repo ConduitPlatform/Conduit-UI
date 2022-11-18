@@ -13,6 +13,17 @@ export const postSchemaRequest = (data: any) => postRequest(`/database/schemas`,
 export const patchSchemaRequest = (_id: string, data: any) =>
   patchRequest(`/database/schemas/${_id}`, { ...data });
 
+export const postSchemaIndexRequest = (_id: string, indexes: any) =>
+  postRequest(`/database/schemas/${_id}/indexes`, indexes);
+
+export const getSchemaIndexesRequest = (_id: string) =>
+  getRequest(`/database/schemas/${_id}/indexes`);
+
+export const deleteSchemaIndexRequest = (_id: string, indexes: string[]) =>
+  deleteRequest(`/database/schemas/${_id}/indexes`, { indexNames: indexes });
+
+export const getDatabaseTypeRequest = () => getRequest(`/database/database-type`);
+
 export const setSchemaExtension = (_id: string, data: any) =>
   postRequest(`/database/schemas/${_id}/extensions/`, { fields: data });
 
