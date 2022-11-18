@@ -87,7 +87,7 @@ const MainContent: FC<Props> = ({
           endpointsLength: endpoints.length,
         })
       );
-      dispatch(setSelectedEndPoint(''));
+      // dispatch(setSelectedEndPoint(''));
     } else {
       dispatch(
         asyncCreateCustomEndpoints({
@@ -180,9 +180,10 @@ const MainContent: FC<Props> = ({
             createMode={createMode}
             availableSchemas={schemaDocuments}
           />
+
+          {renderDetails()}
         </>
       )}
-      {renderDetails()}
       {(editMode || createMode) && (
         <SaveSection
           editMode={editMode}
