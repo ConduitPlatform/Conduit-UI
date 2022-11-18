@@ -263,7 +263,7 @@ export const asyncGetSchemaIndexes = createAsyncThunk(
     try {
       const { data } = await getSchemaIndexesRequest(params.id);
       thunkAPI.dispatch(setAppLoading(false));
-      return data as any;
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -281,7 +281,7 @@ export const asyncCreateSchemaIndex = createAsyncThunk(
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
       thunkAPI.dispatch(asyncGetSchemaIndexes({ id: params.id }));
       thunkAPI.dispatch(setAppLoading(false));
-      return data as any;
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));

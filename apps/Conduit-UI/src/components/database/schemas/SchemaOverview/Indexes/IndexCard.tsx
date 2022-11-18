@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import React, { FC } from 'react';
 import { SchemaIndex } from '../../../../../models/database/CmsModels';
-import { asyncDeleteSchemaIndexes } from '../../../../../redux/slices/databaseSlice';
 
 interface Props {
   index: SchemaIndex;
