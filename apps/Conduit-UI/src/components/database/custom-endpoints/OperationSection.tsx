@@ -279,6 +279,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           dialogAction={handleSchemaChange}
           setExternalElements={setDisplayedSchema}
           externalElements={displayedSchema}
+          disableSelectAllButton
         />
       )}
     </Box>

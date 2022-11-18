@@ -27,6 +27,7 @@ interface Props {
   externalElements?: any[];
   dialogAction?: any;
   setExternalElements?: (values: any[]) => void;
+  disableSelectAllButton?: boolean;
 }
 
 const TableDialog: React.FC<Props> = ({
@@ -41,6 +42,7 @@ const TableDialog: React.FC<Props> = ({
   dialogAction,
   externalElements,
   setExternalElements,
+  disableSelectAllButton,
 }) => {
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
@@ -118,6 +120,12 @@ const TableDialog: React.FC<Props> = ({
       fullWidth
       maxWidth="lg"
       open={open}
+      PaperProps={{
+        sx: {
+          height: '93vh',
+          borderRadius: '16px',
+        },
+      }}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
@@ -155,6 +163,7 @@ const TableDialog: React.FC<Props> = ({
         {data.tableData.length ? (
           <>
             <DataTable
+              disableSelectAllButton
               headers={headers}
               dsData={data.tableData}
               handleSelect={handleSelect}

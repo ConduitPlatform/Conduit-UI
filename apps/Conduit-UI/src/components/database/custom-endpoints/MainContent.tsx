@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import { Endpoint } from '../../../models/customEndpoints/customEndpointsModels';
 import { Filters, Schema } from '../../../models/database/CmsModels';
@@ -11,6 +11,7 @@ import {
 } from '../../../redux/slices/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { disableSubmit, prepareQuery } from '../../../utils/cms';
+import { enqueueInfoNotification } from '../../../utils/useNotifier';
 import AssignmentsSection from './AssignmentsSection';
 import InformationTooltip from './InformationTooltip';
 import InputsSection from './InputsSection';
@@ -48,7 +49,13 @@ const MainContent: FC<Props> = ({
   const { endpoints } = useAppSelector((state) => state.databaseSlice.data.customEndpoints);
 
   const handleNameChange = (event: any) => {
-    dispatch(setEndpointData({ name: event.target.value }));
+    const regex = /[^a-z0-9_]/gi;
+    if (regex.test(event.target.value)) {
+      dispatch(
+        enqueueInfoNotification('Endpoint name can only contain alpharithmetics and _', 'duplicate')
+      );
+    }
+    dispatch(setEndpointData({ name: event.target.value.replace(regex, '') }));
   };
 
   const handleSubmit = (edit = false) => {
@@ -89,6 +96,7 @@ const MainContent: FC<Props> = ({
           endpointsLength: endpoints.length,
         })
       );
+      dispatch(setSelectedEndPoint(''));
     }
     setCreateMode(false);
     setEditMode(false);
@@ -123,48 +131,57 @@ const MainContent: FC<Props> = ({
       </>
     );
   };
+
   return (
     <Box display="flex" pt={2} gap={2} flexDirection="column">
-      <Box display="flex" gap={2} alignItems="center">
-        <TextField
-          size="small"
-          sx={{ maxWidth: 300 }}
-          fullWidth
-          disabled={!editMode}
-          variant={'outlined'}
-          label={'Name'}
-          value={endpoint.name}
-          onChange={handleNameChange}
-        />
-        <InformationTooltip />
-        <Box display="flex" px={2} gap={2} justifyContent="flex-end" width="100%">
-          {!editMode && (
-            <Button
-              variant="outlined"
-              color="error"
-              aria-label="delete"
-              onClick={handleDeleteClick}
-              size="small">
-              <Delete />
-            </Button>
-          )}
-          {!editMode && (
-            <Button
-              variant="outlined"
-              color="primary"
-              aria-label="edit"
-              onClick={handleEditClick}
-              size="small">
-              <Edit />
-            </Button>
-          )}
+      {!selectedEndpoint && !createMode ? (
+        <Box sx={{ marginTop: '100px', textAlign: 'center' }}>
+          <Typography variant="h6">Select an endpoint to view more</Typography>
         </Box>
-      </Box>
-      <OperationSection
-        editMode={editMode}
-        createMode={createMode}
-        availableSchemas={schemaDocuments}
-      />
+      ) : (
+        <>
+          <Box display="flex" gap={2} alignItems="center">
+            <TextField
+              size="small"
+              sx={{ maxWidth: 300 }}
+              fullWidth
+              disabled={!editMode}
+              variant={'outlined'}
+              label={'Name'}
+              value={endpoint.name}
+              onChange={handleNameChange}
+            />
+            <InformationTooltip />
+            <Box display="flex" px={2} gap={2} justifyContent="flex-end" width="100%">
+              {!editMode && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  aria-label="delete"
+                  onClick={handleDeleteClick}
+                  size="small">
+                  <Delete />
+                </Button>
+              )}
+              {!editMode && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  aria-label="edit"
+                  onClick={handleEditClick}
+                  size="small">
+                  <Edit />
+                </Button>
+              )}
+            </Box>
+          </Box>
+          <OperationSection
+            editMode={editMode}
+            createMode={createMode}
+            availableSchemas={schemaDocuments}
+          />
+        </>
+      )}
       {renderDetails()}
       {(editMode || createMode) && (
         <SaveSection

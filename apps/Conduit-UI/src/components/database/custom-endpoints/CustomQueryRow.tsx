@@ -5,7 +5,6 @@ import {
   Grid,
   IconButton,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -140,6 +139,11 @@ const CustomQueryRow: FC<Props> = ({
     if (isArray(type) && schemaType === 'Array') {
       return false;
     }
+
+    if (type === 'ObjectId' && schemaType === 'Relation') {
+      return false;
+    }
+
     if (schemaType !== type) {
       return true;
     }
@@ -177,16 +181,17 @@ const CustomQueryRow: FC<Props> = ({
   const extractCustomField = () => {
     if (schemaType === 'Boolean') {
       return (
-        <Select
+        <TextField
+          size="small"
+          select
           disabled={!editMode}
+          label="Custom (Boolean)"
           value={query.comparisonField.value}
-          native
           fullWidth
           onChange={(event: any) => inputCustomChange(event, index)}>
-          <option />
-          <option value="true">true</option>
-          <option value="false">false</option>
-        </Select>
+          <MenuItem value="true">true</MenuItem>
+          <MenuItem value="false">false</MenuItem>
+        </TextField>
       );
     }
     return (

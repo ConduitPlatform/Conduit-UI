@@ -1,9 +1,15 @@
-import React, { isValidElement, useState } from 'react';
-import { Checkbox, IconButton, TableCell, TableRow, TableRowProps } from '@mui/material';
-import DataTableActions from './DataTableActions';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import moment from 'moment';
-import InnerTable from './InnerTable';
+import React, { isValidElement, useState } from "react";
+import {
+  Checkbox,
+  IconButton,
+  TableCell,
+  TableRow,
+  TableRowProps,
+} from "@mui/material";
+import DataTableActions from "./DataTableActions";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import moment from "moment";
+import InnerTable from "./InnerTable";
 
 type Action = {
   title: string;
@@ -39,8 +45,8 @@ const DataTableRows: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
 
   const getValue = (value: any) => {
-    if (moment(value, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]', true).isValid()) {
-      return moment(value).format('DD/MM/YYYY');
+    if (moment(value, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]", true).isValid()) {
+      return moment(value).format("DD/MM/YYYY");
     }
     if (isValidElement(value)) {
       return value;
@@ -48,7 +54,10 @@ const DataTableRows: React.FC<Props> = ({
     return value?.toString();
   };
 
-  const onMenuItemClick = (action: { title: string; type: string }, data: any) => {
+  const onMenuItemClick = (
+    action: { title: string; type: string },
+    data: any
+  ) => {
     if (handleAction) {
       handleAction(action, data);
     }
@@ -72,28 +81,29 @@ const DataTableRows: React.FC<Props> = ({
       return (
         <Checkbox
           color="primary"
-          disabled={row.owner && row.owner !== 'cms'}
           checked={isItemSelected()}
           onChange={() => onMenuItemSelect(row._id)}
         />
       );
     if (collapsible)
       return (
-        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+        <IconButton
+          aria-label="expand row"
+          size="small"
+          onClick={() => setOpen(!open)}
+        >
           {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
         </IconButton>
       );
   };
 
-  const extractSchemasActions = () => {
-    if (row.owner && row.owner !== 'cms') {
-      return [{ title: 'Extend', type: 'extend' }];
-    } else return actions;
-  };
-
   return (
     <>
-      <TableRow onClick={() => onRowClick(row)} key={index} {...tableRowProps}>
+      <TableRow
+        onClick={() => onMenuItemSelect(row._id)}
+        key={index}
+        {...tableRowProps}
+      >
         <TableCell align="left" padding="none">
           {extractIcon()}
         </TableCell>
@@ -101,18 +111,19 @@ const DataTableRows: React.FC<Props> = ({
           <TableCell
             align="left"
             sx={{
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              width: item?.length > 0 ? '40px' :  '350px',
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              width: item?.length > 0 ? "40px" : "350px",
             }}
-            key={`row ${j}`}>
+            key={`row ${j}`}
+          >
             {getValue(row[item])}
           </TableCell>
         ))}
-        <TableCell key={`action-${row}`} align={'right'}>
+        <TableCell key={`action-${row}`} align={"right"}>
           <DataTableActions
-            actions={extractSchemasActions()}
+            actions={actions}
             onActionClick={(action) => onMenuItemClick(action, row)}
             isBlocked={!row.Active}
             editDisabled={selectedItems.length > 1}

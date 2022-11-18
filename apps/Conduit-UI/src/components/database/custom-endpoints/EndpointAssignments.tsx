@@ -369,7 +369,8 @@ const EndpointAssignments: FC<Props> = ({
                 disabled={isValueIncompatible(
                   assignment.schemaField,
                   input.type,
-                  availableFieldsOfSchema
+                  availableFieldsOfSchema,
+                  input.array
                 )}
                 sx={{ paddingLeft: 4 }}
                 key={`idx-${index}-input`}
@@ -379,7 +380,26 @@ const EndpointAssignments: FC<Props> = ({
             ))}
           </TextField>
         </Grid>
-        {assignment.assignmentField.type === 'Custom' ||
+        {getTypeOfValue(assignment.schemaField, availableFieldsOfSchema) === 'Boolean' &&
+          assignment.assignmentField.type === 'Custom' && (
+            <Grid item xs={2}>
+              <TextField
+                size="small"
+                select
+                disabled={!editMode}
+                label="Custom (Boolean)"
+                value={assignment.assignmentField.value}
+                fullWidth
+                onChange={(event: any) =>
+                  handleAssignmentCustomValueChange(event, index, assignment.schemaField)
+                }>
+                <MenuItem value="true">true</MenuItem>
+                <MenuItem value="false">false</MenuItem>
+              </TextField>
+            </Grid>
+          )}
+        {(getTypeOfValue(assignment.schemaField, availableFieldsOfSchema) !== 'Boolean' &&
+          assignment.assignmentField.type === 'Custom') ||
         assignment.assignmentField.type === 'Context' ? (
           <Grid item xs={2}>
             <TextField

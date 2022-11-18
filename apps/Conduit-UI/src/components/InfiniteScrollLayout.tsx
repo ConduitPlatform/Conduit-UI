@@ -18,7 +18,7 @@ const InfiniteScrollLayout: React.FC<Props> = ({
 }) => {
   return (
     <Box
-      height={'80vh'}
+      height={'77vh'}
       sx={{
         display: 'flex',
         backgroundColor: 'rgba(0,0,0,0.05)',
