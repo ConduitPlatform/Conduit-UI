@@ -1,5 +1,6 @@
 //TODO schemas, schemaDocuments, customEndpoints, config, schemaFields, queries
 //We need further testing
+import { Assignment } from '../customEndpoints/customEndpointsModels';
 import { OperationsEnum } from '../OperationsEnum';
 
 export interface SchemaIndex {
@@ -134,4 +135,9 @@ export interface IntrospectionStatus {
   foreignSchemaCount: number;
   importedSchemas: string[];
   importedSchemaCount: number;
+}
+
+export interface Filters {
+  search: string;
+  operation: number;
 }

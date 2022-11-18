@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.2](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.1...v0.15.2) (2022-11-17)
+
+
+### Bug Fixes
+
+* assignments check that allows to set ObjectId type to Relation ([#192](https://github.com/ConduitPlatform/Conduit-UI/issues/192)) ([12ee6a0](https://github.com/ConduitPlatform/Conduit-UI/commit/12ee6a08483b3c73f74c9fdd1b930f9853036d87))
+* change admin password old-new issue ([#188](https://github.com/ConduitPlatform/Conduit-UI/issues/188)) ([6f511f0](https://github.com/ConduitPlatform/Conduit-UI/commit/6f511f0bc3a4cc75f5573af84e1f0acacd8bd787))
+* **Custom endpoints:** qol fixes ([#194](https://github.com/ConduitPlatform/Conduit-UI/issues/194)) ([0270aac](https://github.com/ConduitPlatform/Conduit-UI/commit/0270aacc1fb8cac31d17cc4795cf6ae33e3d624b))
+* **custom-endpoints:** stability fixes ([#191](https://github.com/ConduitPlatform/Conduit-UI/issues/191)) ([2a8f33c](https://github.com/ConduitPlatform/Conduit-UI/commit/2a8f33c626942ad11e3724cb18638f3ef65c373f))
+* **Schemas:** Schema editing improvements ([#190](https://github.com/ConduitPlatform/Conduit-UI/issues/190)) ([28b69e9](https://github.com/ConduitPlatform/Conduit-UI/commit/28b69e952c8f7deb3c5671a8318bdeee45a84848))
+
 ### [0.15.1](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.0...v0.15.1) (2022-10-25)
 
 

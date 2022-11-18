@@ -1,5 +1,5 @@
 import React, { FC, Fragment, useCallback } from 'react';
-import { Grid, IconButton, MenuItem, styled, TextField, Typography } from '@mui/material';
+import { Box, Grid, IconButton, MenuItem, styled, TextField, Typography } from '@mui/material';
 import ActionTypes from '../../../models/ActionTypes';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { deepClone } from '../../../utils/deepClone';
@@ -285,23 +285,23 @@ const EndpointAssignments: FC<Props> = ({
 
   return selectedAssignments.map((assignment: Assignment, index: number) => (
     <Fragment key={`assignment-${index}`}>
-      <Grid item container xs={12} spacing={3} alignItems="center" justifyContent="center">
-        <Grid item xs={1}>
-          <Typography>{index + 1}.</Typography>
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            select
-            size="small"
-            label={'Schema Field'}
-            variant="outlined"
-            fullWidth
-            value={assignment.schemaField}
-            disabled={!editMode}
-            onChange={(event) => handleAssignmentFieldChange(event, index)}>
-            <MenuItem aria-label="None" value="-" />
-            {prepareOptions()}
-          </TextField>
+      <Grid item container xs={12} spacing={3} pb={4} alignItems="center" justifyContent="center">
+        <Grid item xs={4}>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography>{index + 1}.</Typography>
+            <TextField
+              select
+              size="small"
+              label={'Schema Field'}
+              variant="outlined"
+              fullWidth
+              value={assignment.schemaField}
+              disabled={!editMode}
+              onChange={(event) => handleAssignmentFieldChange(event, index)}>
+              <MenuItem aria-label="None" value="-" />
+              {prepareOptions()}
+            </TextField>
+          </Box>
         </Grid>
         <Grid item xs={2}>
           <TextField

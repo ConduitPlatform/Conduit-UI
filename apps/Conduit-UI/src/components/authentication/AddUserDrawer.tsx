@@ -66,7 +66,7 @@ const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
                       message: 'Not a valid e-mail!',
                     },
                   })}
-                  label="Username/Email"
+                  label="Email"
                   typeOfInput={'text'}
                 />
               </Grid>

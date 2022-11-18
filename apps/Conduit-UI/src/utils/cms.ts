@@ -1,10 +1,13 @@
 import { isArray } from 'lodash';
+import { Endpoint } from '../models/customEndpoints/customEndpointsModels';
+import { OperationsEnum } from '../models/OperationsEnum';
 
-const getAvailableFieldsOfSchema = (schemaSelected: any, schemas: any) => {
+const getCompiledFieldsOfSchema = (schemaSelected: any, schemas: any) => {
   if (schemaSelected) {
     const found = schemas.find((schema: any) => schema._id === schemaSelected);
+
     if (found) {
-      return found.fields;
+      return found.compiledFields;
     }
     return {};
   }
@@ -26,7 +29,11 @@ export const isValueIncompatible = (
         if (isArray(innerSchemaType) && externalInputType === 'Array') {
           return false;
         }
-        if (innerSchemaType === externalInputType) return false;
+        if (
+          innerSchemaType === externalInputType ||
+          (innerSchemaType === 'Relation' && externalInputType === 'ObjectId')
+        )
+          return false;
         return true;
       }
       return;
@@ -39,7 +46,11 @@ export const isValueIncompatible = (
         if (isArray(foundSchema.type) && externalInputType === 'Array') {
           return false;
         }
-        if (foundSchema?.type === externalInputType) return false;
+        if (
+          foundSchema?.type === externalInputType ||
+          (foundSchema?.type === 'Relation' && externalInputType === 'ObjectId')
+        )
+          return false;
         return true;
       }
     }
@@ -189,12 +200,55 @@ const prepareQuery = (selectedQueries: any) => {
   return query;
 };
 
+const disableSubmit = (endpoint: Endpoint) => {
+  if (!endpoint.name) return true;
+  if (!endpoint.selectedSchema) return true;
+  if (endpoint.operation === -1) return true;
+
+  let invalidQueries;
+  let invalidAssignments;
+
+  if (endpoint.operation === OperationsEnum.POST) {
+    if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
+    invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+  }
+  if (endpoint.operation === OperationsEnum.PUT) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+    if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
+    invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+  }
+  if (endpoint.operation === OperationsEnum.PATCH) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+    if (!endpoint.assignments || endpoint.assignments.length < 1) return true;
+    invalidAssignments = hasInvalidAssignments(endpoint.assignments);
+  }
+  if (endpoint.operation === OperationsEnum.DELETE) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+  }
+  if (endpoint.operation === OperationsEnum.GET) {
+    if (!endpoint.queries || endpoint.queries.length === 0) return true;
+    invalidQueries = hasInvalidQueries(endpoint.queries);
+  }
+
+  if (invalidQueries || invalidAssignments) {
+    return true;
+  }
+  const invalidInputs = hasInvalidInputs(endpoint.inputs);
+  if (invalidInputs) {
+    return true;
+  }
+};
+
 export {
   findFieldsWithTypes,
-  getAvailableFieldsOfSchema,
+  getCompiledFieldsOfSchema,
   hasInvalidQueries,
   hasInvalidAssignments,
   hasInvalidInputs,
   recursiveNodeIteration,
   prepareQuery,
+  disableSubmit,
 };

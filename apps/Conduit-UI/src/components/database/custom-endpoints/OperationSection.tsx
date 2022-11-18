@@ -1,16 +1,22 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Button, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
 import { OperationsEnum } from '../../../models/OperationsEnum';
 import { findFieldsWithTypes } from '../../../utils/cms';
-import { setEndpointData, setSchemaFields } from '../../../redux/slices/customEndpointsSlice';
+import {
+  setAccessibleSchemaFields,
+  setCompiledSchemaFields,
+  setEndpointData,
+} from '../../../redux/slices/customEndpointsSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { Schema } from '../../../models/database/CmsModels';
 import { Assignment } from '../../../models/customEndpoints/customEndpointsModels';
 import TableDialog from '../../common/TableDialog';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../../redux/slices/databaseSlice';
-import { Loop } from '@mui/icons-material';
-import { getAccesssibleSchemaFields } from '../../../http/requests/DatabaseRequests';
+import {
+  getAccesssibleSchemaFields,
+  getSchemaByIdRequest,
+} from '../../../http/requests/DatabaseRequests';
 import { enqueueInfoNotification } from '../../../utils/useNotifier';
 
 interface Props {
@@ -46,7 +52,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     const assignments: Assignment[] = [];
     if (operation === 1) {
       if (endpoint.selectedSchema) {
-        if (schemaFields.length > 0) {
+        if (schemaFields?.length > 0) {
           schemaFields.forEach((field: string) => {
             const assignment: Assignment = {
               schemaField: field,
@@ -63,6 +69,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     if (endpoint.selectedSchema !== '') {
       const selectedSchema = endpoint.selectedSchema;
       const fields = await getAccesssibleSchemaFields(selectedSchema, operation);
+      const schema = await getSchemaByIdRequest(selectedSchema);
 
       if (Object.keys(fields.data.accessibleFields).length === 0) {
         dispatch(
@@ -71,6 +78,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
       }
 
       const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
+      const compiledFieldsWithTypes = findFieldsWithTypes(schema.data.compiledFields);
 
       if (
         endpoint.operation &&
@@ -89,7 +97,8 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
         });
       }
       dispatch(setEndpointData({ selectedSchema, assignments }));
-      dispatch(setSchemaFields(fieldsWithTypes));
+      dispatch(setAccessibleSchemaFields(fieldsWithTypes));
+      dispatch(setCompiledSchemaFields(compiledFieldsWithTypes));
     }
   };
 
@@ -97,6 +106,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     const assignments: Assignment[] = [];
     const selectedSchema = changedSchema[0]._id;
     const fields = await getAccesssibleSchemaFields(selectedSchema, endpoint.operation);
+    const schema = await getSchemaByIdRequest(selectedSchema);
 
     if (Object.keys(fields.data.accessibleFields).length === 0) {
       dispatch(
@@ -105,6 +115,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
     }
 
     const fieldsWithTypes = findFieldsWithTypes(fields.data.accessibleFields);
+    const compiledFieldsWithTypes = findFieldsWithTypes(schema.data.compiledFields);
 
     if (
       endpoint.operation &&
@@ -123,7 +134,8 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
       });
     }
     dispatch(setEndpointData({ selectedSchema, assignments }));
-    dispatch(setSchemaFields(fieldsWithTypes));
+    dispatch(setAccessibleSchemaFields(fieldsWithTypes));
+    dispatch(setCompiledSchemaFields(compiledFieldsWithTypes));
   };
 
   const handleAuthenticationChange = (event: React.ChangeEvent<{ checked: boolean }>) => {
@@ -175,94 +187,82 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
   };
 
   return (
-    <>
-      <Grid item container spacing={2} xs={12} wrap={'nowrap'} justifyContent={'space-between'}>
-        <Grid item container sx={{ alignItems: 'center', flex: 1 }} spacing={2}>
-          <Grid item container sx={{ flex: 0 }}>
-            <TextField
-              select
-              fullWidth
+    <Box display="flex" justifyContent="space-between" alignItems="center" gap={2} flexWrap="wrap">
+      <Box display="flex" gap={3} alignItems="center">
+        <TextField
+          select
+          fullWidth
+          size="small"
+          label={'Select Operation'}
+          variant="outlined"
+          sx={{ minWidth: 220 }}
+          value={endpoint.operation}
+          disabled={!editMode}
+          onChange={handleOperationChange}>
+          <MenuItem aria-label="None" value="-1" />
+          <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
+          <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
+          <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
+          <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
+          <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
+        </TextField>
+        <Button
+          fullWidth
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={!editMode || endpoint.operation === -1}
+          onClick={() => setDrawer(true)}>
+          {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
+        </Button>
+      </Box>
+      <Box display="flex" justifyContent="flex-end">
+        <FormControlLabel
+          control={
+            <Checkbox
               size="small"
-              label={'Select Operation'}
-              variant="outlined"
-              sx={{ minWidth: 170 }}
-              value={endpoint.operation}
               disabled={!editMode}
-              onChange={handleOperationChange}>
-              <MenuItem aria-label="None" value="-1" />
-              <MenuItem value={OperationsEnum.GET}>Find/Get</MenuItem>
-              <MenuItem value={OperationsEnum.POST}>Create</MenuItem>
-              <MenuItem value={OperationsEnum.PUT}>Update/Edit</MenuItem>
-              <MenuItem value={OperationsEnum.DELETE}>Delete</MenuItem>
-              <MenuItem value={OperationsEnum.PATCH}>Patch</MenuItem>
-            </TextField>
-          </Grid>
+              color={'primary'}
+              checked={endpoint.authentication}
+              onChange={handleAuthenticationChange}
+              name="authentication"
+            />
+          }
+          label="Authenticated"
+        />
 
-          <Grid item sx={{ flex: 1 }}>
-            <Button
-              size="small"
-              variant="contained"
-              color="primary"
-              disabled={!editMode || endpoint.operation === -1}
-              endIcon={editMode && <Loop />}
-              onClick={() => setDrawer(true)}>
-              {displayedSchema[0] ? `Schema: ${displayedSchema[0].name}` : 'Select Schema'}
-            </Button>
-          </Grid>
-        </Grid>
-
-        <Grid container item spacing={2} sx={{ flex: 1, pr: 1 }} justifyContent={'flex-end'}>
-          <Grid item>
+        {endpoint.operation === OperationsEnum.GET && (
+          <>
             <FormControlLabel
               control={
                 <Checkbox
                   size="small"
                   disabled={!editMode}
                   color={'primary'}
-                  checked={endpoint.authentication}
-                  onChange={handleAuthenticationChange}
-                  name="authentication"
+                  checked={endpoint.paginated}
+                  onChange={handlePaginatedChange}
+                  name="paginated"
                 />
               }
-              label="Authenticated"
+              label="Paginated"
             />
-          </Grid>
-          {endpoint.operation === OperationsEnum.GET && (
-            <>
-              <Grid item sx={{ flex: 0 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode}
-                      color={'primary'}
-                      checked={endpoint.paginated}
-                      onChange={handlePaginatedChange}
-                      name="paginated"
-                    />
-                  }
-                  label="Paginated"
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
+                  color={'primary'}
+                  checked={endpoint.sorted}
+                  onChange={handleSortedChange}
+                  name="sorted"
                 />
-              </Grid>
-              <Grid item sx={{ flex: 0 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      disabled={!editMode || endpoint.operation !== OperationsEnum.GET}
-                      color={'primary'}
-                      checked={endpoint.sorted}
-                      onChange={handleSortedChange}
-                      name="sorted"
-                    />
-                  }
-                  label="Sorted"
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
-      </Grid>
+              }
+              label="Sorted"
+            />
+          </>
+        )}
+      </Box>
       {editMode && (
         <TableDialog
           open={drawer}
@@ -281,7 +281,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
           externalElements={displayedSchema}
         />
       )}
-    </>
+    </Box>
   );
 };
 
