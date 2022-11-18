@@ -218,7 +218,7 @@ const disableSubmit = (endpoint: Endpoint) => {
     invalidAssignments = hasInvalidAssignments(endpoint.assignments);
   }
   if (endpoint.operation === OperationsEnum.PUT) {
-    if (endpoint.assignments?.length > 0) return true;
+    if (!endpoint.assignments || endpoint.assignments.length === 0) return true;
     invalidAssignments = hasInvalidAssignments(endpoint.assignments);
   }
   if (endpoint.operation === OperationsEnum.PATCH) {
