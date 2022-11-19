@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.4](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.3...v0.15.4) (2022-11-19)
+
+
+### Bug Fixes
+
+* **custom-endpoints:** Minor Custom Endpoints fixes ([#197](https://github.com/ConduitPlatform/Conduit-UI/issues/197)) ([cc97d8f](https://github.com/ConduitPlatform/Conduit-UI/commit/cc97d8f492183289024edac96e765c9b84cd423d))
+
 ### [0.15.3](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.2...v0.15.3) (2022-11-18)
 
 
