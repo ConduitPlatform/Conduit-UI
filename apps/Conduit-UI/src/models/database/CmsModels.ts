@@ -24,11 +24,19 @@ export interface Schema {
   };
   name: string;
   ownerModule: string;
-  extensions: any[];
+  extensions: Extension[];
   compiledFields: any;
   fields: any;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Extension {
+  fields: any;
+  ownerModule: string;
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
 }
 
 export interface ICrudOperations {

@@ -115,7 +115,7 @@ export const SchemaOverview: FC<Props> = ({
     );
   };
 
-  const formattedFields = getSchemaFieldsWithExtra(schema.fields);
+  const formattedFields = getSchemaFieldsWithExtra(schema.compiledFields);
 
   const goToSchemaEndpoints = (name: string) => {
     router.push(`/database/custom?schema=${name}`, undefined, { shallow: true });
@@ -208,7 +208,7 @@ export const SchemaOverview: FC<Props> = ({
             ) : (
               <Box sx={{ borderRadius: 4, overflow: 'auto', height: '100%' }}>
                 <JsonEditorComponent
-                  placeholder={schema?.fields}
+                  placeholder={formattedFields}
                   viewOnly
                   height="100%"
                   width="100%"
