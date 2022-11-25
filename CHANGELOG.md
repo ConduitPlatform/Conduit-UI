@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.5](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.4...v0.15.5) (2022-11-25)
+
+
+### Bug Fixes
+
+* **database:** custom-endpoints location enum ([4e23fcc](https://github.com/ConduitPlatform/Conduit-UI/commit/4e23fccb2e1c6788b2fd632c2892ca50345d14a9))
+* **SchemaOverview:** now showing compiled fields instead of fields ([#198](https://github.com/ConduitPlatform/Conduit-UI/issues/198)) ([9d1ca84](https://github.com/ConduitPlatform/Conduit-UI/commit/9d1ca84207273cdde774edfb4ba07eae00317054))
+
 ### [0.15.4](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.3...v0.15.4) (2022-11-19)
 
 
