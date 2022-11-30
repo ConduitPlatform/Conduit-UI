@@ -32,19 +32,6 @@ const Main = styled('main')(() => ({
   flexGrow: 1,
 }));
 
-// TODO to be added on a separate page
-// const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
-//   {
-//     title: 'graphql',
-//     expression: 'sum(increase(conduit_admin_routes_total{transport="graphql"}[10m]))',
-//   },
-//   { title: 'rest', expression: 'sum(increase(conduit_admin_routes_total{transport="rest"}[10m]))' },
-//   {
-//     title: 'socket',
-//     expression: 'sum(increase(conduit_admin_routes_total{transport="socket"}[10m]))',
-//   },
-// ];
-
 const Home: React.FC = () => {
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));

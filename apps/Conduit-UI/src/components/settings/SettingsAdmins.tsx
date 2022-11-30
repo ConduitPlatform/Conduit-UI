@@ -5,6 +5,7 @@ import {
   asyncChangeOtherAdminsPassword,
   asyncCreateAdminUser,
   asyncDeleteAdmin,
+  asyncGetAdminById,
   asyncGetAdmins,
 } from '../../redux/slices/settingsSlice';
 import { Box, Button } from '@mui/material';
@@ -21,6 +22,7 @@ import ChangeOtherAdminsPassword from './ChangeAdminPassword';
 const SettingsAdmins: React.FC = () => {
   const dispatch = useAppDispatch();
   const { admins, count } = useAppSelector((state) => state.settingsSlice.data.authAdmins);
+  const loggedInAdmin = useAppSelector((state) => state.settingsSlice.data.selectedAdmin);
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
   const [limit, setLimit] = useState<number>(25);
@@ -41,10 +43,21 @@ const SettingsAdmins: React.FC = () => {
     open: false,
     multiple: false,
   });
+  const [deleteLoggedInUser, setDeleteLoggedInUser] = useState<{
+    open: boolean;
+    multiple: boolean;
+  }>({
+    open: false,
+    multiple: false,
+  });
 
   useEffect(() => {
     dispatch(asyncGetAdmins({ skip, limit }));
   }, [dispatch, limit, skip]);
+
+  useEffect(() => {
+    dispatch(asyncGetAdminById('me'));
+  }, [dispatch]);
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
@@ -65,10 +78,17 @@ const SettingsAdmins: React.FC = () => {
   const handleAction = (action: { title: string; type: string }, data: IAdmin) => {
     const currentUser = admins.find((admin: IAdmin) => admin._id === data._id) as IAdmin;
     if (action.type === 'delete') {
-      setOpenDeleteUser({
-        open: true,
-        multiple: false,
-      });
+      if (data.username === loggedInAdmin.username) {
+        setDeleteLoggedInUser({
+          open: true,
+          multiple: false,
+        });
+      } else {
+        setOpenDeleteUser({
+          open: true,
+          multiple: false,
+        });
+      }
       setSelectedAdmin(currentUser);
     } else if (action.type === 'edit') {
       setDrawer({ open: true, action: 'edit' });
@@ -82,6 +102,13 @@ const SettingsAdmins: React.FC = () => {
 
   const handleClose = () => {
     setOpenDeleteUser({
+      open: false,
+      multiple: false,
+    });
+  };
+
+  const handleCloseDeleteSignedInUser = () => {
+    setDeleteLoggedInUser({
       open: false,
       multiple: false,
     });
@@ -119,8 +146,6 @@ const SettingsAdmins: React.FC = () => {
     title: 'Delete',
     type: 'delete',
   };
-
-  //TODO this button can be accessed only when admin is superAdmin, to be implemented later on
 
   const toEdit = {
     title: 'Change password',
@@ -181,6 +206,14 @@ const SettingsAdmins: React.FC = () => {
         description={handleDeleteDescription(openDeleteUser.multiple, selectedAdmin)}
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
+      />
+      <ConfirmationDialog
+        open={deleteLoggedInUser.open}
+        handleClose={handleCloseDeleteSignedInUser}
+        title={'You cannot delete the account you are currently logged in with!'}
+        buttonAction={handleCloseDeleteSignedInUser}
+        buttonText={'Exit'}
+        showCancelButton={false}
       />
       <SideDrawerWrapper
         open={drawer.open}
