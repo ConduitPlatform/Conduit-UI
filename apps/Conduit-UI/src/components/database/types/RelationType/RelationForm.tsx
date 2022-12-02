@@ -119,6 +119,7 @@ const RelationForm: FC<IProps> = ({
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'It will appear in the entry editor'}
       />
       <Box width={'100%'}>

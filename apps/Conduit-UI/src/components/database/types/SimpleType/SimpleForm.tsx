@@ -92,6 +92,7 @@ const SimpleForm: FC<IProps> = ({
         sx={{ mb: 1 }}
         fullWidth
         required
+        disabled={readOnly && !!selectedItem}
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}

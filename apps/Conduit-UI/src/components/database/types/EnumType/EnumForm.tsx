@@ -104,6 +104,7 @@ const EnumForm: FC<IProps> = ({
         inputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'It will appear in the entry editor'}
       />
       <FormControl sx={{ margin: 1, minWidth: 120 }} variant={'outlined'} fullWidth required>
