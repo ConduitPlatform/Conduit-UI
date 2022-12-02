@@ -202,7 +202,7 @@ const BooleanForm: FC<IProps> = ({
         </Grid>
 
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={12} pb={2}>
             <Box
               width={'100%'}
               display={'inline-flex'}
@@ -223,11 +223,6 @@ const BooleanForm: FC<IProps> = ({
                 label=""
               />
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <InfoTypography variant={'body2'}>
-              If active, this field will be required
-            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -272,7 +267,7 @@ const BooleanForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={booleanData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"
