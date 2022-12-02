@@ -13,10 +13,12 @@ interface IProps {
 const EnumType: FC<IProps> = ({ item, ...rest }) => {
   return (
     <Box display="flex" justifyContent="space-between">
-      <FieldIndicators item={item} />
       <CustomIcon>
         <SelectIcon />
       </CustomIcon>
+      <Box display="flex" alignItems="center" gap={1}>
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };
@@ -26,10 +28,12 @@ export default EnumType;
 export const EnumGroupType: FC<IProps> = ({ item, ...rest }) => {
   return (
     <Box display="flex" justifyContent="space-between">
-      <FieldIndicators item={item} />
       <CustomIcon>
         <SelectIcon />
       </CustomIcon>
+      <Box display="flex" alignItems="center" gap={1}>
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };

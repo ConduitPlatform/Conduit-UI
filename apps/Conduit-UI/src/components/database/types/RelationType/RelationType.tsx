@@ -15,7 +15,9 @@ const RelationType: FC<IProps> = ({ item, ...rest }) => {
       <CustomIcon>
         <DeviceHubIcon />
       </CustomIcon>
-      <FieldIndicators item={item} />
+      <Box display="flex" alignItems="center" gap={1}>
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };
@@ -28,7 +30,9 @@ export const RelationGroupType: FC<IProps> = ({ item, ...rest }) => {
       <CustomIcon>
         <DeviceHubIcon />
       </CustomIcon>
-      <FieldIndicators item={item} />
+      <Box display="flex" alignItems="center" gap={1}>
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };
