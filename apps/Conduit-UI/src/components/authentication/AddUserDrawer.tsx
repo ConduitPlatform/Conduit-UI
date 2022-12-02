@@ -76,6 +76,14 @@ const AddUserDrawer: React.FC<Props> = ({ handleNewUserDispatch }) => {
                     required: 'Password is required',
                     pattern: { value: passwordRegExp, message: 'Not a valid password' },
                   })}
+                  textFieldProps={{
+                    inputProps: {
+                      autocomplete: 'new-password',
+                      form: {
+                        autocomplete: 'new-password',
+                      },
+                    },
+                  }}
                   label="Password"
                   typeOfInput={'password'}
                 />

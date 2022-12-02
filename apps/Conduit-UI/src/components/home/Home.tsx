@@ -165,7 +165,7 @@ const Home: React.FC = () => {
                     <RequestsLatency module="home" modulesLength={enabledModules?.length} />
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <ModuleHealth module="home" />
+                    <ModuleHealth module="core" />
                   </Grid>
                   {isEnabled('database') && (
                     <Grid item xs={6} sm={3}>
@@ -183,12 +183,6 @@ const Home: React.FC = () => {
                       />
                     </Grid>
                   )}
-                  {/* {isEnabled('authentication') && (
-                <Grid item xs={6} sm={3}>
-                  <MetricCount title="Users" expression="" />
-                </Grid>
-                Missing prom endpoint
-              )} */}
                   {isEnabled('chat') && (
                     <Grid item xs={6} sm={3}>
                       <MetricCount title="Chat Rooms" expression="conduit_chat_rooms_total[5m]" />
