@@ -23,9 +23,6 @@ const ObjectIdType: FC<IProps> = ({ item, ...rest }) => {
                 <CodeIcon />
               </CustomIcon>
             </Tooltip>
-            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              object placeholder
-            </Typography>
           </Box>
         </Grid>
         <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>
@@ -51,9 +48,6 @@ export const ObjectIdGroupType: FC<IProps> = ({ item, ...rest }) => {
                 <CodeIcon />
               </CustomIcon>
             </Tooltip>
-            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              object placeholder
-            </Typography>
           </Box>
         </Grid>
         <Grid container item xs={6} alignItems={'center'} justifyContent={'flex-end'}>

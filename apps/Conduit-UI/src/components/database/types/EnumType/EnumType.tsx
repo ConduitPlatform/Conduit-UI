@@ -12,20 +12,12 @@ interface IProps {
 
 const EnumType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <>
-      <Grid item container xs={1}>
-        <CustomIcon>
-          <SelectIcon />
-        </CustomIcon>
-      </Grid>
-      <Grid item container justifyContent="flex-end" xs={5}>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
-    </>
+    <Box display="flex" justifyContent="space-between">
+      <FieldIndicators item={item} />
+      <CustomIcon>
+        <SelectIcon />
+      </CustomIcon>
+    </Box>
   );
 };
 
@@ -33,19 +25,11 @@ export default EnumType;
 
 export const EnumGroupType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <>
-      <Grid item container xs={1}>
-        <CustomIcon>
-          <SelectIcon />
-        </CustomIcon>
-      </Grid>
-      <Grid item container justifyContent="flex-end" xs={5}>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
-    </>
+    <Box display="flex" justifyContent="space-between">
+      <FieldIndicators item={item} />
+      <CustomIcon>
+        <SelectIcon />
+      </CustomIcon>
+    </Box>
   );
 };

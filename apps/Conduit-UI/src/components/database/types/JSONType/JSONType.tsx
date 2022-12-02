@@ -32,7 +32,7 @@ const JSONType: FC<IProps> = ({ item, ...rest }) => {
               </CustomIcon>
             </Tooltip>
             <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              simple placeholder
+              {item.default ?? ''}
             </Typography>
           </Box>
         </Grid>
@@ -60,7 +60,7 @@ export const JSONGroupType: FC<IProps> = ({ item, ...rest }) => {
               </CustomIcon>
             </Tooltip>
             <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              simple placeholder
+              {item.default ?? ''}
             </Typography>
           </Box>
         </Grid>
