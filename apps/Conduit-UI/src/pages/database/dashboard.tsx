@@ -1,11 +1,14 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
+import DatabaseLayout from '../../features/database/databaseLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const DatabaseDashboard = dynamic(() => import('../../components/database/DatabaseDashboard'), {
-  loading: () => <LoaderComponent />,
-});
+const DatabaseDashboard = dynamic(
+  () => import('../../features/database/components/DatabaseDashboard'),
+  {
+    loading: () => <LoaderComponent />,
+  }
+);
 
 const Dashboard = () => {
   return <DatabaseDashboard />;

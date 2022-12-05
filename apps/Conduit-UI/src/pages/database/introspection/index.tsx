@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
-import DatabaseLayout from '../../../components/navigation/InnerLayouts/databaseLayout';
+import DatabaseLayout from '../../../features/database/databaseLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../../components/common/LoaderComponent';
 
 const IntrospectionLayout = dynamic(
-  () => import('../../../components/database/schemas/Introspection/IntrospectionLayout'),
+  () => import('../../../features/database/components/schemas/Introspection/IntrospectionLayout'),
   {
     loading: () => <LoaderComponent />,
   }
