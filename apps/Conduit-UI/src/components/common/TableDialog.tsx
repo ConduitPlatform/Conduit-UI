@@ -42,7 +42,6 @@ const TableDialog: React.FC<Props> = ({
   dialogAction,
   externalElements,
   setExternalElements,
-  disableSelectAllButton,
 }) => {
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
@@ -54,6 +53,12 @@ const TableDialog: React.FC<Props> = ({
   useEffect(() => {
     getData({ skip, limit, search, debouncedSearch });
   }, [skip, limit, search, debouncedSearch, getData]);
+
+  useEffect(() => {
+    setSkip(0);
+    setPage(0);
+    setLimit(25);
+  }, [debouncedSearch]);
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
