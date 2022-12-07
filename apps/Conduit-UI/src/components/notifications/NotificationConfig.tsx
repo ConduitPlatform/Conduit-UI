@@ -66,16 +66,16 @@ const NotificationConfig: FC = () => {
       firebase: undefined,
       onesignal: undefined,
     };
-    if (data.providerName === 'firebase') {
+    if (data.providerName === 'firebase' && data.firebase !== undefined) {
       configToSave.firebase = {
-        projectId: data.firebase!.projectId,
-        privateKey: data.firebase!.privateKey,
-        clientEmail: data.firebase!.clientEmail,
+        projectId: data.firebase.projectId,
+        privateKey: data.firebase.privateKey,
+        clientEmail: data.firebase.clientEmail,
       };
-    } else {
+    } else if (data.onesignal !== undefined) {
       configToSave.onesignal = {
-        appId: data.onesignal!.appId,
-        apiKey: data.onesignal!.apiKey,
+        appId: data.onesignal.appId,
+        apiKey: data.onesignal.apiKey,
       };
     }
     dispatch(asyncSaveNotificationConfig(configToSave));
