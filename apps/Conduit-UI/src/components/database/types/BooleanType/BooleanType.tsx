@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
 import { FieldIndicators } from '@conduitplatform/ui-components';
-import Grid from '@mui/material/Grid';
 import { IBooleanData } from '../../../../models/database/BuildTypesModels';
 
 interface IProps {

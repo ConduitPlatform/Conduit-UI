@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import { FieldIndicators } from '@conduitplatform/ui-components';
 import SelectIcon from '@mui/icons-material/FormatListBulleted';
-import Grid from '@mui/material/Grid';
 import { CustomIcon } from '../SimpleType/SimpleType';
 // import { IEnumData } from '../../../../models/cms/BuildTypesModels';
 
