@@ -19,9 +19,7 @@ interface IProps {
     select: boolean;
     unique: boolean;
     name: string;
-    placeholderFalse: string;
     isArray: boolean;
-    placeholderTrue: string;
     type:
       | 'Text'
       | 'Number'
@@ -50,8 +48,6 @@ const BooleanForm: FC<IProps> = ({
 }) => {
   const [booleanData, setBooleanData] = useState({
     name: selectedItem ? selectedItem.name : '',
-    placeholderFalse: selectedItem ? selectedItem.placeholderFalse : '',
-    placeholderTrue: selectedItem ? selectedItem.placeholderTrue : '',
     type: selectedItem ? selectedItem.type : drawerData.type,
     default: selectedItem ? selectedItem.default : false,
     unique: selectedItem ? selectedItem.unique : false,
@@ -68,14 +64,6 @@ const BooleanForm: FC<IProps> = ({
       name: event.target.value.split(' ').join(''),
       // id: slug,
     });
-  };
-
-  const handleFalsePlaceholder = (event: { target: { value: string } }) => {
-    setBooleanData({ ...booleanData, placeholderFalse: event.target.value });
-  };
-
-  const handleTruePlaceholder = (event: { target: { value: string } }) => {
-    setBooleanData({ ...booleanData, placeholderTrue: event.target.value });
   };
 
   const handleFieldDefault = () => {
@@ -118,30 +106,6 @@ const BooleanForm: FC<IProps> = ({
           readOnly: readOnly && !!selectedItem,
         }}
         helperText={'This is the name of the field in the schema model'}
-      />
-      <TextField
-        id="False Placeholder"
-        label="False Placeholder"
-        onChange={handleFalsePlaceholder}
-        placeholder={'false'}
-        value={booleanData.placeholderFalse}
-        variant="outlined"
-        sx={{ mb: 1 }}
-        fullWidth
-        required
-        helperText={'Placeholder to appear in the editor'}
-      />
-      <TextField
-        id="True Placeholder"
-        label="True Placeholder"
-        onChange={handleTruePlaceholder}
-        placeholder={'true'}
-        value={booleanData.placeholderTrue}
-        variant="outlined"
-        sx={{ mb: 1 }}
-        fullWidth
-        required
-        helperText={'Placeholder to appear in the editor'}
       />
       <Box width={'100%'}>
         <Grid container>

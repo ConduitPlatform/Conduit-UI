@@ -17,11 +17,11 @@ const BooleanType: FC<IProps> = ({ item, ...rest }) => {
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              {item.placeholderFalse}
+              False
             </Typography>
             <Switch disabled checked={item.default} value="Boolean" />
             <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              {item.placeholderTrue}
+              True
             </Typography>
           </Box>
         </Grid>
@@ -44,11 +44,11 @@ export const BooleanGroupType: FC<IProps> = ({ item, ...rest }) => {
         <Grid container item xs={6} alignItems={'center'}>
           <Box display={'flex'} alignItems={'center'}>
             <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              {item.placeholderFalse}
+              False
             </Typography>
             <Switch disabled checked={item.default} value="Boolean" />
             <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              {item.placeholderTrue}
+              True
             </Typography>
           </Box>
         </Grid>

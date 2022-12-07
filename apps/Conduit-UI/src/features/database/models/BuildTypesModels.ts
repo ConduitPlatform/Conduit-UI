@@ -45,8 +45,6 @@ export interface IBooleanData {
   id: string;
   isArray: boolean;
   name: string;
-  placeholderFalse: string;
-  placeholderTrue: string;
   required: boolean;
   select: boolean;
   type: 'Boolean';

@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import SchemaDataCard from './SchemaData/SchemaDataCard';
 import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import SchemaDataHeader from './SchemaData/SchemaDataHeader';
-import useParseQuery from './useParseQuery';
+import useParseQuery from '../../hooks/useParseQuery';
 import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaData/SchemaDataPlaceholder';
 import JSONEditor from './SchemaData/JSONEditor';

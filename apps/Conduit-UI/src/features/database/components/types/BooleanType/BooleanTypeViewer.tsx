@@ -16,11 +16,11 @@ const BooleanTypeViewer: FC<IProps> = ({ item, ...rest }) => {
       <Grid item container xs={1}>
         <Box display="flex" justifyContent="flex-start" alignItems="center">
           <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-            {item.placeholderFalse}
+            False
           </Typography>
           <Switch disabled sx={{ ml: -1 }} checked={item.default} value="Boolean" />
           <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-            {item.placeholderTrue}
+            True
           </Typography>
         </Box>
       </Grid>
@@ -43,11 +43,11 @@ export const BooleanGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
       <Grid item container xs={1}>
         <Box display="flex" justifyContent="flex-start" alignItems="center">
           <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-            {item.placeholderFalse}
+            False
           </Typography>
           <Switch disabled checked={item.default} sx={{ ml: -1 }} value="Boolean" />
           <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-            {item.placeholderTrue}
+            True
           </Typography>
         </Box>
       </Grid>

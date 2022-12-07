@@ -6,7 +6,7 @@ import { Paginator } from '@conduitplatform/ui-components';
 import { BoxProps } from '@mui/material/Box/Box';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Search, Refresh, AccountTree } from '@mui/icons-material';
-import useParseQuery from '../useParseQuery';
+import useParseQuery from '../../../hooks/useParseQuery';
 import { styled, Typography } from '@mui/material';
 
 const ObjText = '{ }';
