@@ -116,7 +116,7 @@ const ChatConfig: React.FC = () => {
                       display={'inline-flex'}
                       justifyContent={'space-between'}
                       alignItems={'center'}>
-                      <Typography variant={'subtitle1'}>Explicit room joins</Typography>
+                      <Typography variant={'subtitle1'}>Explicit Room Joins</Typography>
                       <FormInputSwitch
                         {...register('explicit_room_joins.enabled', { disabled: !edit })}
                       />
