@@ -234,7 +234,6 @@ const NotificationConfig: FC = () => {
                     }))}
                   />
                 </Grid>
-                {console.log(hasProvider)}
                 {hasProvider &&
                   (hasProvider === 'firebase' ? getFirebaseForm() : getOneSignalForm())}
               </Grid>
