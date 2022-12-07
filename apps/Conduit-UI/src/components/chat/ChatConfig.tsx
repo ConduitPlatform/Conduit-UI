@@ -9,7 +9,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputSwitch } from '../common/FormComponents/FormInputSwitch';
 import { ConfigSaveSection, ConfigContainer, ConduitTooltip } from '@conduitplatform/ui-components';
 import { InfoOutlined } from '@mui/icons-material';
-import { Icon, useTheme } from '@mui/material';
+import { Divider, Icon, useTheme } from '@mui/material';
 
 const ChatConfig: React.FC = () => {
   const theme = useTheme();
@@ -34,6 +34,11 @@ const ChatConfig: React.FC = () => {
   const isActive = useWatch({
     control,
     name: 'active',
+  });
+
+  const explicitRoomJoins = useWatch({
+    control,
+    name: 'explicit_room_joins.enabled',
   });
 
   const handleCancel = () => {
@@ -82,9 +87,9 @@ const ChatConfig: React.FC = () => {
             <Grid container spacing={2} sx={{ paddingLeft: 4, mt: 1 }}>
               {isActive && (
                 <>
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <Box
-                      width={'50%'}
+                      width={'100%'}
                       display={'inline-flex'}
                       justifyContent={'space-between'}
                       alignItems={'center'}>
@@ -92,14 +97,57 @@ const ChatConfig: React.FC = () => {
                       <FormInputSwitch {...register('allowMessageEdit', { disabled: !edit })} />
                     </Box>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <Box
-                      width={'50%'}
+                      width={'100%'}
                       display={'inline-flex'}
                       justifyContent={'space-between'}
                       alignItems={'center'}>
                       <Typography variant={'subtitle1'}>Allow Message Delete</Typography>
                       <FormInputSwitch {...register('allowMessageDelete', { disabled: !edit })} />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography variant={'subtitle1'}>Explicit room joins</Typography>
+                      <FormInputSwitch
+                        {...register('explicit_room_joins.enabled', { disabled: !edit })}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography variant={'subtitle1'}>Send Email</Typography>
+                      <FormInputSwitch
+                        {...register('explicit_room_joins.send_email', {
+                          disabled: !edit || !explicitRoomJoins,
+                        })}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography variant={'subtitle1'}>Send Notification</Typography>
+                      <FormInputSwitch
+                        {...register('explicit_room_joins.send_notification', {
+                          disabled: !edit || !explicitRoomJoins,
+                        })}
+                      />
                     </Box>
                   </Grid>
                 </>

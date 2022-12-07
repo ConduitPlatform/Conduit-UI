@@ -155,6 +155,7 @@ const TableDialog: React.FC<Props> = ({
           variant="outlined"
           name="Search"
           value={search}
+          autoFocus
           onChange={(e) => setSearch(e.target.value)}
           label="Search"
           InputProps={{
@@ -184,7 +185,9 @@ const TableDialog: React.FC<Props> = ({
             />
           </>
         ) : (
-          <Typography>No content available </Typography>
+          <Typography textAlign="center" sx={{ mt: '50px' }}>
+            No content available{' '}
+          </Typography>
         )}
       </DialogContent>
       <DialogActions>

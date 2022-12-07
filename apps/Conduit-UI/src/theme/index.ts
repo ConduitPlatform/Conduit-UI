@@ -117,6 +117,9 @@ const getDesignTokens = (mode: PaletteMode) => ({
           '&.Mui-checked + .MuiSwitch-track': {
             opacity: 1,
           },
+          '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: 0.1,
+          },
         },
         track: {
           opacity: 1,
