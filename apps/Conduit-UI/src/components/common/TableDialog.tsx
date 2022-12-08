@@ -42,7 +42,6 @@ const TableDialog: React.FC<Props> = ({
   dialogAction,
   externalElements,
   setExternalElements,
-  disableSelectAllButton,
 }) => {
   const [page, setPage] = useState<number>(0);
   const [skip, setSkip] = useState<number>(0);
@@ -54,6 +53,12 @@ const TableDialog: React.FC<Props> = ({
   useEffect(() => {
     getData({ skip, limit, search, debouncedSearch });
   }, [skip, limit, search, debouncedSearch, getData]);
+
+  useEffect(() => {
+    setSkip(0);
+    setPage(0);
+    setLimit(25);
+  }, [debouncedSearch]);
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
@@ -150,6 +155,7 @@ const TableDialog: React.FC<Props> = ({
           variant="outlined"
           name="Search"
           value={search}
+          autoFocus
           onChange={(e) => setSearch(e.target.value)}
           label="Search"
           InputProps={{
@@ -179,7 +185,9 @@ const TableDialog: React.FC<Props> = ({
             />
           </>
         ) : (
-          <Typography>No content available </Typography>
+          <Typography textAlign="center" sx={{ mt: '50px' }}>
+            No content available{' '}
+          </Typography>
         )}
       </DialogContent>
       <DialogActions>

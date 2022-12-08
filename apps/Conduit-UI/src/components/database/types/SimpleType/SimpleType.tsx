@@ -6,7 +6,6 @@ import DateIcon from '@mui/icons-material/DateRange';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { FieldIndicators } from '@conduitplatform/ui-components';
-import Grid from '@mui/material/Grid';
 import { ISimpleDataTypes } from '../../../../models/database/BuildTypesModels';
 import { Icon, styled } from '@mui/material';
 
@@ -60,22 +59,16 @@ interface IProps {
 
 const SimpleType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <SimpleIcon type={item.type} />
-            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              simple placeholder
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
+    <Box {...rest} display="flex" justifyContent="space-between">
+      <Box display={'flex'} alignItems={'center'}>
+        <SimpleIcon type={item.type} />
+        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+          {item.default ?? ''}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };
@@ -84,22 +77,16 @@ export default SimpleType;
 
 export const SimpleGroupType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <SimpleIcon type={item.type} />
-            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              simple placeholder
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
+    <Box {...rest} display="flex" justifyContent="space-between">
+      <Box display={'flex'} alignItems={'center'}>
+        <SimpleIcon type={item.type} />
+        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+          {item.default ?? ''}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };

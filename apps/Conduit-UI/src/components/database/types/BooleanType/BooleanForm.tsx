@@ -1,7 +1,6 @@
 import React, { FC, MouseEventHandler, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
@@ -117,6 +116,7 @@ const BooleanForm: FC<IProps> = ({
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'This is the name of the field in the schema model'}
       />
       <TextField
@@ -202,7 +202,7 @@ const BooleanForm: FC<IProps> = ({
         </Grid>
 
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={12} pb={2}>
             <Box
               width={'100%'}
               display={'inline-flex'}
@@ -223,11 +223,6 @@ const BooleanForm: FC<IProps> = ({
                 label=""
               />
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <InfoTypography variant={'body2'}>
-              If active, this field will be required
-            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -272,7 +267,7 @@ const BooleanForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={booleanData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"

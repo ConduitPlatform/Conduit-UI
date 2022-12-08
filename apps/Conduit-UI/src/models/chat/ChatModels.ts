@@ -4,6 +4,11 @@ export interface IChatConfig {
   active: boolean;
   allowMessageDelete: boolean;
   allowMessageEdit: boolean;
+  explicit_room_joins: {
+    enabled: boolean;
+    send_email: boolean;
+    send_notification: boolean;
+  };
 }
 
 export interface IChatRoom {

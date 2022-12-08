@@ -34,6 +34,11 @@ const initialState: IChatSlice = {
     active: false,
     allowMessageDelete: false,
     allowMessageEdit: false,
+    explicit_room_joins: {
+      enabled: false,
+      send_email: false,
+      send_notification: false,
+    },
   },
   data: {
     chatRooms: {

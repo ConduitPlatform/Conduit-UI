@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
@@ -97,6 +96,7 @@ const JSONForm: FC<IProps> = ({
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'It will appear in the entry editor'}
       />
       <Box width="100%" mb={2}>
@@ -145,7 +145,7 @@ const JSONForm: FC<IProps> = ({
         </Grid>
 
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={12} pb={2}>
             <Box
               width={'100%'}
               display={'inline-flex'}
@@ -166,11 +166,6 @@ const JSONForm: FC<IProps> = ({
                 label=""
               />
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <InfoTypography variant={'body2'}>
-              If active, this field will be required
-            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -211,7 +206,7 @@ const JSONForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={jsonData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"
