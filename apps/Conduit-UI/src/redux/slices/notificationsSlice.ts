@@ -4,9 +4,9 @@ import {
   NotificationData,
 } from '../../models/notifications/NotificationModels';
 import {
-  sendNotification,
   getNotificationConfig,
   patchNotificationConfig,
+  sendNotification,
 } from '../../http/requests/NotificationsRequests';
 import { setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
@@ -28,6 +28,10 @@ const initialState: INotificationSlice = {
         projectId: '',
         privateKey: '',
         clientEmail: '',
+      },
+      onesignal: {
+        apiKey: '',
+        appId: '',
       },
     },
     notifications: [],
