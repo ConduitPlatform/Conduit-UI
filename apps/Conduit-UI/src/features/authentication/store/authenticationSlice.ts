@@ -3,11 +3,11 @@ import { AuthUser, IAuthenticationConfig } from '../models/AuthModels';
 import {
   blockUnblockUsers,
   blockUser,
-  createNewUsers,
+  createUser,
   deleteUsers,
   editUser,
   getAuthenticationConfig,
-  getAuthUsersDataReq,
+  getUsers,
   patchAuthenticationConfig,
   unblockUser,
 } from '../http/AuthenticationRequests';
@@ -186,7 +186,7 @@ export const asyncGetAuthUserData = createAsyncThunk(
   'authentication/getUserData',
   async (params: Pagination & Search & { provider?: string } & { sort?: string }, thunkAPI) => {
     try {
-      const { data } = await getAuthUsersDataReq(params);
+      const { data } = await getUsers(params);
       return data;
     } catch (error) {
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -203,7 +203,7 @@ export const asyncAddNewUser = createAsyncThunk(
   ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      await createNewUsers(params.values);
+      await createUser(params.values);
       params.getUsers();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully added ${params.values.email}!`));
       thunkAPI.dispatch(setAppLoading(false));

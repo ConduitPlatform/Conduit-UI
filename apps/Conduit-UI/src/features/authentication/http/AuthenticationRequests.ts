@@ -2,10 +2,10 @@ import { deleteRequest, getRequest, patchRequest, postRequest } from '../../../h
 import { AuthUser } from '../models/AuthModels';
 import { Pagination, Search, Sort } from '../../../models/http/HttpModels';
 
-export const getAuthUsersDataReq = (params: Pagination & Search & { provider?: string } & Sort) =>
+export const getUsers = (params: Pagination & Search & { provider?: string } & Sort) =>
   getRequest(`/authentication/users`, params);
 
-export const createNewUsers = (values: { email: string; password: string }) =>
+export const createUser = (values: { email: string; password: string }) =>
   postRequest(`/authentication/users`, {
     email: values.email,
     password: values.password,
