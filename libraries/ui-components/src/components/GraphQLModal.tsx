@@ -5,8 +5,6 @@ import DialogContent from "@mui/material/DialogContent";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, DialogContentText, IconButton, Typography } from "@mui/material";
-import { IAdminSettings } from "@conduitplatform/conduit-ui/src/models/settings/SettingsModels";
-import { IRouterConfig } from "@conduitplatform/conduit-ui/src/models/router/RouterModels";
 
 interface Props {
   title: string;
@@ -15,8 +13,8 @@ interface Props {
   icon?: JSX.Element;
   baseUrl?: string;
   adminUrl?: string;
-  transportsAdmin: IAdminSettings["transports"];
-  transportsRouter: IRouterConfig["transports"];
+  transportsAdmin: { rest: boolean; graphql: boolean; sockets: boolean };
+  transportsRouter: { rest: boolean; graphql: boolean; sockets: boolean };
 }
 
 const GraphQLModal: FC<Props> = ({

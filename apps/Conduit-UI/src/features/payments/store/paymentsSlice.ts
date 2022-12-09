@@ -17,7 +17,6 @@ import {
   patchPaymentSettingsRequest,
   patchProductRequest,
 } from '../http/PaymentsRequests';
-import { enqueueErrorNotification, enqueueSuccessNotification } from '../../utils/useNotifier';
 import {
   Customer,
   PaymentsConfig,
@@ -26,6 +25,7 @@ import {
   Transaction,
 } from '../models/PaymentsModels';
 import { Pagination, Search } from '../../../models/http/HttpModels';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
 
 interface IPaymentsSlice {
   data: {
