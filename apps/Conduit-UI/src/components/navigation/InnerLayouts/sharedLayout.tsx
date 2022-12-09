@@ -90,8 +90,8 @@ const SharedLayout: FC<Props> = ({
                     variant="outlined"
                     onClick={() => setSwaggerOpen(true)}>
                     {swaggerIcon}
-                    <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-                      {smallScreen ? null : 'SWAGGER'}
+                    <Typography sx={{ ml: smallScreen ? 0 : 1, 'text-transform': 'none' }}>
+                      {smallScreen ? null : 'Swagger'}
                     </Typography>
                   </Button>
                 )}
@@ -102,7 +102,7 @@ const SharedLayout: FC<Props> = ({
                     onClick={() => setGraphQLOpen(true)}
                     sx={{ ml: 2 }}>
                     {graphQLIcon}
-                    <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                    <Typography sx={{ ml: smallScreen ? 0 : 1, 'text-transform': 'none' }}>
                       {smallScreen ? null : 'GraphQL'}
                     </Typography>
                   </Button>
@@ -115,7 +115,7 @@ const SharedLayout: FC<Props> = ({
                     style={{ textDecoration: 'none' }}>
                     <Button color="primary" variant="contained" sx={{ ml: 2 }}>
                       {<Description />}
-                      <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+                      <Typography sx={{ ml: smallScreen ? 0 : 1, 'text-transform': 'none' }}>
                         {smallScreen ? null : 'Documentation'}
                       </Typography>
                     </Button>
