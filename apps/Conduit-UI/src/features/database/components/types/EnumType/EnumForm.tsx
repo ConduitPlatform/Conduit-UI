@@ -104,6 +104,7 @@ const EnumForm: FC<IProps> = ({
         inputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'It will appear in the entry editor'}
       />
       <FormControl sx={{ margin: 1, minWidth: 120 }} variant={'outlined'} fullWidth required>
@@ -151,7 +152,7 @@ const EnumForm: FC<IProps> = ({
 
       <Box width={'100%'}>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={12} pb={2}>
             <Box
               width={'100%'}
               display={'inline-flex'}
@@ -172,11 +173,6 @@ const EnumForm: FC<IProps> = ({
                 label=""
               />
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <InfoTypography variant={'body2'}>
-              If active, this field will be required
-            </InfoTypography>
           </Grid>
         </Grid>
 

@@ -32,19 +32,6 @@ const Main = styled('main')(() => ({
   flexGrow: 1,
 }));
 
-// TODO to be added on a separate page
-// const expressionsAdminRoutes: ExpressionsRoutesArray[] = [
-//   {
-//     title: 'graphql',
-//     expression: 'sum(increase(conduit_admin_routes_total{transport="graphql"}[10m]))',
-//   },
-//   { title: 'rest', expression: 'sum(increase(conduit_admin_routes_total{transport="rest"}[10m]))' },
-//   {
-//     title: 'socket',
-//     expression: 'sum(increase(conduit_admin_routes_total{transport="socket"}[10m]))',
-//   },
-// ];
-
 const Home: React.FC = () => {
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -178,7 +165,7 @@ const Home: React.FC = () => {
                     <RequestsLatency module="home" modulesLength={enabledModules?.length} />
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <ModuleHealth module="home" />
+                    <ModuleHealth module="core" />
                   </Grid>
                   {isEnabled('database') && (
                     <Grid item xs={6} sm={3}>
@@ -196,12 +183,6 @@ const Home: React.FC = () => {
                       />
                     </Grid>
                   )}
-                  {/* {isEnabled('authentication') && (
-                <Grid item xs={6} sm={3}>
-                  <MetricCount title="Users" expression="" />
-                </Grid>
-                Missing prom endpoint
-              )} */}
                   {isEnabled('chat') && (
                     <Grid item xs={6} sm={3}>
                       <MetricCount title="Chat Rooms" expression="conduit_chat_rooms_total[5m]" />

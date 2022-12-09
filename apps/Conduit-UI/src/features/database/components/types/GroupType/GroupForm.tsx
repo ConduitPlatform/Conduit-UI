@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import Checkbox from '@mui/material/Checkbox';
 import { IDrawerData, IGroupData } from '../../../models/BuildTypesModels';
 import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
@@ -78,6 +77,7 @@ const GroupForm: FC<IProps> = ({
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'It will appear in the entry editor'}
       />
 
@@ -146,11 +146,7 @@ const GroupForm: FC<IProps> = ({
             </Typography>
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={groupData.isArray}
-                  onChange={handleFieldIsArray}
-                  color="primary"
-                />
+                <Switch checked={groupData.isArray} onChange={handleFieldIsArray} color="primary" />
               }
               label=""
             />

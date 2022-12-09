@@ -119,11 +119,12 @@ const RelationForm: FC<IProps> = ({
         InputProps={{
           readOnly: readOnly && !!selectedItem,
         }}
+        disabled={readOnly && !!selectedItem}
         helperText={'It will appear in the entry editor'}
       />
       <Box width={'100%'}>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid item xs={12} pb={2}>
             <Box
               width={'100%'}
               display={'inline-flex'}
@@ -144,11 +145,6 @@ const RelationForm: FC<IProps> = ({
                 label=""
               />
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <InfoTypography variant={'body2'}>
-              If active, this field will be required
-            </InfoTypography>
           </Grid>
         </Grid>
 
@@ -193,7 +189,7 @@ const RelationForm: FC<IProps> = ({
               </Typography>
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     checked={simpleData.isArray}
                     onChange={handleFieldIsArray}
                     color="primary"
@@ -210,10 +206,12 @@ const RelationForm: FC<IProps> = ({
           </Grid>
         </Grid>
       </Box>
-      <FormControl sx={{ margin: 1, minWidth: 120, maxWidth: 300 }} variant={'outlined'} fullWidth>
+      <FormControl variant={'outlined'} fullWidth>
         <InputLabel id="field-type">Relation</InputLabel>
         <Select
           labelId="field-relation"
+          sx={{ borderRadius: '12px' }}
+          fullWidth
           id="field relation"
           label={'Relation'}
           value={simpleData.model}
@@ -230,7 +228,7 @@ const RelationForm: FC<IProps> = ({
         <FormHelperText>Select the Relation type</FormHelperText>
       </FormControl>
 
-      <Box display={'flex'} gap={2} width={'100%'}>
+      <Box pt={2} display={'flex'} gap={2} width={'100%'}>
         <Button variant="contained" color="primary" type="submit">
           OK
         </Button>

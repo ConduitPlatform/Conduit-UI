@@ -22,26 +22,20 @@ interface IProps {
 
 const JSONType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <Tooltip title={'JSON field'}>
-              <CustomIcon>
-                <IntegrationInstructionsRounded />
-              </CustomIcon>
-            </Tooltip>
-            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              simple placeholder
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
+    <Box {...rest} display="flex" justifyContent="space-between">
+      <Box display={'flex'} alignItems={'center'}>
+        <Tooltip title={'JSON field'}>
+          <CustomIcon>
+            <IntegrationInstructionsRounded />
+          </CustomIcon>
+        </Tooltip>
+        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+          {item.default ?? ''}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center">
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };
@@ -50,26 +44,20 @@ export default JSONType;
 
 export const JSONGroupType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <Box {...rest}>
-      <Grid container>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <Tooltip title={'JSON field'}>
-              <CustomIcon>
-                <IntegrationInstructionsRounded />
-              </CustomIcon>
-            </Tooltip>
-            <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-              simple placeholder
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid container item xs={6} justifyContent={'flex-end'} alignItems={'center'}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
+    <Box {...rest} display="flex" justifyContent="space-between">
+      <Box display={'flex'} alignItems={'center'}>
+        <Tooltip title={'JSON field'}>
+          <CustomIcon>
+            <IntegrationInstructionsRounded />
+          </CustomIcon>
+        </Tooltip>
+        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
+          {item.default ?? ''}
+        </Typography>
+      </Box>
+      <Box display="flex" alignItems="center">
+        <FieldIndicators item={item} />
+      </Box>
     </Box>
   );
 };
