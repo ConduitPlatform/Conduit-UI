@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 import EmailsLayout from '../../features/emails/emailsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const EmailDashboard = dynamic(() => import('../../features/emails/EmailDashboard'), {
+const EmailDashboard = dynamic(() => import('../../features/emails/components/EmailDashboard'), {
   loading: () => <LoaderComponent />,
 });
 

@@ -4,7 +4,7 @@ import SettingsLayout from '../../features/settings/settingsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const SettingsDashboard = dynamic(
-  () => import('../../features/notifications/NotificationDashboard'),
+  () => import('../../features/notifications/components/NotificationDashboard'),
   {
     loading: () => <LoaderComponent />,
   }

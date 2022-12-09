@@ -6,7 +6,7 @@ import {
   deleteServiceAccounts,
   createServiceAccount,
   refreshServiceAccount,
-} from '../../settings/SettingsRequests';
+} from '../../settings/http/SettingsRequests';
 import {
   ConfirmationDialog,
   DataTable,

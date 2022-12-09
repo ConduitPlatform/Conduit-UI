@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const PaymentsSubscriptions = dynamic(
-  () => import('../../features/payments/PaymentsSubscriptions'),
+  () => import('../../features/payments/components/PaymentsSubscriptions'),
   {
     loading: () => <LoaderComponent />,
   }

@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 import FormsLayout from '../../features/forms/formsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const FormsDashboard = dynamic(() => import('../../features/forms/FormsDashboard'), {
+const FormsDashboard = dynamic(() => import('../../features/forms/components/FormsDashboard'), {
   loading: () => <LoaderComponent />,
 });
 

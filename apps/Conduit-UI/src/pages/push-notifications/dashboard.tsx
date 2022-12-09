@@ -4,7 +4,7 @@ import NotificationLayout from '../../features/notifications/notificationLayout'
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const NotificationDashboard = dynamic(
-  () => import('../../features/notifications/NotificationDashboard'),
+  () => import('../../features/notifications/components/NotificationDashboard'),
   {
     loading: () => <LoaderComponent />,
   }

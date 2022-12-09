@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import NotificationLayout from '../../features/notifications/notificationLayout';
-import { NotificationData } from '../../features/notifications/NotificationModels';
-import { asyncSendNewNotification } from '../../features/notifications/notificationsSlice';
+import { NotificationData } from '../../features/notifications/models/NotificationModels';
+import { asyncSendNewNotification } from '../../features/notifications/store/notificationsSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const SendNotificationForm = dynamic(
-  () => import('../../features/notifications/SendNotificationForm'),
+  () => import('../../features/notifications/components/SendNotificationForm'),
   {
     loading: () => <LoaderComponent />,
   }

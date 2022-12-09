@@ -3,9 +3,12 @@ import PaymentsLayout from '../../features/payments/paymentsLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const PaymentsCustomers = dynamic(() => import('../../features/payments/PaymentsCustomers'), {
-  loading: () => <LoaderComponent />,
-});
+const PaymentsCustomers = dynamic(
+  () => import('../../features/payments/components/PaymentsCustomers'),
+  {
+    loading: () => <LoaderComponent />,
+  }
+);
 
 const Customers = () => {
   return <PaymentsCustomers />;

@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
 import FormsLayout from '../../features/forms/formsLayout';
-import { asyncGetFormsConfig } from '../../features/forms/formsSlice';
+import { asyncGetFormsConfig } from '../../features/forms/store/formsSlice';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const FormsConfig = dynamic(() => import('../../features/forms/FormsConfig'), {
+const FormsConfig = dynamic(() => import('../../features/forms/components/FormsConfig'), {
   loading: () => <LoaderComponent />,
 });
 

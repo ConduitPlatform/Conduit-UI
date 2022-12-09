@@ -3,7 +3,7 @@ import EmailsLayout from '../../features/emails/emailsLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const EmailTemplates = dynamic(() => import('../../features/emails/EmailTemplates'), {
+const EmailTemplates = dynamic(() => import('../../features/emails/components/EmailTemplates'), {
   loading: () => <LoaderComponent />,
 });
 

@@ -1,20 +1,20 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import appAuthSlice from './slices/appAuthSlice';
 import authenticationSlice from '../features/authentication/store/authenticationSlice';
-import notificationsSlice from '../features/notifications/notificationsSlice';
+import notificationsSlice from '../features/notifications/store/notificationsSlice';
 import storageSlice from '../features/storage/storageSlice';
-import settingsSlice from '../features/settings/settingsSlice';
-import emailsSlice from '../features/emails/emailsSlice';
+import settingsSlice from '../features/settings/store/settingsSlice';
+import emailsSlice from '../features/emails/store/emailsSlice';
 import databaseSlice from '../features/database/store/databaseSlice';
-import routerSlice from '../features/router/routerSlice';
+import routerSlice from '../features/router/store/routerSlice';
 import customEndpointsSlice from '../features/database/store/customEndpointsSlice';
 import smsSlice from '../features/sms/smsSlice';
 import { useMemo } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import appSlice from './slices/appSlice';
-import formsSlice from '../features/forms/formsSlice';
+import formsSlice from '../features/forms/store/formsSlice';
 import chatSlice from '../features/chat/store/chatSlice';
-import paymentsSlice from '../features/payments/paymentsSlice';
+import paymentsSlice from '../features/payments/store/paymentsSlice';
 import logsSlice from './slices/logsSlice';
 import metricsSlice from './slices/metricsSlice';
 
