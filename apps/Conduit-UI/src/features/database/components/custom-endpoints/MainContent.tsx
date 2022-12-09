@@ -8,7 +8,7 @@ import { setEndpointData, setSelectedEndPoint } from '../../store/customEndpoint
 import { asyncCreateCustomEndpoints, asyncUpdateCustomEndpoints } from '../../store/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { disableSubmit, prepareQuery } from '../../utils/cms';
-import { enqueueInfoNotification } from '../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 import AssignmentsSection from './AssignmentsSection';
 import InformationTooltip from './InformationTooltip';
 import InputsSection from './InputsSection';

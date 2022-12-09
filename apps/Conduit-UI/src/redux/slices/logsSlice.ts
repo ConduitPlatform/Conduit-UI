@@ -1,7 +1,7 @@
 import { LogsData, LokiLogsData, ModulesTypes } from '../../models/logs/LogsModels';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { setAppLoading } from './appSlice';
-import { enqueueErrorNotification } from '../../utils/useNotifier';
+import { enqueueErrorNotification } from '../../hooks/useNotifier';
 import { getErrorData } from '../../utils/error-handler';
 import { getLogsLevels, getLogsQueryRange } from '../../http/requests/LogsRequests';
 

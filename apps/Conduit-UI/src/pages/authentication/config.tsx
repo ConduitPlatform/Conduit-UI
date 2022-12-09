@@ -1,12 +1,12 @@
 import React, { ReactElement, useEffect } from 'react';
-import { asyncGetAuthenticationConfig } from '../../redux/slices/authenticationSlice';
+import { asyncGetAuthenticationConfig } from '../../features/authentication/store/authenticationSlice';
 import { useAppDispatch } from '../../redux/store';
-import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
+import AuthenticationLayout from '../../features/authentication/authenticationLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const AuthenticationConfig = dynamic(
-  () => import('../../components/authentication/AuthenticationConfig'),
+  () => import('../../features/authentication/components/AuthenticationConfig'),
   {
     loading: () => <LoaderComponent />,
   }

@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import SMSLayout from '../../components/navigation/InnerLayouts/smsLayout';
+import SMSLayout from '../../features/sms/smsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const SmsDashboard = dynamic(() => import('../../components/sms/SmsDashboard'), {
+const SmsDashboard = dynamic(() => import('../../features/sms/SmsDashboard'), {
   loading: () => <LoaderComponent />,
 });
 

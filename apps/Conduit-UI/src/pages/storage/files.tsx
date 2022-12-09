@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import StorageLayout from '../../components/navigation/InnerLayouts/storageLayout';
+import StorageLayout from '../../features/storage/storageLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const StorageFiles = dynamic(() => import('../../components/storage/StorageFiles'), {
+const StorageFiles = dynamic(() => import('../../features/storage/StorageFiles'), {
   loading: () => <LoaderComponent />,
 });
 

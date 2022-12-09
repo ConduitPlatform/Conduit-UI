@@ -14,7 +14,7 @@ import TableDialog from '../../../../components/common/TableDialog';
 import { Pagination, Search } from '../../../../models/http/HttpModels';
 import { asyncGetSchemasDialog } from '../../store/databaseSlice';
 import { getAccesssibleSchemaFields, getSchemaByIdRequest } from '../../http/DatabaseRequests';
-import { enqueueInfoNotification } from '../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 
 interface Props {
   createMode: boolean;

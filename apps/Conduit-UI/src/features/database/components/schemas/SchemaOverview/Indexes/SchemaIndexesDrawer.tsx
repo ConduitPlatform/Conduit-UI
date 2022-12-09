@@ -27,7 +27,7 @@ import {
   clearSelectedIndexes,
 } from '../../../../store/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../../../redux/store';
-import { enqueueInfoNotification } from '../../../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../../../hooks/useNotifier';
 import IndexCard from './IndexCard';
 
 interface Props {

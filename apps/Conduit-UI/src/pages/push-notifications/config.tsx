@@ -1,12 +1,12 @@
 import React, { ReactElement, useEffect } from 'react';
-import NotificationLayout from '../../components/navigation/InnerLayouts/notificationLayout';
-import { asyncGetNotificationConfig } from '../../redux/slices/notificationsSlice';
+import NotificationLayout from '../../features/notifications/notificationLayout';
+import { asyncGetNotificationConfig } from '../../features/notifications/notificationsSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const NotificationConfig = dynamic(
-  () => import('../../components/notifications/NotificationConfig'),
+  () => import('../../features/notifications/NotificationConfig'),
   {
     loading: () => <LoaderComponent />,
   }

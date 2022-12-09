@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect } from 'react';
-import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
-import { asyncGetAdminSettings, asyncGetCoreSettings } from '../../redux/slices/settingsSlice';
+import SettingsLayout from '../../features/settings/settingsLayout';
+import { asyncGetAdminSettings, asyncGetCoreSettings } from '../../features/settings/settingsSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const GeneralSettingsTab = dynamic(() => import('../../components/settings/GeneralSettingsTab'), {
+const GeneralSettingsTab = dynamic(() => import('../../features/settings/GeneralSettingsTab'), {
   loading: () => <LoaderComponent />,
 });
 

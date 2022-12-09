@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { asyncInitialData } from '../../redux/slices/appAuthSlice';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import useNotifier, { enqueueInfoNotification } from '../../utils/useNotifier';
+import useNotifier, { enqueueInfoNotification } from '../../hooks/useNotifier';
 import { isModuleOnline } from '../modules/moduleUtils';
 import LoaderComponent from '../common/LoaderComponent';
 

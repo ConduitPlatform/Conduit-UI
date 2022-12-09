@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import ChatLayout from '../../components/navigation/InnerLayouts/chatLayout';
+import ChatLayout from '../../features/chat/chatLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const ChatDashboard = dynamic(() => import('../../components/chat/ChatDashboard'), {
+const ChatDashboard = dynamic(() => import('../../features/chat/components/ChatDashboard'), {
   loading: () => <LoaderComponent />,
 });
 

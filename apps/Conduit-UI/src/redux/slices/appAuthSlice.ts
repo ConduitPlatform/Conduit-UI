@@ -1,21 +1,27 @@
 import { createAsyncThunk, createSlice, unwrapResult } from '@reduxjs/toolkit';
 import { removeCookie, setCookie } from '../../utils/cookie';
 import { IModule } from '../../models/appAuth';
-import { asyncGetNotificationConfig, clearNotificationPageStore } from './notificationsSlice';
-import { asyncGetStorageConfig, clearStoragePageStore } from './storageSlice';
-import { getAdminModulesRequest } from '../../http/requests/SettingsRequests';
+import {
+  asyncGetNotificationConfig,
+  clearNotificationPageStore,
+} from '../../features/notifications/notificationsSlice';
+import { asyncGetStorageConfig, clearStoragePageStore } from '../../features/storage/storageSlice';
+import { getAdminModulesRequest } from '../../features/settings/SettingsRequests';
 import { loginRequest, verifyTwoFARequest } from '../../http/requests/AppAuthRequests';
 import { asyncGetInfo, clearAppNotifications, setAppLoading } from './appSlice';
 import { getErrorData } from '../../utils/error-handler';
-import { asyncGetEmailConfig, clearEmailPageStore } from './emailsSlice';
-import { asyncGetAuthenticationConfig, clearAuthenticationPageStore } from './authenticationSlice';
-import { enqueueErrorNotification, enqueueInfoNotification } from '../../utils/useNotifier';
-import { asyncGetChatConfig } from './chatSlice';
-import { asyncGetFormsConfig } from './formsSlice';
-import { asyncGetPaymentConfig } from './paymentsSlice';
-import { asyncGetSmsConfig } from './smsSlice';
-import { asyncGetRouterConfig } from './routerSlice';
-import { asyncGetAdminSettings } from './settingsSlice';
+import { asyncGetEmailConfig, clearEmailPageStore } from '../../features/emails/emailsSlice';
+import {
+  asyncGetAuthenticationConfig,
+  clearAuthenticationPageStore,
+} from '../../features/authentication/store/authenticationSlice';
+import { enqueueErrorNotification, enqueueInfoNotification } from '../../hooks/useNotifier';
+import { asyncGetChatConfig } from '../../features/chat/store/chatSlice';
+import { asyncGetFormsConfig } from '../../features/forms/formsSlice';
+import { asyncGetPaymentConfig } from '../../features/payments/paymentsSlice';
+import { asyncGetSmsConfig } from '../../features/sms/smsSlice';
+import { asyncGetRouterConfig } from '../../features/router/routerSlice';
+import { asyncGetAdminSettings } from '../../features/settings/settingsSlice';
 import jwt_decode from 'jwt-decode';
 import Router from 'next/router';
 import { getDisabledModules, getSortedModules } from '../../components/modules/moduleUtils';

@@ -3,7 +3,7 @@ import { Box, Typography, Button, TextField, useTheme } from '@mui/material';
 import { ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../store/databaseSlice';
-import { enqueueInfoNotification } from '../../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../../hooks/useNotifier';
 import { ICrudOperations, ModifyOptions, Permissions, Schema } from '../../../models/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';

@@ -5,7 +5,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { deepClone } from '../../../../utils/deepClone';
 import { Assignment, Input } from '../../models/customEndpointsModels';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
-import { enqueueInfoNotification } from '../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 import { useAppDispatch } from '../../../../redux/store';
 
 interface Props {

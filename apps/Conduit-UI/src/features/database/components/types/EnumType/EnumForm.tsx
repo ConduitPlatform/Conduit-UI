@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import React, { FC, useEffect, useState } from 'react';
 import { IDrawerData, IEnumData } from '../../../models/BuildTypesModels';
 import { useAppDispatch } from '../../../../../redux/store';
-import { enqueueInfoNotification } from '../../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../../hooks/useNotifier';
 import { InfoTypography, StyledForm } from '../SimpleType/SimpleForm';
 
 interface IProps {

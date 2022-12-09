@@ -17,7 +17,7 @@ import {
 } from '../../store/databaseSlice';
 import InfiniteScrollLayout from '../../../../components/InfiniteScrollLayout';
 import { useRouter } from 'next/router';
-import { enqueueInfoNotification } from '../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 import EndpointsList from './EndpointsList';
 import { getAccesssibleSchemaFields } from '../../http/DatabaseRequests';
 import ListActions from './ListActions';

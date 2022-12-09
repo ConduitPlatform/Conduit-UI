@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
-import EmailsLayout from '../../components/navigation/InnerLayouts/emailsLayout';
-import { asyncGetEmailConfig } from '../../redux/slices/emailsSlice';
+import EmailsLayout from '../../features/emails/emailsLayout';
+import { asyncGetEmailConfig } from '../../features/emails/emailsSlice';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const EmailConfig = dynamic(() => import('../../components/emails/EmailConfig'), {
+const EmailConfig = dynamic(() => import('../../features/emails/EmailConfig'), {
   loading: () => <LoaderComponent />,
 });
 

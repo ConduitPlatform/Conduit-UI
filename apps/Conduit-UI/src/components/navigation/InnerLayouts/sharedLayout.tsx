@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Box, Button, Typography, Tabs, Tab, useTheme, useMediaQuery } from '@mui/material';
-import { IAdminSettings } from '../../../models/settings/SettingsModels';
-import { IRouterConfig } from '../../../models/router/RouterModels';
+import { IAdminSettings } from '../../../features/settings/SettingsModels';
+import { IRouterConfig } from '../../../features/router/RouterModels';
 import { useRouter } from 'next/router';
 import { GraphQLModal, LinkComponent, SwaggerModal } from '@conduitplatform/ui-components';
 import { ModulesTypes, moduleTitle } from '../../../models/logs/LogsModels';

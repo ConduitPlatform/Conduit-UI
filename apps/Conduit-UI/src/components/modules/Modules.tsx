@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { getModuleIcon, getModuleName } from './moduleUtils';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { enqueueInfoNotification } from '../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../hooks/useNotifier';
 import { ModuleItem, LinkComponent } from '@conduitplatform/ui-components';
 import { IModule } from '../../models/appAuth';
 

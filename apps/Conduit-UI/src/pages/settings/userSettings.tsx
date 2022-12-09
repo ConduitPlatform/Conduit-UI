@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
+import SettingsLayout from '../../features/settings/settingsLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const UserSettingsTab = dynamic(() => import('../../components/settings/UserSettingsLayout'), {
+const UserSettingsTab = dynamic(() => import('../../features/settings/UserSettingsLayout'), {
   loading: () => <LoaderComponent />,
 });
 

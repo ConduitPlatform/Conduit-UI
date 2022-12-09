@@ -13,7 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { ConditionsEnum } from '../../models/Conditions.enum';
 import { isArray } from 'lodash';
 import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../../utils/cms';
-import { enqueueInfoNotification } from '../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import clsx from 'clsx';
 

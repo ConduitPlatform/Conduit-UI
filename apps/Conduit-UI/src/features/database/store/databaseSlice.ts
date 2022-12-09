@@ -21,7 +21,7 @@ import {
   createSchemaDocumentRequest,
   deleteSchemaDocumentRequest,
   editSchemaDocumentRequest,
-} from '../../../http/requests/SchemasRequests';
+} from '../http/SchemasRequests';
 import {
   createCustomEndpointsRequest,
   deleteCustomEndpointsRequest,
@@ -38,7 +38,7 @@ import {
 } from '../models/CmsModels';
 import { setAppLoading } from '../../../redux/slices/appSlice';
 import { getErrorData } from '../../../utils/error-handler';
-import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../utils/useNotifier';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import { set } from 'lodash';
 import {
@@ -47,7 +47,7 @@ import {
   getIntrospectionSchemas,
   introspect,
   introspectionStatus,
-} from '../../../http/requests/IntrospectionRequests';
+} from '../http/IntrospectionRequests';
 
 export interface IDatabaseSlice {
   data: {

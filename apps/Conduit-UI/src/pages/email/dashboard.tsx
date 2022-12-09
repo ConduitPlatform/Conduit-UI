@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import EmailsLayout from '../../components/navigation/InnerLayouts/emailsLayout';
+import EmailsLayout from '../../features/emails/emailsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const EmailDashboard = dynamic(() => import('../../components/emails/EmailDashboard'), {
+const EmailDashboard = dynamic(() => import('../../features/emails/EmailDashboard'), {
   loading: () => <LoaderComponent />,
 });
 

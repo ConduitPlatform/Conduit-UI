@@ -9,7 +9,7 @@ import {
   Button,
 } from '@mui/material';
 import { useAppDispatch } from '../../../../../redux/store';
-import { enqueueInfoNotification } from '../../../../../utils/useNotifier';
+import { enqueueInfoNotification } from '../../../../../hooks/useNotifier';
 import { useRouter } from 'next/router';
 import CloseIcon from '@mui/icons-material/Close';
 import { LinkComponent } from '@conduitplatform/ui-components';

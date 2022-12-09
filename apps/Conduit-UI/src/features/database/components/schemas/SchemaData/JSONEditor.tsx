@@ -3,7 +3,7 @@ import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
 import { useAppDispatch } from '../../../../../redux/store';
 import { Schema } from '../../../models/CmsModels';
 import { asyncEditSchemaDocument } from '../../../store/databaseSlice';
-import { enqueueErrorNotification } from '../../../../../utils/useNotifier';
+import { enqueueErrorNotification } from '../../../../../hooks/useNotifier';
 import { Box, styled } from '@mui/material';
 import JsonEditorComponent from '../../../../../components/common/JsonEditorComponent';
 

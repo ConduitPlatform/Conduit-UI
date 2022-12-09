@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect } from 'react';
-import StorageLayout from '../../components/navigation/InnerLayouts/storageLayout';
-import { asyncGetStorageConfig } from '../../redux/slices/storageSlice';
+import StorageLayout from '../../features/storage/storageLayout';
+import { asyncGetStorageConfig } from '../../features/storage/storageSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const StorageConfig = dynamic(() => import('../../components/storage/StorageConfig'), {
+const StorageConfig = dynamic(() => import('../../features/storage/StorageConfig'), {
   loading: () => <LoaderComponent />,
 });
 
