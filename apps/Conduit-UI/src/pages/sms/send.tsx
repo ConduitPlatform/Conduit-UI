@@ -3,7 +3,7 @@ import SMSLayout from '../../features/sms/smsLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const SendSms = dynamic(() => import('../../features/sms/SendSms'), {
+const SendSms = dynamic(() => import('../../features/sms/components/SendSms'), {
   loading: () => <LoaderComponent />,
 });
 

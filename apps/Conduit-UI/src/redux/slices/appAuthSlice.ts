@@ -5,7 +5,10 @@ import {
   asyncGetNotificationConfig,
   clearNotificationPageStore,
 } from '../../features/notifications/store/notificationsSlice';
-import { asyncGetStorageConfig, clearStoragePageStore } from '../../features/storage/storageSlice';
+import {
+  asyncGetStorageConfig,
+  clearStoragePageStore,
+} from '../../features/storage/store/storageSlice';
 import { getAdminModulesRequest } from '../../features/settings/http/SettingsRequests';
 import { loginRequest, verifyTwoFARequest } from '../../http/requests/AppAuthRequests';
 import { asyncGetInfo, clearAppNotifications, setAppLoading } from './appSlice';
@@ -19,7 +22,7 @@ import { enqueueErrorNotification, enqueueInfoNotification } from '../../hooks/u
 import { asyncGetChatConfig } from '../../features/chat/store/chatSlice';
 import { asyncGetFormsConfig } from '../../features/forms/store/formsSlice';
 import { asyncGetPaymentConfig } from '../../features/payments/store/paymentsSlice';
-import { asyncGetSmsConfig } from '../../features/sms/smsSlice';
+import { asyncGetSmsConfig } from '../../features/sms/store/smsSlice';
 import { asyncGetRouterConfig } from '../../features/router/store/routerSlice';
 import { asyncGetAdminSettings } from '../../features/settings/store/settingsSlice';
 import jwt_decode from 'jwt-decode';

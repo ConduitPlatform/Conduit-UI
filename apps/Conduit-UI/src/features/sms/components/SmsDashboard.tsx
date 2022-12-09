@@ -1,9 +1,9 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
-import TotalRequestsByModule from '../../components/metrics/TotalRequestsByModule';
-import RequestsLatency from '../../components/metrics/RequestLatency';
-import ModuleHealth from '../../components/metrics/ModuleHealth';
-import MetricCount from '../../components/metrics/MetricCount';
+import TotalRequestsByModule from '../../../components/metrics/TotalRequestsByModule';
+import RequestsLatency from '../../../components/metrics/RequestLatency';
+import ModuleHealth from '../../../components/metrics/ModuleHealth';
+import MetricCount from '../../../components/metrics/MetricCount';
 
 const SmsDashboard = () => {
   return (

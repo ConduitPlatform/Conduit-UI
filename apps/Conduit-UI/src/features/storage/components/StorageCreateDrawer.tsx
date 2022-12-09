@@ -2,11 +2,11 @@ import React, { ChangeEvent, FC, useEffect, useMemo } from 'react';
 import { Button, Grid, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SideDrawerWrapper } from '@conduitplatform/ui-components';
-import { CreateFormSelected, IContainer, ICreateForm } from './StorageModels';
+import { CreateFormSelected, IContainer, ICreateForm } from '../models/StorageModels';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import { FormInputText } from '../../components/common/FormComponents/FormInputText';
-import { FormInputSwitch } from '../../components/common/FormComponents/FormInputSwitch';
-import { validFileName } from '../../utils/validations';
+import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
+import { FormInputSwitch } from '../../../components/common/FormComponents/FormInputSwitch';
+import { validFileName } from '../../../utils/validations';
 import FolderIcon from '@mui/icons-material/Folder';
 import StorageIcon from '@mui/icons-material/Storage';
 

@@ -1,5 +1,5 @@
-import { deleteRequest, getRequest, patchRequest, postRequest } from '../../http/requestsConfig';
-import { IStorageConfig } from './StorageModels';
+import { deleteRequest, getRequest, patchRequest, postRequest } from '../../../http/requestsConfig';
+import { IStorageConfig } from '../models/StorageModels';
 import {
   ICreateStorageContainer,
   ICreateStorageFile,
@@ -9,7 +9,7 @@ import {
   IGetStorageContainers,
   IGetStorageFiles,
   IGetStorageFolders,
-} from './StorageRequestsModels';
+} from '../models/StorageRequestsModels';
 
 export const getStorageSettings = () => getRequest(`/config/storage`);
 

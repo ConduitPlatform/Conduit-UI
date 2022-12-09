@@ -1,5 +1,5 @@
-import { getRequest, patchRequest, postRequest } from '../../http/requestsConfig';
-import { ISendSms, ISmsConfig } from './SmsModels';
+import { getRequest, patchRequest, postRequest } from '../../../http/requestsConfig';
+import { ISendSms, ISmsConfig } from '../models/SmsModels';
 
 export const getSmsConfig = () => {
   return getRequest(`/config/sms`);

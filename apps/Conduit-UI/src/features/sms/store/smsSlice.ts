@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { setAppLoading } from '../../redux/slices/appSlice';
-import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification } from '../../hooks/useNotifier';
-import { getSmsConfig, patchSmsConfig, sendSmsRequest } from './SmsRequests';
-import { ISendSms, ISmsConfig, ISmsProviders } from './SmsModels';
+import { setAppLoading } from '../../../redux/slices/appSlice';
+import { getErrorData } from '../../../utils/error-handler';
+import { enqueueErrorNotification } from '../../../hooks/useNotifier';
+import { getSmsConfig, patchSmsConfig, sendSmsRequest } from '../http/SmsRequests';
+import { ISendSms, ISmsConfig, ISmsProviders } from '../models/SmsModels';
 
 interface ISmsSlice {
   data: {

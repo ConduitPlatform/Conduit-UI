@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import StorageTable from './StorageTable';
 import {
   asyncAddStorageContainer,
@@ -12,11 +12,11 @@ import {
   asyncGetStorageContainers,
   clearStorageContainerData,
   setContainerDataEmpty,
-} from './storageSlice';
+} from '../store/storageSlice';
 import StorageCreateDrawer from './StorageCreateDrawer';
 import StorageAddDrawer from './StorageAddDrawer';
 import { ConfirmationDialog } from '@conduitplatform/ui-components';
-import { CreateFormSelected, ICreateForm, IStorageFile } from './StorageModels';
+import { CreateFormSelected, ICreateForm, IStorageFile } from '../models/StorageModels';
 import { debounce } from 'lodash';
 
 const debounceTime = 500;

@@ -6,12 +6,12 @@ import Typography from '@mui/material/Typography';
 import { Clear, Send, Sms } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FormInputText } from '../../components/common/FormComponents/FormInputText';
-import { ISendSms } from './SmsModels';
-import { useAppDispatch } from '../../redux/store';
-import { asyncSendSms } from './smsSlice';
+import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
+import { ISendSms } from '../models/SmsModels';
+import { useAppDispatch } from '../../../redux/store';
+import { asyncSendSms } from '../store/smsSlice';
 import { Box } from '@mui/material';
-import { phoneNumberRegExp } from '../../utils/validations';
+import { phoneNumberRegExp } from '../../../utils/validations';
 
 const SendSms: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -5,9 +5,13 @@ import { DataTable, Paginator, StorageDownloadDialog } from '@conduitplatform/ui
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { ContainerDataProps, IStorageContainerData, IStorageFileData } from './StorageModels';
-import { asyncSetSelectedStorageFile } from './storageSlice';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import {
+  ContainerDataProps,
+  IStorageContainerData,
+  IStorageFileData,
+} from '../models/StorageModels';
+import { asyncSetSelectedStorageFile } from '../store/storageSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import SearchIcon from '@mui/icons-material/Search';
 
 interface IContainerTable {

@@ -6,7 +6,7 @@ import {
   IStorageFile,
   IStorageFileData,
   IStorageFolderData,
-} from './StorageModels';
+} from '../models/StorageModels';
 import {
   createStorageContainer,
   createStorageFile,
@@ -20,12 +20,12 @@ import {
   getStorageFolders,
   getStorageSettings,
   patchStorageSettings,
-} from './StorageRequests';
-import { setAppLoading } from '../../redux/slices/appSlice';
-import { getErrorData } from '../../utils/error-handler';
-import { enqueueErrorNotification, enqueueSuccessNotification } from '../../hooks/useNotifier';
+} from '../http/StorageRequests';
+import { setAppLoading } from '../../../redux/slices/appSlice';
+import { getErrorData } from '../../../utils/error-handler';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
 import { concat } from 'lodash';
-import { ICreateStorageContainer, ICreateStorageFolder } from './StorageRequestsModels';
+import { ICreateStorageContainer, ICreateStorageFolder } from '../models/StorageRequestsModels';
 
 interface IStorageSlice {
   data: {
