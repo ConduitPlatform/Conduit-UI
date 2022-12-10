@@ -18,11 +18,7 @@ const AuthorizationDashboard = () => {
             <ModuleHealth small module="authorization" />
           </Grid>
           <Grid item xs={6} sm={3}>
-            <MetricCount
-              small
-              title="Authorization Rules"
-              expression="authorization_rules_total[10m]"
-            />
+            <MetricCount small title="Rules" expression="authorization_rules_total[10m]" />
           </Grid>
           <Grid item xs={6} sm={3}>
             <MetricCount small title="Roles" expression="authorization_roles_total[10m]" />
