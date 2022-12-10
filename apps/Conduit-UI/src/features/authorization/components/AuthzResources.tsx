@@ -185,7 +185,7 @@ const AuthzResources: React.FC = () => {
         handleLimitChange={handleLimitChange}
         page={page}
         count={count}
-        noData={resources?.length === 0 ? 'resources' : undefined}>
+        noData={resources && resources.length === 0 ? 'resources' : undefined}>
         <DataTable
           sort={sort}
           setSort={setSort}
