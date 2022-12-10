@@ -9,6 +9,7 @@ import {
   Notifications,
   Payment,
   People,
+  Security,
   Settings,
   Sms,
   Toc,
@@ -18,6 +19,7 @@ import { IModule } from '../../models/appAuth';
 
 const modules = [
   'authentication',
+  'authorization',
   'email',
   'storage',
   'forms',
@@ -59,6 +61,8 @@ export const getModuleIcon = (moduleName: string) => {
       return <Home color={'inherit'} />;
     case 'authentication':
       return <People color={'inherit'} />;
+    case 'authorization':
+      return <Security color={'inherit'} />;
     case 'pushNotifications':
       return <Notifications color={'inherit'} />;
     case 'sms':

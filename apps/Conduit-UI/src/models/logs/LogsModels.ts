@@ -1,6 +1,7 @@
 export type ModulesTypes =
   | 'home'
   | 'authentication'
+  | 'authorization'
   | 'email'
   | 'storage'
   | 'forms'
@@ -33,6 +34,8 @@ export const moduleTitle = (type: ModulesTypes) => {
   switch (type) {
     case 'authentication':
       return 'Authentication';
+    case 'authorization':
+      return 'Authorization';
     case 'email':
       return 'Email';
     case 'storage':

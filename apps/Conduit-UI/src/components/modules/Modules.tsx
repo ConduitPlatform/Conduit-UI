@@ -22,6 +22,7 @@ const Modules: React.FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
   const enabledAuth = useAppSelector((state) => state.authenticationSlice.data.config.active);
+  const enabledAuthz = useAppSelector((state) => state.authorizationSlice.config.active);
   const enabledEmail = useAppSelector((state) => state.emailsSlice.data.config.active);
   const enabledStorage = useAppSelector((state) => state.storageSlice.data.config.active);
   const enabledNotifications = useAppSelector(
@@ -54,6 +55,12 @@ const Modules: React.FC<Props> = ({
               : metricsAvailable
               ? '/authentication/dashboard'
               : '/authentication/users';
+          case 'authorization':
+            return !enabledAuthz
+              ? '/authorization/config'
+              : metricsAvailable
+              ? '/authorization/dashboard'
+              : '/authorization/resources';
           case 'email':
             return !enabledEmail
               ? '/email/config'
