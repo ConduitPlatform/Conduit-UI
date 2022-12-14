@@ -17,27 +17,6 @@
     "apps/*",
     "libraries/*"
   ],
-  "turbo": {
-    "pipeline": {
-      "build": {
-        "dependsOn": [
-          "^build"
-        ],
-        "outputs": [
-          ".dist/**"
-        ]
-      },
-      "dev": {
-        "dependsOn": [
-          "^build"
-        ],
-        "outputs": [
-          ".dist/**"
-        ],
-        "cache": false
-      }
-    }
-  },
   "devDependencies": {
     "lerna": "^4.0.0",
     "standard-version": "^9.3.0",

@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
-import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
+import AuthenticationLayout from '../../features/authentication/authenticationLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const AuthenticationSignIn = dynamic(
-  () => import('../../components/authentication/AuthenticationSignIn'),
+  () => import('../../features/authentication/components/AuthenticationSignIn'),
   {
     loading: () => <LoaderComponent />,
   }

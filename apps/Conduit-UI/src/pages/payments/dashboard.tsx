@@ -1,11 +1,14 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import PaymentsLayout from '../../components/navigation/InnerLayouts/paymentsLayout';
+import PaymentsLayout from '../../features/payments/paymentsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const PaymentsDashboard = dynamic(() => import('../../components/payments/PaymentsDashboard'), {
-  loading: () => <LoaderComponent />,
-});
+const PaymentsDashboard = dynamic(
+  () => import('../../features/payments/components/PaymentsDashboard'),
+  {
+    loading: () => <LoaderComponent />,
+  }
+);
 
 const Dashboard = () => {
   return <PaymentsDashboard />;

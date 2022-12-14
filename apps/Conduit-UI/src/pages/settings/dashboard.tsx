@@ -1,10 +1,10 @@
 import dynamic from 'next/dynamic';
 import React, { ReactElement } from 'react';
-import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
+import SettingsLayout from '../../features/settings/settingsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const SettingsDashboard = dynamic(
-  () => import('../../components/notifications/NotificationDashboard'),
+  () => import('../../features/notifications/components/NotificationDashboard'),
   {
     loading: () => <LoaderComponent />,
   }

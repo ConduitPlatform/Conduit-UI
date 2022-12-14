@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
-import FormsLayout from '../../components/navigation/InnerLayouts/formsLayout';
+import FormsLayout from '../../features/forms/formsLayout';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const FormsView = dynamic(() => import('../../components/forms/FormsView'), {
+const FormsView = dynamic(() => import('../../features/forms/components/FormsView'), {
   loading: () => <LoaderComponent />,
 });
 

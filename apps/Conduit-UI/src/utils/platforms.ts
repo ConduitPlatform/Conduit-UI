@@ -1,4 +1,4 @@
-import ClientPlatformEnum from '../models/security/SecurityModels';
+import ClientPlatformEnum from '../features/router/models/SecurityModels';
 
 export const createPlatforms = [
   { label: 'WEB', value: ClientPlatformEnum.WEB },

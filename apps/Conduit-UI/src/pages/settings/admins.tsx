@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import SettingsLayout from '../../components/navigation/InnerLayouts/settingsLayout';
+import SettingsLayout from '../../features/settings/settingsLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const SettingsAdmins = dynamic(() => import('../../components/settings/SettingsAdmins'), {
+const SettingsAdmins = dynamic(() => import('../../features/settings/components/SettingsAdmins'), {
   loading: () => <LoaderComponent />,
 });
 

@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect } from 'react';
-import ChatLayout from '../../components/navigation/InnerLayouts/chatLayout';
-import { asyncGetChatConfig } from '../../redux/slices/chatSlice';
+import ChatLayout from '../../features/chat/chatLayout';
+import { asyncGetChatConfig } from '../../features/chat/store/chatSlice';
 import { useAppDispatch } from '../../redux/store';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const ChatConfig = dynamic(() => import('../../components/chat/ChatConfig'), {
+const ChatConfig = dynamic(() => import('../../features/chat/components/ChatConfig'), {
   loading: () => <LoaderComponent />,
 });
 

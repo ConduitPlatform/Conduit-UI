@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import DatabaseLayout from '../../../components/navigation/InnerLayouts/databaseLayout';
+import DatabaseLayout from '../../../features/database/databaseLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../../components/common/LoaderComponent';
 
-const Schemas = dynamic(() => import('../../../components/database/schemas/Schemas'), {
+const Schemas = dynamic(() => import('../../../features/database/components/schemas/Schemas'), {
   loading: () => <LoaderComponent />,
 });
 

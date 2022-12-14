@@ -1,12 +1,12 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/store';
-import { asyncGetSchemas } from '../../redux/slices/databaseSlice';
-import DatabaseLayout from '../../components/navigation/InnerLayouts/databaseLayout';
+import { asyncGetSchemas } from '../../features/database/store/databaseSlice';
+import DatabaseLayout from '../../features/database/databaseLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const CustomEndpointsLayout = dynamic(
-  () => import('../../components/database/custom-endpoints/CustomEndpointsLayout'),
+  () => import('../../features/database/components/custom-endpoints/CustomEndpointsLayout'),
   {
     loading: () => <LoaderComponent />,
   }

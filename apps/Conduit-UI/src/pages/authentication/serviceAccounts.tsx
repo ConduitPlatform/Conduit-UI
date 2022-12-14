@@ -1,10 +1,10 @@
-import AuthenticationLayout from '../../components/navigation/InnerLayouts/authenticationLayout';
+import AuthenticationLayout from '../../features/authentication/authenticationLayout';
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
 const ServiceAccountsTabs = dynamic(
-  () => import('../../components/authentication/ServiceAccountsTabs'),
+  () => import('../../features/authentication/components/ServiceAccountsTabs'),
   {
     loading: () => <LoaderComponent />,
   }

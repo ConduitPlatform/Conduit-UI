@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import EmailsLayout from '../../components/navigation/InnerLayouts/emailsLayout';
+import EmailsLayout from '../../features/emails/emailsLayout';
 import dynamic from 'next/dynamic';
 import LoaderComponent from '../../components/common/LoaderComponent';
 
-const SendEmailForm = dynamic(() => import('../../components/emails/SendEmailForm'), {
+const SendEmailForm = dynamic(() => import('../../features/emails/components/SendEmailForm'), {
   loading: () => <LoaderComponent />,
 });
 

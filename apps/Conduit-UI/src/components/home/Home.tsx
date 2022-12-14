@@ -109,8 +109,8 @@ const Home: React.FC = () => {
               <Icon sx={{ display: 'flex', alignContent: 'center', width: 24, height: 24 }}>
                 <Image src={Swagger} alt="swagger" />
               </Icon>
-              <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-                {smallScreen ? null : 'SWAGGER'}
+              <Typography sx={{ ml: smallScreen ? 0 : 1, 'text-transform': 'none' }}>
+                {smallScreen ? null : 'Swagger'}
               </Typography>
             </Button>
           )}
@@ -119,7 +119,7 @@ const Home: React.FC = () => {
               <Icon sx={{ display: 'flex', alignContent: 'center', width: 24, height: 24 }}>
                 <Image src={GraphQL} alt="graphQL" />
               </Icon>
-              <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
+              <Typography sx={{ ml: smallScreen ? 0 : 1, 'text-transform': 'none' }}>
                 {smallScreen ? null : 'GraphQL'}
               </Typography>
             </Button>
@@ -131,8 +131,8 @@ const Home: React.FC = () => {
             style={{ textDecoration: 'none' }}>
             <Button variant="contained" color="primary">
               <Description width={24} height={24} />
-              <Typography sx={{ ml: smallScreen ? 0 : 1 }}>
-                {smallScreen ? null : 'DOCUMENTATION'}
+              <Typography sx={{ ml: smallScreen ? 0 : 1, 'text-transform': 'none' }}>
+                {smallScreen ? null : 'Documentation'}
               </Typography>
             </Button>
           </a>
