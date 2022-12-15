@@ -16,7 +16,7 @@ export default class MyDocument extends Document {
           />
           {/* eslint-disable */}
           <link
-            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;1,100&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
             rel="stylesheet"
           />
           {/* eslint-enable */}

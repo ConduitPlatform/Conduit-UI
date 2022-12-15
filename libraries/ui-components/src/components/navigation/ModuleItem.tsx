@@ -87,8 +87,8 @@ const ModuleItem: React.FC<Props> = ({
               "&	.MuiListItemText-primary": {
                 color: "inherit",
                 textTransform: "capitalize",
-                fontWeight: theme.palette.mode === "dark" ? "bold" : "regular",
-                fontSize: fontSize ?? 12,
+                fontWeight: "regular",
+                fontSize: fontSize ?? '0.8rem',
                 marginLeft: 1,
               },
             }}

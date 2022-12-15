@@ -68,7 +68,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
     ...(mode === 'light' ? paletteLight : paletteDark),
   },
   typography: {
-    fontFamily: 'JetBrains Mono',
+    fontFamily: 'Inter',
   },
   components: {
     MuiPaper: {
