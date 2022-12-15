@@ -60,9 +60,9 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
       return <MetricWidgetSkeleton />;
     } else if (!loading && counter) {
       return counter;
-    } else if (!loading && counter === undefined) {
-      return 'Critical';
-    } else return 'No data';
+    } else {
+      return 'No data';
+    }
   };
 
   return (
