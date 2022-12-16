@@ -60,7 +60,7 @@ const AreaChart: FC<Props> = ({
       },
 
       id: 'basic-bar',
-      fontFamily: 'JetBrains Mono',
+      fontFamily: 'Inter',
       background: theme.palette.background.paper,
       stacked: false,
     },
@@ -128,7 +128,7 @@ const AreaChart: FC<Props> = ({
       offsetY: 0,
       style: {
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
-        fontFamily: 'JetBrains Mono',
+        fontFamily: 'Inter',
       },
     },
   };
