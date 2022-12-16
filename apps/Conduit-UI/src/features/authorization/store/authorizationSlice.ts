@@ -1,9 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
+  deleteRelation,
+  deleteResources,
   getAuthzSettings,
   getRelations,
+  getRelationsById,
   getResources,
+  getResourcesById,
   patchAuthzSettings,
+  patchResources,
+  postRelations,
+  postResources,
 } from '../http/AuthorizationRequests';
 import {
   AuthzRelationType,
@@ -55,11 +62,106 @@ export const asyncGetResources = createAsyncThunk(
   }
 );
 
+export const asyncGetResourcesById = createAsyncThunk(
+  'authz/getResourcesById',
+  async (params: { id: string }, thunkAPI) => {
+    try {
+      const { data } = await getResourcesById(params.id);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncPostResources = createAsyncThunk(
+  'authz/postResources',
+  async (params: AuthzResourceType, thunkAPI) => {
+    try {
+      const { data } = await postResources(params);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncPatchResources = createAsyncThunk(
+  'authz/postResources',
+  async (params: { id: string; data: AuthzResourceType }, thunkAPI) => {
+    try {
+      const { data } = await patchResources(params.id, params.data);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteResources = createAsyncThunk(
+  'authz/deleteResources',
+  async (params: { id: string }, thunkAPI) => {
+    try {
+      const { data } = await deleteResources(params.id);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncGetRelations = createAsyncThunk(
   'authz/getRelations',
   async (params: Pagination & Search & Sort, thunkAPI) => {
     try {
       const { data } = await getRelations(params);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetRelationsById = createAsyncThunk(
+  'authz/getRelationsById',
+  async (params: { id: string }, thunkAPI) => {
+    try {
+      const { data } = await getRelationsById(params.id);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncPostRelations = createAsyncThunk(
+  'authz/postRelations',
+  async (params: AuthzRelationType, thunkAPI) => {
+    try {
+      const { data } = await postRelations(params);
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteRelations = createAsyncThunk(
+  'authz/deleteRelations',
+  async (params: { id: string }, thunkAPI) => {
+    try {
+      const { data } = await deleteRelation(params.id);
       return data;
     } catch (error) {
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -111,7 +213,7 @@ const authorizationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(asyncGetResources.fulfilled, (state, action) => {
-      state.resourceData.resources = action.payload.resources;
+      state.resourceData.resources = action.payload.found;
       state.resourceData.count = action.payload.count;
     });
 

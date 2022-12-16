@@ -2,21 +2,12 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import React, { useCallback, useEffect, useState } from 'react';
 import useDebounce from '../../../hooks/useDebounce';
 import { prepareSort } from '../../../utils/prepareSort';
-import {
-  Box,
-  Button,
-  Icon,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 import {
   DataTable,
+  SideDrawerWrapper,
   TableActionsContainer,
   TableContainer,
-  ConduitTooltip,
 } from '@conduitplatform/ui-components';
 import SearchIcon from '@mui/icons-material/Search';
 import { AddCircleOutline, DeleteTwoTone, InfoOutlined } from '@mui/icons-material';
@@ -37,9 +28,6 @@ const AuthzResources: React.FC = () => {
   const [openDeleteTemplates, setOpenDeleteTemplates] = useState<boolean>(false);
   const [drawer, setDrawer] = useState<boolean>(false);
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
-  const [importTemplate, setImportTemplate] = useState<boolean>(false);
-  const [create, setCreate] = useState<boolean>(false);
-  const [edit, setEdit] = useState<boolean>(false);
 
   const debouncedSearch: string = useDebounce(search, 500);
 
@@ -54,14 +42,6 @@ const AuthzResources: React.FC = () => {
   }, [debouncedSearch]);
 
   const { resources, count } = useAppSelector((state) => state.authorizationSlice.resourceData);
-
-  const handleClose = () => {
-    setImportTemplate(false);
-    setEdit(false);
-    setCreate(false);
-    setDrawer(false);
-    setOpenDeleteTemplates(false);
-  };
 
   const handleSelect = (id: string) => {
     const newSelectedTemplates = [...selectedTemplates];
@@ -111,16 +91,6 @@ const AuthzResources: React.FC = () => {
 
   const actions = [toView];
 
-  const extractTitle = () => {
-    if (!importTemplate && !create) {
-      return 'Edit your template';
-    }
-    if (!importTemplate) {
-      return 'Create an email template';
-    }
-    return 'Import an external template';
-  };
-
   return (
     <Box>
       <TableActionsContainer>
@@ -140,30 +110,6 @@ const AuthzResources: React.FC = () => {
               ),
             }}
           />
-
-          <ConduitTooltip
-            title={
-              <Box display="flex" flexDirection="column" gap={2} p={2}>
-                <Typography variant="body2">
-                  Most web applications typically require a way to send e-mails to users. The Email
-                  module serves this very purpose. Below you can see a brief introduction to some of
-                  its features.
-                </Typography>
-                <Box display="flex" gap={2}>
-                  <a
-                    href="https://getconduit.dev/docs/modules/email/get-started#templates"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}>
-                    <Button variant="outlined">Templates</Button>
-                  </a>
-                </Box>
-              </Box>
-            }>
-            <Icon>
-              <InfoOutlined />
-            </Icon>
-          </ConduitTooltip>
         </Box>
         <Box display="flex" gap={2} alignItems="center">
           {selectedTemplates.length > 0 && (
@@ -177,6 +123,15 @@ const AuthzResources: React.FC = () => {
               </Tooltip>
             </IconButton>
           )}
+        </Box>
+        <Box display="flex" alignItems="center">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddCircleOutline />}
+            onClick={() => setDrawer(true)}>
+            New Resource
+          </Button>
         </Box>
       </TableActionsContainer>
       <TableContainer
@@ -197,6 +152,13 @@ const AuthzResources: React.FC = () => {
           selectedItems={selectedTemplates}
         />
       </TableContainer>
+      <SideDrawerWrapper
+        open={drawer}
+        title={'Create a resource'}
+        closeDrawer={() => setDrawer(false)}
+        width={750}>
+        <Box>placeholder</Box>
+      </SideDrawerWrapper>
     </Box>
   );
 };
