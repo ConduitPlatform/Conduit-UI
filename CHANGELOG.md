@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.6](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.5...v0.15.6) (2022-12-16)
+
+
+### Features
+
+* **push-notifications:** oneSignal support ([#199](https://github.com/ConduitPlatform/Conduit-UI/issues/199)) ([ba235ef](https://github.com/ConduitPlatform/Conduit-UI/commit/ba235efa8f5ab5dc24b38a61c76c402dae1205c6))
+* use Inter font ([#205](https://github.com/ConduitPlatform/Conduit-UI/issues/205)) ([59397c3](https://github.com/ConduitPlatform/Conduit-UI/commit/59397c3c8af316cb1dbaed2b61cfb33e4ce082a9))
+
+
+### Bug Fixes
+
+* global fixes ([#200](https://github.com/ConduitPlatform/Conduit-UI/issues/200)) ([b21250c](https://github.com/ConduitPlatform/Conduit-UI/commit/b21250ca00d63d7075b7961b2fb3a61c861f3bb1))
+* **metrics:** health status displaying critical on missing data, prometheus job ([#204](https://github.com/ConduitPlatform/Conduit-UI/issues/204)) ([606b266](https://github.com/ConduitPlatform/Conduit-UI/commit/606b266f5e9b1acd49de1649f17b2eb8c820272f)), closes [#466](https://github.com/ConduitPlatform/Conduit-UI/issues/466)
+
 ### [0.15.5](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.4...v0.15.5) (2022-11-25)
 
 
