@@ -5,7 +5,6 @@ import NumberIcon from '@mui/icons-material/Filter7';
 import DateIcon from '@mui/icons-material/DateRange';
 import Tooltip from '@mui/material/Tooltip';
 import { FieldIndicators } from '@conduitplatform/ui-components';
-import Grid from '@mui/material/Grid';
 import { ISimpleDataTypes } from '../../../models/BuildTypesModels';
 import { CustomIcon } from './SimpleType';
 
@@ -50,36 +49,13 @@ interface IProps {
 
 const SimpleTypeViewer: FC<IProps> = ({ item }) => {
   return (
-    <>
-      <Grid item container xs={1}>
-        <SimpleIcon type={item.type} />
-      </Grid>
-      <Grid item container justifyContent="flex-end" xs={5}>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
-    </>
+    <Box display="flex" justifyContent="space-between">
+      <SimpleIcon type={item.type} />
+      <Box display={'flex'} alignItems={'center'}>
+        <FieldIndicators item={item} />
+      </Box>
+    </Box>
   );
 };
 
 export default SimpleTypeViewer;
-
-export const SimpleGroupTypeViewer: FC<IProps> = ({ item }) => {
-  return (
-    <>
-      <Grid item container xs={1}>
-        <SimpleIcon type={item.type} />
-      </Grid>
-      <Grid item container justifyContent="flex-end" xs={5}>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
-    </>
-  );
-};

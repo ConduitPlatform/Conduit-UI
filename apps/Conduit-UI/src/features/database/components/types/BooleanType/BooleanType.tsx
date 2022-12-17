@@ -11,7 +11,7 @@ interface IProps {
 
 const BooleanType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <Box {...rest} display="flex" alignItems="center" justifyContent="center">
+    <Box {...rest} display="flex" alignItems="center" justifyContent="space-between">
       <Box display={'flex'} alignItems={'center'}>
         <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
           False
@@ -32,7 +32,7 @@ export default BooleanType;
 
 export const BooleanGroupType: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <Box {...rest} display="flex" alignItems="center" justifyContent="center">
+    <Box {...rest} display="flex" alignItems="center" justifyContent="space-between">
       <Box display={'flex'} alignItems={'center'}>
         <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
           False
