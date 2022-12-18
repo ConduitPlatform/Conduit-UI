@@ -61,6 +61,7 @@ const GroupTypeChildViewer: FC<IProps> = ({ item, groupIndex, itemIndex, parent,
               px: 3,
               pt: 2,
               pb: 1,
+              mt: 2,
             }}>
             {item.content.map((groupItem, index) => {
               return (

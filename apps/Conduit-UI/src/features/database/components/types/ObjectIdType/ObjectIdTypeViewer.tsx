@@ -4,6 +4,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import { FieldIndicators } from '@conduitplatform/ui-components';
 import { IObjectData } from '../../../models/BuildTypesModels';
 import { CustomIcon } from '../SimpleType/SimpleType';
+import { Tooltip } from '@mui/material';
 
 interface IProps {
   item: IObjectData;
@@ -12,9 +13,11 @@ interface IProps {
 const ObjectIdTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
     <Box display="flex" justifyContent="space-between">
-      <CustomIcon>
-        <CodeIcon />
-      </CustomIcon>
+      <Tooltip title="Object ID field">
+        <CustomIcon>
+          <CodeIcon />
+        </CustomIcon>
+      </Tooltip>
       <Box display="flex">
         <FieldIndicators item={item} />
       </Box>
