@@ -232,7 +232,9 @@ export const SchemaOverview: FC<Props> = ({
         handleDelete={handleDeleteSchema}
         selectedSchema={selectedSchemaForAction}
       />
-      <SchemaIndexesDrawer open={indexDrawer} setOpen={setIndexDrawer} schema={schema} />
+      {!introspection && (
+        <SchemaIndexesDrawer open={indexDrawer} setOpen={setIndexDrawer} schema={schema} />
+      )}
     </>
   );
 };

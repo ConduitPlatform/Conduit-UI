@@ -21,7 +21,7 @@ const ObjectIdType: FC<IProps> = ({ item, ...rest }) => {
           </CustomIcon>
         </Tooltip>
       </Box>
-      <Box display={'flex'} alignItems={'center'} gap={1}>
+      <Box display={'flex'} alignItems={'center'}>
         <FieldIndicators item={item} />
       </Box>
     </Box>
@@ -29,20 +29,3 @@ const ObjectIdType: FC<IProps> = ({ item, ...rest }) => {
 };
 
 export default ObjectIdType;
-
-export const ObjectIdGroupType: FC<IProps> = ({ item, ...rest }) => {
-  return (
-    <Box {...rest} display="flex" justifyContent="space-between" alignItems="center">
-      <Box display={'flex'} alignItems={'center'}>
-        <Tooltip title={'ObjectId field'}>
-          <CustomIcon>
-            <CodeIcon />
-          </CustomIcon>
-        </Tooltip>
-      </Box>
-      <Box display={'flex'} alignItems={'center'} gap={1}>
-        <FieldIndicators item={item} />
-      </Box>
-    </Box>
-  );
-};

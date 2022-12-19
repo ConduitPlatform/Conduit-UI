@@ -41,23 +41,3 @@ const JSONType: FC<IProps> = ({ item, ...rest }) => {
 };
 
 export default JSONType;
-
-export const JSONGroupType: FC<IProps> = ({ item, ...rest }) => {
-  return (
-    <Box {...rest} display="flex" justifyContent="space-between">
-      <Box display={'flex'} alignItems={'center'}>
-        <Tooltip title={'JSON field'}>
-          <CustomIcon>
-            <IntegrationInstructionsRounded />
-          </CustomIcon>
-        </Tooltip>
-        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.default ?? ''}
-        </Typography>
-      </Box>
-      <Box display="flex" alignItems="center">
-        <FieldIndicators item={item} />
-      </Box>
-    </Box>
-  );
-};
