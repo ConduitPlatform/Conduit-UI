@@ -96,7 +96,7 @@ const RelationSelectInput: FC<RelationSelectInputProps> = ({
           <IconButton
             onClick={(e) => {
               window.open(
-                `/cms/schemadata?schemaModel=${schemaModel}&schemaDocumentId=${item._id}`
+                `/database/schemas?schemaModel=${schemaModel}&schemaDocumentId=${item._id}`
               );
               e.stopPropagation();
             }}

@@ -46,7 +46,7 @@ const ListActions: FC<Props> = ({ filters, schemasWithEndpoints, handleFilterCha
           variant="outlined"
           name="Search"
           size="small"
-          label="Find endpoint"
+          label="Find Endpoint"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           InputProps={{
@@ -69,9 +69,7 @@ const ListActions: FC<Props> = ({ filters, schemasWithEndpoints, handleFilterCha
             onChange={(event) => {
               dispatch(setEndpointsOperation(event.target.value as number));
             }}>
-            <MenuItem value={-2}>
-              <em>All</em>
-            </MenuItem>
+            <MenuItem value={-2}>Any</MenuItem>
             <MenuItem value={0}>GET</MenuItem>
             <MenuItem value={1}>POST</MenuItem>
             <MenuItem value={2}>PUT</MenuItem>

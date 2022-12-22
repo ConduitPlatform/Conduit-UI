@@ -90,7 +90,10 @@ const Schemas: FC = () => {
   }, [schemaModel]);
 
   useEffect(() => {
-    if (schemaDocumentId) setSearch(`{"_id": "${schemaDocumentId}"}`);
+    if (schemaDocumentId) {
+      setSearch(`{"_id": "${schemaDocumentId}"}`);
+      setSelectedTab(1);
+    }
   }, [schemaDocumentId]);
 
   useEffect(() => {
@@ -205,7 +208,7 @@ const Schemas: FC = () => {
     }
   };
 
-  const handleTabChange = (event: any, newValue: any) => {
+  const handleTabChange = (event: any, newValue: number) => {
     setSelectedTab(newValue);
   };
 
@@ -228,7 +231,7 @@ const Schemas: FC = () => {
 
     return (
       <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
-        No selected Schema
+        No schema selected
       </Typography>
     );
   };
