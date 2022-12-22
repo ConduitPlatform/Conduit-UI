@@ -55,6 +55,12 @@ interface Props {
   introspection?: boolean;
 }
 
+const defaultFields = {
+  _id: 'ObjectId',
+  createdAt: 'Date',
+  updatedAt: 'Date',
+};
+
 const SchemaEditor: FC<Props> = ({ introspection }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -100,7 +106,12 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
-    if (!introspection && id && !isNew) dispatch(asyncGetSchemaById({ id, noError: true }));
+    if (!introspection && id && !isNew) {
+      dispatch(asyncGetSchemaById({ id, noError: true }));
+    } else if (isNew) {
+      const formattedFields = getSchemaFieldsWithExtra(defaultFields);
+      setEditableFields({ newTypeFields: formattedFields });
+    }
   }, [dispatch, introspection, id, isNew]);
 
   useEffect(() => {
