@@ -124,7 +124,7 @@ const IntrospectionLayout: FC = () => {
               />
             ) : (
               <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
-                No selected Schema
+                No schema selected
               </Typography>
             )}
           </Box>
