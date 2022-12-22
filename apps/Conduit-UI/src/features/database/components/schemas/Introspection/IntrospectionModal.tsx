@@ -56,7 +56,6 @@ const IntrospectionModal: FC<Props> = ({ open, setOpen, schema }) => {
       <DialogContent sx={{ py: 4 }}>
         {Object.keys({ newTypeFields: formattedFields }).map((dataKey, i) => (
           <SchemaViewer
-            editable
             dataKey={dataKey}
             data={{ newTypeFields: formattedFields }}
             schemaToEdit={schemaToEdit}

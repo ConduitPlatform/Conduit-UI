@@ -8,11 +8,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import React, { FC } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { FieldIndicators } from '@conduitplatform/ui-components';
-import { BooleanGroupType } from '../BooleanType/BooleanType';
-import { EnumGroupType } from '../EnumType/EnumType';
-import { ObjectIdGroupType } from '../ObjectIdType/ObjectIdType';
-import { RelationGroupType } from '../RelationType/RelationType';
-import { CustomIcon, SimpleGroupType } from '../SimpleType/SimpleType';
+import SimpleType, { CustomIcon } from '../SimpleType/SimpleType';
 import GroupGroupType from './GroupTypeChild';
 import {
   IGroupChildContentData,
@@ -20,7 +16,11 @@ import {
   IGroupData,
 } from '../../../models/BuildTypesModels';
 import { Icon, styled } from '@mui/material';
-import { JSONGroupType } from '../JSONType/JSONType';
+import EnumType from '../EnumType/EnumType';
+import ObjectIdType from '../ObjectIdType/ObjectIdType';
+import BooleanType from '../BooleanType/BooleanType';
+import RelationType from '../RelationType/RelationType';
+import JSONType from '../JSONType/JSONType';
 
 interface IProps {
   item: IGroupData;
@@ -50,23 +50,21 @@ const GroupType: FC<IProps> = ({
   const handleGroupContent = (item: IGroupChildContentData | IGroupChildData, index: number) => {
     switch (item.type) {
       case 'Text':
-        return item.isEnum ? (
-          <EnumGroupType item={item} /> //needs changes
-        ) : (
-          <SimpleGroupType item={item} />
-        );
       case 'Number':
-        return item.isEnum ? <EnumGroupType item={item} /> : <SimpleGroupType item={item} />;
       case 'Date':
-        return <SimpleGroupType item={item} />;
+        return item.isEnum ? (
+          <EnumType item={item} /> //needs changes
+        ) : (
+          <SimpleType item={item} />
+        );
       case 'ObjectId':
-        return <ObjectIdGroupType item={item} />;
+        return <ObjectIdType item={item} />;
       case 'Boolean':
-        return <BooleanGroupType item={item} />;
+        return <BooleanType item={item} />;
       case 'Relation':
-        return <RelationGroupType item={item} />;
+        return <RelationType item={item} />;
       case 'JSON':
-        return <JSONGroupType item={item} />;
+        return <JSONType item={item} />;
       case 'Group':
         return (
           <GroupGroupType

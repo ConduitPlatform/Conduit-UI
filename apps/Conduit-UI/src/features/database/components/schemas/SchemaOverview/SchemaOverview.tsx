@@ -112,7 +112,9 @@ export const SchemaOverview: FC<Props> = ({
     );
   };
 
-  const formattedFields = getSchemaFieldsWithExtra(schema.compiledFields);
+  const formattedFields = getSchemaFieldsWithExtra(
+    !introspection ? schema.compiledFields : schema.fields
+  );
 
   const goToSchemaEndpoints = (name: string) => {
     router.push(`/database/custom?schema=${name}`, undefined, { shallow: true });
@@ -232,7 +234,9 @@ export const SchemaOverview: FC<Props> = ({
         handleDelete={handleDeleteSchema}
         selectedSchema={selectedSchemaForAction}
       />
-      <SchemaIndexesDrawer open={indexDrawer} setOpen={setIndexDrawer} schema={schema} />
+      {!introspection && (
+        <SchemaIndexesDrawer open={indexDrawer} setOpen={setIndexDrawer} schema={schema} />
+      )}
     </>
   );
 };

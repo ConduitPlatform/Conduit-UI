@@ -4,14 +4,14 @@ import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
 import React, { FC } from 'react';
-import { CustomIcon, SimpleGroupType } from '../SimpleType/SimpleType';
-import { BooleanGroupType } from '../BooleanType/BooleanType';
+import SimpleType, { CustomIcon } from '../SimpleType/SimpleType';
 import Tooltip from '@mui/material/Tooltip';
 import GroupIcon from '@mui/icons-material/PlaylistAdd';
 import { FieldIndicators } from '@conduitplatform/ui-components';
 import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../models/BuildTypesModels';
 import { GroupItemIcon } from './GroupType';
+import BooleanType from '../BooleanType/BooleanType';
 
 interface IProps {
   item: IGroupChildData;
@@ -32,13 +32,11 @@ const GroupGroupType: FC<IProps> = ({
   const handleGroupContent = (item: any) => {
     switch (item.type) {
       case 'Text':
-        return <SimpleGroupType item={item} />;
       case 'Number':
-        return <SimpleGroupType item={item} />;
       case 'Date':
-        return <SimpleGroupType item={item} />;
+        return <SimpleType item={item} />;
       case 'Boolean':
-        return <BooleanGroupType item={item} />;
+        return <BooleanType item={item} />;
       default:
         return null;
     }

@@ -15,7 +15,7 @@ const EnumType: FC<IProps> = ({ item, ...rest }) => {
       <CustomIcon>
         <SelectIcon />
       </CustomIcon>
-      <Box display="flex" alignItems="center" gap={1}>
+      <Box display="flex" alignItems="center">
         <FieldIndicators item={item} />
       </Box>
     </Box>
@@ -23,16 +23,3 @@ const EnumType: FC<IProps> = ({ item, ...rest }) => {
 };
 
 export default EnumType;
-
-export const EnumGroupType: FC<IProps> = ({ item, ...rest }) => {
-  return (
-    <Box display="flex" justifyContent="space-between">
-      <CustomIcon>
-        <SelectIcon />
-      </CustomIcon>
-      <Box display="flex" alignItems="center" gap={1}>
-        <FieldIndicators item={item} />
-      </Box>
-    </Box>
-  );
-};

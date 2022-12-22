@@ -66,7 +66,7 @@ const SimpleType: FC<IProps> = ({ item, ...rest }) => {
           {item.default ?? ''}
         </Typography>
       </Box>
-      <Box display="flex" alignItems="center" gap={1}>
+      <Box display="flex" alignItems="center">
         <FieldIndicators item={item} />
       </Box>
     </Box>
@@ -74,19 +74,3 @@ const SimpleType: FC<IProps> = ({ item, ...rest }) => {
 };
 
 export default SimpleType;
-
-export const SimpleGroupType: FC<IProps> = ({ item, ...rest }) => {
-  return (
-    <Box {...rest} display="flex" justifyContent="space-between">
-      <Box display={'flex'} alignItems={'center'}>
-        <SimpleIcon type={item.type} />
-        <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.default ?? ''}
-        </Typography>
-      </Box>
-      <Box display="flex" alignItems="center" gap={1}>
-        <FieldIndicators item={item} />
-      </Box>
-    </Box>
-  );
-};

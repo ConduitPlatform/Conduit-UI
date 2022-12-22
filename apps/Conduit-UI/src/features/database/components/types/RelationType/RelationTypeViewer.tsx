@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import { FieldIndicators } from '@conduitplatform/ui-components';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
-import Grid from '@mui/material/Grid';
 import { IRelationData } from '../../../models/BuildTypesModels';
 import { CustomIcon } from '../SimpleType/SimpleType';
+import { Tooltip } from '@mui/material';
 
 interface IProps {
   item: IRelationData;
@@ -12,40 +12,17 @@ interface IProps {
 
 const RelationTypeViewer: FC<IProps> = ({ item, ...rest }) => {
   return (
-    <>
-      <Grid item container xs={1}>
+    <Box display="flex" justifyContent="space-between">
+      <Tooltip title="Relation type">
         <CustomIcon>
           <DeviceHubIcon />
         </CustomIcon>
-      </Grid>
-      <Grid item container justifyContent="flex-end" xs={5}>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
-    </>
+      </Tooltip>
+      <Box display="flex">
+        <FieldIndicators item={item} />
+      </Box>
+    </Box>
   );
 };
 
 export default RelationTypeViewer;
-
-export const RelationGroupTypeViewer: FC<IProps> = ({ item, ...rest }) => {
-  return (
-    <>
-      <Grid item container xs={1}>
-        <CustomIcon>
-          <DeviceHubIcon />
-        </CustomIcon>
-      </Grid>
-      <Grid item container justifyContent="flex-end" xs={5}>
-        <Grid item xs={6}>
-          <Box display={'flex'} alignItems={'center'}>
-            <FieldIndicators item={item} />
-          </Box>
-        </Grid>
-      </Grid>
-    </>
-  );
-};
