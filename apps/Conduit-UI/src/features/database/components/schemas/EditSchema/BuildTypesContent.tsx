@@ -116,9 +116,7 @@ const BuildTypesContent: FC<Props> = ({
                       sx={{
                         display: 'flex',
                         flexDirection: 'column-reverse',
-                        padding: 2,
-                        marginBottom: 2,
-                        borderLeft: '1px solid #dce0e5',
+                        py: 2,
                       }}
                       ref={provided.innerRef}
                       {...provided.draggableProps}>
@@ -127,7 +125,7 @@ const BuildTypesContent: FC<Props> = ({
                         <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                           <Box display={'flex'}>
                             <Typography variant={'body2'} sx={{ marginRight: 8 }}>
-                              Field name: <strong>{item.name}</strong>
+                              <strong>{item.name}</strong>
                             </Typography>
                           </Box>
                           <Box display={'flex'}>

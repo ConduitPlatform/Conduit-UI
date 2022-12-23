@@ -591,7 +591,14 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
           {nonEditableFields.length
             ? nonEditableFields.map((ext, i) => {
                 return (
-                  <Accordion key={i}>
+                  <Accordion
+                    sx={{
+                      '&.MuiPaper-root': {
+                        '&.MuiAccordion-root': { borderRadius: '16px' },
+                        borderRadius: '32px',
+                      },
+                    }}
+                    key={i}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
@@ -635,7 +642,16 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
               })
             : ''}
           {showEditableFields() ? (
-            <Accordion defaultExpanded>
+            <Accordion
+              defaultExpanded
+              disableGutters
+              elevation={0}
+              sx={{
+                '&.MuiPaper-root': {
+                  '&.MuiAccordion-root': { borderRadius: '20px' },
+                  borderRadius: '32px',
+                },
+              }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon color="action" />}
                 aria-controls="panel1a-content"
@@ -679,7 +695,6 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
             sx={{
               height: `calc(100vh - ${headerHeight}px)`,
               width: '25%',
-              backgroundColor: theme.palette.background.paper,
               padding: 2,
               position: 'fixed',
               top: headerHeight,
@@ -693,7 +708,6 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
                     width: '100%',
                     height: '100%',
                     border: '1px',
-                    backgroundColor: theme.palette.background.paper,
                     borderRadius: 4,
                   }}
                   ref={provided.innerRef}>

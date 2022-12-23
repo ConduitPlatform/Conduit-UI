@@ -15,7 +15,7 @@ import {
   IGroupChildData,
   IGroupData,
 } from '../../../models/BuildTypesModels';
-import { Icon, styled } from '@mui/material';
+import { Icon, styled, useTheme } from '@mui/material';
 import EnumType from '../EnumType/EnumType';
 import ObjectIdType from '../ObjectIdType/ObjectIdType';
 import BooleanType from '../BooleanType/BooleanType';
@@ -47,6 +47,7 @@ const GroupType: FC<IProps> = ({
   handleGroupDrawer,
   ...rest
 }) => {
+  const theme = useTheme();
   const handleGroupContent = (item: IGroupChildContentData | IGroupChildData, index: number) => {
     switch (item.type) {
       case 'Text':
@@ -106,8 +107,18 @@ const GroupType: FC<IProps> = ({
             ref={provided.innerRef}
             sx={
               snapshot.isDraggingOver
-                ? { minHeight: 300, width: '100%', backgroundColor: 'grey.500' }
-                : { minHeight: 300, width: '100%', border: '1px dotted black' }
+                ? {
+                    minHeight: 200,
+                    width: '100%',
+                    backgroundColor: 'grey.500',
+                    borderRadius: '16px',
+                  }
+                : {
+                    minHeight: 200,
+                    width: '100%',
+                    background: `${theme.palette.background.default}`,
+                    borderRadius: '16px',
+                  }
             }>
             {item.content && Array.isArray(item.content) && item.content.length > 0 ? (
               item.content.map(
@@ -161,7 +172,9 @@ const GroupType: FC<IProps> = ({
                 )
               )
             ) : (
-              <Box>Place items</Box>
+              <Box display="flex" justifyContent="center" pt="40px">
+                <Typography>Place items</Typography>
+              </Box>
             )}
             {provided.placeholder}
           </Box>

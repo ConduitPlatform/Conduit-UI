@@ -61,7 +61,7 @@ const CrudOperationsDialog: React.FC<Props> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleCloseDialog}>
+    <Dialog open={open} onClose={handleCloseDialog} PaperProps={{ sx: { borderRadius: '16px' } }}>
       <DialogTitle id="simple-dialog-title">
         CRUD operations
         <IconButton

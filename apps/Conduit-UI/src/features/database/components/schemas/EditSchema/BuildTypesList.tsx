@@ -12,6 +12,7 @@ import BooleanIcon from '@mui/icons-material/ToggleOn';
 import DateIcon from '@mui/icons-material/DateRange';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import { IntegrationInstructionsRounded } from '@mui/icons-material';
+import { useTheme } from '@mui/material';
 
 interface Props {
   item: any; //todo fix this
@@ -27,6 +28,7 @@ interface Props {
 }
 
 const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
+  const theme = useTheme();
   const handleIcon = (
     item:
       | 'Text'
@@ -82,6 +84,7 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
       {(provided, snapshot) => (
         <>
           <Card
+            elevation={0}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -89,6 +92,7 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
               padding: 2,
               marginBottom: 2,
               userSelect: 'none',
+              borderRadius: '16px',
             }}
             ref={provided.innerRef}
             {...provided.draggableProps}
@@ -97,12 +101,14 @@ const BuildTypesList: FC<Props> = ({ item, index, ...rest }) => {
           </Card>
           {snapshot.isDragging && (
             <Card
+              elevation={0}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: 2,
                 marginBottom: 2,
+                borderRadius: '16px',
                 userSelect: 'none',
                 '&~div': {
                   transform: 'none !important',
