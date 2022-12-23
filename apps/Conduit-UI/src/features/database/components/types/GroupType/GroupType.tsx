@@ -108,16 +108,20 @@ const GroupType: FC<IProps> = ({
             sx={
               snapshot.isDraggingOver
                 ? {
+                    mt: 2,
                     minHeight: 200,
                     width: '100%',
                     backgroundColor: 'grey.500',
                     borderRadius: '16px',
+                    p: 2,
                   }
                 : {
+                    mt: 2,
                     minHeight: 200,
                     width: '100%',
                     background: `${theme.palette.background.default}`,
                     borderRadius: '16px',
+                    p: 2,
                   }
             }>
             {item.content && Array.isArray(item.content) && item.content.length > 0 ? (
@@ -172,7 +176,13 @@ const GroupType: FC<IProps> = ({
                 )
               )
             ) : (
-              <Box display="flex" justifyContent="center" pt="40px">
+              <Box
+                mt={2}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                pt="40px">
                 <Typography>Place items</Typography>
               </Box>
             )}

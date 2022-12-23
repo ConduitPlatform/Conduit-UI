@@ -75,12 +75,14 @@ const GroupGroupType: FC<IProps> = ({
                     width: '100%',
                     backgroundColor: 'grey.500',
                     borderRadius: '16px',
+                    p: 2,
                   }
                 : {
                     minHeight: 200,
                     width: '100%',
                     background: `${theme.palette.background.paper}`,
                     borderRadius: '16px',
+                    p: 2,
                   }
             }>
             {item.content && Array.isArray(item.content) && item.content.length > 0 ? (
@@ -134,7 +136,12 @@ const GroupGroupType: FC<IProps> = ({
                 );
               })
             ) : (
-              <Box display="flex" justifyContent="center" pt="40px">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                pt="40px">
                 <Typography>Place items</Typography>
               </Box>
             )}

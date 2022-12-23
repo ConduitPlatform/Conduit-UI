@@ -99,7 +99,7 @@ const BuildTypesContent: FC<Props> = ({
               height: '100%',
               border: '1px',
               background: 'inherit',
-              padding: 4,
+              padding: 2,
               minHeight: 550,
               borderRadius: '4px',
             }}
@@ -125,7 +125,7 @@ const BuildTypesContent: FC<Props> = ({
                         <Box display={'flex'} width={'100%'} justifyContent={'space-between'}>
                           <Box display={'flex'}>
                             <Typography variant={'body2'} sx={{ marginRight: 8 }}>
-                              <strong>{item.name}</strong>
+                              Field name: <strong>{item.name}</strong>
                             </Typography>
                           </Box>
                           <Box display={'flex'}>
@@ -173,7 +173,6 @@ const BuildTypesContent: FC<Props> = ({
                   justifyContent: 'center',
                   alignItems: 'center',
                   height: 420,
-                  border: 'dashed 1px #667587',
                   opacity: snapshot.isDraggingOver ? 0.4 : undefined,
                 }}>
                 <Content sx={{ mb: 2 }} />
