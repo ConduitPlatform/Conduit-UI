@@ -62,7 +62,12 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose, systemSchemas }) => {
   };
 
   return (
-    <Dialog fullWidth={true} maxWidth={'sm'} open={open} onClose={handleCloseClick}>
+    <Dialog
+      fullWidth={true}
+      maxWidth={'sm'}
+      PaperProps={{ sx: { borderRadius: '16px' } }}
+      open={open}
+      onClose={handleCloseClick}>
       <Box maxWidth={600}>
         <DialogTitle id="new-custom-type" sx={{ textAlign: 'center', marginBottom: 4 }}>
           Create new Schema

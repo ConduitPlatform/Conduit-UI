@@ -12,6 +12,7 @@ import Grid from '@mui/material/Grid';
 import { IGroupChildData } from '../../../models/BuildTypesModels';
 import { GroupItemIcon } from './GroupType';
 import BooleanType from '../BooleanType/BooleanType';
+import { useTheme } from '@mui/material';
 
 interface IProps {
   item: IGroupChildData;
@@ -29,6 +30,7 @@ const GroupGroupType: FC<IProps> = ({
   handleGroupDrawer,
   ...rest
 }) => {
+  const theme = useTheme();
   const handleGroupContent = (item: any) => {
     switch (item.type) {
       case 'Text':
@@ -68,8 +70,20 @@ const GroupGroupType: FC<IProps> = ({
             ref={provided.innerRef}
             sx={
               snapshot.isDraggingOver
-                ? { minHeight: 100, width: '100%', backgroundColor: 'grey.500' }
-                : { minHeight: 100, width: '100%', border: '1px dotted black' }
+                ? {
+                    minHeight: 200,
+                    width: '100%',
+                    backgroundColor: 'grey.500',
+                    borderRadius: '16px',
+                    p: 2,
+                  }
+                : {
+                    minHeight: 200,
+                    width: '100%',
+                    background: `${theme.palette.background.paper}`,
+                    borderRadius: '16px',
+                    p: 2,
+                  }
             }>
             {item.content && Array.isArray(item.content) && item.content.length > 0 ? (
               item.content.map((groupItem, index) => {
@@ -122,7 +136,14 @@ const GroupGroupType: FC<IProps> = ({
                 );
               })
             ) : (
-              <Box>Place items</Box>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                pt="40px">
+                <Typography>Place items</Typography>
+              </Box>
             )}
             {provided.placeholder}
           </Box>

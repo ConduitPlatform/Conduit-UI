@@ -99,7 +99,7 @@ const BuildTypesContent: FC<Props> = ({
               height: '100%',
               border: '1px',
               background: 'inherit',
-              padding: 4,
+              padding: 2,
               minHeight: 550,
               borderRadius: '4px',
             }}
@@ -116,9 +116,7 @@ const BuildTypesContent: FC<Props> = ({
                       sx={{
                         display: 'flex',
                         flexDirection: 'column-reverse',
-                        padding: 2,
-                        marginBottom: 2,
-                        borderLeft: '1px solid #dce0e5',
+                        py: 2,
                       }}
                       ref={provided.innerRef}
                       {...provided.draggableProps}>
@@ -175,7 +173,6 @@ const BuildTypesContent: FC<Props> = ({
                   justifyContent: 'center',
                   alignItems: 'center',
                   height: 420,
-                  border: 'dashed 1px #667587',
                   opacity: snapshot.isDraggingOver ? 0.4 : undefined,
                 }}>
                 <Content sx={{ mb: 2 }} />

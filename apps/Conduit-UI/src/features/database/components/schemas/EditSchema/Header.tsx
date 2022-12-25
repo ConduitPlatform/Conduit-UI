@@ -111,7 +111,6 @@ const Header: FC<Props> = ({
 
   return (
     <Box
-      boxShadow={3}
       sx={{
         zIndex: 9998,
         height: headerHeight,
