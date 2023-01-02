@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AuthUser, IAuthenticationConfig } from '../models/AuthModels';
+import { AuthUser, CaptchaProvider, IAuthenticationConfig } from '../models/AuthModels';
 import {
   blockUnblockUsers,
   blockUser,
@@ -98,7 +98,20 @@ const initialState: IAuthenticationSlice = {
         verification_redirect_uri: '',
       },
       service: { enabled: false },
-
+      captcha: {
+        enabled: false,
+        acceptablePlatform: {
+          android: false,
+          web: false,
+        },
+        provider: CaptchaProvider.recaptcha,
+        routes: {
+          login: false,
+          register: false,
+          oAuth2: false,
+        },
+        secretKey: '',
+      },
       twitch: {
         accountLinking: false,
         enabled: false,
