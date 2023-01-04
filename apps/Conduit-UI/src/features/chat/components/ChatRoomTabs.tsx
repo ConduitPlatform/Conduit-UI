@@ -1,7 +1,7 @@
 import React, { FC, forwardRef, useCallback, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { useAppDispatch } from '../../../redux/store';
-import { asyncGetChatRooms } from '../store/chatSlice';
+import { asyncAddChatRooms } from '../store/chatSlice';
 import makeStyles from '@mui/styles/makeStyles';
 import memoize from 'memoize-one';
 import { IChatRoom } from '../models/ChatModels';
@@ -122,24 +122,28 @@ const ChatRoomTabs: FC<Props> = ({
   const dispatch = useAppDispatch();
   const classes = useStyles();
 
-  const getChatRooms = useCallback(
-    (skip: number, limit: number) => {
-      const params = {
-        skip: skip,
-        limit: limit,
-        search: debouncedSearch,
-      };
-      dispatch(asyncGetChatRooms(params));
-    },
-    [debouncedSearch, dispatch]
+  const addChatTabs = (skip: number, limit: number) => {
+    const params = {
+      skip: skip,
+      limit: limit,
+      search: debouncedSearch,
+    };
+    dispatch(asyncAddChatRooms(params));
+  };
+
+  const debouncedGetApiItems = debounce(
+    (limit: number) => addChatTabs(chatRooms?.length, limit),
+    timeoutAmount
   );
 
-  const debouncedGetApiItems = debounce(() => getChatRooms(chatRooms?.length, 20), timeoutAmount);
-
-  const loadMoreItems = useCallback(() => {
-    debouncedGetApiItems();
-    return () => debouncedGetApiItems.cancel();
-  }, [debouncedGetApiItems]);
+  const loadMoreItems = useCallback(
+    (stopIndex: number) => {
+      const limit = stopIndex + 1;
+      debouncedGetApiItems(limit);
+      return () => debouncedGetApiItems.cancel();
+    },
+    [debouncedGetApiItems]
+  );
 
   const itemData = createItemData(chatRooms, onPress, onLongPress, selectedTab, classes);
 

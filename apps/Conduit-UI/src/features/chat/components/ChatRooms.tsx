@@ -30,7 +30,9 @@ const ChatRooms: React.FC = () => {
   }, [debouncedSearch, dispatch]);
 
   useEffect(() => {
-    getChatRooms();
+    if (data?.length < count || data?.length === 0) {
+      getChatRooms();
+    }
   }, [getChatRooms]);
 
   const handleCreateChatRoom = (inputData: { name: string; participants: AuthUserUI[] }) => {
