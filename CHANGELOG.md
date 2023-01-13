@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.7](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.6...v0.15.7) (2023-01-13)
+
+
+### Features
+
+* captcha in authentication config ([#210](https://github.com/ConduitPlatform/Conduit-UI/issues/210)) ([29de7e0](https://github.com/ConduitPlatform/Conduit-UI/commit/29de7e0b253870f30222fbf4f58f3237d169253f))
+* **SchemaEditor:** defaut values such as _id, creaated, update now are prefilled ([#208](https://github.com/ConduitPlatform/Conduit-UI/issues/208)) ([584dd24](https://github.com/ConduitPlatform/Conduit-UI/commit/584dd2403510ffe3e121bbd688e7c335863aa7b2))
+
+
+### Bug Fixes
+
+* **database:** broken relation doc links in document selection ([#206](https://github.com/ConduitPlatform/Conduit-UI/issues/206)) ([29269a8](https://github.com/ConduitPlatform/Conduit-UI/commit/29269a8a2c123bf6c34d3f9433be70adb2a4fe0d))
+* **database:** custom endpoint lt,le,gt,ge field comparison operators not selectable for date fields ([#213](https://github.com/ConduitPlatform/Conduit-UI/issues/213)) ([0fe77b2](https://github.com/ConduitPlatform/Conduit-UI/commit/0fe77b2288a21fe88cae9941cd7a665f88a758b4))
+* Storage fix navigation ([#214](https://github.com/ConduitPlatform/Conduit-UI/issues/214)) ([3afa127](https://github.com/ConduitPlatform/Conduit-UI/commit/3afa127118c1ccf2a7e3f05274554a2db539e4d4))
+
 ### [0.15.6](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.5...v0.15.6) (2022-12-16)
 
 
