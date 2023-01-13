@@ -100,7 +100,7 @@ const DataTableRows: React.FC<Props> = ({
   return (
     <>
       <TableRow
-        onClick={() => onMenuItemSelect(row._id)}
+        onClick={() => onRowClick ? onRowClick(row): onMenuItemSelect(row._id)}
         key={index}
         {...tableRowProps}
       >
