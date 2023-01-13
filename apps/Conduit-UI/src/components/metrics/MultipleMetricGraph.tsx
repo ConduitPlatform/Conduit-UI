@@ -11,6 +11,7 @@ import {
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 import MetricWidgetOptions from './MetricWidgetOptions';
 import { GraphContainer } from '@conduitplatform/ui-components';
+import { completeExpression } from '../../utils/injectMetricsLabels';
 
 interface Props {
   expressionsRoutes: ExpressionsRoutesArray[];
@@ -46,7 +47,9 @@ const MultipleMetricGraph: FC<Props> = ({
   const prepareData = useMemo(() => {
     return Object.entries(totalData).filter(([key, item]) =>
       expressionsRoutes.some(
-        (exprRoute) => key === exprRoute.expression && item?.counters?.length > 0
+        (exprRoute) =>
+          key === completeExpression(exprRoute.expression, exprRoute.labels) &&
+          item?.counters?.length > 0
       )
     );
   }, [expressionsRoutes, totalData]);
@@ -59,7 +62,7 @@ const MultipleMetricGraph: FC<Props> = ({
     expressionsRoutes?.map((exprRoute) => {
       dispatch(
         asyncGetGenericMetricQueryRange({
-          expression: exprRoute.expression,
+          expression: completeExpression(exprRoute.expression, exprRoute.labels),
           startDate: startDateValue
             ? startDateValue.valueOf() / 1000
             : moment().subtract(1, 'hours').unix(),
@@ -72,14 +75,21 @@ const MultipleMetricGraph: FC<Props> = ({
 
   const graphLoading = useMemo(() => {
     return Object.entries(loading)
-      .filter(([key, _item]) => expressionsRoutes.some((exprRoute) => key === exprRoute.expression))
+      .filter(([key, _item]) => {
+        return expressionsRoutes.some(
+          (exprRoute) => key === completeExpression(exprRoute.expression, exprRoute.labels)
+        );
+      })
       .some(([_key, item]) => item);
   }, [expressionsRoutes, loading]);
 
   const series = useMemo(() => {
     return prepareData.map(([key, item]) => {
       const serie: MultipleSeries = {
-        name: expressionsRoutes?.find((exprRoute) => exprRoute.expression === key)?.title ?? '',
+        name:
+          expressionsRoutes?.find(
+            (exprRoute) => completeExpression(exprRoute.expression, exprRoute.labels) === key
+          )?.title ?? '',
         data: item.counters,
       };
       return serie;

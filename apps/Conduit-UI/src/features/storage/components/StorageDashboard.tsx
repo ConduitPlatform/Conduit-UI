@@ -17,19 +17,27 @@ const StorageDashboard = () => {
             <ModuleHealth small module="storage" />
           </Grid>
           <Grid item md={2} sm={6} xs={6}>
-            <MetricCount small title="Containers" expression="conduit_containers_total[10m]" />
+            <MetricCount
+              small
+              title="Containers"
+              expression="conduit_containers_total{inject_labels}[10m]"
+            />
           </Grid>
           <Grid item md={2} sm={6} xs={6}>
-            <MetricCount small title="Folders" expression="conduit_folders_total[10m]" />
+            <MetricCount
+              small
+              title="Folders"
+              expression="conduit_folders_total{inject_labels}[10m]"
+            />
           </Grid>
           <Grid item md={2} sm={6} xs={6}>
-            <MetricCount small title="Files" expression="conduit_files_total[10m]" />
+            <MetricCount small title="Files" expression="conduit_files_total{inject_labels}[10m]" />
           </Grid>
           <Grid item md={2} sm={6} xs={6}>
             <MetricCount
               small
               title="Size (bytes)"
-              expression="conduit_storage_size_bytes_total[10m]"
+              expression="conduit_storage_size_bytes_total{inject_labels}[10m]"
             />
           </Grid>
         </Grid>

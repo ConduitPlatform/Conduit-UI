@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
-import ExtractQueryRangeGraph from '../../../components/metrics/ExtractMetricGraph';
 import TotalRequestsByModule from '../../../components/metrics/TotalRequestsByModule';
 import RequestsLatency from '../../../components/metrics/RequestLatency';
 import ModuleHealth from '../../../components/metrics/ModuleHealth';
@@ -10,15 +9,18 @@ import MultipleMetricGraph from '../../../components/metrics/MultipleMetricGraph
 const expressionClientRoutes: ExpressionsRoutesArray[] = [
   {
     title: 'graphql',
-    expression: 'sum(increase(conduit_client_routes_total{transport="graphql"}[10m]))',
+    labels: { transport: 'graphql' },
+    expression: 'sum(increase(conduit_client_routes_total{inject_labels}[10m]))',
   },
   {
     title: 'rest',
-    expression: 'sum(increase(conduit_client_routes_total{transport="rest"}[10m]))',
+    labels: { transport: 'rest' },
+    expression: 'sum(increase(conduit_client_routes_total{inject_labels}[10m]))',
   },
   {
     title: 'socket',
-    expression: 'sum(increase(conduit_client_routes_total{transport="socket"}[10m]))',
+    labels: { transport: 'socket' },
+    expression: 'sum(increase(conduit_client_routes_total{inject_labels}[10m]))',
   },
 ];
 

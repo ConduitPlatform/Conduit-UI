@@ -22,7 +22,7 @@ const AuthenticationDashboard = () => {
             <MetricCount
               small
               title="Logged-in Users"
-              expression="conduit_logged_in_users_total[10m]"
+              expression="conduit_logged_in_users_total{inject_labels}[10m]"
             />
           </Grid>
         </Grid>
@@ -31,7 +31,7 @@ const AuthenticationDashboard = () => {
         </Grid>
         <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
-            expression="sum(increase(conduit_login_requests_total[10m]))"
+            expression="sum(increase(conduit_login_requests_total{inject_labels}[10m]))"
             graphTitle="Login Requests"
             label="Requests"
           />

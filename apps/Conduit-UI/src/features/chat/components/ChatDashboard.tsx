@@ -18,7 +18,11 @@ const ChatDashboard = () => {
             <ModuleHealth small module="chat" />
           </Grid>
           <Grid item xs={6} sm={3}>
-            <MetricCount small title="Chat Rooms" expression="conduit_chat_rooms_total[10m]" />
+            <MetricCount
+              small
+              title="Chat Rooms"
+              expression="conduit_chat_rooms_total{inject_labels}[10m]"
+            />
           </Grid>
         </Grid>
         <Grid item xs={12} lg={6}>
@@ -26,7 +30,7 @@ const ChatDashboard = () => {
         </Grid>
         <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
-            expression="sum(increase(conduit_messages_sent_total[10m]))"
+            expression="sum(increase(conduit_messages_sent_total{inject_labels}[10m]))"
             graphTitle="Messages Sent"
             label="Messages"
           />

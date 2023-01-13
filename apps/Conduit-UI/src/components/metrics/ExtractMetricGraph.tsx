@@ -5,10 +5,12 @@ import AreaChart from '../charts/AreaChart';
 import { asyncGetGenericMetricQueryRange } from '../../redux/slices/metricsSlice';
 import MetricWidgetOptions from './MetricWidgetOptions';
 import { GraphContainer } from '@conduitplatform/ui-components';
+import { completeExpression } from '../../utils/injectMetricsLabels';
 
 interface Props {
   expression: string;
   graphTitle?: string;
+  labels?: { [key: string]: string | number | boolean };
   hasControls?: boolean;
   label?: string;
   canZoom?: boolean;
@@ -22,6 +24,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   hasControls = true,
   label = 'value',
   canZoom = true,
+  labels,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -30,16 +33,19 @@ const ExtractQueryRangeGraph: FC<Props> = ({
   const [selectedStep, setSelectedStep] = useState<string>('10m');
   const [detailedView, setDetailedView] = useState<boolean>(false);
 
-  const data = useAppSelector((state) => state?.metricsSlice?.data?.genericMetric?.[expression]);
+  const data = useAppSelector(
+    (state) => state?.metricsSlice?.data?.genericMetric?.[completeExpression(expression, labels)]
+  );
 
   const loading = useAppSelector(
-    (state) => state?.metricsSlice?.meta.genericMetricLoading?.[expression]
+    (state) =>
+      state?.metricsSlice?.meta.genericMetricLoading?.[completeExpression(expression, labels)]
   );
 
   useEffect(() => {
     dispatch(
       asyncGetGenericMetricQueryRange({
-        expression,
+        expression: completeExpression(expression, labels),
         startDate: startDateValue
           ? startDateValue.valueOf() / 1000
           : moment().subtract(1, 'hours').unix(),
@@ -47,7 +53,7 @@ const ExtractQueryRangeGraph: FC<Props> = ({
         step: selectedStep,
       })
     );
-  }, [dispatch, expression, startDateValue, endDateValue, selectedStep]);
+  }, [dispatch, expression, startDateValue, endDateValue, selectedStep, labels]);
 
   return (
     <GraphContainer>

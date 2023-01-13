@@ -13,11 +13,12 @@ module.exports = (phase) => {
   };
 
   const publicRuntimeConfig = {
-    CONDUIT_URL: process.env.CONDUIT_URL,
+    CONDUIT_NAMESPACE: process.env.CONDUIT_NAMESPACE,
   };
 
   const serverRuntimeConfig = {
     MASTER_KEY: process.env.MASTER_KEY,
+    CONDUIT_NAMESPACE: process.env.CONDUIT_NAMESPACE,
   };
 
   const redirects = async () => {

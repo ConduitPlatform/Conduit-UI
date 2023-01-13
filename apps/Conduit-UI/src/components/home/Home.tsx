@@ -171,7 +171,8 @@ const Home: React.FC = () => {
                     <Grid item xs={6} sm={3}>
                       <MetricCount
                         title="Schemas"
-                        expression="conduit_registered_schemas_total{imported='false'}[5m]"
+                        labels={{ imported: false }}
+                        expression="conduit_registered_schemas_total{inject_labels}[5m]"
                       />
                     </Grid>
                   )}
@@ -185,31 +186,40 @@ const Home: React.FC = () => {
                   )}
                   {isEnabled('chat') && (
                     <Grid item xs={6} sm={3}>
-                      <MetricCount title="Chat Rooms" expression="conduit_chat_rooms_total[5m]" />
+                      <MetricCount
+                        title="Chat Rooms"
+                        expression="conduit_chat_rooms_total{inject_labels}[5m]"
+                      />
                     </Grid>
                   )}
                   {isEnabled('forms') && (
                     <Grid item xs={6} sm={3}>
-                      <MetricCount title="Forms" expression="conduit_forms_total[5m]" />
+                      <MetricCount
+                        title="Forms"
+                        expression="conduit_forms_total{inject_labels}[5m]"
+                      />
                     </Grid>
                   )}
                   {isEnabled('email') && (
                     <Grid item xs={6} sm={3}>
                       <MetricCount
                         title="Email Templates"
-                        expression="conduit_email_templates_total[5m]"
+                        expression="conduit_email_templates_total{inject_labels}[5m]"
                       />
                     </Grid>
                   )}
                   {isEnabled('storage') && (
                     <Grid item xs={6} sm={3}>
-                      <MetricCount title="Files" expression="conduit_files_total[5m]" />
+                      <MetricCount
+                        title="Files"
+                        expression="conduit_files_total{inject_labels}[5m]"
+                      />
                     </Grid>
                   )}
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                   <ExtractQueryRangeGraph
-                    expression="sum(increase(conduit_admin_grpc_requests_total[10m]))"
+                    expression="sum(increase(conduit_admin_grpc_requests_total{inject_labels}[10m]))"
                     graphTitle="Total Admin gRPC Requests"
                     label="Requests"
                     hasControls={false}
@@ -218,7 +228,7 @@ const Home: React.FC = () => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                   <ExtractQueryRangeGraph
-                    expression="sum(increase(conduit_internal_grpc_requests_total[10m]))"
+                    expression="sum(increase(conduit_internal_grpc_requests_total{inject_labels}[10m]))"
                     graphTitle="Internal gRPC Requests"
                     label="Requests"
                     hasControls={false}

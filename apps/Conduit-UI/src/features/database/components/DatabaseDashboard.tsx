@@ -21,14 +21,16 @@ const DatabaseDashboard = () => {
             <MetricCount
               small
               title="Conduit Schemas"
-              expression="conduit_registered_schemas_total{imported='false'}[10m]"
+              labels={{ imported: false }}
+              expression="conduit_registered_schemas_total{inject_labels}[10m]"
             />
           </Grid>
           <Grid item md={3} sm={6} xs={6}>
             <MetricCount
               small
               title="Imported Schemas"
-              expression="conduit_registered_schemas_total{imported='true'}[10m]"
+              labels={{ imported: true }}
+              expression="conduit_registered_schemas_total{inject_labels}[10m]"
             />
           </Grid>
         </Grid>
@@ -37,7 +39,7 @@ const DatabaseDashboard = () => {
         </Grid>
         <Grid item xs={12} lg={6}>
           <ExtractQueryRangeGraph
-            expression="sum(increase(conduit_database_queries_total[10m]))"
+            expression="sum(increase(conduit_database_queries_total{inject_labels}[10m]))"
             graphTitle="Database Queries"
             label="Queries"
           />
