@@ -20,7 +20,7 @@ interface Props {
   collapsible?: any;
   row: any;
   index: number;
-  onRowClick: (item: any) => void;
+  onRowClick?: (item: any) => void;
   actions?: Action[];
   handleAction?: (action: Action, data: any) => void;
   selectedItems: any[];
@@ -100,7 +100,7 @@ const DataTableRows: React.FC<Props> = ({
   return (
     <>
       <TableRow
-        onClick={() => onMenuItemSelect(row._id)}
+        onClick={() => onRowClick && !handleSelect ? onRowClick(row): onMenuItemSelect(row._id)}
         key={index}
         {...tableRowProps}
       >
