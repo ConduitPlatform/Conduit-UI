@@ -371,16 +371,24 @@ const CustomQueryRow: FC<Props> = ({
             <MenuItem aria-label="None" value="-1" />
             <MenuItem value={ConditionsEnum.EQUAL}>(==) equal to</MenuItem>
             <MenuItem value={ConditionsEnum.NEQUAL}>(!=) not equal to</MenuItem>
-            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER}>
+            <MenuItem
+              disabled={!['Number', 'Date'].includes(schemaType)}
+              value={ConditionsEnum.GREATER}>
               {'(>) greater than'}
             </MenuItem>
-            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.GREATER_EQ}>
-              {'(>=) greater that or equal to'}
+            <MenuItem
+              disabled={!['Number', 'Date'].includes(schemaType)}
+              value={ConditionsEnum.GREATER_EQ}>
+              {'(>=) greater than or equal to'}
             </MenuItem>
-            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS}>
+            <MenuItem
+              disabled={!['Number', 'Date'].includes(schemaType)}
+              value={ConditionsEnum.LESS}>
               {'(<) less than'}
             </MenuItem>
-            <MenuItem disabled={schemaType !== 'Number'} value={ConditionsEnum.LESS_EQ}>
+            <MenuItem
+              disabled={!['Number', 'Date'].includes(schemaType)}
+              value={ConditionsEnum.LESS_EQ}>
               {'(<=) less that or equal to'}
             </MenuItem>
             <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.EQUAL_SET}>
