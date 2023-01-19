@@ -2,12 +2,18 @@ import axios from 'axios';
 import { getCurrentStore } from '../redux/store';
 import { asyncLogout } from '../redux/slices/appAuthSlice';
 import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
-
+import getConfig from 'next/config';
 /**
  * We no longer include the masterkey in our requests
  * since we are targeting the proxy server instead which
  * will add it itself.
  * */
+const {
+  publicRuntimeConfig: { CONDUIT_NAMESPACE },
+} = getConfig();
+export const NAMESPACE = process.env.CONDUIT_NAMESPACE
+  ? process.env.CONDUIT_NAMESPACE
+  : CONDUIT_NAMESPACE;
 
 // export const config = {
 //   masterkey: process.env.IS_DEV ? process.env.MASTER_KEY : MASTER_KEY,

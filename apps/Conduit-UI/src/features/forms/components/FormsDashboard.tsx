@@ -17,7 +17,7 @@ const FormsDashboard = () => {
             <ModuleHealth small module="forms" />
           </Grid>
           <Grid item xs={6} sm={3}>
-            <MetricCount small title="Forms" expression="conduit_forms_total[10m]" />
+            <MetricCount small title="Forms" expression="conduit_forms_total{inject_labels}[10m]" />
           </Grid>
         </Grid>
         <Grid item xs={12}>

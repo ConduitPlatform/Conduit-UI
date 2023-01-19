@@ -34,4 +34,5 @@ export interface MultipleSeries {
 export interface ExpressionsRoutesArray {
   title: string;
   expression: string;
+  labels: { [key: string]: string | number | boolean };
 }

@@ -1,4 +1,4 @@
-import { getRequestLoki } from '../requestsConfig';
+import { getRequestLoki, NAMESPACE } from '../requestsConfig';
 import { ModulesTypes } from '../../models/logs/LogsModels';
 
 export const getLogsLevels = (body: { startDate?: number; endDate?: number }) =>
@@ -15,6 +15,11 @@ export const getLogsQueryRange = (body: {
   limit?: number;
 }) => {
   let query = `{module="${body.module}"`;
+
+  if (NAMESPACE && NAMESPACE.length > 0) {
+    query += `,namespace="${NAMESPACE}"`;
+  }
+
   if (body.levels?.length) {
     const selectedLevelsStr = body.levels?.join('|');
     query = query.concat(', ', `level=~"${selectedLevelsStr}"`);

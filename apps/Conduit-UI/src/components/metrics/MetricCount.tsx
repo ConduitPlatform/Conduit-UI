@@ -7,14 +7,16 @@ import LottieForWidget from './LottieForWidget';
 import MetricsWidget from './MetricsWidget';
 import { getLottieByTitle } from './getLottieByTitle';
 import MetricWidgetSkeleton from './MetricsWidgetSkeleton';
+import { completeExpression } from '../../utils/injectMetricsLabels';
 
 interface Props {
   expression: string;
+  labels?: { [key: string]: string | number | boolean };
   title: string;
   small?: boolean;
 }
 
-const MetricCount: FC<Props> = ({ expression, title, small }) => {
+const MetricCount: FC<Props> = ({ expression, title, small, labels }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -40,20 +42,21 @@ const MetricCount: FC<Props> = ({ expression, title, small }) => {
   };
 
   const counter: number = useAppSelector(
-    (state) => state?.metricsSlice?.data?.metricCounter?.[expression]
+    (state) => state?.metricsSlice?.data?.metricCounter?.[completeExpression(expression, labels)]
   );
 
   const loading = useAppSelector(
-    (state) => state?.metricsSlice?.meta?.metricCounterLoading?.[expression]
+    (state) =>
+      state?.metricsSlice?.meta?.metricCounterLoading?.[completeExpression(expression, labels)]
   );
 
   useEffect(() => {
     dispatch(
       asyncGetCounter({
-        expression,
+        expression: completeExpression(expression, labels),
       })
     );
-  }, [dispatch, expression]);
+  }, [dispatch, expression, labels]);
 
   const extractContent = () => {
     if (loading) {

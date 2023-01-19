@@ -17,7 +17,11 @@ const SmsDashboard = () => {
             <ModuleHealth small module="sms" />
           </Grid>
           <Grid item sm={3} xs={6}>
-            <MetricCount small title="SMS Sent" expression="conduit_sms_sent_total[5m]" />
+            <MetricCount
+              small
+              title="SMS Sent"
+              expression="conduit_sms_sent_total{inject_labels}[5m]"
+            />
           </Grid>
         </Grid>
         <Grid container item spacing={2}>
