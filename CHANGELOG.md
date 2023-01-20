@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.9](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.8...v0.15.9) (2023-01-20)
+
+
+### Bug Fixes
+
+* **authentication:** missing client sessions config (hotfix) ([b5875ea](https://github.com/ConduitPlatform/Conduit-UI/commit/b5875ea16da44136d634f5562bf1cddee18a0fc8))
+
 ### [0.15.8](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.7...v0.15.8) (2023-01-20)
 
 
