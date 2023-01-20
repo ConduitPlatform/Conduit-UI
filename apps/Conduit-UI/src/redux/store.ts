@@ -17,6 +17,7 @@ import chatSlice from '../features/chat/store/chatSlice';
 import paymentsSlice from '../features/payments/store/paymentsSlice';
 import logsSlice from './slices/logsSlice';
 import metricsSlice from './slices/metricsSlice';
+import authorizationSlice from '../features/authorization/store/authorizationSlice';
 
 let store: any;
 
@@ -26,6 +27,7 @@ export const makeStore = (preloadedState: any) =>
       appSlice,
       appAuthSlice,
       authenticationSlice,
+      authorizationSlice,
       formsSlice,
       databaseSlice,
       customEndpointsSlice,

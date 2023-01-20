@@ -28,6 +28,7 @@ import { asyncGetAdminSettings } from '../../features/settings/store/settingsSli
 import jwt_decode from 'jwt-decode';
 import Router from 'next/router';
 import { getDisabledModules, getSortedModules } from '../../components/modules/moduleUtils';
+import { asyncGetAuthzConfig } from '../../features/authorization/store/authorizationSlice';
 
 export type AppAuthState = {
   data: {
@@ -131,6 +132,9 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
       switch (item.moduleName) {
         case 'authentication':
           thunkAPI.dispatch(asyncGetAuthenticationConfig());
+          break;
+        case 'authorization':
+          thunkAPI.dispatch(asyncGetAuthzConfig());
           break;
         case 'chat':
           thunkAPI.dispatch(asyncGetChatConfig());
