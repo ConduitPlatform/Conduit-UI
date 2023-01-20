@@ -360,6 +360,39 @@ const AuthenticationConfig: React.FC = () => {
                       <FormInputSwitch {...register('service.enabled', { disabled: !edit })} />
                     </Box>
                   </Grid>
+                  <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+
+                  <Grid item xs={12}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography px={3} variant={'h6'}>
+                        Users Sessions
+                      </Typography>
+                    </Box>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography px={3}>Multiple active sessions per client</Typography>
+                      <FormInputSwitch
+                        {...register('clients.multipleUserSessions', { disabled: !edit })}
+                      />
+                    </Box>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography px={3}>Actives sessions from multiple clients</Typography>
+                      <FormInputSwitch
+                        {...register('clients.multipleClientLogins', { disabled: !edit })}
+                      />
+                    </Box>
+                  </Grid>
                 </Grid>
               </>
             )}
