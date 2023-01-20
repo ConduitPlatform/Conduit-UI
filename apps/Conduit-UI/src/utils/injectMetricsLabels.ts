@@ -10,7 +10,7 @@ export const completeExpression = (
     labelString = `{namespace="${NAMESPACE}"}`;
     return completeExpression.replace('{inject_labels}', labelString);
   } else if (!labels) {
-    return completeExpression.replace('{inject_labels}', labelString);
+    return completeExpression.replace('{inject_labels}', '');
   }
   if (NAMESPACE && NAMESPACE.length > 0) {
     labelString = `{namespace="${NAMESPACE}",`;
