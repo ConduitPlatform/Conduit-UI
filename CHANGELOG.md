@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.8](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.7...v0.15.8) (2023-01-20)
+
+
+### Features
+
+* **metrics:** label injection on prometheus metrics to add namespace when it exists ([#215](https://github.com/ConduitPlatform/Conduit-UI/issues/215)) ([52ad5bb](https://github.com/ConduitPlatform/Conduit-UI/commit/52ad5bb2df6df74ea10f516d665995999047c5a2))
+
+
+### Bug Fixes
+
+* **metrics:** label injection ([a2c7e04](https://github.com/ConduitPlatform/Conduit-UI/commit/a2c7e046e3f5633a0393c895911d4ec38bf6ec66))
+
 ### [0.15.7](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.6...v0.15.7) (2023-01-13)
 
 
