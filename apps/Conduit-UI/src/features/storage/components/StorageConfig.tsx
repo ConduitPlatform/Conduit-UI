@@ -56,7 +56,7 @@ const StorageConfig: React.FC = () => {
     { label: 'Azure', value: 'azure' },
     { label: 'Google', value: 'google' },
     { label: 'Local', value: 'local' },
-    { label: 'Aws S3', value: 'aws' },
+    { label: 'S3', value: 'aws' },
     { label: 'Aliyun OSS', value: 'aliyun' },
   ];
 
@@ -184,6 +184,12 @@ const StorageConfig: React.FC = () => {
                       <FormInputText
                         {...register('aws.accountId', { disabled: !edit })}
                         label="Account Id"
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <FormInputText
+                        {...register('aws.endpoint', { disabled: !edit })}
+                        label="Endpoint"
                       />
                     </Grid>
                   </>

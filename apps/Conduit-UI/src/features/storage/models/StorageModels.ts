@@ -16,6 +16,7 @@ export interface IStorageConfig {
     accessKeyId: string;
     secretAccessKey: string;
     accountId: string;
+    endpoint: string;
   };
   aliyun: {
     region: string;
