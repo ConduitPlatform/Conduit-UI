@@ -186,6 +186,11 @@ const StorageConfig: React.FC = () => {
                         label="Account Id"
                       />
                     </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant={'subtitle2'}>
+                        This should be left empty if using AWS S3
+                      </Typography>
+                    </Grid>
                     <Grid item md={6} xs={12}>
                       <FormInputText
                         {...register('aws.endpoint', { disabled: !edit })}
