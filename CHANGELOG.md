@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.10](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.9...v0.15.10) (2023-01-31)
+
+
+### Features
+
+* **storage:** make S3 storage generic with endpoint specification ([#216](https://github.com/ConduitPlatform/Conduit-UI/issues/216)) ([da5b2bf](https://github.com/ConduitPlatform/Conduit-UI/commit/da5b2bfdaddf02d1b1ed8765c6b8064d001965f6))
+
 ### [0.15.9](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.8...v0.15.9) (2023-01-20)
 
 
