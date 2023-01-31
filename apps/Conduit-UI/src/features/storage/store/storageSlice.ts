@@ -67,6 +67,7 @@ const initialState: IStorageSlice = {
         accountId: '',
         region: '',
         secretAccessKey: '',
+        endpoint: '',
       },
       aliyun: {
         region: '',
