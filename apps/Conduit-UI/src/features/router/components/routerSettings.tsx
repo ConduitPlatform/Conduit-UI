@@ -72,10 +72,6 @@ const RouterSettings: React.FC = () => {
                       </Icon>
                     </ConduitTooltip>
                   </Box>
-
-                  <Typography variant={'subtitle1'}>
-                    Below you can see information about the Conduit location
-                  </Typography>
                 </Grid>
                 <Grid item xs={12} container wrap={'nowrap'}>
                   <Grid

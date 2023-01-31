@@ -110,9 +110,6 @@ const GeneralSettingsTab: React.FC = () => {
             <Grid container>
               <Grid item xs={12}>
                 <Typography variant={'h6'}>General</Typography>
-                <Typography variant={'subtitle1'}>
-                  Below you can see information about the Conduit location
-                </Typography>
               </Grid>
               <Grid item xs={12} mt={2} container alignItems={'center'} mb={1}>
                 {SelectEnv}
