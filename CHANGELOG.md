@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.11](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.10...v0.15.11) (2023-02-02)
+
+
+### Bug Fixes
+
+* **database:** unable to set postgres indexes, invalid hash index value ([#217](https://github.com/ConduitPlatform/Conduit-UI/issues/217)) ([86a21ab](https://github.com/ConduitPlatform/Conduit-UI/commit/86a21abb861b41e5b9723d5700c28ec57ab71938))
+
 ### [0.15.10](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.9...v0.15.10) (2023-01-31)
 
 
