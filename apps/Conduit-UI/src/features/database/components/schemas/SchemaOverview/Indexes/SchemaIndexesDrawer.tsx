@@ -56,7 +56,7 @@ const mongoDbIndexTypes = [
 
 const postgresIndexTypes = [
   { value: 'BTREE', label: 'BTREE' },
-  { value: '-HASH', label: 'HASH' },
+  { value: 'HASH', label: 'HASH' },
   { value: 'GIST', label: 'GIST' },
   { value: 'SPGIST', label: 'SPGIST' },
   { value: 'GIN', label: 'GIN' },
@@ -137,7 +137,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
       };
       dispatch(asyncCreateSchemaIndex({ id: schema._id, data: formattedValues }));
     } else if (typeOfDb === 'PostgreSQL') {
-      if (postgresType) {
+      if (!postgresType) {
         dispatch(enqueueInfoNotification('You have to specify a type for your indexes!'));
         return;
       }

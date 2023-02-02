@@ -58,7 +58,7 @@ const IndexCard: FC<Props> = ({ index, handleDeleteIndex }) => {
           }
         </Typography>
         {index.options.unique === true && (
-          <FormControlLabel control={<Checkbox checked={true} />} label="Unique" />
+          <FormControlLabel control={<Checkbox checked={true} disabled={true} />} label="Unique" />
         )}
       </Box>
     </Card>
