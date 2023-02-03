@@ -110,6 +110,10 @@ const NotificationConfig: FC = () => {
       name: 'onesignal',
       label: 'OneSignal',
     },
+    {
+      name: 'basic',
+      label: 'Basic',
+    },
   ];
 
   const getFirebaseForm = () => {
@@ -229,13 +233,13 @@ const NotificationConfig: FC = () => {
                     {...register('providerName', { disabled: !edit })}
                     label={'Provider name'}
                     options={providers?.map((provider) => ({
-                      label: provider.name,
+                      label: provider.label,
                       value: provider.name,
                     }))}
                   />
                 </Grid>
-                {hasProvider &&
-                  (hasProvider === 'firebase' ? getFirebaseForm() : getOneSignalForm())}
+                {hasProvider && hasProvider === 'firebase' && getFirebaseForm()}
+                {hasProvider && hasProvider === 'onesignal' && getOneSignalForm()}
               </Grid>
             )}
             <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
