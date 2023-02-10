@@ -118,7 +118,7 @@ export const getSchemaFieldsWithExtra = (schemaFields) => {
           type: 'Date',
           unique: false,
           select: true,
-          required: false,
+          required: true,
           value: field,
         });
       }
@@ -127,8 +127,9 @@ export const getSchemaFieldsWithExtra = (schemaFields) => {
           name: k,
           type: 'ObjectId',
           unique: true,
+          primaryKey: true,
           select: true,
-          required: false,
+          required: true,
           value: field,
         });
       }
