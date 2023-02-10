@@ -132,7 +132,10 @@ const BuildTypesContent: FC<Props> = ({
                             <CustomizedButton
                               onClick={() => handleDelete(index)}
                               disabled={disabled ? true : checkIfDisabled(item.name)}>
-                              <DeleteIcon color="error" sx={{ height: 25, width: 25 }} />
+                              <DeleteIcon
+                                color={disabled || checkIfDisabled(item.name) ? undefined : 'error'}
+                                sx={{ height: 25, width: 25 }}
+                              />
                             </CustomizedButton>
                             <CustomizedButton
                               onClick={() => handleDrawer(item, index)}
