@@ -68,7 +68,7 @@ export const changePassword = (oldPassword: string, newPassword: string) => {
 };
 
 export const changeOtherAdminsPassword = (adminId: string, newPassword: string) =>
-  putRequest(`/change-password/${adminId}`, {
+  putRequest(`/admins/${adminId}/change-password`, {
     newPassword,
   });
 
