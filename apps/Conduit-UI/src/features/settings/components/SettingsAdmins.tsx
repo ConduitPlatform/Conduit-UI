@@ -18,6 +18,8 @@ import {
 } from '@conduitplatform/ui-components';
 import CreateNewUserModal from './CreateNewAdminUserTab';
 import ChangeOtherAdminsPassword from './ChangeAdminPassword';
+import { enqueueErrorNotification } from '../../../hooks/useNotifier';
+import { getErrorData } from '../../../utils/error-handler';
 
 const SettingsAdmins: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -79,10 +81,8 @@ const SettingsAdmins: React.FC = () => {
     const currentUser = admins.find((admin: IAdmin) => admin._id === data._id) as IAdmin;
     if (action.type === 'delete') {
       if (data.username === loggedInAdmin.username) {
-        setDeleteLoggedInUser({
-          open: true,
-          multiple: false,
-        });
+        enqueueErrorNotification(`Cannot delete self.`);
+        return;
       } else {
         setOpenDeleteUser({
           open: true,
@@ -91,6 +91,10 @@ const SettingsAdmins: React.FC = () => {
       }
       setSelectedAdmin(currentUser);
     } else if (action.type === 'edit') {
+      if (data.username === loggedInAdmin.username) {
+        enqueueErrorNotification(`You must go to your profile to change your password.`);
+        return;
+      }
       setDrawer({ open: true, action: 'edit' });
       setSelectedAdmin(currentUser);
     }
