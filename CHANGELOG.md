@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.12](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.11...v0.15.12) (2023-02-14)
+
+
+### Features
+
+* **push-notifications:** basic provider support ([#219](https://github.com/ConduitPlatform/Conduit-UI/issues/219)) ([cbb7163](https://github.com/ConduitPlatform/Conduit-UI/commit/cbb71632fee6130c886fa64ec08e2e6c4239b4f1))
+
+
+### Bug Fixes
+
+* **database:** schema editor _id, createdAt, updatedAt field constraints ([#220](https://github.com/ConduitPlatform/Conduit-UI/issues/220)) ([77730fe](https://github.com/ConduitPlatform/Conduit-UI/commit/77730fed6e26b3c255dee6af5717dbaf1c57b023))
+* **settings:** admin allowed to try to delete self ([#221](https://github.com/ConduitPlatform/Conduit-UI/issues/221)) ([2667f80](https://github.com/ConduitPlatform/Conduit-UI/commit/2667f8042a6e7bc594fe3eb847bd07b1f018c488))
+
 ### [0.15.11](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.10...v0.15.11) (2023-02-02)
 
 
