@@ -50,7 +50,7 @@ const AuthenticationConfig: React.FC = () => {
     name: 'accessTokens.setCookie',
   });
 
-  const refreshTokenscookies = useWatch({
+  const refreshTokensCookies = useWatch({
     control,
     name: 'refreshTokens.setCookie',
   });
@@ -243,7 +243,7 @@ const AuthenticationConfig: React.FC = () => {
                         <Grid item container spacing={2} alignItems="center">
                           <Grid item md={6} xs={12}>
                             <FormInputText
-                              {...register('accessTokens.expiryPeriod', { disabled: !edit })}
+                              {...register('refreshTokens.expiryPeriod', { disabled: !edit })}
                               label="Expiry Period"
                             />
                           </Grid>
@@ -271,7 +271,7 @@ const AuthenticationConfig: React.FC = () => {
                         <Grid item md={6} xs={12}>
                           <FormInputText
                             {...register('refreshTokens.cookieOptions.sameSite', {
-                              disabled: !edit || !refreshTokens || !refreshTokenscookies,
+                              disabled: !edit || !refreshTokens || !refreshTokensCookies,
                             })}
                             label="Same site"
                           />
@@ -279,7 +279,7 @@ const AuthenticationConfig: React.FC = () => {
                         <Grid item md={6} xs={12}>
                           <FormInputText
                             {...register('refreshTokens.cookieOptions.maxAge', {
-                              disabled: !edit || !refreshTokens || !refreshTokenscookies,
+                              disabled: !edit || !refreshTokens || !refreshTokensCookies,
                             })}
                             label="Max age"
                           />
@@ -287,7 +287,7 @@ const AuthenticationConfig: React.FC = () => {
                         <Grid item md={6} xs={12}>
                           <FormInputText
                             {...register('refreshTokens.cookieOptions.path', {
-                              disabled: !edit || !refreshTokens || !refreshTokenscookies,
+                              disabled: !edit || !refreshTokens || !refreshTokensCookies,
                             })}
                             label="Path"
                           />
@@ -304,7 +304,7 @@ const AuthenticationConfig: React.FC = () => {
                             </Typography>
                             <FormInputSwitch
                               {...register('refreshTokens.cookieOptions.httpOnly', {
-                                disabled: !edit || !refreshTokens || !refreshTokenscookies,
+                                disabled: !edit || !refreshTokens || !refreshTokensCookies,
                               })}
                               switchProps={{ sx: { ml: 1 } }}
                             />
@@ -321,7 +321,7 @@ const AuthenticationConfig: React.FC = () => {
                             </Typography>
                             <FormInputSwitch
                               {...register('refreshTokens.cookieOptions.signed', {
-                                disabled: !edit || !refreshTokens || !refreshTokenscookies,
+                                disabled: !edit || !refreshTokens || !refreshTokensCookies,
                               })}
                               switchProps={{ sx: { ml: 1 } }}
                             />
@@ -338,7 +338,7 @@ const AuthenticationConfig: React.FC = () => {
                             </Typography>
                             <FormInputSwitch
                               {...register('refreshTokens.cookieOptions.secure', {
-                                disabled: !edit || !refreshTokens || !refreshTokenscookies,
+                                disabled: !edit || !refreshTokens || !refreshTokensCookies,
                               })}
                               switchProps={{ sx: { ml: 1 } }}
                             />
