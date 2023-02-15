@@ -3,35 +3,28 @@ import JSONInput from 'react-json-editor-ajrm';
 import { localeEn } from '../../models/JSONEditorAjrmLocale';
 import { useTheme } from '@mui/material';
 
-interface JsonEditorComponentProps {
+export interface JsonEditorComponentProps {
   id?: string | undefined;
   placeholder?: any;
+  reset?: boolean | undefined;
   viewOnly?: boolean | undefined;
   onChange?: any;
+  onBlur?: any;
   confirmGood?: boolean | undefined;
   height?: string | undefined;
   width?: string | undefined;
 }
-
-const JsonEditorComponent: React.FC<JsonEditorComponentProps> = ({
-  id,
-  placeholder,
-  viewOnly,
-  onChange,
-  confirmGood,
-  height,
-  width,
-}) => {
+const JsonEditorComponent = React.forwardRef<
+  JSONInput,
+  React.PropsWithChildren<JsonEditorComponentProps>
+>((props, ref) => {
   const theme = useTheme();
 
   return (
     <JSONInput
-      id={id}
+      ref={ref}
       key={`jsonInput-${theme.palette.mode}`}
-      placeholder={placeholder}
       locale={localeEn}
-      viewOnly={viewOnly}
-      onChange={onChange}
       colors={{
         default:
           theme.palette.mode === 'dark' ? theme.palette.grey['300'] : theme.palette.grey['600'],
@@ -49,11 +42,11 @@ const JsonEditorComponent: React.FC<JsonEditorComponentProps> = ({
         string:
           theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
       }}
-      height={height}
-      width={width}
-      confirmGood={confirmGood}
+      {...props}
     />
   );
-};
+});
+
+JsonEditorComponent.displayName = 'JsonEditorComponent';
 
 export default JsonEditorComponent;
