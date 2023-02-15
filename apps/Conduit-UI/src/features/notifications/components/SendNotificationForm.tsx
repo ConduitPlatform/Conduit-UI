@@ -11,6 +11,7 @@ import { SelectedElements } from '@conduitplatform/ui-components';
 import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
 import { NotificationData } from '../models/NotificationModels';
 import { Pagination, Search } from '../../../models/http/HttpModels';
+import FormInputJsonEditor from '../../../components/common/FormComponents/FormInputJsonEditor';
 
 type SendNotificationProps = {
   handleSend: (value: NotificationData) => void;
@@ -19,11 +20,13 @@ type SendNotificationProps = {
 interface NotificationInputs {
   title: string;
   body: string;
+  data: any;
 }
 
 const defaultValues = {
   title: '',
   body: '',
+  data: {},
 };
 
 const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
@@ -61,9 +64,10 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
     });
   };
 
-  const onSubmit = (data: NotificationInputs) => {
-    const selectedIds = selectedUsers.map((user) => user._id);
-    const dataToSend = { ...data, userIds: selectedIds };
+  const onSubmit = (inputs: NotificationInputs) => {
+    const { title, body, data } = inputs;
+    const userIds = selectedUsers.map((user) => user._id);
+    const dataToSend = { title, body, data, userIds };
     handleSend(dataToSend);
   };
 
@@ -92,10 +96,17 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
                 />
               </Box>
               <Grid item xs={12}>
-                <FormInputText {...register('title')} label="title" />
+                <FormInputText {...register('title')} label="Title" />
               </Grid>
               <Grid item xs={12}>
                 <FormInputText {...register('body')} rows={10} label="Body" />
+              </Grid>
+              <Grid item xs={12}>
+                <FormInputJsonEditor
+                  {...register('data')}
+                  label="Data"
+                  jsonEditorProps={{ height: 'fit-content', width: '100%', confirmGood: true }}
+                />
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
                 <Button type="submit" variant="contained" color="primary" startIcon={<Send />}>
