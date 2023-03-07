@@ -32,7 +32,7 @@ const IntrospectionSchemasList: FC<Props> = ({ handleListItemSelect, search, act
     if (schemaDocuments?.length < schemasCount || schemaDocuments?.length === 0) {
       dispatch(asyncGetIntrospectionSchemas(params));
     }
-  }, [dispatch, search]);
+  }, [dispatch, schemaDocuments?.length, schemasCount, search]);
 
   const addSchemas = (skip: number, limit: number) => {
     const params = {

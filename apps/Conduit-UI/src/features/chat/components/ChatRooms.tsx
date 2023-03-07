@@ -33,7 +33,7 @@ const ChatRooms: React.FC = () => {
     if (data?.length < count || data?.length === 0) {
       getChatRooms();
     }
-  }, [getChatRooms]);
+  }, [count, data?.length, getChatRooms]);
 
   const handleCreateChatRoom = (inputData: { name: string; participants: AuthUserUI[] }) => {
     const participantIds = inputData.participants.map((participant) => participant._id);
