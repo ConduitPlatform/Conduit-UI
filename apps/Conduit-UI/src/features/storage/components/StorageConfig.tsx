@@ -123,6 +123,12 @@ const StorageConfig: React.FC = () => {
           <Grid container spacing={2} sx={{ pl: 4, mb: 1 }}>
             {isActive && (
               <>
+                <Grid item xs={12} display={'flex'} alignItems={'center'} whiteSpace={'nowrap'}>
+                  <Typography variant="subtitle1" mr={2}>
+                    Allow Container Creation
+                  </Typography>
+                  <FormInputSwitch {...register('allowContainerCreation', { disabled: !edit })} />
+                </Grid>
                 <Grid item xs={12}>
                   <Typography variant={'subtitle2'}>The provider to use for storage</Typography>
                 </Grid>
