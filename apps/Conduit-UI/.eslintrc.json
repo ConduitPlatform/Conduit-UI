@@ -21,7 +21,6 @@
   ],
   "rules": {
     "no-eval": "error",
-    "no-console": "warn",
     "react/prop-types": 0,
     "import/first": "error",
     "max-len": ["error", 130],
