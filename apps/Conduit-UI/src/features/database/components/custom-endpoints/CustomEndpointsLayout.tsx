@@ -22,6 +22,7 @@ import EndpointsList from './EndpointsList';
 import { getAccesssibleSchemaFields } from '../../http/DatabaseRequests';
 import ListActions from './ListActions';
 import MainContent from './MainContent';
+import { Button } from '@mui/material';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -216,8 +217,18 @@ const CustomEndpointsLayout: FC = () => {
             initializeData={initializeData}
           />
         }
-        buttonText="create endpoint"
-        buttonClick={handleAddNewEndpoint}
+        buttons={
+          <>
+            <Button
+              color={'primary'}
+              variant={'contained'}
+              fullWidth
+              sx={{ whiteSpace: 'nowrap' }}
+              onClick={handleAddNewEndpoint}>
+              {'Create endpoint'}
+            </Button>
+          </>
+        }
       />
       <ConfirmationDialog
         buttonText={'Delete'}

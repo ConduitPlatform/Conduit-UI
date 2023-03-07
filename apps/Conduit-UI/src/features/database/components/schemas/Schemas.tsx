@@ -267,6 +267,10 @@ const Schemas: FC = () => {
     setNewSchemaDialog(true);
   };
 
+  const handleExportImport = () => {
+    // setNewSchemaDialog(true);
+  };
+
   return (
     <>
       <InfiniteScrollLayout
@@ -372,7 +376,6 @@ const Schemas: FC = () => {
             actualSchema={actualSchema}
           />
         }
-        buttonText={'Create schema'}
         infoComponent={
           <Box
             sx={{
@@ -388,7 +391,26 @@ const Schemas: FC = () => {
             {prepareCardContainer()}
           </Box>
         }
-        buttonClick={handleAddSchema}
+        buttons={
+          <>
+            <Button
+              color={'primary'}
+              variant={'contained'}
+              fullWidth
+              sx={{ whiteSpace: 'nowrap' }}
+              onClick={handleAddSchema}>
+              {'Create schema'}
+            </Button>
+            <Button
+              color={'primary'}
+              variant={'outlined'}
+              fullWidth
+              sx={{ whiteSpace: 'nowrap', marginTop: 1 }}
+              onClick={handleExportImport}>
+              {'Export / Import'}
+            </Button>
+          </>
+        }
       />
       <ConfirmationDialog
         buttonText="Delete"
