@@ -11,7 +11,7 @@ interface Props {
 const InfiniteScrollLayout: React.FC<Props> = ({ listActions, list, buttons, infoComponent }) => {
   return (
     <Box
-      height={'77vh'}
+      height={'75vh'}
       sx={{
         display: 'flex',
         backgroundColor: 'rgba(0,0,0,0.05)',
