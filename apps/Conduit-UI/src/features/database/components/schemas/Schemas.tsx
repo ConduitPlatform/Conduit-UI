@@ -28,6 +28,7 @@ import { SchemaOverview } from './SchemaOverview/SchemaOverview';
 import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
 import { ConduitMultiSelect, ConduitTooltip } from '@conduitplatform/ui-components';
 import InfiniteScrollLayout from '../../../../components/InfiniteScrollLayout';
+import ExportImportDialog from '../../../../components/common/ExportImportDialog';
 
 const TabPanel: FC = ({ children }) => {
   return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
@@ -70,6 +71,7 @@ const Schemas: FC = () => {
   const [schemaName, setSchemaName] = useState('');
   const [enabled, setEnabled] = useState<boolean>(true);
   const [newSchemaDialog, setNewSchemaDialog] = useState(false);
+  const [exportImportSchemaDialog, setExportImportSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
 
@@ -268,7 +270,7 @@ const Schemas: FC = () => {
   };
 
   const handleExportImport = () => {
-    // setNewSchemaDialog(true);
+    setExportImportSchemaDialog(true);
   };
 
   return (
@@ -433,6 +435,14 @@ const Schemas: FC = () => {
         systemSchemas={systemSchemas}
         open={newSchemaDialog}
         handleClose={() => setNewSchemaDialog(false)}
+      />
+      <ExportImportDialog
+        title={'Database Schemas'}
+        open={exportImportSchemaDialog}
+        handleClose={() => setExportImportSchemaDialog(false)}
+        handleExport={() => console.log('export database')}
+        handleImport={(imp) => console.log('import database', imp)}
+        importInfo={'WARNING: Database Schemas with the same name will be overriden'}
       />
     </>
   );
