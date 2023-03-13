@@ -8,6 +8,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
   const pathNames = [
     '/authentication/dashboard',
     '/authentication/users',
+    '/authentication/teams',
     '/authentication/signIn',
     '/authentication/serviceAccounts',
     '/authentication/config',
@@ -15,6 +16,7 @@ const AuthenticationLayout: React.FC = ({ children }) => {
   const labels = [
     { name: 'dashboard', id: 'dashboard' },
     { name: 'users', id: 'users' },
+    { name: 'teams', id: 'teams' },
     { name: 'sign in methods', id: 'signIn' },
     { name: 'service Accounts', id: 'serviceAccounts' },
     { name: 'config', id: 'config' },
