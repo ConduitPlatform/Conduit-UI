@@ -29,6 +29,7 @@ import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
 import { ConduitMultiSelect, ConduitTooltip } from '@conduitplatform/ui-components';
 import InfiniteScrollLayout from '../../../../components/InfiniteScrollLayout';
 import ExportImportDialog from '../../../../components/common/ExportImportDialog';
+import { getSchemasExportRequest, postSchemasImportRequest } from '../../http/DatabaseRequests';
 
 const TabPanel: FC = ({ children }) => {
   return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
@@ -269,8 +270,22 @@ const Schemas: FC = () => {
     setNewSchemaDialog(true);
   };
 
-  const handleExportImport = () => {
-    setExportImportSchemaDialog(true);
+  const handleExport = () => {
+    getSchemasExportRequest()
+      .then((res) => {
+        const json = JSON.stringify(res.data, null, 2);
+        const href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+        const link = document.createElement('a');
+        link.download = 'conduit-schemas.json';
+        link.href = href;
+        link.click();
+        URL.revokeObjectURL(href);
+      })
+      .catch(console.error);
+  };
+
+  const handleImport = (imp: any) => {
+    postSchemasImportRequest(imp).catch(console.error);
   };
 
   return (
@@ -408,7 +423,7 @@ const Schemas: FC = () => {
               variant={'outlined'}
               fullWidth
               sx={{ whiteSpace: 'nowrap', marginTop: 1 }}
-              onClick={handleExportImport}>
+              onClick={() => setExportImportSchemaDialog(true)}>
               {'Export / Import'}
             </Button>
           </>
@@ -440,8 +455,8 @@ const Schemas: FC = () => {
         title={'Database Schemas'}
         open={exportImportSchemaDialog}
         handleClose={() => setExportImportSchemaDialog(false)}
-        handleExport={() => console.log('export database')}
-        handleImport={(imp) => console.log('import database', imp)}
+        handleExport={handleExport}
+        handleImport={handleImport}
         importInfo={'WARNING: Database Schemas with the same name will be overriden'}
       />
     </>
