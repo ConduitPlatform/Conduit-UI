@@ -60,6 +60,6 @@ export const getSchemasExportRequest = () => {
   return getRequest(`/database/schemas/export`);
 };
 
-export const postSchemasImportRequest = (params: any) => {
+export const postSchemasImportRequest = (params: { schemas: any[] }) => {
   return postRequest(`/database/schemas/import`, params);
 };
