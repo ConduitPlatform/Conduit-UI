@@ -285,7 +285,7 @@ const Schemas: FC = () => {
   };
 
   const handleImport = (imp: any) => {
-    postSchemasImportRequest({ schemas: imp }).catch(console.error);
+    postSchemasImportRequest(imp).catch(console.error);
   };
 
   return (
