@@ -19,15 +19,15 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import ClientPlatformEnum, { IClient } from '../models/SecurityModels';
+import ClientPlatformEnum, { IClient, IUpdateClient } from '../models/SecurityModels';
 import {
   asyncDeleteClient,
   asyncGetAvailableClients,
   asyncPutRouterConfig,
+  asyncUpdateClient,
   clearClientSecret,
 } from '../store/routerSlice';
-import { useAppSelector } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import CreateSecurityClientDialog from './CreateSecurityClientDialog';
 import { Add, Edit, InfoOutlined, KeyboardArrowDown } from '@mui/icons-material';
 import UpdateSecurityClient from './UpdateSecurityClient';
@@ -41,6 +41,8 @@ import { prepareSort } from '../../../utils/prepareSort';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { IRouterConfig } from '../models/RouterModels';
 import { FormInputSwitch } from '../../../components/common/FormComponents/FormInputSwitch';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
+import { getErrorData } from '../../../utils/error-handler';
 
 const emptyClient = {
   _id: '',
@@ -55,7 +57,7 @@ const emptyClient = {
 };
 
 const SecurityTab: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -164,6 +166,20 @@ const SecurityTab: React.FC = () => {
     reset();
   };
 
+  const handleCopyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    dispatch(enqueueSuccessNotification(`Client ID copied to clipboard!`));
+  };
+
+  const handleUpdateSecurityClient = async (arg: { _id: string; data: IUpdateClient }) => {
+    try {
+      await dispatch(asyncUpdateClient(arg)).unwrap();
+      dispatch(asyncGetAvailableClients({ sort: prepareSort(sort) }));
+    } catch (error) {
+      dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+    }
+  };
+
   return (
     <Container maxWidth={'md'} sx={{ background: 'text.primary' }}>
       <Paper elevation={0} sx={{ p: 4, borderRadius: 8 }}>
@@ -249,7 +265,13 @@ const SecurityTab: React.FC = () => {
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                 }}>
-                                <Typography variant={'caption'}>{client.clientId}</Typography>
+                                <Typography
+                                  variant={'caption'}
+                                  color={'primary'}
+                                  onClick={() => handleCopyToClipboard(client.clientId)}
+                                  sx={{ cursor: 'pointer' }}>
+                                  {client.clientId}
+                                </Typography>
                               </TableCell>
                               <TableCell
                                 sx={{
@@ -321,6 +343,7 @@ const SecurityTab: React.FC = () => {
                     availableClients={availableClients}
                     handleClose={handleCloseUpdateDialog}
                     client={selectedClient}
+                    onSubmit={handleUpdateSecurityClient}
                   />
                 </SideDrawerWrapper>
               </>
