@@ -123,6 +123,16 @@ export interface IAuthenticationConfig {
   };
   phoneAuthentication: { enabled: boolean };
   clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };
+  teams: {
+    enabled: boolean;
+    enableDefaultTeam: boolean;
+    allowAddWithoutInvite: boolean;
+    invites: {
+      enabled: boolean;
+      sendEmail: boolean;
+      inviteUrl: string;
+    };
+  };
   active: boolean;
   captcha: {
     enabled: boolean;
