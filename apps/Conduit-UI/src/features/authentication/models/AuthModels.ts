@@ -17,6 +17,20 @@ export interface AuthUserUI {
   _id: string;
 }
 
+export interface AuthTeam {
+  name: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
+}
+
+export interface AuthTeamUI {
+  Name: string;
+  'Registered At': string;
+  _id: string;
+}
+
 export interface SignInTypes {
   enabled: boolean;
   OAuth2Flow?: boolean;

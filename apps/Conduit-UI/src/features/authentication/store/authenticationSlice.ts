@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AuthUser, CaptchaProvider, IAuthenticationConfig } from '../models/AuthModels';
+import { AuthTeam, AuthUser, CaptchaProvider, IAuthenticationConfig } from '../models/AuthModels';
 import {
   blockUnblockUsers,
   blockUser,
@@ -22,6 +22,10 @@ interface IAuthenticationSlice {
       users: AuthUser[];
       count: number;
     };
+    authTeams: {
+      teams: AuthTeam[];
+      count: number;
+    };
     config: IAuthenticationConfig;
   };
 }
@@ -30,6 +34,10 @@ const initialState: IAuthenticationSlice = {
   data: {
     authUsers: {
       users: [],
+      count: 0,
+    },
+    authTeams: {
+      teams: [],
       count: 0,
     },
     config: {
@@ -65,6 +73,16 @@ const initialState: IAuthenticationSlice = {
       clients: {
         multipleUserSessions: false,
         multipleClientLogins: true,
+      },
+      teams: {
+        enabled: false,
+        enableDefaultTeam: false,
+        allowAddWithoutInvite: false,
+        invites: {
+          enabled: false,
+          sendEmail: false,
+          inviteUrl: '',
+        },
       },
       phoneAuthentication: {
         enabled: false,
