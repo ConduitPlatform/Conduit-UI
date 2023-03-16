@@ -1,25 +1,30 @@
 import React, { useMemo, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { useAppDispatch } from '../../../redux/store';
-import { Box } from '@mui/material';
-import { IClient } from '../models/SecurityModels';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Box, IconButton } from '@mui/material';
+import { IClient, IUpdateClient } from '../models/SecurityModels';
+import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
 import { FormInputSelect } from '../../../components/common/FormComponents/FormInputSelect';
-import { asyncGetAvailableClients, asyncUpdateClient } from '../store/routerSlice';
 import { platforms } from '../../../utils/platforms';
 import Security from '../../../assets/svgs/security.svg';
-import { enqueueErrorNotification } from '../../../hooks/useNotifier';
-import TemplateEditor from '../../emails/components/TemplateEditor';
+import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
 import Image from 'next/image';
+import { CopyAllOutlined } from '@mui/icons-material';
 
 interface Props {
   handleClose: () => void;
   client: IClient;
   availableClients: IClient[];
+  onSubmit: (arg: { _id: string; data: IUpdateClient }) => void;
 }
 
-const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableClients }) => {
+const UpdateSecurityClient: React.FC<Props> = ({
+  handleClose,
+  client,
+  availableClients,
+  onSubmit,
+}) => {
   const dispatch = useAppDispatch();
 
   const methods = useForm<IClient>({
@@ -38,7 +43,7 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
 
   const existingAlias = (value: string) => value === client?.alias;
 
-  const onSubmit = (data: IClient) => {
+  const handleSubmit = (data: IClient) => {
     if (isWeb && (!data.domain || data.domain.length === 0)) {
       dispatch(enqueueErrorNotification(`Domain needs to be set for web clients`));
       return;
@@ -49,26 +54,44 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
         notes: data.notes,
         domain: data.domain,
       };
-      dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
+      onSubmit({ _id: data._id, data: formattedData });
     } else {
       const formattedData = {
         alias: data.alias !== '' ? data.alias : undefined,
         notes: data.notes,
       };
-      dispatch(asyncUpdateClient({ _id: data._id, data: formattedData }));
+      onSubmit({ _id: data._id, data: formattedData });
     }
-
-    setTimeout(() => {
-      dispatch(asyncGetAvailableClients({}));
-    }, 140);
     handleClose();
+  };
+
+  const handleCopyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    dispatch(enqueueSuccessNotification(`Client ID copied to clipboard!`));
   };
 
   return (
     <Box>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <form onSubmit={methods.handleSubmit(handleSubmit)}>
           <Box display="flex" flexDirection="column" gap={3} p={3}>
+            <FormInputText
+              disabled
+              name={'clientId'}
+              label={'Client ID'}
+              aria-readonly
+              textFieldProps={{
+                InputProps: {
+                  endAdornment: (
+                    <IconButton
+                      disableRipple
+                      onClick={() => handleCopyToClipboard(methods.getValues('clientId'))}>
+                      <CopyAllOutlined />
+                    </IconButton>
+                  ),
+                },
+              }}
+            />
             <FormInputText
               name={'alias'}
               label={'Alias'}
@@ -78,13 +101,10 @@ const UpdateSecurityClient: React.FC<Props> = ({ handleClose, client, availableC
               }}
             />
             {isWeb && <FormInputText name={'domain'} label={'domain'} />}
-            <Controller
-              name="notes"
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <TemplateEditor value={value} setValue={onChange} />
-              )}
-              rules={{ required: 'Template body required' }}
+            <FormInputText
+              name={'notes'}
+              label={'Notes'}
+              textFieldProps={{ multiline: true, rows: 10 }}
             />
             <FormInputSelect
               options={platforms.map((platform) => ({
