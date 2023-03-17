@@ -69,8 +69,13 @@ const Teams: React.FC = () => {
   useEffect(() => {
     setSkip(0);
     setPage(0);
-    setLimit(25);
   }, [debouncedSearch]);
+
+  useEffect(() => {
+    setSkip(0);
+    setPage(0);
+    setSearch('');
+  }, [selectedTeam]);
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
@@ -136,9 +141,6 @@ const Teams: React.FC = () => {
           setSelectedTeam([data]);
         }
       }
-      setSkip(0);
-      setPage(0);
-      setSearch('');
     },
     [selectedTeam]
   );
