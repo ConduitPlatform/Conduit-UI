@@ -128,7 +128,14 @@ const Teams: React.FC = () => {
   const handleSelectTeam = useCallback(
     (data?: AuthTeam) => {
       if (!data) setSelectedTeam(undefined);
-      else setSelectedTeam([...(selectedTeam ?? []), data]);
+      else {
+        if (selectedTeam && selectedTeam.length > 0) {
+          if (selectedTeam[selectedTeam.length - 1]._id !== data.parentTeam) return;
+          setSelectedTeam([...(selectedTeam ?? []), data]);
+        } else {
+          setSelectedTeam([data]);
+        }
+      }
       setSkip(0);
       setPage(0);
       setSearch('');
