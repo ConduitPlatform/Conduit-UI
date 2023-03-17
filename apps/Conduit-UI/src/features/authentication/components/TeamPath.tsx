@@ -1,7 +1,7 @@
 import { Box, Collapse, IconButton } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { AuthTeam } from '../models/AuthModels';
 
 interface Props {
@@ -29,20 +29,19 @@ const TeamPath: FC<Props> = ({ selectedTeam, setSelectedTeam }) => {
           Selected Team:
         </Typography>
         {selectedTeam?.map((team, index, teams) => (
-          <>
+          <Fragment key={index}>
             <Typography
-              key={'teamName' + index}
               variant={'body2'}
               onClick={() => setSelectedTeam(teams.slice(0, index + 1))}
               sx={{ cursor: 'pointer', fontWeight: index < teams.length - 1 ? 'normal' : 'bold' }}>
               {team.name}
             </Typography>
             {index < teams.length - 1 && (
-              <Typography key={'divider' + index} color={'primary'} variant={'h6'}>
+              <Typography color={'primary'} variant={'h6'}>
                 /
               </Typography>
             )}
-          </>
+          </Fragment>
         ))}
       </Box>
     </Collapse>
