@@ -19,10 +19,17 @@ export interface AuthUserUI {
 
 export interface AuthTeam {
   name: string;
+  parentTeam: string;
   isDefault: boolean;
   createdAt: string;
   updatedAt: string;
   _id: string;
+}
+
+export interface AuthTeamFields {
+  name: string;
+  parentTeam?: string;
+  isDefault: boolean;
 }
 
 export interface AuthTeamUI {

@@ -9,32 +9,16 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
 import { Box } from '@mui/material';
 import { FormInputCheckBox } from '../../../components/common/FormComponents/FormInputCheckbox';
-import { AuthTeam } from '../models/AuthModels';
+import { AuthTeam, AuthTeamFields } from '../models/AuthModels';
 
 interface Props {
-  handleNewTeamDispatch: (values: { name: string; isDefault: boolean }) => void;
   data?: AuthTeam;
-  // handleSubmit?: ()
+  handleSubmit: (values: { _id?: string } & AuthTeamFields) => void;
 }
 
-interface NewTeamInputs {
-  name: string;
-  isDefault: boolean;
-  parentTeam?: string;
-}
-
-const defaultValues = {
-  name: '',
-  isDefault: false,
-};
-
-const AddTeamDrawer: React.FC<Props> = ({ handleNewTeamDispatch }) => {
-  const methods = useForm<NewTeamInputs>({ defaultValues: defaultValues });
+const TeamDrawer: React.FC<Props> = ({ data, handleSubmit }) => {
+  const methods = useForm<{ _id?: string } & AuthTeamFields>({ defaultValues: data });
   const { register } = methods;
-
-  const onSubmit = (data: { name: string; isDefault: boolean; parentTeam?: string }) => {
-    handleNewTeamDispatch(data);
-  };
 
   return (
     <Box flex={1} display={'flex'} flexDirection={'column'}>
@@ -48,7 +32,7 @@ const AddTeamDrawer: React.FC<Props> = ({ handleNewTeamDispatch }) => {
         }}
         maxWidth="sm">
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <form onSubmit={methods.handleSubmit(handleSubmit)}>
             <Grid
               container
               alignItems="center"
@@ -61,6 +45,14 @@ const AddTeamDrawer: React.FC<Props> = ({ handleNewTeamDispatch }) => {
                 mt: 10,
               }}
               spacing={2}>
+              <Grid item xs={12}>
+                <FormInputText
+                  disabled
+                  {...register('parentTeam')}
+                  label="Parent Team"
+                  typeOfInput={'text'}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <FormInputText
                   {...register('name', {
@@ -100,4 +92,4 @@ const AddTeamDrawer: React.FC<Props> = ({ handleNewTeamDispatch }) => {
   );
 };
 
-export default AddTeamDrawer;
+export default TeamDrawer;

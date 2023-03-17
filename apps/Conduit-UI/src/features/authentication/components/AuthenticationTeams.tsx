@@ -11,15 +11,19 @@ import {
 import { Button } from '@mui/material';
 import { AddCircle } from '@mui/icons-material';
 import AuthTeams from '../models/AuthTeams';
-import { AuthTeam, AuthTeamUI } from '../models/AuthModels';
+import { AuthTeam, AuthTeamFields, AuthTeamUI } from '../models/AuthModels';
 import {
   asyncAddNewTeam,
   asyncDeleteTeam,
+  asyncEditTeam,
   asyncGetAuthenticationConfig,
   asyncGetAuthTeamData,
 } from '../store/authenticationSlice';
-import AddTeamDrawer from './AddTeamDrawer';
+import TeamDrawer from './TeamDrawer';
 import { handleDeleteDescription, handleDeleteTitle } from './teamDialog';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
 
 const Teams: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -36,7 +40,6 @@ const Teams: React.FC = () => {
   });
   const [selectedTeam, setSelectedTeam] = useState<AuthTeam>();
   const [openDeleteTeam, setOpenDeleteTeam] = useState<boolean>(false);
-  const [openEditTeam, setOpenEditTeam] = useState<boolean>(false);
   const [drawer, setDrawer] = useState<boolean>(false);
 
   const debouncedSearch: string = useDebounce(search, 500);
@@ -80,7 +83,7 @@ const Teams: React.FC = () => {
   const handleAction = (action: { title: string; type: string }, data: AuthTeamUI) => {
     const currentTeam = teams.find((team: AuthTeam) => team._id === data._id) as AuthTeam;
     if (action.type === 'edit') {
-      setOpenEditTeam(true);
+      setDrawer(true);
       setSelectedTeam(currentTeam);
     } else if (action.type === 'delete') {
       setOpenDeleteTeam(true);
@@ -92,20 +95,20 @@ const Teams: React.FC = () => {
     dispatch(asyncGetAuthTeamData({ skip, limit, search: debouncedSearch }));
   }, [debouncedSearch, dispatch, limit, skip]);
 
-  const handleNewTeamDispatch = (
-    values: {
-      name: string;
-      isDefault: boolean;
-    },
-    parentTeam?: string
-  ) => {
-    dispatch(asyncAddNewTeam({ values: { ...values, parentTeam }, getTeams: getTeamsCallback }));
+  const handleTeamDispatch = (values: { _id?: string } & AuthTeamFields) => {
+    if (values._id) {
+      dispatch(asyncEditTeam(values as { _id: string } & AuthTeamFields));
+    } else {
+      dispatch(asyncAddNewTeam({ values, getTeams: getTeamsCallback }));
+    }
     setDrawer(false);
+    setSelectedTeam(undefined);
   };
 
   const handleClose = () => {
     setOpenDeleteTeam(false);
-    setOpenEditTeam(false);
+    setDrawer(false);
+    setSelectedTeam(undefined);
   };
 
   const deleteButtonAction = () => {
@@ -122,7 +125,21 @@ const Teams: React.FC = () => {
   return (
     <div>
       <TableActionsContainer>
-        <div />
+        <TextField
+          size="small"
+          variant="outlined"
+          name="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          label="Find team"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
         <Button
           sx={{ whiteSpace: 'nowrap', ml: 1 }}
           color="primary"
@@ -144,11 +161,9 @@ const Teams: React.FC = () => {
       <SideDrawerWrapper
         open={drawer}
         maxWidth={550}
-        title="Add a new team"
-        closeDrawer={() => setDrawer(false)}>
-        <AddTeamDrawer
-          handleNewTeamDispatch={(values) => handleNewTeamDispatch(values, undefined)}
-        />
+        title={selectedTeam ? `Edit team ${selectedTeam._id}` : 'Add a new team'}
+        closeDrawer={handleClose}>
+        <TeamDrawer data={selectedTeam} handleSubmit={handleTeamDispatch} />
       </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteTeam}
@@ -158,7 +173,6 @@ const Teams: React.FC = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
-      {/*<EditTeamDialog open={openEditTeam} data={selectedTeam} handleClose={handleClose} />*/}
     </div>
   );
 };

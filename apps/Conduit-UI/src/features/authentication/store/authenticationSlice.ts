@@ -1,5 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AuthTeam, AuthUser, CaptchaProvider, IAuthenticationConfig } from '../models/AuthModels';
+import {
+  AuthTeam,
+  AuthTeamFields,
+  AuthUser,
+  CaptchaProvider,
+  IAuthenticationConfig,
+} from '../models/AuthModels';
 import {
   blockUnblockUsers,
   blockUser,
@@ -349,7 +355,7 @@ export const asyncAddNewTeam = createAsyncThunk(
   'authentication/addTeam',
   async (
     params: {
-      values: { name: string; isDefault: boolean; parentTeam?: string };
+      values: AuthTeamFields;
       getTeams: () => void;
     },
     thunkAPI
@@ -370,7 +376,7 @@ export const asyncAddNewTeam = createAsyncThunk(
 
 export const asyncEditTeam = createAsyncThunk(
   'authentication/editTeam',
-  async (values: AuthTeam, thunkAPI) => {
+  async (values: { _id: string } & AuthTeamFields, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await editTeam(values);
@@ -466,7 +472,11 @@ const authenticationSlice = createSlice({
       const foundIndex = state.data.authTeams.teams.findIndex(
         (team) => team._id === action.payload._id
       );
-      if (foundIndex !== -1) state.data.authTeams.teams.splice(foundIndex, 1, action.payload);
+      if (foundIndex !== -1)
+        state.data.authTeams.teams.splice(foundIndex, 1, {
+          ...state.data.authTeams.teams[foundIndex],
+          ...action.payload,
+        });
     });
     builder.addCase(asyncBlockUserUI.fulfilled, (state, action) => {
       const userToBlock = state.data.authUsers.users.find((user) => user._id === action.payload);

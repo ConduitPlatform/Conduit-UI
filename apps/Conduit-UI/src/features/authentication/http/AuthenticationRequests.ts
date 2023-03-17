@@ -1,5 +1,5 @@
 import { deleteRequest, getRequest, patchRequest, postRequest } from '../../../http/requestsConfig';
-import { AuthTeam, AuthUser } from '../models/AuthModels';
+import { AuthTeamFields, AuthUser } from '../models/AuthModels';
 import { Pagination, Search, Sort } from '../../../models/http/HttpModels';
 
 export const getUsers = (params: Pagination & Search & { provider?: string } & Sort) =>
@@ -42,9 +42,9 @@ export const createTeam = (values: { name: string; isDefault: boolean; parentTea
     parentTeam: values.parentTeam,
   });
 
-export const editTeam = (values: AuthTeam) =>
-  patchRequest(`/authentication/teams/${values._id}`, {
-    ...values,
+export const editTeam = ({ _id, ...params }: { _id: string } & AuthTeamFields) =>
+  patchRequest(`/authentication/teams/${_id}`, {
+    ...params,
   });
 
 export const deleteTeam = (id: string) => deleteRequest(`/authentication/teams/${id}`);
