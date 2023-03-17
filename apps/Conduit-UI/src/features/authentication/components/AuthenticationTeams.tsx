@@ -8,7 +8,7 @@ import {
   TableActionsContainer,
   TableContainer,
 } from '@conduitplatform/ui-components';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { AddCircle } from '@mui/icons-material';
 import AuthTeams from '../models/AuthTeams';
 import { AuthTeam, AuthTeamFields, AuthTeamUI } from '../models/AuthModels';
@@ -24,6 +24,7 @@ import { handleDeleteDescription, handleDeleteTitle } from './teamDialog';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import TextField from '@mui/material/TextField';
+import TeamPath from './TeamPath';
 
 const Teams: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +39,8 @@ const Teams: React.FC = () => {
     asc: false,
     index: null,
   });
-  const [selectedTeam, setSelectedTeam] = useState<AuthTeam>();
+  const [selectedTeam, setSelectedTeam] = useState<AuthTeam[]>();
+  const [teamToEdit, setTeamToEdit] = useState<AuthTeam>();
   const [openDeleteTeam, setOpenDeleteTeam] = useState<boolean>(false);
   const [drawer, setDrawer] = useState<boolean>(false);
 
@@ -48,16 +50,21 @@ const Teams: React.FC = () => {
     dispatch(asyncGetAuthenticationConfig());
   }, [dispatch]);
 
-  useEffect(() => {
+  const getTeamsCallback = useCallback(() => {
     dispatch(
       asyncGetAuthTeamData({
         skip,
         limit,
         search: debouncedSearch,
         sort: prepareSort(sort),
+        parentTeam: selectedTeam?.[selectedTeam.length - 1]?._id,
       })
     );
-  }, [dispatch, limit, skip, debouncedSearch, sort]);
+  }, [dispatch, skip, limit, debouncedSearch, sort, selectedTeam]);
+
+  useEffect(() => {
+    getTeamsCallback();
+  }, [getTeamsCallback]);
 
   useEffect(() => {
     setSkip(0);
@@ -84,16 +91,12 @@ const Teams: React.FC = () => {
     const currentTeam = teams.find((team: AuthTeam) => team._id === data._id) as AuthTeam;
     if (action.type === 'edit') {
       setDrawer(true);
-      setSelectedTeam(currentTeam);
+      setTeamToEdit(currentTeam);
     } else if (action.type === 'delete') {
       setOpenDeleteTeam(true);
-      setSelectedTeam(currentTeam);
+      setTeamToEdit(currentTeam);
     }
   };
-
-  const getTeamsCallback = useCallback(() => {
-    dispatch(asyncGetAuthTeamData({ skip, limit, search: debouncedSearch }));
-  }, [debouncedSearch, dispatch, limit, skip]);
 
   const handleTeamDispatch = (values: { _id?: string } & AuthTeamFields) => {
     if (values._id) {
@@ -102,44 +105,59 @@ const Teams: React.FC = () => {
       dispatch(asyncAddNewTeam({ values, getTeams: getTeamsCallback }));
     }
     setDrawer(false);
-    setSelectedTeam(undefined);
+    setTeamToEdit(undefined);
   };
 
   const handleClose = () => {
     setOpenDeleteTeam(false);
     setDrawer(false);
-    setSelectedTeam(undefined);
+    setTeamToEdit(undefined);
   };
 
   const deleteButtonAction = () => {
-    if (!selectedTeam) return;
+    if (!teamToEdit) return;
     const params = {
-      id: `${selectedTeam._id}`,
+      id: `${teamToEdit._id}`,
       getTeams: getTeamsCallback,
     };
     dispatch(asyncDeleteTeam(params));
     setOpenDeleteTeam(false);
-    setSelectedTeam(undefined);
+    setTeamToEdit(undefined);
   };
+
+  const handleSelectTeam = useCallback(
+    (data?: AuthTeam) => {
+      if (!data) setSelectedTeam(undefined);
+      else setSelectedTeam([...(selectedTeam ?? []), data]);
+      setSkip(0);
+      setPage(0);
+      setSearch('');
+    },
+    [selectedTeam]
+  );
 
   return (
     <div>
       <TableActionsContainer>
-        <TextField
-          size="small"
-          variant="outlined"
-          name="Search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          label="Find team"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Box display={'flex'}>
+          <TextField
+            size="small"
+            variant="outlined"
+            name="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            label="Find team"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mr: 1 }}
+          />
+          <TeamPath selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
+        </Box>
         <Button
           sx={{ whiteSpace: 'nowrap', ml: 1 }}
           color="primary"
@@ -156,20 +174,30 @@ const Teams: React.FC = () => {
         page={page}
         count={count}
         noData={!teams.length ? 'teams' : undefined}>
-        <AuthTeams sort={sort} setSort={setSort} teams={teams} handleAction={handleAction} />
+        <AuthTeams
+          sort={sort}
+          setSort={setSort}
+          teams={teams}
+          handleAction={handleAction}
+          handleRowClick={handleSelectTeam}
+        />
       </TableContainer>
       <SideDrawerWrapper
         open={drawer}
         maxWidth={550}
-        title={selectedTeam ? `Edit team ${selectedTeam._id}` : 'Add a new team'}
+        title={teamToEdit ? `Edit team ${teamToEdit._id}` : 'Add a new team'}
         closeDrawer={handleClose}>
-        <TeamDrawer data={selectedTeam} handleSubmit={handleTeamDispatch} />
+        <TeamDrawer
+          data={teamToEdit}
+          handleSubmit={handleTeamDispatch}
+          parentTeam={selectedTeam?.[selectedTeam.length - 1]?._id}
+        />
       </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteTeam}
         handleClose={handleClose}
-        title={selectedTeam && handleDeleteTitle(selectedTeam)}
-        description={selectedTeam && handleDeleteDescription(selectedTeam)}
+        title={teamToEdit && handleDeleteTitle(teamToEdit)}
+        description={teamToEdit && handleDeleteDescription(teamToEdit)}
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />

@@ -226,10 +226,13 @@ const initialState: IAuthenticationSlice = {
 export const asyncGetAuthUserData = createAsyncThunk(
   'authentication/getUserData',
   async (params: Pagination & Search & Sort & { provider?: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getUsers(params);
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }
@@ -341,10 +344,13 @@ export const asyncDeleteUsers = createAsyncThunk(
 export const asyncGetAuthTeamData = createAsyncThunk(
   'authentication/getTeamData',
   async (params: Pagination & Search & Sort & { parentTeam?: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await getTeams(params);
+      thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
     }

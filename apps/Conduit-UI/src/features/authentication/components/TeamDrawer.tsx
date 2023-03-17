@@ -14,10 +14,13 @@ import { AuthTeam, AuthTeamFields } from '../models/AuthModels';
 interface Props {
   data?: AuthTeam;
   handleSubmit: (values: { _id?: string } & AuthTeamFields) => void;
+  parentTeam?: string;
 }
 
-const TeamDrawer: React.FC<Props> = ({ data, handleSubmit }) => {
-  const methods = useForm<{ _id?: string } & AuthTeamFields>({ defaultValues: data });
+const TeamDrawer: React.FC<Props> = ({ data, handleSubmit, parentTeam }) => {
+  const methods = useForm<{ _id?: string } & AuthTeamFields>({
+    defaultValues: { parentTeam: parentTeam, ...data },
+  });
   const { register } = methods;
 
   return (

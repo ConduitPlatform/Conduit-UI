@@ -7,9 +7,10 @@ interface Props {
   setSort: any;
   teams: AuthTeam[];
   handleAction: (action: { title: string; type: string }, data: AuthTeamUI) => void;
+  handleRowClick: (data?: AuthTeam) => void;
 }
 
-const AuthTeams: React.FC<Props> = ({ sort, setSort, teams, handleAction }) => {
+const AuthTeams: React.FC<Props> = ({ sort, setSort, teams, handleAction, handleRowClick }) => {
   const formatData = (teams: AuthTeam[]): AuthTeamUI[] => {
     return teams.map((t) => {
       return {
@@ -19,6 +20,10 @@ const AuthTeams: React.FC<Props> = ({ sort, setSort, teams, handleAction }) => {
         'Registered At': t.createdAt,
       };
     });
+  };
+
+  const findData = (team: AuthTeamUI): AuthTeam | undefined => {
+    return teams.find((t) => t._id === team._id);
   };
 
   const toDelete = {
@@ -49,6 +54,10 @@ const AuthTeams: React.FC<Props> = ({ sort, setSort, teams, handleAction }) => {
       actions={actions}
       handleAction={handleAction}
       selectable={false}
+      handleRowClick={(row) => handleRowClick(findData(row))}
+      tableRowProps={{
+        sx: { cursor: 'pointer' },
+      }}
     />
   );
 };
