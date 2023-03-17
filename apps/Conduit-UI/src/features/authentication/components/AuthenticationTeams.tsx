@@ -8,7 +8,7 @@ import {
   TableActionsContainer,
   TableContainer,
 } from '@conduitplatform/ui-components';
-import { Box, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { AddCircle } from '@mui/icons-material';
 import AuthTeams from '../models/AuthTeams';
 import { AuthTeam, AuthTeamFields, AuthTeamUI } from '../models/AuthModels';
@@ -139,25 +139,21 @@ const Teams: React.FC = () => {
   return (
     <div>
       <TableActionsContainer>
-        <Box display={'flex'}>
-          <TextField
-            size="small"
-            variant="outlined"
-            name="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            label="Find team"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ mr: 1 }}
-          />
-          <TeamPath selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
-        </Box>
+        <TextField
+          size="small"
+          variant="outlined"
+          name="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          label="Find team"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
         <Button
           sx={{ whiteSpace: 'nowrap', ml: 1 }}
           color="primary"
@@ -167,6 +163,7 @@ const Teams: React.FC = () => {
           ADD TEAM
         </Button>
       </TableActionsContainer>
+      <TeamPath selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
       <TableContainer
         handlePageChange={handlePageChange}
         limit={limit}
