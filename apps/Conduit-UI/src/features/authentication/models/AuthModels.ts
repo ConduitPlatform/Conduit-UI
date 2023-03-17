@@ -28,6 +28,7 @@ export interface AuthTeam {
 export interface AuthTeamUI {
   Name: string;
   'Registered At': string;
+  Default: boolean;
   _id: string;
 }
 

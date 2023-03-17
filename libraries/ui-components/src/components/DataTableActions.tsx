@@ -9,7 +9,7 @@ import Upload from "@mui/icons-material/CloudUpload";
 import Sync from "@mui/icons-material/Sync";
 import ReplyAll from "@mui/icons-material/ReplyAll";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import { Add } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
 
 interface Action {
   title: string;
@@ -50,7 +50,7 @@ const DataTableActions: React.FC<Props> = ({
       case "replies":
         return <ReplyAll color="primary" />;
       case "extend":
-        return <Add color="primary" />;
+        return <AddIcon color="primary" />;
 
       default:
         return <></>;

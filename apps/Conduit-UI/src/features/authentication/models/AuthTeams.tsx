@@ -7,25 +7,15 @@ interface Props {
   setSort: any;
   teams: AuthTeam[];
   handleAction: (action: { title: string; type: string }, data: AuthTeamUI) => void;
-  handleSelect: (id: string) => void;
-  handleSelectAll: (data: AuthTeamUI[]) => void;
-  selectedTeams: string[];
 }
 
-const AuthTeams: React.FC<Props> = ({
-  sort,
-  setSort,
-  teams,
-  handleAction,
-  handleSelect,
-  handleSelectAll,
-  selectedTeams,
-}) => {
+const AuthTeams: React.FC<Props> = ({ sort, setSort, teams, handleAction }) => {
   const formatData = (teams: AuthTeam[]): AuthTeamUI[] => {
     return teams.map((t) => {
       return {
         _id: t._id,
         Name: t.name,
+        Default: t.isDefault,
         'Registered At': t.createdAt,
       };
     });
@@ -41,16 +31,12 @@ const AuthTeams: React.FC<Props> = ({
     type: 'edit',
   };
 
-  const toBlock = {
-    title: 'Block/Unblock',
-    type: 'block/unblock',
-  };
-
-  const actions = [toEdit, toBlock, toDelete];
+  const actions = [toEdit, toDelete];
 
   const headers = [
     { title: '_id', sort: '_id' },
     { title: 'Name', sort: 'name' },
+    { title: 'Default', sort: 'isDefault' },
     { title: 'Registered At', sort: 'createdAt' },
   ];
 
@@ -62,9 +48,7 @@ const AuthTeams: React.FC<Props> = ({
       dsData={formatData(teams)}
       actions={actions}
       handleAction={handleAction}
-      handleSelect={handleSelect}
-      handleSelectAll={handleSelectAll}
-      selectedItems={selectedTeams}
+      selectable={false}
     />
   );
 };
