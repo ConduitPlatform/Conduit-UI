@@ -8,10 +8,10 @@ const EmailsLayout: React.FC = ({ children }) => {
   const pathNames = ['/email/dashboard', '/email/templates', '/email/send', '/email/config'];
 
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'templates', id: 'templates' },
-    { name: 'send', id: 'send' },
-    { name: 'config', id: 'config' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'Templates', id: 'templates' },
+    { name: 'Send', id: 'send' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (

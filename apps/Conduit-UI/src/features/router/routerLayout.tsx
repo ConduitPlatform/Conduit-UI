@@ -5,9 +5,9 @@ import StyledLayout from '../../components/navigation/InnerLayouts/styledLayout'
 const RouterLayout: React.FC = ({ children }) => {
   const pathNames = ['/router/dashboard', '/router/settings', '/router/security'];
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'general', id: 'settingsRoute' },
-    { name: 'security', id: 'security' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'General', id: 'settingsRoute' },
+    { name: 'Security', id: 'security' },
   ];
 
   return (

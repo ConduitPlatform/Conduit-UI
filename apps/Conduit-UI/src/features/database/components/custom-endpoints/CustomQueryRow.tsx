@@ -346,7 +346,7 @@ const CustomQueryRow: FC<Props> = ({
           <TextField
             select
             size="small"
-            label={'Schema Field'}
+            label={'Model Field'}
             variant="outlined"
             fullWidth
             value={query.schemaField}
@@ -430,7 +430,7 @@ const CustomQueryRow: FC<Props> = ({
               Add a custom value
             </MenuItem>
             <MenuItem disabled className={classes.group}>
-              Schema Fields
+              Model Fields
             </MenuItem>
             {prepareOptions()}
             <MenuItem disabled className={classes.group}>

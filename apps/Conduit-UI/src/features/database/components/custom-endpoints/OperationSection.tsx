@@ -70,7 +70,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
 
       if (Object.keys(fields.data.accessibleFields).length === 0) {
         dispatch(
-          enqueueInfoNotification('Current schema does not have accessible fields!', 'duplicate')
+          enqueueInfoNotification('Current model does not have accessible fields!', 'duplicate')
         );
       }
 
@@ -107,7 +107,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
 
     if (Object.keys(fields.data.accessibleFields).length === 0) {
       dispatch(
-        enqueueInfoNotification('Current schema does not have accessible fields!', 'duplicate')
+        enqueueInfoNotification('Current model does not have accessible fields!', 'duplicate')
       );
     }
 

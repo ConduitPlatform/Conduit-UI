@@ -8,9 +8,9 @@ const FormsLayout: React.FC = ({ children }) => {
   const pathNames = ['/forms/dashboard', '/forms/view', '/forms/config'];
 
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'view', id: 'view' },
-    { name: 'config', id: 'config' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'View', id: 'view' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (
