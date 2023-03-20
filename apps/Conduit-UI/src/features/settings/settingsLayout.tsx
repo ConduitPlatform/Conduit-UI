@@ -5,9 +5,9 @@ import StyledLayout from '../../components/navigation/InnerLayouts/styledLayout'
 const SettingsLayout: React.FC = ({ children }) => {
   const pathNames = ['/settings/settings', '/settings/admins', '/settings/userSettings'];
   const labels = [
-    { name: 'general', id: 'settings' },
-    { name: 'admin users', id: 'admins' },
-    { name: 'user settings', id: 'userSettings' },
+    { name: 'General', id: 'settings' },
+    { name: 'Admin Users', id: 'admins' },
+    { name: 'User Settings', id: 'userSettings' },
   ];
 
   return (

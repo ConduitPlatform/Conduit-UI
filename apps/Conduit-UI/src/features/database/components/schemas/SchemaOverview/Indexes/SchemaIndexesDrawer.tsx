@@ -212,7 +212,7 @@ const SchemaIndexesDrawer: FC<Props> = ({ open, setOpen, schema }) => {
           </Grid>
           <Grid item xs={12}>
             <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="subtitle2">Schema fields:</Typography>
+              <Typography variant="subtitle2">Model fields:</Typography>
               <IconButton color="primary" size="small" aria-label="add" onClick={handleAddField}>
                 <Add />
               </IconButton>

@@ -8,9 +8,9 @@ const StorageLayout: React.FC = ({ children }) => {
   const pathNames = ['/storage/dashboard', '/storage/files', '/storage/config'];
 
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'files', id: 'files' },
-    { name: 'config', id: 'config' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'Files', id: 'files' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (

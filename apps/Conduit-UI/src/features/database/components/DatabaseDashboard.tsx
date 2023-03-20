@@ -20,7 +20,7 @@ const DatabaseDashboard = () => {
           <Grid item md={3} sm={6} xs={6}>
             <MetricCount
               small
-              title="Conduit Schemas"
+              title="Conduit Models"
               labels={{ imported: false }}
               expression="conduit_registered_schemas_total{inject_labels}[10m]"
             />
@@ -28,7 +28,7 @@ const DatabaseDashboard = () => {
           <Grid item md={3} sm={6} xs={6}>
             <MetricCount
               small
-              title="Imported Schemas"
+              title="Imported Models"
               labels={{ imported: true }}
               expression="conduit_registered_schemas_total{inject_labels}[10m]"
             />

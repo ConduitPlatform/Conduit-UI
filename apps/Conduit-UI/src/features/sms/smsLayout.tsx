@@ -8,9 +8,9 @@ const SMSLayout: React.FC = ({ children }) => {
   const pathNames = ['/sms/dashboard', '/sms/send', '/sms/config'];
 
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'send', id: 'send' },
-    { name: 'config', id: 'config' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'Send', id: 'send' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (

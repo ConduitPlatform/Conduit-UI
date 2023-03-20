@@ -30,14 +30,14 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose, systemSchemas }) => {
     if (regex.test(value)) {
       dispatch(
         enqueueInfoNotification(
-          'The schema name can only contain alpharithmetics and _',
+          'The model name can only contain alpharithmetics and _',
           'duplicate'
         )
       );
     }
 
     if (systemSchemas.find((systemSchema) => systemSchema === value)) {
-      dispatch(enqueueInfoNotification('This schema name is reserved by a system schema'));
+      dispatch(enqueueInfoNotification('This model name is reserved by a system model'));
     }
 
     setTypeName(value.replace(/[^a-z0-9_]/gi, ''));
@@ -70,14 +70,14 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose, systemSchemas }) => {
       onClose={handleCloseClick}>
       <Box maxWidth={600}>
         <DialogTitle id="new-custom-type" sx={{ textAlign: 'center', marginBottom: 4 }}>
-          Create new Schema
+          Create new Model
         </DialogTitle>
         <DialogContent>
           <Box display="flex" justifyContent="center">
             <TextField
               sx={{ width: '70%', mb: 4, mt: 2 }}
               id="type-name"
-              label="Enter your Schema name"
+              label="Enter your Model name"
               variant="outlined"
               value={typeName}
               onChange={(event) => handleTypeName(event.target.value)}
@@ -97,7 +97,7 @@ const NewSchemaDialog: FC<Props> = ({ open, handleClose, systemSchemas }) => {
               sx={{ mb: 3 }}
               variant="contained"
               disabled={isDisabled()}>
-              Create new Schema
+              Create new Model
             </Button>
           </LinkComponent>
         </DialogActions>

@@ -10,10 +10,10 @@ const DatabaseLayout: React.FC = ({ children }) => {
     '/database/custom',
   ];
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'schemas', id: 'schemas' },
-    { name: 'introspection', id: 'introspection' },
-    { name: 'custom endpoints', id: 'custom' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'Models', id: 'schemas' },
+    { name: 'Introspection', id: 'introspection' },
+    { name: 'Custom Endpoints', id: 'custom' },
   ];
 
   return (

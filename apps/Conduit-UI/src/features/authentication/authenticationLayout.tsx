@@ -14,12 +14,12 @@ const AuthenticationLayout: React.FC = ({ children }) => {
     '/authentication/config',
   ];
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'users', id: 'users' },
-    { name: 'teams', id: 'teams' },
-    { name: 'sign in methods', id: 'signIn' },
-    { name: 'service Accounts', id: 'serviceAccounts' },
-    { name: 'config', id: 'config' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'Users', id: 'users' },
+    { name: 'Teams', id: 'teams' },
+    { name: 'Sign-in Methods', id: 'signIn' },
+    { name: 'Service Accounts', id: 'serviceAccounts' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (

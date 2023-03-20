@@ -83,14 +83,14 @@ const ListActions: FC<Props> = ({ filters, schemasWithEndpoints, handleFilterCha
           <ConduitMultiSelect
             formControlProps={{ fullWidth: true }}
             handleChange={handleFilterChange}
-            label="Schemas"
+            label="Models"
             options={schemasWithEndpoints}
             values={schemas}
             sortBy="name"
           />
           <Tooltip title="Custom Endpoints Documentation">
             <a
-              href="https://getconduit.dev/docs/modules/database/tutorials/custom_endpoints"
+              href="https://getconduit.dev/docs/modules/database/custom_endpoints"
               target="_blank"
               rel="noopener noreferrer"
               style={{ textDecoration: 'none' }}>

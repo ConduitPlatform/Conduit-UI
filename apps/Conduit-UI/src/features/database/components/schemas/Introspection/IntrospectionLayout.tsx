@@ -59,7 +59,7 @@ const IntrospectionLayout: FC = () => {
                 name="Search"
                 value={schemaSearch}
                 onChange={(e) => setSchemaSearch(e.target.value)}
-                label="Find schema"
+                label="Find model"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -75,7 +75,7 @@ const IntrospectionLayout: FC = () => {
                     <Typography variant="body2">
                       Database Introspection allows you to conveniently import all or some of your
                       schemas from an existing database without the need of manually creating each
-                      one. Schemas can be edited and verified through the schema editor.
+                      one. Schemas can be edited and verified through the model editor.
                     </Typography>
                     <Box display="flex" justifyContent="flex-end">
                       <a
@@ -103,7 +103,7 @@ const IntrospectionLayout: FC = () => {
           actualSchema={actualSchema}
         />
       }
-      buttonText={'Introspect Schemas'}
+      buttonText={'Introspect Models'}
       infoComponent={
         <>
           <Box
@@ -124,7 +124,7 @@ const IntrospectionLayout: FC = () => {
               />
             ) : (
               <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
-                No schema selected
+                No model selected
               </Typography>
             )}
           </Box>

@@ -80,7 +80,7 @@ const Header: FC<Props> = ({
   const handleDataName = (value: string) => {
     const regex = /[^a-z0-9_]/gi;
     if (regex.test(value)) {
-      dispatch(enqueueInfoNotification('The schema name can only contain alpharithmetics and _'));
+      dispatch(enqueueInfoNotification('The model name can only contain alpharithmetics and _'));
     }
 
     if (reservedBySystemSchema(value)) {

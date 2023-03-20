@@ -105,7 +105,7 @@ const BooleanForm: FC<IProps> = ({
           readOnly: readOnly && !!selectedItem,
         }}
         disabled={readOnly && !!selectedItem}
-        helperText={'This is the name of the field in the schema model'}
+        helperText={'This is the name of the field in the model'}
       />
       <Box width={'100%'}>
         <Grid container>
