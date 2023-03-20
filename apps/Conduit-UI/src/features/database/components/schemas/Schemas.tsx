@@ -296,7 +296,7 @@ const Schemas: FC = () => {
                     title={
                       <Box display="flex" flexDirection="column" gap={2} p={2}>
                         <Typography variant="body2">
-                          Custom content types are expressed as Models which are created in the
+                          Custom content types are expressed as models which are created in the
                           database as schemas. Models contain fields of different types, some of
                           them are optional while others are required. Some of them might even take
                           a default value if nothing else is explicitly specified.
