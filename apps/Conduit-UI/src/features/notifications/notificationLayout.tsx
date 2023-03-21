@@ -12,9 +12,9 @@ const NotificationLayout: React.FC = ({ children }) => {
   ];
 
   const labels = [
-    { name: 'dashboard', id: 'dashboard' },
-    { name: 'send', id: 'send' },
-    { name: 'config', id: 'config' },
+    { name: 'Dashboard', id: 'dashboard' },
+    { name: 'Send', id: 'send' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (

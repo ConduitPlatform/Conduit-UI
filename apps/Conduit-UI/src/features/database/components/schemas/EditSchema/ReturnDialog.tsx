@@ -41,7 +41,7 @@ const ReturnDialog: FC<Props> = ({ open, setOpen, name, introspection }) => {
       </DialogTitle>
       <DialogContent>
         <Typography>
-          The schema was modified, if you proceed any changes you have made will be lost!
+          The model was modified, if you proceed any changes you have made will be lost!
         </Typography>
       </DialogContent>
       <DialogActions>

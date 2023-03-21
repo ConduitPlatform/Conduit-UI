@@ -17,6 +17,28 @@ export interface AuthUserUI {
   _id: string;
 }
 
+export interface AuthTeam {
+  name: string;
+  parentTeam: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
+}
+
+export interface AuthTeamFields {
+  name: string;
+  parentTeam?: string;
+  isDefault: boolean;
+}
+
+export interface AuthTeamUI {
+  Name: string;
+  'Registered At': string;
+  Default: boolean;
+  _id: string;
+}
+
 export interface SignInTypes {
   enabled: boolean;
   OAuth2Flow?: boolean;
@@ -123,6 +145,16 @@ export interface IAuthenticationConfig {
   };
   phoneAuthentication: { enabled: boolean };
   clients: { multipleUserSessions: boolean; multipleClientLogins: boolean };
+  teams: {
+    enabled: boolean;
+    enableDefaultTeam: boolean;
+    allowAddWithoutInvite: boolean;
+    invites: {
+      enabled: boolean;
+      sendEmail: boolean;
+      inviteUrl: string;
+    };
+  };
   active: boolean;
   captcha: {
     enabled: boolean;

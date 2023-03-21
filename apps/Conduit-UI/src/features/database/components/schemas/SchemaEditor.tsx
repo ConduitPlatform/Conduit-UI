@@ -536,7 +536,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     if (nonEditableFields.length) {
       return `Extended Fields `;
     } else {
-      return 'Schema Fields';
+      return 'Model Fields';
     }
   };
 
@@ -688,7 +688,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
             </Accordion>
           ) : (
             <Typography sx={{ textAlign: 'center', marginTop: '60px' }}>
-              Schema cannot be extended
+              Model cannot be extended
             </Typography>
           )}
           <Box

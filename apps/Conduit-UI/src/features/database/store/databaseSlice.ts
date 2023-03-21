@@ -278,7 +278,7 @@ export const asyncCreateSchemaIndex = createAsyncThunk(
     thunkAPI.dispatch(setAppLoading(true));
     try {
       const { data } = await postSchemaIndexRequest(params.id, params.data);
-      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created schema index`));
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully created model index`));
       thunkAPI.dispatch(asyncGetSchemaIndexes({ id: params.id }));
       thunkAPI.dispatch(setAppLoading(false));
       return data;
@@ -366,9 +366,7 @@ export const asyncEditSchema = createAsyncThunk<any, { _id: string; data: any }>
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await patchSchemaRequest(params._id, params.data);
-      thunkAPI.dispatch(
-        enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
-      );
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully edited model [id]:${params._id}`));
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
@@ -388,7 +386,7 @@ export const asyncDeleteSelectedSchemas = createAsyncThunk(
         thunkAPI.dispatch(enqueueSuccessNotification(`Successfully deleted selected schemas`));
       } else {
         thunkAPI.dispatch(
-          enqueueSuccessNotification(`Successfully deleted schema with id: ${args.ids[0]}`)
+          enqueueSuccessNotification(`Successfully deleted model with id: ${args.ids[0]}`)
         );
       }
       thunkAPI.dispatch(setAppLoading(false));
@@ -407,9 +405,7 @@ export const asyncModifyExtension = createAsyncThunk<any, { _id: string; data: a
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await setSchemaExtension(params._id, params.data);
-      thunkAPI.dispatch(
-        enqueueSuccessNotification(`Successfully edited schema [id]:${params._id}`)
-      );
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully edited model [id]:${params._id}`));
       thunkAPI.dispatch(setAppLoading(false));
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));

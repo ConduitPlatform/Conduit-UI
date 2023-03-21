@@ -9,7 +9,7 @@ const ChatLayout: React.FC = ({ children }) => {
   const labels = [
     { name: 'Dashboard', id: 'dashboard' },
     { name: 'Rooms', id: 'rooms' },
-    { name: 'config', id: 'config' },
+    { name: 'Config', id: 'config' },
   ];
 
   return (

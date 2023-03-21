@@ -56,7 +56,7 @@ const CustomEndpointsLayout: FC = () => {
       if (!isFound) {
         router.replace('/database/custom', undefined, { shallow: true });
         dispatch(
-          enqueueInfoNotification('Selected schema has no available endpoints!', 'duplicate')
+          enqueueInfoNotification('Selected model has no available endpoints!', 'duplicate')
         );
       } else {
         setSchemas([`${schema}`]);

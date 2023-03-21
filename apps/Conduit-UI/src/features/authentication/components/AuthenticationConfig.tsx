@@ -55,6 +55,16 @@ const AuthenticationConfig: React.FC = () => {
     name: 'refreshTokens.setCookie',
   });
 
+  const teamsEnabled = useWatch({
+    control,
+    name: 'teams.enabled',
+  });
+
+  const teamsInvitesEnabled = useWatch({
+    control,
+    name: 'teams.invites.enabled',
+  });
+
   const captchaEnabled = useWatch({
     control,
     name: 'captcha.enabled',
@@ -406,140 +416,240 @@ const AuthenticationConfig: React.FC = () => {
                     justifyContent={'space-between'}
                     alignItems={'center'}>
                     <Typography px={3} variant={'h6'}>
+                      Teams
+                    </Typography>
+                    <FormInputSwitch {...register('teams.enabled', { disabled: !edit })} />
+                  </Box>
+                  {teamsEnabled && (
+                    <Grid container spacing={2} pt={3} pl={3}>
+                      <Grid item xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Enable Default Team
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('teams.enableDefaultTeam', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Allow Add Without Invite
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('teams.allowAddWithoutInvite', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} mt={1}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant="body1" fontWeight={'bold'}>
+                            Invites
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('teams.invites.enabled', { disabled: !edit })}
+                          />
+                        </Box>
+                      </Grid>
+                      {teamsInvitesEnabled && (
+                        <>
+                          <Grid item xs={12} ml={2}>
+                            <Box
+                              width={'100%'}
+                              display={'inline-flex'}
+                              justifyContent={'space-between'}
+                              alignItems={'center'}>
+                              <Typography variant={'subtitle1'} mr={1}>
+                                Send Email
+                              </Typography>
+                              <FormInputSwitch
+                                {...register('teams.invites.sendEmail', {
+                                  disabled: !edit,
+                                })}
+                                switchProps={{ sx: { ml: 1 } }}
+                              />
+                            </Box>
+                          </Grid>
+                          <Grid item container alignItems={'center'} ml={2}>
+                            <Grid item md={4} xs={12}>
+                              <Typography variant={'subtitle1'}>Invite URL</Typography>
+                            </Grid>
+                            <Grid item md={8} xs={12}>
+                              <FormInputText
+                                {...register('teams.invites.inviteUrl', { disabled: !edit })}
+                                label="Invite URL"
+                              />
+                            </Grid>
+                          </Grid>
+                        </>
+                      )}
+                    </Grid>
+                  )}
+                </Grid>
+              </>
+            )}
+            {isActive && (
+              <>
+                <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+                <Grid container marginBottom={2}>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography px={3} variant={'h6'}>
                       Captcha
                     </Typography>
                     <FormInputSwitch {...register('captcha.enabled', { disabled: !edit })} />
                   </Box>
-                  <Grid container spacing={2} sx={{ padding: 3 }}>
-                    {captchaEnabled && (
-                      <>
-                        <Grid item container alignItems={'center'}>
-                          <Grid item md={4} xs={12}>
-                            <Typography variant={'subtitle1'} fontWeight={'bold'}>
-                              Provider:
-                            </Typography>
-                          </Grid>
-                          <Grid item md={8} xs={12}>
-                            <FormInputSelect
-                              label={''}
-                              {...register('captcha.provider', { disabled: !edit })}
-                              options={captchaProviders?.map((template) => ({
-                                label: template,
-                                value: template,
-                              }))}
-                            />
-                          </Grid>
-                        </Grid>
 
-                        <Grid item xs={12} mt={1}>
-                          <Typography variant="body1" fontWeight={'bold'}>
-                            Platforms
+                  {captchaEnabled && (
+                    <Grid container spacing={2} pt={3} pl={3}>
+                      <Grid item container alignItems={'center'}>
+                        <Grid item md={4} xs={12}>
+                          <Typography variant={'subtitle1'} fontWeight={'bold'}>
+                            Provider:
                           </Typography>
                         </Grid>
+                        <Grid item md={8} xs={12}>
+                          <FormInputSelect
+                            label={''}
+                            {...register('captcha.provider', { disabled: !edit })}
+                            options={captchaProviders?.map((template) => ({
+                              label: template,
+                              value: template,
+                            }))}
+                          />
+                        </Grid>
+                      </Grid>
 
-                        <Grid item md={6} xs={12}>
-                          <Box
-                            width={'100%'}
-                            display={'inline-flex'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}>
-                            <Typography variant={'subtitle1'} mr={1}>
-                              Android
-                            </Typography>
-                            <FormInputSwitch
-                              {...register('captcha.acceptablePlatform.android', {
-                                disabled: !edit,
-                              })}
-                              switchProps={{ sx: { ml: 1 } }}
-                            />
-                          </Box>
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                          <Box
-                            width={'100%'}
-                            display={'inline-flex'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}>
-                            <Typography variant={'subtitle1'} mr={1}>
-                              Web
-                            </Typography>
-                            <FormInputSwitch
-                              {...register('captcha.acceptablePlatform.web', {
-                                disabled: !edit,
-                              })}
-                              switchProps={{ sx: { ml: 1 } }}
-                            />
-                          </Box>
-                        </Grid>
-                        <Grid item xs={12} mt={1}>
-                          <Typography variant="body1" fontWeight={'bold'}>
-                            Routes
+                      <Grid item xs={12} mt={1}>
+                        <Typography variant="body1" fontWeight={'bold'}>
+                          Platforms
+                        </Typography>
+                      </Grid>
+
+                      <Grid item md={6} xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Android
                           </Typography>
+                          <FormInputSwitch
+                            {...register('captcha.acceptablePlatform.android', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Web
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('captcha.acceptablePlatform.web', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} mt={1}>
+                        <Typography variant="body1" fontWeight={'bold'}>
+                          Routes
+                        </Typography>
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Login
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('captcha.routes.login', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Register
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('captcha.routes.register', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            oAuth2
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('captcha.routes.oAuth2', {
+                              disabled: !edit,
+                            })}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item container alignItems={'center'} mt={1}>
+                        <Grid item md={4} xs={12}>
+                          <Typography variant={'subtitle1'}>Secret key:</Typography>
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                          <Box
-                            width={'100%'}
-                            display={'inline-flex'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}>
-                            <Typography variant={'subtitle1'} mr={1}>
-                              Login
-                            </Typography>
-                            <FormInputSwitch
-                              {...register('captcha.routes.login', {
-                                disabled: !edit,
-                              })}
-                              switchProps={{ sx: { ml: 1 } }}
-                            />
-                          </Box>
+                        <Grid item md={8} xs={12}>
+                          <FormInputText
+                            {...register('captcha.secretKey', { disabled: !edit })}
+                            label="Secret key"
+                          />
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                          <Box
-                            width={'100%'}
-                            display={'inline-flex'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}>
-                            <Typography variant={'subtitle1'} mr={1}>
-                              Register
-                            </Typography>
-                            <FormInputSwitch
-                              {...register('captcha.routes.register', {
-                                disabled: !edit,
-                              })}
-                              switchProps={{ sx: { ml: 1 } }}
-                            />
-                          </Box>
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                          <Box
-                            width={'100%'}
-                            display={'inline-flex'}
-                            justifyContent={'space-between'}
-                            alignItems={'center'}>
-                            <Typography variant={'subtitle1'} mr={1}>
-                              oAuth2
-                            </Typography>
-                            <FormInputSwitch
-                              {...register('captcha.routes.oAuth2', {
-                                disabled: !edit,
-                              })}
-                            />
-                          </Box>
-                        </Grid>
-                        <Grid item container alignItems={'center'} mt={1}>
-                          <Grid item md={4} xs={12}>
-                            <Typography variant={'subtitle1'}>Secret key:</Typography>
-                          </Grid>
-                          <Grid item md={8} xs={12}>
-                            <FormInputText
-                              {...register('captcha.secretKey', { disabled: !edit })}
-                              label="Secret key"
-                            />
-                          </Grid>
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
+                      </Grid>
+                    </Grid>
+                  )}
                 </Grid>
               </>
             )}

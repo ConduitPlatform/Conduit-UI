@@ -92,13 +92,13 @@ const SchemaActionsDialog: FC<Props> = ({
               <FormControlLabel
                 disabled
                 control={<Checkbox defaultChecked />}
-                label="Selected schema will be deleted"
+                label="Selected model will be deleted"
               />
               <FormControlLabel
                 control={
                   <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
                 }
-                label="Delete schema data"
+                label="Delete model data"
               />
             </FormGroup>
           </>
@@ -117,7 +117,7 @@ const SchemaActionsDialog: FC<Props> = ({
                 control={
                   <Checkbox onClick={() => setDeleteData(!deleteData)} checked={deleteData} />
                 }
-                label="Delete schema data"
+                label="Delete model data"
               />
             </FormGroup>
           </>

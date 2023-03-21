@@ -139,6 +139,7 @@ const SharedLayout: FC<Props> = ({
                     disabled={disabled}
                     label={
                       <Typography
+                        sx={{ 'text-transform': 'none' }}
                         color={
                           theme.palette.mode === 'dark'
                             ? theme.palette.common.white

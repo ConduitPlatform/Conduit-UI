@@ -53,7 +53,7 @@ export const asyncGetAvailableClients = createAsyncThunk(
 );
 
 export const asyncUpdateClient = createAsyncThunk(
-  'security/deleteClient',
+  'security/updateClient',
   async (args: { _id: string; data: IUpdateClient }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {

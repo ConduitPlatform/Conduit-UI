@@ -292,7 +292,7 @@ const EndpointAssignments: FC<Props> = ({
             <TextField
               select
               size="small"
-              label={'Schema Field'}
+              label={'Model Field'}
               variant="outlined"
               fullWidth
               value={assignment.schemaField}

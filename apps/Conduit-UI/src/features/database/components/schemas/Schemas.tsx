@@ -234,7 +234,7 @@ const Schemas: FC = () => {
 
     return (
       <Typography sx={{ marginTop: 20 }} variant={'h6'} textAlign={'center'}>
-        No schema selected
+        No model selected
       </Typography>
     );
   };
@@ -303,7 +303,7 @@ const Schemas: FC = () => {
                     name="Search"
                     value={schemaSearch}
                     onChange={(e) => setSchemaSearch(e.target.value)}
-                    label="Find schema"
+                    label="Find model"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -317,10 +317,10 @@ const Schemas: FC = () => {
                     title={
                       <Box display="flex" flexDirection="column" gap={2} p={2}>
                         <Typography variant="body2">
-                          Custom content types are expressed as database schemas. Schemas contain
-                          fields of different types. Some of them are optional, while others are
-                          required. Some of them might even take a default value if nothing else is
-                          explicitly specified.
+                          Custom content types are expressed as models which are created in the
+                          database as schemas. Models contain fields of different types, some of
+                          them are optional while others are required. Some of them might even take
+                          a default value if nothing else is explicitly specified.
                         </Typography>
                         <Box display="flex" justifyContent="flex-end">
                           <a
@@ -328,7 +328,7 @@ const Schemas: FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Schemas</Button>
+                            <Button variant="outlined">Models</Button>
                           </a>
                         </Box>
                         <Box display="flex" justifyContent="flex-end">
@@ -337,7 +337,7 @@ const Schemas: FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ textDecoration: 'none' }}>
-                            <Button variant="outlined">Schema Data</Button>
+                            <Button variant="outlined">Model Data</Button>
                           </a>
                         </Box>
                       </Box>
@@ -416,7 +416,7 @@ const Schemas: FC = () => {
               fullWidth
               sx={{ whiteSpace: 'nowrap' }}
               onClick={handleAddSchema}>
-              {'Create schema'}
+              {'Create Model'}
             </Button>
             <Button
               color={'primary'}

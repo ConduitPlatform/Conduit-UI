@@ -1,5 +1,5 @@
 import { deleteRequest, getRequest, patchRequest, postRequest } from '../../../http/requestsConfig';
-import { AuthUser } from '../models/AuthModels';
+import { AuthTeamFields, AuthUser } from '../models/AuthModels';
 import { Pagination, Search, Sort } from '../../../models/http/HttpModels';
 
 export const getUsers = (params: Pagination & Search & { provider?: string } & Sort) =>
@@ -31,6 +31,23 @@ export const blockUnblockUsers = (body: { ids: string[]; block: boolean }) => {
 export const unblockUser = (id: string) => {
   return postRequest(`/authentication/users/${id}/unblock`);
 };
+
+export const getTeams = (params: Pagination & Search & { parentTeam?: string } & Sort) =>
+  getRequest(`/authentication/teams`, params);
+
+export const createTeam = (values: { name: string; isDefault: boolean; parentTeam?: string }) =>
+  postRequest(`/authentication/teams`, {
+    name: values.name,
+    isDefault: values.isDefault,
+    parentTeam: values.parentTeam,
+  });
+
+export const editTeam = ({ _id, ...params }: { _id: string } & AuthTeamFields) =>
+  patchRequest(`/authentication/teams/${_id}`, {
+    ...params,
+  });
+
+export const deleteTeam = (id: string) => deleteRequest(`/authentication/teams/${id}`);
 
 export const getAuthenticationConfig = () => getRequest(`/config/authentication`);
 

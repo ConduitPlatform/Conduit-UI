@@ -49,9 +49,18 @@ export const getDocumentsByNameRequest = (params: {
   limit: number;
   query?: string;
 }) =>
-  postRequest(`/database/schemas/${params.name}/query`, {
-    ...params,
-  });
+  postRequest(
+    `/database/schemas/${params.name}/query`,
+    {
+      query: params.query,
+    },
+    {
+      params: {
+        skip: params.skip,
+        limit: params.limit,
+      },
+    }
+  );
 
 export const getDocumentByIdRequest = (params: { schemaName: string; id: string }) =>
   getRequest(`/database/schemas/${params.schemaName}/docs/${params.id}`);

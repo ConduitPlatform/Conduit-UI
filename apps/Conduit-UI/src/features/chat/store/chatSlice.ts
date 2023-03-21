@@ -103,10 +103,29 @@ export const asyncGetChatRooms = createAsyncThunk(
       thunkAPI.dispatch(setAppLoading(false));
 
       return {
-        chatRooms: chatRoomDocuments,
-        count,
+        chatRooms: chatRoomDocuments as IChatRoom[],
+        count: count,
         search: params.search,
       };
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncAddChatRooms = createAsyncThunk(
+  'chat/addChatRooms',
+  async (params: { skip: number; limit: number; search?: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const {
+        data: { chatRoomDocuments },
+      } = await getChatRooms(params);
+      thunkAPI.dispatch(setAppLoading(false));
+
+      return { results: chatRoomDocuments as IChatRoom[] };
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -196,7 +215,10 @@ const chatSlice = createSlice({
         state.data.chatRooms.search = '';
         return;
       }
-      state.data.chatRooms.data = [...state.data.chatRooms.data, ...action.payload.chatRooms];
+      state.data.chatRooms.data = action.payload.chatRooms;
+    });
+    builder.addCase(asyncAddChatRooms.fulfilled, (state, action) => {
+      state.data.chatRooms.data = [...state.data.chatRooms.data, ...action.payload.results];
     });
     builder.addCase(asyncGetChatMessages.fulfilled, (state, action) => {
       state.data.chatMessages.data = [...state.data.chatMessages.data, ...action.payload.messages];

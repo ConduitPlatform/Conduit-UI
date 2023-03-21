@@ -76,7 +76,7 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <ExtensionIcon />
           </ListItemIcon>
-          <Tooltip title="Allows the schema to be extended by modules">
+          <Tooltip title="Allows the model to be extended by modules">
             <ListItemText primary="Extendable" />
           </Tooltip>
         </ListItem>
@@ -86,7 +86,7 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <AddIcon />
           </ListItemIcon>
-          <Tooltip title="Allows the creation of schema entries by extension schemas">
+          <Tooltip title="Allows the creation of model entries by extension models">
             <ListItemText primary="Create" />
           </Tooltip>
         </ListItem>
@@ -96,7 +96,7 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
-          <Tooltip title="Allows the modification of target schema entry fields by extension schemas">
+          <Tooltip title="Allows the modification of target model entry fields by extension models">
             <ListItemText primary="Modify" />
           </Tooltip>
         </ListItem>
@@ -106,7 +106,7 @@ export const ExtractSchemaInfo = (schema: Schema, introspection?: boolean) => {
           <ListItemIcon>
             <DeleteIcon />
           </ListItemIcon>
-          <Tooltip title="Allows the deletion of schema entries by extension schemas">
+          <Tooltip title="Allows the deletion of model entries by extension models">
             <ListItemText primary="Delete" />
           </Tooltip>
         </ListItem>

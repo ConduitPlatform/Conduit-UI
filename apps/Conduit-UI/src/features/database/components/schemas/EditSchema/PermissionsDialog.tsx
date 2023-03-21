@@ -98,7 +98,7 @@ const PermissionsDialog: FC<Props> = ({
                       {...register('extendable', { disabled: isDisabled() })}
                       label="Extendable"
                     />
-                    <Tooltip title="Allows the schema to be extended by modules">
+                    <Tooltip title="Allows the model to be extended by modules">
                       <InfoOutlined />
                     </Tooltip>
                   </Box>
@@ -109,7 +109,7 @@ const PermissionsDialog: FC<Props> = ({
                       {...register('canCreate', { disabled: isDisabled() })}
                       label="Create"
                     />
-                    <Tooltip title="Allows the creation of schema entries by extension schemas">
+                    <Tooltip title="Allows the creation of model entries by extension models">
                       <InfoOutlined />
                     </Tooltip>
                   </Box>
@@ -120,7 +120,7 @@ const PermissionsDialog: FC<Props> = ({
                       {...register('canDelete', { disabled: isDisabled() })}
                       label="Delete"
                     />
-                    <Tooltip title="Allows the deletion of schema entries by extension schemas">
+                    <Tooltip title="Allows the deletion of model entries by extension models">
                       <InfoOutlined />
                     </Tooltip>
                   </Box>
@@ -136,7 +136,7 @@ const PermissionsDialog: FC<Props> = ({
                         value: option.value,
                       }))}
                     />
-                    <Tooltip title="Allows the modification of target schema entry fields by extension schemas">
+                    <Tooltip title="Allows the modification of target model entry fields by extension schemas">
                       <InfoOutlined />
                     </Tooltip>
                   </Box>
