@@ -36,9 +36,7 @@ const SchemasList: FC<Props> = ({
       owner: owners,
       enabled: enabled,
     };
-    if (schemaDocuments?.length < schemasCount || schemaDocuments?.length === 0) {
-      dispatch(asyncGetSchemas(params));
-    }
+    dispatch(asyncGetSchemas(params));
   }, [dispatch, search, owners, enabled, schemaDocuments?.length, schemasCount]);
 
   const addSchemas = (skip: number, limit: number) => {
