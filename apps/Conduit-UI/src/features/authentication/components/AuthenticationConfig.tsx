@@ -156,19 +156,16 @@ const AuthenticationConfig: React.FC = () => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <FormInputText
+                    <FormInputSelect
+                      label={'Same site'}
                       {...register('accessTokens.cookieOptions.sameSite', {
-                        disabled: !edit || !accessTokensCookies,
+                        disabled: !edit,
                       })}
-                      label="Same site"
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <FormInputText
-                      {...register('accessTokens.cookieOptions.maxAge', {
-                        disabled: !edit || !accessTokensCookies,
-                      })}
-                      label="Max age"
+                      options={[
+                        { label: 'None', value: 'None' },
+                        { label: 'Lax', value: 'Lax' },
+                        { label: 'Strict', value: 'Strict' },
+                      ]}
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
@@ -279,19 +276,16 @@ const AuthenticationConfig: React.FC = () => {
                           />
                         </Grid>
                         <Grid item md={6} xs={12}>
-                          <FormInputText
+                          <FormInputSelect
+                            label={'Same site'}
                             {...register('refreshTokens.cookieOptions.sameSite', {
-                              disabled: !edit || !refreshTokens || !refreshTokensCookies,
+                              disabled: !edit,
                             })}
-                            label="Same site"
-                          />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                          <FormInputText
-                            {...register('refreshTokens.cookieOptions.maxAge', {
-                              disabled: !edit || !refreshTokens || !refreshTokensCookies,
-                            })}
-                            label="Max age"
+                            options={[
+                              { label: 'None', value: 'None' },
+                              { label: 'Lax', value: 'Lax' },
+                              { label: 'Strict', value: 'Strict' },
+                            ]}
                           />
                         </Grid>
                         <Grid item md={6} xs={12}>
