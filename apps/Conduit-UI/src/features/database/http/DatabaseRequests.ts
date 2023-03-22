@@ -64,3 +64,11 @@ export const getDocumentsByNameRequest = (params: {
 
 export const getDocumentByIdRequest = (params: { schemaName: string; id: string }) =>
   getRequest(`/database/schemas/${params.schemaName}/docs/${params.id}`);
+
+export const getSchemasExportRequest = () => {
+  return getRequest(`/database/schemas/export`);
+};
+
+export const postSchemasImportRequest = (params: any) => {
+  return postRequest(`/database/schemas/import`, params);
+};

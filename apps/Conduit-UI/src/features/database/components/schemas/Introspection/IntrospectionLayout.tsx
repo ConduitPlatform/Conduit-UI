@@ -103,7 +103,6 @@ const IntrospectionLayout: FC = () => {
           actualSchema={actualSchema}
         />
       }
-      buttonText={'Introspect Models'}
       infoComponent={
         <>
           <Box
@@ -137,7 +136,18 @@ const IntrospectionLayout: FC = () => {
           )}
         </>
       }
-      buttonClick={() => handleIntrospectSchemas()}
+      buttons={
+        <>
+          <Button
+            color={'primary'}
+            variant={'contained'}
+            fullWidth
+            sx={{ whiteSpace: 'nowrap' }}
+            onClick={handleIntrospectSchemas}>
+            {'Introspect Models'}
+          </Button>
+        </>
+      }
     />
   );
 };

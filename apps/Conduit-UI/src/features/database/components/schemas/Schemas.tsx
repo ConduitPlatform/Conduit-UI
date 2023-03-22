@@ -28,6 +28,8 @@ import { SchemaOverview } from './SchemaOverview/SchemaOverview';
 import NewSchemaDialog from './SchemaOverview/NewSchemaDialog';
 import { ConduitMultiSelect, ConduitTooltip } from '@conduitplatform/ui-components';
 import InfiniteScrollLayout from '../../../../components/InfiniteScrollLayout';
+import ExportImportDialog from '../../../../components/common/ExportImportDialog';
+import { getSchemasExportRequest, postSchemasImportRequest } from '../../http/DatabaseRequests';
 
 const TabPanel: FC = ({ children }) => {
   return <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>{children}</Box>;
@@ -70,6 +72,7 @@ const Schemas: FC = () => {
   const [schemaName, setSchemaName] = useState('');
   const [enabled, setEnabled] = useState<boolean>(true);
   const [newSchemaDialog, setNewSchemaDialog] = useState(false);
+  const [exportImportSchemaDialog, setExportImportSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
 
@@ -267,6 +270,24 @@ const Schemas: FC = () => {
     setNewSchemaDialog(true);
   };
 
+  const handleExport = () => {
+    getSchemasExportRequest()
+      .then((res) => {
+        const json = JSON.stringify(res.data, null, 2);
+        const href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+        const link = document.createElement('a');
+        link.download = 'conduit-schemas.json';
+        link.href = href;
+        link.click();
+        URL.revokeObjectURL(href);
+      })
+      .catch(console.error);
+  };
+
+  const handleImport = (imp: any) => {
+    postSchemasImportRequest(imp).catch(console.error);
+  };
+
   return (
     <>
       <InfiniteScrollLayout
@@ -372,7 +393,6 @@ const Schemas: FC = () => {
             actualSchema={actualSchema}
           />
         }
-        buttonText={'Create Model'}
         infoComponent={
           <Box
             sx={{
@@ -388,7 +408,26 @@ const Schemas: FC = () => {
             {prepareCardContainer()}
           </Box>
         }
-        buttonClick={handleAddSchema}
+        buttons={
+          <>
+            <Button
+              color={'primary'}
+              variant={'contained'}
+              fullWidth
+              sx={{ whiteSpace: 'nowrap' }}
+              onClick={handleAddSchema}>
+              {'Create Model'}
+            </Button>
+            <Button
+              color={'primary'}
+              variant={'outlined'}
+              fullWidth
+              sx={{ whiteSpace: 'nowrap', marginTop: 1 }}
+              onClick={() => setExportImportSchemaDialog(true)}>
+              {'Export / Import'}
+            </Button>
+          </>
+        }
       />
       <ConfirmationDialog
         buttonText="Delete"
@@ -411,6 +450,14 @@ const Schemas: FC = () => {
         systemSchemas={systemSchemas}
         open={newSchemaDialog}
         handleClose={() => setNewSchemaDialog(false)}
+      />
+      <ExportImportDialog
+        title={'Database Schemas'}
+        open={exportImportSchemaDialog}
+        handleClose={() => setExportImportSchemaDialog(false)}
+        handleExport={handleExport}
+        handleImport={handleImport}
+        importInfo={'WARNING: Database Schemas with the same name will be overriden'}
       />
     </>
   );

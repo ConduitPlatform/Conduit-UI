@@ -1,24 +1,17 @@
 import React, { ReactNode } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 
 interface Props {
   listActions?: ReactNode;
   list?: ReactNode;
-  buttonText?: string;
-  infoComponent?: any;
-  buttonClick?: () => void;
+  buttons?: ReactNode;
+  infoComponent?: ReactNode;
 }
 
-const InfiniteScrollLayout: React.FC<Props> = ({
-  listActions,
-  list,
-  buttonText,
-  infoComponent,
-  buttonClick,
-}) => {
+const InfiniteScrollLayout: React.FC<Props> = ({ listActions, list, buttons, infoComponent }) => {
   return (
     <Box
-      height={'77vh'}
+      height={'75vh'}
       sx={{
         display: 'flex',
         backgroundColor: 'rgba(0,0,0,0.05)',
@@ -26,21 +19,14 @@ const InfiniteScrollLayout: React.FC<Props> = ({
         overflow: 'hidden',
       }}>
       <Box
-        sx={{ minHeight: '50vh', width: '400px', display: 'flex', p: 2, flexDirection: 'column' }}>
+        sx={{ minHeight: '50vh', width: '400px', display: 'flex', p: 1, flexDirection: 'column' }}>
         {listActions}
-        <Box height={'100%'} sx={{ marginTop: 2 }}>
+        <Box width={'100%'} height={'100%'} sx={{ marginTop: 1 }}>
           {list}
         </Box>
-        {buttonText ? (
-          <Button
-            color={'primary'}
-            variant={'contained'}
-            fullWidth
-            sx={{ whiteSpace: 'nowrap', marginTop: 2 }}
-            onClick={buttonClick}>
-            {buttonText}
-          </Button>
-        ) : null}
+        <Box width={'100%'} sx={{ marginTop: 1 }}>
+          {buttons}
+        </Box>
       </Box>
       <Box sx={{ overflow: 'auto' }} width={'100%'}>
         {infoComponent}

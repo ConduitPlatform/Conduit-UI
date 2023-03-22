@@ -64,10 +64,11 @@ const ViewSubscription: React.FC<Props> = ({ subscription }) => {
   };
 
   const chipsToDisplay = (values: Subscription) => {
-    return Object.entries(values).map(
-      ([key, value]) =>
-        key !== 'transactions' && <Chip color="primary" label={`${key}: ${value}`} />
-    );
+    return Object.entries(values)
+      .filter(([key]) => key !== 'transactions')
+      .map(([key, value], index) => (
+        <Chip key={index} color="primary" label={`${key}: ${value}`} />
+      ));
   };
 
   const headers = [
