@@ -109,8 +109,8 @@ const findFieldsWithTypes = (fields: any) => {
   fieldKeys.forEach((field) => {
     fieldsWithTypes.push({
       name: field,
-      type: fields[field].type,
-      required: fields[field].required,
+      type: fields[field].type ?? fields[field],
+      required: fields[field].required ?? false,
     });
   });
   return fieldsWithTypes;
