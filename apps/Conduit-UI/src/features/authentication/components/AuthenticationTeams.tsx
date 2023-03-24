@@ -14,6 +14,7 @@ import AuthTeams from '../models/AuthTeams';
 import { AuthTeam, AuthTeamFields, AuthTeamUI, AuthUser, AuthUserUI } from '../models/AuthModels';
 import {
   asyncAddNewTeam,
+  asyncAddNewTeamMembers,
   asyncDeleteTeam,
   asyncDeleteTeamMembers,
   asyncEditTeam,
@@ -33,6 +34,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { handleDeleteTeamMemberDescription, handleDeleteTeamMemberTitle } from './teamMemberDialog';
 import EditTeamMembersDialog from './EditTeamMembersDialog';
+import AddTeamMemberDrawer from './AddTeamMemberDrawer';
 
 const Teams: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -338,6 +340,23 @@ const Teams: React.FC = () => {
     setSelectedUsers([]);
   };
 
+  const handleAddMemberDispatch = (values: { members: string[] }) => {
+    const params = {
+      values: {
+        _id: selectedTeam?.[selectedTeam.length - 1]?._id ?? '',
+        members: values.members,
+      },
+      getParams: {
+        skip: membersSkip,
+        limit: membersLimit,
+        search: debouncedMemberSearch,
+        sort: prepareSort(membersSort),
+      },
+    };
+    dispatch(asyncAddNewTeamMembers(params));
+    setDrawerAddMember(false);
+  };
+
   return (
     <Box
       sx={{
@@ -493,6 +512,15 @@ const Teams: React.FC = () => {
         buttonAction={deleteButtonAction}
         buttonText={'Delete'}
       />
+      <SideDrawerWrapper
+        open={drawerAddMember}
+        title="Add team members"
+        width={'100%'}
+        closeDrawer={() => {
+          setDrawerAddMember(false);
+        }}>
+        <AddTeamMemberDrawer handleAddTeamMemberDispatch={handleAddMemberDispatch} />
+      </SideDrawerWrapper>
       <ConfirmationDialog
         open={openDeleteUser.open}
         handleClose={handleClose}

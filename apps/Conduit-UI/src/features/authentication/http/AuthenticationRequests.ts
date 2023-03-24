@@ -71,7 +71,7 @@ export const editTeamMembers = ({
   });
 
 export const deleteTeamMembers = ({ _id, ...values }: { _id: string; members: string[] }) =>
-  deleteRequest(`/authentication/teams/${_id}/members`, undefined, {
+  deleteRequest(`/authentication/teams/${_id}/members`, {
     members: values.members,
   });
 

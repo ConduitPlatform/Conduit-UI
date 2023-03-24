@@ -424,17 +424,18 @@ export const asyncAddNewTeamMembers = createAsyncThunk(
   'authentication/addTeamMembers',
   async (
     params: {
+      getParams: Pagination & Search & Sort;
       values: { _id: string; members: string[] };
-      getTeamMembers: () => void;
     },
     thunkAPI
   ) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
       await addTeamMembers(params.values);
-      params.getTeamMembers();
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully added team members!`));
+      const { data } = await getTeamMembers({ _id: params.values._id, ...params.getParams });
       thunkAPI.dispatch(setAppLoading(false));
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -581,7 +582,15 @@ const authenticationSlice = createSlice({
       state.data.authTeams.teamMembers = action.payload.members;
       state.data.authTeams.membersCount = action.payload.count;
     });
+    builder.addCase(asyncAddNewTeamMembers.fulfilled, (state, action) => {
+      state.data.authTeams.teamMembers = action.payload.members;
+      state.data.authTeams.membersCount = action.payload.count;
+    });
     builder.addCase(asyncEditTeamMembers.fulfilled, (state, action) => {
+      state.data.authTeams.teamMembers = action.payload.members;
+      state.data.authTeams.membersCount = action.payload.count;
+    });
+    builder.addCase(asyncDeleteTeamMembers.fulfilled, (state, action) => {
       state.data.authTeams.teamMembers = action.payload.members;
       state.data.authTeams.membersCount = action.payload.count;
     });
