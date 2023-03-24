@@ -12,7 +12,7 @@ interface Props {
 const TeamPath: FC<Props> = ({ selectedTeam, setSelectedTeam }) => {
   return (
     <Collapse in={selectedTeam && selectedTeam.length > 0}>
-      <Box display="flex" alignItems="center" minHeight={32}>
+      <Box display="flex" alignItems="center" minHeight={48} p={1}>
         <Typography
           mr={2}
           color={'lightgray'}

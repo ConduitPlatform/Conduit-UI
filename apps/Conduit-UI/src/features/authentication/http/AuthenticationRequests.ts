@@ -49,6 +49,32 @@ export const editTeam = ({ _id, ...params }: { _id: string } & AuthTeamFields) =
 
 export const deleteTeam = (id: string) => deleteRequest(`/authentication/teams/${id}`);
 
+export const getTeamMembers = ({ _id, ...params }: Pagination & Search & { _id: string } & Sort) =>
+  getRequest(`/authentication/teams/${_id}/members`, params);
+
+export const addTeamMembers = ({ _id, ...values }: { _id: string; members: string[] }) =>
+  postRequest(`/authentication/teams/${_id}/members`, {
+    members: values.members,
+  });
+
+export const editTeamMembers = ({
+  _id,
+  ...values
+}: {
+  _id: string;
+  members: string[];
+  role: string;
+}) =>
+  patchRequest(`/authentication/teams/${_id}/members`, {
+    members: values.members,
+    role: values.role,
+  });
+
+export const deleteTeamMembers = ({ _id, ...values }: { _id: string; members: string[] }) =>
+  deleteRequest(`/authentication/teams/${_id}/members`, {
+    members: values.members,
+  });
+
 export const getAuthenticationConfig = () => getRequest(`/config/authentication`);
 
 export const patchAuthenticationConfig = (body: any) =>
