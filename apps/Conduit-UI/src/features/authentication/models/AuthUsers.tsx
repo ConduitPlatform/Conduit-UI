@@ -10,6 +10,7 @@ interface Props {
   handleSelect: (id: string) => void;
   handleSelectAll: (data: AuthUserUI[]) => void;
   selectedUsers: string[];
+  actions?: ('delete' | 'edit' | 'block')[];
 }
 
 const AuthUsers: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const AuthUsers: React.FC<Props> = ({
   handleSelect,
   handleSelectAll,
   selectedUsers,
+  actions = ['edit', 'delete', 'block'],
 }) => {
   const formatData = (users: AuthUser[]) => {
     return users.map((u) => {
@@ -33,22 +35,25 @@ const AuthUsers: React.FC<Props> = ({
     });
   };
 
-  const toDelete = {
-    title: 'Delete',
-    type: 'delete',
-  };
-
-  const toEdit = {
-    title: 'Edit',
-    type: 'edit',
-  };
-
-  const toBlock = {
-    title: 'Block/Unblock',
-    type: 'block/unblock',
-  };
-
-  const actions = [toEdit, toBlock, toDelete];
+  const tableActions = actions.map((action) => {
+    switch (action) {
+      case 'edit':
+        return {
+          title: 'Edit',
+          type: 'edit',
+        };
+      case 'delete':
+        return {
+          title: 'Delete',
+          type: 'delete',
+        };
+      case 'block':
+        return {
+          title: 'Block/Unblock',
+          type: 'block/unblock',
+        };
+    }
+  });
 
   const headers = [
     { title: '_id', sort: '_id' },
@@ -64,7 +69,7 @@ const AuthUsers: React.FC<Props> = ({
       headers={headers}
       setSort={setSort}
       dsData={formatData(users)}
-      actions={actions}
+      actions={tableActions}
       handleAction={handleAction}
       handleSelect={handleSelect}
       handleSelectAll={handleSelectAll}

@@ -250,8 +250,7 @@ const Users: React.FC = () => {
                   open: true,
                   multiple: true,
                 })
-              }
-              size="large">
+              }>
               <Tooltip title="Block multiple users">
                 <BlockIcon />
               </Tooltip>
@@ -263,8 +262,7 @@ const Users: React.FC = () => {
                   open: true,
                   multiple: true,
                 })
-              }
-              size="large">
+              }>
               <Tooltip title="Delete multiple users">
                 <DeleteIcon />
               </Tooltip>

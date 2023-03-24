@@ -75,7 +75,7 @@ const SharedLayout: FC<Props> = ({
   }));
 
   return (
-    <Box sx={{ height: '100vh', p: 4 }}>
+    <Box sx={{ height: '100vh', p: 4, display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 2 }}>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant={'h4'}>{title}</Typography>
@@ -191,7 +191,9 @@ const SharedLayout: FC<Props> = ({
           transportsRouter={transportsRouter}
         />
       </Box>
-      <Box>{children}</Box>
+      <Box display={'flex'} flexDirection={'column'} flex={1} alignItems={'stretch'}>
+        {children}
+      </Box>
       {module === 'settings' ? null : logsAvailable ? <LogsComponent module={module} /> : null}
     </Box>
   );

@@ -7,15 +7,19 @@ import {
   IAuthenticationConfig,
 } from '../models/AuthModels';
 import {
+  addTeamMembers,
   blockUnblockUsers,
   blockUser,
   createTeam,
   createUser,
   deleteTeam,
+  deleteTeamMembers,
   deleteUsers,
   editTeam,
+  editTeamMembers,
   editUser,
   getAuthenticationConfig,
+  getTeamMembers,
   getTeams,
   getUsers,
   patchAuthenticationConfig,
@@ -35,6 +39,8 @@ interface IAuthenticationSlice {
     authTeams: {
       teams: AuthTeam[];
       count: number;
+      teamMembers: AuthUser[];
+      membersCount: number;
     };
     config: IAuthenticationConfig;
   };
@@ -49,6 +55,8 @@ const initialState: IAuthenticationSlice = {
     authTeams: {
       teams: [],
       count: 0,
+      teamMembers: [],
+      membersCount: 0,
     },
     config: {
       active: false,
@@ -412,6 +420,93 @@ export const asyncDeleteTeam = createAsyncThunk(
   }
 );
 
+export const asyncAddNewTeamMembers = createAsyncThunk(
+  'authentication/addTeamMembers',
+  async (
+    params: {
+      values: { _id: string; members: string[] };
+      getTeamMembers: () => void;
+    },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await addTeamMembers(params.values);
+      params.getTeamMembers();
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully added team members!`));
+      thunkAPI.dispatch(setAppLoading(false));
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetAuthTeamMembersData = createAsyncThunk(
+  'authentication/getTeamMembersData',
+  async (params: Pagination & Search & Sort & { _id: string }, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getTeamMembers(params);
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncEditTeamMembers = createAsyncThunk(
+  'authentication/editTeamMembers',
+  async (
+    {
+      getParams,
+      ...values
+    }: { _id: string; members: string[]; role: string; getParams: Pagination & Search & Sort },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await editTeamMembers(values);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully edited team members!`));
+      const { data } = await getTeamMembers({ _id: values._id, ...getParams });
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncDeleteTeamMembers = createAsyncThunk(
+  'authentication/deleteTeam',
+  async (
+    {
+      getParams,
+      ...params
+    }: { _id: string; members: string[]; getParams: Pagination & Search & Sort },
+    thunkAPI
+  ) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      await deleteTeamMembers(params);
+      thunkAPI.dispatch(enqueueSuccessNotification(`Successfully removed team members!`));
+      const { data } = await getTeamMembers({ _id: params._id, ...getParams });
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
 export const asyncGetAuthenticationConfig = createAsyncThunk(
   'authentication/getConfig',
   async (arg, thunkAPI) => {
@@ -481,6 +576,14 @@ const authenticationSlice = createSlice({
           ...state.data.authTeams.teams[foundIndex],
           ...action.payload,
         });
+    });
+    builder.addCase(asyncGetAuthTeamMembersData.fulfilled, (state, action) => {
+      state.data.authTeams.teamMembers = action.payload.members;
+      state.data.authTeams.membersCount = action.payload.count;
+    });
+    builder.addCase(asyncEditTeamMembers.fulfilled, (state, action) => {
+      state.data.authTeams.teamMembers = action.payload.members;
+      state.data.authTeams.membersCount = action.payload.count;
     });
     builder.addCase(asyncBlockUserUI.fulfilled, (state, action) => {
       const userToBlock = state.data.authUsers.users.find((user) => user._id === action.payload);
