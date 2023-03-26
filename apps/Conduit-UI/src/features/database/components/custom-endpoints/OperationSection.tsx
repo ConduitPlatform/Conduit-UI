@@ -154,7 +154,7 @@ const OperationSection: FC<Props> = ({ createMode, editMode, availableSchemas })
   const getData = useCallback(
     (params: Pagination & Search) => {
       if (drawer) {
-        dispatch(asyncGetSchemasDialog({ ...params, enabled: true }));
+        dispatch(asyncGetSchemasDialog({ ...params, enabled: true, sort: 'name' }));
       }
     },
     [dispatch, drawer]
