@@ -21,6 +21,7 @@ export default class MyDocument extends Document {
           />
           {/* eslint-enable */}
           {(this.props as any).emotionStyleTags}
+          <link rel="icon" href="/favicon.ico" />
         </Head>
         <body>
           <Main />
