@@ -342,9 +342,7 @@ const Schemas: FC = () => {
                         </Box>
                       </Box>
                     }>
-                    <Icon>
-                      <InfoOutlined />
-                    </Icon>
+                    <InfoOutlined />
                   </ConduitTooltip>
                 </Box>
               </Grid>
