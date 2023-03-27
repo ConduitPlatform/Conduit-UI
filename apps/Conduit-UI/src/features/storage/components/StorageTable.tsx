@@ -1,7 +1,12 @@
 import React, { ChangeEvent, FC, useMemo, useState } from 'react';
-import { Button, Grid, TextField, Typography, InputAdornment } from '@mui/material';
+import { Button, Grid, TextField, Typography, InputAdornment, Box } from '@mui/material';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import { DataTable, Paginator, StorageDownloadDialog } from '@conduitplatform/ui-components';
+import {
+  DataTable,
+  Paginator,
+  StorageDownloadDialog,
+  TableActionsContainer,
+} from '@conduitplatform/ui-components';
 import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
@@ -185,41 +190,30 @@ const StorageTable: FC<Props> = ({
 
   return (
     <>
-      <Grid
-        container
-        item
-        xs={12}
-        gap={1}
-        sx={{ justifyContent: 'space-between', marginBottom: 1, alignItems: 'center' }}>
-        <Grid item sx={{ display: 'flex' }}>
-          {path.split('/').map((item, index) => {
-            return (
-              <Typography
-                variant="subtitle1"
-                sx={
-                  item || index === 0
-                    ? {
-                        cursor: 'pointer',
-                        '&:hover': {
-                          textDecoration: 'underline',
-                        },
-                      }
-                    : undefined
-                }
-                onClick={() => onPathClick(item, index)}
-                key={index}>
-                {index === 0 ? '..' : `/${item}`}
-              </Typography>
-            );
-          })}
-        </Grid>
-        <Grid
-          item
-          sx={{
-            display: 'flex',
-            flex: 1,
-            minWidth: 120,
-          }}>
+      <TableActionsContainer>
+        <Box display={'flex'} alignItems={'center'}>
+          <Box display={'flex'} alignItems={'center'} mr={1}>
+            {path.split('/').map((item, index) => {
+              return (
+                <Typography
+                  variant="subtitle1"
+                  sx={
+                    item || index === 0
+                      ? {
+                          cursor: 'pointer',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }
+                      : undefined
+                  }
+                  onClick={() => onPathClick(item, index)}
+                  key={index}>
+                  {index === 0 ? '..' : `/${item}`}
+                </Typography>
+              );
+            })}
+          </Box>
           <TextField
             disabled={path === '/'}
             size="small"
@@ -236,8 +230,8 @@ const StorageTable: FC<Props> = ({
               ),
             }}
           />
-        </Grid>
-        <Grid item>
+        </Box>
+        <Box display={'flex'} alignItems={'center'}>
           <Button
             variant="contained"
             color="primary"
@@ -264,8 +258,8 @@ const StorageTable: FC<Props> = ({
             onClick={() => handleAdd()}>
             Add
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </TableActionsContainer>
       <DataTable
         dsData={formatData()}
         actions={actions}
