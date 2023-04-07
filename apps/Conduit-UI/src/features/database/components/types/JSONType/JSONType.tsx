@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { FieldIndicators } from '@conduitplatform/ui-components';
-import Grid from '@mui/material/Grid';
 import { Icon, styled } from '@mui/material';
 import { IntegrationInstructionsRounded } from '@mui/icons-material';
 
@@ -30,7 +29,7 @@ const JSONType: FC<IProps> = ({ item, ...rest }) => {
           </CustomIcon>
         </Tooltip>
         <Typography variant={'body2'} sx={{ opacity: 0.4 }}>
-          {item.default ?? ''}
+          {item.default ? JSON.stringify(item.default, null, 1) : ''}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center">
