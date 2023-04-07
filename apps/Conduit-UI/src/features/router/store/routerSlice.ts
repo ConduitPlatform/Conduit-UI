@@ -3,7 +3,7 @@ import { setAppLoading } from '../../../redux/slices/appSlice';
 import { getErrorData } from '../../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
 import ClientPlatformEnum, { IClient, IUpdateClient } from '../models/SecurityModels';
-import { IRouterConfig } from '../models/RouterModels';
+import { CaptchaProvider, IRouterConfig } from '../models/RouterModels';
 import {
   deleteClientRequest,
   generateNewClientRequest,
@@ -28,6 +28,16 @@ const initialState: IRouterSlice = {
       hostUrl: '',
       transports: { rest: false, graphql: false, sockets: false },
       security: { clientValidation: false },
+      captcha: { provider: CaptchaProvider.recaptcha, enabled: false, secretKey: '' },
+      cors: {
+        enabled: false,
+        origin: '',
+        methods: '',
+        allowedHeaders: '',
+        exposedHeaders: '',
+        credentials: false,
+        maxAge: 0,
+      },
     },
     clientSecret: '',
     availableClients: [],

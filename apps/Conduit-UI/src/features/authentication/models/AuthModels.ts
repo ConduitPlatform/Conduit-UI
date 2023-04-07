@@ -107,11 +107,6 @@ export interface CookieOptions {
   sameSite: string;
 }
 
-export enum CaptchaProvider {
-  recaptcha = 'recaptcha',
-  hcaptcha = 'hcaptcha',
-}
-
 export interface IAuthenticationConfig {
   facebook: SignInTypes;
   google: SignInTypes;
@@ -161,12 +156,10 @@ export interface IAuthenticationConfig {
       android: boolean;
       web: boolean;
     };
-    provider: CaptchaProvider;
     routes: {
       login: boolean;
       register: boolean;
       oAuth2: boolean;
     };
-    secretKey?: string;
   };
 }
