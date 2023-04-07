@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, Container, Paper, Tooltip, Divider, Button, Icon } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
 import { FormInputSwitch } from '../../../components/common/FormComponents/FormInputSwitch';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
@@ -39,12 +39,17 @@ const GeneralSettingsTab: React.FC = () => {
   });
 
   const {
+    control,
     reset: resetAdmin,
     register: registerAdmin,
     handleSubmit: handleSubmitAdmin,
   } = methodsAdmin;
   const { reset: resetCore, register: registerCore, handleSubmit: handleSubmitCore } = methodsCore;
 
+  const corsEnabled = useWatch({
+    control,
+    name: 'cors.enabled',
+  });
   useEffect(() => {
     resetAdmin(adminSettings);
   }, [adminSettings, resetAdmin]);
@@ -291,6 +296,110 @@ const GeneralSettingsTab: React.FC = () => {
                     />
                   </Grid>
                 </Grid>
+                <>
+                  <Divider sx={{ marginTop: 2, marginBottom: 2, width: '100%' }} />
+                  <Grid container marginBottom={2}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography variant={'h6'}>CORS</Typography>
+                      <FormInputSwitch {...registerAdmin('cors.enabled', { disabled: !edit })} />
+                    </Box>
+
+                    {corsEnabled && (
+                      <Grid container spacing={2} pt={3} pl={3}>
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={8}
+                          alignItems={'center'}
+                          wrap={'nowrap'}
+                          sx={{ marginRight: 4 }}>
+                          <FormInputText
+                            {...registerAdmin('cors.origin')}
+                            label="Origin"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={8}
+                          alignItems={'center'}
+                          wrap={'nowrap'}
+                          sx={{ marginRight: 4 }}>
+                          <FormInputText
+                            {...registerAdmin('cors.methods')}
+                            label="Allowed Methods"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={8}
+                          alignItems={'center'}
+                          wrap={'nowrap'}
+                          sx={{ marginRight: 4 }}>
+                          <FormInputText
+                            {...registerAdmin('cors.allowedHeaders')}
+                            label="Allowed Headers"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={8}
+                          alignItems={'center'}
+                          wrap={'nowrap'}
+                          sx={{ marginRight: 4 }}>
+                          <FormInputText
+                            {...registerAdmin('cors.exposedHeaders')}
+                            label="Exposed HEaders"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={8}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}
+                          wrap={'nowrap'}
+                          sx={{ marginRight: 4 }}>
+                          <Typography>Credentials</Typography>
+                          <FormInputSwitch
+                            {...registerAdmin('cors.credentials', { disabled: !edit })}
+                          />
+                        </Grid>
+
+                        <Grid
+                          container
+                          item
+                          xs={12}
+                          sm={8}
+                          alignItems={'center'}
+                          wrap={'nowrap'}
+                          sx={{ marginRight: 4 }}>
+                          <FormInputText
+                            typeOfInput={'number'}
+                            {...registerAdmin('cors.maxAge')}
+                            label="Max Age"
+                            disabled={!edit}
+                          />
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Grid>
+                </>
               </Grid>
               <ConfigSaveSection edit={edit} setEdit={setEdit} handleCancel={handleCancel} />
             </Grid>

@@ -23,6 +23,15 @@ export interface IAdminSettings {
   };
   hostUrl: string;
   transports: { rest: boolean; graphql: boolean; sockets: boolean };
+  cors: {
+    enabled: boolean;
+    origin: string;
+    methods: string;
+    allowedHeaders: string;
+    exposedHeaders: string;
+    credentials: boolean;
+    maxAge: number;
+  };
 }
 
 export interface ICoreSettings {

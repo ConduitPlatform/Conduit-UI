@@ -1,11 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import {
-  AuthTeam,
-  AuthTeamFields,
-  AuthUser,
-  CaptchaProvider,
-  IAuthenticationConfig,
-} from '../models/AuthModels';
+import { AuthTeam, AuthTeamFields, AuthUser, IAuthenticationConfig } from '../models/AuthModels';
 import {
   addTeamMembers,
   blockUnblockUsers,
@@ -138,13 +132,11 @@ const initialState: IAuthenticationSlice = {
           android: false,
           web: false,
         },
-        provider: CaptchaProvider.recaptcha,
         routes: {
           login: false,
           register: false,
           oAuth2: false,
         },
-        secretKey: '',
       },
       twitch: {
         accountLinking: false,

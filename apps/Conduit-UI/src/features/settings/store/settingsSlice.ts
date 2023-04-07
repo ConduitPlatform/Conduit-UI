@@ -58,6 +58,15 @@ const initialState: ISettingsSlice = {
     },
     hostUrl: '',
     transports: { rest: true, graphql: false, sockets: false },
+    cors: {
+      enabled: false,
+      origin: '',
+      methods: '',
+      allowedHeaders: '',
+      exposedHeaders: '',
+      credentials: false,
+      maxAge: 0,
+    },
   },
 };
 
