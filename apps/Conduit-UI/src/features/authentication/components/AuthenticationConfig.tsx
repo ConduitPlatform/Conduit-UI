@@ -449,6 +449,23 @@ const AuthenticationConfig: React.FC = () => {
                           />
                         </Box>
                       </Grid>
+                      <Grid item xs={12}>
+                        <Box
+                          width={'100%'}
+                          display={'inline-flex'}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}>
+                          <Typography variant={'subtitle1'} mr={1}>
+                            Allow Email Mismatch For Invites
+                          </Typography>
+                          <FormInputSwitch
+                            {...register('teams.allowEmailMismatchForInvites', {
+                              disabled: !edit,
+                            })}
+                            switchProps={{ sx: { ml: 1 } }}
+                          />
+                        </Box>
+                      </Grid>
                       <Grid item xs={12} mt={1}>
                         <Box
                           width={'100%'}

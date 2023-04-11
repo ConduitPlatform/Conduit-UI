@@ -143,6 +143,7 @@ export interface IAuthenticationConfig {
     enabled: boolean;
     enableDefaultTeam: boolean;
     allowAddWithoutInvite: boolean;
+    allowEmailMismatchForInvites: boolean;
     invites: {
       enabled: boolean;
       sendEmail: boolean;
