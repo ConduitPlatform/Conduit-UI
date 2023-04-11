@@ -375,7 +375,7 @@ const EndpointAssignments: FC<Props> = ({
                 sx={{ paddingLeft: 4 }}
                 key={`idx-${index}-input`}
                 value={'Input-' + input.name}>
-                {`${input.name} ${extractInputValueType(input.type)}`}
+                {`${input.name} ${extractInputValueType(input)}`}
               </MenuItem>
             ))}
           </TextField>

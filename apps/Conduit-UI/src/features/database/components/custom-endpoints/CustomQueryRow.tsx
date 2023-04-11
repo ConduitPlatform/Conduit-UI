@@ -16,6 +16,7 @@ import { extractInputValueType, getTypeOfValue, isValueIncompatible } from '../.
 import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import clsx from 'clsx';
+import { Input } from '../../models/customEndpointsModels';
 
 const useStyles = makeStyles((theme) => ({
   menuItem: {
@@ -73,13 +74,7 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   index: number;
   query: any;
-  selectedInputs: {
-    array: boolean;
-    location: number;
-    name: string;
-    optional: boolean;
-    type: string;
-  }[];
+  selectedInputs: Input[];
   editMode: boolean;
   handleQueryFieldChange: any;
   handleQueryConditionChange: any;
@@ -135,16 +130,20 @@ const CustomQueryRow: FC<Props> = ({
     }
   }, [compiledSchemaFields, query.schemaField]);
 
-  const isValueInputIncompatible = (type: any) => {
-    if (isArray(type) && schemaType === 'Array') {
+  const isValueInputIncompatible = (input: Input, operator?: ConditionsEnum) => {
+    if (operator === ConditionsEnum.EQUAL_SET || operator === ConditionsEnum.NEQUAL_SET) {
+      return !input.array;
+    }
+
+    if (input.array && schemaType === 'Array') {
       return false;
     }
 
-    if (type === 'ObjectId' && schemaType === 'Relation') {
+    if (input.type === 'ObjectId' && schemaType === 'Relation') {
       return false;
     }
 
-    if (schemaType !== type) {
+    if (schemaType !== input.type) {
       return true;
     }
   };
@@ -391,14 +390,9 @@ const CustomQueryRow: FC<Props> = ({
               value={ConditionsEnum.LESS_EQ}>
               {'(<=) less that or equal to'}
             </MenuItem>
-            <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.EQUAL_SET}>
-              (in) equal to any of the following
-            </MenuItem>
-            <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.NEQUAL_SET}>
+            <MenuItem value={ConditionsEnum.EQUAL_SET}>(in) equal to any of the following</MenuItem>
+            <MenuItem value={ConditionsEnum.NEQUAL_SET}>
               (not-in) not equal to any of the following
-            </MenuItem>
-            <MenuItem disabled={schemaType !== 'Array'} value={ConditionsEnum.CONTAIN}>
-              (array-contains) an array containing
             </MenuItem>
           </TextField>
         </Grid>
@@ -438,11 +432,11 @@ const CustomQueryRow: FC<Props> = ({
             </MenuItem>
             {selectedInputs.map((input, index) => (
               <MenuItem
-                disabled={isValueInputIncompatible(input.type)}
+                disabled={isValueInputIncompatible(input, query.operation)}
                 className={classes.item}
                 key={`idxF-${index}-input`}
                 value={'Input-' + input.name}>
-                {`${input.name} ${extractInputValueType(input.type)}`}
+                {`${input.name} ${extractInputValueType(input)}`}
               </MenuItem>
             ))}
           </TextField>

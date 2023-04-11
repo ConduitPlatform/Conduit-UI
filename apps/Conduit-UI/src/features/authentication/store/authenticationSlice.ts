@@ -88,6 +88,7 @@ const initialState: IAuthenticationSlice = {
         enabled: false,
         enableDefaultTeam: false,
         allowAddWithoutInvite: false,
+        allowEmailMismatchForInvites: false,
         invites: {
           enabled: false,
           sendEmail: false,
