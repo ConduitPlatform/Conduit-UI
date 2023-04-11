@@ -1,5 +1,5 @@
 import { isArray } from 'lodash';
-import { Endpoint } from '../models/customEndpointsModels';
+import { Endpoint, Input } from '../models/customEndpointsModels';
 import { OperationsEnum } from '../models/OperationsEnum';
 
 const getCompiledFieldsOfSchema = (schemaSelected: any, schemas: any) => {
@@ -92,15 +92,15 @@ export const getTypeOfValue = (fieldName: string, availableFieldsOfSchema: any) 
   }
 };
 
-export const extractInputValueType = (type: any) => {
-  if (type === undefined) {
+export const extractInputValueType = (input: Input) => {
+  if (input.type === undefined) {
     return '';
   }
 
-  if (isArray(type)) {
-    return '(Array)';
+  if (input.array) {
+    return `(Array)`;
   }
-  return `(${type})`;
+  return `(${input.type})`;
 };
 
 const findFieldsWithTypes = (fields: any) => {
