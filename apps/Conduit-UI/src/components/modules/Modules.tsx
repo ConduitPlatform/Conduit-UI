@@ -28,6 +28,7 @@ const Modules: React.FC<Props> = ({
     (state) => state.notificationsSlice.data.config.active
   );
   const enabledForms = useAppSelector((state) => state.formsSlice.data.config.active);
+  const enabledFunctions = useAppSelector((state) => state.functionsSlice.data.config.active);
   const enabledChat = useAppSelector((state) => state.chatSlice.config.active);
   const enabledSms = useAppSelector((state) => state.smsSlice.data.config.active);
   const enabledPayments = useAppSelector((state) => state.paymentsSlice.data.config.active);
@@ -62,6 +63,8 @@ const Modules: React.FC<Props> = ({
               : '/email/templates';
           case 'database':
             return metricsAvailable ? '/database/dashboard' : '/database/schemas';
+          case 'functions':
+            return metricsAvailable ? '/functions/dashboard' : '/functions/templates';
           case 'storage':
             return !enabledStorage
               ? '/storage/config'
@@ -119,6 +122,7 @@ const Modules: React.FC<Props> = ({
       enabledAuth,
       enabledChat,
       enabledEmail,
+      enabledFunctions,
       enabledForms,
       enabledNotifications,
       enabledPayments,
