@@ -38,9 +38,28 @@ const SavedFunctions: React.FC = () => {
   const originalFunctionsTemplate = {
     _id: '',
     name: '',
-    functionCode: '',
-    inputs: '',
-    returns: '',
+    functionCode: `/** 
+    *your code will be wrapped in:
+    * module.exports = function(grpcSdk,req,res) { }
+    * so you can use req and res as you would in express
+    * write your code below this line
+    **/`,
+    inputs: `{
+   "auth":false,
+   "queryParams":{
+      "myParam":"Boolean",
+      "myObject":{
+         "myObjectField":"String",
+         "myRequiredObjectField":{
+            "type":"String",
+            "required":true
+         }
+      }
+   }
+}`,
+    returns: `{
+    "result": "String"
+    }`,
     timeout: 180000,
   };
   const [skip, setSkip] = useState<number>(0);

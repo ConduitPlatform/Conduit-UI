@@ -64,7 +64,7 @@ const Modules: React.FC<Props> = ({
           case 'database':
             return metricsAvailable ? '/database/dashboard' : '/database/schemas';
           case 'functions':
-            return metricsAvailable ? '/functions/dashboard' : '/functions/templates';
+            return metricsAvailable ? '/functions/dashboard' : '/functions/functions';
           case 'storage':
             return !enabledStorage
               ? '/storage/config'

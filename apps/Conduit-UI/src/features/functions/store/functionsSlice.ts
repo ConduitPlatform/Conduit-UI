@@ -12,6 +12,7 @@ import { setAppLoading } from '../../../redux/slices/appSlice';
 import { getErrorData } from '../../../utils/error-handler';
 import { enqueueErrorNotification, enqueueSuccessNotification } from '../../../hooks/useNotifier';
 import { Pagination, Search, Sort } from '../../../models/http/HttpModels';
+import { isEmpty, isNil } from 'lodash';
 
 interface IFunctionsSlice {
   data: {
@@ -89,13 +90,24 @@ export const asyncUploadFunction = createAsyncThunk(
   async (functionData: FunctionData, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await postFunctionRequest(functionData);
+      const { data } = await postFunctionRequest({
+        ...functionData,
+        inputs:
+          !isNil(functionData.inputs) && !isEmpty(functionData.inputs)
+            ? JSON.parse(functionData.inputs)
+            : undefined,
+        returns:
+          !isNil(functionData.returns) && !isEmpty(functionData.returns)
+            ? JSON.parse(functionData.returns)
+            : undefined,
+      });
       thunkAPI.dispatch(
         enqueueSuccessNotification(`Successfully created function ${functionData.name}!`)
       );
       thunkAPI.dispatch(setAppLoading(false));
       return data;
     } catch (error) {
+      console.log(error);
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
       throw error;
@@ -108,7 +120,11 @@ export const asyncPatchFunction = createAsyncThunk(
   async (functionData: { _id: string; data: Partial<FunctionData> }, thunkAPI) => {
     thunkAPI.dispatch(setAppLoading(true));
     try {
-      const { data } = await patchFunctionRequest(functionData._id, functionData.data);
+      const { data } = await patchFunctionRequest(functionData._id, {
+        ...functionData.data,
+        inputs: functionData.data.inputs ? JSON.parse(functionData.data.inputs) : undefined,
+        returns: functionData.data.returns ? JSON.parse(functionData.data.returns) : undefined,
+      });
       thunkAPI.dispatch(enqueueSuccessNotification(`Successfully update function ${data.name}!`));
       thunkAPI.dispatch(setAppLoading(false));
       return data;
@@ -137,7 +153,7 @@ export const asyncDeleteFunctions = createAsyncThunk(
   }
 );
 
-const updateFunctionyID = (updated: FunctionType, functions: FunctionType[]) => {
+const updateFunctionByID = (updated: FunctionType, functions: FunctionType[]) => {
   return functions.map((t) => {
     if (t._id === updated._id) {
       return {
@@ -165,15 +181,29 @@ const functionsSlice = createSlice({
       state.data.config = action.payload;
     });
     builder.addCase(asyncGetSavedFunctions.fulfilled, (state, action) => {
-      state.data.functions = action.payload.functions;
+      state.data.functions = action.payload.functions.map((f: any) => ({
+        ...f,
+        inputs: f.inputs ? JSON.stringify(f.inputs) : undefined,
+        returns: f.returns ? JSON.stringify(f.returns) : undefined,
+      }));
       state.data.totalCount = action.payload.count;
     });
     builder.addCase(asyncUploadFunction.fulfilled, (state, action) => {
-      state.data.functions.push(action.payload);
+      const newFunction = action.payload;
+      newFunction.inputs = newFunction.inputs ? JSON.stringify(newFunction.inputs) : undefined;
+      newFunction.returns = newFunction.returns ? JSON.stringify(newFunction.returns) : undefined;
+      state.data.functions.push(newFunction);
       state.data.totalCount = state.data.totalCount++;
     });
     builder.addCase(asyncPatchFunction.fulfilled, (state, action) => {
-      state.data.functions = updateFunctionyID(action.payload, state.data.functions);
+      const updatedFunction = action.payload;
+      updatedFunction.inputs = updatedFunction.inputs
+        ? JSON.stringify(updatedFunction.inputs)
+        : undefined;
+      updatedFunction.returns = updatedFunction.returns
+        ? JSON.stringify(updatedFunction.returns)
+        : undefined;
+      state.data.functions = updateFunctionByID(updatedFunction, state.data.functions);
     });
   },
 });

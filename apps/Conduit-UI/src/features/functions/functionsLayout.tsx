@@ -5,17 +5,11 @@ import { useAppSelector } from '../../redux/store';
 
 const FunctionsLayout: React.FC = ({ children }) => {
   const configActive = useAppSelector((state) => state.functionsSlice.data.config.active);
-  const pathNames = [
-    '/functions/dashboard',
-    '/functions/functions',
-    '/functions/test',
-    '/functions/config',
-  ];
+  const pathNames = ['/functions/dashboard', '/functions/functions', '/functions/config'];
 
   const labels = [
     { name: 'Dashboard', id: 'dashboard' },
     { name: 'Functions', id: 'functions' },
-    { name: 'Test', id: 'test' },
     { name: 'Config', id: 'config' },
   ];
 

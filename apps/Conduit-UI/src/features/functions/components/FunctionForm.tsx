@@ -1,6 +1,6 @@
 import { Button, FormLabel, Grid } from '@mui/material';
 import React, { FC } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import FunctionEditor from './FunctionEditor';
 import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
 import { FunctionType } from '../models/FunctionsModels';
@@ -41,7 +41,6 @@ const FunctionForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               render={({ field: { onChange, value } }) => (
                 <FunctionEditor value={value} setValue={onChange} />
               )}
-              rules={{ required: 'Function inputs required' }}
             />
           </Grid>
           <Grid item sm={12}>
@@ -52,7 +51,7 @@ const FunctionForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               render={({ field: { onChange, value } }) => (
                 <FunctionEditor value={value} setValue={onChange} />
               )}
-              rules={{ required: 'Template body required' }}
+              rules={{ required: 'Function code required' }}
             />
           </Grid>
           <Grid item sm={12}>
@@ -63,7 +62,6 @@ const FunctionForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               render={({ field: { onChange, value } }) => (
                 <FunctionEditor value={value} setValue={onChange} />
               )}
-              rules={{ required: 'Function inputs required' }}
             />
           </Grid>
           <Grid container item>
