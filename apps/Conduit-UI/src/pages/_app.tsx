@@ -11,6 +11,7 @@ import { getCookie } from '../utils/cookie';
 import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import Snackbar from '../components/navigation/Snackbar';
 import './../theme/global.css';
+import 'reactflow/dist/style.css';
 import dynamic from 'next/dynamic';
 import createEmotionCache from '../createEmotionCache';
 import { CacheProvider, EmotionCache } from '@emotion/react';

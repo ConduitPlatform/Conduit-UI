@@ -61,6 +61,7 @@
     "react-virtuoso": "^2.18.0",
     "react-window": "^1.8.6",
     "react-window-infinite-loader": "^1.0.7",
+    "reactflow": "^11.7.0",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.4.1",

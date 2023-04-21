@@ -3,11 +3,13 @@ import { AltRoute } from '@mui/icons-material';
 import StyledLayout from '../../components/navigation/InnerLayouts/styledLayout';
 
 const RouterLayout: React.FC = ({ children }) => {
-  const pathNames = ['/router/dashboard', '/router/settings', '/router/security'];
+  const pathNames = ['/router/dashboard', '/router/routes', '/router/security', '/router/settings'];
   const labels = [
     { name: 'Dashboard', id: 'dashboard' },
-    { name: 'General', id: 'settingsRoute' },
+    { name: 'Routes', id: 'routesRoute' },
     { name: 'Security', id: 'security' },
+
+    { name: 'Settings', id: 'settingsRoute' },
   ];
 
   return (
