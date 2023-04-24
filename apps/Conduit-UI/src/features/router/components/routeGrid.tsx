@@ -5,6 +5,7 @@ import ReactFlow, {
   applyNodeChanges,
   Background,
   Controls,
+  Edge,
   MiniMap,
   Node,
   Position,
@@ -173,46 +174,93 @@ const endpoints = {
     middlewares: {},
   },
 };
-type NodeType = 'Module' | 'URL' | 'Route';
+type NodeType = 'ModulePath' | 'Middleware' | 'Route' | 'URL';
 
 const nodeWidth = 250;
 
-const createNode = (type: NodeType, id: string, position: { x: number; y: number }): Node => ({
+const createNode = (
+  type: NodeType,
+  id: string,
+  position: { x: number; y: number },
+  label?: string
+): Node => ({
   id,
   type,
   position,
   sourcePosition: Position.Right,
   targetPosition: Position.Left,
-  data: { label: `${id}` },
+  data: { label: label || `${id}` },
 });
 
-const createEdge = (source: string, target: string): any => ({
+const createEdge = (source: string, target: string): Edge => ({
   id: `edge-${source}-${target}`,
   source,
   target,
   animated: true,
-  arrowHeadType: 'arrowclosed',
 });
 
-const generateElements = (data: any): any => {
+const generateElements = (data: any) => {
   const nodes: Node[] = [];
-  const edges: any[] = [];
+  const edges: Edge[] = [];
   const xPos = 100;
   let yPos = 50;
 
   for (const moduleName in data) {
     const moduleUrl = data[moduleName].moduleUrl;
-    nodes.push(createNode('Module', '/' + moduleName, { x: xPos, y: yPos }));
-    nodes.push(createNode('URL', moduleUrl, { x: xPos + nodeWidth, y: yPos }));
-    edges.push(createEdge('/' + moduleName, moduleUrl));
+    const modulePath = data[moduleName].middlewares[0];
 
-    yPos += 100;
+    nodes.push(createNode('ModulePath', `/${moduleName}`, { x: xPos, y: yPos }, modulePath));
 
     for (const routeName in data[moduleName].routes) {
       const route = data[moduleName].routes[routeName];
-      const routeId = `${route.path.replace('/' + moduleName, '')}`;
-      nodes.push(createNode('Route', routeId, { x: xPos + 2 * nodeWidth, y: yPos }));
-      edges.push(createEdge(moduleUrl, routeId));
+      const routePath = route.path.replace(`/${moduleName}`, '');
+      const routeMiddlewares = route.middlewares;
+      const routeId = `${moduleName}-${routeName}`;
+
+      yPos += 100;
+
+      let lastXPos = xPos;
+      if (routeMiddlewares.length > 0) {
+        routeMiddlewares.forEach((middleware: string, index: number) => {
+          lastXPos = lastXPos + 2 * index + nodeWidth;
+          const middlewareId = `${routeId}-middleware-${index}`;
+          const previousMiddlewareId = `${routeId}-middleware-${index - 1}`;
+          nodes.push(
+            createNode(
+              'Middleware',
+              middlewareId,
+              {
+                x: lastXPos,
+                y: yPos,
+              },
+              middleware
+            )
+          );
+          if (index === 0 && routeMiddlewares.length === 1) {
+            edges.push(createEdge(`/${moduleName}`, middlewareId));
+            edges.push(createEdge(middlewareId, `${routeId}`));
+          } else if (index === 0) {
+            edges.push(createEdge(`/${moduleName}`, middlewareId));
+          } else if (index === routeMiddlewares.length - 1) {
+            edges.push(createEdge(previousMiddlewareId, middlewareId));
+            edges.push(createEdge(middlewareId, `${routeId}`));
+          } else {
+            edges.push(createEdge(previousMiddlewareId, middlewareId));
+          }
+        });
+      } else {
+        edges.push(createEdge(`/${moduleName}`, routeId));
+      }
+      nodes.push(createNode('Route', routeId, { x: lastXPos + nodeWidth, y: yPos }, routePath));
+      nodes.push(
+        createNode(
+          'URL',
+          `${routeId}-url`,
+          { x: lastXPos + 3 * nodeWidth, y: yPos },
+          `${moduleName}(${moduleUrl})`
+        )
+      );
+      edges.push(createEdge(`${routeId}`, `${routeId}-url`));
 
       yPos += 100;
     }
@@ -226,8 +274,8 @@ const onLoad = (reactFlowInstance: any): void => {
 };
 
 const EndpointFlow: React.FC = () => {
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -242,7 +290,6 @@ const EndpointFlow: React.FC = () => {
     setNodes(nodes);
     setEdges(edges);
   }, []);
-
   return (
     <div style={{ height: '80vh', width: '100%' }}>
       <ReactFlow
@@ -250,18 +297,15 @@ const EndpointFlow: React.FC = () => {
         onNodesChange={onNodesChange}
         edges={edges}
         onEdgesChange={onEdgesChange}
-        // onElementsRemove={(elementsToRemove) =>
-        //   setElements((els) => els.filter((el) => !elementsToRemove.includes(el)))
-        // }
         onLoad={onLoad}
         snapToGrid
         snapGrid={[15, 15]}>
         <Background color="#888" gap={16} />
+
         <Controls />
         <MiniMap />
       </ReactFlow>
     </div>
   );
 };
-
 export default EndpointFlow;
