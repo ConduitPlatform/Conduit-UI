@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import EnumType from '../../types/EnumType/EnumType';
+import EnumTypeViewer from '../../types/EnumType/EnumTypeViewer';
 import { BoxProps } from '@mui/material/Box/Box';
 import GroupTypeViewer from '../GroupTypeViewer';
 import RelationTypeViewer from '../../types/RelationType/RelationTypeViewer';
 import BooleanTypeViewer from '../../types/BooleanType/BooleanTypeViewer';
 import ObjectIdTypeViewer from '../../types/ObjectIdType/ObjectIdTypeViewer';
 import SimpleTypeViewer from '../../types/SimpleType/SimpleTypeViewer';
-import { Grid, Paper, Tooltip } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import { Schema } from '../../../models/CmsModels';
 import JSONTypeViewer from '../../types/JSONType/JSONTypeViewer';
 import { FieldIndicators } from '@conduitplatform/ui-components';
@@ -27,7 +27,7 @@ const SchemaViewer: FC<Props> = ({ dataKey, data, schemaToEdit, setSchemaToEdit,
       case 'Text':
       case 'Number':
       case 'Date':
-        return item.isEnum ? <EnumType item={item} /> : <SimpleTypeViewer item={item} />;
+        return item.isEnum ? <EnumTypeViewer item={item} /> : <SimpleTypeViewer item={item} />;
       case 'ObjectId':
         return <ObjectIdTypeViewer item={item} />;
       case 'Boolean':

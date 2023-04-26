@@ -43,6 +43,7 @@ const EnumForm: FC<IProps> = ({
     select: selectedItem ? selectedItem.select : true,
     required: selectedItem ? selectedItem.required : false,
     enumValues: selectedItem ? selectedItem.enumValues : [],
+    default: selectedItem ? selectedItem.default : '',
     isEnum: selectedItem ? selectedItem.isEnum : true,
   });
 
@@ -60,6 +61,10 @@ const EnumForm: FC<IProps> = ({
 
   const handleFieldType = (event: any) => {
     setSimpleData({ ...simpleData, type: event.target.value });
+  };
+
+  const handleFieldDefault = (event: any) => {
+    setSimpleData({ ...simpleData, default: event.target.value });
   };
 
   const handleFieldRequired = () => {
@@ -149,6 +154,31 @@ const EnumForm: FC<IProps> = ({
           />
         ))}
       </Box>
+
+      <FormControl
+        sx={{ margin: 1, minWidth: 120 }}
+        variant={'outlined'}
+        fullWidth
+        required={simpleData.required}>
+        <InputLabel id="field-type">Default</InputLabel>
+        <Select
+          labelId="field-default-value"
+          id="field default value"
+          label={'Field default value'}
+          value={simpleData.default}
+          disabled={enumValues.length === 0}
+          onChange={handleFieldDefault}>
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {enumValues.map((enumValue, index) => (
+            <MenuItem key={index} value={enumValue}>
+              {enumValue}
+            </MenuItem>
+          ))}
+        </Select>
+        <FormHelperText>Select the default enum value</FormHelperText>
+      </FormControl>
 
       <Box width={'100%'}>
         <Grid container>
