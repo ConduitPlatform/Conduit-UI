@@ -13,6 +13,7 @@ import { asyncUpdateEmailConfig } from '../store/emailsSlice';
 import { ConfigContainer, ConfigSaveSection, ConduitTooltip } from '@conduitplatform/ui-components';
 import { Button, Icon, useTheme } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
+import { consumeIterator } from 'next/dist/build/babel/loader/util';
 
 const EmailConfig: React.FC = () => {
   const theme = useTheme();
@@ -132,6 +133,8 @@ const EmailConfig: React.FC = () => {
         <Grid item xs={12}>
           <Grid container spacing={2}>
             {Object.keys(fields)?.map((field) => {
+              // check if field is in FieldTypes
+              if (field === 'secure' || field === 'ignoreTls') return <></>;
               if (transportProvider === 'smtp' && field === 'auth') {
                 return Object.keys(fields?.[field])?.map((childField) => {
                   return (
@@ -159,6 +162,42 @@ const EmailConfig: React.FC = () => {
                 </Grid>
               );
             })}
+            {transportProvider === 'smtp' && (
+              <>
+                <Grid item md={6} xs={12} key={`secure`}>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'subtitle1'} mb={1}>
+                      Secure
+                    </Typography>
+                    <FormInputSwitch
+                      {...register(`transportSettings.smtp.secure`, {
+                        disabled: !edit,
+                      })}
+                      key={'secure'}
+                    />
+                  </Box>
+                  <Box
+                    width={'100%'}
+                    display={'inline-flex'}
+                    justifyContent={'space-between'}
+                    alignItems={'center'}>
+                    <Typography variant={'subtitle1'} mb={1}>
+                      Ignore TLS
+                    </Typography>
+                    <FormInputSwitch
+                      {...register(`transportSettings.smtp.ignoreTls`, {
+                        disabled: !edit,
+                      })}
+                      key={'ignoreTls'}
+                    />
+                  </Box>
+                </Grid>
+              </>
+            )}
           </Grid>
         </Grid>
       </>

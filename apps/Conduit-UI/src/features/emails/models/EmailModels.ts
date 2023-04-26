@@ -20,6 +20,8 @@ export interface MailgunSettings {
 export interface SmtpSettings {
   port: string;
   host: string;
+  secure: boolean;
+  ignoreTls: boolean;
   auth: {
     username: string;
     password: string;
