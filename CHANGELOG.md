@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.13](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.12...v0.15.13) (2023-04-26)
+
+
+### Features
+
+* **email:** add secure/ignoreTls settings ([63fc1f0](https://github.com/ConduitPlatform/Conduit-UI/commit/63fc1f000104ea0c5b290eb9bfee18a80701b463))
+
 ### [0.15.12](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.11...v0.15.12) (2023-02-14)
 
 
