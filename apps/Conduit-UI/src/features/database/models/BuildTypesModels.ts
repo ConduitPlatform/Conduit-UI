@@ -33,6 +33,7 @@ export interface ISimpleData {
 
 export interface IEnumData {
   enumValues: string[];
+  default: string;
   isEnum: boolean;
   name: string;
   required: boolean;
