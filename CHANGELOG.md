@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.14](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.13...v0.15.14) (2023-04-27)
+
+
+### Bug Fixes
+
+* emailSlice ([970a9de](https://github.com/ConduitPlatform/Conduit-UI/commit/970a9de0717894e3b5492175389994abc8afeae9))
+
 ### [0.15.13](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.12...v0.15.13) (2023-04-26)
 
 
