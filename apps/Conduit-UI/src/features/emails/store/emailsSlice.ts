@@ -44,6 +44,8 @@ const initialState: IEmailSlice = {
         smtp: {
           port: '',
           host: '',
+          secure: false,
+          ignoreTls: false,
           auth: {
             username: '',
             password: '',
