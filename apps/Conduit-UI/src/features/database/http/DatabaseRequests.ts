@@ -72,3 +72,11 @@ export const getSchemasExportRequest = () => {
 export const postSchemasImportRequest = (params: any) => {
   return postRequest(`/database/schemas/import`, params);
 };
+
+export const getCustomEndpointsExportRequest = () => {
+  return getRequest(`/database/customEndpoints/export`);
+};
+
+export const postCustomEndpointsImportRequest = (params: any) => {
+  return postRequest(`/database/customEndpoints/import`, params);
+};
