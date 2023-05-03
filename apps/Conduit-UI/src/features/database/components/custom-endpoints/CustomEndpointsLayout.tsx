@@ -19,10 +19,15 @@ import InfiniteScrollLayout from '../../../../components/InfiniteScrollLayout';
 import { useRouter } from 'next/router';
 import { enqueueInfoNotification } from '../../../../hooks/useNotifier';
 import EndpointsList from './EndpointsList';
-import { getAccesssibleSchemaFields } from '../../http/DatabaseRequests';
+import {
+  getAccesssibleSchemaFields,
+  getCustomEndpointsExportRequest,
+  postCustomEndpointsImportRequest,
+} from '../../http/DatabaseRequests';
 import ListActions from './ListActions';
 import MainContent from './MainContent';
 import { Button } from '@mui/material';
+import ExportImportDialog from '../../../../components/common/ExportImportDialog';
 
 const CustomEndpointsLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +38,8 @@ const CustomEndpointsLayout: FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
   const [schemas, setSchemas] = useState<string[]>([]);
+
+  const [exportImportEndpointDialog, setExportImportEndpointDialog] = useState(false);
 
   const { endpoint, selectedEndpoint } = useAppSelector((state) => state.customEndpointsSlice.data);
   const { schemasWithEndpoints } = useAppSelector((state) => state.databaseSlice.data);
@@ -184,6 +191,24 @@ const CustomEndpointsLayout: FC = () => {
     setCreateMode(true);
   };
 
+  const handleExport = () => {
+    getCustomEndpointsExportRequest()
+      .then((res) => {
+        const json = JSON.stringify(res.data, null, 2);
+        const href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+        const link = document.createElement('a');
+        link.download = 'conduit-custom-endpoints.json';
+        link.href = href;
+        link.click();
+        URL.revokeObjectURL(href);
+      })
+      .catch(console.error);
+  };
+
+  const handleImport = (imp: any) => {
+    postCustomEndpointsImportRequest(imp).catch(console.error);
+  };
+
   return (
     <>
       <InfiniteScrollLayout
@@ -227,6 +252,14 @@ const CustomEndpointsLayout: FC = () => {
               onClick={handleAddNewEndpoint}>
               {'Create endpoint'}
             </Button>
+            <Button
+              color={'primary'}
+              variant={'outlined'}
+              fullWidth
+              sx={{ whiteSpace: 'nowrap', marginTop: 1 }}
+              onClick={() => setExportImportEndpointDialog(true)}>
+              {'Export / Import'}
+            </Button>
           </>
         }
       />
@@ -238,6 +271,14 @@ const CustomEndpointsLayout: FC = () => {
         delete custom endpoint with name:${selectedEndpoint?.name}`}
         handleClose={handleConfirmationDialogClose}
         buttonAction={handleDeleteConfirmed}
+      />
+      <ExportImportDialog
+        title={'Database Custom Endpoints'}
+        open={exportImportEndpointDialog}
+        handleClose={() => setExportImportEndpointDialog(false)}
+        handleExport={handleExport}
+        handleImport={handleImport}
+        importInfo={'WARNING: Database Custom Endpoints with the same name will be overriden'}
       />
     </>
   );
