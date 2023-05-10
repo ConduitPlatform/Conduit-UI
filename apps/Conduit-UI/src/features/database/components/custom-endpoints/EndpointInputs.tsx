@@ -132,17 +132,13 @@ const EndpointInputs: FC<Props> = ({
             onChange={(event) => handleInputLocationChange(event, index)}>
             <MenuItem value={InputLocationEnum.QUERY_PARAMS}>Query params</MenuItem>
             <MenuItem
-              disabled={operationType === OperationsEnum.GET}
-              value={InputLocationEnum.BODY}>
-              Body
-            </MenuItem>
-            <MenuItem
               disabled={
                 operationType === OperationsEnum.DELETE || operationType === OperationsEnum.GET
               }
-              value={InputLocationEnum.URL_PARAMS}>
-              URL
+              value={InputLocationEnum.BODY}>
+              Body
             </MenuItem>
+            <MenuItem value={InputLocationEnum.URL_PARAMS}>URL</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={1} />
