@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.0-alpha.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.12...v0.16.0-alpha.0) (2023-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **authentication,router,admin:** captcha/cors settings
+* Database schemas export / import (#225)
+
+### Features
+
+* allowContainerCreation switch for storage config ([#224](https://github.com/ConduitPlatform/Conduit-UI/issues/224)) ([bdb180f](https://github.com/ConduitPlatform/Conduit-UI/commit/bdb180f79689c68048d7c3971132f78fdc20d682))
+* Authentication Teams UI (authentication/teams CRUD) ([#227](https://github.com/ConduitPlatform/Conduit-UI/issues/227)) ([521cf3b](https://github.com/ConduitPlatform/Conduit-UI/commit/521cf3b4be76d23c8732bbb80c78cf0ff70cde30))
+* **authentication,router,admin:** captcha/cors settings ([75cd5aa](https://github.com/ConduitPlatform/Conduit-UI/commit/75cd5aa1aa19538afecf4756a3f2def6bcaab5eb)), closes [#233](https://github.com/ConduitPlatform/Conduit-UI/issues/233)
+* **authentication:** add Team members ([#230](https://github.com/ConduitPlatform/Conduit-UI/issues/230)) ([7123283](https://github.com/ConduitPlatform/Conduit-UI/commit/7123283208d7274c35281ce60952c28e171baab3))
+* available security clients table copy client id to clipboard ([#226](https://github.com/ConduitPlatform/Conduit-UI/issues/226)) ([139def2](https://github.com/ConduitPlatform/Conduit-UI/commit/139def21b1cd097213207a2d9deb3cf5b3bf0f56))
+* Database schemas export / import ([#225](https://github.com/ConduitPlatform/Conduit-UI/issues/225)) ([b5558b9](https://github.com/ConduitPlatform/Conduit-UI/commit/b5558b96dd5b5f7fa4cac6e80a1d54e301423fd9))
+* default field for database enum type ([#236](https://github.com/ConduitPlatform/Conduit-UI/issues/236)) ([129d534](https://github.com/ConduitPlatform/Conduit-UI/commit/129d53459981fbb460bd71e98495181850c19fad))
+* **email:** add secure,ignoreTls settings ([2d722f5](https://github.com/ConduitPlatform/Conduit-UI/commit/2d722f53a6831d86c87ea07ffb31ab71bffcbcc1))
+* export and import functionality for database custom endpoints ([#237](https://github.com/ConduitPlatform/Conduit-UI/issues/237)) ([47a0d0c](https://github.com/ConduitPlatform/Conduit-UI/commit/47a0d0c0ee6ab34b49b5b980e1060a32f9b2729e))
+* favicon ([#231](https://github.com/ConduitPlatform/Conduit-UI/issues/231)) ([55a53e7](https://github.com/ConduitPlatform/Conduit-UI/commit/55a53e75e3e869af91ff769aa623443127ec338f))
+* Notifications send form data field ([5360ce3](https://github.com/ConduitPlatform/Conduit-UI/commit/5360ce30e5f0efb147e8ad27ede2aad1beb88fa6))
+
+
+### Bug Fixes
+
+* **authentication:** config update access/refreshToken expiry using single state ([#222](https://github.com/ConduitPlatform/Conduit-UI/issues/222)) ([1e79a96](https://github.com/ConduitPlatform/Conduit-UI/commit/1e79a962763b11fa1051df1d0c8674f3c1863fc5))
+* chat rooms, database schemas introspection request when press tab ([#211](https://github.com/ConduitPlatform/Conduit-UI/issues/211)) ([36ae9ac](https://github.com/ConduitPlatform/Conduit-UI/commit/36ae9acb3d9c16aecf86d8edb2a7e73f4f6e3f9c))
+* Custom query array ([#234](https://github.com/ConduitPlatform/Conduit-UI/issues/234)) ([84471e8](https://github.com/ConduitPlatform/Conduit-UI/commit/84471e8d62601e14759bcd38d43abc273516673e))
+* **database:** sort schemas/endpoints by name ([#232](https://github.com/ConduitPlatform/Conduit-UI/issues/232)) ([6a92c1a](https://github.com/ConduitPlatform/Conduit-UI/commit/6a92c1a7c9f8cca9523ab51b81d304ff57a0c678))
+* emailSlice ([42a5756](https://github.com/ConduitPlatform/Conduit-UI/commit/42a5756b5509737344d9e67a644f1c6cf4407d3d))
+* **EndpointInput:** fixes disabled condition for Query/Body/URL params ([#238](https://github.com/ConduitPlatform/Conduit-UI/issues/238)) ([aa95452](https://github.com/ConduitPlatform/Conduit-UI/commit/aa95452efc7bc68a64cca9115d5b49b0bd8bca3d))
+* fields type parsing ([dfa190a](https://github.com/ConduitPlatform/Conduit-UI/commit/dfa190ab3df8f83531b7a5c128d1ca6d930e01b2))
+* issue with multiple clicks on teams table row ([80b1c4b](https://github.com/ConduitPlatform/Conduit-UI/commit/80b1c4b51a587be50f6e26742541e167c9d5718b))
+* removed unused clients tab ([aab50ed](https://github.com/ConduitPlatform/Conduit-UI/commit/aab50eda7509faa30534436c2794e908764d3ebf))
+* reset skip-page-search on selected team change ([1a81bfc](https://github.com/ConduitPlatform/Conduit-UI/commit/1a81bfc39c09c5511e9d3c723ef88a3effcf6ace))
+* schema documents not updating after owner/archived change ([be5831d](https://github.com/ConduitPlatform/Conduit-UI/commit/be5831d88795a3bf44f437febab3cff3e8bc5614))
+* schema editor json crash ([7a10b83](https://github.com/ConduitPlatform/Conduit-UI/commit/7a10b836ecd249753d139375d69e046079aa6ff0))
+* storage table actions ([af961c5](https://github.com/ConduitPlatform/Conduit-UI/commit/af961c5a413793a28b06124d745f70d7742848b8))
+* team fragment key issue ([5a1dd89](https://github.com/ConduitPlatform/Conduit-UI/commit/5a1dd89d49879ec33e3692d941b8fbdc613149bc))
+
 ### [0.15.12](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.11...v0.15.12) (2023-02-14)
 
 
