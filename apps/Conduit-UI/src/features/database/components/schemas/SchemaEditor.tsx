@@ -30,7 +30,13 @@ import {
   clearSelectedSchema,
 } from '../../store/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import { ICrudOperations, ModifyOptions, Permissions, Schema } from '../../models/CmsModels';
+import {
+  Authorization,
+  ICrudOperations,
+  ModifyOptions,
+  Permissions,
+  Schema,
+} from '../../models/CmsModels';
 import { Chip, Typography, useTheme } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -91,6 +97,9 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     canModify: ModifyOptions.Everything,
     canDelete: true,
   });
+  const [schemaAuthorization, setSchemaAuthorization] = useState<Authorization>({
+    enabled: false,
+  });
   const [drawerData, setDrawerData] = useState<any>({
     open: false,
     type: '',
@@ -134,6 +143,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     }
     if (introspection && selectedSchema) {
       setCrudOperations(initialCrudOperations);
+      setSchemaAuthorization({ enabled: false });
       setSchemaPermissions({
         extendable: false,
         canCreate: false,
@@ -157,6 +167,12 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
       ) {
         setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
       }
+      if (
+        selectedSchema.modelOptions.conduit.authorization !== null &&
+        selectedSchema.modelOptions.conduit.authorization !== undefined
+      ) {
+        setSchemaAuthorization(selectedSchema.modelOptions.conduit.authorization);
+      }
       const formattedFields = getSchemaFieldsWithExtra(selectedSchema.fields);
 
       setEditableFields({ newTypeFields: formattedFields });
@@ -170,6 +186,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
       setAuthentication(false);
       setCrudOperations(initialCrudOperations);
       setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
+      setSchemaAuthorization(selectedSchema.modelOptions.conduit.authorization);
       const extensionSchemas = selectedSchema.extensions.map((ext) => ({
         [ext.ownerModule]: getSchemaFieldsWithExtra(ext.fields),
       }));
@@ -181,6 +198,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
       setAuthentication(false);
       setCrudOperations(initialCrudOperations);
       setSchemaPermissions(selectedSchema.modelOptions.conduit.permissions);
+      setSchemaAuthorization(selectedSchema.modelOptions.conduit.authorization);
       if (
         selectedSchema.extensions &&
         selectedSchema.extensions.length &&
@@ -467,7 +485,12 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
     });
   };
 
-  const handleSave = (name: string, crudOperations: ICrudOperations, permissions: Permissions) => {
+  const handleSave = (
+    name: string,
+    crudOperations: ICrudOperations,
+    permissions: Permissions,
+    authorization: Authorization
+  ) => {
     if (introspection && selectedSchema) {
       const newSchemaFields = prepareFields(editableFields.newTypeFields);
       const newSchema = {
@@ -477,6 +500,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
           conduit: {
             cms: { crudOperations: crudOperations, enabled: true },
             permissions: permissions,
+            authorization: authorization,
           },
         },
         fields: newSchemaFields,
@@ -499,6 +523,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         const editableSchema = {
           fields: { ...editableSchemaFields },
           conduitOptions: {
+            authorization,
             cms: {
               crudOperations,
             },
@@ -513,6 +538,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
           name: name,
           fields: newSchemaFields,
           conduitOptions: {
+            authorization,
             cms: {
               crudOperations,
             },
@@ -579,6 +605,7 @@ const SchemaEditor: FC<Props> = ({ introspection }) => {
         authentication={authentication}
         crudOperations={crudOperations}
         permissions={schemaPermissions}
+        authorization={schemaAuthorization}
         readOnly={readOnly}
         handleSave={handleSave}
         selectedSchema={selectedSchema}
