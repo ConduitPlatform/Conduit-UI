@@ -9,7 +9,7 @@ const RouterRoutes = dynamic(() => import('../../features/router/components/rout
   loading: () => <LoaderComponent />,
 });
 
-const Settings = () => {
+const Routes = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -19,8 +19,8 @@ const Settings = () => {
   return <RouterRoutes />;
 };
 
-Settings.getLayout = function getLayout(page: ReactElement) {
+Routes.getLayout = function getLayout(page: ReactElement) {
   return <RouterLayout>{page}</RouterLayout>;
 };
 
-export default Settings;
+export default Routes;

@@ -194,7 +194,6 @@ const routerSlice = createSlice({
       state.data.availableClients = action.payload;
     });
     builder.addCase(asyncGetAvailableRoutes.fulfilled, (state, action) => {
-      debugger;
       state.data.availableRoutes = action.payload;
     });
     builder.addCase(asyncGenerateNewClient.fulfilled, (state, action) => {

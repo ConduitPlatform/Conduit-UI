@@ -24,9 +24,11 @@ const createNode = (
   label?: string
 ): Node => ({
   id,
-  type,
+  type: 'default',
   position,
   style: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
     borderColor:
       type === 'Middleware'
         ? '#0000ff'
