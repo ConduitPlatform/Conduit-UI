@@ -20,6 +20,7 @@ export interface Schema {
         crudOperations: ICrudOperations;
       };
       permissions: Permissions;
+      authorization: Authorization;
     };
   };
   name: string;
@@ -73,6 +74,9 @@ export interface Permissions {
   canCreate: boolean;
   canModify: ModifyOptions;
   canDelete: boolean;
+}
+export interface Authorization {
+  enabled: boolean;
 }
 
 export enum ModifyOptions {

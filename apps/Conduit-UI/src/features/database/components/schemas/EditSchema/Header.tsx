@@ -1,15 +1,22 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Box, Typography, Button, TextField, useTheme } from '@mui/material';
+import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
 import { ArrowBackIos, Save as SaveIcon } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { clearSelectedSchema } from '../../../store/databaseSlice';
 import { enqueueInfoNotification } from '../../../../../hooks/useNotifier';
-import { ICrudOperations, ModifyOptions, Permissions, Schema } from '../../../models/CmsModels';
+import {
+  Authorization,
+  ICrudOperations,
+  ModifyOptions,
+  Permissions,
+  Schema,
+} from '../../../models/CmsModels';
 import PermissionsDialog from './PermissionsDialog';
 import CrudOperationsDialog from './CrudOperationsDialog';
 import { useRouter } from 'next/router';
 import ReturnDialog from './ReturnDialog';
 import { useAppSelector } from '../../../../../redux/store';
+import Checkbox from '@mui/material/Checkbox';
 
 export const headerHeight = 64;
 
@@ -19,8 +26,14 @@ interface Props {
   crudOperations: ICrudOperations;
   selectedSchema?: Schema;
   permissions: Permissions;
+  authorization: Authorization;
   readOnly: boolean;
-  handleSave: (name: string, crud: ICrudOperations, permissions: Permissions) => void;
+  handleSave: (
+    name: string,
+    crud: ICrudOperations,
+    permissions: Permissions,
+    authorization: Authorization
+  ) => void;
   introspection?: boolean;
   editableFields?: { newTypeFields: [] };
   modified: boolean;
@@ -32,6 +45,7 @@ const Header: FC<Props> = ({
   selectedSchema,
   crudOperations,
   permissions,
+  authorization,
   readOnly,
   handleSave,
   introspection,
@@ -57,6 +71,9 @@ const Header: FC<Props> = ({
     canModify: ModifyOptions.Everything,
     canDelete: false,
   });
+  const [schemaAuthorization, setSchemaAuthorization] = useState<Authorization>({
+    enabled: false,
+  });
   const [permissionsDialog, setPermissionsDialog] = useState<boolean>(false);
   const [crudOperationsDialog, setCrudOperationsDialog] = useState<boolean>(false);
   const [returnDialog, setReturnDialog] = useState<boolean>(false);
@@ -69,7 +86,10 @@ const Header: FC<Props> = ({
     if (permissions) {
       setSchemaPermissions({ ...permissions });
     }
-  }, [authentication, crudOperations, name, permissions]);
+    if (authorization) {
+      setSchemaAuthorization({ ...authorization });
+    }
+  }, [authentication, crudOperations, name, permissions, authorization]);
 
   const reservedBySystemSchema = (value?: string) => {
     if (systemSchemas.find((systemSchema: string) => systemSchema === value)) {
@@ -91,7 +111,7 @@ const Header: FC<Props> = ({
   };
 
   const handleData = () => {
-    handleSave(schemaName, schemaCrudOperations, schemaPermissions);
+    handleSave(schemaName, schemaCrudOperations, schemaPermissions, schemaAuthorization);
   };
 
   const handleBackButtonClick = () => {
@@ -162,6 +182,21 @@ const Header: FC<Props> = ({
             <Button variant="outlined" onClick={() => setPermissionsDialog(true)}>
               Extensions
             </Button>
+            <Box display="flex" alignItems="center">
+              <Typography sx={{ color: 'text.secondary' }}>Authorization</Typography>
+              <Checkbox
+                checked={schemaAuthorization.enabled}
+                onClick={() => {
+                  if (readOnly && !authorization.enabled && !schemaAuthorization.enabled) {
+                    const enable = confirm(
+                      'Enabling Authorization will wipe all model data. Are you sure you want to continue?'
+                    );
+                    if (!enable) return;
+                  }
+                  setSchemaAuthorization({ enabled: !schemaAuthorization.enabled });
+                }}
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
