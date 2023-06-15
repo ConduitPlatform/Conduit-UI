@@ -28,6 +28,10 @@ import { asyncGetAdminSettings } from '../../features/settings/store/settingsSli
 import jwt_decode from 'jwt-decode';
 import Router from 'next/router';
 import { getDisabledModules, getSortedModules } from '../../components/modules/moduleUtils';
+import {
+  asyncGetFunctionsConfig,
+  clearFunctionsPageStore,
+} from '../../features/functions/store/functionsSlice';
 
 export type AppAuthState = {
   data: {
@@ -95,6 +99,7 @@ export const asyncverifyTwoFA = createAsyncThunk(
 export const asyncLogout = createAsyncThunk('appAuth/logout', async (arg: void, thunkAPI) => {
   thunkAPI.dispatch(clearAuthenticationPageStore());
   thunkAPI.dispatch(clearEmailPageStore());
+  thunkAPI.dispatch(clearFunctionsPageStore());
   thunkAPI.dispatch(clearNotificationPageStore());
   thunkAPI.dispatch(clearStoragePageStore());
   thunkAPI.dispatch(clearAppNotifications());
@@ -137,6 +142,9 @@ export const asyncInitialData = createAsyncThunk('appAuth/initialData', async (a
           break;
         case 'email':
           thunkAPI.dispatch(asyncGetEmailConfig());
+          break;
+        case 'functions':
+          thunkAPI.dispatch(asyncGetFunctionsConfig());
           break;
         case 'storage':
           thunkAPI.dispatch(asyncGetStorageConfig());

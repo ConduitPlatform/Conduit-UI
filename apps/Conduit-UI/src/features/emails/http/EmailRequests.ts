@@ -20,7 +20,7 @@ export const patchEmailTemplateRequest = (templateId: string, data: EmailData) =
   patchRequest(`/email/templates/${templateId}`, { ...data });
 
 export const deleteEmailTemplateRequest = (ids: string[]) => {
-  return deleteRequest(`/email/templates/${ids}`);
+  return deleteRequest(`/email/templates`, { ids: ids.join(',') });
 };
 export const uploadTemplateRequest = (_id: string) =>
   postRequest(`/email/templates/upload`, {

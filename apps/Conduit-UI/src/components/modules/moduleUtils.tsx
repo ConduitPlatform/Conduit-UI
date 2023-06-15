@@ -3,6 +3,7 @@ import {
   AltRoute,
   Chat,
   Cloud,
+  Code,
   Email,
   FormatAlignLeft,
   Home,
@@ -21,6 +22,7 @@ const modules = [
   'email',
   'storage',
   'forms',
+  'functions',
   'pushNotifications',
   'sms',
   'chat',
@@ -65,6 +67,8 @@ export const getModuleIcon = (moduleName: string) => {
       return <Sms color={'inherit'} />;
     case 'email':
       return <Email color={'inherit'} />;
+    case 'functions':
+      return <Code color={'inherit'} />;
     case 'storage':
       return <Cloud color={'inherit'} />;
     case 'settings':

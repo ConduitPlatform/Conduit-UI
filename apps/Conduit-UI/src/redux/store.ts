@@ -14,6 +14,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import appSlice from './slices/appSlice';
 import formsSlice from '../features/forms/store/formsSlice';
 import chatSlice from '../features/chat/store/chatSlice';
+import functionsSlice from '../features/functions/store/functionsSlice';
 import paymentsSlice from '../features/payments/store/paymentsSlice';
 import logsSlice from './slices/logsSlice';
 import metricsSlice from './slices/metricsSlice';
@@ -27,6 +28,7 @@ export const makeStore = (preloadedState: any) =>
       appAuthSlice,
       authenticationSlice,
       formsSlice,
+      functionsSlice,
       databaseSlice,
       customEndpointsSlice,
       notificationsSlice,

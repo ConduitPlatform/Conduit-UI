@@ -4,6 +4,7 @@ export type ModulesTypes =
   | 'email'
   | 'storage'
   | 'forms'
+  | 'functions'
   | 'pushNotifications'
   | 'sms'
   | 'chat'
@@ -35,6 +36,8 @@ export const moduleTitle = (type: ModulesTypes) => {
       return 'Authentication';
     case 'email':
       return 'Email';
+    case 'functions':
+      return 'Functions';
     case 'storage':
       return 'Storage';
     case 'forms':
