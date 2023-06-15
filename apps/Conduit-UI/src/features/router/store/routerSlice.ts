@@ -9,6 +9,7 @@ import {
   generateNewClientRequest,
   getAvailableClientsRequest,
   getRouterConfig,
+  getRouterRoutes,
   patchRouterConfig,
   updateSecurityClient,
 } from '../http/SecurityRequests';
@@ -17,6 +18,7 @@ import { Sort } from '../../../models/http/HttpModels';
 interface IRouterSlice {
   data: {
     availableClients: IClient[];
+    availableRoutes: { [key: string]: any };
     clientSecret: string;
     config: IRouterConfig;
   };
@@ -41,6 +43,7 @@ const initialState: IRouterSlice = {
     },
     clientSecret: '',
     availableClients: [],
+    availableRoutes: {},
   },
 };
 
@@ -54,6 +57,22 @@ export const asyncGetAvailableClients = createAsyncThunk(
       } = await getAvailableClientsRequest(args);
       thunkAPI.dispatch(setAppLoading(false));
       return clients;
+    } catch (error) {
+      thunkAPI.dispatch(setAppLoading(false));
+      thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
+      throw error;
+    }
+  }
+);
+
+export const asyncGetAvailableRoutes = createAsyncThunk(
+  'security/getRoutes',
+  async (args: void, thunkAPI) => {
+    thunkAPI.dispatch(setAppLoading(true));
+    try {
+      const { data } = await getRouterRoutes();
+      thunkAPI.dispatch(setAppLoading(false));
+      return data;
     } catch (error) {
       thunkAPI.dispatch(setAppLoading(false));
       thunkAPI.dispatch(enqueueErrorNotification(`${getErrorData(error)}`));
@@ -173,6 +192,9 @@ const routerSlice = createSlice({
     });
     builder.addCase(asyncGetAvailableClients.fulfilled, (state, action) => {
       state.data.availableClients = action.payload;
+    });
+    builder.addCase(asyncGetAvailableRoutes.fulfilled, (state, action) => {
+      state.data.availableRoutes = action.payload;
     });
     builder.addCase(asyncGenerateNewClient.fulfilled, (state, action) => {
       state.data.availableClients.push(action.payload);

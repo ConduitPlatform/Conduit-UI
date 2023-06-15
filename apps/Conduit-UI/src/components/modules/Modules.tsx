@@ -91,7 +91,7 @@ const Modules: React.FC<Props> = ({
           case 'sms':
             return !enabledSms ? '/sms/config' : metricsAvailable ? '/sms/dashboard' : '/sms/send';
           case 'router':
-            return metricsAvailable ? '/router/dashboard' : '/router/settings';
+            return metricsAvailable ? '/router/dashboard' : '/router/routes';
           case 'chat':
             return !enabledChat
               ? '/chat/config'

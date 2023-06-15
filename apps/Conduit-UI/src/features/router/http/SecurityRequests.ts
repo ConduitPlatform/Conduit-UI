@@ -40,3 +40,6 @@ export const patchRouterConfig = (data: IRouterConfig) => {
     config: { ...data },
   });
 };
+export const getRouterRoutes = () => {
+  return getRequest(`/router/routes/`);
+};
