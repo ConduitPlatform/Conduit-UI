@@ -12,6 +12,7 @@ import { FormInputText } from '../../../components/common/FormComponents/FormInp
 import { NotificationData } from '../models/NotificationModels';
 import { Pagination, Search } from '../../../models/http/HttpModels';
 import FormInputJsonEditor from '../../../components/common/FormComponents/FormInputJsonEditor';
+import { FormInputCheckBox } from '../../../components/common/FormComponents/FormInputCheckbox';
 
 type SendNotificationProps = {
   handleSend: (value: NotificationData) => void;
@@ -21,12 +22,14 @@ interface NotificationInputs {
   title: string;
   body: string;
   data: any;
+  isSilent: boolean;
 }
 
 const defaultValues = {
   title: '',
   body: '',
   data: {},
+  isSilent: false,
 };
 
 const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
@@ -65,9 +68,9 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
   };
 
   const onSubmit = (inputs: NotificationInputs) => {
-    const { title, body, data } = inputs;
+    const { title, body, data, isSilent } = inputs;
     const userIds = selectedUsers.map((user) => user._id);
-    const dataToSend = { title, body, data, userIds };
+    const dataToSend = { title, body, data, isSilent, userIds };
     handleSend(dataToSend);
   };
 
@@ -107,6 +110,9 @@ const SendNotificationForm: FC<SendNotificationProps> = ({ handleSend }) => {
                   label="Data"
                   jsonEditorProps={{ height: 'fit-content', width: '100%', confirmGood: true }}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <FormInputCheckBox {...register('isSilent')} label="Silent Notification" />
               </Grid>
               <Grid item container justifyContent="flex-end" xs={12}>
                 <Button type="submit" variant="contained" color="primary" startIcon={<Send />}>
