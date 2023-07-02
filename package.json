@@ -9,10 +9,6 @@
     "prepare": "husky install",
     "release": "standard-version"
   },
-  "resolutions": {
-    "@types/react": "^17.0.19",
-    "@types/react-dom": "^17.0.9"
-  },
   "workspaces": [
     "apps/*",
     "libraries/*"
