@@ -118,6 +118,7 @@ const EndpointInputs: FC<Props> = ({
             <MenuItem value={'Boolean'}>Boolean</MenuItem>
             <MenuItem value={'ObjectId'}>ObjectId</MenuItem>
             <MenuItem value={'Date'}>Date</MenuItem>
+            <MenuItem value={'JSON'}>JSON</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={2}>
