@@ -2,6 +2,7 @@ export interface NotificationData {
   userIds: string[];
   title: string;
   body: string;
+  isSilent: boolean;
 }
 
 export interface INotificationConfig {
