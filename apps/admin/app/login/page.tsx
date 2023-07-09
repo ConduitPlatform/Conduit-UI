@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { LoginForm } from '@/components/login/loginForm';
-import { loginAction } from '@/lib/api';
+import { adminLogin } from '@/lib/api';
 import LoginIllustration from '@/components/login/loginSvg';
 import Image from 'next/image';
 
@@ -28,7 +28,7 @@ export default function AuthenticationPage() {
                 Enter your username/password to login to your account.
               </p>
             </div>
-            <LoginForm loginAction={loginAction} />
+            <LoginForm loginAction={adminLogin} />
           </div>
         </div>
       </div>

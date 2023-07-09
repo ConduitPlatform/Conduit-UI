@@ -1,6 +1,6 @@
 'use client';
 import React, { ReactNode, startTransition, useEffect, useState } from 'react';
-import { getUser } from '@/lib/api';
+import { getAdmin } from '@/lib/api';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
@@ -10,7 +10,7 @@ export const LoginProvider = ({ children }: { children: ReactNode }): React.JSX.
   const pathname = usePathname();
 
   useEffect(() => {
-    getUser()
+    getAdmin()
       .then((user) => {
         if (!user) {
           setLoading(false);
