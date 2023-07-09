@@ -11,21 +11,15 @@ export const axiosInstance: AxiosInstance = (() => {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      masterkey: process.env.MASTER_KEY,
     },
   });
   instance.interceptors.request.use(
     (config) => {
       if (config.headers.Authorization) return config;
-      if (config.url === "/authentication/renew") {
-        config.headers.Authorization = `Bearer ${
-          cookies().get("refreshToken")?.value
-        }`;
-      } else {
-
-        config.headers.Authorization = `Bearer ${
-          cookies().get("accessToken")?.value
-        }`;
-      }
+      config.headers.Authorization = `Bearer ${
+        cookies().get("accessToken")?.value
+      }`;
       return config;
     },
     (error) => {

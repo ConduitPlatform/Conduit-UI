@@ -8,29 +8,35 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LoaderIcon } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {
-  loginAction: (email: string, password: string) => Promise<any>;
+  loginAction: (username: string, password: string) => Promise<any>;
 }
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [username, setUsername] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
+  const router = useRouter();
   const { toast } = useToast();
+
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
-    props.loginAction('email', 'password')
+    props.loginAction(username, password)
       .then(() => {
         setIsLoading(false);
         toast({
           title: 'Hello there',
-        })
+        });
+        router.replace('/');
       })
       .catch(() => {
         toast({
           title: 'That\'s not right',
           variant: 'destructive',
-        })
+        });
         setIsLoading(false);
       });
   }
@@ -40,17 +46,19 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
       <form onSubmit={onSubmit}>
         <div className='grid gap-2'>
           <div className='grid gap-1'>
-            <Label className='sr-only' htmlFor='email'>
-              Email
+            <Label className='sr-only' htmlFor='username'>
+              Username
             </Label>
             <Input
-              id='email'
-              placeholder='name@example.com'
-              type='email'
+              id='username'
+              placeholder='username'
+              type='text'
               autoCapitalize='none'
-              autoComplete='email'
+              autoComplete='username'
               autoCorrect='off'
               disabled={isLoading}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className='grid gap-1'>
@@ -65,6 +73,8 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
               autoComplete='password'
               autoCorrect='off'
               disabled={isLoading}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <Button disabled={isLoading}>

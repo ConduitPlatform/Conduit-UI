@@ -1,7 +1,7 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/Toast/toaster';
-import { LoginProvider } from '@/components/LoginProvider';
+import { ProviderInjector } from '@/components/providers/ProviderInjector';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,10 +18,10 @@ export default function RootLayout({
   return (
     <html lang='en'>
     <body className={inter.className}>
-    <main className={'h-[100vh] w-[100vw]'}>
-      <LoginProvider>{children}</LoginProvider></main>
+    <main className={'h-[100vh] w-[100vw] min-w-[1080px] overflow-x-auto'}>
+      <ProviderInjector>{children}</ProviderInjector>
+    </main>
     <Toaster />
-
     </body>
     </html>
   );
