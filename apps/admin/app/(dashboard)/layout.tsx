@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           );
         })}
       </Sidebar>
-      <div className='flex-grow'>{children}</div>
+      <div className='flex-grow max-h-screen overflow-auto'>{children}</div>
     </div>);
 
 };
