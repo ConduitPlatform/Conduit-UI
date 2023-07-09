@@ -1,6 +1,7 @@
 import {
   BellDot,
   BellPlus,
+  Bot,
   Braces,
   Cog,
   Contact,
@@ -59,6 +60,10 @@ export const navList = [
         name: 'Strategies',
         href: '/authentication/strategies',
         icon: <Key className={NAV_ICON_CLASSES} />,
+      }, {
+        name: 'Service Accounts',
+        href: '/authentication/service-accounts',
+        icon: <Bot className={NAV_ICON_CLASSES} />,
       }, {
         name: 'Settings',
         href: '/authentication/settings',
