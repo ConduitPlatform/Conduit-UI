@@ -13,7 +13,7 @@ import { getUsers } from '@/lib/api/authentication';
 export default function UsersTable({ data, count }: { data: User[], count: number }) {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState<string>('');
-  const debouncedSearchTerm = useDebounce(search,  300);
+  const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
     setUsers(data);
   }, [data]);
@@ -28,8 +28,7 @@ export default function UsersTable({ data, count }: { data: User[], count: numbe
     <div className='container mx-auto py-10'>
       <div className={'flex flex-row justify-between pb-2'}>
         <Input placeholder={'Search'} className={'w-44'} onChange={(e) => setSearch(e.target.value)} />
-        <AddUserSheet onSuccess={(user:User)=>{
-          debugger;
+        <AddUserSheet onSuccess={(user: User) => {
           setUsers([...users, user]);
         }}>
           <Button variant='outline'>Add User</Button>

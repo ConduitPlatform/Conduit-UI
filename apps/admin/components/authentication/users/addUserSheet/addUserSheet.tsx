@@ -8,7 +8,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import * as z from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { createUser } from '@/lib/api/authentication';
 import { User } from '@/lib/models/User';
+import { useAlerts } from '@/components/providers/AlertProvider';
 
 const FormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -26,9 +27,25 @@ const FormSchema = z.object({
 
 export const AddUserSheet = ({ children, onSuccess }: { children?: ReactNode, onSuccess?: (user: User) => void }) => {
   const [open, setOpen] = useState(false);
+  const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  useEffect(() => {
+    if (!open && form.formState.isSubmitted) return form.reset();
+    if (!open && form.formState.isDirty) {
+      addAlert({
+        title: 'Add User',
+        description: 'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
+        cancelText: 'Cancel',
+        actionText: 'Close',
+        onDecision: (cancel) => {
+          if (!cancel) return form.reset();
+          setOpen(true);
+        },
+      });
+    }
+  }, [open]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const { id, dismiss } = toast({
@@ -42,7 +59,6 @@ export const AddUserSheet = ({ children, onSuccess }: { children?: ReactNode, on
     });
     createUser(data.email, data.password)
       .then((user) => {
-        form.reset();
         setOpen(false);
         dismiss();
         onSuccess?.(user);
@@ -74,8 +90,6 @@ export const AddUserSheet = ({ children, onSuccess }: { children?: ReactNode, on
           ),
         });
       });
-
-
   }
 
   return <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
