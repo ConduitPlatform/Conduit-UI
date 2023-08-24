@@ -25,14 +25,25 @@ const FormSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters long'),
 });
 
-export const AddUserSheet = ({ children, onSuccess }: { children?: ReactNode, onSuccess?: (user: User) => void }) => {
-  const [open, setOpen] = useState(false);
+export const AddUserSheet = ({ children, defaultOpen, onClose, onSuccess }: {
+  children?: ReactNode,
+  onSuccess?: (user: User) => void,
+  onClose?: () => void,
+  defaultOpen?: boolean
+}) => {
+  const [open, setOpen] = useState(defaultOpen !== undefined ? defaultOpen : false);
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
   useEffect(() => {
-    if (!open && form.formState.isSubmitted) return form.reset();
+    if (defaultOpen !== undefined) setOpen(defaultOpen);
+  }, [defaultOpen]);
+  useEffect(() => {
+    if (!open && form.formState.isSubmitted) {
+      onClose?.();
+      return form.reset();
+    }
     if (!open && form.formState.isDirty) {
       addAlert({
         title: 'Add User',
@@ -40,10 +51,15 @@ export const AddUserSheet = ({ children, onSuccess }: { children?: ReactNode, on
         cancelText: 'Cancel',
         actionText: 'Close',
         onDecision: (cancel) => {
-          if (!cancel) return form.reset();
+          if (!cancel) {
+            onClose?.();
+            return form.reset();
+          }
           setOpen(true);
         },
       });
+    } else if (!open) {
+      onClose?.();
     }
   }, [open]);
 

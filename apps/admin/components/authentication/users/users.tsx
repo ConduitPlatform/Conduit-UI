@@ -9,10 +9,12 @@ import { AddUserSheet } from '@/components/authentication/users/addUserSheet/add
 // @ts-ignore
 import { useDebounce } from '@uidotdev/usehooks';
 import { getUsers } from '@/lib/api/authentication';
+import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
 
 export default function UsersTable({ data, count }: { data: User[], count: number }) {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState<string>('');
+  const { openUserAdd } = useUserActions();
   const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
     setUsers(data);
@@ -34,7 +36,7 @@ export default function UsersTable({ data, count }: { data: User[], count: numbe
           <Button variant='outline'>Add User</Button>
         </AddUserSheet>
       </div>
-      <DataTable columns={columns} data={users} />
+      <DataTable columns={columns} data={users} userAdd={openUserAdd}/>
     </div>
   );
 }
