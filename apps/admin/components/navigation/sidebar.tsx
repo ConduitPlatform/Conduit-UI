@@ -13,7 +13,7 @@ import * as React from 'react';
 
 export const Sidebar = ({ children }: { children?: ReactNode }) => {
   return (
-    <div className='flex flex-col gap-y-5 overflow-y-auto border-r border-border bg-background px-6 h-[100vh]'>
+    <div className='flex flex-col gap-y-5 overflow-y-auto border-r border-border bg-background px-6 h-[100vh] main-scrollbar'>
       <div className='flex h-16 shrink-0 items-center'>
         <Image
           className='h-8 w-auto'
@@ -36,25 +36,25 @@ export const Sidebar = ({ children }: { children?: ReactNode }) => {
         <div className='-mx-6'>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className='flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-foreground hover:bg-secondary'>
+                <div className='flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-foreground hover:bg-secondary hover:cursor-pointer'>
                   <span className='sr-only'>Settings</span>
                   <span aria-hidden='true'>Settings</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align={'start'}>
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href={'/settings/general'} className={'flex gap-2 items-center'}>
                     <Cog className={'w-6 h-6'} />
                     General
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem >
+                <DropdownMenuItem asChild>
                   <Link href={'/settings/user-settings'} className={'flex gap-2 items-center'}>
                     <User className={'w-6 h-6'} />
                     User Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem >
+                <DropdownMenuItem asChild>
                   <Link href={'/settings/admin-users'} className={'flex gap-2 items-center'}>
                     <Users2 />
                     Admin Users

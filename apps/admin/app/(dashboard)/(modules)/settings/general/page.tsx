@@ -2,5 +2,6 @@ import { General } from '@/components/settings/general';
 
 
 export default function SettingsGeneral() {
-  return <General/>
+  const data = {}
+  return <General data={data}/>
 }
