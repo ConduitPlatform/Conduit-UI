@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
     <body className={inter.className } style={{overflow:'hidden'}}>
-    <main className={'min-w-[1080px] overflow-auto'}>
+    <main className={'h-[100vh] min-w-[1080px] overflow-auto'}>
       <ProviderInjector>{children}</ProviderInjector>
     </main>
     <Toaster />
