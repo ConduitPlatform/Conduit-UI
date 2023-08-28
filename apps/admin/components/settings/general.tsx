@@ -182,7 +182,7 @@ export const General = ({data}:Props) => {
               render={({ field }) => (
                 <FormItem className="flex items-center gap-4">
                   <FormLabel className="text-2xl font-medium">
-                    CORS
+                    Cross Origin Resource Sharing
                   </FormLabel>
                   <FormControl>
                     <Switch
@@ -335,6 +335,7 @@ export const General = ({data}:Props) => {
                     </FormLabel>
                     <FormControl>
                       <Input
+                        min={0}
                         disabled={!edit}
                         type={'number'}
                         title={'Hash Rounds'}
@@ -358,6 +359,7 @@ export const General = ({data}:Props) => {
                     <FormControl>
                       <Input
                         disabled={!edit}
+                        min={0}
                         type={'number'}
                         title={'Token Expiration Time'}
                         placeholder={'Enter a value'}
@@ -392,7 +394,7 @@ export const General = ({data}:Props) => {
               />
             </div>
           </div>
-          <div className={'w-full p-4 flex justify-end'}>
+          <div className={'w-full py-4 flex justify-end'}>
             {edit ?
               <div className={'flex gap-2'}>
                 <Button

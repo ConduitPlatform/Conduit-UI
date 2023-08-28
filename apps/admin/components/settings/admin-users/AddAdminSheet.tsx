@@ -19,7 +19,7 @@ import { User } from '@/lib/models/User';
 import { useAlerts } from '@/components/providers/AlertProvider';
 
 const FormSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  username: z.string(),
   password: z.string().min(6, 'Password must be at least 6 characters long'),
   confirmPassword: z.string()
 });
@@ -91,12 +91,12 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
 
             <FormField
               control={form.control}
-              name='email'
+              name='username'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-right'}>Username</FormLabel>
+                <FormItem className='flex flex-col gap-2'>
+                  <FormLabel >Username</FormLabel>
                   <FormControl>
-                    <Input placeholder='mail@conduit.com' className='col-span-3' {...field} />
+                    <Input placeholder='Enter a username' className='col-span-3' {...field} />
                   </FormControl>
                   <FormMessage className={'text-right col-span-4'} />
                 </FormItem>
@@ -106,10 +106,10 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
               control={form.control}
               name='password'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-right'}>Password</FormLabel>
+                <FormItem className='flex flex-col gap-2'>
+                  <FormLabel >Password</FormLabel>
                   <FormControl>
-                    <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
+                    <Input autoComplete="new-password" placeholder='very secret' type='password' className='col-span-3' {...field} />
                   </FormControl>
                   <FormMessage className={'text-right col-span-4'} />
                 </FormItem>
@@ -119,8 +119,8 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
               control={form.control}
               name='confirmPassword'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-right'}>Confirm Password</FormLabel>
+                <FormItem className='flex flex-col gap-2'>
+                  <FormLabel >Confirm Password</FormLabel>
                   <FormControl>
                     <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
                   </FormControl>

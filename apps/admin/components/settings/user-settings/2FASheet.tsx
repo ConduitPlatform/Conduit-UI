@@ -88,7 +88,7 @@ export const TwoFASheet = ({ children, defaultOpen, onClose, onSuccess }: {
               name='code'
               render={({ field }) => (
                 <FormItem className='flex flex-col gap-4'>
-                  <FormLabel className={'text-center'}>Please scan the qr code above and insert your verification code to continue</FormLabel>
+                  <FormLabel className={'text-center'}>Please scan the QR code above and insert your verification code to continue</FormLabel>
                   <FormControl>
                     <Input placeholder='verification code' type={'password'} className='col-span-3' {...field} />
                   </FormControl>

@@ -89,7 +89,7 @@ export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: 
               control={form.control}
               name='oldPassword'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
+                <FormItem className='flex flex-col gap-2'>
                   <FormLabel className={'text-left'}>Old Password</FormLabel>
                   <FormControl>
                     <Input placeholder='old password' type={'password'} className='col-span-3' {...field} />
@@ -102,8 +102,8 @@ export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: 
               control={form.control}
               name='newPassword'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-left'}>New Password</FormLabel>
+                <FormItem className='flex flex-col gap-2'>
+                  <FormLabel>New Password</FormLabel>
                   <FormControl>
                     <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
                   </FormControl>
@@ -115,8 +115,8 @@ export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: 
               control={form.control}
               name='confirmNewPassword'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-left'}>Confirm new Password</FormLabel>
+                <FormItem className='flex flex-col gap-2'>
+                  <FormLabel>Confirm new Password</FormLabel>
                   <FormControl>
                     <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
                   </FormControl>

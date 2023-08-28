@@ -143,7 +143,7 @@ export const AddUserSheet = ({ children, defaultOpen, onClose, onSuccess }: {
                 <FormItem className='grid grid-cols-4 items-center gap-x-4'>
                   <FormLabel className={'text-right'}>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
+                    <Input placeholder='very secret' autoComplete="new-password" type='password' className='col-span-3' {...field} />
                   </FormControl>
                   <FormMessage className={'text-right col-span-4'} />
                 </FormItem>
