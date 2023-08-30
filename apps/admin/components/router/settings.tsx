@@ -14,14 +14,10 @@ import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon } from 'lucide-react';
 
 const FormSchema = z.object({
-  general: z.string().optional(),
   url: z.string().optional(),
   rest: z.boolean().optional(),
   graphQl: z.boolean().optional(),
   webSocket: z.boolean().optional(),
-  hashRounds: z.string().optional(),
-  expiration: z.string().optional(),
-  secret: z.string().optional(),
   cors: z.boolean().optional(),
   origin:z.string().optional(),
   methods: z.string().optional(),
@@ -29,18 +25,22 @@ const FormSchema = z.object({
   exposedHeaders : z.string().optional(),
   credentials: z.boolean().optional(),
   maxAge :z.string().optional(),
+  captcha:z.boolean().optional(),
+  provider:z.string().optional(),
+  secret: z.string().optional()
 });
 
 interface Props {
   data: any
 }
-export const General = ({data}:Props) => {
+export const Settings = ({data}:Props) => {
   const [edit, setEdit] = useState<boolean>(false)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       rest:true,
-      cors:false
+      cors:false,
+      captcha:false,
     },
   });
 
@@ -49,11 +49,11 @@ export const General = ({data}:Props) => {
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     console.log(data)
     toast({
-      title: 'Settings Updated',
+      title: 'Router',
       description: (
         <div className={'flex flex-row items-center space-x-2.5'}>
           <CheckIcon className={'w-8 h-8'} />
-          <p className='text-sm text-foreground'>Settings Updated!</p>
+          <p className='text-sm text-foreground'>Router Settings Updated!</p>
         </div>
       ),
     });
@@ -64,36 +64,11 @@ export const General = ({data}:Props) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className={'flex flex-col gap-4'}>
-            <p className={'text-2xl font-medium'}>General</p>
-              <FormField
-                control={form.control}
-                name='general'
-                render={({ field }) => (
-                  <FormItem className={'w-2/12'} >
-                    <FormLabel
-                      >Environment</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!edit} >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className={'bg-white dark:bg-popover'}>
-                        <SelectItem value={'development'}>Development</SelectItem>
-                        <SelectItem value={'production'}>Production</SelectItem>
-                        <SelectItem value={'test'}>Test</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            <Separator className={'my-3'}/>
-            <div>
-              <p className={'text-2xl font-medium'}>Routing</p>
-              <p className={'text-xs text-[#94A3B8]'}>For specifics about different kinds of administrative routes, visit <a href={'https://getconduit.dev/docs/administration/rest'} className='hover:underline' target={'_blank'}>REST</a>, <a href={'https://getconduit.dev/docs/administration/graphql'} className='hover:underline' target={'_blank'}>GRAPHQL</a>, <a href={'https://getconduit.dev/docs/administration/sockets'} className='hover:underline' target={'_blank'}>WEBSOCKETS</a>. To see more information regarding the Administrative APIs, please visit our <a href={'https://getconduit.dev/docs/administration/'} className='hover:underline'>docs</a>.</p>
+            <div className={'flex flex-col gap-2'}>
+              <p className={'text-2xl font-medium'}>General</p>
+              <p className={'text-xs text-[#94A3B8] w-9/12'}>Router provides a way for modules to register application routes for REST and GraphQL APIs. Endpoint documentation is automatically generated so as to further facilitate development. It also provides support for application-level WebSockets. See <a href={'https://getconduit.dev/docs/modules/router/'} className='hover:underline'>more</a>.</p>
             </div>
-            <FormField
+              <FormField
               control={form.control}
               name='url'
               render={({ field }) => (
@@ -144,9 +119,9 @@ export const General = ({data}:Props) => {
                 name="graphQl"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
-                      <FormLabel className="text-base">
-                        GraphQL
-                      </FormLabel>
+                    <FormLabel className="text-base">
+                      GraphQL
+                    </FormLabel>
                     <FormControl>
                       <Switch
                         disabled={!edit}
@@ -162,9 +137,9 @@ export const General = ({data}:Props) => {
                 name="webSocket"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
-                      <FormLabel className="text-base">
-                        WebSockets
-                      </FormLabel>
+                    <FormLabel className="text-base">
+                      WebSockets
+                    </FormLabel>
                     <FormControl>
                       <Switch
                         disabled={!edit}
@@ -323,50 +298,45 @@ export const General = ({data}:Props) => {
               </div>
             )}
             <Separator className={'my-3'}/>
-            <p className={'text-2xl font-medium'}>Administrative Settings</p>
-            <div className={'grid grid-cols-2 gap-4'}>
+            <FormField
+              control={form.control}
+              name="captcha"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-4">
+                  <FormLabel className="text-2xl font-medium">
+                    Captcha
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={!edit}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {form.watch('captcha') &&
+            <div className={'grid grid-cols-3 gap-4'}>
               <FormField
                 control={form.control}
-                name='hashRounds'
+                name='provider'
                 render={({ field }) => (
-                  <FormItem className={'w-full'}>
-                    <FormLabel>
-                      Hash Rounds
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        min={0}
-                        disabled={!edit}
-                        type={'number'}
-                        title={'Hash Rounds'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='expiration'
-                render={({ field }) => (
-                  <FormItem className={'w-full'}>
-                    <FormLabel>
-                      Token Expiration Time
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!edit}
-                        min={0}
-                        type={'number'}
-                        title={'Token Expiration Time'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
+                  <FormItem >
+                    <FormLabel
+                    >Provider</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!edit} >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Select a provider' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className={'bg-white dark:bg-popover'}>
+                        <SelectItem value={'recaptcha'}>recaptcha</SelectItem>
+                        <SelectItem value={'hcaptcha'}>hcaptcha</SelectItem>
+                        <SelectItem value={'turnstile'}>turnstile</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -377,13 +347,13 @@ export const General = ({data}:Props) => {
                 render={({ field }) => (
                   <FormItem className={'w-full'}>
                     <FormLabel>
-                      Token Secret
+                      Secret key
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'Token Secret'}
-                        placeholder={'Enter token secret'}
+                        title={'Secret key'}
+                        placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
                       />
@@ -393,6 +363,7 @@ export const General = ({data}:Props) => {
                 )}
               />
             </div>
+            }
           </div>
           <div className={'w-full py-4 flex justify-end'}>
             {edit ?
@@ -406,7 +377,7 @@ export const General = ({data}:Props) => {
                     form.reset();
                     setEdit(false);
                   }
-                }>Cancel</Button>
+                  }>Cancel</Button>
                 <Button type="submit">Submit</Button>
               </div>:
               <Button onClick={()=>{setEdit(true)}} >Edit</Button>
