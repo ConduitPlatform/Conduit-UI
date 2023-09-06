@@ -5,7 +5,7 @@ import { navList } from '@/app/(dashboard)/navList';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={'flex flex-row'}>
+    <div className={'flex'}>
       <Sidebar>
         {navList.map((item) => {
           if (item.children) {
@@ -32,7 +32,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           );
         })}
       </Sidebar>
-      <div className='flex-grow max-h-screen overflow-auto'>{children}</div>
+      <div className='flex-grow max-h-screen overflow-auto main-scrollbar'>{children}</div>
     </div>);
-
 };
