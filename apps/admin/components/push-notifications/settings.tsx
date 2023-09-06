@@ -14,7 +14,7 @@ import { Module } from '@/lib/models/Module';
 import { SettingsForm } from '@/components/push-notifications/settingsForm';
 
 interface Props {
-  data:NotificationSettings
+  data: NotificationSettings
 }
 
 const FormSchema = z.object({

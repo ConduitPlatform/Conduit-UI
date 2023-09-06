@@ -1,7 +1,8 @@
 import { Settings } from '@/components/router/settings';
+import { getRouterSettings } from '@/lib/api/router';
 
 
-export default function RouterSettings() {
-  const data = {}
-  return <Settings data={data}/>
+export default async function RouterSettings() {
+  const { config: data } = await getRouterSettings()
+  return <Settings data={data} />
 }
