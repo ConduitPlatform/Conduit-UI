@@ -8,7 +8,7 @@ import { PlusIcon, UserPlus } from 'lucide-react';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  userAdd: () => void;
+  userAdd?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -59,7 +59,7 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            ) : (
+            ) : userAdd ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
                   <div className="text-center">
@@ -76,6 +76,14 @@ export function DataTable<TData, TValue>({
                         New User
                       </button>
                     </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ): (
+              <TableRow>
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
+                  <div className="text-center">
+                    <h3 className="mt-2 text-sm font-semibold text-foreground">No data</h3>
                   </div>
                 </TableCell>
               </TableRow>

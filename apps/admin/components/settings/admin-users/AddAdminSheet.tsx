@@ -15,18 +15,28 @@ import { toast } from '@/lib/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { User } from '@/lib/models/User';
+import { Admin } from '@/lib/models/User';
 import { useAlerts } from '@/components/providers/AlertProvider';
+import { postNewAdminUser } from '@/lib/api/settings/admins';
+import { LucideX } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
   username: z.string(),
-  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  password: z.string(),
   confirmPassword: z.string()
+}).refine(schema => {
+  if (schema.password !== schema.confirmPassword)
+    return false;
+  return true;
+}, {
+  message: 'Passwords do not match!',
+  path: ['confirmPassword']
 });
 
 export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
   children?: ReactNode,
-  onSuccess?: (user: User) => void,
+  onSuccess?: (user: Admin) => void,
   onClose?: () => void,
   defaultOpen?: boolean
 }) => {
@@ -35,15 +45,20 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const router = useRouter()
+
+  const {formState, reset, control,handleSubmit} = form;
+
   useEffect(() => {
     if (defaultOpen !== undefined) setOpen(defaultOpen);
   }, [defaultOpen]);
+
   useEffect(() => {
-    if (!open && form.formState.isSubmitted) {
+    if (!open && formState.isSubmitted) {
       onClose?.();
-      return form.reset();
+      return reset();
     }
-    if (!open && form.formState.isDirty) {
+    if (!open && formState.isDirty) {
       addAlert({
         title: 'Add Admin',
         description: 'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
@@ -52,7 +67,7 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
         onDecision: (cancel) => {
           if (!cancel) {
             onClose?.();
-            return form.reset();
+            return reset();
           }
           setOpen(true);
         },
@@ -63,15 +78,35 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
   }, [open]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    //TODO: endpoint for new admin
-    const { id, dismiss } = toast({
-      title: 'New Admin',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <p className='text-sm text-foreground'>Admin added!</p>
-        </div>
-      ),
-    });
+    postNewAdminUser(data.username,data.password).then((res)=>{
+      setOpen(false);
+      toast({
+        title: 'New Admin',
+        description: (
+          <div className={'flex flex-row items-center space-x-2.5'}>
+            <p className='text-sm text-foreground'>Admin added!</p>
+          </div>
+        ),
+      });
+      router.refresh()
+    }).catch((err)=>{
+      console.log(err.message)
+      toast({
+        title: 'New Admin',
+        description: (
+          <div className={'flex flex-col'}>
+            <div className={'flex flex-row text-destructive items-center'}>
+              <LucideX className={'w-8 h-8'} />
+              <p className='text-sm'>Failed to add with:</p>
+            </div>
+            <pre className='mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive'>
+              <code className='text-sm text-foreground'>{err.message}</code>
+            </pre>
+          </div>
+        ),
+      });
+    })
+
   }
 
   return <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
@@ -80,7 +115,7 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
     </SheetTrigger>
     <SheetContent side='right'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <SheetHeader>
             <SheetTitle>Create new admin user</SheetTitle>
             <SheetDescription>
@@ -90,7 +125,7 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
           <div className='grid gap-4 py-4'>
 
             <FormField
-              control={form.control}
+              control={control}
               name='username'
               render={({ field }) => (
                 <FormItem className='flex flex-col gap-2'>
@@ -103,7 +138,7 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
               )}
             />
             <FormField
-              control={form.control}
+              control={control}
               name='password'
               render={({ field }) => (
                 <FormItem className='flex flex-col gap-2'>
@@ -116,7 +151,7 @@ export const AddAdminSheet = ({ children, defaultOpen, onClose, onSuccess }: {
               )}
             />
             <FormField
-              control={form.control}
+              control={control}
               name='confirmPassword'
               render={({ field }) => (
                 <FormItem className='flex flex-col gap-2'>

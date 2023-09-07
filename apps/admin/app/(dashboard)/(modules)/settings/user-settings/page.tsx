@@ -5,7 +5,7 @@ import { Check, KeyRound, ShieldCheck, X } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TwoFASheet } from '@/components/settings/user-settings/2FASheet';
 import { NewPasswordSheet } from '@/components/settings/user-settings/NewPasswordSheet';
-import { getAdminById } from '@/lib/api/settings';
+import { getAdminById } from '@/lib/api/settings/admins';
 import { Admin } from '@/lib/models/User';
 import moment from 'moment';
 

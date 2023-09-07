@@ -19,10 +19,6 @@ export const patchAdminSettings = async (data: AdminSettings) => {
   await axiosInstance.patch(`/config/admin`, { config: { ...data } });
 };
 
-export const getAdminById = async (id: string) => {
-  const res =  await axiosInstance.get(`/admins/${id}`)
-  return res.data
-}
 
 export const setTwoFA = async (enable:boolean) => {
   const res = await axiosInstance.put('/toggle-twofa', { enableTwoFa: enable })

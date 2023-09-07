@@ -1,4 +1,3 @@
-'use client';
 import {
   Sheet,
   SheetContent,
@@ -7,25 +6,23 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
-import { ReactNode, useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import * as z from 'zod';
-import { toast } from '@/lib/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { User } from '@/lib/models/User';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ReactNode, useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { changePassword } from '@/lib/api/settings';
-import { LucideX } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { changeAdminsPasswordById } from '@/lib/api/settings/admins';
+import { toast } from '@/lib/hooks/use-toast';
+import { CheckIcon, LucideX } from 'lucide-react';
 
 const FormSchema = z.object({
-  oldPassword: z.string(),
-  newPassword: z.string(),
+  password: z.string(),
   confirmPassword: z.string()
 }).refine(schema => {
-  if (schema.newPassword !== schema.confirmPassword)
+  if (schema.password !== schema.confirmPassword)
     return false;
   return true;
 }, {
@@ -33,68 +30,58 @@ const FormSchema = z.object({
   path: ['confirmPassword']
 });
 
-export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: {
+export const ChangePasswordSheet = ({ children, id }: {
   children?: ReactNode,
-  onSuccess?: (user: User) => void,
-  onClose?: () => void,
-  defaultOpen?: boolean
+  id:string
 }) => {
-  const [open, setOpen] = useState(defaultOpen !== undefined ? defaultOpen : false);
-
+  const [open, setOpen] = useState( false);
   const { addAlert } = useAlerts();
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  const {reset, handleSubmit,  control,formState } = form;
-
-  useEffect(() => {
-    if (defaultOpen !== undefined) setOpen(defaultOpen);
-  }, [defaultOpen]);
+  const {formState, reset, control,handleSubmit} = form;
 
   useEffect(() => {
     if (!open && formState.isSubmitted) {
-      onClose?.();
       return reset();
     }
     if (!open && formState.isDirty) {
       addAlert({
-        title: 'Change Password',
+        title: 'Add Admin',
         description: 'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
         cancelText: 'Cancel',
         actionText: 'Close',
         onDecision: (cancel) => {
           if (!cancel) {
-            onClose?.();
             return reset();
           }
           setOpen(true);
         },
       });
-    } else if (!open) {
-      onClose?.();
     }
   }, [open]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    changePassword(data.oldPassword, data.newPassword).then((res) =>{
+    changeAdminsPasswordById(id,data.password).then((res)=>{
+      setOpen(false);
       toast({
-        title: 'Password',
+        title: 'Admin Password',
         description: (
           <div className={'flex flex-row items-center space-x-2.5'}>
-            <p className='text-sm text-foreground'>Password changed!</p>
+            <CheckIcon className={'w-8 h-8'} />
+            <p className='text-sm text-foreground'>Password updated successfully!</p>
           </div>
         ),
       });
     }).catch((err)=>{
       toast({
-        title: 'Settings',
+        title: 'Admin Password',
         description: (
           <div className={'flex flex-col'}>
             <div className={'flex flex-row text-destructive items-center'}>
               <LucideX className={'w-8 h-8'} />
-              <p className='text-sm'>Failed to add with:</p>
+              <p className='text-sm'>Failed to update with:</p>
             </div>
             <pre className='mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive'>
               <code className='text-sm text-foreground'>{err.message}</code>
@@ -113,30 +100,17 @@ export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: 
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <SheetHeader>
-            <SheetTitle>Change your password</SheetTitle>
+            <SheetTitle>Change user&apos;s password</SheetTitle>
           </SheetHeader>
           <div className='grid gap-4 py-4'>
             <FormField
               control={control}
-              name='oldPassword'
+              name='password'
               render={({ field }) => (
                 <FormItem className='flex flex-col gap-2'>
-                  <FormLabel className={'text-left'}>Old Password</FormLabel>
+                  <FormLabel >Password</FormLabel>
                   <FormControl>
-                    <Input placeholder='old password' type={'password'} className='col-span-3' {...field} />
-                  </FormControl>
-                  <FormMessage className={'text-right col-span-4'} />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name='newPassword'
-              render={({ field }) => (
-                <FormItem className='flex flex-col gap-2'>
-                  <FormLabel>New Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
+                    <Input autoComplete="new-password" placeholder='very secret' type='password' className='col-span-3' {...field} />
                   </FormControl>
                   <FormMessage className={'text-right col-span-4'} />
                 </FormItem>
@@ -147,7 +121,7 @@ export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: 
               name='confirmPassword'
               render={({ field }) => (
                 <FormItem className='flex flex-col gap-2'>
-                  <FormLabel>Confirm new Password</FormLabel>
+                  <FormLabel >Confirm Password</FormLabel>
                   <FormControl>
                     <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
                   </FormControl>
@@ -157,7 +131,7 @@ export const NewPasswordSheet = ({ children, defaultOpen, onClose, onSuccess }: 
             />
           </div>
           <SheetFooter>
-            <Button type='submit'>Submit</Button>
+            <Button type='submit'>Change password</Button>
           </SheetFooter>
         </form>
       </Form>
