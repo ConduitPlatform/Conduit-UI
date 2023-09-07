@@ -118,7 +118,7 @@ export const AddUserSheet = ({ children, defaultOpen, onClose, onSuccess }: {
           <SheetHeader>
             <SheetTitle>Add User</SheetTitle>
             <SheetDescription>
-              Add a new user to the database. Click save when you're done.
+              Add a new user to the database. Click save when you&apos;re done.
             </SheetDescription>
           </SheetHeader>
           <div className='grid gap-4 py-4'>

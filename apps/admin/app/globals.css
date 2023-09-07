@@ -10,8 +10,8 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 80%;
+    --input: 214.3 31.8% 80%;
 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
@@ -43,8 +43,8 @@
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 217.2 32.6% 35%;
+    --input: 217.2 32.6% 35%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -68,5 +68,35 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @variants responsive {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .main-scrollbar::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+
+    .main-scrollbar::-webkit-scrollbar-track {
+      border-radius: 100vh;
+      background: #434343;
+    }
+
+    .main-scrollbar::-webkit-scrollbar-thumb {
+      background: #b3b4bd;
+      border-radius: 100vh;
+    }
   }
 }
