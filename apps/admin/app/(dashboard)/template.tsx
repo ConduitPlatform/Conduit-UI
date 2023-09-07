@@ -21,7 +21,7 @@ const MODULE_NAMES: { [key: string]: string } = {
 };
 export default function ModuleHeader({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const module = pathname.split('/')[1];
+  const whichModule = pathname.split('/')[1];
   const moduleName = MODULE_NAMES[pathname.split('/')[1]];
   if(!moduleName) return (<>{children}</>);
   return (
@@ -37,7 +37,7 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
             <Image src={'/graphql.svg'} alt={'graphql'} width={16} height={16} className={'mr-2'} />
             GraphQL
           </Button>
-          <Link href={`https://getconduit.dev/docs/modules/${module}`} target={'_blank'}>
+          <Link href={`https://getconduit.dev/docs/modules/${whichModule}`} target={'_blank'}>
             <Button variant='outline'>
               <FileText className='w-4 h-4 mr-2' />
               Documentation
