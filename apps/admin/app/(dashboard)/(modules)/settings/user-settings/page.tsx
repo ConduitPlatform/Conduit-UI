@@ -1,15 +1,17 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Check, KeyRound, ShieldCheck, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { NewPasswordSheet } from '@/components/settings/user-settings/NewPasswordSheet';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Check, KeyRound, ShieldCheck, X } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TwoFASheet } from '@/components/settings/user-settings/2FASheet';
-import { Checkbox } from '@/components/ui/checkbox';
+import { NewPasswordSheet } from '@/components/settings/user-settings/NewPasswordSheet';
+import { getAdminById } from '@/lib/api/settings';
+import { Admin } from '@/lib/models/User';
+import moment from 'moment';
 
-export default function SettingsUser() {
-  const data = {name:'lydia', createdAt:'19/06/21',superAdmin:true}
+export default async function SettingsUser() {
+  const userData: Admin = await getAdminById('me');
+
   return (
     <div className={'container flex mx-auto py-16 main-scrollbar items-center justify-center'}>
       <Card className={'w-fit'}>
@@ -22,7 +24,7 @@ export default function SettingsUser() {
               <Label>Username</Label>
               <Input
                 disabled={true}
-                value={data.name}
+                value={userData.username}
                 title={'userName'}
                 className={'text-accent-foreground'}
               />
@@ -31,14 +33,14 @@ export default function SettingsUser() {
               <Label>Created At</Label>
               <Input
                 disabled={true}
-                value={data.createdAt}
+                value={moment(userData.createdAt).format('MM/DD/YYYY')}
                 className={'text-accent-foreground'}
               />
             </div>
           </div>
           <div className={'flex space-x-2 items-center'}>
             <Label>Super admin</Label>
-            {data.superAdmin ? <Check width={15} color={'green'}/> : <X width={15} color={'red'} />}
+            {userData.isSuperAdmin ? <Check width={15} color={'green'} /> : <X width={15} color={'red'} />}
           </div>
           <NewPasswordSheet>
             <Button className="flex gap-2 w-6/12">
@@ -47,7 +49,7 @@ export default function SettingsUser() {
             </Button>
           </NewPasswordSheet>
           <div className=" flex items-center space-x-4 rounded-md border p-4">
-            <ShieldCheck />
+            <ShieldCheck/>
             <div className="flex-1 space-y-1">
               <p className="text-sm font-medium leading-none">
                 2FA
@@ -56,7 +58,7 @@ export default function SettingsUser() {
                 Enable 2 Factor Authentication for secure Login
               </p>
             </div>
-            <TwoFASheet/>
+            <TwoFASheet hasTwoFa={userData.hasTwoFA}/>
           </div>
         </CardContent>
       </Card>
