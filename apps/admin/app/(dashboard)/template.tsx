@@ -30,7 +30,6 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
     getRouterSettings().then((res)=>{
       setGraphql(res.config.transports.graphql)
     })
-    //this here children
   },[])
 
   if(!moduleName) return (<>{children}</>);

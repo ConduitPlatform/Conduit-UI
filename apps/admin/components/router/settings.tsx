@@ -14,7 +14,6 @@ import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { RouterSettings } from '@/lib/models/Router';
 import { patchRouterSettings} from '@/lib/api/router';
-import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
   hostUrl: z.string().url(),
@@ -52,7 +51,6 @@ interface Props {
 }
 export const Settings = ({data}:Props) => {
   const [edit, setEdit] = useState<boolean>(false)
-  const router = useRouter()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: data
@@ -89,9 +87,7 @@ export const Settings = ({data}:Props) => {
           </div>
         ),
       });
-      //this or
       location.reload()
-      // router.refresh()
     }).catch((err)=>{
       dismiss();
       toast({
