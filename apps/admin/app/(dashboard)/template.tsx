@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { getRouterSettings } from '@/lib/api/router';
 
 const MODULE_NAMES: { [key: string]: string } = {
   'settings': 'Settings',
@@ -20,9 +22,16 @@ const MODULE_NAMES: { [key: string]: string } = {
   'push-notifications': 'Notifications',
 };
 export default function ModuleHeader({ children }: { children: React.ReactNode }) {
+  const [graphql , setGraphql] = useState<boolean>(false)
   const pathname = usePathname();
   const whichModule = pathname.split('/')[1];
   const moduleName = MODULE_NAMES[pathname.split('/')[1]];
+  useEffect(()=>{
+    getRouterSettings().then((res)=>{
+      setGraphql(res.config.transports.graphql)
+    })
+  },[])
+
   if(!moduleName) return (<>{children}</>);
   return (
     <>
@@ -33,10 +42,12 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
             <Image src={'/swagger.svg'} alt={'swagger'} width={16} height={16} className={'mr-2'} />
             Swagger
           </Button>
-          <Button variant='outline'>
-            <Image src={'/graphql.svg'} alt={'graphql'} width={16} height={16} className={'mr-2'} />
-            GraphQL
-          </Button>
+          {graphql &&
+            <Button variant='outline'>
+              <Image src={'/graphql.svg'} alt={'graphql'} width={16} height={16} className={'mr-2'} />
+              GraphQL
+            </Button>
+          }
           <Link href={`https://getconduit.dev/docs/modules/${whichModule}`} target={'_blank'}>
             <Button variant='outline'>
               <FileText className='w-4 h-4 mr-2' />
