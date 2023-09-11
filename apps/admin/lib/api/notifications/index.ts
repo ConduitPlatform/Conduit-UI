@@ -1,6 +1,7 @@
 'use server';
 import { axiosInstance } from '@/lib/api';
 import { NotificationSettings } from '@/lib/models/Notification';
+import { Module } from '@/lib/models/Module';
 
 export const getNotificationSettings = async () => {
   const res = await axiosInstance.get(`/config/pushNotifications`, {
@@ -8,7 +9,7 @@ export const getNotificationSettings = async () => {
   return res.data;
 }
 
-export const patchNotificationSettings = async (data: Partial<NotificationSettings>) => {
+export const patchNotificationSettings = async (data: Partial<NotificationSettings>):Promise<Module[]>  => {
   await axiosInstance.patch(`/config/pushNotifications`, {config: { ...data }});
   return new Promise(async (resolve, reject) => {
     setTimeout(async () => {

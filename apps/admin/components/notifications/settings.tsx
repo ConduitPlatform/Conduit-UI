@@ -90,7 +90,7 @@ export const Settings = ({data}:Props) => {
         apiKey: data.apiKey,
       };
     }
-    patchNotificationSettings(notificationData).then((res:any) => {
+    patchNotificationSettings(notificationData).then((res) => {
       dismiss();
       const notifModule = res.find((module:Module) => module.moduleName === 'pushNotifications')
       if (notifModule && notifModule.serving)
