@@ -253,7 +253,7 @@ export const Settings = ({data}:Props) => {
         <div className="space-y-0.5">
           <div className={'flex gap-2 items-center'}>
             <p className="text-2xl font-medium">
-              Push Notifications
+              Push Notifications Module
             </p>
             <Switch
               checked={notificationModule}
