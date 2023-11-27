@@ -1,8 +1,11 @@
 import React from 'react';
 import { Payment } from '@mui/icons-material';
 import StyledLayout from '../../components/navigation/InnerLayouts/styledLayout';
+import { useAppSelector } from '../../redux/store';
 
 const PaymentsLayout: React.FC = ({ children }) => {
+  const configActive = useAppSelector((state) => state.paymentsSlice.data.config.active);
+
   const pathNames = [
     '/payments/dashboard',
     '/payments/customers',
@@ -23,6 +26,7 @@ const PaymentsLayout: React.FC = ({ children }) => {
 
   return (
     <StyledLayout
+      configActive={configActive}
       module={'payments'}
       labels={labels}
       pathNames={pathNames}

@@ -28,8 +28,11 @@ const PaymentsProducts: React.FC = () => {
   const originalProductState = {
     _id: '',
     name: '',
+    productDescription: '',
     value: 0,
+    vat: 0,
     currency: '',
+    trialDays: 0,
     isSubscription: false,
     recurring: reccuringEnum.day,
     recurringCount: 0,
@@ -81,7 +84,10 @@ const PaymentsProducts: React.FC = () => {
     const _id = data._id;
     const updatedData = {
       name: data.name,
+      productDescription: data.productDescription,
+      trialDays: data.trialDays,
       value: data.value,
+      vat: data.vat,
       currency: data.currency,
       isSubscription: data.isSubscription,
       recurring: data.recurring,
@@ -97,7 +103,10 @@ const PaymentsProducts: React.FC = () => {
     const newData = {
       _id: data._id,
       name: data.name,
+      productDescription: data.productDescription,
+      trialDays: data.trialDays,
       value: data.value,
+      vat: data.vat,
       currency: data.currency,
       isSubscription: data.isSubscription,
       recurring: data.recurring,
@@ -222,9 +231,9 @@ const PaymentsProducts: React.FC = () => {
     return data.map((u) => {
       return {
         _id: u._id,
-        value: u.value,
+        value: u.value / 100 + ' ' + u.currency,
         name: u.name,
-        subsciption: u.isSubscription ? 'true' : 'false',
+        subscription: u.isSubscription ? 'true' : 'false',
         'Updated At': u.updatedAt,
       };
     });

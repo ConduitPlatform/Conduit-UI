@@ -8,12 +8,26 @@ import { FormInputSwitch } from '../../../components/common/FormComponents/FormI
 import { FormInputText } from '../../../components/common/FormComponents/FormInputText';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { asyncUpdatePaymentConfig } from '../store/paymentsSlice';
-import { ConfigSaveSection, ConfigContainer } from '@conduitplatform/ui-components';
+import { ConfigContainer, ConfigSaveSection } from '@conduitplatform/ui-components';
+import { FormInputSelect } from '../../../components/common/FormComponents/FormInputSelect';
 
 interface FormProps {
   active: boolean;
-  enabled: boolean;
-  secret_key: string;
+  stripe: {
+    enabled: boolean;
+    secret_key: string;
+  };
+  viva: {
+    enabled: boolean;
+    // sandbox or production
+    environment: string;
+    mid: string;
+    apiKey: string;
+    smartCheckout: {
+      clientId: string;
+      clientSecret: string;
+    };
+  };
 }
 
 const PaymentsConfig: React.FC = () => {
@@ -24,21 +38,13 @@ const PaymentsConfig: React.FC = () => {
   const [edit, setEdit] = useState<boolean>(false);
   const methods = useForm<FormProps>({
     defaultValues: useMemo(() => {
-      return {
-        active: config.active,
-        enabled: config.stripe.enabled,
-        secret_key: config.stripe.secret_key,
-      };
+      return config;
     }, [config]),
   });
   const { reset, control, register } = methods;
 
   useEffect(() => {
-    reset({
-      active: config.active,
-      enabled: config.stripe.enabled,
-      secret_key: config.stripe.secret_key,
-    });
+    reset(config);
   }, [reset, config]);
 
   const isActive = useWatch({
@@ -53,11 +59,7 @@ const PaymentsConfig: React.FC = () => {
 
   const onSubmit = (dataToSubmit: FormProps) => {
     const data = {
-      active: dataToSubmit.active,
-      stripe: {
-        enabled: dataToSubmit.enabled,
-        secret_key: dataToSubmit.secret_key,
-      },
+      ...dataToSubmit,
     };
     setEdit(false);
     const body = {
@@ -93,8 +95,8 @@ const PaymentsConfig: React.FC = () => {
                       display={'inline-flex'}
                       justifyContent={'space-between'}
                       alignItems={'center'}>
-                      <Typography variant={'h6'}>Enable stripe payments</Typography>
-                      <FormInputSwitch {...register('enabled', { disabled: !edit })} />
+                      <Typography variant={'h6'}>Enable Stripe payments</Typography>
+                      <FormInputSwitch {...register('stripe.enabled', { disabled: !edit })} />
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
@@ -102,8 +104,56 @@ const PaymentsConfig: React.FC = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <FormInputText
-                      {...register('secret_key', { disabled: !edit })}
+                      {...register('stripe.secret_key', { disabled: !edit })}
                       label={'Secret key'}
+                    />
+                  </Grid>
+                  <Divider sx={{ mt: 2, mb: 2, width: '100%' }} />
+                  <Grid item xs={6}>
+                    <Box
+                      width={'100%'}
+                      display={'inline-flex'}
+                      justifyContent={'space-between'}
+                      alignItems={'center'}>
+                      <Typography variant={'h6'}>Enable Viva payments</Typography>
+                      <FormInputSwitch {...register('viva.enabled', { disabled: !edit })} />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant={'h6'}>Viva environment</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormInputSelect
+                      {...register('viva.environment', { disabled: !edit })}
+                      label="Environment"
+                      options={[
+                        { label: 'Sandbox', value: 'sandbox' },
+                        { label: 'Production', value: 'production' },
+                      ]}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormInputText
+                      {...register('viva.mid', { disabled: !edit })}
+                      label="Merchant ID"
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormInputText
+                      {...register('viva.apiKey', { disabled: !edit })}
+                      label="API KEY"
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormInputText
+                      {...register('viva.smartCheckout.clientId', { disabled: !edit })}
+                      label="SmartCheckout ClientID"
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormInputText
+                      {...register('viva.smartCheckout.clientSecret', { disabled: !edit })}
+                      label="SmartCheckout ClientSecret"
                     />
                   </Grid>
                 </>

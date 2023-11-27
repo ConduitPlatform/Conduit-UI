@@ -16,8 +16,11 @@ export interface Customer {
 export interface Product {
   _id?: string;
   name: string;
+  productDescription: string;
   value: number;
+  vat: number;
   currency: string;
+  trialDays: number;
   isSubscription: boolean;
   recurring: reccuringEnum;
   recurringCount: number;
@@ -67,5 +70,15 @@ export interface PaymentsConfig {
   stripe: {
     enabled: boolean;
     secret_key: string;
+  };
+  viva: {
+    enabled: boolean;
+    environment: string;
+    mid: string;
+    apiKey: string;
+    smartCheckout: {
+      clientId: string;
+      clientSecret: string;
+    };
   };
 }

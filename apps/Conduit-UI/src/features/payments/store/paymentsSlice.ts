@@ -70,6 +70,16 @@ const initialState: IPaymentsSlice = {
         enabled: false,
         secret_key: '',
       },
+      viva: {
+        enabled: false,
+        environment: 'sandbox',
+        mid: '',
+        apiKey: '',
+        smartCheckout: {
+          clientId: '',
+          clientSecret: '',
+        },
+      },
     },
   },
 };

@@ -26,6 +26,7 @@ const ViewEditProduct: React.FC<Props> = ({
   setEdit,
   create,
   setCreate,
+  handleClose,
 }) => {
   const handleSaveClick = (data: Product) => {
     if (create) {
@@ -49,7 +50,11 @@ const ViewEditProduct: React.FC<Props> = ({
           }}>
           <Grid container spacing={2} justifyContent="space-around">
             {edit ? (
-              <ProductForm preloadedValues={product} handleSubmitData={handleSaveClick} />
+              <ProductForm
+                preloadedValues={product}
+                handleSubmitData={handleSaveClick}
+                handleClose={handleClose}
+              />
             ) : (
               <ExtractDrawerInfo valuesToShow={product} />
             )}

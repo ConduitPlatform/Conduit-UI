@@ -147,19 +147,19 @@ const Modules: React.FC<Props> = ({
       {sortedArray &&
         sortedArray.map((module, index) => {
           if (disabled) {
-            if (getModuleName(module.moduleName) === 'payments') {
-              return;
-            } else
-              return (
-                <ModuleItem
-                  icon={getModuleIcon(module.moduleName)}
-                  title={getModuleName(module.moduleName)}
-                  onClick={() => handleDisabledClick()}
-                  key={index}
-                  disabled={disabled}
-                  smallScreen={smallScreen}
-                />
-              );
+            // if (getModuleName(module.moduleName) === 'payments') {
+            //   return;
+            // } else
+            return (
+              <ModuleItem
+                icon={getModuleIcon(module.moduleName)}
+                title={getModuleName(module.moduleName)}
+                onClick={() => handleDisabledClick()}
+                key={index}
+                disabled={disabled}
+                smallScreen={smallScreen}
+              />
+            );
           }
           return moduleItem(module.moduleName, index);
         })}

@@ -9,18 +9,22 @@ import { FormInputSwitch } from '../../../../components/common/FormComponents/Fo
 interface Props {
   preloadedValues: Product;
   handleSubmitData: (data: Product) => void;
+  handleClose: () => void;
 }
 
 interface IProductForm {
   name: string;
   value: number;
+  vat: number;
+  productDescription: string;
+  trialDays: number;
   currency: string;
   isSubscription: boolean;
   recurring: reccuringEnum;
   recurringCount: number;
 }
 
-const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
+const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData, handleClose }) => {
   const methods = useForm<IProductForm>({ defaultValues: preloadedValues });
 
   const { handleSubmit, reset, control, setValue, register } = methods;
@@ -41,6 +45,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
 
   const onCancel = () => {
     reset();
+    handleClose();
   };
 
   const currencies = [
@@ -92,16 +97,32 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
               label="Name"
             />
           </Grid>
+          <Grid item sm={12}>
+            <FormInputText {...register('productDescription')} label="Product description" />
+          </Grid>
           <Grid item sm={6}>
             <FormInputText
               {...register('value', {
                 required: 'Value is required',
                 pattern: {
-                  value: /^(?=.*\d)\d{1,3}(?:\.\d\d?)?$/,
+                  value: /^(?!-)\d+$/,
                   message: 'Negative number not allowed',
                 },
               })}
-              label="Value"
+              label="Price (in cents, excl. VAT)"
+              typeOfInput="number"
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <FormInputText
+              {...register('vat', {
+                required: 'VAT is required',
+                pattern: {
+                  value: /^(?!-)\d+(\.\d+)?$/,
+                  message: 'Negative number not allowed',
+                },
+              })}
+              label="VAT %"
               typeOfInput="number"
             />
           </Grid>
@@ -119,7 +140,7 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
             </Grid>
             {isSubscription && (
               <>
-                <Grid item sm={12}>
+                <Grid item sm={12} sx={{ marginTop: 2, color: 'text.primary', width: '100%' }}>
                   <FormInputSelect
                     {...register('recurring')}
                     options={recuringOptions}
@@ -130,11 +151,23 @@ const ProductForm: FC<Props> = ({ preloadedValues, handleSubmitData }) => {
                   <FormInputText
                     {...register('recurringCount', {
                       pattern: {
-                        value: /^(?=.*\d)\d{1,3}(?:\.\d\d?)?$/,
+                        value: /^(?!-)\d+$/,
                         message: 'Negative number not allowed',
                       },
                     })}
                     label="Recurring count"
+                    typeOfInput="number"
+                  />
+                </Grid>
+                <Grid item sm={12} sx={{ marginTop: '10px' }}>
+                  <FormInputText
+                    {...register('trialDays', {
+                      pattern: {
+                        value: /^(?!-)\d+$/,
+                        message: 'Negative number not allowed',
+                      },
+                    })}
+                    label="Days of Trial period"
                     typeOfInput="number"
                   />
                 </Grid>
