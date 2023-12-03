@@ -6,76 +6,82 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-interface Props{
+interface Props {
   control: any;
   edit: boolean;
-  setEdit: (arg0:boolean)=> void;
+  setEdit: (arg0: boolean) => void;
   data: StorageSettings;
   watch: any;
   reset: any;
 }
-export const SettingsForm = ({control, edit, setEdit, watch, reset, data}:Props) => {
-  return(
+
+export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Props) => {
+  return (
     <>
       <div className={'flex flex-col gap-4'}>
-        <FormField
-          control={control}
-          name="allowContainerCreation"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 w-3/12">
-              <FormLabel className="text-base">
-                Allow Container Creation
-              </FormLabel>
-              <FormControl>
-                <Switch
-                  disabled={!edit}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name='provider'
-          render={({ field }) => (
-            <FormItem className={'w-3/12'}>
-              <FormLabel>Storage Provider</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={!edit}>
+        <div className={'flex flex-row gap-x-5'}>
+          <FormField
+            control={control}
+            name='provider'
+            render={({ field }) => (
+              <FormItem className={'w-3/12'}>
+                <FormLabel>Storage Provider</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value} disabled={!edit}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a provider' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className={'bg-white dark:bg-popover'}>
+                    <SelectItem value={'local'}>Local</SelectItem>
+                    <SelectItem value={'aliyun'}>
+                      <div className={'flex items-center gap-2'}>
+                        Aliyun OSS {data.aliyun && data.aliyun.accessKeyId !== '' && watch('provider') !== 'firebase' &&
+                        <Cog />}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={'aws'}>
+                      <div className={'flex items-center gap-2'}>
+                        AWS {data.aws && data.aws.accessKeyId && watch('provider') !== 'aws' && <Cog />}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={'azure'}>
+                      <div className={'flex items-center gap-2'}>
+                        Azure {data.azure && data.azure.connectionString && watch('provider') !== 'azure' && <Cog />}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={'google'}>
+                      <div className={'flex items-center gap-2'}>
+                        Google {data.google && data.google.serviceAccountKeyPath && watch('provider') !== 'google' &&
+                        <Cog />}
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='allowContainerCreation'
+            render={({ field }) => (
+              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4 w-3/12'>
+                <FormLabel className='text-base'>
+                  Allow Container Creation
+                </FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select a provider' />
-                  </SelectTrigger>
+                  <Switch
+                    disabled={!edit}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FormControl>
-                <SelectContent className={'bg-white dark:bg-popover'}>
-                  <SelectItem value={'local'}>Local</SelectItem>
-                  <SelectItem value={'aliyun'}>
-                    <div className={'flex items-center gap-2'}>
-                      Aliyun OSS {data.aliyun && data.aliyun.accessKeyId!== '' && watch('provider') !== 'firebase' && <Cog />}
-                    </div>
-                  </SelectItem>
-                  <SelectItem value={'aws'}>
-                    <div className={'flex items-center gap-2'}>
-                      AWS {data.aws && data.aws.accessKeyId && watch('provider') !== 'aws' && <Cog />}
-                    </div>
-                  </SelectItem>
-                  <SelectItem value={'azure'}>
-                    <div className={'flex items-center gap-2'}>
-                      Azure {data.azure && data.azure.connectionString && watch('provider') !== 'azure' && <Cog />}
-                    </div>
-                  </SelectItem>
-                  <SelectItem value={'google'}>
-                    <div className={'flex items-center gap-2'}>
-                      Google {data.google && data.google.serviceAccountKeyPath && watch('provider') !== 'google' && <Cog />}
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              </FormItem>
+            )}
+          />
+
+        </div>
         <div className={'grid grid-cols-2 gap-4'}>
           {watch('provider') === 'local' &&
             <FormField
@@ -101,143 +107,143 @@ export const SettingsForm = ({control, edit, setEdit, watch, reset, data}:Props)
             />
           }
           {watch('provider') === 'aliyun' &&
-              <>
-                <FormField
-                  control={control}
-                  name='aliyun.region'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Region
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={!edit}
-                          title={'Region'}
-                          placeholder={'Enter a value'}
-                          className={'text-accent-foreground'}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name='aliyun.accessKeyId'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Access Key Id
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={!edit}
-                          title={'Access Key Id'}
-                          placeholder={'Enter a value'}
-                          className={'text-accent-foreground'}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name='aliyun.accessKeySecret'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Access Key Secret
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={!edit}
-                          title={'Access Key Secret'}
-                          placeholder={'Enter a value'}
-                          className={'text-accent-foreground'}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
+            <>
+              <FormField
+                control={control}
+                name='aliyun.region'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Region
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title={'Region'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name='aliyun.accessKeyId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Access Key Id
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title={'Access Key Id'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name='aliyun.accessKeySecret'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Access Key Secret
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title={'Access Key Secret'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
           }{
-          watch('provider') ===  'azure' &&
-            <FormField
-              control={control}
-              name='azure.connectionString'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Connection String
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!edit}
-                      title={'Connection String'}
-                      placeholder={'Enter a value'}
-                      className={'text-accent-foreground'}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          }
-          {watch('provider') ===  'google' &&
-          <>
-            <FormField
-              control={control}
-              name='google.serviceAccountKeyPath'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Service Account Key Path
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!edit}
-                      title={' Service Account Key Path'}
-                      placeholder={'Enter a value'}
-                      className={'text-accent-foreground'}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name='google.bucketName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Bucket Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!edit}
-                      title={'Bucket Name'}
-                      placeholder={'Enter a value'}
-                      className={'text-accent-foreground'}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
+          watch('provider') === 'azure' &&
+          <FormField
+            control={control}
+            name='azure.connectionString'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Connection String
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    disabled={!edit}
+                    title={'Connection String'}
+                    placeholder={'Enter a value'}
+                    className={'text-accent-foreground'}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        }
+          {watch('provider') === 'google' &&
+            <>
+              <FormField
+                control={control}
+                name='google.serviceAccountKeyPath'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Service Account Key Path
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title={' Service Account Key Path'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name='google.bucketName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Bucket Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title={'Bucket Name'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
           }
           {
-            watch('provider') ===  'aws' &&
+            watch('provider') === 'aws' &&
             <>
               <FormField
                 control={control}
@@ -358,14 +364,17 @@ export const SettingsForm = ({control, edit, setEdit, watch, reset, data}:Props)
               type='button'
               className={'dark:border-gray-500'}
               variant={'outline'}
-              onClick={()=> {
+              onClick={() => {
                 reset();
                 setEdit(false);
               }}>Cancel</Button>
-            <Button type="submit">Submit</Button>
-          </div>:
-          <Button onClick={()=>{setEdit(true)}} >Edit</Button>
+            <Button type='submit'>Submit</Button>
+          </div> :
+          <Button onClick={() => {
+            setEdit(true);
+          }}>Edit</Button>
         }
-      </div></>
-  )
-}
+      </div>
+    </>
+  );
+};
