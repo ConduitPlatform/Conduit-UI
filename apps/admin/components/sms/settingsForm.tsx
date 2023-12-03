@@ -1,16 +1,16 @@
-import { StorageSettings } from '@/lib/models/Storage';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { SmsSettings } from '@/lib/models/Sms';
+import { Switch } from '@/components/ui/switch';
 
 interface Props {
   control: any;
   edit: boolean;
   setEdit: (arg0: boolean) => void;
-  data: StorageSettings;
+  data: SmsSettings;
   watch: any;
   reset: any;
 }
@@ -22,10 +22,10 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
         <div className={'flex flex-row gap-x-5'}>
           <FormField
             control={control}
-            name='provider'
+            name='providerName'
             render={({ field }) => (
               <FormItem className={'w-3/12'}>
-                <FormLabel>Storage Provider</FormLabel>
+                <FormLabel>SMS Provider</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value} disabled={!edit}>
                   <FormControl>
                     <SelectTrigger>
@@ -33,27 +33,27 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className={'bg-white dark:bg-popover'}>
-                    <SelectItem value={'local'}>Local</SelectItem>
-                    <SelectItem value={'aliyun'}>
+                    <SelectItem value={'twilio'}>
                       <div className={'flex items-center gap-2'}>
-                        Aliyun OSS {data.aliyun && data.aliyun.accessKeyId !== '' && watch('provider') !== 'aliyun' &&
+                        Twilio {data.twilio && data.twilio.accountSID !== '' && watch('providerName') !== 'twilio' &&
                         <Cog />}
                       </div>
                     </SelectItem>
-                    <SelectItem value={'aws'}>
+                    <SelectItem value={'awsSns'}>
                       <div className={'flex items-center gap-2'}>
-                        AWS {data.aws && data.aws.accessKeyId !== '' && watch('provider') !== 'aws' && <Cog />}
-                      </div>
-                    </SelectItem>
-                    <SelectItem value={'azure'}>
-                      <div className={'flex items-center gap-2'}>
-                        Azure {data.azure && data.azure.connectionString !== '' && watch('provider') !== 'azure' &&
+                        AWS SNS{data.awsSns && data.awsSns.accessKeyId !== '' && watch('provider') !== 'awsSns' &&
                         <Cog />}
                       </div>
                     </SelectItem>
-                    <SelectItem value={'google'}>
+                    <SelectItem value={'messageBird'}>
                       <div className={'flex items-center gap-2'}>
-                        Google {data.google && data.google.serviceAccountKeyPath !== '' && watch('provider') !== 'google' &&
+                        MessageBird {data.messageBird && data.messageBird.accessKeyId !== '' && watch('provider') !== 'messageBird' &&
+                        <Cog />}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={'clickSend'}>
+                      <div className={'flex items-center gap-2'}>
+                        ClickSend {data.clickSend && data.clickSend.clicksendApiKey !== '' && watch('provider') !== 'clickSend' &&
                         <Cog />}
                       </div>
                     </SelectItem>
@@ -63,40 +63,104 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
               </FormItem>
             )}
           />
-          <FormField
-            control={control}
-            name='allowContainerCreation'
-            render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4 w-3/12'>
-                <FormLabel className='text-base'>
-                  Allow Container Creation
-                </FormLabel>
-                <FormControl>
-                  <Switch
-                    disabled={!edit}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
         </div>
         <div className={'grid grid-cols-2 gap-4'}>
-          {watch('provider') === 'local' &&
-            <FormField
+          {watch('providerName') === 'twilio' &&
+            <>
+              <FormField
+                control={control}
+                name='twilio.phoneNumber'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'tel'}
+                        title={'Phone Number'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name='twilio.accountSID'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Account SID
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title={'Account SID'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> <FormField
               control={control}
-              name='local.storagePath'
+              name='twilio.authToken'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Storage Path
+                    Authentication Token
                   </FormLabel>
                   <FormControl>
                     <Input
                       disabled={!edit}
-                      title={'Storage Path'}
+                      type={'password'}
+                      title={'Authentication Token'}
+                      placeholder={'Enter a value'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> <FormField
+              control={control}
+              name='twilio.verify.active'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4 w-4/12'>
+                  <FormLabel>
+                    Verification Module
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={!edit}
+                      title={'Active'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> <FormField
+              control={control}
+              name='twilio.verify.serviceSid'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Verification Module SID
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      title={'Verify SID'}
                       placeholder={'Enter a value'}
                       className={'text-accent-foreground'}
                       {...field}
@@ -106,12 +170,13 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 </FormItem>
               )}
             />
+            </>
           }
-          {watch('provider') === 'aliyun' &&
+          {watch('providerName') === 'awsSns' &&
             <>
               <FormField
                 control={control}
-                name='aliyun.region'
+                name='awsSns.region'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
@@ -132,16 +197,16 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
               />
               <FormField
                 control={control}
-                name='aliyun.accessKeyId'
+                name='awsSns.accessKeyId'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Access Key Id
+                      Access Key ID
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'Access Key Id'}
+                        title={'Access Key ID'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
@@ -153,7 +218,7 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
               />
               <FormField
                 control={control}
-                name='aliyun.accessKeySecret'
+                name='awsSns.secretAccessKey'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
@@ -162,6 +227,7 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                     <FormControl>
                       <Input
                         disabled={!edit}
+                        type={'password'}
                         title={'Access Key Secret'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -173,44 +239,21 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 )}
               />
             </>
-          }{
-          watch('provider') === 'azure' &&
-          <FormField
-            control={control}
-            name='azure.connectionString'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Connection String
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    disabled={!edit}
-                    title={'Connection String'}
-                    placeholder={'Enter a value'}
-                    className={'text-accent-foreground'}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        }
-          {watch('provider') === 'google' &&
+          }
+          {watch('providerName') === 'messageBird' &&
             <>
               <FormField
                 control={control}
-                name='google.serviceAccountKeyPath'
+                name='messageBird.accessKeyId'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Service Account Key Path
+                      Access Key ID
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={' Service Account Key Path'}
+                        title={'Access Key ID'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
@@ -222,16 +265,16 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
               />
               <FormField
                 control={control}
-                name='google.bucketName'
+                name='messageBird.originatorName'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Bucket Name
+                      Originator Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'Bucket Name'}
+                        title={'Originator Name'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
@@ -239,25 +282,23 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
+                )} />
             </>
           }
-          {
-            watch('provider') === 'aws' &&
+          {watch('providerName') === 'clickSend' &&
             <>
               <FormField
                 control={control}
-                name='aws.region'
+                name='clickSend.username'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Region
+                      API Username
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'Region'}
+                        title={'Username'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
@@ -269,82 +310,17 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
               />
               <FormField
                 control={control}
-                name='aws.accessKeyId'
+                name='clickSend.clicksendApiKey'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Access Key Id
+                      API Key
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'accessKeyId'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name='aws.secretAccessKey'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Secret Access Key
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!edit}
-                        title={'secretAccessKey'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name='aws.accountId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Account Id
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!edit}
-                        title={'Account Id'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name='aws.endpoint'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Endpoint
-                      <p className={'text-xs text-[#94A3B8]'}>
-                        This field should be empty if using AWS S3
-                      </p>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!edit}
-                        title={'endpoint'}
+                        type={'password'}
+                        title={'API Key'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}

@@ -8,7 +8,7 @@ export type StorageSettings = {
   google: GoogleSettings,
   azure: AzureSettings,
   aws: AwsSettings,
-  aliyun: Aliyub,
+  aliyun: Aliyun,
   local: LocalSettings
 }
 
@@ -32,7 +32,7 @@ type AwsSettings = {
   accountId: string,
   endpoint?: string
 }
-type Aliyub = {
+type Aliyun = {
   region: string,
   accessKeyId: string,
   accessKeySecret: string

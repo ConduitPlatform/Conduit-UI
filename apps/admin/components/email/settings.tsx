@@ -5,7 +5,6 @@ import {
 import { useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { z } from 'zod';
-import { isObjectNotEmpty } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/hooks/use-toast';
@@ -16,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
 import { SettingsForm } from '@/components/email/settingsForm';
+import { isEmpty } from 'lodash';
 
 interface Props {
   data: EmailSettings
@@ -53,9 +53,9 @@ const FormSchema = z.object({
     }),
   }),
 }).refine(schema => {
-  if (schema.transport === 'mailgun' && (!isObjectNotEmpty(schema.transportSettings.mailgun)))
+  if (schema.transport === 'mailgun' && (!isEmpty(schema.transportSettings.mailgun)))
     return false;
-  if (schema.transport === 'smtp' && (schema.transportSettings.smtp.port === '' || schema.transportSettings.smtp.port === '' || !isObjectNotEmpty(schema.transportSettings.smtp.auth)))
+  if (schema.transport === 'smtp' && (schema.transportSettings.smtp.port === '' || schema.transportSettings.smtp.port === '' || !isEmpty(schema.transportSettings.smtp.auth)))
     return false;
   if(schema.transport === 'mandrill' && schema.transportSettings.mandrill.apiKey === ''  )
     return false

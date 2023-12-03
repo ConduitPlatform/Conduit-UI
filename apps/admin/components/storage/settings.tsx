@@ -12,7 +12,7 @@ import { Form} from '@/components/ui/form';
 import { SettingsForm } from '@/components/storage/settingsForm';
 import { Module } from '@/lib/models/Module';
 import { patchStorageSettings } from '@/lib/api/storage';
-import { isObjectNotEmpty } from '@/lib/utils';
+import { isEmpty } from 'lodash';
 
 interface Props{
   data: StorageSettings;
@@ -44,19 +44,19 @@ const FormSchema = z.object({
     storagePath: z.string(),
   }),
 }).refine(schema => {
-  if (schema.provider === 'google' && !isObjectNotEmpty(schema.google))
+  if (schema.provider === 'google' && !isEmpty(schema.google))
     return false;
-  if (schema.provider === 'azure' && !isObjectNotEmpty(schema.azure))
+  if (schema.provider === 'azure' && !isEmpty(schema.azure))
     return false;
   if (schema.provider === 'aws') {
     const object = schema.aws;
     delete object.endpoint
-    if(!isObjectNotEmpty(object))
+    if(!isEmpty(object))
       return false
   }
-  if (schema.provider === 'aliyun' &&  !isObjectNotEmpty(schema.aliyun))
+  if (schema.provider === 'aliyun' &&  !isEmpty(schema.aliyun))
     return false;
-  if (schema.provider === 'local' &&  !isObjectNotEmpty(schema.local))
+  if (schema.provider === 'local' &&  !isEmpty(schema.local))
     return false;
   return true;
 }, {
@@ -158,7 +158,7 @@ export const Settings = ({data}:Props) => {
             });
             const updatedSettings = {
               active: !storageModule,
-              ...(!storageModule && {providerName: 'local'})
+              ...(!storageModule && {provider: 'local'})
             }
             setValue('provider','local');
             setStorageModule(!storageModule);
