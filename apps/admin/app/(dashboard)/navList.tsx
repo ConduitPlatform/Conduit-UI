@@ -213,7 +213,7 @@ export const navList = [
         href: '/push-notifications',
         icon: <LucideAreaChart className={NAV_ICON_CLASSES} />,
       }, {
-        name: 'File browser',
+        name: 'Test Send',
         href: '/push-notifications/send',
         icon: <BellPlus className={NAV_ICON_CLASSES} />,
       }, {
@@ -257,7 +257,7 @@ export const navList = [
         href: '/sms',
         icon: <LucideAreaChart className={NAV_ICON_CLASSES} />,
       }, {
-        name: 'File browser',
+        name: 'Test Send',
         href: '/sms/send',
         icon: <Send className={NAV_ICON_CLASSES} />,
       }, {

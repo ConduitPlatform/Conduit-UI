@@ -16,7 +16,6 @@ export interface TransportSettings {
 
 export interface MailgunSettings {
   apiKey: string;
-  domain: string;
   host: string;
   proxy: string;
 }

@@ -170,8 +170,8 @@ export const Settings = ({data}:Props) => {
 
     patchEmailSettings(data).then((res) => {
       dismiss();
-      const storageModule = res.find((module:Module) => module.moduleName === 'storage')
-      if (storageModule && storageModule.serving)
+      const emailModule = res.find((module:Module) => module.moduleName === 'email')
+      if (emailModule && emailModule.serving)
         toast({
           title: 'Email',
           description: (
