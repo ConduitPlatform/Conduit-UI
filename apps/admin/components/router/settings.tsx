@@ -22,6 +22,10 @@ const FormSchema = z.object({
     provider: z.string(),
     secretKey: z.string()
   }),
+  rateLimit:z.object({
+    maxRequests:z.number(),
+    resetInterval: z.number(),
+  }),
   cors: z.object({
     enabled:z.boolean(),
     origin:z.string(),
@@ -137,7 +141,7 @@ export const Settings = ({data}:Props) => {
                 </FormItem>
               )}
             />
-            <div className={'grid grid-cols-3 gap-4'}>
+            <div className={'grid grid-cols-4 gap-4'}>
               <FormField
                 control={control}
                 name="transports.rest"
@@ -148,12 +152,12 @@ export const Settings = ({data}:Props) => {
                         REST
                       </FormLabel>
                       <FormDescription className={'pr-2'}>
-                        Conduit&apos;s administrative REST API may not be disabled via the Admin Panel at this time
+                        Note: Disabling REST will affect webhook functionality.
                       </FormDescription>
                     </div>
                     <FormControl>
                       <Switch
-                        disabled={true}
+                        disabled={!edit}
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -197,6 +201,83 @@ export const Settings = ({data}:Props) => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={control}
+                name="transports.proxy"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        Proxy
+                      </FormLabel>
+                      <FormDescription className={'pr-2'}>
+                        Allows you to create proxy routes to external services.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        disabled={!edit}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <Separator className={'my-3'}/>
+            <h1 className="text-2xl font-medium pt-2">Rate Limit settings</h1>
+            <div className={"flex flex-row space-x-4"}>
+            <FormField
+              control={control}
+              name='rateLimit.maxRequests'
+              render={({ field }) => (
+                <FormItem className={'w-1/2'}>
+                  <FormLabel>
+                    Max Requests
+                  </FormLabel>
+                  <FormDescription className={'pr-2'}>
+                      The maximum number of requests allowed within the specified interval.
+                  </FormDescription>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      type={'number'}
+                      title={'Max Requests'}
+                      placeholder={'eg. 50'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name='rateLimit.resetInterval'
+              render={({ field }) => (
+                <FormItem className={'w-1/2'}>
+                  <FormLabel>
+                    Interval
+                  </FormLabel>
+                  <FormDescription className={'pr-2'}>
+                    The interval in seconds after which the rate limit counter will be reset.
+                  </FormDescription>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      type={'number'}
+                      title={'Interval'}
+                      placeholder={'eg. 1'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             </div>
             <Separator className={'my-3'}/>
             <FormField

@@ -3,6 +3,7 @@ export type RouterSettings = {
   captcha: captchaSettings,
   cors: corsSettings,
   transports: transportSettings,
+  rateLimit: rateLimitSettings,
   security: securitySettings
 }
 
@@ -27,6 +28,11 @@ type transportSettings = {
   graphql: boolean,
   sockets: boolean,
   proxy: boolean
+}
+
+type rateLimitSettings = {
+  maxRequests: number,
+  resetInterval: number
 }
 
 type securitySettings = {
