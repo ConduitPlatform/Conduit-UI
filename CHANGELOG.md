@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.15](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.14...v0.15.15) (2023-12-17)
+
+
+### Bug Fixes
+
+* github/gitlab config ([da9e93d](https://github.com/ConduitPlatform/Conduit-UI/commit/da9e93d3dfea538d3c2cbf17e3e170e3715891e5))
+
 ### [0.15.14](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.13...v0.15.14) (2023-04-27)
 
 
