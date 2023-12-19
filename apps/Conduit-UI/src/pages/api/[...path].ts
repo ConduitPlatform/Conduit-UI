@@ -8,18 +8,14 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
         logsAvailable: process.env.LOKI_URL && process.env.LOKI_URL.length > 0,
         metricsAvailable: !!(process.env.PROMETHEUS_URL && process.env.PROMETHEUS_URL.length > 0),
       });
+      resolve({});
     } else if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
-
-      proxyLoki?.on('error', reject);
-
-      proxyLoki?.web(req, res);
+      proxyLoki?.once('proxyRes', resolve).once('error', reject).web(req, res);
     } else if (req.url?.match(/^\/api\/prometheus/)) {
       req.url = req.url?.replace(/^\/api\/prometheus/, '');
 
-      proxyPrometheus?.on('error', reject);
-
-      proxyPrometheus?.web(req, res);
+      proxyPrometheus?.once('proxyRes', resolve).once('error', reject).web(req, res);
     } else {
       // removes the api prefix from url
       req.url = req.url?.replace(/^\/api/, '');
@@ -37,15 +33,7 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
       // if (authorization) {
       //   req.headers.authorization = authorization;
       // }
-
-      /**
-       * if an error occurs in the proxy, we will reject the promise.
-       * it is so important. if you don't reject the promise,
-       * you're facing the stalled requests issue.
-       */
-      proxy.on('error', reject);
-
-      proxy.web(req, res);
+      proxy.once('proxyRes', resolve).once('error', reject).web(req, res);
     }
   });
 };
