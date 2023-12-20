@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import httpProxy from 'http-proxy';
+import { isEmpty, isNil } from 'lodash';
 
 export const config = {
   api: {
@@ -10,15 +11,22 @@ export const config = {
 export default (req: NextApiRequest, res: NextApiResponse) =>
   new Promise((resolve, reject) => {
     const proxy: httpProxy = httpProxy.createProxy();
+    const prometheusAvailable =
+      !isNil(process.env.PROMETHEUS_URL) && !isEmpty(process.env.PROMETHEUS_URL);
+    const lokiAvailable = !isNil(process.env.LOKI_URL) && !isEmpty(process.env.LOKI_URL);
     let requestData;
     if (req.url?.match(/^\/api\/info/)) {
       res.status(200).json({
-        logsAvailable: process.env.LOKI_URL && process.env.LOKI_URL.length > 0,
-        metricsAvailable: process.env.PROMETHEUS_URL && process.env.PROMETHEUS_URL.length > 0,
+        logsAvailable: lokiAvailable,
+        metricsAvailable: prometheusAvailable,
       });
       return resolve({});
     } else if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
+      if (!lokiAvailable) {
+        res.status(500).json({ error: 'Loki URL is not set' });
+        return resolve({});
+      }
       requestData = {
         timeout: 5000,
         changeOrigin: true,
@@ -26,6 +34,10 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
         target: process.env.LOKI_URL,
       };
     } else if (req.url?.match(/^\/api\/prometheus/)) {
+      if (!prometheusAvailable) {
+        res.status(500).json({ error: 'Prometheus URL is not set' });
+        return resolve({});
+      }
       req.url = req.url?.replace(/^\/api\/prometheus/, '');
       requestData = {
         timeout: 5000,
