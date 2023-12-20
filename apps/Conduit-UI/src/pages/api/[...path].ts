@@ -11,11 +11,18 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
       resolve({});
     } else if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
-      proxyLoki?.once('proxyRes', resolve).once('error', reject).web(req, res);
+      try {
+        proxyLoki?.once('proxyRes', resolve).once('error', reject).web(req, res);
+      } catch (e) {
+        reject(e);
+      }
     } else if (req.url?.match(/^\/api\/prometheus/)) {
       req.url = req.url?.replace(/^\/api\/prometheus/, '');
-
-      proxyPrometheus?.once('proxyRes', resolve).once('error', reject).web(req, res);
+      try {
+        proxyPrometheus?.once('proxyRes', resolve).once('error', reject).web(req, res);
+      } catch (e) {
+        reject(e);
+      }
     } else {
       // removes the api prefix from url
       req.url = req.url?.replace(/^\/api/, '');
@@ -33,7 +40,11 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
       // if (authorization) {
       //   req.headers.authorization = authorization;
       // }
-      proxy.once('proxyRes', resolve).once('error', reject).web(req, res);
+      try {
+        proxy.once('proxyRes', resolve).once('error', reject).web(req, res);
+      } catch (e) {
+        reject(e);
+      }
     }
   });
 };
