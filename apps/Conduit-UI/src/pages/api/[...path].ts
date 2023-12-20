@@ -46,6 +46,9 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
         reject(e);
       }
     }
+  }).catch((e) => {
+    console.log(e);
+    res.status(500).json({ error: e?.message ?? 'Something went wrong' });
   });
 };
 export default path;
