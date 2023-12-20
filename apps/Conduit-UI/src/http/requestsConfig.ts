@@ -3,6 +3,7 @@ import { getCurrentStore } from '../redux/store';
 import { asyncLogout } from '../redux/slices/appAuthSlice';
 import { sanitizeRequestParams } from '../utils/sanitizeRequestParams';
 import getConfig from 'next/config';
+
 /**
  * We no longer include the masterkey in our requests
  * since we are targeting the proxy server instead which
@@ -91,12 +92,16 @@ export const getRequest = (endpoint: string, params?: any): Promise<any> => {
 };
 
 export const getRequestLoki = (endpoint: string, params?: any): Promise<any> => {
-  return _axios.get('/api/loki' + endpoint, { params });
+  return _axios.get('/api/loki' + endpoint, { params }).catch((err) => {
+    console.log('Failed to get loki data');
+  });
 };
 
 //TODO placeholder fow now till we proxy the actual request
 export const getRequestProm = (endpoint: string, params?: any): Promise<any> => {
-  return _axios.get('/api/prometheus/api/v1' + endpoint, { params });
+  return _axios.get('/api/prometheus/api/v1' + endpoint, { params }).catch((err) => {
+    console.log('Failed to get prometheus data');
+  });
 };
 
 export const getRequestInfo = (): Promise<any> => {

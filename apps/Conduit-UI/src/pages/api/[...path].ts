@@ -1,28 +1,38 @@
-import { proxy, proxyLoki, proxyPrometheus } from '../../server/proxy';
 import { NextApiRequest, NextApiResponse } from 'next';
+import httpProxy from 'http-proxy';
 
-const path = (req: NextApiRequest, res: NextApiResponse) => {
-  return new Promise((resolve, reject) => {
+export const config = {
+  api: {
+    externalResolver: true,
+    bodyParser: false,
+  },
+};
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  new Promise((resolve, reject) => {
+    const proxy: httpProxy = httpProxy.createProxy();
+    let requestData;
     if (req.url?.match(/^\/api\/info/)) {
       res.status(200).json({
         logsAvailable: process.env.LOKI_URL && process.env.LOKI_URL.length > 0,
-        metricsAvailable: !!(process.env.PROMETHEUS_URL && process.env.PROMETHEUS_URL.length > 0),
+        metricsAvailable: process.env.PROMETHEUS_URL && process.env.PROMETHEUS_URL.length > 0,
       });
-      resolve({});
+      return resolve({});
     } else if (req.url?.match(/^\/api\/loki/)) {
       req.url = req.url?.replace(/^\/api\/loki/, '');
-      try {
-        proxyLoki?.once('proxyRes', resolve).once('error', reject).web(req, res);
-      } catch (e) {
-        reject(e);
-      }
+      requestData = {
+        timeout: 5000,
+        changeOrigin: true,
+        autoRewrite: false,
+        target: process.env.LOKI_URL,
+      };
     } else if (req.url?.match(/^\/api\/prometheus/)) {
       req.url = req.url?.replace(/^\/api\/prometheus/, '');
-      try {
-        proxyPrometheus?.once('proxyRes', resolve).once('error', reject).web(req, res);
-      } catch (e) {
-        reject(e);
-      }
+      requestData = {
+        timeout: 5000,
+        changeOrigin: true,
+        autoRewrite: false,
+        target: process.env.PROMETHEUS_URL,
+      };
     } else {
       // removes the api prefix from url
       req.url = req.url?.replace(/^\/api/, '');
@@ -40,21 +50,19 @@ const path = (req: NextApiRequest, res: NextApiResponse) => {
       // if (authorization) {
       //   req.headers.authorization = authorization;
       // }
-      try {
-        proxy.once('proxyRes', resolve).once('error', reject).web(req, res);
-      } catch (e) {
-        reject(e);
-      }
+      requestData = {
+        timeout: 10000,
+        changeOrigin: true,
+        autoRewrite: false,
+        target: process.env.CONDUIT_URL,
+      };
     }
-  }).catch((e) => {
-    console.log(e);
-    res.status(500).json({ error: e?.message ?? 'Something went wrong' });
+    try {
+      proxy.once('proxyRes', resolve).once('error', reject).web(req, res, requestData);
+    } catch (e) {
+      console.log(e);
+    }
+  }).catch((error) => {
+    console.log('Caught error: ', error?.message ?? 'Something went wrong');
+    res.status(500).json({ error: error?.message ?? 'Something went wrong' });
   });
-};
-export default path;
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
