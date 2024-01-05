@@ -1,6 +1,13 @@
+export type StorageProvider =
+  | 'google'
+  | 'azure'
+  | 'aws'
+  | 'aliyun'
+  | 'local';
+
 export type StorageSettings = {
   active: boolean,
-  provider: string,
+  provider: StorageProvider,
   authorization: AuthorizationProps,
   defaultContainer: string,
   allowContainerCreation: boolean,
@@ -12,7 +19,7 @@ export type StorageSettings = {
 }
 
 type AuthorizationProps = {
-  enabled:boolean,
+  enabled: boolean,
 }
 
 type GoogleSettings = {

@@ -11,61 +11,12 @@ import { Switch } from '@/components/ui/switch';
 import { Form} from '@/components/ui/form';
 import { SettingsForm } from '@/components/storage/settingsForm';
 import { patchStorageSettings } from '@/lib/api/storage';
-import { isEmpty } from 'lodash';
+import { FormSchema } from "@/components/storage/zod";
 
 interface Props{
   data: StorageSettings;
   authzAvailable: boolean;
 }
-
-const FormSchema = z.object({
-  provider: z.string(),
-  authorization: z.object({
-    enabled: z.boolean(),
-  }),
-  defaultContainer: z.string(),
-  allowContainerCreation: z.boolean(),
-  google: z.object({
-    serviceAccountKeyPath: z.string(),
-  }),
-  azure: z.object({
-    connectionString: z.string(),
-  }),
-  aws: z.object({
-    region: z.string(),
-    accessKeyId: z.string(),
-    secretAccessKey: z.string(),
-    accountId: z.string(),
-    endpoint: z.string().optional()
-  }),
-  aliyun: z.object({
-    region: z.string(),
-    accessKeyId: z.string(),
-    accessKeySecret: z.string()
-  }),
-  local: z.object({
-    storagePath: z.string(),
-  }),
-}).refine(schema => {
-  if (schema.provider === 'google' && !isEmpty(schema.google))
-    return false;
-  if (schema.provider === 'azure' && !isEmpty(schema.azure))
-    return false;
-  if (schema.provider === 'aws') {
-    const object = schema.aws;
-    delete object.endpoint
-    if(!isEmpty(object))
-      return false
-  }
-  if (schema.provider === 'aliyun' && !isEmpty(schema.aliyun))
-    return false;
-  if (schema.provider === 'local' && !isEmpty(schema.local))
-    return false;
-  return true;
-}, {
-  message: 'You need to fill in all the fields below for this provider',
-  path: ['provider']
-});
 
 export const Settings = ({ data, authzAvailable }: Props) => {
   const [storageModule, setStorageModule] = useState<boolean>(false)
@@ -75,7 +26,7 @@ export const Settings = ({ data, authzAvailable }: Props) => {
     resolver: zodResolver(FormSchema),
     defaultValues: data,
   });
-  const { setValue,reset, control, handleSubmit, watch } = form;
+  const { setValue, reset, control, handleSubmit, watch } = form;
 
   useEffect(()=>{
     if (data){
@@ -159,9 +110,9 @@ export const Settings = ({ data, authzAvailable }: Props) => {
                 </div>
               ),
             });
-            const updatedSettings = {
+            const updatedSettings: Partial<StorageSettings> = {
               active: !storageModule,
-              ...(!storageModule && {provider: 'local'})
+              ...(!storageModule && { provider: 'local' }),
             }
             setValue('provider','local');
             setStorageModule(!storageModule);
