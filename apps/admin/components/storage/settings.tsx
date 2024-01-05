@@ -15,14 +15,18 @@ import { isEmpty } from 'lodash';
 
 interface Props{
   data: StorageSettings;
+  authzAvailable: boolean;
 }
 
 const FormSchema = z.object({
   provider: z.string(),
+  authorization: z.object({
+    enabled: z.boolean(),
+  }),
+  defaultContainer: z.string(),
   allowContainerCreation: z.boolean(),
   google: z.object({
     serviceAccountKeyPath: z.string(),
-    bucketName: z.string()
   }),
   azure: z.object({
     connectionString: z.string(),
@@ -53,9 +57,9 @@ const FormSchema = z.object({
     if(!isEmpty(object))
       return false
   }
-  if (schema.provider === 'aliyun' &&  !isEmpty(schema.aliyun))
+  if (schema.provider === 'aliyun' && !isEmpty(schema.aliyun))
     return false;
-  if (schema.provider === 'local' &&  !isEmpty(schema.local))
+  if (schema.provider === 'local' && !isEmpty(schema.local))
     return false;
   return true;
 }, {
@@ -63,7 +67,7 @@ const FormSchema = z.object({
   path: ['provider']
 });
 
-export const Settings = ({ data }: Props) => {
+export const Settings = ({ data, authzAvailable }: Props) => {
   const [storageModule, setStorageModule] = useState<boolean>(false)
   const [edit, setEdit] = useState<boolean>(false)
   const { addAlert } = useAlerts();
@@ -229,6 +233,7 @@ export const Settings = ({ data }: Props) => {
                 watch={watch}
                 reset={reset}
                 data={data}
+                authzAvailable={authzAvailable}
               />
             </form>
           </Form>
