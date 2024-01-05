@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { Module } from '@/lib/models/Module';
 import { patchEmailSettings } from '@/lib/api/email';
 import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
@@ -122,7 +121,7 @@ export const Settings = ({data}:Props) => {
               }
           }
           patchEmailSettings(updatedSettings).then(
-            (res)=> {
+            res=> {
               dismiss();
               toast({
                 title: 'Email',
@@ -168,9 +167,9 @@ export const Settings = ({data}:Props) => {
       ),
     });
 
-    patchEmailSettings(data).then((res) => {
+    patchEmailSettings(data).then(res => {
       dismiss();
-      const emailModule = res.find((module:Module) => module.moduleName === 'email')
+      const emailModule = res.find(module => module.moduleName === 'email')
       if (emailModule && emailModule.serving)
         toast({
           title: 'Email',

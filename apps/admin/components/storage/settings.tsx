@@ -10,7 +10,6 @@ import { toast } from '@/lib/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Form} from '@/components/ui/form';
 import { SettingsForm } from '@/components/storage/settingsForm';
-import { Module } from '@/lib/models/Module';
 import { patchStorageSettings } from '@/lib/api/storage';
 import { isEmpty } from 'lodash';
 
@@ -64,7 +63,7 @@ const FormSchema = z.object({
   path: ['provider']
 });
 
-export const Settings = ({data}:Props) => {
+export const Settings = ({ data }: Props) => {
   const [storageModule, setStorageModule] = useState<boolean>(false)
   const [edit, setEdit] = useState<boolean>(false)
   const { addAlert } = useAlerts();
@@ -75,7 +74,7 @@ export const Settings = ({data}:Props) => {
   const { setValue,reset, control, handleSubmit, watch } = form;
 
   useEffect(()=>{
-    if(data){
+    if (data){
       setStorageModule(data.active)
     }
   },[data])
@@ -92,9 +91,9 @@ export const Settings = ({data}:Props) => {
       ),
     });
 
-    patchStorageSettings(data).then((res:any) => {
+    patchStorageSettings(data).then(res => {
       dismiss();
-      const storageModule = res.find((module:Module) => module.moduleName === 'storage')
+      const storageModule = res.find(module => module.moduleName === 'storage')
       if (storageModule && storageModule.serving)
         toast({
           title: 'Storage',

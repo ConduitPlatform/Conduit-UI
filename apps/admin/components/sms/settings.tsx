@@ -8,9 +8,8 @@ import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { Module } from '@/lib/models/Module';
 import { SmsSettings } from '@/lib/models/Sms';
-import {isEmpty} from "lodash";
+import { isEmpty } from "lodash";
 import { patchSmsSettings } from '@/lib/api/sms';
 import { SettingsForm } from '@/components/sms/settingsForm';
 
@@ -85,9 +84,9 @@ export const Settings = ({ data }: Props) => {
       ),
     });
 
-    patchSmsSettings(data).then((res: any) => {
+    patchSmsSettings(data).then(res => {
       dismiss();
-      const smsModule = res.find((module: Module) => module.moduleName === 'sms');
+      const smsModule = res.find(module => module.moduleName === 'sms');
       if (smsModule && smsModule.serving)
         toast({
           title: 'SMS',

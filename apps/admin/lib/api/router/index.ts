@@ -1,12 +1,25 @@
 'use server';
 import { axiosInstance } from '@/lib/api';
 import { RouterSettings } from '@/lib/models/Router';
+import { getModules } from '@/lib/api/modules';
 
-export const getRouterSettings = async () : Promise<{config:RouterSettings}> => {
-  const res = await axiosInstance.get(`/config/router`, {});
+type ConfigResponse = { config: RouterSettings };
+
+export const getRouterSettings = async () => {
+  const res = await axiosInstance.get<ConfigResponse>(`/config/router`, {});
   return res.data;
-}
+};
 
 export const patchRouterSettings = async (data: Partial<RouterSettings>) => {
-  await axiosInstance.patch(`/config/router`, {config: { ...data },});
+  await axiosInstance.patch<ConfigResponse>(`/config/router`, { config: { ...data } });
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
+    setTimeout(async () => {
+      try {
+        const modules = await getModules();
+        resolve(modules);
+      } catch (error) {
+        reject(error);
+      }
+    }, 3000);
+  });
 };

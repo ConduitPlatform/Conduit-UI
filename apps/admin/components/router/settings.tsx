@@ -80,18 +80,35 @@ export const Settings = ({data}:Props) => {
         </div>
       ),
     });
-    patchRouterSettings(dataToSubmit).then((res)=>{
-      dismiss()
-      toast({
-        title: 'Router',
-        description: (
-          <div className={'flex flex-row items-center space-x-2.5'}>
-            <CheckIcon className={'w-8 h-8'} />
-            <p className='text-sm text-foreground'>Router Notifications Updated!</p>
-          </div>
-        ),
-      });
-      location.reload()
+    patchRouterSettings(dataToSubmit).then((res)=> {
+      dismiss();
+      const chatModule = res.find(module => module.moduleName === 'chat');
+      if (chatModule && chatModule.serving)
+        toast({
+          title: 'Router',
+          description: (
+            <div className={'flex flex-row items-center space-x-2.5'}>
+              <CheckIcon className={'w-8 h-8'} />
+              <p className='text-sm text-foreground'>Router Settings Updated!</p>
+            </div>
+          ),
+        });
+      else
+        toast({
+          title: 'Chat',
+          description: (
+            <div className={'flex flex-col'}>
+              <div className={'flex flex-row text-destructive items-center'}>
+                <LucideX className={'w-8 h-8'} />
+                <p className='text-sm'>Failed to update with:</p>
+              </div>
+              <pre className='mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive'>
+                <code
+                  className='text-sm text-foreground'>Activation was not successful. Check the logs for more info</code>
+              </pre>
+            </div>
+          ),
+        });
     }).catch((err)=>{
       dismiss();
       toast({

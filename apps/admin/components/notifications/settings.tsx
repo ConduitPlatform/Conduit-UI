@@ -10,7 +10,6 @@ import { Switch } from '@/components/ui/switch';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { patchNotificationSettings } from '@/lib/api/notifications';
 import { NotificationSettings } from '@/lib/models/Notification';
-import { Module } from '@/lib/models/Module';
 import { SettingsForm } from '@/components/notifications/settingsForm';
 
 interface Props {
@@ -90,9 +89,9 @@ export const Settings = ({data}:Props) => {
         apiKey: data.apiKey,
       };
     }
-    patchNotificationSettings(notificationData).then((res) => {
+    patchNotificationSettings(notificationData).then(res => {
       dismiss();
-      const notifModule = res.find((module:Module) => module.moduleName === 'pushNotifications')
+      const notifModule = res.find(module => module.moduleName === 'pushNotifications')
       if (notifModule && notifModule.serving)
         toast({
           title: 'Notifications',
@@ -161,7 +160,7 @@ export const Settings = ({data}:Props) => {
           setValue('providerName','basic');
           setNotificationModule(!notificationModule);
           patchNotificationSettings(updatedSettings).then(
-            (res)=> {
+            res=> {
               dismiss()
               toast({
                 title: 'Notifications',

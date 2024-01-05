@@ -12,7 +12,6 @@ import { useAlerts } from '@/components/providers/AlertProvider';
 import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Module } from '@/lib/models/Module';
 
 interface Props{
   data:FormSettings
@@ -61,7 +60,7 @@ export const Settings = ({data}:Props) => {
           }
           setFormsModule(!formsModule);
           patchFormsSettings(updatedSettings).then(
-            (res)=> {
+            res=> {
               dismiss();
               toast({
                 title: 'Forms',
@@ -107,9 +106,9 @@ export const Settings = ({data}:Props) => {
         </div>
       ),
     });
-    patchFormsSettings(formData).then((res)=>{
+    patchFormsSettings(formData).then(res=>{
       dismiss();
-      const formModule = res.find((module:Module) => module.moduleName === 'forms')
+      const formModule = res.find(module => module.moduleName === 'forms')
       if (formModule && formModule.serving)
         toast({
           title: 'Forms',
