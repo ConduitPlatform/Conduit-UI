@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX, Paperclip } from 'lucide-react';
+import { CheckIcon, LoaderIcon, LucideX, Paperclip, ShieldCheck } from 'lucide-react';
 import { patchFormsSettings } from '@/lib/api/forms';
 import { useRouter } from 'next/navigation';
 import { useAlerts } from '@/components/providers/AlertProvider';
@@ -13,16 +13,19 @@ import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
-interface Props{
-  data:FormSettings
+interface Props {
+  data: FormSettings,
+  captchaAvailable: boolean,
 }
 
 const FormSchema = z.object({
-  useAttachments: z.boolean()
+  useAttachments: z.boolean(),
+  captcha: z.boolean(),
 })
-export const Settings = ({data}:Props) => {
+
+export const Settings = ({ data, captchaAvailable }: Props) => {
   const [formsModule, setFormsModule] = useState<boolean>(false)
-  const [edit ,setEdit] = useState<boolean>(false)
+  const [edit, setEdit] = useState<boolean>(false)
   const { addAlert } = useAlerts();
 
   const router = useRouter()
@@ -37,7 +40,8 @@ export const Settings = ({data}:Props) => {
     if(data){
       setFormsModule(data.active)
     }
-  },[data])
+  },[data]);
+
   const handleSwitchChange = () => {
     addAlert({
       title: 'Forms Module',
@@ -93,7 +97,6 @@ export const Settings = ({data}:Props) => {
         }},
     });
   }
-
 
   const onSubmit = (formData: z.infer<typeof FormSchema>) => {
     setEdit(false);
@@ -178,20 +181,21 @@ export const Settings = ({data}:Props) => {
         {formsModule &&
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className=" w-5/12 flex items-center justify-center space-x-4 rounded-md border p-4">
-                <Paperclip />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Attachments
-                  </p>
-                  <p className="text-sm text-muted-foreground w-11/12">
-                    Enable support for attachment fields in forms.
-                  </p>
-                </div>
-                <FormField
-                  control={control}
-                  name="useAttachments"
-                  render={({ field }) => (
+              <div className="flex gap-x-5 items-center">
+                <div className="w-5/12 flex items-center justify-center gap-x-4 rounded-md border p-4">
+                  <Paperclip />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      Attachments
+                    </p>
+                    <p className="text-sm text-muted-foreground w-11/12">
+                      Enable support for attachment fields in forms.
+                    </p>
+                  </div>
+                  <FormField
+                    control={control}
+                    name="useAttachments"
+                    render={({ field }) => (
                       <FormControl>
                         <Switch
                           disabled={!edit}
@@ -199,8 +203,33 @@ export const Settings = ({data}:Props) => {
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                  )}
-                />
+                    )}
+                  />
+                </div>
+                <div className=" w-5/12 flex items-center justify-center gap-x-4 rounded-md border p-4">
+                  <ShieldCheck />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      Captcha
+                    </p>
+                    <p className="text-sm text-muted-foreground w-11/12">
+                      Enable support for captcha in forms.
+                    </p>
+                  </div>
+                  <FormField
+                    control={control}
+                    name="captcha"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Switch
+                          disabled={!edit || (!field.value && !captchaAvailable)}
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                </div>
               </div>
               <div className={'py-4 flex justify-end'}>
                 {edit ?
