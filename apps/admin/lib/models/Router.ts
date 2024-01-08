@@ -1,40 +1,42 @@
 export type RouterSettings = {
   hostUrl: string,
-  captcha: captchaSettings,
-  cors: corsSettings,
-  transports: transportSettings,
-  rateLimit: rateLimitSettings,
-  security: securitySettings
-}
+  captcha: CaptchaSettings,
+  cors: CorsSettings,
+  transports: TransportSettings,
+  rateLimit: RateLimitSettings,
+  security: SecuritySettings,
+};
 
-type captchaSettings = {
+export type CaptchaProvider = 'recaptcha' | 'hcaptcha' | 'turnstile';
+
+type CaptchaSettings = {
   enabled: boolean,
-  provider: string,
-  secretKey: string
-}
+  provider: CaptchaProvider,
+  secretKey: string,
+};
 
-type corsSettings = {
+type CorsSettings = {
   enabled: boolean,
   origin: string,
   methods: string,
   allowedHeaders: string,
   exposedHeaders: string,
   credentials: boolean,
-  maxAge: number
-}
+  maxAge: number,
+};
 
-type transportSettings = {
+type TransportSettings = {
   rest: boolean,
   graphql: boolean,
   sockets: boolean,
-  proxy: boolean
-}
+  proxy: boolean,
+};
 
-type rateLimitSettings = {
+type RateLimitSettings = {
   maxRequests: number,
-  resetInterval: number
-}
+  resetInterval: number,
+};
 
-type securitySettings = {
-  clientValidation: boolean
-}
+type SecuritySettings = {
+  clientValidation: boolean,
+};
