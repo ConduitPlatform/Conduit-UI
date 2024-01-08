@@ -1,20 +1,21 @@
 'use server';
 import { axiosInstance } from '@/lib/api';
 import { EmailSettings } from '@/lib/models/Email';
-import { Module } from '@/lib/models/Module';
 import { getModules } from '@/lib/api/modules';
 
-export const getEmailSettings = async():Promise<{config: EmailSettings}> => {
-  const res = await axiosInstance.get('config/email');
-  return res.data
+type ConfigResponse = { config: EmailSettings };
+
+export const getEmailSettings = async() => {
+  const res = await axiosInstance.get<ConfigResponse>('config/email');
+  return res.data;
 }
 
-export const patchEmailSettings = async (data: Partial<EmailSettings>):Promise<Module[]> => {
-  await axiosInstance.patch(`/config/email`, { config: { ...data } })
-  return new Promise(async (resolve, reject) => {
+export const patchEmailSettings = async (data: Partial<EmailSettings>) => {
+  await axiosInstance.patch<ConfigResponse>(`/config/email`, { config: { ...data } })
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
     setTimeout(async () => {
       try {
-        const modules = await getModules()
+        const modules = await getModules();
         resolve(modules);
       } catch (error) {
         reject(error);

@@ -11,11 +11,12 @@ interface Props {
   edit: boolean;
   setEdit: (arg0: boolean) => void;
   data: StorageSettings;
+  authzAvailable: boolean;
   watch: any;
   reset: any;
 }
 
-export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Props) => {
+export const SettingsForm = ({ control, edit, setEdit, watch, reset, data, authzAvailable }: Props) => {
   return (
     <>
       <div className={'flex flex-col gap-4'}>
@@ -65,6 +66,27 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
           />
           <FormField
             control={control}
+            name='defaultContainer'
+            render={({ field }) => (
+              <FormItem className='w-3/12'>
+                <FormLabel>
+                  Default Container
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    disabled={!edit}
+                    title={'Default Container'}
+                    placeholder={'Enter a value'}
+                    className={'text-accent-foreground'}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
             name='allowContainerCreation'
             render={({ field }) => (
               <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4 w-3/12'>
@@ -81,7 +103,24 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
               </FormItem>
             )}
           />
-
+          <FormField
+            control={control}
+            name='authorization.enabled'
+            render={({ field }) => (
+              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4 w-3/12'>
+                <FormLabel className='text-base'>
+                  Authorization
+                </FormLabel>
+                <FormControl>
+                  <Switch
+                    disabled={!edit || (!field.value && !authzAvailable)}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
         <div className={'grid grid-cols-2 gap-4'}>
           {watch('provider') === 'local' &&
@@ -136,12 +175,12 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Access Key Id
+                      Access Key ID
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'Access Key Id'}
+                        title={'Access Key ID'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
@@ -220,27 +259,6 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                   </FormItem>
                 )}
               />
-              <FormField
-                control={control}
-                name='google.bucketName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Bucket Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!edit}
-                        title={'Bucket Name'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </>
           }
           {
@@ -273,7 +291,7 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Access Key Id
+                      Access Key ID
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -315,12 +333,12 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Account Id
+                      Account ID
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        title={'Account Id'}
+                        title={'Account ID'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}

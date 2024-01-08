@@ -41,7 +41,7 @@ export const Settings = ({ data }: Props) => {
             active: !functionsModule,
           };
           setFunctionsModule(!functionsModule);
-          patchFunctionsSettings(updatedSettings).then(() => {
+          patchFunctionsSettings(updatedSettings).then(res => {
               dismiss();
               toast({
                 title: 'Functions',

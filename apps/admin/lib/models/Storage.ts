@@ -1,7 +1,13 @@
+export type StorageProvider =
+  | 'google'
+  | 'azure'
+  | 'aws'
+  | 'aliyun'
+  | 'local';
+
 export type StorageSettings = {
   active: boolean,
-  provider: string,
-  storagePath: string,
+  provider: StorageProvider,
   authorization: AuthorizationProps,
   defaultContainer: string,
   allowContainerCreation: boolean,
@@ -13,12 +19,11 @@ export type StorageSettings = {
 }
 
 type AuthorizationProps = {
-  enabled:boolean,
+  enabled: boolean,
 }
 
 type GoogleSettings = {
   serviceAccountKeyPath: string,
-  bucketName: string
 }
 
 type AzureSettings = {
@@ -32,11 +37,13 @@ type AwsSettings = {
   accountId: string,
   endpoint?: string
 }
+
 type Aliyun = {
   region: string,
   accessKeyId: string,
   accessKeySecret: string
 }
+
 type LocalSettings = {
   storagePath: string
 }

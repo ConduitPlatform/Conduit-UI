@@ -8,7 +8,6 @@ import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { Module } from '@/lib/models/Module';
 import { SettingsForm } from '@/components/chat/settingsForm';
 import { ChatSettings } from '@/lib/models/Chat';
 import { patchChatSettings } from '@/lib/api/chat';
@@ -57,9 +56,9 @@ export const Settings = ({ data }: Props) => {
       ),
     });
 
-    patchChatSettings(data).then((res: any) => {
+    patchChatSettings(data).then(res => {
       dismiss();
-      const chatModule = res.find((module: Module) => module.moduleName === 'chat');
+      const chatModule = res.find(module => module.moduleName === 'chat');
       if (chatModule && chatModule.serving)
         toast({
           title: 'Chat',
@@ -127,7 +126,7 @@ export const Settings = ({ data }: Props) => {
           };
           setChatModule(!chatModule);
           patchChatSettings(updatedSettings).then(
-            (res) => {
+            res => {
               dismiss();
               toast({
                 title: 'Chat',
