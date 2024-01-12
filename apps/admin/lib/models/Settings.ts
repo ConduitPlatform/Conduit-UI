@@ -3,7 +3,7 @@ export type AdminSettings = {
   hostUrl: string;
   transports: TransportSettings;
   cors: CorsSettings;
-}
+};
 
 type CorsSettings = {
   enabled: boolean;
@@ -13,20 +13,22 @@ type CorsSettings = {
   exposedHeaders: string;
   credentials: boolean;
   maxAge: number;
-}
+};
 
 type AuthSettings = {
   tokenSecret: string;
   hashRounds: number;
   tokenExpirationTime: number;
-}
+};
 
 type TransportSettings = {
   rest: boolean;
   graphql: boolean;
-  sockets: boolean
-}
+  sockets: boolean;
+};
 
 export type CoreSettings = {
-  env: string;
-}
+  env: CoreEnv;
+};
+
+export type CoreEnv = 'production' | 'development' | 'test';

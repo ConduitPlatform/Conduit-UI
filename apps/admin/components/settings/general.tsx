@@ -12,20 +12,20 @@ import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { AdminSettings, CoreSettings } from '@/lib/models/Settings';
+import { AdminSettings, CoreEnv, CoreSettings } from '@/lib/models/Settings';
 import { patchAdminSettings, patchCoreSettings } from '@/lib/api/settings';
 
 const FormSchema = z.object({
   hostUrl: z.string().url(),
-  env: z.string(),
+  env: z.enum(['production', 'development', 'test']),
   cors: z.object({
-    enabled:z.boolean(),
-    origin:z.string(),
+    enabled: z.boolean(),
+    origin: z.string(),
     methods: z.string(),
     allowedHeaders: z.string(),
-    exposedHeaders : z.string(),
+    exposedHeaders: z.string(),
     credentials: z.boolean(),
-    maxAge :z.number(),
+    maxAge: z.number(),
   }),
   transports: z.object({
     rest: z.boolean(),
@@ -42,7 +42,8 @@ const FormSchema = z.object({
 interface Props {
   data: AdminSettings & CoreSettings
 }
-export const General = ({data}:Props) => {
+
+export const General = ({data}: Props) => {
   const [edit, setEdit] = useState<boolean>(false)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -125,7 +126,7 @@ export const General = ({data}:Props) => {
               render={({ field }) => (
                 <FormItem className={'w-2/12'} >
                   <FormLabel>Environment</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value} defaultValue={'recaptcha'} disabled={!edit} >
+                  <Select onValueChange={(env: CoreEnv) => field.onChange(env)} value={field.value} defaultValue={'recaptcha'} disabled={!edit} >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder='Select'/>

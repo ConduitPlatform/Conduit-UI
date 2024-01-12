@@ -12,28 +12,28 @@ import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { RouterSettings } from '@/lib/models/Router';
-import { patchRouterSettings} from '@/lib/api/router';
+import { CaptchaProvider, RouterSettings } from '@/lib/models/Router';
+import { patchRouterSettings } from '@/lib/api/router';
 
 const FormSchema = z.object({
   hostUrl: z.string().url(),
-  captcha:z.object({
+  captcha: z.object({
     enabled:z.boolean(),
-    provider: z.string(),
-    secretKey: z.string()
+    provider: z.enum(['recaptcha', 'hcaptcha', 'turnstile']),
+    secretKey: z.string(),
   }),
   rateLimit:z.object({
     maxRequests:z.number(),
     resetInterval: z.number(),
   }),
   cors: z.object({
-    enabled:z.boolean(),
-    origin:z.string(),
+    enabled: z.boolean(),
+    origin: z.string(),
     methods: z.string(),
     allowedHeaders: z.string(),
     exposedHeaders : z.string(),
     credentials: z.boolean(),
-    maxAge :z.union([z.string(), z.number()]),
+    maxAge: z.number(),
   }),
   transports: z.object({
     rest: z.boolean(),
@@ -53,7 +53,8 @@ const FormSchema = z.object({
 interface Props {
   data: RouterSettings
 }
-export const Settings = ({data}:Props) => {
+
+export const Settings = ({data}: Props) => {
   const [edit, setEdit] = useState<boolean>(false)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -471,9 +472,9 @@ export const Settings = ({data}:Props) => {
                   control={control}
                   name='captcha.provider'
                   render={({ field }) => (
-                    <FormItem >
+                    <FormItem>
                       <FormLabel>Provider</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} defaultValue={'recaptcha'} disabled={!edit} >
+                      <Select onValueChange={(p: CaptchaProvider) => field.onChange(p)} value={field.value} defaultValue={'recaptcha'} disabled={!edit}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Select a provider' />
