@@ -14,6 +14,8 @@ import { patchChatSettings } from '@/lib/api/chat';
 
 interface Props {
   data: ChatSettings;
+  emailAvailable: boolean;
+  pushNotificationsAvailable: boolean;
 }
 
 const FormSchema = z.object({
@@ -28,7 +30,7 @@ const FormSchema = z.object({
   }),
 });
 
-export const Settings = ({ data }: Props) => {
+export const Settings = ({ data, emailAvailable, pushNotificationsAvailable }: Props) => {
   const [chatModule, setChatModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
@@ -193,6 +195,8 @@ export const Settings = ({ data }: Props) => {
                 watch={watch}
                 reset={reset}
                 data={data}
+                emailAvailable={emailAvailable}
+                pushNotificationsAvailable={pushNotificationsAvailable}
               />
             </form>
           </Form>

@@ -10,9 +10,20 @@ interface Props {
   data: ChatSettings;
   watch: any;
   reset: any;
+  emailAvailable: boolean;
+  pushNotificationsAvailable: boolean;
 }
 
-export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Props) => {
+export const SettingsForm = ({
+  control,
+  edit,
+  setEdit,
+  watch,
+  reset,
+  data,
+  emailAvailable,
+  pushNotificationsAvailable,
+}: Props) => {
   return (
     <>
       <div className={'flex flex-col gap-4'}>
@@ -127,7 +138,7 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 </FormLabel>
                 <FormControl>
                   <Switch
-                    disabled={!edit}
+                    disabled={!edit || (!field.value && !emailAvailable)}
                     title={'Active'}
                     className={'text-accent-foreground'}
                     {...field}
@@ -147,7 +158,7 @@ export const SettingsForm = ({ control, edit, setEdit, watch, reset, data }: Pro
                 </FormLabel>
                 <FormControl>
                   <Switch
-                    disabled={!edit}
+                    disabled={!edit || (!field.value && !pushNotificationsAvailable)}
                     title={'Active'}
                     className={'text-accent-foreground'}
                     {...field}
