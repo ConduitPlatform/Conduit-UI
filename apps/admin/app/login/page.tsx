@@ -14,7 +14,7 @@ export default function AuthenticationPage() {
     <>
       <div
         className='container hidden h-full flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
-        <div className='hidden h-full text-white dark:border-r lg:flex bg-primary items-center'>
+        <div className='hidden h-full text-white dark:border-r lg:flex bg-primary dark:bg-primary-foreground items-center'>
           <LoginIllustration />
         </div>
         <div className='lg:p-8'>
