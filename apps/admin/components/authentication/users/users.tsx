@@ -27,7 +27,7 @@ export default function UsersTable({ data, count }: { data: User[], count: numbe
   }, [debouncedSearchTerm]);
 
   return (
-    <div className='container mx-auto py-10'>
+    <>
       <div className={'flex flex-row justify-between pb-2'}>
         <Input placeholder={'Search'} className={'w-44'} onChange={(e) => setSearch(e.target.value)} />
         <AddUserSheet onSuccess={(user: User) => {
@@ -36,7 +36,7 @@ export default function UsersTable({ data, count }: { data: User[], count: numbe
           <Button variant='outline'>Add User</Button>
         </AddUserSheet>
       </div>
-      <DataTable columns={columns} data={users} userAdd={openUserAdd}/>
-    </div>
+      <DataTable columns={columns} data={users} userAdd={openUserAdd} />
+    </>
   );
 }

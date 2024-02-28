@@ -61,7 +61,9 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
           </Link>
         </div>
       </div>
-      {children}
+      <div className='container mx-auto py-10'>
+        {children}
+      </div>
     </>);
 
 };

@@ -2,7 +2,7 @@ import { getUsers } from '@/lib/api/authentication';
 import UsersTable from '@/components/authentication/users/users';
 import { UserActionsProvider } from '@/components/authentication/users/UserActionsProvider';
 
-export default async function DemoPage({ searchParams }: {
+export default async function UserPage({ searchParams }: {
   searchParams: {
     skip: number,
     limit: number,
