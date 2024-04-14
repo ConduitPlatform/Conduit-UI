@@ -40,3 +40,6 @@ export type AuthenticationConfig =
 export type AuthenticationConfigResponse = {
   config: AuthenticationConfig;
 }
+export type AuthenticationConfigSchemaResponse = {
+  config: {[key:string]: string | boolean | number | string[] | boolean[] | number[]};
+}

@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getRouterSettings } from '@/lib/api/router';
-import ScalarIcon from '@/icons';
+import { ScalarIcon } from '@/icons';
 
 const MODULE_NAMES: { [key: string]: string } = {
   'settings': 'Settings',

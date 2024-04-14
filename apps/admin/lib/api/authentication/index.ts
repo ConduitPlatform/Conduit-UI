@@ -1,7 +1,6 @@
 'use server';
 import { axiosInstance } from '@/lib/api';
 import { User } from '@/lib/models/User';
-import { getModules } from '@/lib/api/modules';
 import { AuthenticationConfig, AuthenticationConfigResponse } from '@/lib/models/authentication';
 
 export const getUsers = async (skip: number, limit: number, params?: {
@@ -35,14 +34,4 @@ export const getAuthenticationSettings = async (): Promise<AuthenticationConfigR
 
 export const patchAuthenticationSettings = async (data: Partial<AuthenticationConfig>) => {
   await axiosInstance.patch<AuthenticationConfigResponse>(`/config/authentication`, { config: { ...data } });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const modules = await getModules();
-        resolve(modules);
-      } catch (error) {
-        reject(error);
-      }
-    }, 3000);
-  });
 };

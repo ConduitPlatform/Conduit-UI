@@ -1852,6 +1852,11 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
+"@ts-react/form@^1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@ts-react/form/-/form-1.8.3.tgz#8ace0b66fe6e7998ff1ad467ad7098a6a76445b5"
+  integrity sha512-r/QALdzmMHh8zkVA3YCjmzIInIEx4QwWUeffE0t8TGRj0qaszGXmGvlX4ZrNGnB67bQj/g+doDwa2FEyvJ7yfw==
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.9.tgz#df4907fc07a886922637b15e02d4cebc4c0021b2"

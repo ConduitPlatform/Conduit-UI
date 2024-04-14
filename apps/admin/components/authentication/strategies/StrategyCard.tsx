@@ -5,22 +5,15 @@ import { cn } from '@/lib/utils';
 import { CheckIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import React from 'react';
-import { Strategy } from '@/components/authentication/strategies/Strategy';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { StrategyInterface } from '@/components/authentication/strategies/interface/Strategy.interface';
+import { StrategySettings } from '@/components/authentication/strategies/StrategySettings';
 
 export interface StrategyCardProps {
-  strategy: Strategy;
+  strategy: StrategyInterface;
 
 }
 
-export const StrategyCard = ({ strategy }: StrategyCardProps) => {
+export const StrategyCard = async ({ strategy }: StrategyCardProps) => {
   return (
     <Card className={'col-span-2 px-0 '} key={`${strategy.name}`}>
       <CardHeader>
@@ -58,22 +51,11 @@ export const StrategyCard = ({ strategy }: StrategyCardProps) => {
         )}
       </CardContent>
       <CardFooter className={'flex flex-row justify-end gap-x-2 pb-2'}>
-        <Dialog>
-          <DialogTrigger>
-            <Button variant='outline'>
-              Settings
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
-              <DialogDescription>
-                This action cannot be undone. This will permanently delete your account
-                and remove your data from our servers.
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+        <StrategySettings strategy={strategy}>
+          <Button variant='outline'>
+            Settings
+          </Button>
+        </StrategySettings>
 
       </CardFooter>
     </Card>
