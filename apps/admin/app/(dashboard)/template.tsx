@@ -35,7 +35,7 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
 
   if (!moduleName) return (<>{children}</>);
   return (
-    <>
+    <div className={"flex flex-col max-h-screen"}>
       <div className={'flex flex-row w-full justify-between p-4 border-b items-center'}>
         <h1 className={'font-light text-xl'}>{moduleName}</h1>
         <div className={'flex flex-row space-x-1.5'}>
@@ -61,9 +61,9 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
           </Link>
         </div>
       </div>
-      <div className='container mx-auto py-10'>
+      <div className='container mx-auto py-10 overflow-y-scroll'>
         {children}
       </div>
-    </>);
+    </div>);
 
 };

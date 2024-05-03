@@ -3,16 +3,12 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { CaptchaProvider } from '@/lib/models/Router';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { patchAuthenticationSettings } from '@/lib/api/authentication';
 import { InputField } from '@/components/ui/form-inputs/InputField';
@@ -150,27 +146,29 @@ export const AuthenticationSettings = ({ data }: Props) => {
             <h1 className='text-2xl font-medium pt-2'>Access Token settings</h1>
             <div className={'flex flex-col space-y-4'}>
               <div className={'flex flex-row space-x-4'}>
-                <InputField label={'JWT Secret'} fieldName={'accessTokens.jwtSecret'} defaultValue={'S3CR3T'} />
+                <InputField label={'JWT Secret'} fieldName={'accessTokens.jwtSecret'} defaultValue={'S3CR3T'}
+                            disabled={!edit} />
                 <InputField type={'number'} label={'Expiry Period (ms)'} fieldName={'accessTokens.expiryPeriod'}
                             defaultValue={3600000}
                             onChange={(e) => {
                               form.setValue('accessTokens.expiryPeriod', parseInt(e.target.value));
-                            }} />
+                            }}
+                            disabled={!edit} />
               </div>
-              <SwitchField label={'Use Cookies'} fieldName={'accessTokens.setCookie'} />
+              <SwitchField label={'Use Cookies'} fieldName={'accessTokens.setCookie'} disabled={!edit} />
               {form.watch('accessTokens.setCookie') && (
                 <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <InputField label={'Domain'} fieldName={'accessTokens.domain'} />
-                  <InputField label={'Path'} fieldName={'accessTokens.path'} />
-                  <InputField label={'SameSite'} fieldName={'accessTokens.sameSite'} />
-                  <SwitchField label={'Secure'} fieldName={'accessTokens.secure'} />
-                  <SwitchField label={'HTTP Only'} fieldName={'accessTokens.httpOnly'} />
-                  <SwitchField label={'Signed'} fieldName={'accessTokens.signed'} />
+                  <InputField label={'Domain'} fieldName={'accessTokens.domain'} disabled={!edit} />
+                  <InputField label={'Path'} fieldName={'accessTokens.path'} disabled={!edit} />
+                  <InputField label={'SameSite'} fieldName={'accessTokens.sameSite'} disabled={!edit} />
+                  <SwitchField label={'Secure'} fieldName={'accessTokens.secure'} disabled={!edit} />
+                  <SwitchField label={'HTTP Only'} fieldName={'accessTokens.httpOnly'} disabled={!edit} />
+                  <SwitchField label={'Signed'} fieldName={'accessTokens.signed'} disabled={!edit} />
                 </div>
               )}
             </div>
             <h1 className='text-2xl font-medium pt-2 flex flex-row items-center gap-x-3'>Refresh Token
-              settings <SwitchField label={''} fieldName={'refreshTokens.enabled'} /></h1>
+              settings <SwitchField label={''} fieldName={'refreshTokens.enabled'} disabled={!edit}/></h1>
             {form.watch('refreshTokens.enabled') && (
               <div className={'flex flex-col space-y-4'}>
                 <div className={'flex flex-row space-x-4'}>
@@ -178,17 +176,18 @@ export const AuthenticationSettings = ({ data }: Props) => {
                               defaultValue={86400000 * 7}
                               onChange={(e) => {
                                 form.setValue('refreshTokens.expiryPeriod', parseInt(e.target.value));
-                              }} />
+                              }}
+                              disabled={!edit} />
                 </div>
-                <SwitchField label={'Use Cookies'} fieldName={'refreshTokens.setCookie'} />
+                <SwitchField label={'Use Cookies'} fieldName={'refreshTokens.setCookie'} disabled={!edit} />
                 {form.watch('refreshTokens.setCookie') && (
                   <div className={'grid grid-cols-2 gap-4 items-center'}>
-                    <InputField label={'Domain'} fieldName={'refreshTokens.domain'} />
-                    <InputField label={'Path'} fieldName={'refreshTokens.path'} />
-                    <InputField label={'SameSite'} fieldName={'refreshTokens.sameSite'} />
-                    <SwitchField label={'Secure'} fieldName={'refreshTokens.secure'} />
-                    <SwitchField label={'HTTP Only'} fieldName={'refreshTokens.httpOnly'} />
-                    <SwitchField label={'Signed'} fieldName={'refreshTokens.signed'} />
+                    <InputField label={'Domain'} fieldName={'refreshTokens.domain'} disabled={!edit} />
+                    <InputField label={'Path'} fieldName={'refreshTokens.path'} disabled={!edit} />
+                    <InputField label={'SameSite'} fieldName={'refreshTokens.sameSite'} disabled={!edit} />
+                    <SwitchField label={'Secure'} fieldName={'refreshTokens.secure'} disabled={!edit} />
+                    <SwitchField label={'HTTP Only'} fieldName={'refreshTokens.httpOnly'} disabled={!edit} />
+                    <SwitchField label={'Signed'} fieldName={'refreshTokens.signed'} disabled={!edit} />
                   </div>
                 )}
               </div>
@@ -196,22 +195,23 @@ export const AuthenticationSettings = ({ data }: Props) => {
 
             <Separator className={'my-3'} />
             <h1 className='text-2xl font-medium pt-2 flex flex-row items-center gap-x-3'>Teams
-              settings <SwitchField label={''} fieldName={'teams.enabled'} /></h1>
+              settings <SwitchField label={''} fieldName={'teams.enabled'} disabled={!edit} /></h1>
             {form.watch('teams.enabled') && (
               <div className={'flex flex-col space-y-4'}>
                 <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <SwitchField label={'Enable default team'} fieldName={'teams.enableDefaultTeam'} />
-                  <SwitchField label={'Allow add without invite'} fieldName={'teams.allowAddWithoutInvite'} />
+                  <SwitchField label={'Enable default team'} fieldName={'teams.enableDefaultTeam'} disabled={!edit} />
+                  <SwitchField label={'Allow add without invite'} fieldName={'teams.allowAddWithoutInvite'}
+                               disabled={!edit} />
                   <SwitchField label={'Allow registration without an invite'}
-                               fieldName={'teams.allowRegistrationWithoutInvite'} />
+                               fieldName={'teams.allowRegistrationWithoutInvite'} disabled={!edit} />
                   <SwitchField label={'Allow email mismatch for invites'}
-                               fieldName={'teams.allowEmailMismatchForInvites'} />
+                               fieldName={'teams.allowEmailMismatchForInvites'} disabled={!edit} />
                 </div>
                 <h1 className='text-xl font-medium pt-2'>Invites</h1>
                 <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <SwitchField label={'Enabled'} fieldName={'teams.invites.enabled'} />
-                  <SwitchField label={'Send email'} fieldName={'teams.invites.sendEmail'} />
-                  <InputField label={'Invite URL'} fieldName={'teams.invites.inviteUrl'} />
+                  <SwitchField label={'Enabled'} fieldName={'teams.invites.enabled'} disabled={!edit} />
+                  <SwitchField label={'Send email'} fieldName={'teams.invites.sendEmail'} disabled={!edit} />
+                  <InputField label={'Invite URL'} fieldName={'teams.invites.inviteUrl'} disabled={!edit} />
                 </div>
               </div>
             )}
@@ -219,24 +219,29 @@ export const AuthenticationSettings = ({ data }: Props) => {
             <Separator className={'my-3'} />
             <h1 className='text-2xl font-medium pt-2'>Client settings</h1>
             <div className={'flex flex-col space-y-4'}>
-              <SwitchField label={'Multiple user sessions in different clients'} fieldName={'clients.multipleUserSessions'}/>
-              <SwitchField label={'Multiple same-client sessions'} fieldName={'clients.multipleClientLogins'} />
+              <SwitchField label={'Multiple user sessions in different clients'}
+                           fieldName={'clients.multipleUserSessions'} disabled={!edit} />
+              <SwitchField label={'Multiple same-client sessions'} fieldName={'clients.multipleClientLogins'}
+                           disabled={!edit} />
             </div>
             <Separator className={'my-3'} />
-            <h1 className='text-2xl font-medium pt-2 flex flex-row items-center gap-x-3'>Captcha <SwitchField label={''} fieldName={'captcha.enabled'} /></h1>
+            <h1 className='text-2xl font-medium pt-2 flex flex-row items-center gap-x-3'>Captcha <SwitchField label={''}
+                                                                                                              fieldName={'captcha.enabled'}
+                                                                                                              disabled={!edit} />
+            </h1>
             {form.watch('captcha.enabled') && (
               <div className={'flex flex-col space-y-4'}>
                 <h1 className='text-lg font-medium pt-2'>Enabled for the following routes:</h1>
                 <div className={'grid grid-cols-2 gap-4 items-center'}>
 
-                  <SwitchField label={'Login'} fieldName={'captcha.routes.login'} />
-                  <SwitchField label={'Register'} fieldName={'captcha.routes.register'} />
-                  <SwitchField label={'OAuth2'} fieldName={'captcha.routes.oAuth2'} />
+                  <SwitchField label={'Login'} fieldName={'captcha.routes.login'} disabled={!edit} />
+                  <SwitchField label={'Register'} fieldName={'captcha.routes.register'} disabled={!edit} />
+                  <SwitchField label={'OAuth2'} fieldName={'captcha.routes.oAuth2'} disabled={!edit} />
                 </div>
                 <h1 className='text-lg font-medium pt-2'>Acceptable Platforms</h1>
                 <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <SwitchField label={'Android'} fieldName={'captcha.acceptablePlatform.android'} />
-                  <SwitchField label={'Web'} fieldName={'captcha.acceptablePlatform.web'} />
+                  <SwitchField label={'Android'} fieldName={'captcha.acceptablePlatform.android'} disabled={!edit} />
+                  <SwitchField label={'Web'} fieldName={'captcha.acceptablePlatform.web'} disabled={!edit} />
                 </div>
               </div>
 

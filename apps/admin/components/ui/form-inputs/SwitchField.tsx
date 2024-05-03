@@ -16,7 +16,6 @@ const SwitchField = ({
                        label,
                        fieldName,
                        className,
-                       disabled,
                        children,
                        ...switchRestProps
                      }: SwitchFieldProps) => {
