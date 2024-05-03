@@ -20,6 +20,10 @@ export default function UsersTable({ data, count }: { data: User[], count: numbe
     setUsers(data);
   }, [data]);
   useEffect(() => {
+    if (debouncedSearchTerm === '') {
+      setUsers(data);
+      return;
+    }
     getUsers(0, 10, { search: debouncedSearchTerm })
       .then((res) => {
         setUsers(res.users);

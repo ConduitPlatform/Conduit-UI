@@ -4,6 +4,10 @@ export type User = {
   isVerified: boolean
 }
 
+export type TeamUser = User & {
+  role: string
+}
+
 export type Admin = {
   createdAt: string;
   email: string;

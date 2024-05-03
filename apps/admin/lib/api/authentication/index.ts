@@ -1,7 +1,8 @@
 'use server';
 import { axiosInstance } from '@/lib/api';
-import { User } from '@/lib/models/User';
+import { TeamUser, User } from '@/lib/models/User';
 import { AuthenticationConfig, AuthenticationConfigResponse } from '@/lib/models/authentication';
+import { Team } from '@/lib/models/Team';
 
 export const getUsers = async (skip: number, limit: number, params?: {
   sort?: string,
@@ -26,7 +27,43 @@ export const createUser = async (email: string, password: string): Promise<User>
   });
   return res.data;
 };
-
+export const getTeams = async (skip: number, limit: number, params?: {
+  sort?: string,
+  search?: string,
+  parentTeam?: string
+}): Promise<{ teams: Team[], count: number }> => {
+  const res = await axiosInstance.get(`/authentication/teams`, {
+    params: {
+      skip,
+      limit,
+      ...params,
+    },
+  });
+  return res.data;
+};
+export const getTeamMembers = async (teamId: string, skip: number, limit: number, params?: {
+  sort?: string,
+  search?: string,
+}): Promise<{ members: TeamUser[], count: number }> => {
+  const res = await axiosInstance.get(`/authentication/teams/${teamId}/members`, {
+    params: {
+      skip,
+      limit,
+      ...params,
+    },
+  });
+  return res.data;
+};
+export const createTeam = async (name: string, params?: {
+  isDefault?: boolean,
+  parentTeam?: string
+}): Promise<Team> => {
+  const res = await axiosInstance.post(`/authentication/teams`, {
+    name,
+    ...params,
+  });
+  return res.data;
+};
 export const getAuthenticationSettings = async (): Promise<AuthenticationConfigResponse> => {
   const res = await axiosInstance.get<AuthenticationConfigResponse>('config/authentication');
   return res.data;
