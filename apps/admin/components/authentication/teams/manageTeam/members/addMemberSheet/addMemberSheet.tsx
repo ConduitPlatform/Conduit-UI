@@ -16,20 +16,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { createTeam } from '@/lib/api/authentication';
+import { createUser } from '@/lib/api/authentication';
+import { TeamUser } from '@/lib/models/User';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { Team } from '@/lib/models/Team';
 
 const FormSchema = z.object({
-  name: z.string().nonempty('Name is required'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
 });
 
-export const AddTeamSheet = ({ children, defaultOpen, onClose, onSuccess, parent }: {
+export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
   children?: ReactNode,
-  onSuccess?: (team: Team) => void,
+  onSuccess?: (user: TeamUser) => void,
   onClose?: () => void,
   defaultOpen?: boolean
-  parent?: string
 }) => {
   const [open, setOpen] = useState(defaultOpen !== undefined ? defaultOpen : false);
   const { addAlert } = useAlerts();
@@ -46,7 +46,7 @@ export const AddTeamSheet = ({ children, defaultOpen, onClose, onSuccess, parent
     }
     if (!open && form.formState.isDirty) {
       addAlert({
-        title: 'Add Team',
+        title: 'Add Member',
         description: 'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
         cancelText: 'Cancel',
         actionText: 'Close',
@@ -65,27 +65,25 @@ export const AddTeamSheet = ({ children, defaultOpen, onClose, onSuccess, parent
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const { id, dismiss } = toast({
-      title: 'Add Team',
+      title: 'Add Member',
       description: (
         <div className={'flex flex-row items-center space-x-2.5'}>
           <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className='text-sm text-foreground'>Adding team...</p>
+          <p className='text-sm text-foreground'>Adding member...</p>
         </div>
       ),
     });
-    createTeam(data.name, {
-      parentTeam: parent,
-    })
-      .then((team) => {
+    createUser(data.email, data.password)
+      .then((user) => {
         setOpen(false);
         dismiss();
-        onSuccess?.(team);
+        onSuccess?.(user as TeamUser);
         toast({
-          title: 'Add Team',
+          title: 'Add Member',
           description: (
             <div className={'flex flex-row items-center space-x-2.5'}>
               <CheckIcon className={'w-8 h-8'} />
-              <p className='text-sm text-foreground'>Team added!</p>
+              <p className='text-sm text-foreground'>Member added!</p>
             </div>
           ),
         });
@@ -93,7 +91,7 @@ export const AddTeamSheet = ({ children, defaultOpen, onClose, onSuccess, parent
       .catch((error) => {
         dismiss();
         toast({
-          title: 'Add Team',
+          title: 'Add Member',
           description: (
             <div className={'flex flex-col'}>
               <div className={'flex flex-row text-destructive items-center'}>
@@ -118,26 +116,40 @@ export const AddTeamSheet = ({ children, defaultOpen, onClose, onSuccess, parent
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <SheetHeader>
-            <SheetTitle>Add Team</SheetTitle>
+            <SheetTitle>Add Member</SheetTitle>
             <SheetDescription>
-              Add a new team to the database. Click save when you&apos;re done.
+              Add a new member to the team. Click save when you&apos;re done.
             </SheetDescription>
           </SheetHeader>
           <div className='grid gap-4 py-4'>
 
             <FormField
               control={form.control}
-              name='name'
+              name='email'
               render={({ field }) => (
                 <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-right'}>Name</FormLabel>
+                  <FormLabel className={'text-right'}>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder='My Cool Team' className='col-span-3' {...field} />
+                    <Input placeholder='mail@conduit.com' className='col-span-3' {...field} />
                   </FormControl>
                   <FormMessage className={'text-right col-span-4'} />
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
+                  <FormLabel className={'text-right'}>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
+                  </FormControl>
+                  <FormMessage className={'text-right col-span-4'} />
+                </FormItem>
+              )}
+            />
+
           </div>
           <SheetFooter>
             <Button type='submit'>Save changes</Button>

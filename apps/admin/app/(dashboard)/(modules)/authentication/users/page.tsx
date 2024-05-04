@@ -15,6 +15,14 @@ export default async function UserPage({ searchParams }: {
   const queryParams = { ...searchParams };
 
   const data = await getUsers(searchParams.skip ?? 0, searchParams.limit ?? 20, { ...searchParams });
+  const refreshUsers = async (search: string) => {
+    'use server';
+    const {
+      users,
+    } = await getUsers(searchParams.skip ?? 0, searchParams.limit ?? 20, { ...searchParams });
+    return users;
+  };
 
-  return <UserActionsProvider><UsersTable data={data.users} count={data.count} /></UserActionsProvider>;
+  return <UserActionsProvider><UsersTable data={data.users} count={data.count}
+                                          refreshData={refreshUsers} /></UserActionsProvider>;
 }

@@ -1,25 +1,25 @@
 'use client';
-import { DataTable } from '@/components/authentication/users/data-table';
-import { columns } from '@/components/authentication/users/columns';
-import { User } from '@/lib/models/User';
+import { TeamUser } from '@/lib/models/User';
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 // @ts-ignore
 import { useDebounce } from '@uidotdev/usehooks';
-import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
 import { useSearchParams } from 'next/navigation';
+import { MemberDataTable } from '@/components/authentication/teams/manageTeam/members/data-table';
+import { useMemberActions } from '@/components/authentication/teams/manageTeam/members/MemberActionsProvider';
+import { AddMemberSheet } from '@/components/authentication/teams/manageTeam/members/addMemberSheet/addMemberSheet';
+import { columns } from '@/components/authentication/teams/manageTeam/members/columns';
 
-export default function UsersTable({ data, count, refreshData }: {
-  data: User[], count: number,
-  refreshData: (searchString: string) => Promise<User[]>
+export default function MembersTable({ data, count, refreshData }: {
+  data: TeamUser[], count: number,
+  refreshData: (searchString: string) => Promise<TeamUser[]>
 }) {
   const searchParams = useSearchParams();
 
-  const [users, setUsers] = useState<User[]>(data);
+  const [users, setUsers] = useState<TeamUser[]>(data);
   const [search, setSearch] = useState<string>(searchParams.get('search') ?? '');
-  const { openUserAdd } = useUserActions();
+  const { openMemberAdd } = useMemberActions();
   const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -39,13 +39,13 @@ export default function UsersTable({ data, count, refreshData }: {
     <>
       <div className={'flex flex-row justify-between pb-2'}>
         <Input placeholder={'Search'} className={'w-44'} onChange={(e) => setSearch(e.target.value)} />
-        <AddUserSheet onSuccess={(user: User) => {
+        <AddMemberSheet onSuccess={(user: TeamUser) => {
           setUsers([...users, user]);
         }}>
-          <Button variant='outline'>Add User</Button>
-        </AddUserSheet>
+          <Button variant='outline'>Add Member</Button>
+        </AddMemberSheet>
       </div>
-      <DataTable columns={columns} data={users} userAdd={openUserAdd} />
+      <MemberDataTable columns={columns} data={users} memberAdd={openMemberAdd} />
     </>
   );
 }

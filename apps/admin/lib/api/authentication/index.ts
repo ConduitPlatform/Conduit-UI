@@ -27,6 +27,10 @@ export const createUser = async (email: string, password: string): Promise<User>
   });
   return res.data;
 };
+export const getTeam = async (teamId: string): Promise<Team> => {
+  const res = await axiosInstance.get(`/authentication/teams/${teamId}`);
+  return res.data;
+};
 export const getTeams = async (skip: number, limit: number, params?: {
   sort?: string,
   search?: string,
@@ -62,6 +66,16 @@ export const createTeam = async (name: string, params?: {
     name,
     ...params,
   });
+  return res.data;
+};
+export const updateTeam = async (data: { _id: string, name?: string, isDefault?: boolean }): Promise<Team> => {
+  const res = await axiosInstance.patch(`/authentication/teams/${data._id}`, {
+    ...data,
+  });
+  return res.data;
+};
+export const deleteTeam = async (teamId: string) => {
+  const res = await axiosInstance.delete(`/authentication/teams/${teamId}`);
   return res.data;
 };
 export const getAuthenticationSettings = async (): Promise<AuthenticationConfigResponse> => {

@@ -14,8 +14,13 @@ export default async function Teams({ searchParams }: {
   const { skip, limit, ...queryParams } = searchParams;
 
   const data = await getTeams(skip ?? 0, limit ?? 20, queryParams);
+  const refreshTeams = async (search: string) => {
+    'use server';
+    const { teams, count } = await getTeams(skip ?? 0, limit ?? 20, { ...queryParams, search });
+    return teams;
+  };
 
   return (
-    <TeamActionsProvider><TeamsTable data={data.teams} /></TeamActionsProvider>
+    <TeamActionsProvider><TeamsTable data={data.teams} refreshData={refreshTeams} /></TeamActionsProvider>
   );
 }

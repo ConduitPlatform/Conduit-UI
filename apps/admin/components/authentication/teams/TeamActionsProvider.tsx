@@ -5,14 +5,14 @@ import { AddTeamSheet } from '@/components/authentication/teams/addTeamSheet/add
 
 type TeamActionsProvider = {
   openTeamAdd: () => void
-  openTeamEdit: (userId: string) => void
+  openSubTeamAdd: (parentId: string) => void
 }
 
 const initialState: TeamActionsProvider = {
   openTeamAdd: () => {
     throw new Error('Not implemented');
   },
-  openTeamEdit: (userId: string) => {
+  openSubTeamAdd: (parentId: string) => {
     throw new Error('Not implemented');
   },
 };
@@ -22,23 +22,21 @@ export const useTeamActions = () => useContext(TeamActionsContext);
 
 export function TeamActionsProvider({ children }: { children: React.ReactNode }) {
   const [teamAdd, setTeamAdd] = React.useState<boolean>(false);
-  const [teamEdit, setTeamEdit] = React.useState<string | undefined>(undefined);
+  const [subTeamAdd, setSubTeamAdd] = React.useState<string | undefined>(undefined);
   const openTeamAdd = () => {
     setTeamAdd(true);
   };
-  const openTeamEdit = (userId: string) => {
-    setTeamEdit(userId);
+  const openSubTeamAdd = (parentTeam: string) => {
+    setSubTeamAdd(parentTeam);
   };
 
   return <TeamActionsContext.Provider
     value={{
       openTeamAdd,
-      openTeamEdit,
+      openSubTeamAdd,
     }}
   >
-    <AddTeamSheet defaultOpen={teamAdd} onClose={() => setTeamAdd(false)} />
-    <AddTeamSheet defaultOpen={teamEdit !== undefined} />
-
+    <AddTeamSheet defaultOpen={teamAdd} onClose={() => setTeamAdd(false)} parent={subTeamAdd} />
     {children}
   </TeamActionsContext.Provider>;
 }
