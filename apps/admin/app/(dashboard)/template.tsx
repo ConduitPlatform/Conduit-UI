@@ -61,7 +61,7 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
           </Link>
         </div>
       </div>
-      <div className='container mx-auto py-10 overflow-y-scroll'>
+      <div className='container mx-auto py-10 overflow-y-auto'>
         {children}
       </div>
     </div>);

@@ -1,29 +1,19 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
 import { ReactNode, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import * as z from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { createUser } from '@/lib/api/authentication';
 import { TeamUser } from '@/lib/models/User';
 import { useAlerts } from '@/components/providers/AlertProvider';
-
-const FormSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters long'),
-});
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
   children?: ReactNode,
@@ -32,19 +22,16 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
   defaultOpen?: boolean
 }) => {
   const [open, setOpen] = useState(defaultOpen !== undefined ? defaultOpen : false);
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const { addAlert } = useAlerts();
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
   useEffect(() => {
     if (defaultOpen !== undefined) setOpen(defaultOpen);
   }, [defaultOpen]);
   useEffect(() => {
-    if (!open && form.formState.isSubmitted) {
+    if (!open && selectedMembers.length === 0) {
       onClose?.();
-      return form.reset();
     }
-    if (!open && form.formState.isDirty) {
+    if (!open && selectedMembers.length > 0) {
       addAlert({
         title: 'Add Member',
         description: 'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
@@ -53,7 +40,7 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
         onDecision: (cancel) => {
           if (!cancel) {
             onClose?.();
-            return form.reset();
+            setSelectedMembers([]);
           }
           setOpen(true);
         },
@@ -63,7 +50,7 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
     }
   }, [open]);
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit() {
     const { id, dismiss } = toast({
       title: 'Add Member',
       description: (
@@ -73,7 +60,7 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
         </div>
       ),
     });
-    createUser(data.email, data.password)
+    createUser('data.email', 'data.password')
       .then((user) => {
         setOpen(false);
         dismiss();
@@ -108,54 +95,23 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
       });
   }
 
-  return <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
-    <SheetTrigger asChild>
+  return <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
+    <DialogTrigger asChild>
       {children}
-    </SheetTrigger>
-    <SheetContent side='right'>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <SheetHeader>
-            <SheetTitle>Add Member</SheetTitle>
-            <SheetDescription>
-              Add a new member to the team. Click save when you&apos;re done.
-            </SheetDescription>
-          </SheetHeader>
-          <div className='grid gap-4 py-4'>
+    </DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Add Member</DialogTitle>
+        <DialogDescription>
+          Add a new member to the team. Click save when you&apos;re done.
+        </DialogDescription>
+      </DialogHeader>
+      <div className='grid gap-4 py-4'>
 
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-right'}>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder='mail@conduit.com' className='col-span-3' {...field} />
-                  </FormControl>
-                  <FormMessage className={'text-right col-span-4'} />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-x-4'>
-                  <FormLabel className={'text-right'}>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder='very secret' type='password' className='col-span-3' {...field} />
-                  </FormControl>
-                  <FormMessage className={'text-right col-span-4'} />
-                </FormItem>
-              )}
-            />
-
-          </div>
-          <SheetFooter>
-            <Button type='submit'>Save changes</Button>
-          </SheetFooter>
-        </form>
-      </Form>
-    </SheetContent>
-  </Sheet>;
+      </div>
+      <DialogFooter>
+        <Button type='submit'>Save changes</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>;
 };
