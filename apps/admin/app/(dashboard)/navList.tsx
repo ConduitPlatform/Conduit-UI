@@ -57,10 +57,6 @@ export const navList = [
         href: '/authentication/teams',
         icon: <Users2 className={NAV_ICON_CLASSES} />,
       }, {
-        name: 'Service Accounts',
-        href: '/authentication/service-accounts',
-        icon: <Bot className={NAV_ICON_CLASSES} />,
-      }, {
         name: 'Strategies',
         href: '/authentication/strategies',
         icon: <Key className={NAV_ICON_CLASSES} />,
