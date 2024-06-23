@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useContext } from 'react';
-import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
+import { AddMemberSheet } from '@/components/authentication/teams/manageTeam/members/addMemberSheet/addMemberSheet';
 
 type MemberActionsProvider = {
   openMemberAdd: () => void
@@ -36,8 +36,8 @@ export function MemberActionsProvider({ children }: { children: React.ReactNode 
       openMemberEdit,
     }}
   >
-    <AddUserSheet defaultOpen={memberAdd} onClose={() => setMemberAdd(false)} />
-    <AddUserSheet defaultOpen={memberEdit !== undefined} />
+    <AddMemberSheet defaultOpen={memberAdd} onClose={() => setMemberAdd(false)} />
+    <AddMemberSheet defaultOpen={memberEdit !== undefined} />
 
     {children}
   </MemberActionsContext.Provider>;

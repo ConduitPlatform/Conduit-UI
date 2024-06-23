@@ -59,6 +59,7 @@ export default async function Teams({ searchParams, params }: {
         </TabsList>
         <TabsContent value='members'>
           <MemberActionsProvider><MembersTable data={userData.members} count={data.count}
+                                               teamId={team._id}
                                                refreshData={refreshUsers} /></MemberActionsProvider>
         </TabsContent>
         <TabsContent value='subteams'>

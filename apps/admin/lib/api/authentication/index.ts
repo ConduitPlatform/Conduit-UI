@@ -58,6 +58,15 @@ export const getTeamMembers = async (teamId: string, skip: number, limit: number
   });
   return res.data;
 };
+export const addTeamMembers = async (teamId: string, members: User[]): Promise<{
+  members: TeamUser[],
+  count: number
+}> => {
+  const res = await axiosInstance.post(`/authentication/teams/${teamId}/members`, {
+    members: members.map((member) => member._id),
+  });
+  return res.data;
+};
 export const createTeam = async (name: string, params?: {
   isDefault?: boolean,
   parentTeam?: string
