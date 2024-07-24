@@ -36,7 +36,7 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
   if (!moduleName) return (<>{children}</>);
   return (
     <div className={"flex flex-col max-h-screen"}>
-      <div className={'flex flex-row w-full justify-between p-4 border-b items-center'}>
+      <div className={'flex flex-row w-full justify-between p-4 border-b items-center sticky top-0 z-40 bg-background'}>
         <h1 className={'font-light text-xl'}>{moduleName}</h1>
         <div className={'flex flex-row space-x-1.5'}>
           <Button variant='outline'>
@@ -61,7 +61,7 @@ export default function ModuleHeader({ children }: { children: React.ReactNode }
           </Link>
         </div>
       </div>
-      <div className='container mx-auto py-10 overflow-y-auto'>
+      <div className='container mx-auto py-10'>
         {children}
       </div>
     </div>);
