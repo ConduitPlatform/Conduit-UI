@@ -7,7 +7,6 @@ import React from 'react';
 interface TextAreaWithLabel extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   fieldName: string;
-  placeholder: string;
   classNames?: {
     label?: string;
     input?: string;

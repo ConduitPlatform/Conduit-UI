@@ -1,7 +1,6 @@
 import {
   BellDot,
   BellPlus,
-  Bot,
   Braces,
   Cog,
   Contact,
@@ -209,8 +208,12 @@ export const navList = [
         href: '/push-notifications',
         icon: <LucideAreaChart className={NAV_ICON_CLASSES} />,
       }, {
+        name: 'Tokens',
+        href: '/push-notifications/tokens',
+        icon: <KeySquare className={NAV_ICON_CLASSES} />,
+      }, {
         name: 'Test Send',
-        href: '/push-notifications/send',
+        href: '/push-notifications/test',
         icon: <BellPlus className={NAV_ICON_CLASSES} />,
       }, {
         name: 'Settings',
