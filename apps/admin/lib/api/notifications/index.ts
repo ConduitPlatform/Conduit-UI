@@ -48,3 +48,19 @@ export const getTokenById = async (id: string, populate?: string): Promise<Notif
   return res.data;
 };
 
+
+export const sendNotifications = async (params: {
+  userIds: string[],
+  title: string,
+  body?: string,
+  data?: Record<string, any>,
+  isSilent?: boolean,
+  platform?: string,
+  doNotStore?: boolean,
+}): Promise<NotificationToken> => {
+  const res = await axiosInstance.post(`/pushNotifications/sendToManyDevices`, {
+    ...params,
+  });
+  return res.data;
+};
+
