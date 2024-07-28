@@ -276,7 +276,7 @@ export const navList = [
         href: '/storage',
         icon: <LucideAreaChart className={NAV_ICON_CLASSES} />,
       }, {
-        name: 'File browser',
+        name: 'Browse',
         href: '/storage/files',
         icon: <FolderSearch className={NAV_ICON_CLASSES} />,
       }, {
