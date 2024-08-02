@@ -1,7 +1,6 @@
 import {
   BellDot,
   BellPlus,
-  Bot,
   Braces,
   Cog,
   Contact,
@@ -56,10 +55,6 @@ export const navList = [
         name: 'Teams',
         href: '/authentication/teams',
         icon: <Users2 className={NAV_ICON_CLASSES} />,
-      }, {
-        name: 'Service Accounts',
-        href: '/authentication/service-accounts',
-        icon: <Bot className={NAV_ICON_CLASSES} />,
       }, {
         name: 'Strategies',
         href: '/authentication/strategies',
@@ -213,8 +208,12 @@ export const navList = [
         href: '/push-notifications',
         icon: <LucideAreaChart className={NAV_ICON_CLASSES} />,
       }, {
+        name: 'Tokens',
+        href: '/push-notifications/tokens',
+        icon: <KeySquare className={NAV_ICON_CLASSES} />,
+      }, {
         name: 'Test Send',
-        href: '/push-notifications/send',
+        href: '/push-notifications/test',
         icon: <BellPlus className={NAV_ICON_CLASSES} />,
       }, {
         name: 'Settings',
@@ -277,7 +276,7 @@ export const navList = [
         href: '/storage',
         icon: <LucideAreaChart className={NAV_ICON_CLASSES} />,
       }, {
-        name: 'File browser',
+        name: 'Browse',
         href: '/storage/files',
         icon: <FolderSearch className={NAV_ICON_CLASSES} />,
       }, {

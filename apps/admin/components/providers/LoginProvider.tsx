@@ -27,6 +27,7 @@ export const LoginProvider = ({ children }: { children: ReactNode }): React.JSX.
         }
       })
       .catch(() => {
+        setLoading(false);
         router.replace('/login');
       });
   }, [pathname, router]);

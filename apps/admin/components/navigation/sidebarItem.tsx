@@ -2,10 +2,10 @@ import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-export const SidebarItem = ({ children, href, active }: {
+export const SidebarItem = ({ children, href, active = false }: {
   children: ReactNode,
   href: string,
-  active: boolean
+  active?: boolean
 }) => {
   return (
     <Link

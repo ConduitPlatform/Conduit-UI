@@ -23,3 +23,9 @@ export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
     }, 3000);
   });
 };
+
+
+export const testSendSMS = async (smsData: { to:string, message:string }) => {
+  const res = await axiosInstance.post(`/sms/send`, { ...smsData });
+  return 'ok';
+};

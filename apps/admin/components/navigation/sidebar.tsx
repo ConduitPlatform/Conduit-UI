@@ -27,13 +27,13 @@ export const Sidebar = ({ children }: { children?: ReactNode }) => {
         <div className='flex-grow' />
         <div className=' flex justify-between sticky bg-background bottom-0 z-10 w-full pt-2'>
           <div className={'flex gap-1'}>
-            <Link href={'/settings/general'} className={'flex rounded-md cursor-default px-2 py-1.5 hover:bg-accent hover:text-accent-foreground'}>
+            <Link href={'/settings/general'} className={'flex rounded-md cursor-pointer px-2 py-1.5 hover:bg-accent hover:text-accent-foreground'}>
               <Cog className={'w-6 h-6'} />
             </Link>
-            <Link href={'/settings/user-settings'} className={'flex rounded-md cursor-default px-2 py-1.5 hover:bg-accent hover:text-accent-foreground'}>
+            <Link href={'/settings/user-settings'} className={'flex rounded-md cursor-pointer px-2 py-1.5 hover:bg-accent hover:text-accent-foreground'}>
               <User className={'w-6 h-6'} />
             </Link>
-            <Link href={'/settings/admin-users'} className={'flex rounded-md cursor-default px-2 py-1.5 hover:bg-accent hover:text-accent-foreground'}>
+            <Link href={'/settings/admin-users'} className={'flex rounded-md cursor-pointer px-2 py-1.5 hover:bg-accent hover:text-accent-foreground'}>
               <Users />
             </Link>
           </div>
