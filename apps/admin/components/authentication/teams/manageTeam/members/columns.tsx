@@ -8,14 +8,20 @@ export const columns: ColumnDef<TeamUser>[] = [
   {
     accessorKey: '_id',
     header: 'User ID',
-    cell: (cell) => {
-      return <div className={'flex flex-row group'}>
-        {cell.getValue() as string}
-        <Clipboard className={'w-4 h-4 ml-2 invisible group-hover:visible cursor-pointer '} onClick={() => {
-          navigator.clipboard.writeText(cell.getValue() as string);
-        }} />
-
-      </div>;
+    cell: cell => {
+      return (
+        <div className={'flex flex-row group'}>
+          {cell.getValue() as string}
+          <Clipboard
+            className={
+              'w-4 h-4 ml-2 invisible group-hover:visible cursor-pointer '
+            }
+            onClick={() => {
+              navigator.clipboard.writeText(cell.getValue() as string);
+            }}
+          />
+        </div>
+      );
     },
   },
   {
@@ -31,15 +37,21 @@ export const columns: ColumnDef<TeamUser>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
-      return <div className={'flex flex-row'}>
-        <Button variant={'ghost'} size={'sm'} title='edit'>
-          <Pencil className={'w-4 h-4'} />
-        </Button>
-        <Button variant={'ghost'} size={'sm'} className={'text-destructive'} title='delete'>
-          <Trash className={'w-4 h-4'} />
-        </Button>
-      </div>;
-
+      return (
+        <div className={'flex flex-row'}>
+          <Button variant={'ghost'} size={'sm'} title="edit">
+            <Pencil className={'w-4 h-4'} />
+          </Button>
+          <Button
+            variant={'ghost'}
+            size={'sm'}
+            className={'text-destructive'}
+            title="delete"
+          >
+            <Trash className={'w-4 h-4'} />
+          </Button>
+        </div>
+      );
     },
   },
 ];

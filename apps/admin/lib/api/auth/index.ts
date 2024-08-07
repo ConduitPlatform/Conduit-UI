@@ -4,7 +4,12 @@ import { cookies } from 'next/headers';
 
 export const adminLogin = async (username: string, password: string) => {
   const res = await axiosInstance.post('/login', { username, password });
-  cookies().set({ name: 'accessToken', value: res.data.token, httpOnly: true, maxAge: 72000 });
+  cookies().set({
+    name: 'accessToken',
+    value: res.data.token,
+    httpOnly: true,
+    maxAge: 72000,
+  });
   return res.data;
 };
 

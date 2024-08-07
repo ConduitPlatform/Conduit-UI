@@ -1,4 +1,10 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ChatSettings } from '@/lib/models/Chat';
@@ -30,12 +36,10 @@ export const SettingsForm = ({
         <div className={'grid grid-cols-4 gap-4'}>
           <FormField
             control={control}
-            name='allowMessageDelete'
+            name="allowMessageDelete"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Messages can be deleted
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Messages can be deleted</FormLabel>
                 <FormControl>
                   <Switch
                     disabled={!edit}
@@ -50,12 +54,10 @@ export const SettingsForm = ({
           />
           <FormField
             control={control}
-            name='allowMessageEdit'
+            name="allowMessageEdit"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Messages can be edited
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Messages can be edited</FormLabel>
                 <FormControl>
                   <Switch
                     disabled={!edit}
@@ -70,12 +72,10 @@ export const SettingsForm = ({
           />
           <FormField
             control={control}
-            name='deleteEmptyRooms'
+            name="deleteEmptyRooms"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Delete empty Chat rooms
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Delete empty Chat rooms</FormLabel>
                 <FormControl>
                   <Switch
                     disabled={!edit}
@@ -90,12 +90,10 @@ export const SettingsForm = ({
           />
           <FormField
             control={control}
-            name='auditMode'
+            name="auditMode"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Keep deleted Rooms/Messages for auditing
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Keep deleted Rooms/Messages for auditing</FormLabel>
                 <FormControl>
                   <Switch
                     disabled={!edit}
@@ -110,12 +108,10 @@ export const SettingsForm = ({
           />
           <FormField
             control={control}
-            name='explicit_room_joins.enabled'
+            name="explicit_room_joins.enabled"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Require invite to join room.
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Require invite to join room.</FormLabel>
                 <FormControl>
                   <Switch
                     disabled={!edit}
@@ -130,12 +126,10 @@ export const SettingsForm = ({
           />
           <FormField
             control={control}
-            name='explicit_room_joins.send_email'
+            name="explicit_room_joins.send_email"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Send invites via e-mail.
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Send invites via e-mail.</FormLabel>
                 <FormControl>
                   <Switch
                     disabled={!edit || (!field.value && !emailAvailable)}
@@ -150,15 +144,15 @@ export const SettingsForm = ({
           />
           <FormField
             control={control}
-            name='explicit_room_joins.send_notification'
+            name="explicit_room_joins.send_notification"
             render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                <FormLabel>
-                  Send invites via Push Notification.
-                </FormLabel>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormLabel>Send invites via Push Notification.</FormLabel>
                 <FormControl>
                   <Switch
-                    disabled={!edit || (!field.value && !pushNotificationsAvailable)}
+                    disabled={
+                      !edit || (!field.value && !pushNotificationsAvailable)
+                    }
                     title={'Active'}
                     className={'text-accent-foreground'}
                     {...field}
@@ -171,22 +165,30 @@ export const SettingsForm = ({
         </div>
       </div>
       <div className={'py-4 flex justify-end'}>
-        {edit ?
+        {edit ? (
           <div className={'flex gap-2'}>
             <Button
-              type='button'
+              type="button"
               className={'dark:border-gray-500'}
               variant={'outline'}
               onClick={() => {
                 reset();
                 setEdit(false);
-              }}>Cancel</Button>
-            <Button type='submit'>Submit</Button>
-          </div> :
-          <Button onClick={() => {
-            setEdit(true);
-          }}>Edit</Button>
-        }
+              }}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Submit</Button>
+          </div>
+        ) : (
+          <Button
+            onClick={() => {
+              setEdit(true);
+            }}
+          >
+            Edit
+          </Button>
+        )}
       </div>
     </>
   );

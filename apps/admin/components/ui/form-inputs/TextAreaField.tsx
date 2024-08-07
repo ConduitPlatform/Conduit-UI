@@ -1,10 +1,16 @@
 import { useFormContext } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { TextArea } from '@/components/ui/textArea';
 import React from 'react';
 
-interface TextAreaWithLabel extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaWithLabel
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   fieldName: string;
   classNames?: {
@@ -15,16 +21,16 @@ interface TextAreaWithLabel extends React.TextareaHTMLAttributes<HTMLTextAreaEle
 }
 
 export const TextAreaField = ({
-                                label,
-                                fieldName,
-                                placeholder,
-                                classNames: {
-                                  label: labelClassName,
-                                  input: inputClassName,
-                                  formItem: formItemClassName,
-                                } = {},
-                                ...restInputProps
-                              }: TextAreaWithLabel) => {
+  label,
+  fieldName,
+  placeholder,
+  classNames: {
+    label: labelClassName,
+    input: inputClassName,
+    formItem: formItemClassName,
+  } = {},
+  ...restInputProps
+}: TextAreaWithLabel) => {
   const { control } = useFormContext();
 
   return (
@@ -32,13 +38,11 @@ export const TextAreaField = ({
       control={control}
       name={fieldName}
       render={({ field }) => (
-        <FormItem
-          className={cn('w-full space-y-0.5', formItemClassName)}
-        >
+        <FormItem className={cn('w-full space-y-0.5', formItemClassName)}>
           <FormLabel
             className={cn(
               'flex gap-2 pl-1 text-base font-medium text-text-body',
-              labelClassName,
+              labelClassName
             )}
           >
             {label}
@@ -56,4 +60,3 @@ export const TextAreaField = ({
     />
   );
 };
-

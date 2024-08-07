@@ -1,6 +1,8 @@
 # misc
 **/.DS_Store
 **/.pem
+**/README.md
+**/CHANGELOG.md
 
 # dependencies
 **/node_modules
@@ -33,3 +35,6 @@
 ./apps/**/next-env.d.ts
 ./apps/**/build
 ./apps/**/.vercel
+
+# Github
+.github

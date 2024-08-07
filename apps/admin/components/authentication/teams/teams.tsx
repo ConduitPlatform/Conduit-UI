@@ -11,14 +11,20 @@ import { AddTeamSheet } from '@/components/authentication/teams/addTeamSheet/add
 import { TeamDataTable } from '@/components/authentication/teams/TeamsTable/data-table';
 import { useSearchParams } from 'next/navigation';
 
-export default function TeamsTable({ data, refreshData, parentTeamId }: {
-  data: Team[],
-  refreshData: (searchString: string) => Promise<Team[]>
-  parentTeamId?: string
+export default function TeamsTable({
+  data,
+  refreshData,
+  parentTeamId,
+}: {
+  data: Team[];
+  refreshData: (searchString: string) => Promise<Team[]>;
+  parentTeamId?: string;
 }) {
   const searchParams = useSearchParams();
   const [teams, setTeams] = useState<Team[]>(data);
-  const [search, setSearch] = useState<string>(searchParams.get('search') ?? '');
+  const [search, setSearch] = useState<string>(
+    searchParams.get('search') ?? ''
+  );
 
   const { openTeamAdd, openSubTeamAdd } = useTeamActions();
   const debouncedSearchTerm = useDebounce(search, 300);
@@ -33,27 +39,37 @@ export default function TeamsTable({ data, refreshData, parentTeamId }: {
       setTeams(data);
       return;
     }
-    refreshData(debouncedSearchTerm).then((teams) => setTeams(teams));
+    refreshData(debouncedSearchTerm).then(teams => setTeams(teams));
   }, [debouncedSearchTerm]);
 
   return (
     <>
       <div className={'flex flex-row justify-between pb-2'}>
-        <Input placeholder={'Search'} className={'w-44'} onChange={(e) => setSearch(e.target.value)} />
-        <AddTeamSheet onSuccess={(team: Team) => {
-          setTeams([...teams, team]);
-        }} parent={parentTeamId}>
-          <Button variant='outline'>Add Team</Button>
+        <Input
+          placeholder={'Search'}
+          className={'w-44'}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <AddTeamSheet
+          onSuccess={(team: Team) => {
+            setTeams([...teams, team]);
+          }}
+          parent={parentTeamId}
+        >
+          <Button variant="outline">Add Team</Button>
         </AddTeamSheet>
       </div>
-      <TeamDataTable columns={columns} data={teams} teamAdd={() => {
-        if (parentTeamId) {
-          openSubTeamAdd(parentTeamId);
-        } else {
-          openTeamAdd();
-        }
-
-      }} />
+      <TeamDataTable
+        columns={columns}
+        data={teams}
+        teamAdd={() => {
+          if (parentTeamId) {
+            openSubTeamAdd(parentTeamId);
+          } else {
+            openTeamAdd();
+          }
+        }}
+      />
     </>
   );
 }

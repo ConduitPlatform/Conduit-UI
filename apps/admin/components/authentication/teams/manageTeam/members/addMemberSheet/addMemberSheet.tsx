@@ -15,13 +15,20 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
-  children?: ReactNode,
-  onSuccess?: (user: TeamUser) => void,
-  onClose?: () => void,
-  defaultOpen?: boolean
+export const AddMemberSheet = ({
+  children,
+  defaultOpen,
+  onClose,
+  onSuccess,
+}: {
+  children?: ReactNode;
+  onSuccess?: (user: TeamUser) => void;
+  onClose?: () => void;
+  defaultOpen?: boolean;
 }) => {
-  const [open, setOpen] = useState(defaultOpen !== undefined ? defaultOpen : false);
+  const [open, setOpen] = useState(
+    defaultOpen !== undefined ? defaultOpen : false
+  );
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const { addAlert } = useAlerts();
   useEffect(() => {
@@ -34,10 +41,11 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
     if (!open && selectedMembers.length > 0) {
       addAlert({
         title: 'Add Member',
-        description: 'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
+        description:
+          'Are you sure you want to close this sheet? Any unsaved changes will be lost.',
         cancelText: 'Cancel',
         actionText: 'Close',
-        onDecision: (cancel) => {
+        onDecision: cancel => {
           if (!cancel) {
             onClose?.();
             setSelectedMembers([]);
@@ -56,12 +64,12 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
       description: (
         <div className={'flex flex-row items-center space-x-2.5'}>
           <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className='text-sm text-foreground'>Adding member...</p>
+          <p className="text-sm text-foreground">Adding member...</p>
         </div>
       ),
     });
     createUser('data.email', 'data.password')
-      .then((user) => {
+      .then(user => {
         setOpen(false);
         dismiss();
         onSuccess?.(user as TeamUser);
@@ -70,12 +78,12 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
           description: (
             <div className={'flex flex-row items-center space-x-2.5'}>
               <CheckIcon className={'w-8 h-8'} />
-              <p className='text-sm text-foreground'>Member added!</p>
+              <p className="text-sm text-foreground">Member added!</p>
             </div>
           ),
         });
       })
-      .catch((error) => {
+      .catch(error => {
         dismiss();
         toast({
           title: 'Add Member',
@@ -83,35 +91,32 @@ export const AddMemberSheet = ({ children, defaultOpen, onClose, onSuccess }: {
             <div className={'flex flex-col'}>
               <div className={'flex flex-row text-destructive items-center'}>
                 <LucideX className={'w-8 h-8'} />
-                <p className='text-sm'>Failed to add with:</p>
+                <p className="text-sm">Failed to add with:</p>
               </div>
-              <pre className='mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive'>
-              <code className='text-sm text-foreground'>{error.message}</code>
-        </pre>
+              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
+                <code className="text-sm text-foreground">{error.message}</code>
+              </pre>
             </div>
-
           ),
         });
       });
   }
 
-  return <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
-    <DialogTrigger asChild>
-      {children}
-    </DialogTrigger>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Add Member</DialogTitle>
-        <DialogDescription>
-          Add a new member to the team. Click save when you&apos;re done.
-        </DialogDescription>
-      </DialogHeader>
-      <div className='grid gap-4 py-4'>
-
-      </div>
-      <DialogFooter>
-        <Button type='submit'>Save changes</Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>;
+  return (
+    <Dialog open={open} onOpenChange={open => setOpen(open)}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Member</DialogTitle>
+          <DialogDescription>
+            Add a new member to the team. Click save when you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4"></div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 };

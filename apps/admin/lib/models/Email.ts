@@ -3,7 +3,7 @@ export type EmailSettings = {
   sendingDomain: string;
   transport: TransportProviders;
   transportSettings: TransportSettings;
-}
+};
 
 export type TransportProviders = 'mailgun' | 'smtp' | 'mandrill' | 'sendgrid';
 

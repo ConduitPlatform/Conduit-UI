@@ -25,7 +25,7 @@ export type BaseAuthenticationSettings = {
       oAuth2: boolean;
     };
     acceptablePlatform: {
-      android:boolean;
+      android: boolean;
       web: boolean;
     };
   };

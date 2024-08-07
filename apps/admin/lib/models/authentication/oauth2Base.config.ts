@@ -4,4 +4,4 @@ export type Oauth2BaseConfig = {
   clientSecret?: string;
   redirect_uri?: string;
   accountLinking?: boolean;
-}
+};

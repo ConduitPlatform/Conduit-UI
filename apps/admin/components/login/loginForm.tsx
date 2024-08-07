@@ -24,7 +24,8 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
-    props.loginAction(username, password)
+    props
+      .loginAction(username, password)
       .then(() => {
         setIsLoading(false);
         toast({
@@ -34,7 +35,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
       })
       .catch(() => {
         toast({
-          title: 'That\'s not right',
+          title: "That's not right",
           variant: 'destructive',
         });
         setIsLoading(false);
@@ -44,43 +45,41 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={onSubmit}>
-        <div className='grid gap-2'>
-          <div className='grid gap-1'>
-            <Label className='sr-only' htmlFor='username'>
+        <div className="grid gap-2">
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="username">
               Username
             </Label>
             <Input
-              id='username'
-              placeholder='username'
-              type='text'
-              autoCapitalize='none'
-              autoComplete='username'
-              autoCorrect='off'
+              id="username"
+              placeholder="username"
+              type="text"
+              autoCapitalize="none"
+              autoComplete="username"
+              autoCorrect="off"
               disabled={isLoading}
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
             />
           </div>
-          <div className='grid gap-1'>
-            <Label className='sr-only' htmlFor='password'>
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="password">
               Password
             </Label>
             <Input
-              id='password'
-              placeholder='******'
-              type='password'
-              autoCapitalize='none'
-              autoComplete='password'
-              autoCorrect='off'
+              id="password"
+              placeholder="******"
+              type="password"
+              autoCapitalize="none"
+              autoComplete="password"
+              autoCorrect="off"
               disabled={isLoading}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
           </div>
           <Button disabled={isLoading}>
-            {isLoading && (
-              <LoaderIcon className='mr-2 h-4 w-4 animate-spin' />
-            )}
+            {isLoading && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
             Sign In
           </Button>
         </div>

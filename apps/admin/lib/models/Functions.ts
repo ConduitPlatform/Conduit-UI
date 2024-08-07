@@ -1,3 +1,3 @@
 export type FunctionsSettings = {
-  active: boolean,
-}
+  active: boolean;
+};

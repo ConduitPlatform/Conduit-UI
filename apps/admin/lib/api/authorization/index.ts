@@ -10,16 +10,22 @@ export const getAuthorizationSettings = async () => {
   return res.data;
 };
 
-export const patchAuthorizationSettings = async (authorizationData: Partial<AuthorizationSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/authorization`, { config: { ...authorizationData } });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const modules = await getModules();
-        resolve(modules);
-      } catch (error) {
-        reject(error);
-      }
-    }, 3000);
+export const patchAuthorizationSettings = async (
+  authorizationData: Partial<AuthorizationSettings>
+) => {
+  await axiosInstance.patch<ConfigResponse>(`/config/authorization`, {
+    config: { ...authorizationData },
   });
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(
+    async (resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const modules = await getModules();
+          resolve(modules);
+        } catch (error) {
+          reject(error);
+        }
+      }, 3000);
+    }
+  );
 };

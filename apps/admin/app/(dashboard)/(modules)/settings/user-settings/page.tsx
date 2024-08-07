@@ -13,7 +13,11 @@ export default async function SettingsUser() {
   const userData: Admin = await getAdminById('me');
 
   return (
-    <div className={'container flex mx-auto py-16 main-scrollbar items-center justify-center'}>
+    <div
+      className={
+        'container flex mx-auto py-16 main-scrollbar items-center justify-center'
+      }
+    >
       <Card className={'w-fit'}>
         <CardHeader>
           <p className={'text-2xl font-medium'}>User Information</p>
@@ -40,7 +44,11 @@ export default async function SettingsUser() {
           </div>
           <div className={'flex space-x-2 items-center'}>
             <Label>Super admin</Label>
-            {userData.isSuperAdmin ? <Check width={15} color={'green'} /> : <X width={15} color={'red'} />}
+            {userData.isSuperAdmin ? (
+              <Check width={15} color={'green'} />
+            ) : (
+              <X width={15} color={'red'} />
+            )}
           </div>
           <NewPasswordSheet>
             <Button className="flex gap-2 w-6/12">
@@ -49,19 +57,17 @@ export default async function SettingsUser() {
             </Button>
           </NewPasswordSheet>
           <div className=" flex items-center space-x-4 rounded-md border p-4">
-            <ShieldCheck/>
+            <ShieldCheck />
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium leading-none">
-                2FA
-              </p>
+              <p className="text-sm font-medium leading-none">2FA</p>
               <p className="text-sm text-muted-foreground w-11/12">
                 Enable 2 Factor Authentication for secure Login
               </p>
             </div>
-            <TwoFASheet hasTwoFa={userData.hasTwoFA}/>
+            <TwoFASheet hasTwoFa={userData.hasTwoFA} />
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
