@@ -27,7 +27,6 @@ const FormSchema = z.object({
   doNotStore: z.boolean().optional(),
 });
 
-
 export const TestSendForm = ({ token }: Props) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -50,7 +49,7 @@ export const TestSendForm = ({ token }: Props) => {
     }
 
     await sendNotifications({
-      userIds: data.users.map((user) => user._id),
+      userIds: data.users.map(user => user._id),
       title: data.title,
       body: data.body,
       data: jsonData,
@@ -63,7 +62,7 @@ export const TestSendForm = ({ token }: Props) => {
           description: 'Notifications sent',
         });
       })
-      .catch((e) => {
+      .catch(e => {
         toast({
           title: 'Push Notifications',
           description: 'Notifications failed to send',
@@ -81,27 +80,40 @@ export const TestSendForm = ({ token }: Props) => {
               variant={'default'}
               type={'button'}
               onClick={() => {
-                openPicker((users) => {
-                  setValue('users', users);
-                }, {
-                  title: 'Add Recipient(s)',
-                  description: 'Select the recipient(s) to send the notification to',
-                  multiple: true,
-                });
-              }}>
+                openPicker(
+                  users => {
+                    setValue('users', users);
+                  },
+                  {
+                    title: 'Add Recipient(s)',
+                    description:
+                      'Select the recipient(s) to send the notification to',
+                    multiple: true,
+                  }
+                );
+              }}
+            >
               <PlusIcon className={'w-6 h-6'} />
               Add recipient(s)
             </Button>
             <div className={'flex flex-row gap-2 '}>
               {form.watch('users')?.map((user, index) => (
-                <div key={user._id} className={'group flex flex-row items-center rounded-full bg-secondary w-fit px-2'}>
+                <div
+                  key={user._id}
+                  className={
+                    'group flex flex-row items-center rounded-full bg-secondary w-fit px-2'
+                  }
+                >
                   <p>{user.email}</p>
                   <Button
                     variant={'ghost'}
                     className={'w-fit p-0 hidden group-hover:block'}
                     onClick={() => {
                       const users = watch('users');
-                      setValue('users', users.filter((_, i) => i !== index));
+                      setValue(
+                        'users',
+                        users.filter((_, i) => i !== index)
+                      );
                     }}
                   >
                     <LucideX className={'w-4 h-4'} />
@@ -110,27 +122,25 @@ export const TestSendForm = ({ token }: Props) => {
               ))}
             </div>
             <InputField label={'Notification Title'} fieldName={'title'} />
-            <TextAreaField label={'Notification Body (optional)'} fieldName={'body'} />
-            <CodeField label={'Data'} fieldName={'data'} placeholder={'{"key": "value"}'} />
+            <TextAreaField
+              label={'Notification Body (optional)'}
+              fieldName={'body'}
+            />
+            <CodeField
+              label={'Data'}
+              fieldName={'data'}
+              placeholder={'{"key": "value"}'}
+            />
             <SwitchField label={'Silent'} fieldName={'silent'} />
             <SwitchField label={'Do not store'} fieldName={'doNotStore'} />
             <div className={'flex flex-row justify-end gap-2'}>
-              <Button
-                variant={'secondary'}
-                onClick={() => reset()}
-              >
+              <Button variant={'secondary'} onClick={() => reset()}>
                 Reset
               </Button>
-              <Button
-                type={'submit'}
-              >
-                Send Notification
-              </Button>
-
+              <Button type={'submit'}>Send Notification</Button>
             </div>
           </form>
         </Form>
-
       </div>
     </div>
   );

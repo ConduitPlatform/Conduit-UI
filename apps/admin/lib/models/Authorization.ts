@@ -1,3 +1,3 @@
 export type AuthorizationSettings = {
-  active: boolean,
-}
+  active: boolean;
+};

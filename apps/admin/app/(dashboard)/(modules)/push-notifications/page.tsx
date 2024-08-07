@@ -1,6 +1,3 @@
 export default function PushNotificationsDashboard() {
-  return (
-    <></>
-  );
+  return <></>;
 }
-

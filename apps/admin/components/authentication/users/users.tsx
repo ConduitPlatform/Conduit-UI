@@ -11,14 +11,21 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
 import { useSearchParams } from 'next/navigation';
 
-export default function UsersTable({ data, count, refreshData }: {
-  data: User[], count: number,
-  refreshData: (searchString: string) => Promise<User[]>
+export default function UsersTable({
+  data,
+  count,
+  refreshData,
+}: {
+  data: User[];
+  count: number;
+  refreshData: (searchString: string) => Promise<User[]>;
 }) {
   const searchParams = useSearchParams();
 
   const [users, setUsers] = useState<User[]>(data);
-  const [search, setSearch] = useState<string>(searchParams.get('search') ?? '');
+  const [search, setSearch] = useState<string>(
+    searchParams.get('search') ?? ''
+  );
   const { openUserAdd } = useUserActions();
   const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
@@ -32,17 +39,23 @@ export default function UsersTable({ data, count, refreshData }: {
       setUsers(data);
       return;
     }
-    refreshData(debouncedSearchTerm).then((users) => setUsers(users));
+    refreshData(debouncedSearchTerm).then(users => setUsers(users));
   }, [debouncedSearchTerm]);
 
   return (
     <>
       <div className={'flex flex-row justify-between pb-2'}>
-        <Input placeholder={'Search'} className={'w-44'} onChange={(e) => setSearch(e.target.value)} />
-        <AddUserSheet onSuccess={(user: User) => {
-          setUsers([...users, user]);
-        }}>
-          <Button variant='outline'>Add User</Button>
+        <Input
+          placeholder={'Search'}
+          className={'w-44'}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <AddUserSheet
+          onSuccess={(user: User) => {
+            setUsers([...users, user]);
+          }}
+        >
+          <Button variant="outline">Add User</Button>
         </AddUserSheet>
       </div>
       <DataTable columns={columns} data={users} userAdd={openUserAdd} />

@@ -1,6 +1,3 @@
 export default function AuthorizationDashboard() {
-  return (
-    <></>
-  );
+  return <></>;
 }
-

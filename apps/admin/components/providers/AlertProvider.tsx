@@ -18,11 +18,11 @@ type Alert = {
   cancelText?: string;
   actionText?: string;
   onDecision: (cancel: boolean) => void;
-}
+};
 
 type AlertProvider = {
   addAlert: (alert: Alert) => void;
-}
+};
 
 const initialState: AlertProvider = {
   addAlert: () => {
@@ -42,32 +42,39 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
   };
   useEffect(() => {
     if (!isOpen) setAlert(undefined);
-
   }, [open]);
 
-  return <AlertContext.Provider
-    value={{
-      addAlert,
-    }}
-  >
-    {alert && (
-      <AlertDialog open={isOpen} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{alert.title ?? 'Are you sure?'}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {alert.description ?? 'You\'ll lose your changes if you don\'t save them.'}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => alert.onDecision(true)}>{alert.cancelText ?? 'Cancel'}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => alert.onDecision(false)}>{alert.actionText ?? 'Continue'}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    )}
+  return (
+    <AlertContext.Provider
+      value={{
+        addAlert,
+      }}
+    >
+      {alert && (
+        <AlertDialog open={isOpen} onOpenChange={setOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {alert.title ?? 'Are you sure?'}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {alert.description ??
+                  "You'll lose your changes if you don't save them."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => alert.onDecision(true)}>
+                {alert.cancelText ?? 'Cancel'}
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={() => alert.onDecision(false)}>
+                {alert.actionText ?? 'Continue'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
 
-    {children}
-  </AlertContext.Provider>;
+      {children}
+    </AlertContext.Provider>
+  );
 }

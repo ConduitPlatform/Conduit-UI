@@ -7,9 +7,9 @@ import { MagicLinkConfigForm } from '@/components/authentication/strategies/sett
 import { TwoFaConfigForm } from '@/components/authentication/strategies/settingsConfig/twoFaConfig';
 
 const strategyMap: {
-  [key: string]: StrategyInterface
+  [key: string]: StrategyInterface;
 } = {
-  'local': {
+  local: {
     name: 'Local',
     description: 'Supports register/login with email/password combinations.',
     supports: {
@@ -19,7 +19,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/local',
     form: LocalConfigForm,
   },
-  'apple': {
+  apple: {
     name: 'Apple',
     description: 'Supports register/login with Apple accounts.',
     supports: {
@@ -30,10 +30,11 @@ const strategyMap: {
       redirect: true,
       native: false,
     },
-    documentation: 'https://getconduit.dev/docs/modules/authentication/tutorials/OAuth2/apple',
+    documentation:
+      'https://getconduit.dev/docs/modules/authentication/tutorials/OAuth2/apple',
     form: AppleConfigForm,
   },
-  'google': {
+  google: {
     name: 'Google',
     description: 'Supports register/login with Google accounts.',
     supports: {
@@ -46,9 +47,8 @@ const strategyMap: {
     },
     documentation: 'https://getconduit.dev/docs/modules/authentication/google',
     form: OauthDefaultConfigForm,
-
   },
-  'facebook': {
+  facebook: {
     name: 'Facebook',
     description: 'Supports register/login with Facebook accounts.',
     supports: {
@@ -59,10 +59,11 @@ const strategyMap: {
       redirect: true,
       native: true,
     },
-    documentation: 'https://getconduit.dev/docs/modules/authentication/facebook',
+    documentation:
+      'https://getconduit.dev/docs/modules/authentication/facebook',
     form: OauthDefaultConfigForm,
   },
-  'twitter': {
+  twitter: {
     name: 'Twitter/X',
     description: 'Supports register/login with Twitter/X accounts.',
     supports: {
@@ -76,7 +77,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/twitter',
     form: OauthDefaultConfigForm,
   },
-  'github': {
+  github: {
     name: 'Github',
     description: 'Supports register/login with Github accounts.',
     supports: {
@@ -90,7 +91,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/github',
     form: OauthDefaultConfigForm,
   },
-  'gitlab': {
+  gitlab: {
     name: 'Gitlab',
     description: 'Supports register/login with Gitlab accounts.',
     supports: {
@@ -104,7 +105,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/gitlab',
     form: OauthDefaultConfigForm,
   },
-  'linkedin': {
+  linkedin: {
     name: 'LinkedIn',
     description: 'Supports register/login with LinkedIn accounts.',
     supports: {
@@ -115,10 +116,11 @@ const strategyMap: {
       redirect: true,
       native: false,
     },
-    documentation: 'https://getconduit.dev/docs/modules/authentication/linkedin',
+    documentation:
+      'https://getconduit.dev/docs/modules/authentication/linkedin',
     form: OauthDefaultConfigForm,
   },
-  'microsoft': {
+  microsoft: {
     name: 'Microsoft',
     description: 'Supports register/login with Microsoft accounts.',
     supports: {
@@ -129,10 +131,11 @@ const strategyMap: {
       redirect: true,
       native: false,
     },
-    documentation: 'https://getconduit.dev/docs/modules/authentication/microsoft',
+    documentation:
+      'https://getconduit.dev/docs/modules/authentication/microsoft',
     form: MicrosoftConfigForm,
   },
-  'twitch': {
+  twitch: {
     name: 'Twitch',
     description: 'Supports register/login with Twitch accounts.',
     supports: {
@@ -146,7 +149,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/twitch',
     form: OauthDefaultConfigForm,
   },
-  'slack': {
+  slack: {
     name: 'Slack',
     description: 'Supports register/login with Slack accounts.',
     supports: {
@@ -160,7 +163,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/slack',
     form: OauthDefaultConfigForm,
   },
-  'figma': {
+  figma: {
     name: 'Figma',
     description: 'Supports register/login with Figma accounts.',
     supports: {
@@ -174,17 +177,19 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/figma',
     form: OauthDefaultConfigForm,
   },
-  'magic_link': {
+  magic_link: {
     name: 'Magic Link',
-    description: 'Supports login operations when email is available for a user, by sending a one-time link to their email.',
+    description:
+      'Supports login operations when email is available for a user, by sending a one-time link to their email.',
     supports: {
       login: true,
       register: false,
     },
-    documentation: 'https://getconduit.dev/docs/modules/authentication/magic-link',
+    documentation:
+      'https://getconduit.dev/docs/modules/authentication/magic-link',
     form: MagicLinkConfigForm,
   },
-  'reddit': {
+  reddit: {
     name: 'Reddit',
     description: 'Supports register/login with Reddit accounts.',
     supports: {
@@ -198,7 +203,7 @@ const strategyMap: {
     documentation: 'https://getconduit.dev/docs/modules/authentication/reddit',
     form: OauthDefaultConfigForm,
   },
-  'phoneAuthentication': {
+  phoneAuthentication: {
     name: 'Phone',
     description: 'Supports register/login with phone numbers.',
     supports: {
@@ -207,18 +212,21 @@ const strategyMap: {
     },
     documentation: 'https://getconduit.dev/docs/modules/authentication/phone',
   },
-  'biometricAuthentication': {
+  biometricAuthentication: {
     name: 'Biometric',
-    description: 'Supports login with biometrics (Fingerprint, FaceID, TouchID or passkeys in general).',
+    description:
+      'Supports login with biometrics (Fingerprint, FaceID, TouchID or passkeys in general).',
     supports: {
       login: true,
       register: false,
     },
-    documentation: 'https://getconduit.dev/docs/modules/authentication/biometric',
+    documentation:
+      'https://getconduit.dev/docs/modules/authentication/biometric',
   },
-  'twoFa': {
+  twoFa: {
     name: 'Two Factor Authentication',
-    description: 'Adds the ability for users to enroll in two-factor authentication, with either phone or authenticator apps.',
+    description:
+      'Adds the ability for users to enroll in two-factor authentication, with either phone or authenticator apps.',
     supports: {
       login: true,
       register: false,

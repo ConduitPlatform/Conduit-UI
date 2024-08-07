@@ -3,8 +3,22 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
@@ -40,11 +54,11 @@ const FormSchema = z.object({
 });
 
 interface Props {
-  data: AdminSettings & CoreSettings
+  data: AdminSettings & CoreSettings;
 }
 
-export const General = ({data}: Props) => {
-  const [edit, setEdit] = useState<boolean>(false)
+export const General = ({ data }: Props) => {
+  const [edit, setEdit] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: data,
@@ -59,12 +73,12 @@ export const General = ({data}: Props) => {
       description: (
         <div className={'flex flex-row items-center space-x-2.5'}>
           <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className='text-sm text-foreground'>Updating Settings...</p>
+          <p className="text-sm text-foreground">Updating Settings...</p>
         </div>
       ),
     });
-    if(formData.env !== data.env){
-      patchCoreSettings({env: formData.env}).catch((err)=>{
+    if (formData.env !== data.env) {
+      patchCoreSettings({ env: formData.env }).catch(err => {
         dismiss();
         toast({
           title: 'Settings formData',
@@ -72,46 +86,48 @@ export const General = ({data}: Props) => {
             <div className={'flex flex-col'}>
               <div className={'flex flex-row text-destructive items-center'}>
                 <LucideX className={'w-8 h-8'} />
-                <p className='text-sm'>Failed to update with:</p>
+                <p className="text-sm">Failed to update with:</p>
               </div>
-              <pre className='mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive'>
-              <code className='text-sm text-foreground'>{err.message}</code>
-            </pre>
+              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
+                <code className="text-sm text-foreground">{err.message}</code>
+              </pre>
+            </div>
+          ),
+        });
+      });
+    }
+    let adminSettings: any = { ...formData };
+    delete adminSettings.env;
+    patchAdminSettings({ ...adminSettings })
+      .then(res => {
+        dismiss();
+        toast({
+          title: 'Settings',
+          description: (
+            <div className={'flex flex-row items-center space-x-2.5'}>
+              <CheckIcon className={'w-8 h-8'} />
+              <p className="text-sm text-foreground">Settings Updated!</p>
             </div>
           ),
         });
       })
-    }
-    let adminSettings:any = {...formData}
-    delete adminSettings.env
-    patchAdminSettings({...adminSettings}).then((res)=>{
-      dismiss();
-      toast({
-        title: 'Settings',
-        description: (
-          <div className={'flex flex-row items-center space-x-2.5'}>
-            <CheckIcon className={'w-8 h-8'} />
-            <p className='text-sm text-foreground'>Settings Updated!</p>
-          </div>
-        ),
-      });
-    }).catch((err)=>{
-      dismiss();
-      toast({
-        title: 'Settings',
-        description: (
-          <div className={'flex flex-col'}>
-            <div className={'flex flex-row text-destructive items-center'}>
-              <LucideX className={'w-8 h-8'} />
-              <p className='text-sm'>Failed to add with:</p>
+      .catch(err => {
+        dismiss();
+        toast({
+          title: 'Settings',
+          description: (
+            <div className={'flex flex-col'}>
+              <div className={'flex flex-row text-destructive items-center'}>
+                <LucideX className={'w-8 h-8'} />
+                <p className="text-sm">Failed to add with:</p>
+              </div>
+              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
+                <code className="text-sm text-foreground">{err.message}</code>
+              </pre>
             </div>
-            <pre className='mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive'>
-              <code className='text-sm text-foreground'>{err.message}</code>
-            </pre>
-          </div>
-        ),
+          ),
+        });
       });
-    })
   };
 
   return (
@@ -122,14 +138,19 @@ export const General = ({data}: Props) => {
             <p className={'text-2xl font-medium'}>General</p>
             <FormField
               control={control}
-              name='env'
+              name="env"
               render={({ field }) => (
-                <FormItem className={'w-2/12'} >
+                <FormItem className={'w-2/12'}>
                   <FormLabel>Environment</FormLabel>
-                  <Select onValueChange={(env: CoreEnv) => field.onChange(env)} value={field.value} defaultValue={'recaptcha'} disabled={!edit} >
+                  <Select
+                    onValueChange={(env: CoreEnv) => field.onChange(env)}
+                    value={field.value}
+                    defaultValue={'recaptcha'}
+                    disabled={!edit}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Select'/>
+                        <SelectValue placeholder="Select" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className={'bg-white dark:bg-popover'}>
@@ -142,19 +163,52 @@ export const General = ({data}: Props) => {
                 </FormItem>
               )}
             />
-            <Separator className={'my-3'}/>
+            <Separator className={'my-3'} />
             <div>
               <p className={'text-2xl font-medium'}>Routing</p>
-              <p className={'text-xs text-[#94A3B8]'}>For specifics about different kinds of administrative routes, visit <a href={'https://getconduit.dev/docs/administration/rest'} className='hover:underline' target={'_blank'}>REST</a>, <a href={'https://getconduit.dev/docs/administration/graphql'} className='hover:underline' target={'_blank'}>GRAPHQL</a>, <a href={'https://getconduit.dev/docs/administration/sockets'} className='hover:underline' target={'_blank'}>WEBSOCKETS</a>. To see more information regarding the Administrative APIs, please visit our <a href={'https://getconduit.dev/docs/administration/'} className='hover:underline'>docs</a>.</p>
+              <p className={'text-xs text-[#94A3B8]'}>
+                For specifics about different kinds of administrative routes,
+                visit{' '}
+                <a
+                  href={'https://getconduit.dev/docs/administration/rest'}
+                  className="hover:underline"
+                  target={'_blank'}
+                >
+                  REST
+                </a>
+                ,{' '}
+                <a
+                  href={'https://getconduit.dev/docs/administration/graphql'}
+                  className="hover:underline"
+                  target={'_blank'}
+                >
+                  GRAPHQL
+                </a>
+                ,{' '}
+                <a
+                  href={'https://getconduit.dev/docs/administration/sockets'}
+                  className="hover:underline"
+                  target={'_blank'}
+                >
+                  WEBSOCKETS
+                </a>
+                . To see more information regarding the Administrative APIs,
+                please visit our{' '}
+                <a
+                  href={'https://getconduit.dev/docs/administration/'}
+                  className="hover:underline"
+                >
+                  docs
+                </a>
+                .
+              </p>
             </div>
             <FormField
               control={control}
-              name='hostUrl'
+              name="hostUrl"
               render={({ field }) => (
                 <FormItem className={'w-4/12'}>
-                  <FormLabel>
-                    URL
-                  </FormLabel>
+                  <FormLabel>URL</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!edit}
@@ -176,11 +230,10 @@ export const General = ({data}: Props) => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        REST
-                      </FormLabel>
+                      <FormLabel className="text-base">REST</FormLabel>
                       <FormDescription className={'pr-2'}>
-                        Conduit&apos;s administrative REST API may not be disabled via the Admin Panel at this time
+                        Conduit&apos;s administrative REST API may not be
+                        disabled via the Admin Panel at this time
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -198,9 +251,7 @@ export const General = ({data}: Props) => {
                 name="transports.graphql"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
-                    <FormLabel className="text-base">
-                      GraphQL
-                    </FormLabel>
+                    <FormLabel className="text-base">GraphQL</FormLabel>
                     <FormControl>
                       <Switch
                         disabled={!edit}
@@ -216,9 +267,7 @@ export const General = ({data}: Props) => {
                 name="transports.sockets"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
-                    <FormLabel className="text-base">
-                      WebSockets
-                    </FormLabel>
+                    <FormLabel className="text-base">WebSockets</FormLabel>
                     <FormControl>
                       <Switch
                         disabled={!edit}
@@ -252,12 +301,10 @@ export const General = ({data}: Props) => {
               <div className={'grid grid-cols-2 gap-4'}>
                 <FormField
                   control={control}
-                  name='cors.origin'
+                  name="cors.origin"
                   render={({ field }) => (
                     <FormItem className={'flex flex-col justify-end'}>
-                      <FormLabel>
-                        Origin
-                      </FormLabel>
+                      <FormLabel>Origin</FormLabel>
                       <FormControl>
                         <Input
                           disabled={!edit}
@@ -273,12 +320,14 @@ export const General = ({data}: Props) => {
                 />
                 <FormField
                   control={control}
-                  name='cors.methods'
+                  name="cors.methods"
                   render={({ field }) => (
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Allowed Methods
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>Make sure Methods are comma-separated</p>
+                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                          Make sure Methods are comma-separated
+                        </p>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -295,12 +344,14 @@ export const General = ({data}: Props) => {
                 />
                 <FormField
                   control={control}
-                  name='cors.allowedHeaders'
+                  name="cors.allowedHeaders"
                   render={({ field }) => (
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Allowed Headers
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>Make sure Headers are comma-separated</p>
+                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                          Make sure Headers are comma-separated
+                        </p>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -317,12 +368,14 @@ export const General = ({data}: Props) => {
                 />
                 <FormField
                   control={control}
-                  name='cors.exposedHeaders'
+                  name="cors.exposedHeaders"
                   render={({ field }) => (
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Exposed Headers
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>Make sure Headers are comma-separated</p>
+                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                          Make sure Headers are comma-separated
+                        </p>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -339,12 +392,10 @@ export const General = ({data}: Props) => {
                 />
                 <FormField
                   control={control}
-                  name='cors.maxAge'
+                  name="cors.maxAge"
                   render={({ field }) => (
                     <FormItem className={'w-full'}>
-                      <FormLabel>
-                        Max Age
-                      </FormLabel>
+                      <FormLabel>Max Age</FormLabel>
                       <FormControl>
                         <Input
                           disabled={!edit}
@@ -364,9 +415,7 @@ export const General = ({data}: Props) => {
                   name="cors.credentials"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <FormLabel className="text-base">
-                        Credentials
-                      </FormLabel>
+                      <FormLabel className="text-base">Credentials</FormLabel>
                       <FormControl>
                         <Switch
                           disabled={!edit}
@@ -379,17 +428,15 @@ export const General = ({data}: Props) => {
                 />
               </div>
             )}
-            <Separator className={'my-3'}/>
+            <Separator className={'my-3'} />
             <p className={'text-2xl font-medium'}>Administrative Settings</p>
             <div className={'grid grid-cols-2 gap-4'}>
               <FormField
                 control={control}
-                name='auth.hashRounds'
+                name="auth.hashRounds"
                 render={({ field }) => (
                   <FormItem className={'w-full'}>
-                    <FormLabel>
-                      Hash Rounds
-                    </FormLabel>
+                    <FormLabel>Hash Rounds</FormLabel>
                     <FormControl>
                       <Input
                         min={0}
@@ -407,12 +454,10 @@ export const General = ({data}: Props) => {
               />
               <FormField
                 control={control}
-                name='auth.tokenExpirationTime'
+                name="auth.tokenExpirationTime"
                 render={({ field }) => (
                   <FormItem className={'w-full'}>
-                    <FormLabel>
-                      Token Expiration Time
-                    </FormLabel>
+                    <FormLabel>Token Expiration Time</FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
@@ -430,12 +475,10 @@ export const General = ({data}: Props) => {
               />
               <FormField
                 control={control}
-                name='auth.tokenSecret'
+                name="auth.tokenSecret"
                 render={({ field }) => (
                   <FormItem className={'w-full'}>
-                    <FormLabel>
-                      Token Secret
-                    </FormLabel>
+                    <FormLabel>Token Secret</FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
@@ -452,23 +495,33 @@ export const General = ({data}: Props) => {
             </div>
           </div>
           <div className={'w-full py-4 flex justify-end'}>
-            {edit ?
+            {edit ? (
               <div className={'flex gap-2'}>
                 <Button
-                  type='button'
+                  type="button"
                   className={'dark:border-gray-500'}
                   variant={'outline'}
-                  onClick={()=> {
+                  onClick={() => {
                     reset();
                     setEdit(false);
-                  }}>Cancel</Button>
+                  }}
+                >
+                  Cancel
+                </Button>
                 <Button type="submit">Submit</Button>
-              </div>:
-              <Button onClick={()=>{setEdit(true)}} >Edit</Button>
-            }
+              </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  setEdit(true);
+                }}
+              >
+                Edit
+              </Button>
+            )}
           </div>
         </form>
       </Form>
     </div>
   );
-}
+};

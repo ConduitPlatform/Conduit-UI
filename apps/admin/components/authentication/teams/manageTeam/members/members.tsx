@@ -11,20 +11,32 @@ import { columns } from '@/components/authentication/teams/manageTeam/members/co
 import { useUserPicker } from '@/components/helpers/UserPicker/UserPicker';
 import { addTeamMembers } from '@/lib/api/authentication';
 
-export default function MembersTable({ data, teamId, count, refreshData }: {
-  data: TeamUser[], count: number, teamId: string,
-  refreshData: (searchString: string) => Promise<TeamUser[]>
+export default function MembersTable({
+  data,
+  teamId,
+  count,
+  refreshData,
+}: {
+  data: TeamUser[];
+  count: number;
+  teamId: string;
+  refreshData: (searchString: string) => Promise<TeamUser[]>;
 }) {
   const searchParams = useSearchParams();
   const { openPicker } = useUserPicker();
 
   const [users, setUsers] = useState<TeamUser[]>(data);
-  const [search, setSearch] = useState<string>(searchParams.get('search') ?? '');
+  const [search, setSearch] = useState<string>(
+    searchParams.get('search') ?? ''
+  );
   const debouncedSearchTerm = useDebounce(search, 300);
   const pickUser = useCallback(() => {
-    openPicker((pickedUsers) => {
+    openPicker(pickedUsers => {
       addTeamMembers(teamId, pickedUsers).then(() => {
-        setUsers([...users, ...pickedUsers.map((user) => ({ ...user, role: 'member' }))]);
+        setUsers([
+          ...users,
+          ...pickedUsers.map(user => ({ ...user, role: 'member' })),
+        ]);
       });
     });
   }, []);
@@ -40,14 +52,20 @@ export default function MembersTable({ data, teamId, count, refreshData }: {
       setUsers(data);
       return;
     }
-    refreshData(debouncedSearchTerm).then((users) => setUsers(users));
+    refreshData(debouncedSearchTerm).then(users => setUsers(users));
   }, [debouncedSearchTerm]);
 
   return (
     <>
       <div className={'flex flex-row justify-between pb-2'}>
-        <Input placeholder={'Search'} className={'w-44'} onChange={(e) => setSearch(e.target.value)} />
-        <Button variant='outline' type={'button'} onClick={pickUser}>Add Member</Button>
+        <Input
+          placeholder={'Search'}
+          className={'w-44'}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <Button variant="outline" type={'button'} onClick={pickUser}>
+          Add Member
+        </Button>
       </div>
       <MemberDataTable columns={columns} data={users} memberAdd={pickUser} />
     </>

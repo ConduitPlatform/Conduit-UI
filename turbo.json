@@ -1,20 +1,12 @@
 {
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".dist/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": [".dist/**"]
     },
     "dev": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".dist/**"
-      ],
+      "dependsOn": ["^build"],
+      "outputs": [".dist/**"],
       "cache": false
     }
   }

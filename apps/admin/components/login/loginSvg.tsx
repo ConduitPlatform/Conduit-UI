@@ -4,7 +4,11 @@ import * as React from 'react';
 /* eslint-disable */
 function LoginIllustration({ ...props }: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 120 1400 1000" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 120 1400 1000"
+      {...props}
+    >
       <style>
         {
           '.prefix__st0{fill:#e8e8e8}.prefix__st1{fill:#161616}.prefix__st2{fill:#5222d0}.prefix__st3{fill:#07D9C4}.prefix__st4{fill:#fff}.prefix__st5,.prefix__st7,.prefix__st8{opacity:.12;fill:#6d6d6d}.prefix__st7,.prefix__st8{opacity:.16}.prefix__st8{opacity:.14}.prefix__st10,.prefix__st13,.prefix__st9{opacity:.15;fill:#6d6d6d}.prefix__st10,.prefix__st13{opacity:.13}.prefix__st13{opacity:.11}'

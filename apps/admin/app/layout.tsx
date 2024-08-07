@@ -11,18 +11,18 @@ export const metadata = {
 };
 
 export default function RootLayout({
-                                     children,
-                                   }: {
-  children: React.ReactNode
+  children,
+}: {
+  children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
-    <body className={inter.className } style={{overflow:'hidden'}}>
-    <main className={'h-[100vh] min-w-[1080px] overflow-auto'}>
-      <ProviderInjector>{children}</ProviderInjector>
-    </main>
-    <Toaster />
-    </body>
+    <html lang="en">
+      <body className={inter.className} style={{ overflow: 'hidden' }}>
+        <main className={'h-[100vh] min-w-[1080px] overflow-auto'}>
+          <ProviderInjector>{children}</ProviderInjector>
+        </main>
+        <Toaster />
+      </body>
     </html>
   );
 }

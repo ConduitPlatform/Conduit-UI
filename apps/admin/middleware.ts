@@ -18,7 +18,6 @@ export async function middleware(request: NextRequest) {
     } else {
       return NextResponse.redirect(new URL('/login', request.url));
     }
-
   }
   const res = await fetch(`${process.env.API_BASE_URL}/admins/me`, {
     method: 'GET',
@@ -42,7 +41,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
     return NextResponse.next();
-
   }
 }
 

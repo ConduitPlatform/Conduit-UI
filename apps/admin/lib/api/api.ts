@@ -10,7 +10,6 @@ export const axiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
     masterkey: process.env.MASTER_KEY,
-
   },
 });
 axiosInstance.interceptors.request.use(
@@ -23,7 +22,7 @@ axiosInstance.interceptors.request.use(
   },
   error => {
     return Promise.reject(error);
-  },
+  }
 );
 axiosInstance.interceptors.response.use(
   response => {
@@ -37,5 +36,5 @@ axiosInstance.interceptors.response.use(
       console.error('error: ', error.response.status, error.request.path);
     }
     return Promise.reject(error);
-  },
+  }
 );
