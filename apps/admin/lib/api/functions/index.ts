@@ -10,16 +10,22 @@ export const getFunctionsSettings = async () => {
   return res.data;
 };
 
-export const patchFunctionsSettings = async (functionsData: Partial<FunctionsSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/functions`, { config: { ...functionsData } });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const modules = await getModules();
-        resolve(modules);
-      } catch (error) {
-        reject(error);
-      }
-    }, 3000);
+export const patchFunctionsSettings = async (
+  functionsData: Partial<FunctionsSettings>
+) => {
+  await axiosInstance.patch<ConfigResponse>(`/config/functions`, {
+    config: { ...functionsData },
   });
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(
+    async (resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const modules = await getModules();
+          resolve(modules);
+        } catch (error) {
+          reject(error);
+        }
+      }, 3000);
+    }
+  );
 };

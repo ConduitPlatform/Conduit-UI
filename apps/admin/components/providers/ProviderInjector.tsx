@@ -6,13 +6,12 @@ import { UserPickerProvider } from '@/components/helpers/UserPicker/UserPicker';
 
 export const ProviderInjector = ({ children }: { children: ReactNode }) => {
   return (
-    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <LoginProvider>
         <AlertProvider>
-          <UserPickerProvider>
-            {children}
-          </UserPickerProvider>
+          <UserPickerProvider>{children}</UserPickerProvider>
         </AlertProvider>
       </LoginProvider>
-    </ThemeProvider>);
+    </ThemeProvider>
+  );
 };

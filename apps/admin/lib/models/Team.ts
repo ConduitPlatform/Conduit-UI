@@ -5,4 +5,4 @@ export type Team = {
   isDefault: boolean;
   createdAt: string;
   updatedAt: string;
-}
+};

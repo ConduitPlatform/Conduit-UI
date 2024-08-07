@@ -21,35 +21,44 @@ const authStrategySchema = z.object({
   backUpCodes: z.boolean().default(true),
 });
 
-export const TwoFaConfigForm: React.FC<StrategyFormProps<authStrategyFormType>> = ({
-                                                                                         data,
-                                                                                         onSubmit,
-                                                                                         onCancel,
-                                                                                       }) => {
+export const TwoFaConfigForm: React.FC<
+  StrategyFormProps<authStrategyFormType>
+> = ({ data, onSubmit, onCancel }) => {
   const form = useForm<authStrategyFormType>({
     resolver: zodResolver(authStrategySchema),
     defaultValues: data ? { ...data } : {},
   });
   const { isSubmitting } = form.formState;
-  return <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <div className={'flex flex-col gap-1'}>
-        <SwitchField fieldName={'enabled'} label={'Enabled'} />
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className={'flex flex-col gap-1'}>
+          <SwitchField fieldName={'enabled'} label={'Enabled'} />
 
-        <Label>Enabled 2-FA methods:</Label>
+          <Label>Enabled 2-FA methods:</Label>
 
-        <div className={'flex flex-row gap-x-1 items-center'}>
-          <SwitchField fieldName={'methods.authenticator'} label={'Authenticator apps'} />
-          <SwitchField fieldName={'methods.sms'} label={'SMS OTP'} />
+          <div className={'flex flex-row gap-x-1 items-center'}>
+            <SwitchField
+              fieldName={'methods.authenticator'}
+              label={'Authenticator apps'}
+            />
+            <SwitchField fieldName={'methods.sms'} label={'SMS OTP'} />
+          </div>
+          <SwitchField
+            fieldName={'backUpCodes'}
+            label={'Generate backup codes'}
+          />
+
+          <div className={'flex flex-row gap-1 mt-4 justify-end'}>
+            <Button type={'reset'} disabled={isSubmitting} onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type={'submit'} disabled={isSubmitting}>
+              Save
+            </Button>
+          </div>
         </div>
-        <SwitchField fieldName={'backUpCodes'} label={'Generate backup codes'} />
-
-        <div className={'flex flex-row gap-1 mt-4 justify-end'}>
-          <Button type={'reset'} disabled={isSubmitting} onClick={onCancel}>Cancel</Button>
-          <Button type={'submit'} disabled={isSubmitting}>Save</Button>
-        </div>
-
-      </div>
-    </form>
-  </Form>;
+      </form>
+    </Form>
+  );
 };

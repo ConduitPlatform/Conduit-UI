@@ -1,7 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,TooltipArrow } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from '@/components/ui/tooltip';
 
 interface TooltipHelperProp {
   content: string;

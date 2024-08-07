@@ -14,7 +14,6 @@ const FormSchema = z.object({
   message: z.string(),
 });
 
-
 export const TestSendSmsForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -31,7 +30,7 @@ export const TestSendSmsForm = () => {
           description: 'Text sent',
         });
       })
-      .catch((e) => {
+      .catch(e => {
         toast({
           title: 'SMS',
           description: 'Failed to send',
@@ -48,22 +47,13 @@ export const TestSendSmsForm = () => {
             <InputField label={'Receiver Phone'} fieldName={'to'} />
             <TextAreaField label={'Text'} fieldName={'message'} />
             <div className={'flex flex-row justify-end gap-2'}>
-              <Button
-                variant={'secondary'}
-                onClick={() => reset()}
-              >
+              <Button variant={'secondary'} onClick={() => reset()}>
                 Reset
               </Button>
-              <Button
-                type={'submit'}
-              >
-                Send SMS
-              </Button>
-
+              <Button type={'submit'}>Send SMS</Button>
             </div>
           </form>
         </Form>
-
       </div>
     </div>
   );

@@ -11,15 +11,19 @@ export const getRouterSettings = async () => {
 };
 
 export const patchRouterSettings = async (data: Partial<RouterSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/router`, { config: { ...data } });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const modules = await getModules();
-        resolve(modules);
-      } catch (error) {
-        reject(error);
-      }
-    }, 3000);
+  await axiosInstance.patch<ConfigResponse>(`/config/router`, {
+    config: { ...data },
   });
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(
+    async (resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const modules = await getModules();
+          resolve(modules);
+        } catch (error) {
+          reject(error);
+        }
+      }, 3000);
+    }
+  );
 };

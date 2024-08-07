@@ -1,12 +1,12 @@
 export type User = {
-  _id: string
-  email: string
-  isVerified: boolean
-}
+  _id: string;
+  email: string;
+  isVerified: boolean;
+};
 
 export type TeamUser = User & {
-  role: string
-}
+  role: string;
+};
 
 export type Admin = {
   createdAt: string;
@@ -16,4 +16,4 @@ export type Admin = {
   _id: string;
   isSuperAdmin: boolean;
   hasTwoFA: boolean;
-}
+};

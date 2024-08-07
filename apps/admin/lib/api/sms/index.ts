@@ -11,21 +11,24 @@ export const getSmsSettings = async () => {
 };
 
 export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/sms`, { config: { ...smsData } });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const modules = await getModules();
-        resolve(modules);
-      } catch (error) {
-        reject(error);
-      }
-    }, 3000);
+  await axiosInstance.patch<ConfigResponse>(`/config/sms`, {
+    config: { ...smsData },
   });
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(
+    async (resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const modules = await getModules();
+          resolve(modules);
+        } catch (error) {
+          reject(error);
+        }
+      }, 3000);
+    }
+  );
 };
 
-
-export const testSendSMS = async (smsData: { to:string, message:string }) => {
+export const testSendSMS = async (smsData: { to: string; message: string }) => {
   const res = await axiosInstance.post(`/sms/send`, { ...smsData });
   return 'ok';
 };

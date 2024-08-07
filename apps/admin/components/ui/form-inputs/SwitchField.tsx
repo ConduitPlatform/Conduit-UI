@@ -1,7 +1,13 @@
 'use client';
 import { SwitchProps } from '@radix-ui/react-switch';
 import { useFormContext } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import React from 'react';
@@ -13,12 +19,12 @@ interface SwitchFieldProps extends SwitchProps {
 }
 
 const SwitchField = ({
-                       label,
-                       fieldName,
-                       className,
-                       children,
-                       ...switchRestProps
-                     }: SwitchFieldProps) => {
+  label,
+  fieldName,
+  className,
+  children,
+  ...switchRestProps
+}: SwitchFieldProps) => {
   const { control } = useFormContext();
 
   return (
@@ -28,7 +34,7 @@ const SwitchField = ({
       render={({ field }) => (
         <FormItem className={cn(className, { 'py-2 px-4': !!children })}>
           {children}
-          <div className='flex flex-row gap-2 items-center'>
+          <div className="flex flex-row gap-2 items-center">
             {label && (
               <FormLabel>
                 <p className={'text-text-dark-gray'}>{label}</p>
@@ -41,7 +47,6 @@ const SwitchField = ({
                 {...switchRestProps}
               />
             </FormControl>
-
           </div>
           <FormMessage className={'pl-2'} />
         </FormItem>

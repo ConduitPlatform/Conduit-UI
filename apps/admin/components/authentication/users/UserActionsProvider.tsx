@@ -4,9 +4,9 @@ import { useContext } from 'react';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 
 type UserActionsProvider = {
-  openUserAdd: () => void
-  openUserEdit: (userId: string) => void
-}
+  openUserAdd: () => void;
+  openUserEdit: (userId: string) => void;
+};
 
 const initialState: UserActionsProvider = {
   openUserAdd: () => {
@@ -20,7 +20,11 @@ const initialState: UserActionsProvider = {
 const UserActionsContext = React.createContext(initialState);
 export const useUserActions = () => useContext(UserActionsContext);
 
-export function UserActionsProvider({ children }: { children: React.ReactNode }) {
+export function UserActionsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
   const [userEdit, setUserEdit] = React.useState<string | undefined>(undefined);
   const openUserAdd = () => {
@@ -30,15 +34,17 @@ export function UserActionsProvider({ children }: { children: React.ReactNode })
     setUserEdit(userId);
   };
 
-  return <UserActionsContext.Provider
-    value={{
-      openUserAdd,
-      openUserEdit,
-    }}
-  >
-    <AddUserSheet defaultOpen={userAdd} onClose={() => setUserAdd(false)} />
-    <AddUserSheet defaultOpen={userEdit !== undefined} />
+  return (
+    <UserActionsContext.Provider
+      value={{
+        openUserAdd,
+        openUserEdit,
+      }}
+    >
+      <AddUserSheet defaultOpen={userAdd} onClose={() => setUserAdd(false)} />
+      <AddUserSheet defaultOpen={userEdit !== undefined} />
 
-    {children}
-  </UserActionsContext.Provider>;
+      {children}
+    </UserActionsContext.Provider>
+  );
 }

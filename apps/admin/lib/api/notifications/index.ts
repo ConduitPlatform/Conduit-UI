@@ -7,28 +7,41 @@ import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 type ConfigResponse = { config: NotificationSettings };
 
 export const getNotificationSettings = async () => {
-  const res = await axiosInstance.get<ConfigResponse>(`/config/pushNotifications`, {});
+  const res = await axiosInstance.get<ConfigResponse>(
+    `/config/pushNotifications`,
+    {}
+  );
   return res.data;
 };
 
-export const patchNotificationSettings = async (data: Partial<NotificationSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/pushNotifications`, { config: { ...data } });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(async (resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const modules = await getModules();
-        resolve(modules);
-      } catch (error) {
-        reject(error);
-      }
-    }, 3000);
+export const patchNotificationSettings = async (
+  data: Partial<NotificationSettings>
+) => {
+  await axiosInstance.patch<ConfigResponse>(`/config/pushNotifications`, {
+    config: { ...data },
   });
+  return new Promise<Awaited<ReturnType<typeof getModules>>>(
+    async (resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const modules = await getModules();
+          resolve(modules);
+        } catch (error) {
+          reject(error);
+        }
+      }, 3000);
+    }
+  );
 };
-export const getTokens = async (skip: number, limit: number, params?: {
-  sort?: string,
-  search?: string,
-  platform?: string
-}): Promise<{ tokens: NotificationToken[], count: number }> => {
+export const getTokens = async (
+  skip: number,
+  limit: number,
+  params?: {
+    sort?: string;
+    search?: string;
+    platform?: string;
+  }
+): Promise<{ tokens: NotificationToken[]; count: number }> => {
   const res = await axiosInstance.get(`/pushNotifications/token`, {
     params: {
       skip,
@@ -39,7 +52,10 @@ export const getTokens = async (skip: number, limit: number, params?: {
   return res.data;
 };
 
-export const getTokenById = async (id: string, populate?: string): Promise<NotificationToken> => {
+export const getTokenById = async (
+  id: string,
+  populate?: string
+): Promise<NotificationToken> => {
   const res = await axiosInstance.get(`/pushNotifications/token/${id}`, {
     params: {
       populate,
@@ -48,19 +64,17 @@ export const getTokenById = async (id: string, populate?: string): Promise<Notif
   return res.data;
 };
 
-
 export const sendNotifications = async (params: {
-  userIds: string[],
-  title: string,
-  body?: string,
-  data?: Record<string, any>,
-  isSilent?: boolean,
-  platform?: string,
-  doNotStore?: boolean,
+  userIds: string[];
+  title: string;
+  body?: string;
+  data?: Record<string, any>;
+  isSilent?: boolean;
+  platform?: string;
+  doNotStore?: boolean;
 }): Promise<NotificationToken> => {
   const res = await axiosInstance.post(`/pushNotifications/sendToManyDevices`, {
     ...params,
   });
   return res.data;
 };
-

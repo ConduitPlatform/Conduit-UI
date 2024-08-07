@@ -16,4 +16,4 @@ export type StrategyInterface = {
   documentation: string;
   data?: any;
   form?: React.FC<StrategyFormProps<any>>;
-}
+};

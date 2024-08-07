@@ -8,4 +8,4 @@ export type NotificationToken = {
   platform: string | PlatformTypesEnum;
   createdAt: string;
   updatedAt: string;
-}
+};

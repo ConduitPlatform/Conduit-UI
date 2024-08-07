@@ -17,29 +17,30 @@ import { LinkedinConfig } from '@/lib/models/authentication/linkedIn.config';
 import { MagicLinkConfig } from '@/lib/models/authentication/magicLink.config';
 import { MicrosoftConfig } from '@/lib/models/authentication/microsoft.config';
 
-export type AuthenticationConfig =
-  BaseAuthenticationSettings
-  & TokenConfig
-  & TeamsConfig
-  & LocalConfig
-  & AppleConfig
-  & BitbucketConfig
-  & FacebookConfig
-  & FigmaConfig
-  & GithubConfig
-  & GitlabConfig
-  & GoogleConfig
-  & LinkedinConfig
-  & MagicLinkConfig
-  & MicrosoftConfig
-  & RedditConfig
-  & SlackConfig
-  & TwitchConfig
-  & TwitterConfig;
+export type AuthenticationConfig = BaseAuthenticationSettings &
+  TokenConfig &
+  TeamsConfig &
+  LocalConfig &
+  AppleConfig &
+  BitbucketConfig &
+  FacebookConfig &
+  FigmaConfig &
+  GithubConfig &
+  GitlabConfig &
+  GoogleConfig &
+  LinkedinConfig &
+  MagicLinkConfig &
+  MicrosoftConfig &
+  RedditConfig &
+  SlackConfig &
+  TwitchConfig &
+  TwitterConfig;
 
 export type AuthenticationConfigResponse = {
   config: AuthenticationConfig;
-}
+};
 export type AuthenticationConfigSchemaResponse = {
-  config: {[key:string]: string | boolean | number | string[] | boolean[] | number[]};
-}
+  config: {
+    [key: string]: string | boolean | number | string[] | boolean[] | number[];
+  };
+};

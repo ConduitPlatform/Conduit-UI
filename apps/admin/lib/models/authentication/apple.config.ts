@@ -5,5 +5,5 @@ export type AppleConfig = {
     privateKey: string;
     teamId: string;
     keyId: string;
-  },
+  };
 };
