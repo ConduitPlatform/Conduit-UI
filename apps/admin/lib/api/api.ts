@@ -32,9 +32,9 @@ axiosInstance.interceptors.response.use(
   async error => {
     const { response } = error;
     if (response?.data?.message) {
-      console.error('error: ', response.status, response.data.message);
+      console.error('error: ', response.data.message);
     } else {
-      console.error('error: ', error.response.status, error.request.path);
+      console.error('error: ', error);
     }
     return Promise.reject(error);
   },

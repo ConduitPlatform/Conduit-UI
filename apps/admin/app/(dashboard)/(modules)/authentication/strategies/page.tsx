@@ -47,7 +47,7 @@ export default async function Strategies({
       </div>
       <div className={'grid grid-cols-6 gap-3 py-5'}>
         {enabledStrategies
-          .map((strategy) => <StrategyCard
+          .map((strategy, index) => <StrategyCard key={index}
             strategy={{ ...strategyMap[strategy], data: config[strategy as keyof typeof config], key: strategy }} />)}
       </div>
     </div>
