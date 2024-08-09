@@ -1,6 +1,6 @@
 'use client';
 import { z } from 'zod';
-import { StorageSettings } from '@/lib/models/Storage';
+import { StorageSettings } from '@/lib/models/storage';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,9 +9,9 @@ import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { SettingsForm } from '@/components/storage/settingsForm';
+import { SettingsForm } from '@/components/storage/settings/settingsForm';
 import { patchStorageSettings } from '@/lib/api/storage';
-import { FormSchema } from '@/components/storage/zod';
+import { FormSchema } from '@/components/storage/settings/zod';
 
 interface Props {
   data: StorageSettings;

@@ -305,7 +305,7 @@ export const navList = [
       },
       {
         name: 'Browse',
-        href: '/storage/files',
+        href: '/storage/browse',
         icon: <FolderSearch className={NAV_ICON_CLASSES} />,
       },
       {

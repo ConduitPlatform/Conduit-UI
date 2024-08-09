@@ -1,4 +1,4 @@
-import { StorageSettings } from '@/lib/models/Storage';
+import { StorageSettings } from '@/lib/models/storage';
 import {
   FormControl,
   FormField,
