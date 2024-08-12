@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/carousel';
 import { Card } from '@/components/ui/card';
 import { Folder } from '@/lib/models/storage';
-import { useFileSystemActions } from '@/components/storage/units/folder/FileSystemActionsProvider';
+import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CreateFolderForm } from '@/components/storage/units/folder/forms/createForm';
@@ -27,11 +27,10 @@ export const CarouselView = ({ refreshFolders }: CarouselViewProps) => {
     );
   }, [currentPath, searchParams]);
 
-  if (!searchParams.get('container')) return <></>;
   return (
     <>
       <CreateFolderForm
-        container={searchParams.get('container') ?? undefined}
+        container={searchParams.get('container')!}
         path={currentPath}
         onSuccess={folder => setFolder(prevState => [folder, ...prevState])}
       />

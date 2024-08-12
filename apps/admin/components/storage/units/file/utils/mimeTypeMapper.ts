@@ -1,0 +1,28 @@
+export const mimeTypeMapper: { [key: string]: string } = {
+  'text/html': 'HTML Document',
+  'text/css': 'CSS Stylesheet',
+  'application/javascript': 'JavaScript File',
+  'application/json': 'JSON Document',
+  'image/png': 'PNG Image',
+  'image/jpeg': 'JPEG Image',
+  'image/gif': 'GIF Image',
+  'image/svg+xml': 'SVG Image',
+  'application/pdf': 'PDF Document',
+  'text/plain': 'Plain Text Document',
+  'application/xml': 'XML Document',
+  'application/zip': 'ZIP Archive',
+  'audio/mpeg': 'MP3 Audio',
+  'video/mp4': 'MP4 Video',
+  'font/woff': 'WOFF Font',
+  'font/woff2': 'WOFF2 Font',
+  'font/ttf': 'TrueType Font',
+  'font/otf': 'OpenType Font',
+  'text/csv': 'CSV Document',
+  'application/msword': 'Microsoft Word Document',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    'Microsoft Word Document (OpenXML)',
+  'application/vnd.ms-excel': 'Microsoft Excel Spreadsheet',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    'Microsoft Excel Spreadsheet (OpenXML)',
+  'application/octet-stream': 'Binary File',
+};

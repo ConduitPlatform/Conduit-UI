@@ -1,5 +1,3 @@
-'use client';
-
 import { BaseFolderForm } from '@/components/storage/units/folder/forms/baseForm';
 import { createFolder } from '@/lib/api/storage';
 import { useToast } from '@/lib/hooks/use-toast';
@@ -10,13 +8,11 @@ export const CreateFolderForm = ({
   path,
   onSuccess,
 }: {
-  container?: string;
+  container: string;
   path: string;
   onSuccess: (data: Folder) => void;
 }) => {
   const { toast } = useToast();
-
-  if (!container) return <>Container Not Defined</>;
   return (
     <BaseFolderForm
       editable={true}

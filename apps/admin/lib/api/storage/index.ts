@@ -176,3 +176,12 @@ export const patchFileUpload = async (
     .patch<Response>(`/storage/files/upload/${id}`, data)
     .then(res => res.data);
 };
+
+export const getFileUrl = async (id: string, args?: { redirect?: boolean }) => {
+  return await axiosInstance
+    .get<{
+      result: string;
+      redirect?: boolean;
+    }>(`/storage/files/${id}/url`, { params: args })
+    .then(res => res.data);
+};

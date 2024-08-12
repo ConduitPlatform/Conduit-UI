@@ -1,6 +1,7 @@
 import { getFolders } from '@/lib/api/storage';
 import { getModules } from '@/lib/api/modules';
 import { CarouselView } from '@/components/storage/units/folder/carousel-view';
+import { NoContainerLayout } from '@/app/(dashboard)/(modules)/storage/browse/noContainer';
 
 type FolderSlotParams = {
   searchParams?: {
@@ -16,6 +17,7 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
     m => m.moduleName === 'authorization' && m.serving
   );
 
+  // TODO: check if container exists
   const refreshFolders = async (path: string, container: string) => {
     'use server';
     const { folders } = await getFolders({
@@ -37,10 +39,14 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
             <div>search</div>
           </div>
         </div>
-        <div className="flex gap-x-4">
-          {/* TODO: toggle see all view / limited view */}
-          <CarouselView refreshFolders={refreshFolders} />
-        </div>
+        {searchParams?.container ? (
+          <div className="flex gap-x-4">
+            {/* TODO: toggle see all view / limited view */}
+            <CarouselView refreshFolders={refreshFolders} />
+          </div>
+        ) : (
+          <NoContainerLayout />
+        )}
       </div>
     </>
   );

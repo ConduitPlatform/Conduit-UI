@@ -1,15 +1,17 @@
-import { FileSystemActionsProvider } from '@/components/storage/units/folder/FileSystemActionsProvider';
+import { FileSystemActionsProvider } from '@/components/storage/FileSystemActionsProvider';
 import { getModules } from '@/lib/api/modules';
+
+type LayoutProps = {
+  children: React.ReactNode;
+  files: React.ReactNode;
+  folders: React.ReactNode;
+};
 
 export default async function Layout({
   children,
   files,
   folders,
-}: {
-  children: React.ReactNode;
-  files: React.ReactNode;
-  folders: React.ReactNode;
-}) {
+}: LayoutProps) {
   const modules = await getModules();
   const storageModuleAvailable = !!modules.find(
     m => m.moduleName === 'storage' && m.serving
@@ -19,7 +21,7 @@ export default async function Layout({
     <FileSystemActionsProvider>
       <div className="space-y-5">
         <div>{children}</div>
-        <div className="grid grid-rows-3 grid-flow-row gap-10">
+        <div className="grid grid-flow-row auto-rows-max gap-10">
           {folders}
           {files}
         </div>

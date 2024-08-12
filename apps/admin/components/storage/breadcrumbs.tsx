@@ -1,6 +1,6 @@
 'use client';
 
-import { useFileSystemActions } from '@/components/storage/units/folder/FileSystemActionsProvider';
+import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import {
   Breadcrumb,
   BreadcrumbItem,
