@@ -20,14 +20,13 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
   // TODO: check if container exists
   const refreshFolders = async (path: string, container: string) => {
     'use server';
-    const { folders } = await getFolders({
+    return await getFolders({
       skip: 0,
       limit: 5,
       sort: '-createdAt',
       parent: path,
       container: container,
     });
-    return folders;
   };
 
   return (

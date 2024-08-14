@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   DataType,
   FilesTable,
@@ -15,17 +15,13 @@ type FileListViewProps = {
 
 export const FileListView = ({ refreshFiles }: FileListViewProps) => {
   const searchParams = useSearchParams();
-  const { currentPath } = useFileSystemActions();
-  const [files, setFiles] = useState<DataType>({
-    files: [],
-    filesCount: 0,
-  });
+  const { currentPath, files, navigateFiles } = useFileSystemActions();
 
   useEffect(() => {
     const container = searchParams.get('container');
     if (container) {
       refreshFiles(currentPath, container).then(res => {
-        setFiles(res);
+        navigateFiles({ ...res });
       });
     }
   }, [searchParams, currentPath]);

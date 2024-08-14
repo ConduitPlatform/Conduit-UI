@@ -15,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import axios from 'axios';
 
 export const CreateFileForm = () => {
-  const { currentPath } = useFileSystemActions();
+  const { currentPath, files, navigateFiles } = useFileSystemActions();
   const searchParams = useSearchParams();
   const [showProgress, setShowProgress] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -47,6 +47,7 @@ export const CreateFileForm = () => {
         );
       },
     });
+    return response.file;
   };
 
   return (
@@ -63,10 +64,15 @@ export const CreateFileForm = () => {
               shouldDirty: true,
             });
             submit(form.getValues())
-              .then(() => {
+              .then(file => {
                 toast({
                   title: 'STORAGE',
                   description: 'New File Created!',
+                });
+                const updatedFiles = [file, ...files.files];
+                navigateFiles({
+                  files: updatedFiles,
+                  filesCount: ++files.filesCount,
                 });
               })
               .finally(() => setShowProgress(false));

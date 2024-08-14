@@ -6,24 +6,27 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import { Card } from '@/components/ui/card';
-import { Folder } from '@/lib/models/storage';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { CreateFolderForm } from '@/components/storage/units/folder/forms/createForm';
+import { getFolders } from '@/lib/api/storage';
 
 type CarouselViewProps = {
-  refreshFolders: (path: string, container: string) => Promise<Folder[]>;
+  refreshFolders: (
+    path: string,
+    container: string
+  ) => Promise<Awaited<ReturnType<typeof getFolders>>>;
 };
 
 export const CarouselView = ({ refreshFolders }: CarouselViewProps) => {
   const searchParams = useSearchParams();
-  const { navigateTo, currentPath } = useFileSystemActions();
-  const [folders, setFolder] = useState<Folder[]>([]);
+  const { navigateTo, currentPath, folders, navigateFolders } =
+    useFileSystemActions();
 
   useEffect(() => {
     refreshFolders(currentPath, searchParams.get('container')!).then(res =>
-      setFolder(res)
+      navigateFolders({ ...res })
     );
   }, [currentPath, searchParams]);
 
@@ -32,11 +35,17 @@ export const CarouselView = ({ refreshFolders }: CarouselViewProps) => {
       <CreateFolderForm
         container={searchParams.get('container')!}
         path={currentPath}
-        onSuccess={folder => setFolder(prevState => [folder, ...prevState])}
+        onSuccess={folder => {
+          const updatedFolders = [folder, ...folders.folders];
+          navigateFolders({
+            folders: updatedFolders,
+            folderCount: ++folders.folderCount,
+          });
+        }}
       />
       <Carousel className="w-full max-w-5xl">
         <CarouselContent>
-          {folders.map(folder => {
+          {folders.folders.map(folder => {
             const trimmed = folder.name.replace(/\/$/, '');
             const path = trimmed.split('/');
             return (
