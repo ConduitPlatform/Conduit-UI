@@ -3,8 +3,8 @@ import { GalleryHorizontal, List } from 'lucide-react';
 import { getModules } from '@/lib/api/modules';
 import { getFiles } from '@/lib/api/storage';
 import { FileListView } from '@/components/storage/units/file/file-list-view';
-import { CreateFileForm } from '@/components/storage/units/file/forms/createForm';
 import { NoContainerLayout } from '@/app/(dashboard)/(modules)/storage/browse/noContainer';
+import { Header } from '@/components/storage/units/file/files-header';
 
 type FileSlotParams = {
   searchParams?: {
@@ -33,16 +33,10 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
 
   return (
     <div className="space-y-4 row-span-2">
-      <div className="flex justify-between">
-        <h1 className="font-semibold text-3xl">Files</h1>
-        <div className="flex gap-x-5 items-center">
-          <div>search</div>
-        </div>
-      </div>
-      {searchParams?.container ? (
-        <>
-          <CreateFileForm />
-          <Tabs defaultValue="list" className="w-full h-full space-y-5">
+      <div className="w-full flex flex-col justify-between">
+        <Header />
+        {searchParams?.container ? (
+          <Tabs defaultValue="list" className="mt-4 w-full h-full space-y-5">
             <TabsList className="">
               <TabsTrigger value="list">
                 <List width={16} height={16} />
@@ -58,10 +52,10 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
               Files Gallery View
             </TabsContent>
           </Tabs>
-        </>
-      ) : (
-        <NoContainerLayout />
-      )}
+        ) : (
+          <NoContainerLayout />
+        )}
+      </div>
     </div>
   );
 }

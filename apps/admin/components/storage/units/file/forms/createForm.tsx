@@ -52,7 +52,7 @@ export const CreateFileForm = () => {
 
   return (
     <Form {...form}>
-      <form>
+      <form className="mt-2">
         <DragAndDropField
           fieldName="attachedFile"
           multiple={false}
