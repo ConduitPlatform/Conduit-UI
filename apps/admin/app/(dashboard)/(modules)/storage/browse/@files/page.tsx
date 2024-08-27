@@ -5,6 +5,7 @@ import { getFiles } from '@/lib/api/storage';
 import { FileListView } from '@/components/storage/units/file/file-list-view';
 import { NoContainerLayout } from '@/app/(dashboard)/(modules)/storage/browse/noContainer';
 import { Header } from '@/components/storage/units/file/files-header';
+import { FilesGalleryView } from '@/components/storage/units/file/file-gallery-view';
 
 type FileSlotParams = {
   searchParams?: {
@@ -49,7 +50,7 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
               <FileListView refreshFiles={refreshFiles} />
             </TabsContent>
             <TabsContent value="gallery" className="overflow-auto h-full">
-              Files Gallery View
+              <FilesGalleryView refreshFiles={refreshFiles} />
             </TabsContent>
           </Tabs>
         ) : (

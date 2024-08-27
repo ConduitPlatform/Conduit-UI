@@ -66,7 +66,6 @@ export const columns: ColumnDef<ConduitFile>[] = [
     accessorKey: 'details',
     header: '',
     cell: ({ row }) => {
-      const _id = row.original._id;
       return (
         <Sheet>
           <SheetTrigger asChild>
