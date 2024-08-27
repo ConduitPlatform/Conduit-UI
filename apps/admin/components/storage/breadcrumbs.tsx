@@ -7,12 +7,23 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Container } from '@/lib/models/storage';
-import { SelectContainerDialog } from '@/components/storage/units/container/select';
 import { isEmpty } from 'lodash';
+import { ContainerDialog } from '@/components/storage/units/container/base';
+import { useEffect, useState } from 'react';
+import { Container } from '@/lib/models/storage';
+import { getContainers } from '@/lib/api/storage';
 
-export const BreadCrumbs = ({ containers }: { containers: Container[] }) => {
+export const BreadCrumbs = ({
+  refreshContainers,
+}: {
+  refreshContainers: () => Promise<Awaited<ReturnType<typeof getContainers>>>;
+}) => {
   const { currentPath, navigateTo } = useFileSystemActions();
+  const [containers, setContainers] = useState<Container[]>([]);
+
+  useEffect(() => {
+    refreshContainers().then(res => setContainers(res.containers));
+  }, []);
 
   const folders = currentPath.replace(/^\/$/g, '').split('/');
   const paths: { [name: string]: string[] } = {};
@@ -20,11 +31,17 @@ export const BreadCrumbs = ({ containers }: { containers: Container[] }) => {
     const name = isEmpty(f) ? '/' : f;
     paths[name] = folders.slice(0, index + 1);
   });
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <SelectContainerDialog containers={containers} />
+          <ContainerDialog
+            containers={containers}
+            refreshContainers={container =>
+              setContainers(prevState => [...prevState, container])
+            }
+          />
         </BreadcrumbItem>
         {folders.map((folder, index) => (
           <>

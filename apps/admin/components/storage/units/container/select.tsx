@@ -1,12 +1,3 @@
-'use client';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Container } from '@/lib/models/storage';
 import {
@@ -18,7 +9,6 @@ import {
 } from '@/components/ui/select';
 import { useCallback } from 'react';
 
-// TODO: integrate create container
 export const SelectContainerDialog = ({
   containers,
 }: {
@@ -39,34 +29,22 @@ export const SelectContainerDialog = ({
   );
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button>{searchParams.get('container') ?? 'Select Container'}</button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Select Container</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Select
-            onValueChange={value =>
-              router.push(
-                pathname + '?' + createQueryString('container', value)
-              )
-            }
-            value={searchParams.get('container') ?? ''}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a provider" />
-            </SelectTrigger>
-            <SelectContent className={'bg-white dark:bg-popover'}>
-              {containers.map(container => (
-                <SelectItem value={container.name}>{container.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <div className="py-4">
+      <Select
+        onValueChange={value =>
+          router.push(pathname + '?' + createQueryString('container', value))
+        }
+        value={searchParams.get('container') ?? undefined}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select container" />
+        </SelectTrigger>
+        <SelectContent className={'bg-white dark:bg-popover'}>
+          {containers.map(container => (
+            <SelectItem value={container.name}>{container.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
