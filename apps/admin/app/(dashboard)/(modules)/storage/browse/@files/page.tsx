@@ -6,14 +6,12 @@ import { FileListView } from '@/components/storage/units/file/file-list-view';
 import { NoContainerLayout } from '@/app/(dashboard)/(modules)/storage/browse/noContainer';
 import { Header } from '@/components/storage/units/file/files-header';
 import { FilesGalleryView } from '@/components/storage/units/file/file-gallery-view';
+import { FILES_LIMIT } from '@/components/storage/units/file/utils';
 
 type FileSlotParams = {
   searchParams?: {
     container?: string; // TODO: this should be layout global
-    // Pagination
-    sfl?: number; // skip files
-    lfl?: number; // limit files
-    // Search Files
+    skip?: number;
     fileName?: string;
   };
 };
@@ -28,8 +26,8 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
   const refreshFiles = async (path: string, container: string) => {
     'use server';
     return await getFiles({
-      skip: 0,
-      limit: 10,
+      skip: searchParams?.skip ?? 0,
+      limit: FILES_LIMIT,
       container: container,
       folder: path.replace(/^\/|\/$/g, ''),
       search: searchParams?.fileName,
@@ -42,7 +40,7 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
         <Header />
         {searchParams?.container ? (
           <Tabs defaultValue="list" className="mt-4 w-full h-full space-y-5">
-            <TabsList className="">
+            <TabsList>
               <TabsTrigger value="list">
                 <List width={16} height={16} />
               </TabsTrigger>

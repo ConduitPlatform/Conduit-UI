@@ -1,4 +1,5 @@
 'use client';
+
 import {
   ColumnDef,
   flexRender,
@@ -15,8 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { getFiles } from '@/lib/api/storage';
+import { Pagination } from '@/components/storage/units/file/pagination';
+import { FILES_LIMIT } from '@/components/storage/units/file/utils';
 
 export type DataType = Awaited<ReturnType<typeof getFiles>>;
 
@@ -89,24 +91,7 @@ export function FilesTable<TValue>({ columns, data }: FilesTableProps<TValue>) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      <Pagination data={data} limit={FILES_LIMIT} />
     </div>
   );
 }

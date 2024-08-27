@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ConduitFile } from '@/lib/models/storage';
 import moment from 'moment';
-import { mimeTypeMapper } from '@/components/storage/units/file/utils/mimeTypeMapper';
+import { mimeTypeMapper } from '@/components/storage/units/file/utils';
 import { MoreVertical, TrashIcon } from 'lucide-react';
 import {
   Sheet,

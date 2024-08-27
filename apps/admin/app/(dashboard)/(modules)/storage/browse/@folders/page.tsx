@@ -7,10 +7,6 @@ import { SearchInput } from '@/components/storage/search';
 type FolderSlotParams = {
   searchParams?: {
     container?: string; // TODO: this should be layout global
-    // Pagination
-    sfd?: number; // skip folders
-    lfd?: number; // limit folders
-    // Search Folders
     folderName?: string;
   };
 };
@@ -26,7 +22,7 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
     'use server';
     return await getFolders({
       skip: 0,
-      limit: 5,
+      limit: 7,
       sort: '-createdAt',
       parent: path,
       container: container,

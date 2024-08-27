@@ -4,7 +4,6 @@ import { DataType } from '@/components/storage/units/file/table/data-table';
 import { useSearchParams } from 'next/navigation';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { FileIcon, FileImageIcon } from 'lucide-react';
 import {
   Sheet,
@@ -14,10 +13,13 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { FileDetails } from '@/components/storage/units/file/details';
+import { Pagination } from '@/components/storage/units/file/pagination';
+import { FILES_LIMIT } from '@/components/storage/units/file/utils';
 
 type FileGalleryViewProps = {
   refreshFiles: (path: string, container: string) => Promise<DataType>;
 };
+
 export const FilesGalleryView = ({ refreshFiles }: FileGalleryViewProps) => {
   const searchParams = useSearchParams();
   const { currentPath, files, navigateFiles } = useFileSystemActions();
@@ -55,24 +57,7 @@ export const FilesGalleryView = ({ refreshFiles }: FileGalleryViewProps) => {
           </Sheet>
         ))}
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => console.log('previous')}
-          // disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => console.log('next')}
-          // disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      <Pagination data={files} limit={FILES_LIMIT} />
     </>
   );
 };
