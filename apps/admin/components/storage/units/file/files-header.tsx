@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { PlusCircleIcon } from 'lucide-react';
 import { CreateFileForm } from '@/components/storage/units/file/forms/createForm';
+import { SearchInput } from '@/components/storage/search';
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -27,7 +28,7 @@ export const Header = () => {
               <span>New File</span>
             </Button>
           </CollapsibleTrigger>
-          <h2>search</h2>
+          <SearchInput field="fileName" />
         </div>
       </div>
       <CollapsibleContent className="w-full">

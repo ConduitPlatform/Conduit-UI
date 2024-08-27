@@ -2,12 +2,16 @@ import { getFolders } from '@/lib/api/storage';
 import { getModules } from '@/lib/api/modules';
 import { CarouselView } from '@/components/storage/units/folder/carousel-view';
 import { NoContainerLayout } from '@/app/(dashboard)/(modules)/storage/browse/noContainer';
+import { SearchInput } from '@/components/storage/search';
 
 type FolderSlotParams = {
   searchParams?: {
     container?: string; // TODO: this should be layout global
-    sfd?: number;
-    lfd?: number;
+    // Pagination
+    sfd?: number; // skip folders
+    lfd?: number; // limit folders
+    // Search Folders
+    folderName?: string;
   };
 };
 
@@ -26,6 +30,7 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
       sort: '-createdAt',
       parent: path,
       container: container,
+      search: searchParams?.folderName,
     });
   };
 
@@ -35,12 +40,11 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
         <div className="flex justify-between">
           <h1 className="font-semibold text-3xl">Folders</h1>
           <div className="flex gap-x-5 items-center">
-            <div>search</div>
+            <SearchInput field="folderName" />
           </div>
         </div>
         {searchParams?.container ? (
           <div className="flex gap-x-4">
-            {/* TODO: toggle see all view / limited view */}
             <CarouselView refreshFolders={refreshFolders} />
           </div>
         ) : (

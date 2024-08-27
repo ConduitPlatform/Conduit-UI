@@ -10,8 +10,11 @@ import { FilesGalleryView } from '@/components/storage/units/file/file-gallery-v
 type FileSlotParams = {
   searchParams?: {
     container?: string; // TODO: this should be layout global
-    sfl?: number;
-    sll?: number;
+    // Pagination
+    sfl?: number; // skip files
+    lfl?: number; // limit files
+    // Search Files
+    fileName?: string;
   };
 };
 
@@ -29,6 +32,7 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
       limit: 10,
       container: container,
       folder: path.replace(/^\/|\/$/g, ''),
+      search: searchParams?.fileName,
     });
   };
 
