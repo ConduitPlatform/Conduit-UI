@@ -36,7 +36,10 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
         <div className="flex justify-between">
           <h1 className="font-semibold text-3xl">Folders</h1>
           <div className="flex gap-x-5 items-center">
-            <SearchInput field="folderName" />
+            <SearchInput
+              field="folderName"
+              active={!!searchParams?.container}
+            />
           </div>
         </div>
         {searchParams?.container ? (

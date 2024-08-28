@@ -37,7 +37,7 @@ export default async function FilesSlot({ searchParams }: FileSlotParams) {
   return (
     <div className="space-y-4 row-span-2">
       <div className="w-full flex flex-col justify-between">
-        <Header />
+        <Header active={!!searchParams?.container} />
         {searchParams?.container ? (
           <Tabs defaultValue="list" className="mt-4 w-full h-full space-y-5">
             <TabsList>

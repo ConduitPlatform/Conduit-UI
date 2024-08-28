@@ -11,16 +11,16 @@ import { PlusCircleIcon } from 'lucide-react';
 import { CreateFileForm } from '@/components/storage/units/file/forms/createForm';
 import { SearchInput } from '@/components/storage/search';
 
-export const Header = () => {
+export const Header = ({ active }: { active: boolean }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} disabled={!active}>
       <div className="flex justify-between items-center gap-x-4">
         <h1 className="font-semibold text-3xl">Files</h1>
         <div className="flex gap-x-4 items-center">
           <CollapsibleTrigger>
             <Button
-              variant="default"
+              variant={active ? 'default' : 'secondary'}
               size="sm"
               className="w-fit space-x-2 px-2.5 py-1.5"
             >
@@ -28,7 +28,7 @@ export const Header = () => {
               <span>New File</span>
             </Button>
           </CollapsibleTrigger>
-          <SearchInput field="fileName" />
+          <SearchInput field="fileName" active={active} />
         </div>
       </div>
       <CollapsibleContent className="w-full">
