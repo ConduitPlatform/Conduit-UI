@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Decimal from 'decimal.js';
 
@@ -10,10 +10,19 @@ export const Pagination = ({ data, limit }: { data: any; limit: number }) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const lastPage = new Decimal(data.filesCount).div(limit).ceil().toNumber();
+  const [lastPage, setLastPage] = useState(
+    new Decimal(data.filesCount).div(limit).ceil().toNumber()
+  );
   const [currentPage, setCurrentPage] = useState<number>(
     new Decimal(Number(searchParams.get('skip')) ?? 0).div(limit).toNumber()
   );
+
+  useEffect(() => {
+    setLastPage(new Decimal(data.filesCount).div(limit).ceil().toNumber());
+    setCurrentPage(
+      new Decimal(Number(searchParams.get('skip')) ?? 0).div(limit).toNumber()
+    );
+  }, [searchParams, data]);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -32,11 +41,11 @@ export const Pagination = ({ data, limit }: { data: any; limit: number }) => {
         onClick={() => {
           const previous = (Number(searchParams.get('skip')) ?? 0) - limit;
           setCurrentPage(prevState => --prevState);
-          router.push(
-            pathname + '?' + createQueryString('skip', previous.toString())
+          router.replace(
+            `${pathname}?${createQueryString('skip', previous.toString())}`
           );
         }}
-        disabled={currentPage === 0}
+        disabled={lastPage === 0 || currentPage === 0}
       >
         Previous
       </Button>
@@ -46,11 +55,11 @@ export const Pagination = ({ data, limit }: { data: any; limit: number }) => {
         onClick={() => {
           const next = (Number(searchParams.get('skip')) ?? 0) + limit;
           setCurrentPage(prevState => ++prevState);
-          router.push(
-            pathname + '?' + createQueryString('skip', next.toString())
+          router.replace(
+            `${pathname}?${createQueryString('skip', next.toString())}`
           );
         }}
-        disabled={lastPage === currentPage + 1}
+        disabled={lastPage === 0 || lastPage === currentPage + 1}
       >
         Next
       </Button>

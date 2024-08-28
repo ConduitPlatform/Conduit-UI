@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from 'react';
 import * as React from 'react';
 import { getFiles, getFolders } from '@/lib/api/storage';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type FilesType = Awaited<ReturnType<typeof getFiles>>;
 type FoldersType = Awaited<ReturnType<typeof getFolders>>;
@@ -37,6 +38,9 @@ export function FileSystemActionsProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const [currentPath, setCurrentPath] = useState<string>('');
   const [files, setFiles] = useState<FilesType>({
     files: [],
@@ -48,6 +52,13 @@ export function FileSystemActionsProvider({
   });
 
   const navigateTo = (path: string) => {
+    const params = new URLSearchParams();
+    searchParams.forEach((v, key) => {
+      if (key === 'container') {
+        params.set(key, v);
+      }
+    });
+    router.push(`${pathname}?${params.toString()}`);
     setCurrentPath(path);
   };
   const navigateFiles = (files: FilesType) => {
