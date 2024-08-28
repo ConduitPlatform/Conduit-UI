@@ -5,6 +5,8 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 
@@ -19,6 +21,12 @@ import {
 import { getFiles } from '@/lib/api/storage';
 import { Pagination } from '@/components/storage/units/file/pagination';
 import { FILES_LIMIT } from '@/components/storage/units/file/utils';
+import {
+  ChevronDownIcon,
+  ChevronsUpDownIcon,
+  ChevronUpIcon,
+} from 'lucide-react';
+import { useState } from 'react';
 
 export type DataType = Awaited<ReturnType<typeof getFiles>>;
 
@@ -28,11 +36,17 @@ interface FilesTableProps<TValue> {
 }
 
 export function FilesTable<TValue>({ columns, data }: FilesTableProps<TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
     data: data.files,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
   });
 
   return (
@@ -45,12 +59,34 @@ export function FilesTable<TValue>({ columns, data }: FilesTableProps<TValue>) {
                 {headerGroup.headers.map(header => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
+                      {header.isPlaceholder ? null : (
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? 'cursor-pointer select-none flex items-center'
+                              : '',
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
+                          {header.column.getCanSort() ? (
+                            header.column.getIsSorted() ? (
+                              header.column.getIsSorted() === 'asc' ? (
+                                <ChevronUpIcon className="w-4 h-4" />
+                              ) : (
+                                <ChevronDownIcon className="w-4 h-4" />
+                              )
+                            ) : (
+                              <ChevronsUpDownIcon className="w-4 h-4" />
+                            )
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      )}
                     </TableHead>
                   );
                 })}

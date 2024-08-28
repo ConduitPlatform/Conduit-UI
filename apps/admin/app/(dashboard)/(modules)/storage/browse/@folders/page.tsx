@@ -17,7 +17,6 @@ export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
     m => m.moduleName === 'authorization' && m.serving
   );
 
-  // TODO: check if container exists
   const refreshFolders = async (path: string, container: string) => {
     'use server';
     return await getFolders({

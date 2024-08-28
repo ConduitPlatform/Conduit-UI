@@ -54,6 +54,7 @@ export const columns: ColumnDef<ConduitFile>[] = [
   {
     accessorKey: 'isPublic',
     header: 'Public',
+    enableSorting: false,
   },
   {
     accessorKey: 'mimeType',
@@ -65,6 +66,7 @@ export const columns: ColumnDef<ConduitFile>[] = [
   {
     accessorKey: 'details',
     header: '',
+    enableSorting: false,
     cell: ({ row }) => {
       return (
         <Sheet>
@@ -86,6 +88,7 @@ export const columns: ColumnDef<ConduitFile>[] = [
   {
     accessorKey: 'delete',
     header: '',
+    enableSorting: false,
     cell: ({ row }) => {
       const _id = row.original._id;
       return (

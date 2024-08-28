@@ -25,9 +25,12 @@ export const CarouselView = ({ refreshFolders }: CarouselViewProps) => {
     useFileSystemActions();
 
   useEffect(() => {
-    refreshFolders(currentPath, searchParams.get('container')!).then(res =>
-      navigateFolders({ ...res })
-    );
+    const container = searchParams.get('container');
+    if (container) {
+      refreshFolders(currentPath, container).then(res =>
+        navigateFolders({ ...res })
+      );
+    }
   }, [currentPath, searchParams]);
 
   return (
