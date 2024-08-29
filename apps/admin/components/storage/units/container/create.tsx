@@ -15,6 +15,7 @@ import { createContainer } from '@/lib/api/storage';
 import { Input } from '@/components/ui/input';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { useToast } from '@/lib/hooks/use-toast';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Container } from '@/lib/models/storage';
 
 const formSchema = z.object({
@@ -26,11 +27,14 @@ const formSchema = z.object({
 });
 
 export const CreateContainerDialog = ({
-  refreshContainers,
+  callback,
 }: {
-  refreshContainers: (data: Container) => void;
+  callback: (data: Container) => void;
 }) => {
   const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,13 +46,23 @@ export const CreateContainerDialog = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(async data =>
-          createContainer(data).then(res => {
-            toast({
-              title: 'STORAGE',
-              description: 'New Container Created',
-            });
-            refreshContainers(res);
-          })
+          createContainer(data)
+            .then(res => {
+              toast({
+                title: 'STORAGE',
+                description: 'New Container Created',
+              });
+              callback(res);
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('container', res.name);
+              router.push(`${pathname}?${params.toString()}`);
+            })
+            .catch(() => {
+              toast({
+                title: 'STORAGE',
+                description: 'Container already exists',
+              });
+            })
         )}
         className="space-y-4 mt-2"
       >

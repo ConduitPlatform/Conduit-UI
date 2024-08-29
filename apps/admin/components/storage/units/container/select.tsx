@@ -11,8 +11,10 @@ import { useCallback } from 'react';
 
 export const SelectContainerDialog = ({
   containers,
+  callback,
 }: {
   containers: Container[];
+  callback: () => void;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -31,9 +33,10 @@ export const SelectContainerDialog = ({
   return (
     <div className="py-4">
       <Select
-        onValueChange={value =>
-          router.push(pathname + '?' + createQueryString('container', value))
-        }
+        onValueChange={value => {
+          callback();
+          router.push(pathname + '?' + createQueryString('container', value));
+        }}
         value={searchParams.get('container') ?? undefined}
       >
         <SelectTrigger>

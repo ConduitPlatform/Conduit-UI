@@ -44,7 +44,7 @@ export const BreadCrumbs = ({
           />
         </BreadcrumbItem>
         {folders.map((folder, index) => (
-          <div key={folder}>
+          <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <button
@@ -59,7 +59,7 @@ export const BreadCrumbs = ({
                 {isEmpty(folder) ? '/' : folder}
               </button>
             </BreadcrumbItem>
-          </div>
+          </>
         ))}
       </BreadcrumbList>
     </Breadcrumb>

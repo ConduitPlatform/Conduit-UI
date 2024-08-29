@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { SelectContainerDialog } from '@/components/storage/units/container/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreateContainerDialog } from '@/components/storage/units/container/create';
+import { useState } from 'react';
 
 export const ContainerDialog = ({
   containers,
@@ -18,10 +19,11 @@ export const ContainerDialog = ({
   containers: Container[];
   refreshContainers: (container: Container) => void;
 }) => {
+  const [open, setOpen] = useState<boolean>(true);
   const searchParams = useSearchParams();
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button>{searchParams.get('container') ?? 'Select Container'}</button>
       </DialogTrigger>
@@ -38,10 +40,18 @@ export const ContainerDialog = ({
             <TabsTrigger value="create">Create Container</TabsTrigger>
           </TabsList>
           <TabsContent value="select">
-            <SelectContainerDialog containers={containers} />
+            <SelectContainerDialog
+              containers={containers}
+              callback={() => setOpen(!open)}
+            />
           </TabsContent>
           <TabsContent value="create" className="overflow-auto h-full">
-            <CreateContainerDialog refreshContainers={refreshContainers} />
+            <CreateContainerDialog
+              callback={(data: Container) => {
+                setOpen(!open);
+                refreshContainers(data);
+              }}
+            />
           </TabsContent>
         </Tabs>
       </DialogContent>
