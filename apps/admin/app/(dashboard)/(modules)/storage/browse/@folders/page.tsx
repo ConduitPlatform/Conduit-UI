@@ -6,7 +6,7 @@ import { SearchInput } from '@/components/storage/search';
 
 type FolderSlotParams = {
   searchParams?: {
-    container?: string; // TODO: this should be layout global
+    container?: string;
     folderName?: string;
   };
 };

@@ -9,7 +9,7 @@ type FilesType = Awaited<ReturnType<typeof getFiles>>;
 type FoldersType = Awaited<ReturnType<typeof getFolders>>;
 
 type FileSystemContext = {
-  navigateTo: (path: string) => void;
+  navigateTo: (path: string, bullseye?: string) => void;
   navigateFiles: (files: FilesType) => void;
   navigateFolders: (folders: FoldersType) => void;
   currentPath: string;
@@ -51,11 +51,14 @@ export function FileSystemActionsProvider({
     folderCount: 0,
   });
 
-  const navigateTo = (path: string) => {
+  const navigateTo = (path: string, bullseye?: string) => {
     const params = new URLSearchParams();
     searchParams.forEach((v, key) => {
       if (key === 'container') {
         params.set(key, v);
+      }
+      if (bullseye) {
+        params.set('fileName', bullseye);
       }
     });
     router.push(`${pathname}?${params.toString()}`);

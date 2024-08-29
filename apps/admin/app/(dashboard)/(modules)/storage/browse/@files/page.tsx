@@ -10,7 +10,7 @@ import { FILES_LIMIT } from '@/components/storage/units/file/utils';
 
 type FileSlotParams = {
   searchParams?: {
-    container?: string; // TODO: this should be layout global
+    container?: string;
     skip?: number;
     fileName?: string;
   };

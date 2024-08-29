@@ -30,6 +30,10 @@ import { deleteFileById } from '@/lib/api/storage';
 export const columns: ColumnDef<ConduitFile>[] = [
   {
     accessorKey: 'alias',
+    header: 'File Alias',
+  },
+  {
+    accessorKey: 'name',
     header: 'File Name',
   },
   {
