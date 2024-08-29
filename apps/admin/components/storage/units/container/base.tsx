@@ -10,17 +10,21 @@ import { useSearchParams } from 'next/navigation';
 import { SelectContainerDialog } from '@/components/storage/units/container/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreateContainerDialog } from '@/components/storage/units/container/create';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getContainers } from '@/lib/api/storage';
 
 export const ContainerDialog = ({
-  containers,
   refreshContainers,
 }: {
-  containers: Container[];
-  refreshContainers: (container: Container) => void;
+  refreshContainers: () => Promise<Awaited<ReturnType<typeof getContainers>>>;
 }) => {
   const searchParams = useSearchParams();
   const [open, setOpen] = useState<boolean>(!searchParams.get('container'));
+  const [containers, setContainers] = useState<Container[]>([]);
+
+  useEffect(() => {
+    refreshContainers().then(res => setContainers(res.containers));
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,7 +53,7 @@ export const ContainerDialog = ({
             <CreateContainerDialog
               callback={(data: Container) => {
                 setOpen(!open);
-                refreshContainers(data);
+                setContainers(prevState => [...prevState, data]);
               }}
             />
           </TabsContent>

@@ -9,8 +9,6 @@ import {
 } from '@/components/ui/breadcrumb';
 import { isEmpty } from 'lodash';
 import { ContainerDialog } from '@/components/storage/units/container/base';
-import { useEffect, useState } from 'react';
-import { Container } from '@/lib/models/storage';
 import { getContainers } from '@/lib/api/storage';
 import { useSearchParams } from 'next/navigation';
 
@@ -22,11 +20,6 @@ export const BreadCrumbs = ({
   const searchParams = useSearchParams();
   const currentPath = searchParams.get('path') ?? '';
   const { navigateTo } = useFileSystemActions();
-  const [containers, setContainers] = useState<Container[]>([]);
-
-  useEffect(() => {
-    refreshContainers().then(res => setContainers(res.containers));
-  }, []);
 
   const folders = currentPath.replace(/^\/$/g, '').split('/');
   const paths: { [name: string]: string[] } = {};
@@ -39,12 +32,7 @@ export const BreadCrumbs = ({
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <ContainerDialog
-            containers={containers}
-            refreshContainers={container =>
-              setContainers(prevState => [...prevState, container])
-            }
-          />
+          <ContainerDialog refreshContainers={refreshContainers} />
         </BreadcrumbItem>
         {folders.map((folder, index) => (
           <>

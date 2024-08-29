@@ -8,7 +8,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { CreateFolderForm } from '@/components/storage/units/folder/forms/createForm';
 import { getFolders } from '@/lib/api/storage';
 

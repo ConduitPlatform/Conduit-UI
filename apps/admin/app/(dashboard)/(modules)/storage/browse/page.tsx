@@ -33,8 +33,8 @@ export default async function StorageBrowse() {
 
   return (
     <>
-      <GlobalSearch refreshItems={refreshItems} />
       <BreadCrumbs refreshContainers={refreshContainers} />
+      <GlobalSearch refreshItems={refreshItems} />
     </>
   );
 }
