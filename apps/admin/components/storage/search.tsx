@@ -20,16 +20,11 @@ export const SearchInput = ({
 
   const debouncedSearchTerm = useDebounce(value, 300);
   useEffect(() => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
     params.set(field, value);
     if (debouncedSearchTerm === '') {
       params.delete(field);
     }
-    searchParams.forEach((v, key) => {
-      if (key === 'container') {
-        params.set(key, v);
-      }
-    });
     router.push(`${pathname}?${params.toString()}`);
   }, [debouncedSearchTerm]);
 

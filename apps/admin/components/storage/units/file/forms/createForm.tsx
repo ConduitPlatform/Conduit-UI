@@ -15,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import axios from 'axios';
 
 export const CreateFileForm = () => {
-  const { currentPath, files, navigateFiles } = useFileSystemActions();
+  const { files, navigateFiles } = useFileSystemActions();
   const searchParams = useSearchParams();
   const [showProgress, setShowProgress] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -28,6 +28,7 @@ export const CreateFileForm = () => {
 
   const submit = async (data: z.infer<typeof schema>) => {
     const container = searchParams.get('container')!;
+    const currentPath = searchParams.get('path') ?? '';
     const response = await fileUpload({
       alias: data.attachedFile.name,
       mimeType: data.attachedFile.type,

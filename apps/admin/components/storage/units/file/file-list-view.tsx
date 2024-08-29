@@ -15,16 +15,17 @@ type FileListViewProps = {
 
 export const FileListView = ({ refreshFiles }: FileListViewProps) => {
   const searchParams = useSearchParams();
-  const { currentPath, files, navigateFiles } = useFileSystemActions();
+  const { files, navigateFiles } = useFileSystemActions();
 
   useEffect(() => {
     const container = searchParams.get('container');
+    const currentPath = searchParams.get('path') ?? '';
     if (container) {
       refreshFiles(currentPath, container).then(res => {
-        navigateFiles({ ...res });
+        navigateFiles(res);
       });
     }
-  }, [searchParams, currentPath]);
+  }, [searchParams]);
 
   return <FilesTable columns={columns} data={files} />;
 };

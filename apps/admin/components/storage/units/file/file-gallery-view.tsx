@@ -22,16 +22,17 @@ type FileGalleryViewProps = {
 
 export const FilesGalleryView = ({ refreshFiles }: FileGalleryViewProps) => {
   const searchParams = useSearchParams();
-  const { currentPath, files, navigateFiles } = useFileSystemActions();
+  const { files, navigateFiles } = useFileSystemActions();
 
   useEffect(() => {
     const container = searchParams.get('container');
+    const currentPath = searchParams.get('path') ?? '';
     if (container) {
       refreshFiles(currentPath, container).then(res => {
         navigateFiles({ ...res });
       });
     }
-  }, [searchParams, currentPath]);
+  }, [searchParams]);
 
   return (
     <>

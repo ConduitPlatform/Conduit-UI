@@ -3,18 +3,25 @@ import { createFolder } from '@/lib/api/storage';
 import { useToast } from '@/lib/hooks/use-toast';
 import { Folder } from '@/lib/models/storage';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export const CreateFolderForm = ({
   container,
-  path,
   onSuccess,
 }: {
   container: string;
-  path: string;
   onSuccess: (data: Folder) => void;
 }) => {
-  const { currentPath, navigateTo } = useFileSystemActions();
+  const searchParams = useSearchParams();
+  const [currentPath, setCurrentPath] = useState(searchParams.get('path'));
+  const { navigateTo } = useFileSystemActions();
   const { toast } = useToast();
+
+  useEffect(() => {
+    setCurrentPath(searchParams.get('path'));
+  }, [searchParams]);
+
   return (
     <BaseFolderForm
       title={'Create Folder'}
@@ -31,7 +38,7 @@ export const CreateFolderForm = ({
         } else {
           createFolder({
             ...data,
-            name: `/${path}/${data.name}`,
+            name: `/${currentPath}/${data.name}`,
             container,
           })
             .then(res => {
@@ -41,10 +48,7 @@ export const CreateFolderForm = ({
               });
               onSuccess(res);
               form.reset();
-              if (redirect) {
-                console.log('navigate path: ', redirect);
-                navigateTo(`${currentPath}/${redirect}`);
-              }
+              if (redirect) navigateTo(`${currentPath}/${redirect}`);
             })
             .catch(() =>
               toast({

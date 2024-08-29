@@ -12,13 +12,16 @@ import { ContainerDialog } from '@/components/storage/units/container/base';
 import { useEffect, useState } from 'react';
 import { Container } from '@/lib/models/storage';
 import { getContainers } from '@/lib/api/storage';
+import { useSearchParams } from 'next/navigation';
 
 export const BreadCrumbs = ({
   refreshContainers,
 }: {
   refreshContainers: () => Promise<Awaited<ReturnType<typeof getContainers>>>;
 }) => {
-  const { currentPath, navigateTo } = useFileSystemActions();
+  const searchParams = useSearchParams();
+  const currentPath = searchParams.get('path') ?? '';
+  const { navigateTo } = useFileSystemActions();
   const [containers, setContainers] = useState<Container[]>([]);
 
   useEffect(() => {

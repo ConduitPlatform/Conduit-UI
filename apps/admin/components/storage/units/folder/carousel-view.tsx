@@ -8,7 +8,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { CreateFolderForm } from '@/components/storage/units/folder/forms/createForm';
 import { getFolders } from '@/lib/api/storage';
 
@@ -21,23 +21,22 @@ type CarouselViewProps = {
 
 export const CarouselView = ({ refreshFolders }: CarouselViewProps) => {
   const searchParams = useSearchParams();
-  const { navigateTo, currentPath, folders, navigateFolders } =
-    useFileSystemActions();
+  const { navigateTo, folders, navigateFolders } = useFileSystemActions();
 
   useEffect(() => {
     const container = searchParams.get('container');
+    const currentPath = searchParams.get('path') ?? '';
     if (container) {
-      refreshFolders(currentPath, container).then(res =>
-        navigateFolders({ ...res })
-      );
+      refreshFolders(currentPath, container).then(res => {
+        navigateFolders(res);
+      });
     }
-  }, [currentPath, searchParams]);
+  }, [searchParams]);
 
   return (
     <>
       <CreateFolderForm
         container={searchParams.get('container')!}
-        path={currentPath}
         onSuccess={folder => {
           const updatedFolders = [folder, ...folders.folders];
           navigateFolders({

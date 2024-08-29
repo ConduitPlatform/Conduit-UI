@@ -12,7 +12,6 @@ type FileSystemContext = {
   navigateTo: (path: string, bullseye?: string) => void;
   navigateFiles: (files: FilesType) => void;
   navigateFolders: (folders: FoldersType) => void;
-  currentPath: string;
   files: FilesType;
   folders: FoldersType;
 };
@@ -21,7 +20,6 @@ const FileSystemContext = createContext<FileSystemContext>({
   navigateTo: () => {},
   navigateFiles: () => {},
   navigateFolders: () => {},
-  currentPath: '',
   files: {
     files: [],
     filesCount: 0,
@@ -41,7 +39,6 @@ export function FileSystemActionsProvider({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [currentPath, setCurrentPath] = useState<string>('');
   const [files, setFiles] = useState<FilesType>({
     files: [],
     filesCount: 0,
@@ -52,17 +49,16 @@ export function FileSystemActionsProvider({
   });
 
   const navigateTo = (path: string, bullseye?: string) => {
-    const params = new URLSearchParams();
-    searchParams.forEach((v, key) => {
-      if (key === 'container') {
-        params.set(key, v);
-      }
-      if (bullseye) {
-        params.set('fileName', bullseye);
-      }
-    });
-    router.push(`${pathname}?${params.toString()}`);
-    setCurrentPath(path);
+    const params = new URLSearchParams(searchParams.toString());
+    if (bullseye) {
+      params.set('fileName', bullseye);
+    } else {
+      params.delete('fileName');
+    }
+    params.delete('folderName');
+    params.delete('skip');
+    params.set('path', path);
+    router.replace(`${pathname}?${params.toString()}`);
   };
   const navigateFiles = (files: FilesType) => {
     setFiles(files);
@@ -74,7 +70,6 @@ export function FileSystemActionsProvider({
   return (
     <FileSystemContext.Provider
       value={{
-        currentPath,
         navigateTo,
         navigateFiles,
         navigateFolders,
