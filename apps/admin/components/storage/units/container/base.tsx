@@ -19,8 +19,8 @@ export const ContainerDialog = ({
   containers: Container[];
   refreshContainers: (container: Container) => void;
 }) => {
-  const [open, setOpen] = useState<boolean>(true);
   const searchParams = useSearchParams();
+  const [open, setOpen] = useState<boolean>(!searchParams.get('container'));
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
