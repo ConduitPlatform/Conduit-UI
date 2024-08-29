@@ -1,4 +1,4 @@
-import { Settings } from '@/components/storage/settings';
+import { Settings } from '@/components/storage/settings/settings';
 import { getStorageSettings } from '@/lib/api/storage';
 import { getModules } from '@/lib/api/modules';
 

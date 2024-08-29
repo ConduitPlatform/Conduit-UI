@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { StorageProvider } from '@/lib/models/Storage';
+import { StorageProvider } from '@/lib/models/storage';
 
 export const BaseSchema = z.object({
   provider: z
