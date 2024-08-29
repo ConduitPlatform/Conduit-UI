@@ -62,7 +62,7 @@ export const BaseFolderForm = ({ action, editable }: FolderFormProps) => {
         <DialogHeader>
           <DialogTitle>Create Folder</DialogTitle>
           <DialogDescription>
-            Create a folder in this directory. Click save when you're done.
+            Create a folder in this directory. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

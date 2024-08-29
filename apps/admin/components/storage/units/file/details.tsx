@@ -82,7 +82,10 @@ export const FileDetails = ({ file }: { file: ConduitFile }) => {
                   .map(name => {
                     const level = isEmpty(name) ? '/' : name;
                     return (
-                      <div className="flex items-center justify-center">
+                      <div
+                        key={level}
+                        className="flex items-center justify-center"
+                      >
                         <BreadcrumbItem>
                           <BreadcrumbSeparator />
                           <span>{level}</span>

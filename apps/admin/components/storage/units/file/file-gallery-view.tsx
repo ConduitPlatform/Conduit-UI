@@ -37,7 +37,7 @@ export const FilesGalleryView = ({ refreshFiles }: FileGalleryViewProps) => {
     <>
       <div className="mt-5 grid grid-cols-5 gap-14">
         {files.files.map(file => (
-          <Sheet>
+          <Sheet key={file._id}>
             <SheetTrigger asChild>
               <div className="flex flex-col items-center space-y-2">
                 {file.mimeType.startsWith('image') ? (

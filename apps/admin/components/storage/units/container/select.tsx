@@ -41,7 +41,9 @@ export const SelectContainerDialog = ({
         </SelectTrigger>
         <SelectContent className={'bg-white dark:bg-popover'}>
           {containers.map(container => (
-            <SelectItem value={container.name}>{container.name}</SelectItem>
+            <SelectItem key={container._id} value={container.name}>
+              {container.name}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
