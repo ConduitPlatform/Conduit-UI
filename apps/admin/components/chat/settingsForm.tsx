@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 interface Props {
   edit: boolean;
@@ -24,6 +24,12 @@ export const SettingsForm = ({
 }: Props) => {
   const formRef = useFormContext();
   const { reset } = formRef;
+
+  const explicitJoin = useWatch({
+    control: formRef.control,
+    name: 'explicit_room_joins.enabled',
+  });
+
   return (
     <>
       <div className={'flex flex-col gap-4'}>
@@ -40,7 +46,6 @@ export const SettingsForm = ({
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -59,7 +64,6 @@ export const SettingsForm = ({
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -78,7 +82,6 @@ export const SettingsForm = ({
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -121,44 +124,48 @@ export const SettingsForm = ({
               </FormItem>
             )}
           />
-          <FormField
-            control={formRef.control}
-            name="explicit_room_joins.send_email"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <FormLabel>Send invites via e-mail.</FormLabel>
-                <FormControl>
-                  <Switch
-                    disabled={!edit || (!field.value && !emailAvailable)}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    className={'text-accent-foreground'}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={formRef.control}
-            name="explicit_room_joins.send_notification"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <FormLabel>Send invites via Push Notification.</FormLabel>
-                <FormControl>
-                  <Switch
-                    disabled={
-                      !edit || (!field.value && !pushNotificationsAvailable)
-                    }
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    className={'text-accent-foreground'}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {explicitJoin && (
+            <>
+              <FormField
+                control={formRef.control}
+                name="explicit_room_joins.send_email"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <FormLabel>Send invites via e-mail.</FormLabel>
+                    <FormControl>
+                      <Switch
+                        disabled={!edit || (!field.value && !emailAvailable)}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className={'text-accent-foreground'}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={formRef.control}
+                name="explicit_room_joins.send_notification"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <FormLabel>Send invites via Push Notification.</FormLabel>
+                    <FormControl>
+                      <Switch
+                        disabled={
+                          !edit || (!field.value && !pushNotificationsAvailable)
+                        }
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className={'text-accent-foreground'}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
         </div>
       </div>
       <div className={'py-4 flex justify-end'}>
