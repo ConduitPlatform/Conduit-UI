@@ -42,7 +42,6 @@ export const Settings = ({
     resolver: zodResolver(FormSchema),
     defaultValues: data,
   });
-  const { setValue, reset, control, handleSubmit, watch } = form;
 
   useEffect(() => {
     if (data) {
@@ -52,7 +51,7 @@ export const Settings = ({
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     setEdit(false);
-    const { id, dismiss } = toast({
+    const { dismiss } = toast({
       title: 'Chat',
       description: (
         <div className={'flex flex-row items-center space-x-2.5'}>
@@ -123,7 +122,7 @@ export const Settings = ({
       actionText: 'Proceed',
       onDecision: cancel => {
         if (!cancel) {
-          const { id, dismiss } = toast({
+          const { dismiss } = toast({
             title: 'Chat',
             description: (
               <div className={'flex flex-row items-center space-x-2.5'}>
@@ -139,7 +138,7 @@ export const Settings = ({
           };
           setChatModule(!chatModule);
           patchChatSettings(updatedSettings)
-            .then(res => {
+            .then(() => {
               dismiss();
               toast({
                 title: 'Chat',
@@ -202,14 +201,10 @@ export const Settings = ({
         </div>
         {chatModule && (
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <SettingsForm
-                control={control}
                 edit={edit}
                 setEdit={setEdit}
-                watch={watch}
-                reset={reset}
-                data={data}
                 emailAvailable={emailAvailable}
                 pushNotificationsAvailable={pushNotificationsAvailable}
               />
