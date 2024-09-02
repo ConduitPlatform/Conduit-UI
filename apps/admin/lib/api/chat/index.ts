@@ -32,7 +32,7 @@ export const patchChatSettings = async (chatData: Partial<ChatSettings>) => {
   );
 };
 
-export const getMessages = (args: {
+export const getMessages = async (args: {
   skip?: number;
   limit?: number;
   sort?: string;
@@ -45,18 +45,18 @@ export const getMessages = (args: {
     messages: ChatMessage[];
     count: number;
   };
-  return axiosInstance
+  return await axiosInstance
     .get<Response>('/chat/messages', { params: args })
     .then(res => res.data);
 };
 
-export const deleteMessages = (ids: string[]) => {
-  return axiosInstance
+export const deleteMessages = async (ids: string[]) => {
+  return await axiosInstance
     .delete<string>('/chat/messages', { params: ids })
     .then(res => res.data);
 };
 
-export const getRooms = (args: {
+export const getRooms = async (args: {
   skip?: number;
   limit?: number;
   sort?: string;
@@ -67,51 +67,60 @@ export const getRooms = (args: {
     chatRoomDocuments: ChatRoom[];
     count: number;
   };
-  return axiosInstance
+  return await axiosInstance
     .get<Response>('/chat/rooms', { params: args })
     .then(res => res.data);
 };
 
-export const getRoomById = (
+export const getRoomById = async (
   roomId: string,
   args: {
     populate?: string[];
   }
 ) => {
-  return axiosInstance
+  return await axiosInstance
     .get<ChatRoom>(`/chat/rooms/${roomId}`, { params: args })
     .then(res => res.data);
 };
 
-export const createRoom = (data: { name: string; participants: string[] }) => {
-  return axiosInstance
+export const createRoom = async (data: {
+  name: string;
+  participants: string[];
+}) => {
+  return await axiosInstance
     .post<ChatRoom>('/chat/rooms', data)
     .then(res => res.data);
 };
 
-export const deleteRooms = (ids: string[]) => {
-  return axiosInstance
+export const deleteRooms = async (ids: string[]) => {
+  return await axiosInstance
     .delete<string>('/chat/rooms', { params: ids })
     .then(res => res.data);
 };
 
-// TODO: pending admin implementation
-export const removeUsersFromRoom = (args: {
+export const removeUsersFromRoom = async (
+  roomId: string,
+  args: {
+    users: string[];
+  }
+) => {
+  const res = await axiosInstance.put<string>(
+    `/chat/leave/${roomId}`,
+    args.users
+  );
+  return res.data;
+};
+
+export const addUsersToRoom = async (args: {
   roomId: string;
   users: string[];
 }) => {
-  return axiosInstance
-    .put<string>(`/chat/leave/${args.roomId}`, args.users)
-    .then(res => res.data);
-};
-
-export const addUsersToRoom = (args: { roomId: string; users: string[] }) => {
-  return axiosInstance
+  return await axiosInstance
     .put<string>(`/chat/rooms/${args.roomId}`, args.users)
     .then(res => res.data);
 };
 
-export const getRoomInvitations = (
+export const getRoomInvitations = async (
   roomId: string,
   args: {
     skip?: number;
@@ -124,13 +133,16 @@ export const getRoomInvitations = (
     invitations: InvitationToken[];
     count: number;
   };
-  return axiosInstance
+  return await axiosInstance
     .get<Response>(`/chat/invitations/${roomId}`, { params: args })
     .then(res => res.data);
 };
 
-export const deleteRoomInvitations = (roomId: string, users: string[]) => {
-  return axiosInstance
+export const deleteRoomInvitations = async (
+  roomId: string,
+  users: string[]
+) => {
+  return await axiosInstance
     .delete(`/chat/invitations/${roomId}`, { params: users })
     .then(res => res.data);
 };
