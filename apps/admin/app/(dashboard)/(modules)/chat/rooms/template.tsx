@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const skip = Number(searchParams.get('skip')) ?? 0;
     const sort = searchParams.get('sort') ?? '-createdAt';
     getRooms({ skip, limit: ROOMS_LIMIT, sort }).then(res => setRooms(res));
-  }, [searchParams.get('skip')]);
+  }, [searchParams]);
 
   const roomsNavigation = useMemo(() => {
     return (
@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {rooms.chatRoomDocuments.map(room => (
             <button
               className={cn(
-                `inline-flex items-center justify-start rounded-sm px-3 py-1.5 text-sm font-medium`,
+                `inline-flex items-center justify-between rounded-sm px-3 py-1.5 text-sm font-medium`,
                 room._id === searchParams.get('room')
                   ? 'bg-secondary text-secondary-foreground shadow-sm'
                   : 'bg-transparent'

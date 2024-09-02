@@ -4,13 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   deleteMessages,
   deleteRoomInvitations,
+  deleteRooms,
   getMessages,
   getRoomById,
   getRoomInvitations,
   removeUsersFromRoom,
 } from '@/lib/api/chat';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { User } from '@/lib/models/User';
 import { Profile } from '@/components/chat/rooms/profile';
 import { Trash2Icon } from 'lucide-react';
@@ -39,6 +40,8 @@ export const ChatRoomPage = ({
   messages: Messages;
   invites: Invites;
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [currentRoom, setCurrentRoom] = useState<ChatRoom | undefined>(
     undefined
@@ -195,6 +198,38 @@ export const ChatRoomPage = ({
                   {currentRoom.deleted ? 'True' : 'False'}
                 </span>
               </div>
+              <div className="flex flex-col">
+                <span className="text-xl">Delete Room?</span>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    {!currentRoom.deleted && (
+                      <button type="button">
+                        <Trash2Icon className="w-4 h-4" />
+                      </button>
+                    )}
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Room</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <span>Are you sure you want to delete this room?</span>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          deleteRooms([currentRoom._id]).then(() =>
+                            router.push(`${pathname}`)
+                          );
+                        }}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
             <div className="h-full overflow-auto space-y-3">
               <span className="text-xl">Participants</span>
@@ -216,7 +251,9 @@ export const ChatRoomPage = ({
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Message</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            Delete Participants
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
                             <span>
                               Are you sure you want to remove this user from the
