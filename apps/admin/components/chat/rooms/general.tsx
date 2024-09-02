@@ -59,7 +59,7 @@ export const ChatRoomPage = ({
           <TabsList>
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="invites">Invitations</TabsTrigger>
-            <TabsTrigger value="participants">Participants</TabsTrigger>
+            <TabsTrigger value="participants">Details</TabsTrigger>
           </TabsList>
           <TabsContent value="chat">
             <div className="h-full overflow-auto space-y-3">
@@ -163,56 +163,91 @@ export const ChatRoomPage = ({
               </>
             ))}
           </TabsContent>
-          <TabsContent value="participants" className="overflow-auto space-y-3">
-            {currentRoom.participants.length ? (
-              (currentRoom.participants as User[]).map(p => (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-x-3">
-                    <Profile
-                      user={p}
-                      logs={currentRoom.participantsLog as ParticipantsLogs[]}
-                    />
-                    <span className="text-sm"> {p.email}</span>
+          <TabsContent value="participants" className="space-y-10">
+            <div className="grid grid-cols-2 gap-5">
+              <div className="flex flex-col">
+                <span className="text-xl">{currentRoom.name}</span>
+                <span className="text-sm text-muted-foreground">
+                  {currentRoom._id}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl">CreatedAt</span>
+                <span className="text-sm text-muted-foreground">
+                  {moment(currentRoom.createdAt).format('DD MMM YYYY')}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl">UpdatedAt</span>
+                <span className="text-sm text-muted-foreground">
+                  {moment(currentRoom.updatedAt).format('DD MMM YYYY')}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl">Creator</span>
+                <span className="text-sm text-muted-foreground">
+                  {(currentRoom.creator as string) ?? 'unknown'}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl">Deleted</span>
+                <span className="text-sm text-muted-foreground">
+                  {currentRoom.deleted ? 'True' : 'False'}
+                </span>
+              </div>
+            </div>
+            <div className="h-full overflow-auto space-y-3">
+              <span className="text-xl">Participants</span>
+              {currentRoom.participants.length ? (
+                (currentRoom.participants as User[]).map(p => (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-x-3">
+                      <Profile
+                        user={p}
+                        logs={currentRoom.participantsLog as ParticipantsLogs[]}
+                      />
+                      <span className="text-sm"> {p.email}</span>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button type="button">
+                          <Trash2Icon className="w-4 h-4" />
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Message</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            <span>
+                              Are you sure you want to remove this user from the
+                              room?
+                            </span>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={async () =>
+                              removeUsersFromRoom(currentRoom._id, {
+                                users: [p._id],
+                              })
+                            }
+                          >
+                            Remove
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button type="button">
-                        <Trash2Icon className="w-4 h-4" />
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Message</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          <span>
-                            Are you sure you want to remove this user from the
-                            room?
-                          </span>
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={async () =>
-                            removeUsersFromRoom(currentRoom._id, {
-                              users: [p._id],
-                            })
-                          }
-                        >
-                          Remove
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              ))
-            ) : (
-              <span>Chat room has no participants</span>
-            )}
+                ))
+              ) : (
+                <span>Chat room has no participants</span>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       ) : (
-        <>Skeleton</>
+        <></>
       )}
     </div>
   );
