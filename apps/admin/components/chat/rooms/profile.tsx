@@ -39,7 +39,7 @@ export const Profile = ({
             <div className="flex flex-col pt-2">
               <Separator className="my-3" />
               <span className="text-sm">History</span>
-              <div className="h-30 overflow-auto flex items-center ">
+              <div className="h-30 overflow-auto flex flex-col justify-start">
                 {logs.map(log => (
                   <span className="text-xs text-muted-foreground">
                     {log.action.toUpperCase()}{' '}
