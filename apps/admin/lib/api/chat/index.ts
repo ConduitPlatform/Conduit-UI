@@ -140,9 +140,11 @@ export const getRoomInvitations = async (
 
 export const deleteRoomInvitations = async (
   roomId: string,
-  users: string[]
+  args: {
+    invitations: string[];
+  }
 ) => {
   return await axiosInstance
-    .delete(`/chat/invitations/${roomId}`, { params: users })
+    .delete(`/chat/invitations/${roomId}`, { params: args })
     .then(res => res.data);
 };
