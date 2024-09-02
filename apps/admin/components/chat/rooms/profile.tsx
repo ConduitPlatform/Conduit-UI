@@ -7,6 +7,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ParticipantsLogs } from '@/lib/models/chat';
 import moment from 'moment';
+import { Separator } from '@/components/ui/separator';
 
 export const Profile = ({
   user,
@@ -35,13 +36,17 @@ export const Profile = ({
             <p className="text-sm">
               {user.isVerified ? 'isVerified' : 'Not Verified'}
             </p>
-            <div className="flex items-center pt-2">
-              {logs.map(log => (
-                <span className="text-xs text-muted-foreground">
-                  {log.action.toUpperCase()}{' '}
-                  {moment(log.createdAt).format('DD MMM YYYY')}
-                </span>
-              ))}
+            <div className="flex flex-col pt-2">
+              <Separator className="my-3" />
+              <span className="text-sm">History</span>
+              <div className="h-30 overflow-auto flex items-center ">
+                {logs.map(log => (
+                  <span className="text-xs text-muted-foreground">
+                    {log.action.toUpperCase()}{' '}
+                    {moment(log.createdAt).format('DD MMM YYYY')}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
