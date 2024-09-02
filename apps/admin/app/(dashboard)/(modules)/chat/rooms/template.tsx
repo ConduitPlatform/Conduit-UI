@@ -6,6 +6,7 @@ import { getRooms } from '@/lib/api/chat';
 import { Lobby } from '@/components/chat/rooms/lobby';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Dot } from 'lucide-react';
 
 type Rooms = Awaited<ReturnType<typeof getRooms>>;
 export const ROOMS_LIMIT = 10;
@@ -33,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {rooms.chatRoomDocuments.map(room => (
             <button
               className={cn(
-                `inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium`,
+                `inline-flex items-center justify-start rounded-sm px-3 py-1.5 text-sm font-medium`,
                 room._id === searchParams.get('room')
                   ? 'bg-secondary text-secondary-foreground shadow-sm'
                   : 'bg-transparent'
@@ -46,6 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               }}
             >
               {room.name}
+              {room.deleted && <Dot className="text-red-500" />}
             </button>
           ))}
         </div>
