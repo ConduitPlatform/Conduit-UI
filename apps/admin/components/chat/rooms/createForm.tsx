@@ -18,6 +18,7 @@ import { User } from '@/lib/models/User';
 import { PotentialParticipants } from '@/components/chat/rooms/participantsTable';
 import { useEffect, useState } from 'react';
 import { getUsers } from '@/lib/api/authentication';
+import { isEmpty } from 'lodash';
 
 export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
   const { toast } = useToast();
@@ -26,12 +27,14 @@ export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
   const formSchema = z.object({
     name: z.string(),
     participants: z.array(z.string()),
+    creator: z.string(),
   });
   const [users, setUsers] = useState<User[]>([]);
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       name: '',
       participants: [],
+      creator: '',
     },
   });
 
@@ -85,7 +88,16 @@ export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
         />
         <PotentialParticipants users={users} />
         <DialogFooter>
-          <Button type="submit">Save</Button>
+          <Button
+            type="submit"
+            disabled={
+              isEmpty(form.getValues('creator')) ||
+              form.getValues('participants').length === 0 ||
+              isEmpty(form.getValues('name'))
+            }
+          >
+            Save
+          </Button>
         </DialogFooter>
       </form>
     </Form>
