@@ -51,7 +51,12 @@ export const ChatRoomPage = ({
     const roomId = searchParams.get('room');
     if (roomId)
       getRoomById(roomId, {
-        populate: ['participants', 'participantsLog', 'participantsLog.user'],
+        populate: [
+          'participants',
+          'participantsLog',
+          'participantsLog.user',
+          'creator',
+        ],
       }).then(res => setCurrentRoom(res));
   }, [searchParams]);
 
@@ -189,7 +194,7 @@ export const ChatRoomPage = ({
               <div className="flex flex-col">
                 <span className="text-xl">Creator</span>
                 <span className="text-sm text-muted-foreground">
-                  {(currentRoom.creator as string) ?? 'unknown'}
+                  {(currentRoom.creator as User).email ?? 'unknown'}
                 </span>
               </div>
               <div className="flex flex-col">
@@ -241,7 +246,12 @@ export const ChatRoomPage = ({
                         user={p}
                         logs={currentRoom.participantsLog as ParticipantsLogs[]}
                       />
-                      <span className="text-sm"> {p.email}</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm">{p.email}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {p._id}
+                        </span>
+                      </div>
                     </div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>

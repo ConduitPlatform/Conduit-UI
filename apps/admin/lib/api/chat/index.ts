@@ -86,6 +86,7 @@ export const getRoomById = async (
 export const createRoom = async (data: {
   name: string;
   participants: string[];
+  creator: string;
 }) => {
   return await axiosInstance
     .post<ChatRoom>('/chat/rooms', data)
@@ -94,7 +95,7 @@ export const createRoom = async (data: {
 
 export const deleteRooms = async (ids: string[]) => {
   return await axiosInstance
-    .delete<string>('/chat/rooms', { params: ids })
+    .delete<string>('/chat/rooms', { params: { ids } })
     .then(res => res.data);
 };
 
