@@ -5,8 +5,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { getRooms } from '@/lib/api/chat';
 import { Lobby } from '@/components/chat/rooms/lobby';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Dot } from 'lucide-react';
+import * as React from 'react';
 
 type Rooms = Awaited<ReturnType<typeof getRooms>>;
 export const ROOMS_LIMIT = 10;
@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const roomsNavigation = useMemo(() => {
     return (
-      <div className="flex flex-col space-y-5 h-full">
+      <div className="flex flex-col space-y-5">
         <h1 className="font-semibold text-3xl">Rooms</h1>
         <div className="flex flex-col">
           {rooms.chatRoomDocuments.map(room => (
@@ -51,7 +51,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
           ))}
         </div>
-        <Button>Create Room</Button>
       </div>
     );
   }, [searchParams, rooms]);
