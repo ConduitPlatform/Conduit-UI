@@ -10,7 +10,7 @@ import {
   getRoomInvitations,
   removeUsersFromRoom,
 } from '@/lib/api/chat';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { User } from '@/lib/models/User';
 import { Profile } from '@/components/chat/rooms/profile';
@@ -98,31 +98,35 @@ export const ChatRoomPage = ({
                   </div>
                   <div className="group flex items-center gap-x-3">
                     <span>{message.message}</span>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button type="button">
-                          <Trash2Icon className="opacity-0 group-hover:opacity-100 w-4 h-4" />
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Message</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            <span>
-                              Are you sure you want to delete this message?
-                            </span>
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={async () => deleteMessages([message._id])}
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    {!currentRoom.deleted && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button type="button">
+                            <Trash2Icon className="opacity-0 group-hover:opacity-100 w-4 h-4" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Message</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              <span>
+                                Are you sure you want to delete this message?
+                              </span>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () =>
+                                deleteMessages([message._id])
+                              }
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                   </div>
                 </div>
               ))}
@@ -146,37 +150,38 @@ export const ChatRoomPage = ({
                       </span>
                     </div>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button type="button">
-                        <Trash2Icon className="w-4 h-4" />
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Invitation</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          <span>
-                            Are you sure you want to delete this invitation?
-                          </span>
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={async () =>
-                            deleteRoomInvitations(currentRoom._id, {
-                              invitations: [invite._id],
-                            })
-                          }
-                        >
-                          Remove
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  {!currentRoom.deleted && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button type="button">
+                          <Trash2Icon className="w-4 h-4" />
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Invitation</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            <span>
+                              Are you sure you want to delete this invitation?
+                            </span>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={async () =>
+                              deleteRoomInvitations(currentRoom._id, {
+                                invitations: [invite._id],
+                              })
+                            }
+                          >
+                            Remove
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
-
                 <span>{invite.token}</span>
               </>
             ))}
@@ -213,40 +218,42 @@ export const ChatRoomPage = ({
                   {currentRoom.deleted ? 'True' : 'False'}
                 </span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-xl">Delete Room?</span>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    {!currentRoom.deleted && (
+              {!currentRoom.deleted && (
+                <div className="flex flex-col">
+                  <span className="text-xl">Delete Room?</span>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
                       <button type="button">
                         <Trash2Icon className="w-4 h-4" />
                       </button>
-                    )}
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Room</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        <span>Are you sure you want to delete this room?</span>
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={async () => {
-                          deleteRooms([currentRoom._id]).then(() =>
-                            router.push(`${pathname}`)
-                          );
-                        }}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Room</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          <span>
+                            Are you sure you want to delete this room?
+                          </span>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={async () => {
+                            deleteRooms([currentRoom._id]).then(() =>
+                              router.push(`${pathname}`)
+                            );
+                          }}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              )}
             </div>
-            <div className="h-full overflow-auto space-y-3">
+            <div className="flex flex-col h-full overflow-auto space-y-3">
               <span className="text-xl">Participants</span>
               {currentRoom.participants.length ? (
                 (currentRoom.participants as User[]).map(p => (
@@ -287,6 +294,17 @@ export const ChatRoomPage = ({
                             onClick={async () =>
                               removeUsersFromRoom(currentRoom._id, {
                                 users: [p._id],
+                              }).then(() => {
+                                getRoomById(currentRoom._id, {
+                                  populate: [
+                                    'participants',
+                                    'participantsLog',
+                                    'participantsLog.user',
+                                    'creator',
+                                  ],
+                                })
+                                  .then(res => setCurrentRoom(res))
+                                  .catch(() => router.push(`${pathname}`));
                               })
                             }
                           >
