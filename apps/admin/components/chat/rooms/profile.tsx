@@ -40,12 +40,15 @@ export const Profile = ({
               <Separator className="my-3" />
               <span className="text-sm">History</span>
               <div className="h-30 overflow-auto flex flex-col justify-start">
-                {logs.map(log => (
-                  <span className="text-xs text-muted-foreground">
-                    {log.action.toUpperCase()}{' '}
-                    {moment(log.createdAt).format('DD MMM YYYY')}
-                  </span>
-                ))}
+                {logs.map(log => {
+                  if ((log.user as User)._id === user._id)
+                    return (
+                      <span className="text-xs text-muted-foreground">
+                        {log.action.toUpperCase()}{' '}
+                        {moment(log.createdAt).format('DD MMM YYYY')}
+                      </span>
+                    );
+                })}
               </div>
             </div>
           </div>
