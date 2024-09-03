@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Table,
   TableBody,
@@ -12,20 +10,22 @@ import {
 import { User } from '@/lib/models/User';
 import { useFormContext } from 'react-hook-form';
 import {
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
 
-export function PotentialParticipants({ users }: { users: User[] }) {
+export function PotentialParticipants({
+  users,
+  columns,
+}: {
+  users: User[];
+  columns: ColumnDef<User, any>[];
+}) {
   const formRef = useFormContext();
   const [rowSelection, setRowSelection] = useState({});
-  const [creatorSelection, setCreatorSelection] = useState<string | undefined>(
-    undefined
-  );
 
   useEffect(() => {
     const selected = [];
@@ -35,52 +35,9 @@ export function PotentialParticipants({ users }: { users: User[] }) {
     formRef.setValue('participants', selected, { shouldValidate: true });
   }, [rowSelection]);
 
-  useEffect(() => {
-    formRef.setValue('creator', creatorSelection, { shouldValidate: true });
-  }, [creatorSelection]);
-
   const table = useReactTable({
     data: users,
-    columns: [
-      {
-        id: 'select',
-        enableSorting: false,
-        cell: props => (
-          <Checkbox
-            aria-label="Select row"
-            checked={props.row.getIsSelected()}
-            onCheckedChange={value => {
-              props.row.toggleSelected(!!value);
-              if (!value && creatorSelection === props.row.original._id) {
-                setCreatorSelection(undefined);
-                formRef.setValue('creator', undefined, {
-                  shouldValidate: true,
-                });
-              }
-            }}
-            className={'mx-2.5 border-border-dark-gray shadow-inherit'}
-          />
-        ),
-      },
-      {
-        accessorKey: '_id',
-        header: 'Select Creator',
-        enableSorting: false,
-        cell: props => (
-          <Switch
-            disabled={!props.row.getIsSelected()}
-            checked={formRef.watch('creator') === props.row.getValue('_id')}
-            onCheckedChange={() => {
-              setCreatorSelection(props.row.getValue('_id'));
-            }}
-          />
-        ),
-      },
-      {
-        accessorKey: 'email',
-        header: 'Email',
-      },
-    ],
+    columns,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
     getRowId: row => row._id,
