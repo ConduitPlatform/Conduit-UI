@@ -105,19 +105,21 @@ export const removeUsersFromRoom = async (
     users: string[];
   }
 ) => {
-  const res = await axiosInstance.put<string>(
-    `/chat/leave/${roomId}`,
-    args.users
-  );
-  return res.data;
+  return await axiosInstance
+    .put<string>(`/chat/leave/${roomId}`, {
+      users: args.users,
+    })
+    .then(res => res.data);
 };
 
-export const addUsersToRoom = async (args: {
-  roomId: string;
-  users: string[];
-}) => {
+export const addUsersToRoom = async (
+  roomId: string,
+  args: {
+    users: string[];
+  }
+) => {
   return await axiosInstance
-    .put<string>(`/chat/rooms/${args.roomId}`, args.users)
+    .put<string>(`/chat/rooms/${roomId}/add`, { users: args.users })
     .then(res => res.data);
 };
 

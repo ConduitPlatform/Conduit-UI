@@ -19,6 +19,7 @@ import { PotentialParticipants } from '@/components/chat/rooms/participantsTable
 import { useEffect, useState } from 'react';
 import { getUsers } from '@/lib/api/authentication';
 import { isEmpty } from 'lodash';
+import { columns } from '@/components/chat/rooms/columns/create-room';
 
 export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
   const { toast } = useToast();
@@ -86,7 +87,10 @@ export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
             </FormItem>
           )}
         />
-        <PotentialParticipants users={users} />
+        <PotentialParticipants
+          users={users}
+          columns={columns({ formRef: form })}
+        />
         <DialogFooter>
           <Button
             type="submit"

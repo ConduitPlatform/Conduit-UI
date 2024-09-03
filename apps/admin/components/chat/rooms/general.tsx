@@ -28,6 +28,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { AddParticipantForm } from '@/components/chat/rooms/addParticipant';
 
 type Messages = Awaited<ReturnType<typeof getMessages>>;
 type ChatRoom = Awaited<ReturnType<typeof getRoomById>>;
@@ -46,6 +55,7 @@ export const ChatRoomPage = ({
   const [currentRoom, setCurrentRoom] = useState<ChatRoom | undefined>(
     undefined
   );
+  const [open, isOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const roomId = searchParams.get('room');
@@ -289,6 +299,34 @@ export const ChatRoomPage = ({
                 ))
               ) : (
                 <span>Chat room has no participants</span>
+              )}
+              {!currentRoom.deleted && (
+                <Dialog open={open} onOpenChange={isOpen}>
+                  <DialogTrigger asChild>
+                    <Button>Add</Button>
+                  </DialogTrigger>
+                  <DialogContent className="w-96">
+                    <DialogHeader>
+                      <DialogTitle>Add User To Room</DialogTitle>
+                    </DialogHeader>
+                    <AddParticipantForm
+                      roomId={currentRoom._id}
+                      callback={() =>
+                        getRoomById(currentRoom._id, {
+                          populate: [
+                            'participants',
+                            'participantsLog',
+                            'participantsLog.user',
+                            'creator',
+                          ],
+                        }).then(res => {
+                          setCurrentRoom(res);
+                          isOpen(!open);
+                        })
+                      }
+                    />
+                  </DialogContent>
+                </Dialog>
               )}
             </div>
           </TabsContent>
