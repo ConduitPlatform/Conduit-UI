@@ -61,6 +61,8 @@ export const getRooms = async (args: {
   limit?: number;
   sort?: string;
   search?: string;
+  users?: string[];
+  deleted?: boolean;
   populate?: string[];
 }) => {
   type Response = {
@@ -106,7 +108,7 @@ export const removeUsersFromRoom = async (
   }
 ) => {
   return await axiosInstance
-    .put<string>(`/chat/leave/${roomId}`, {
+    .put<string>(`/chat/room/${roomId}/remove`, {
       users: args.users,
     })
     .then(res => res.data);

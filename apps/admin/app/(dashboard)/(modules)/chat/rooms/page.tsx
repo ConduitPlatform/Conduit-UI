@@ -1,42 +1,39 @@
-import { getMessages, getRoomInvitations } from '@/lib/api/chat';
 import { getModules } from '@/lib/api/modules';
-import { ChatRoomPage } from '@/components/chat/rooms/general';
+import { RoomsTable } from '@/components/chat/rooms/tables/rooms/data-table';
+import { columns } from '@/components/chat/rooms/tables/rooms/columns';
+import { getRooms } from '@/lib/api/chat';
+import Decimal from 'decimal.js';
+import { ROOMS_LIMIT } from '@/components/chat/rooms/tables/rooms/utils';
 
 type ChatRoomParams = {
   searchParams?: {
-    skip?: number;
-    limit?: number;
+    pageIndex?: number;
+    search?: string;
     sort?: string;
-    room?: string;
+    desc?: string;
   };
 };
 
 export default async function ChatRooms({ searchParams }: ChatRoomParams) {
   const modules = await getModules();
-  const chatAvailable = !!modules.find(
+  const chatModuleAvailable = !!modules.find(
     m => m.moduleName === 'chat' && m.serving
   );
-  if (!chatAvailable) return <>Chat module is not serving.</>;
+  if (!chatModuleAvailable) return <>Chat module is not serving.</>;
 
-  let messages: Awaited<ReturnType<typeof getMessages>> = {
-    messages: [],
-    count: 0,
-  };
-  let invites: Awaited<ReturnType<typeof getRoomInvitations>> = {
-    invitations: [],
-    count: 0,
-  };
-  if (searchParams?.room) {
-    messages = await getMessages({
-      skip: 0,
-      limit: 20,
-      roomId: searchParams?.room,
-      populate: ['readBy', 'senderUser'],
-    });
-    invites = await getRoomInvitations(searchParams.room, {
-      populate: ['sender', 'receiver'],
-    });
-  }
+  const skip = searchParams?.pageIndex
+    ? new Decimal(searchParams?.pageIndex).mul(ROOMS_LIMIT).toNumber()
+    : 0;
+  const sort = searchParams?.sort
+    ? `${searchParams.desc === 'true' ? '-' : ''}${searchParams.sort}`
+    : searchParams?.sort;
 
-  return <ChatRoomPage messages={messages} invites={invites} />;
+  console.log('sort: ', sort, searchParams?.desc);
+  const rooms = await getRooms({
+    skip,
+    limit: ROOMS_LIMIT,
+    search: searchParams?.search,
+    sort,
+  });
+  return <RoomsTable data={rooms} columns={columns} />;
 }
