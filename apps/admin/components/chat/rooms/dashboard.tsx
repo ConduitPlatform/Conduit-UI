@@ -20,19 +20,23 @@ import { CreateRoomForm } from '@/components/chat/rooms/forms/createForm';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { XIcon } from 'lucide-react';
 import { useUserPicker } from '@/components/helpers/UserPicker/UserPicker';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
   const { openPicker } = useUserPicker();
-  const [users, setUsers] = useState<string[]>(
-    searchParams.get('users')?.split(',') ?? []
-  );
+  const [users, setUsers] = useState<string[]>([]);
   const [open, setOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>(
-    searchParams.get('search') ?? ''
-  );
+  const [deleted, setDeleted] = useState<string | undefined>(undefined);
+  const [search, setSearch] = useState<string>('');
 
   const pickUsers = useCallback(() => {
     openPicker(pickedUsers => {
@@ -66,6 +70,10 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
     setUsers(searchParams.get('users')?.split(',') ?? []);
   }, [searchParams.get('users')]);
 
+  useEffect(() => {
+    setDeleted(searchParams.get('deleted') ?? undefined);
+  }, [searchParams.get('deleted')]);
+
   return (
     <>
       <div className="w-full flex justify-between">
@@ -76,6 +84,23 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
+          <Select
+            onValueChange={value => {
+              const params = new URLSearchParams();
+              params.set('deleted', value);
+              router.push(`${pathname}?${params.toString()}`);
+            }}
+            value={deleted}
+          >
+            <SelectTrigger className="rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm border-0 focus:ring-0">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="true">Deleted</SelectItem>
+              <SelectItem value="false">Active</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="flex items-center">
             <button
               onClick={pickUsers}

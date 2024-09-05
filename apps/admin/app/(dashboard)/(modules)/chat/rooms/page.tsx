@@ -11,6 +11,7 @@ type ChatRoomParams = {
     sort?: string;
     desc?: string;
     users?: string[];
+    deleted?: 'true' | 'false' | 'all';
   };
 };
 
@@ -33,6 +34,10 @@ export default async function ChatRooms({ searchParams }: ChatRoomParams) {
     limit: ROOMS_LIMIT,
     search: searchParams?.search,
     users: searchParams?.users,
+    deleted:
+      searchParams?.deleted === 'all'
+        ? undefined
+        : searchParams?.deleted === 'true',
     sort,
   });
   return <RoomsDashboard data={rooms} />;
