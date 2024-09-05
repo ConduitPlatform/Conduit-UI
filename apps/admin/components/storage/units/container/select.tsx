@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useCallback } from 'react';
+import { createQueryString } from '@/lib/utils';
 
 export const SelectContainerDialog = ({
   containers,
@@ -20,22 +20,16 @@ export const SelectContainerDialog = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
   return (
     <div className="py-4">
       <Select
         onValueChange={value => {
           callback();
-          router.push(pathname + '?' + createQueryString('container', value));
+          const params = createQueryString(
+            [{ name: 'container', value }],
+            searchParams.toString()
+          );
+          router.push(`${pathname}?${params}`);
         }}
         value={searchParams.get('container') ?? undefined}
       >
