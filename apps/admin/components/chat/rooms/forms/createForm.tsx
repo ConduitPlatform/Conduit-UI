@@ -64,9 +64,7 @@ export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
                 description: 'New Room Created',
               });
               callback();
-              const params = new URLSearchParams();
-              params.set('room', res._id);
-              router.push(`${pathname}?${params.toString()}`);
+              router.push(`${pathname}/${res._id}`);
             })
             .catch(err =>
               toast({
