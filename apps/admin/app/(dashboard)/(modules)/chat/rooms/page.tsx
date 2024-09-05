@@ -10,6 +10,7 @@ type ChatRoomParams = {
     search?: string;
     sort?: string;
     desc?: string;
+    users?: string[];
   };
 };
 
@@ -31,6 +32,7 @@ export default async function ChatRooms({ searchParams }: ChatRoomParams) {
     skip,
     limit: ROOMS_LIMIT,
     search: searchParams?.search,
+    users: searchParams?.users,
     sort,
   });
   return <RoomsDashboard data={rooms} />;
