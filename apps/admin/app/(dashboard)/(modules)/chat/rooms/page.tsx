@@ -8,8 +8,7 @@ type ChatRoomParams = {
   searchParams?: {
     pageIndex?: number;
     search?: string;
-    sort?: string;
-    desc?: string;
+    sort?: string[];
     users?: string[];
     deleted?: 'true' | 'false' | 'all';
   };
@@ -25,9 +24,6 @@ export default async function ChatRooms({ searchParams }: ChatRoomParams) {
   const skip = searchParams?.pageIndex
     ? new Decimal(searchParams?.pageIndex).mul(ROOMS_LIMIT).toNumber()
     : 0;
-  const sort = searchParams?.sort
-    ? `${searchParams.desc === 'true' ? '-' : ''}${searchParams.sort}`
-    : searchParams?.sort;
 
   const rooms = await getRooms({
     skip,
@@ -38,7 +34,7 @@ export default async function ChatRooms({ searchParams }: ChatRoomParams) {
       searchParams?.deleted === 'all'
         ? undefined
         : searchParams?.deleted === 'true',
-    sort,
+    sort: searchParams?.sort,
   });
   return <RoomsDashboard data={rooms} />;
 }
