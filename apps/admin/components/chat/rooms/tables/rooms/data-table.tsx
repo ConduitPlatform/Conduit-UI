@@ -17,103 +17,81 @@ import {
 } from '@tanstack/react-table';
 import { getRooms } from '@/lib/api/chat';
 import { ChatRoom } from '@/lib/models/chat';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Decimal from 'decimal.js';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-//@ts-ignore
-import { useDebounce } from '@uidotdev/usehooks';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { CreateRoomForm } from '@/components/chat/rooms/createForm';
 import { ROOMS_LIMIT } from '@/components/chat/rooms/tables/rooms/utils';
 import {
   ChevronDownIcon,
   ChevronsUpDownIcon,
   ChevronUpIcon,
 } from 'lucide-react';
+import { createQueryString } from '@/lib/utils';
 
-type ChatRoomsResponse = Awaited<ReturnType<typeof getRooms>>;
+export type ChatRoomsResponse = Awaited<ReturnType<typeof getRooms>>;
 
-export function RoomsTable({
+export function RoomsDataTable({
   data,
   columns,
 }: {
   data: ChatRoomsResponse;
   columns: ColumnDef<ChatRoom, any>[];
 }) {
+  // TODO: decouple pagination logic from table
+  // TODO: create a reusable table component (sorting)
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [open, setOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>(
-    searchParams.get('search') ?? ''
-  );
   const [pagination, setPagination] = useState({
     pageIndex: Number(searchParams.get('pageIndex')) ?? 0,
     pageSize: ROOMS_LIMIT,
   });
-  const [sorting, setSorting] = useState<ColumnSort[]>(
-    searchParams.get('sort')
-      ? [
-          {
-            id: searchParams.get('sort') as string,
-            desc: Boolean(searchParams.get('desc')!),
-          },
-        ]
-      : []
-  );
-
-  const debouncedSearchTerm = useDebounce(search, 300);
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('search', search);
-    if (debouncedSearchTerm === '') {
-      params.delete('search');
-    }
-    router.push(`${pathname}?${params.toString()}`);
-  }, [debouncedSearchTerm]);
+  const [sorting, setSorting] = useState<ColumnSort[]>([]);
 
   useEffect(() => {
-    setSearch(searchParams.get('search') ?? '');
-  }, [searchParams.get('search')]);
-
-  const createQueryString = useCallback(
-    (queryParams: { name: string; value: string }[]) => {
-      const params = new URLSearchParams(searchParams.toString());
-      for (const p of queryParams) {
-        params.set(p.name, p.value);
-      }
-      return params.toString();
-    },
-    [pagination]
-  );
+    const sort = searchParams.get('sort') as string | null;
+    if (!sort) return;
+    const params = sort.split(',').map(value => {
+      const name = value.replace('-', '');
+      const desc = value.split('-');
+      return { id: name, desc: !!desc.length };
+    });
+    setSorting(params);
+  }, []);
 
   useEffect(() => {
-    router.replace(
-      `${pathname}?${createQueryString([
+    setPagination({
+      pageIndex: Number(searchParams.get('pageIndex')) ?? 0,
+      pageSize: ROOMS_LIMIT,
+    });
+  }, []);
+
+  useEffect(() => {
+    const params = createQueryString(
+      [
         {
           name: 'pageIndex',
-          value: pagination.pageIndex.toString(),
+          value: new Decimal(pagination.pageIndex).ceil().toString(),
         },
-      ])}`
+      ],
+      searchParams.toString()
     );
+    router.push(`${pathname}?${params}`);
   }, [pagination.pageIndex]);
 
   useEffect(() => {
     if (!sorting.length) return;
-    router.replace(
-      `${pathname}?${createQueryString([
-        { name: 'sort', value: sorting[0].id },
-        { name: 'desc', value: String(sorting[0].desc) },
-      ])}`
+    const sortingParams = sorting.map(param => {
+      const value = `${param.desc ? '-' : ''}${param.id}`;
+      return { name: 'sort', value };
+    });
+    const params = createQueryString(
+      [{ name: 'pageIndex', value: '0' }, ...sortingParams],
+      searchParams.toString()
     );
+    router.push(`${pathname}?${params}`);
   }, [sorting]);
 
   const table = useReactTable({
@@ -121,7 +99,7 @@ export function RoomsTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
-    pageCount: new Decimal(data.count).div(1).toNumber(),
+    pageCount: new Decimal(data.count).div(ROOMS_LIMIT).toNumber(),
     manualPagination: true,
     manualSorting: true,
     onSortingChange: setSorting,
@@ -133,25 +111,6 @@ export function RoomsTable({
 
   return (
     <>
-      <div className="w-full flex justify-between">
-        <Input
-          placeholder={'Search By Name'}
-          className={'w-44'}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button>Create Room</Button>
-          </DialogTrigger>
-          <DialogContent className={'max-w-fit'}>
-            <DialogHeader>
-              <DialogTitle>Create Room</DialogTitle>
-            </DialogHeader>
-            <CreateRoomForm callback={() => setOpen(!open)} />
-          </DialogContent>
-        </Dialog>
-      </div>
       <Table className="mt-5">
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (

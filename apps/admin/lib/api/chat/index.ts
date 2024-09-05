@@ -59,7 +59,7 @@ export const deleteMessages = async (ids: string[]) => {
 export const getRooms = async (args: {
   skip?: number;
   limit?: number;
-  sort?: string;
+  sort?: string[];
   search?: string;
   users?: string[];
   deleted?: boolean;
