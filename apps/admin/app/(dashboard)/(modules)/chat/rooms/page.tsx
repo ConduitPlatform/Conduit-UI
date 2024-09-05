@@ -1,9 +1,8 @@
 import { getModules } from '@/lib/api/modules';
-import { RoomsTable } from '@/components/chat/rooms/tables/rooms/data-table';
-import { columns } from '@/components/chat/rooms/tables/rooms/columns';
 import { getRooms } from '@/lib/api/chat';
 import Decimal from 'decimal.js';
 import { ROOMS_LIMIT } from '@/components/chat/rooms/tables/rooms/utils';
+import { RoomsDashboard } from '@/components/chat/rooms/dashboard';
 
 type ChatRoomParams = {
   searchParams?: {
@@ -28,12 +27,11 @@ export default async function ChatRooms({ searchParams }: ChatRoomParams) {
     ? `${searchParams.desc === 'true' ? '-' : ''}${searchParams.sort}`
     : searchParams?.sort;
 
-  console.log('sort: ', sort, searchParams?.desc);
   const rooms = await getRooms({
     skip,
     limit: ROOMS_LIMIT,
     search: searchParams?.search,
     sort,
   });
-  return <RoomsTable data={rooms} columns={columns} />;
+  return <RoomsDashboard data={rooms} />;
 }

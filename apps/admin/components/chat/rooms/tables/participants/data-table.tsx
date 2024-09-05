@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Table,
   TableBody,
@@ -7,48 +9,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { User } from '@/lib/models/User';
-import { useFormContext } from 'react-hook-form';
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { User } from '@/lib/models/User';
 
-export function PotentialParticipants({
+export const ParticipantsTable = ({
   users,
   columns,
 }: {
   users: User[];
   columns: ColumnDef<User, any>[];
-}) {
-  const formRef = useFormContext();
-  const [rowSelection, setRowSelection] = useState({});
-
-  useEffect(() => {
-    const selected = [];
-    for (let key of Object.keys(rowSelection)) {
-      selected.push(key);
-    }
-    formRef.setValue('participants', selected, { shouldValidate: true });
-  }, [rowSelection]);
-
+}) => {
   const table = useReactTable({
     data: users,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    getRowId: row => row._id,
-    state: {
-      rowSelection,
-    },
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
     <Table>
-      <TableCaption>A list of platform users.</TableCaption>
+      <TableCaption>A list of selected users.</TableCaption>
       <TableHeader>
         {table.getHeaderGroups().map(headerGroup => (
           <TableRow key={headerGroup.id}>
@@ -83,7 +69,7 @@ export function PotentialParticipants({
           ))
         ) : (
           <TableRow>
-            <TableCell className="h-24 text-center">
+            <TableCell colSpan={columns.length} className="h-24 text-center">
               <div className="text-center">
                 <h3 className="mt-2 text-sm font-semibold text-foreground">
                   No data
@@ -95,4 +81,4 @@ export function PotentialParticipants({
       </TableBody>
     </Table>
   );
-}
+};
