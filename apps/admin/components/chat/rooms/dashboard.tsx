@@ -105,21 +105,28 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
             <button
               onClick={pickUsers}
               type="button"
-              className="inline-flex gap-x-2 items-center rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               <span className="text-muted-foreground">Users</span>
-              <div className="flex items-center justify-center w-6 h-6 rounded-full p-2 bg-slate-700 text-sm text-white">
-                {users.length}
-              </div>
-              <span>Selected</span>
+              {!!users.length ? (
+                <div className="ml-2 flex items-center gap-x-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full p-2 bg-slate-700 text-sm text-white">
+                    {users.length}
+                  </div>
+                  <span>Selected</span>
+                </div>
+              ) : (
+                <>:All</>
+              )}
             </button>
-            <button
-              disabled={!users.length}
-              onClick={resetPickedUsers}
-              className="disabled:text-muted-foreground"
-            >
-              <XIcon />
-            </button>
+            {!!users.length && (
+              <button
+                onClick={resetPickedUsers}
+                className="disabled:text-muted-foreground"
+              >
+                <XIcon />
+              </button>
+            )}
           </div>
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
