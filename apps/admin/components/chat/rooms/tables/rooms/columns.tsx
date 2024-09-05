@@ -5,6 +5,8 @@ import { ChatRoom } from '@/lib/models/chat';
 import { Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { DeleteRoomAlert } from '@/components/chat/rooms/delete';
+import { EyeIcon } from 'lucide-react';
 
 export const columns: ColumnDef<ChatRoom, any>[] = [
   {
@@ -41,7 +43,7 @@ export const columns: ColumnDef<ChatRoom, any>[] = [
     enableSorting: false,
     cell: props => (
       <Link href={`/chat/rooms/${props.row.original._id}`}>
-        <Button variant={'secondary'}>enter</Button>
+        <EyeIcon className="w-4 h-4" />
       </Link>
     ),
   },
