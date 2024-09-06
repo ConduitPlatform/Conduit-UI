@@ -18,7 +18,7 @@ import { isEmpty } from 'lodash';
 import { useUserPicker } from '@/components/helpers/UserPicker/UserPicker';
 import { PlusIcon } from 'lucide-react';
 import { ParticipantsTable } from '@/components/chat/rooms/tables/participants/data-table';
-import { columns } from '@/components/chat/rooms/tables/participants/columns';
+import { useColumns } from '@/components/chat/rooms/tables/participants/columns';
 import { User } from '@/lib/models/User';
 
 export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
@@ -93,7 +93,7 @@ export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
             </FormItem>
           )}
         />
-        <ParticipantsTable columns={columns({ formRef: form })} users={users} />
+        <ParticipantsTable columns={useColumns()} users={users} />
         <button
           onClick={pickUsers}
           type="button"

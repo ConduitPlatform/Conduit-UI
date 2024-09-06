@@ -54,7 +54,7 @@ export const Participants = ({ room }: { room: RoomResponse }) => {
       <div className="h-56 overflow-auto flex flex-col gap-y-3">
         {!!room.participants.length &&
           (room.participants as User[]).map(p => (
-            <div className="flex items-center justify-between">
+            <div key={p._id} className="flex items-center justify-between">
               <div className="flex items-center gap-x-3">
                 <Profile
                   user={p}

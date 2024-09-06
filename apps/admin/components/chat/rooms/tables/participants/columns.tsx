@@ -3,37 +3,37 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { User } from '@/lib/models/User';
 import { Switch } from '@/components/ui/switch';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { useMemo } from 'react';
 
-export const columns = ({
-  formRef,
-}: {
-  formRef: any;
-}): ColumnDef<User, any>[] => {
+export function useColumns() {
+  const formRef = useFormContext();
   const creator = useWatch({
     control: formRef.control,
     name: 'creator',
   });
-
-  return [
-    {
-      accessorKey: '_id',
-      header: 'Select Creator',
-      enableSorting: false,
-      cell: props => (
-        <Switch
-          checked={creator && creator === props.row.getValue('_id')}
-          onCheckedChange={() => {
-            formRef.setValue('creator', props.row.getValue('_id'), {
-              shouldValidate: true,
-            });
-          }}
-        />
-      ),
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-    },
-  ];
-};
+  return useMemo<ColumnDef<User, any>[]>(
+    () => [
+      {
+        accessorKey: '_id',
+        header: 'Select Creator',
+        enableSorting: false,
+        cell: props => (
+          <Switch
+            checked={creator && creator === props.row.getValue('_id')}
+            onCheckedChange={() => {
+              formRef.setValue('creator', props.row.getValue('_id'), {
+                shouldValidate: true,
+              });
+            }}
+          />
+        ),
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+      },
+    ],
+    []
+  );
+}

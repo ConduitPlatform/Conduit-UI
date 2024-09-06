@@ -1,6 +1,6 @@
 'use client';
 
-import { columns } from '@/components/chat/rooms/tables/rooms/columns';
+import { useColumns } from '@/components/chat/rooms/tables/rooms/columns';
 import {
   ChatRoomsResponse,
   RoomsDataTable,
@@ -139,7 +139,7 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
           </SheetContent>
         </Sheet>
       </div>
-      <RoomsDataTable data={data} columns={columns()} />
+      <RoomsDataTable data={data} columns={useColumns()} />
     </>
   );
 };

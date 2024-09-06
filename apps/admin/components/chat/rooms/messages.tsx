@@ -53,7 +53,7 @@ export const Messages = ({
         </div>
         <div className="flex flex-col space-y-3">
           {messages.messages.map(message => (
-            <div className="flex flex-col gap-x-2">
+            <div key={message._id} className="flex flex-col gap-x-2">
               <div className="flex gap-x-1 items-center">
                 <Profile
                   user={message.senderUser as User}
