@@ -7,35 +7,37 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { ChatSettings } from '@/lib/models/Chat';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { cn } from '@/lib/utils';
 
+const disabledStyling = 'text-muted-foreground';
 interface Props {
-  control: any;
   edit: boolean;
   setEdit: (arg0: boolean) => void;
-  data: ChatSettings;
-  watch: any;
-  reset: any;
   emailAvailable: boolean;
   pushNotificationsAvailable: boolean;
 }
 
 export const SettingsForm = ({
-  control,
   edit,
   setEdit,
-  watch,
-  reset,
-  data,
   emailAvailable,
   pushNotificationsAvailable,
 }: Props) => {
+  const formRef = useFormContext();
+  const { reset } = formRef;
+
+  const explicitJoin = useWatch({
+    control: formRef.control,
+    name: 'explicit_room_joins.enabled',
+  });
+
   return (
     <>
       <div className={'flex flex-col gap-4'}>
         <div className={'grid grid-cols-4 gap-4'}>
           <FormField
-            control={control}
+            control={formRef.control}
             name="allowMessageDelete"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
@@ -43,9 +45,9 @@ export const SettingsForm = ({
                 <FormControl>
                   <Switch
                     disabled={!edit}
-                    title={'Active'}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -53,7 +55,7 @@ export const SettingsForm = ({
             )}
           />
           <FormField
-            control={control}
+            control={formRef.control}
             name="allowMessageEdit"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
@@ -61,9 +63,9 @@ export const SettingsForm = ({
                 <FormControl>
                   <Switch
                     disabled={!edit}
-                    title={'Active'}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -71,7 +73,7 @@ export const SettingsForm = ({
             )}
           />
           <FormField
-            control={control}
+            control={formRef.control}
             name="deleteEmptyRooms"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
@@ -79,9 +81,9 @@ export const SettingsForm = ({
                 <FormControl>
                   <Switch
                     disabled={!edit}
-                    title={'Active'}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -89,7 +91,7 @@ export const SettingsForm = ({
             )}
           />
           <FormField
-            control={control}
+            control={formRef.control}
             name="auditMode"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
@@ -97,9 +99,9 @@ export const SettingsForm = ({
                 <FormControl>
                   <Switch
                     disabled={!edit}
-                    title={'Active'}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -107,7 +109,7 @@ export const SettingsForm = ({
             )}
           />
           <FormField
-            control={control}
+            control={formRef.control}
             name="explicit_room_joins.enabled"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
@@ -115,53 +117,65 @@ export const SettingsForm = ({
                 <FormControl>
                   <Switch
                     disabled={!edit}
-                    title={'Active'}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                     className={'text-accent-foreground'}
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={control}
-            name="explicit_room_joins.send_email"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <FormLabel>Send invites via e-mail.</FormLabel>
-                <FormControl>
-                  <Switch
-                    disabled={!edit || (!field.value && !emailAvailable)}
-                    title={'Active'}
-                    className={'text-accent-foreground'}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="explicit_room_joins.send_notification"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <FormLabel>Send invites via Push Notification.</FormLabel>
-                <FormControl>
-                  <Switch
-                    disabled={
-                      !edit || (!field.value && !pushNotificationsAvailable)
-                    }
-                    title={'Active'}
-                    className={'text-accent-foreground'}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <>
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.send_email"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Send invites via e-mail.
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={
+                        !explicitJoin ||
+                        !edit ||
+                        (!field.value && !emailAvailable)
+                      }
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className={'text-accent-foreground'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.send_notification"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Send invites via Push Notification.
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={
+                        !explicitJoin ||
+                        !edit ||
+                        (!field.value && !pushNotificationsAvailable)
+                      }
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className={'text-accent-foreground'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
         </div>
       </div>
       <div className={'py-4 flex justify-end'}>
