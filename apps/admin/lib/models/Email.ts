@@ -21,7 +21,7 @@ export interface MailgunSettings {
 }
 
 export interface SmtpSettings {
-  port: string;
+  port: number;
   host: string;
   secure: boolean;
   ignoreTls: boolean;
