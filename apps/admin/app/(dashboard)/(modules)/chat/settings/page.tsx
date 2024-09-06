@@ -1,4 +1,4 @@
-import { Settings } from '@/components/chat/settings';
+import { Settings } from '@/components/chat/settings/settings';
 import { getChatSettings } from '@/lib/api/chat';
 import { getModules } from '@/lib/api/modules';
 
