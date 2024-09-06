@@ -52,7 +52,7 @@ export const getMessages = async (args: {
 
 export const deleteMessages = async (ids: string[]) => {
   return await axiosInstance
-    .delete<string>('/chat/messages', { params: ids })
+    .delete<string>('/chat/messages', { params: { ids } })
     .then(res => res.data);
 };
 
