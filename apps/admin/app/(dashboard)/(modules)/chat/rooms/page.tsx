@@ -10,7 +10,7 @@ type ChatRoomParams = {
     search?: string;
     sort?: string[];
     users?: string[];
-    deleted?: 'true' | 'false' | 'all';
+    deleted?: string;
   };
 };
 
