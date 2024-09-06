@@ -1,17 +1,14 @@
 import { getMessages, getRoomById, getRoomInvitations } from '@/lib/api/chat';
 import { getModules } from '@/lib/api/modules';
-import { HashIcon } from 'lucide-react';
 import React from 'react';
 import { Messages } from '@/components/chat/rooms/messages';
 import { Details } from '@/components/chat/rooms/details';
 import { Participants } from '@/components/chat/rooms/participants';
 import { Invitations } from '@/components/chat/rooms/invitations';
-import { SearchInput } from '@/components/chat/helpers/search';
 
 type ChatRoomParams = {
   searchParams?: {
-    skip?: number;
-    limit?: number;
+    pageIndex?: number;
     sort?: string;
     search?: string;
   };
@@ -38,33 +35,22 @@ export default async function ChatRoomPage({
     ],
   });
   const messages = await getMessages({
-    skip: 0,
-    limit: 20,
-    sort: searchParams?.sort,
+    skip: searchParams?.pageIndex ? searchParams.pageIndex * 9 : 0,
+    limit: 9,
+    sort: '-createdAt',
     roomId: params.roomId,
     populate: ['readBy', 'senderUser'],
     search: searchParams?.search,
-  });
+  }).then(res => ({ ...res, messages: res.messages.reverse() }));
   const invites = await getRoomInvitations(params.roomId, {
+    skip: 0,
+    limit: 100,
     populate: ['sender', 'receiver'],
   });
 
   return (
-    <div className="w-full h-[800px] flex gap-x-10 divide-x">
-      <div className="relative w-2/3 overflow-hidden">
-        <div className="sticky top-0 left-0 right-0 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-x-5">
-            <div className="p-2.5 bg-slate-700 rounded-md">
-              <HashIcon className="w-4 h-4" />
-            </div>
-            <span className="font-semibold text-xl">{currentRoom.name}</span>
-          </div>
-          <SearchInput />
-        </div>
-        <div className="overflow-auto space-y-3 h-[800px]">
-          <Messages messages={messages} room={currentRoom} />
-        </div>
-      </div>
+    <div className="w-full flex gap-x-10 divide-x">
+      <Messages messages={messages} room={currentRoom} />
       <div className="px-7 space-y-5">
         <Details room={currentRoom} />
         <Participants room={currentRoom} />
