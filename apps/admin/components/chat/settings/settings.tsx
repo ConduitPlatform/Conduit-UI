@@ -8,7 +8,7 @@ import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { SettingsForm } from '@/components/chat/settingsForm';
+import { SettingsForm } from '@/components/chat/settings/settingsForm';
 import { patchChatSettings } from '@/lib/api/chat';
 import { ChatSettings } from '@/lib/models/chat';
 
