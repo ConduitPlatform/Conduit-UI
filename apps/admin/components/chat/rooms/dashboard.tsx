@@ -133,13 +133,13 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
           <SheetTrigger asChild>
             <Button>Create Room</Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[600px]">
+          <SheetContent side="right" className="sm:max-w-xl">
             <SheetTitle>Create Room</SheetTitle>
             <CreateRoomForm callback={() => setOpen(!open)} />
           </SheetContent>
         </Sheet>
       </div>
-      <RoomsDataTable data={data} columns={columns} />
+      <RoomsDataTable data={data} columns={columns()} />
     </>
   );
 };
