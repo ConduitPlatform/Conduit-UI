@@ -8,7 +8,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { cn } from '@/lib/utils';
 
+const disabledStyling = 'text-muted-foreground';
 interface Props {
   edit: boolean;
   setEdit: (arg0: boolean) => void;
@@ -124,48 +126,56 @@ export const SettingsForm = ({
               </FormItem>
             )}
           />
-          {explicitJoin && (
-            <>
-              <FormField
-                control={formRef.control}
-                name="explicit_room_joins.send_email"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <FormLabel>Send invites via e-mail.</FormLabel>
-                    <FormControl>
-                      <Switch
-                        disabled={!edit || (!field.value && !emailAvailable)}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className={'text-accent-foreground'}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={formRef.control}
-                name="explicit_room_joins.send_notification"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <FormLabel>Send invites via Push Notification.</FormLabel>
-                    <FormControl>
-                      <Switch
-                        disabled={
-                          !edit || (!field.value && !pushNotificationsAvailable)
-                        }
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className={'text-accent-foreground'}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
+          <>
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.send_email"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Send invites via e-mail.
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={
+                        !explicitJoin ||
+                        !edit ||
+                        (!field.value && !emailAvailable)
+                      }
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className={'text-accent-foreground'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.send_notification"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Send invites via Push Notification.
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={
+                        !explicitJoin ||
+                        !edit ||
+                        (!field.value && !pushNotificationsAvailable)
+                      }
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className={'text-accent-foreground'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
         </div>
       </div>
       <div className={'py-4 flex justify-end'}>
