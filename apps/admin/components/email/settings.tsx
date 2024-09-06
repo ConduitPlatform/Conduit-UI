@@ -1,5 +1,5 @@
 'use client';
-import { EmailSettings, TransportProviders } from '@/lib/models/Email';
+import { EmailSettings } from '@/lib/models/Email';
 import { useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { z } from 'zod';
@@ -33,12 +33,11 @@ const FormSchema = z
     transportSettings: z.object({
       mailgun: z.object({
         apiKey: z.string(),
-        domain: z.string(),
         host: z.string(),
         proxy: z.string(),
       }),
       smtp: z.object({
-        port: z.string(),
+        port: z.number().int().default(587),
         host: z.string(),
         secure: z.boolean(),
         ignoreTls: z.boolean(),
@@ -58,28 +57,18 @@ const FormSchema = z
   })
   .refine(
     schema => {
-      if (
-        schema.transport === 'mailgun' &&
-        !isEmpty(schema.transportSettings.mailgun)
-      )
-        return false;
-      if (
-        schema.transport === 'smtp' &&
-        (schema.transportSettings.smtp.port === '' ||
-          schema.transportSettings.smtp.port === '' ||
-          !isEmpty(schema.transportSettings.smtp.auth))
-      )
-        return false;
-      if (
-        schema.transport === 'mandrill' &&
-        schema.transportSettings.mandrill.apiKey === ''
-      )
-        return false;
-      if (
-        schema.transport === 'sendgrid' &&
-        schema.transportSettings.sendgrid.apiKey === ''
-      )
-        return true;
+      switch (schema.transport) {
+        case 'mailgun':
+          return !isEmpty(schema.transportSettings.mailgun);
+        case 'smtp':
+          return !isEmpty(schema.transportSettings.smtp.auth);
+        case 'mandrill':
+          return !isEmpty(schema.transportSettings.mandrill);
+        case 'sendgrid':
+          return !isEmpty(schema.transportSettings.sendgrid);
+        default:
+          return false;
+      }
     },
     {
       message: 'You need to fill in all the fields below for this transport',
@@ -126,23 +115,7 @@ export const Settings = ({ data }: Props) => {
             ),
           });
           const updatedSettings = {
-            sendingDomain: '',
             active: !emailModule,
-            transport: 'smtp' as TransportProviders,
-            transportSettings: {
-              ...data.transportSettings,
-              smtp: {
-                port: '',
-                host: '',
-                secure: false,
-                ignoreTls: false,
-                auth: {
-                  username: '',
-                  password: '',
-                  method: '',
-                },
-              },
-            },
           };
           patchEmailSettings(updatedSettings)
             .then(res => {
@@ -197,7 +170,6 @@ export const Settings = ({ data }: Props) => {
         </div>
       ),
     });
-
     patchEmailSettings(data)
       .then(res => {
         dismiss();
@@ -295,7 +267,11 @@ export const Settings = ({ data }: Props) => {
         </div>
         {emailModule && (
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={handleSubmit(onSubmit, err => {
+                console.log(err);
+              })}
+            >
               <SettingsForm
                 control={control}
                 edit={edit}

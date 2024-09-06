@@ -116,7 +116,7 @@ export const SettingsForm = ({
             <>
               <FormField
                 control={control}
-                name="smtp.port"
+                name="transportSettings.smtp.port"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>SMTP Port*</FormLabel>
@@ -128,6 +128,9 @@ export const SettingsForm = ({
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
+                        onChange={e => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -136,7 +139,7 @@ export const SettingsForm = ({
               />
               <FormField
                 control={control}
-                name="smtp.host"
+                name="transportSettings.smtp.host"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>SMTP Host*</FormLabel>
@@ -156,7 +159,7 @@ export const SettingsForm = ({
               />
               <FormField
                 control={control}
-                name="smtp.secure"
+                name="transportSettings.smtp.secure"
                 render={({ field }) => (
                   <FormItem className={'items-center'}>
                     <FormLabel>HTTPS</FormLabel>
@@ -174,7 +177,7 @@ export const SettingsForm = ({
               />
               <FormField
                 control={control}
-                name="smtp.ignoreTls"
+                name="transportSettings.smtp.ignoreTls"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Ignore TLS Errors</FormLabel>
@@ -193,7 +196,7 @@ export const SettingsForm = ({
               {/*auth*/}
               <FormField
                 control={control}
-                name="smtp.auth.username"
+                name="transportSettings.smtp.auth.username"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>STMP Username</FormLabel>
@@ -212,7 +215,7 @@ export const SettingsForm = ({
               />
               <FormField
                 control={control}
-                name="smtp.auth.password"
+                name="transportSettings.smtp.auth.password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>STMP Password</FormLabel>
@@ -232,7 +235,7 @@ export const SettingsForm = ({
               />
               <FormField
                 control={control}
-                name="smtp.auth.method"
+                name="transportSettings.smtp.auth.method"
                 render={({ field }) => (
                   <FormItem className={'w-3/12'}>
                     <FormLabel>Auth Method</FormLabel>
@@ -261,7 +264,7 @@ export const SettingsForm = ({
             <>
               <FormField
                 control={control}
-                name="mailgun.apiKey"
+                name="transportSettings.mailgun.apiKey"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>API Key*</FormLabel>
@@ -281,7 +284,7 @@ export const SettingsForm = ({
               />
               <FormField
                 control={control}
-                name="mailgun.host"
+                name="transportSettings.mailgun.host"
                 render={({ field }) => (
                   <FormItem className={'w-4/12'}>
                     <FormLabel>Mailgun Host (EU or US)*</FormLabel>
@@ -311,7 +314,7 @@ export const SettingsForm = ({
 
               <FormField
                 control={control}
-                name="mailgun.proxy"
+                name="transportSettings.mailgun.proxy"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Proxy</FormLabel>
@@ -334,7 +337,7 @@ export const SettingsForm = ({
           {watch('transport') === 'mandrill' && (
             <FormField
               control={control}
-              name="mandrill.apiKey"
+              name="transportSettings.mandrill.apiKey"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>API Key*</FormLabel>
@@ -357,7 +360,7 @@ export const SettingsForm = ({
             <>
               <FormField
                 control={control}
-                name="sendgrid.apiKey"
+                name="transportSettings.sendgrid.apiKey"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>API Key*</FormLabel>
