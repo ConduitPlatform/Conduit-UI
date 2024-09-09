@@ -9,9 +9,11 @@ import { useRouter } from 'next/navigation';
 import { deleteTemplate } from '@/lib/api/email';
 import Link from 'next/link';
 import { EyeIcon } from 'lucide-react';
+import { useToast } from '@/lib/hooks/use-toast';
 
 export function useColumns() {
   const router = useRouter();
+  const { toast } = useToast();
   return useMemo<ColumnDef<EmailTemplate, any>[]>(
     () => [
       {
@@ -49,9 +51,11 @@ export function useColumns() {
             title={'Delete Template'}
             description={`Are you sure you want to delete template ${props.row.original.name}?`}
             callback={() =>
-              deleteTemplate(props.row.original._id).then(() =>
-                router.refresh()
-              )
+              deleteTemplate(props.row.original._id)
+                .then(() => router.refresh())
+                .catch(err =>
+                  toast({ title: 'Email', description: err.message })
+                )
             }
           />
         ),
