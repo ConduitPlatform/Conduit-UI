@@ -1,5 +1,5 @@
 'use client';
-import { EmailSettings } from '@/lib/models/Email';
+import { EmailSettings } from '@/lib/models/email';
 import { useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { z } from 'zod';

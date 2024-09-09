@@ -1,4 +1,4 @@
-import { EmailSettings } from '@/lib/models/Email';
+import { EmailSettings } from '@/lib/models/email';
 import {
   FormControl,
   FormDescription,
