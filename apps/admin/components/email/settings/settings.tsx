@@ -11,7 +11,7 @@ import { patchEmailSettings } from '@/lib/api/email';
 import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { SettingsForm } from '@/components/email/settingsForm';
+import { SettingsForm } from '@/components/email/settings/settingsForm';
 import { isEmpty } from 'lodash';
 
 interface Props {
