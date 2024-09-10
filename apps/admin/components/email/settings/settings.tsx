@@ -93,8 +93,6 @@ export const Settings = ({ data }: Props) => {
     defaultValues: data,
   });
 
-  const { reset, control, handleSubmit, setValue, watch } = form;
-
   const handleSwitchChange = () => {
     addAlert({
       title: 'Email Module',
@@ -268,18 +266,11 @@ export const Settings = ({ data }: Props) => {
         {emailModule && (
           <Form {...form}>
             <form
-              onSubmit={handleSubmit(onSubmit, err => {
+              onSubmit={form.handleSubmit(onSubmit, err => {
                 console.log(err);
               })}
             >
-              <SettingsForm
-                control={control}
-                edit={edit}
-                setEdit={setEdit}
-                watch={watch}
-                reset={reset}
-                data={data}
-              />
+              <SettingsForm edit={edit} setEdit={setEdit} data={data} />
             </form>
           </Form>
         )}
