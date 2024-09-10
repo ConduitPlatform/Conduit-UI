@@ -370,6 +370,35 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="transportSettings.sendgrid.residency"
+                render={({ field }) => (
+                  <FormItem className={'w-4/12'}>
+                    <FormLabel>Sendgrid Host (EU or US)*</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!edit}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a sendgrid host" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className={'bg-white dark:bg-popover'}>
+                        <SelectItem value={'global'}>
+                          https://api.sendgrid.com (Global)
+                        </SelectItem>
+                        <SelectItem value={'eu'}>
+                          https://api.eu.sendgrid.com (EU)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </>
           )}
         </div>

@@ -52,6 +52,7 @@ const FormSchema = z
       }),
       sendgrid: z.object({
         apiKey: z.string(),
+        residency: z.string(),
       }),
     }),
   })
