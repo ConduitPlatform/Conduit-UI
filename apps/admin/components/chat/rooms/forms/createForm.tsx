@@ -93,7 +93,10 @@ export const CreateRoomForm = ({ callback }: { callback: () => void }) => {
             </FormItem>
           )}
         />
-        <ParticipantsTable columns={useColumns()} users={users} />
+        <ParticipantsTable
+          columns={useColumns({ formRef: form })}
+          users={users}
+        />
         <button
           onClick={pickUsers}
           type="button"

@@ -24,3 +24,12 @@ export type EmailRecord = {
   createdAt: string | Date;
   updatedAt: string | Date;
 };
+
+export type ExternalTemplate = {
+  _id: string;
+  name: string;
+  subject?: string;
+  body: string;
+  createdAt: string;
+  variables?: string[];
+};

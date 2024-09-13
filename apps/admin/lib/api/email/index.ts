@@ -4,6 +4,7 @@ import {
   EmailConfigResponse,
   EmailSettings,
   EmailTemplate,
+  ExternalTemplate,
 } from '@/lib/models/email';
 import { getModules } from '@/lib/api/modules';
 
@@ -82,5 +83,19 @@ export const patchTemplates = async (
     .put<EmailTemplate>(`/email/templates/${templateId}`, {
       ...args,
     })
+    .then(res => res.data);
+};
+
+export const getExternalTemplates = async (args: {
+  skip?: number;
+  limit?: number;
+  sortByName?: boolean;
+}) => {
+  type Response = {
+    templateDocuments: ExternalTemplate[];
+    count: number;
+  };
+  return axiosInstance
+    .get<Response>('/email/externalTemplates', { params: args })
     .then(res => res.data);
 };

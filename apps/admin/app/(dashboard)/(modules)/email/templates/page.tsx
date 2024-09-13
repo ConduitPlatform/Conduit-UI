@@ -1,5 +1,5 @@
 import { getModules } from '@/lib/api/modules';
-import { getTemplates } from '@/lib/api/email';
+import { getExternalTemplates, getTemplates } from '@/lib/api/email';
 import { TemplatesDashboard } from '@/components/email/templates/dashboard';
 
 type EmailTemplatesParams = {
@@ -7,6 +7,8 @@ type EmailTemplatesParams = {
     pageIndex?: number;
     sort?: string;
     search?: string;
+    externalPageIndex?: number;
+    sortByName?: boolean;
   };
 };
 
@@ -17,13 +19,23 @@ export default async function EmailTemplates({
   const emailModuleAvailable = !!modules.find(
     m => m.moduleName === 'email' && m.serving
   );
-
   if (!emailModuleAvailable) return <>Email module is not serving.</>;
 
   const templates = await getTemplates({
     skip: searchParams.pageIndex ? searchParams.pageIndex * 10 : 0,
+    limit: 10,
     sort: searchParams.sort,
     search: searchParams.search,
   });
-  return <TemplatesDashboard data={templates} />;
+
+  const external = await getExternalTemplates({
+    skip: searchParams.externalPageIndex
+      ? searchParams.externalPageIndex * 10
+      : 0,
+    limit: 10,
+    sortByName: searchParams.sortByName,
+  })
+    .then(res => res)
+    .catch(() => null);
+  return <TemplatesDashboard data={templates} external={external} />;
 }
