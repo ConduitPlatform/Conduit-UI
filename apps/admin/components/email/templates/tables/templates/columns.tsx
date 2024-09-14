@@ -6,10 +6,21 @@ import moment from 'moment/moment';
 import { DeleteAlert } from '@/components/helpers/delete';
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteTemplate } from '@/lib/api/email';
+import { deleteTemplate, uploadTemplate } from '@/lib/api/email';
 import Link from 'next/link';
-import { EyeIcon } from 'lucide-react';
+import { EyeIcon, UploadCloud } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export function useColumns() {
   const router = useRouter();
@@ -68,6 +79,53 @@ export function useColumns() {
           <Link href={`/email/templates/${props.row.original._id}`}>
             <EyeIcon className="w-4 h-4" />
           </Link>
+        ),
+      },
+      {
+        accessorKey: 'push',
+        header: '',
+        enableSorting: false,
+        cell: props => (
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <button type="button">
+                <UploadCloud className="w-4 h-4" />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Upload Template</AlertDialogTitle>
+                <AlertDialogDescription>
+                  <span>
+                    Are you sure you want to push this template to email
+                    provider?
+                  </span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () =>
+                    uploadTemplate(props.row.original._id)
+                      .then(() =>
+                        toast({
+                          title: 'Email',
+                          description: 'Template uploaded successfully',
+                        })
+                      )
+                      .catch(err =>
+                        toast({
+                          title: 'Email',
+                          description: err.message,
+                        })
+                      )
+                  }
+                >
+                  Push
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ),
       },
     ],

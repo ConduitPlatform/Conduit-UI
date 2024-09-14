@@ -14,6 +14,10 @@ import {
 } from '@/components/email/templates/tables/external/data-table';
 import { columns } from '@/components/email/templates/tables/external/columns';
 import { isNil } from 'lodash';
+import { syncTemplates } from '@/lib/api/email';
+import { useToast } from '@/lib/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 export const TemplatesDashboard = ({
   data,
@@ -22,6 +26,8 @@ export const TemplatesDashboard = ({
   data: EmailTemplatesResponse;
   external: ExternalTemplatesResponse | null;
 }) => {
+  const { toast } = useToast();
+  const router = useRouter();
   return (
     <Tabs defaultValue="local">
       <TabsList>
@@ -29,7 +35,37 @@ export const TemplatesDashboard = ({
         <TabsTrigger value="external">External Templates</TabsTrigger>
       </TabsList>
       <TabsContent value="local">
-        <SearchInput />
+        <div className="flex gap-x-3 items-center">
+          <SearchInput />
+          <Button
+            variant={'secondary'}
+            type="button"
+            onClick={() =>
+              syncTemplates()
+                .then(() => {
+                  toast({
+                    title: 'Email',
+                    description: 'Templates synced successfully',
+                  });
+                  router.refresh();
+                })
+                .catch(err =>
+                  toast({
+                    title: 'Email',
+                    description: err.message,
+                  })
+                )
+            }
+          >
+            Pull
+          </Button>
+        </div>
+        <div className={'pr-2 w-7/12 mt-5'}>
+          <p className={'text-xs text-[#94A3B8]'}>
+            Warning: Pulling templates will overwrite only local changes, any
+            external templates not registered in the system will not be synced.
+          </p>
+        </div>
         <TemplatesTable data={data} columns={useColumns()} />
       </TabsContent>
       <TabsContent value="external" className="overflow-auto h-full">

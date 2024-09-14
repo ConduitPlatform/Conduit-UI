@@ -99,3 +99,19 @@ export const getExternalTemplates = async (args: {
     .get<Response>('/email/externalTemplates', { params: args })
     .then(res => res.data);
 };
+
+export const syncTemplates = async () => {
+  type Response = {
+    updated: EmailTemplate[];
+    count: number;
+  };
+  return axiosInstance
+    .put<Response>('/email/syncExternalTemplates')
+    .then(res => res.data);
+};
+
+export const uploadTemplate = async (id: string) => {
+  return axiosInstance
+    .post('/email/templates/upload', { id })
+    .then(res => res.data);
+};
