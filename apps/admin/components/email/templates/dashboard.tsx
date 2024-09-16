@@ -18,6 +18,8 @@ import { syncTemplates } from '@/lib/api/email';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { PlusCircleIcon } from 'lucide-react';
+import Link from 'next/link';
 
 export const TemplatesDashboard = ({
   data,
@@ -30,10 +32,13 @@ export const TemplatesDashboard = ({
   const router = useRouter();
   return (
     <Tabs defaultValue="local">
-      <TabsList>
-        <TabsTrigger value="local">Local Conduit Templates</TabsTrigger>
-        <TabsTrigger value="external">External Templates</TabsTrigger>
-      </TabsList>
+      <div className="flex w-full items-center justify-between">
+        <div></div>
+        <TabsList>
+          <TabsTrigger value="local">Local Conduit Templates</TabsTrigger>
+          <TabsTrigger value="external">External Templates</TabsTrigger>
+        </TabsList>
+      </div>
       <TabsContent value="local">
         <div className="flex gap-x-3 items-center">
           <SearchInput />
@@ -59,6 +64,9 @@ export const TemplatesDashboard = ({
           >
             Pull
           </Button>
+          <Link href="/email/templates/new">
+            <PlusCircleIcon className="w-4 h-4" />
+          </Link>
         </div>
         <div className={'pr-2 w-7/12 mt-5'}>
           <p className={'text-xs text-[#94A3B8]'}>
