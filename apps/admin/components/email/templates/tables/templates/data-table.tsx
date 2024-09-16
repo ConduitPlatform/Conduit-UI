@@ -5,9 +5,10 @@ import {
   ColumnSort,
   flexRender,
   getCoreRowModel,
+  RowSelectionState,
   useReactTable,
 } from '@tanstack/react-table';
-import { getTemplates } from '@/lib/api/email';
+import { deleteTemplates, getTemplates } from '@/lib/api/email';
 import { EmailTemplate } from '@/lib/models/email';
 import {
   Table,
@@ -27,6 +28,7 @@ import React, { useEffect, useState } from 'react';
 import Decimal from 'decimal.js';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createQueryString } from '@/lib/utils';
+import { useToast } from '@/lib/hooks/use-toast';
 
 export type EmailTemplatesResponse = Awaited<ReturnType<typeof getTemplates>>;
 
@@ -40,11 +42,13 @@ export const TemplatesTable = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
   const [pagination, setPagination] = useState({
     pageIndex: Number(searchParams.get('pageIndex')) ?? 0,
     pageSize: 10,
   });
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   useEffect(() => {
     const sort = searchParams.get('sort') as string | null;
@@ -99,14 +103,44 @@ export const TemplatesTable = ({
     manualPagination: true,
     manualSorting: true,
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    getRowId: row => row._id,
     state: {
       sorting,
       pagination,
+      rowSelection,
     },
   });
 
   return (
-    <>
+    <div className="static">
+      {(table.getIsSomePageRowsSelected() ||
+        table.getIsAllPageRowsSelected()) && (
+        <div className="absolute inset-x-1/2 bottom-10 text-sm text-black w-full">
+          <div className="inline-flex gap-x-5 items-center rounded-3xl px-5 py-2.5 shadow bg-gray-100">
+            <span>{Object.keys(rowSelection).length} Selected</span>
+            <button
+              className="border border-input px-2 py-1 rounded-md font-medium ring-offset-background"
+              type="button"
+              onClick={() =>
+                deleteTemplates(Object.keys(rowSelection))
+                  .then(() => {
+                    router.refresh();
+                    toast({
+                      title: 'Email',
+                      description: 'Templates deleted successfully',
+                    });
+                  })
+                  .catch(err =>
+                    toast({ title: 'Email', description: err.message })
+                  )
+              }
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
       <Table className="mt-5">
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (
@@ -154,6 +188,7 @@ export const TemplatesTable = ({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
+                onClick={row.getToggleSelectedHandler()}
               >
                 {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
@@ -193,6 +228,6 @@ export const TemplatesTable = ({
           Next
         </Button>
       </div>
-    </>
+    </div>
   );
 };

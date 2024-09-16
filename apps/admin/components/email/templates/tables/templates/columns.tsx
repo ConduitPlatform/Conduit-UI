@@ -4,7 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { EmailTemplate } from '@/lib/models/email';
 import moment from 'moment/moment';
 import { DeleteAlert } from '@/components/helpers/delete';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { deleteTemplate, uploadTemplate } from '@/lib/api/email';
 import Link from 'next/link';
@@ -21,12 +21,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export function useColumns() {
   const router = useRouter();
   const { toast } = useToast();
   return useMemo<ColumnDef<EmailTemplate, any>[]>(
     () => [
+      {
+        id: 'select-col',
+        header: ({ table }) => {
+          return (
+            <Checkbox
+              checked={
+                table.getIsAllRowsSelected() || table.getIsSomeRowsSelected()
+              }
+              onClick={() => table.toggleAllRowsSelected()}
+            />
+          );
+        },
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onChange={e => {
+              return row.getToggleSelectedHandler();
+            }}
+          />
+        ),
+      },
       {
         accessorKey: '_id',
         enableSorting: false,
