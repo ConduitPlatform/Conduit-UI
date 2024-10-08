@@ -12,14 +12,19 @@ export const metadata = {
 
 export default function RootLayout({
   children,
+  logsdrawer,
 }: {
   children: React.ReactNode;
+  logsdrawer: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body className={inter.className} style={{ overflow: 'hidden' }}>
         <main className={'h-[100vh] min-w-[1080px] overflow-auto'}>
-          <ProviderInjector>{children}</ProviderInjector>
+          <ProviderInjector>
+            {children}
+            {logsdrawer}
+          </ProviderInjector>
         </main>
         <Toaster />
       </body>

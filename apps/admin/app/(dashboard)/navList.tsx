@@ -28,6 +28,7 @@ import {
   Send,
   User,
   Users2,
+  List,
 } from 'lucide-react';
 import React from 'react';
 
@@ -188,13 +189,6 @@ export const navList = [
         href: '/forms/settings',
         icon: <Cog className={NAV_ICON_CLASSES} />,
       },
-    ],
-  },
-  {
-    name: 'Functions',
-    href: '/functions',
-    icon: <LucideFunctionSquare className={NAV_ICON_CLASSES} />,
-    children: [
       {
         name: 'Dashboard',
         href: '/functions',
@@ -314,5 +308,10 @@ export const navList = [
         icon: <Cog className={NAV_ICON_CLASSES} />,
       },
     ],
+  },
+  {
+    name: 'Logs Viewer',
+    href: '/logs-viewer',
+    icon: <List className={NAV_ICON_CLASSES} />,
   },
 ];

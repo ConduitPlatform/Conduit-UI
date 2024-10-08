@@ -7,22 +7,22 @@ import * as React from 'react';
 
 export const Sidebar = ({ children }: { children?: ReactNode }) => {
   return (
-    <div className="flex flex-col gap-y-5 overflow-y-auto border-r border-border bg-background px-6 h-[100vh] main-scrollbar">
-      <div className="flex h-16 shrink-0 items-center sticky top-0 bg-background z-10">
+    <div className="flex flex-col gap-y-5 overflow-y-auto border-r border-border bg-background px-6 h-[100vh] main-scrollbar min-w-60">
+      <div className="sticky top-0 z-10 flex items-center h-16 shrink-0 bg-background">
         <Image
-          className="h-8 w-auto"
+          className="w-auto h-8"
           width={178}
           height={32}
           src="/conduitLogo.svg"
           alt="Conduit Logo"
         />
       </div>
-      <nav className="flex flex-grow flex-col gap-y-7 h-full">
+      <nav className="flex flex-col flex-grow h-full gap-y-7">
         <div>
           <div className="flex flex-col">{children}</div>
         </div>
         <div className="flex-grow" />
-        <div className=" flex justify-between sticky bg-background bottom-0 z-10 w-full pt-2">
+        <div className="sticky bottom-0 z-10 flex justify-between w-full pt-2 bg-background">
           <div className={'flex gap-1'}>
             <Link
               href={'/settings/general'}
@@ -49,7 +49,7 @@ export const Sidebar = ({ children }: { children?: ReactNode }) => {
               <Users />
             </Link>
           </div>
-          <div className=" mt-auto">
+          <div className="mt-auto ">
             <ThemeSwitcher />
           </div>
         </div>
