@@ -1,6 +1,5 @@
-import React from 'react';
 import { LogsAccordionList } from './LogsAccordionList';
-import LogsFilters from './LogsFilters';
+import LogsFiltersPanel from './LogsFiltersPanel';
 
 type Module = {
   moduleName: string;
@@ -11,13 +10,6 @@ type LogsProps = {
 };
 
 export default function LogsViewer({ modules }: LogsProps) {
-  const servedModuleOptions = modules
-    .filter(module => module.serving)
-    .map(module => ({
-      label: module.moduleName,
-      value: module.moduleName,
-    }));
-
   return (
     <div className={'flex flex-col'}>
       <div
@@ -27,10 +19,8 @@ export default function LogsViewer({ modules }: LogsProps) {
       >
         <h1 className={'font-light text-xl'}>Logs Viewer</h1>
       </div>
-      <div className="container py-5 mx-auto">
-        <LogsFilters moduleOptions={servedModuleOptions} />
-        <LogsAccordionList />
-      </div>
+      <LogsFiltersPanel modules={modules} />
+      <LogsAccordionList />
     </div>
   );
 }

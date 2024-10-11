@@ -65,7 +65,7 @@ const SelectField = ({
       name={fieldName}
       control={control}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel className={labelClassName}>{label}</FormLabel>
           <Select
             value={field.value}
@@ -74,7 +74,7 @@ const SelectField = ({
             {...restProps}
           >
             <FormControl>
-              <SelectTrigger className={cn(selectTriggerClassName)}>
+              <SelectTrigger className={selectTriggerClassName}>
                 <SelectValue
                   placeholder={placeholder}
                   className={selectValueClassName}
@@ -82,7 +82,9 @@ const SelectField = ({
               </SelectTrigger>
             </FormControl>
 
-            <SelectContent className={selectContentClassName}>
+            <SelectContent
+              className={cn('bg-background', selectContentClassName)}
+            >
               {options.map(option => {
                 return (
                   <SelectItem

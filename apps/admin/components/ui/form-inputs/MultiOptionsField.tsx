@@ -41,6 +41,7 @@ interface MultiOptionsFieldProps extends CommandProps {
     label?: string;
     error?: string;
     description?: string;
+    selectTrigger?: string;
   };
 }
 
@@ -56,6 +57,7 @@ const MultiOptionsField = ({
     label: labelClassName,
     error: errorClassName,
     input: inputClassName,
+    selectTrigger: selectTriggerClassName,
     selectItem: selectItemClassName,
     description: descriptionClassName,
   } = {},
@@ -88,6 +90,9 @@ const MultiOptionsField = ({
         if (e.key === 'Escape') {
           input.blur();
         }
+        if (e.key === 'Enter') {
+          setOpen(!open);
+        }
       }
     },
     []
@@ -106,20 +111,22 @@ const MultiOptionsField = ({
       name={fieldName}
       control={control}
       render={() => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel className={labelClassName}>{label}</FormLabel>
           <FormControl>
             <Command
               onKeyDown={handleKeyDown}
-              className={'overflow-visible bg-transparent'}
+              className={'overflow-visible bg-transparent relative flex-1'}
             >
               <button
                 className={cn(
-                  'flex h-10 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5'
+                  'flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-transparent pl-3 py-2 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5',
+                  selectTriggerClassName
                 )}
                 type="button"
+                onClick={() => setOpen(!open)}
               >
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1">
                   {selectedOptions.map(option => (
                     <Badge
                       key={option.value}
@@ -150,10 +157,9 @@ const MultiOptionsField = ({
                       value={inputValue}
                       onValueChange={setInputValue}
                       onBlur={() => setOpen(false)}
-                      onFocus={() => setOpen(true)}
                       placeholder={placeholder}
                       className={cn(
-                        'flex-1 bg-transparent outline-none placeholder:text-muted-foreground',
+                        'flex-1 bg-transparent outline-none placeholder:text-primary',
                         inputClassName
                       )}
                       {...restProps}
@@ -161,10 +167,17 @@ const MultiOptionsField = ({
                   )}
                 </div>
               </button>
+              <button
+                onClick={() => setSelectedOptions([])}
+                className="absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-none top-1/2 right-1 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                type="button"
+              >
+                <X className="flex-shrink-0 w-4 h-4 text-muted-foreground hover:text-foreground" />
+              </button>
               {open && filteredOptions && filteredOptions.length > 0 && (
-                <div className="relative mb-[1px]">
+                <div className="relative">
                   <CommandList>
-                    <div className="absolute top-0 z-10 w-full border rounded-md shadow-md outline-none bg-popover text-popover-foreground animate-in">
+                    <div className="absolute z-10 w-full border rounded-md shadow-md outline-none top-1 bg-background animate-in">
                       <CommandEmpty>
                         <div className="p-2 text-sm text-center text-muted-foreground">
                           No matches found

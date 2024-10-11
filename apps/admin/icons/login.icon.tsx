@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 // viewBox="0 0 1600 1200" original
-/* eslint-disable */
-function LoginIllustration({ ...props }: React.SVGProps<SVGSVGElement>) {
+export const LoginIllustration = ({
+  ...props
+}: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -834,6 +835,4 @@ function LoginIllustration({ ...props }: React.SVGProps<SVGSVGElement>) {
       </g>
     </svg>
   );
-}
-
-export default LoginIllustration;
+};

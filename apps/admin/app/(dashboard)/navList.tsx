@@ -28,7 +28,7 @@ import {
   Send,
   User,
   Users2,
-  List,
+  Logs,
 } from 'lucide-react';
 import React from 'react';
 
@@ -312,6 +312,6 @@ export const navList = [
   {
     name: 'Logs Viewer',
     href: '/logs-viewer',
-    icon: <List className={NAV_ICON_CLASSES} />,
+    icon: <Logs className={NAV_ICON_CLASSES} />,
   },
 ];
