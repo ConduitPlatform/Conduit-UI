@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href;
   const isSubActive = (href: string) => pathname.includes(href);
+
   return (
     <div className={'flex'}>
       <Sidebar>
@@ -51,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           );
         })}
       </Sidebar>
-      <div className="flex-grow max-h-screen overflow-auto main-scrollbar">
+      <div className="relative flex-grow h-screen overflow-auto main-scrollbar">
         {children}
       </div>
     </div>
