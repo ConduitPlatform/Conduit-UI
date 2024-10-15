@@ -11,19 +11,24 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
+import { cn } from '@/lib/utils';
 
 const limitOptions = ['100', '500', '1000', '5000'];
+
 const timeOptions = [
-  'last 10 minutes',
-  'last 30 minutes',
-  'last 1 hour',
-  'last 24 hours',
-  'today',
+  'Last 10 minutes',
+  'Last 30 minutes',
+  'Last 1 hour',
+  'Last 24 hours',
+  'Today',
 ];
 
 const levelsOptions = [
-  { label: 'info', value: 'info' },
-  { label: 'error', value: 'error' },
+  { label: 'Info', value: 'info' },
+  { label: 'Error', value: 'error' },
+  { label: 'Warning', value: 'warning' },
+  { label: 'Debug', value: 'debug' },
 ];
 
 type Option = {
@@ -45,59 +50,107 @@ export default function LogsFiltersForm({
 
   const form = useForm<logsFormSchemaT>({
     resolver: zodResolver(logsFormSchema),
-    defaultValues: {},
+    defaultValues: {
+      limit: 0,
+      level: '',
+      module: '',
+      startDate: new Date(),
+      endDate: new Date(),
+    },
   });
 
   const selectTriggerClass = 'bg-background mt-0';
+  const formItemClass = 'space-y-1';
 
   return (
     <Form {...form}>
       <form
         className={
-          'flex flex-col px-3 pt-3 pb-4 border mx-5 mb-5 rounded-md border-input bg-secondary data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:hidden'
+          'flex flex-col px-3 pt-3 pb-4 border mx-5 mb-5 rounded-md border-input bg-secondary'
         }
         {...restProps}
       >
-        <div className="grid grid-cols-3 gap-4">
-          <SelectField
-            label={'Time'}
-            fieldName={'time_range'}
-            placeholder={'Select one option'}
-            options={timeOptions}
-            classNames={{ selectTrigger: selectTriggerClass }}
-          />
+        {showModuleFilter && (
+          <div className="grid grid-cols-2 gap-3 mb-2">
+            <MultiOptionsField
+              label={'Level'}
+              fieldName={'level'}
+              options={levelsOptions}
+              placeholder={'Select options'}
+              classNames={{
+                selectTrigger: cn('capitalize', selectTriggerClass),
+              }}
+              className={formItemClass}
+            />
+            <MultiOptionsField
+              label={'Module'}
+              fieldName={'module'}
+              options={moduleOptions}
+              placeholder={'Select options'}
+              className={formItemClass}
+              classNames={{ selectTrigger: selectTriggerClass }}
+            />
+          </div>
+        )}
+        <div
+          className={cn(
+            'grid grid-cols-3 gap-4',
+            showModuleFilter && 'grid-cols-2'
+          )}
+        >
+          {showModuleFilter ? (
+            <div className="flex gap-3">
+              <DatePickerField
+                fieldName="startDate"
+                label={'Start date'}
+                className={formItemClass}
+                classNames={{ trigger: 'min-w-32' }}
+                showIcon
+              />
+              <DatePickerField
+                fieldName="endDate"
+                label={'End date'}
+                className={formItemClass}
+                classNames={{ trigger: 'min-w-32' }}
+                showIcon
+              />
+            </div>
+          ) : (
+            <SelectField
+              label={'Time'}
+              options={timeOptions}
+              fieldName={'timeRange'}
+              placeholder={'Select one option'}
+              classNames={{ selectTrigger: selectTriggerClass }}
+              className={formItemClass}
+            />
+          )}
           <SelectField
             label={'Limit'}
-            fieldName={'limit'}
             options={limitOptions}
+            fieldName={'limit'}
             placeholder={'Select one option'}
             classNames={{ selectTrigger: selectTriggerClass }}
+            className={formItemClass}
           />
-          <MultiOptionsField
-            label={'Level'}
-            fieldName={'level'}
-            options={levelsOptions}
-            placeholder={'Select options'}
-            classNames={{ selectTrigger: selectTriggerClass }}
-          />
+          {!showModuleFilter && (
+            <MultiOptionsField
+              label={'Level'}
+              fieldName={'level'}
+              options={levelsOptions}
+              placeholder={'Select options'}
+              classNames={{ selectTrigger: selectTriggerClass }}
+              className={formItemClass}
+            />
+          )}
         </div>
         {!showModuleFilter && (
           <Link
-            href="logs-viewer"
-            className="self-end pt-2 text-sm text-muted-foreground hover:dark:text-white hover:underline hover:text-black"
+            href="/logs-viewer"
+            className="self-end mt-2 text-sm text-muted-foreground hover:dark:text-white hover:underline hover:text-primary"
           >
             More filters
           </Link>
-        )}
-        {showModuleFilter && (
-          <MultiOptionsField
-            label={'Module'}
-            fieldName={'module'}
-            options={moduleOptions}
-            placeholder={'Select options'}
-            className="mt-2 space-y-1"
-            classNames={{ selectTrigger: selectTriggerClass }}
-          />
         )}
       </form>
     </Form>

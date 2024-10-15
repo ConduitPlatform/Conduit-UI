@@ -1,5 +1,5 @@
 'use client';
-import { X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   CommandGroup,
@@ -8,7 +8,7 @@ import {
   CommandEmpty,
   CommandProps,
 } from '@/components/ui/command';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -65,6 +65,7 @@ const MultiOptionsField = ({
 }: MultiOptionsFieldProps) => {
   const { control } = useFormContext();
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
   const [inputValue, setInputValue] = useState<string | undefined>('');
@@ -73,30 +74,20 @@ const MultiOptionsField = ({
     setSelectedOptions(prev => prev.filter(s => s.value !== option.value));
   }, []);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      const input = inputRef.current;
-      if (input) {
-        if (
-          (e.key === 'Delete' || e.key === 'Backspace') &&
-          input.value === ''
-        ) {
-          setSelectedOptions(prev => {
-            const newSelected = [...prev];
-            newSelected.pop();
-            return newSelected;
-          });
-        }
-        if (e.key === 'Escape') {
-          input.blur();
-        }
-        if (e.key === 'Enter') {
-          setOpen(!open);
-        }
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
       }
-    },
-    []
-  );
+    };
+    window.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      window.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [containerRef]);
 
   const filteredOptions = options?.filter(
     option => !selectedOptions.some(selected => selected.value === option.value)
@@ -106,6 +97,7 @@ const MultiOptionsField = ({
     setInputValue('');
     setSelectedOptions(prev => [...prev, option]);
   };
+
   return (
     <FormField
       name={fieldName}
@@ -114,17 +106,18 @@ const MultiOptionsField = ({
         <FormItem className={className}>
           <FormLabel className={labelClassName}>{label}</FormLabel>
           <FormControl>
-            <Command
-              onKeyDown={handleKeyDown}
-              className={'overflow-visible bg-transparent relative flex-1'}
-            >
-              <button
+            <Command className={'overflow-visible bg-transparent relative'}>
+              <div
                 className={cn(
                   'flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-transparent pl-3 py-2 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5',
                   selectTriggerClassName
                 )}
-                type="button"
+                role="combobox"
+                tabIndex={0}
+                aria-controls="options"
+                aria-expanded={open}
                 onClick={() => setOpen(!open)}
+                ref={containerRef}
               >
                 <div className="flex flex-wrap gap-1">
                   {selectedOptions.map(option => (
@@ -157,23 +150,36 @@ const MultiOptionsField = ({
                       value={inputValue}
                       onValueChange={setInputValue}
                       onBlur={() => setOpen(false)}
+                      onFocus={() => setOpen(false)}
                       placeholder={placeholder}
                       className={cn(
-                        'flex-1 bg-transparent outline-none placeholder:text-primary',
+                        'flex-1 bg-transparent outline-none placeholder:text-muted-foreground',
                         inputClassName
                       )}
                       {...restProps}
                     />
                   )}
                 </div>
-              </button>
-              <button
-                onClick={() => setSelectedOptions([])}
-                className="absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-none top-1/2 right-1 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                type="button"
-              >
-                <X className="flex-shrink-0 w-4 h-4 text-muted-foreground hover:text-foreground" />
-              </button>
+              </div>
+              {selectedOptions.length === 0 ? (
+                <button
+                  className="absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-none text-muted-foreground top-1/2 right-1"
+                  type="button"
+                  onClick={() => setOpen(!open)}
+                >
+                  <ChevronDown className="flex-shrink-0 w-4 h-4" />
+                  <span className="sr-only">Open</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setSelectedOptions([])}
+                  type="button"
+                  className="absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-none hover:text-foreground text-muted-foreground top-1/2 right-1"
+                >
+                  <X className="flex-shrink-0 w-4 h-4 " />
+                  <span className="sr-only">Clear</span>
+                </button>
+              )}
               {open && filteredOptions && filteredOptions.length > 0 && (
                 <div className="relative">
                   <CommandList>

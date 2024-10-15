@@ -9,31 +9,37 @@ import { SearchInput } from '@/components/ui/form-inputs/SearchInput';
 import LogsFiltersForm from './LogsFilterForm';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { getModuleTitle, ModulesTypes } from '@/lib/models/logs-viewer';
 
 type Module = {
-  moduleName: string;
+  moduleName: ModulesTypes;
   serving: boolean;
+  openFilters?: boolean;
 };
 
 type LogsFiltersPanelProps = {
   className?: string;
   modules: Module[];
+  open?: boolean;
 };
 
 export default function LogsFiltersPanel({
   className,
   modules,
+  open = false,
 }: LogsFiltersPanelProps) {
-  const [isToggled, setIsToggled] = useState(false);
+  const [openFilters, setOpenFilters] = useState(open);
   const iconClass = 'w-4 h-4 flex-shrink-0';
   const pathname = usePathname();
   const isLogsViewerPage = pathname === '/logs-viewer';
+
   const servedModules = modules
     .filter(module => module.serving)
     .map(module => ({
-      label: module.moduleName,
+      label: getModuleTitle(module.moduleName),
       value: module.moduleName,
-    }));
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div
@@ -51,9 +57,9 @@ export default function LogsFiltersPanel({
           </div>
           <Toggle
             aria-label="Toggle"
-            pressed={isToggled}
+            pressed={openFilters}
             size="lg"
-            onPressedChange={isToggled => setIsToggled(isToggled)}
+            onPressedChange={open => setOpenFilters(open)}
             variant="outline"
           >
             <Filter className={iconClass} />
@@ -64,10 +70,7 @@ export default function LogsFiltersPanel({
         </div>
         <SearchInput className="w-1/2 min-w-[200px]" />
       </div>
-      <LogsFiltersForm
-        moduleOptions={servedModules}
-        data-state={isToggled ? 'open' : 'closed'}
-      />
+      {openFilters && <LogsFiltersForm moduleOptions={servedModules} />}
     </div>
   );
 }

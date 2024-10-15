@@ -12,11 +12,12 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
+import { ModulesTypes } from '@/lib/models/logs-viewer';
 
 const snapPoints = [0.5, 0.75, 1];
 
 type Module = {
-  moduleName: string;
+  moduleName: ModulesTypes;
   serving: boolean;
 };
 
@@ -65,7 +66,7 @@ export function LogsDrawer({ modules }: LogsDrawerProps) {
             <span className="sr-only">Close</span>
           </Button>
         </DrawerTrigger>
-        <LogsFiltersPanel modules={modules} />
+        <LogsFiltersPanel modules={modules} open />
         <LogsAccordionList />
       </DrawerContent>
     </Drawer>

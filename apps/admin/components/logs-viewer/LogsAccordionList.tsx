@@ -8,8 +8,9 @@ import {
 } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import JsonViewer from './JsonViewer';
-import { Files, Check } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Files } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '../ui/badge';
 
 type LogsAccordionListProps = {
   className?: string;
@@ -46,30 +47,35 @@ export function LogsAccordionList({ className }: LogsAccordionListProps) {
         >
           <AccordionTrigger
             className={cn(
-              'px-3 py-2 hover:no-underline text-medium',
+              'px-3 py-2 hover:no-underline text-medium justify-start',
               value === `item-${index}`
                 ? 'border-b border-b-input rounded-t-md bg-secondary'
                 : 'rounded-md hover:bg-secondary'
             )}
           >
-            {log}
+            <div className="flex items-start w-full gap-3">
+              <Badge className="bg-emerald-500">info</Badge>
+              {log}
+            </div>
           </AccordionTrigger>
           <AccordionContent className="relative pb-0">
             <JsonViewer json={dummyJson} />
-            <Button
-              onClick={() => handleCopyToClipboard(dummyJson)}
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute top-1 right-3 text-muted-foreground hover:text-primary"
-            >
-              {copied ? (
-                <Check className={iconClass} />
-              ) : (
+            {copied ? (
+              <span className="absolute text-sm font-normal top-3 right-6 text-muted-foreground">
+                Copied!
+              </span>
+            ) : (
+              <Button
+                onClick={() => handleCopyToClipboard(dummyJson)}
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute top-1 right-3 text-muted-foreground hover:text-primary"
+              >
                 <Files className={iconClass} />
-              )}
-              <span className="sr-only">Copy log's metadata</span>
-            </Button>
+                <span className="sr-only">Copy log&apos;s metadata</span>
+              </Button>
+            )}
           </AccordionContent>
         </AccordionItem>
       ))}

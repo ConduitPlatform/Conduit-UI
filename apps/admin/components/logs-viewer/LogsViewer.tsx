@@ -1,8 +1,9 @@
+import { ModulesTypes } from '@/lib/models/logs-viewer';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
 
 type Module = {
-  moduleName: string;
+  moduleName: ModulesTypes;
   serving: boolean;
 };
 type LogsProps = {
@@ -19,7 +20,7 @@ export default function LogsViewer({ modules }: LogsProps) {
       >
         <h1 className={'font-light text-xl'}>Logs Viewer</h1>
       </div>
-      <LogsFiltersPanel modules={modules} />
+      <LogsFiltersPanel modules={modules} open />
       <LogsAccordionList />
     </div>
   );
