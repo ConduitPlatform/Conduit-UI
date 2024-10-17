@@ -12,7 +12,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
-import { ModulesTypes } from '@/lib/models/logs-viewer';
+import { LogsData, ModulesTypes } from '@/lib/models/logs-viewer';
 
 const snapPoints = [0.5, 0.75, 1];
 
@@ -23,9 +23,11 @@ type Module = {
 
 type LogsDrawerProps = {
   modules: Module[];
+  levels: string[];
+  logs: LogsData[];
 };
 
-export function LogsDrawer({ modules }: LogsDrawerProps) {
+export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -66,8 +68,8 @@ export function LogsDrawer({ modules }: LogsDrawerProps) {
             <span className="sr-only">Close</span>
           </Button>
         </DrawerTrigger>
-        <LogsFiltersPanel modules={modules} open />
-        <LogsAccordionList />
+        <LogsFiltersPanel modules={modules} levels={levels} />
+        <LogsAccordionList logs={logs} />
       </DrawerContent>
     </Drawer>
   );

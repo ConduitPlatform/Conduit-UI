@@ -6,11 +6,12 @@ type Module = {
   moduleName: ModulesTypes;
   serving: boolean;
 };
-type LogsProps = {
+type LogsViewerProps = {
   modules: Module[];
+  levels: string[];
 };
 
-export default function LogsViewer({ modules }: LogsProps) {
+export default function LogsViewer({ modules, levels }: LogsViewerProps) {
   return (
     <div className={'flex flex-col'}>
       <div
@@ -20,8 +21,8 @@ export default function LogsViewer({ modules }: LogsProps) {
       >
         <h1 className={'font-light text-xl'}>Logs Viewer</h1>
       </div>
-      <LogsFiltersPanel modules={modules} open />
-      <LogsAccordionList />
+      <LogsFiltersPanel modules={modules} levels={levels} open />
+      <LogsAccordionList logs={[]} />
     </div>
   );
 }

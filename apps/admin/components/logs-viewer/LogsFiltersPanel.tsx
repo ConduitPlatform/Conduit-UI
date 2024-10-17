@@ -20,12 +20,14 @@ type Module = {
 type LogsFiltersPanelProps = {
   className?: string;
   modules: Module[];
+  levels: string[];
   open?: boolean;
 };
 
 export default function LogsFiltersPanel({
   className,
   modules,
+  levels,
   open = false,
 }: LogsFiltersPanelProps) {
   const [openFilters, setOpenFilters] = useState(open);
@@ -40,6 +42,11 @@ export default function LogsFiltersPanel({
       value: module.moduleName,
     }))
     .sort((a, b) => a.label.localeCompare(b.label));
+
+  const levelsOptions = levels.map(level => ({
+    label: level,
+    value: level,
+  }));
 
   return (
     <div
@@ -70,7 +77,12 @@ export default function LogsFiltersPanel({
         </div>
         <SearchInput className="w-1/2 min-w-[200px]" />
       </div>
-      {openFilters && <LogsFiltersForm moduleOptions={servedModules} />}
+      {openFilters && (
+        <LogsFiltersForm
+          moduleOptions={servedModules}
+          levelOptions={levelsOptions}
+        />
+      )}
     </div>
   );
 }
