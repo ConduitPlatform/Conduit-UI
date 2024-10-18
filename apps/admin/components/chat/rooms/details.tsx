@@ -6,7 +6,7 @@ import { User } from '@/lib/models/User';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 import React from 'react';
-import { DeleteAlert } from '@/components/chat/helpers/delete';
+import { DeleteAlert } from '@/components/helpers/delete';
 import { usePathname, useRouter } from 'next/navigation';
 
 type RoomResponse = Awaited<ReturnType<typeof getRoomById>>;

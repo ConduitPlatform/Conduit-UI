@@ -6,12 +6,12 @@ import { ParticipantsLogs } from '@/lib/models/chat';
 import moment from 'moment';
 import { deleteMessages, getMessages, getRoomById } from '@/lib/api/chat';
 import React, { useEffect, useState } from 'react';
-import { DeleteAlert } from '@/components/chat/helpers/delete';
+import { DeleteAlert } from '@/components/helpers/delete';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Decimal from 'decimal.js';
 import { HashIcon } from 'lucide-react';
-import { SearchInput } from '@/components/chat/helpers/search';
+import { SearchInput } from '@/components/helpers/search';
 
 type MessagesResponse = Awaited<ReturnType<typeof getMessages>>;
 type RoomResponse = Awaited<ReturnType<typeof getRoomById>>;

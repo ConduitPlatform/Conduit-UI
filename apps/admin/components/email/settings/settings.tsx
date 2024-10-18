@@ -1,5 +1,5 @@
 'use client';
-import { EmailSettings } from '@/lib/models/Email';
+import { EmailSettings } from '@/lib/models/email';
 import { useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { z } from 'zod';
@@ -11,7 +11,7 @@ import { patchEmailSettings } from '@/lib/api/email';
 import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { SettingsForm } from '@/components/email/settingsForm';
+import { SettingsForm } from '@/components/email/settings/settingsForm';
 import { isEmpty } from 'lodash';
 
 interface Props {
@@ -52,6 +52,7 @@ const FormSchema = z
       }),
       sendgrid: z.object({
         apiKey: z.string(),
+        residency: z.string(),
       }),
     }),
   })
@@ -92,8 +93,6 @@ export const Settings = ({ data }: Props) => {
     resolver: zodResolver(FormSchema),
     defaultValues: data,
   });
-
-  const { reset, control, handleSubmit, setValue, watch } = form;
 
   const handleSwitchChange = () => {
     addAlert({
@@ -268,18 +267,11 @@ export const Settings = ({ data }: Props) => {
         {emailModule && (
           <Form {...form}>
             <form
-              onSubmit={handleSubmit(onSubmit, err => {
+              onSubmit={form.handleSubmit(onSubmit, err => {
                 console.log(err);
               })}
             >
-              <SettingsForm
-                control={control}
-                edit={edit}
-                setEdit={setEdit}
-                watch={watch}
-                reset={reset}
-                data={data}
-              />
+              <SettingsForm edit={edit} setEdit={setEdit} data={data} />
             </form>
           </Form>
         )}

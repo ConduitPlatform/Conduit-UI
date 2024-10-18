@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ChatRoom } from '@/lib/models/chat';
 import Link from 'next/link';
-import { DeleteAlert } from '@/components/chat/helpers/delete';
+import { DeleteAlert } from '@/components/helpers/delete';
 import { EyeIcon } from 'lucide-react';
 import { deleteRooms } from '@/lib/api/chat';
 import { useRouter } from 'next/navigation';

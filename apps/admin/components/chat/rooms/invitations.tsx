@@ -9,7 +9,7 @@ import React from 'react';
 import { User } from '@/lib/models/User';
 import { Profile } from '@/components/chat/helpers/profile';
 import { ParticipantsLogs } from '@/lib/models/chat';
-import { DeleteAlert } from '@/components/chat/helpers/delete';
+import { DeleteAlert } from '@/components/helpers/delete';
 import { usePathname, useRouter } from 'next/navigation';
 import moment from 'moment/moment';
 

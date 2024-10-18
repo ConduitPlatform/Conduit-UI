@@ -38,4 +38,5 @@ export interface MandrillSettings {
 
 export interface SendgridSettings {
   apiKey: string;
+  residency: string;
 }
