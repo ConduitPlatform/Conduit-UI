@@ -12,7 +12,9 @@ export const metadata = {
 
 export default function RootLayout({
   children,
+  logsdrawer,
 }: {
+  logsdrawer: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (

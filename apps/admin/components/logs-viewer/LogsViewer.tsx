@@ -7,6 +7,7 @@ type Module = {
   moduleName: ModulesTypes;
   serving: boolean;
 };
+
 type LogsViewerProps = {
   modules: Module[];
   levels: string[];

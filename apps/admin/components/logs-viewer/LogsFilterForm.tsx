@@ -33,7 +33,6 @@ type Option = {
 interface LogsFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   moduleOptions?: Option[];
   levelOptions?: Option[];
-}
 
 export default function LogsFiltersForm({
   moduleOptions,
@@ -79,9 +78,7 @@ export default function LogsFiltersForm({
               label={'Module'}
               fieldName={'module'}
               options={moduleOptions}
-              className={formItemClass}
-              classNames={{ selectTrigger: selectTriggerClass }}
-            />
+              placeholder={'Select options'}
           </div>
         )}
         <div

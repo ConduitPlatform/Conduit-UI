@@ -105,3 +105,4 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
     </Accordion>
   );
 }
+

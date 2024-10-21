@@ -9,6 +9,7 @@ import { SearchInput } from '@/components/ui/form-inputs/SearchInput';
 import LogsFiltersForm from './LogsFilterForm';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+
 import {
   getModuleTitle,
   LogsData,
@@ -33,6 +34,7 @@ export default function LogsFiltersPanel({
   className,
   modules,
   levels,
+
   open = false,
 }: LogsFiltersPanelProps) {
   const [openFilters, setOpenFilters] = useState(open);

@@ -14,6 +14,7 @@ import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
 import { LogsData, ModulesTypes } from '@/lib/models/logs-viewer';
 
+
 const snapPoints = [0.5, 0.75, 1];
 
 type Module = {
@@ -64,6 +65,7 @@ export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
             variant="ghost"
             size="sm"
             className="absolute w-8 h-8 rounded-md outline-none top-2 right-2 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+
           >
             <X className="flex-shrink-0 w-4 h-4" />
             <span className="sr-only">Close</span>
@@ -71,6 +73,7 @@ export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
         </DrawerTrigger>
         <LogsFiltersPanel modules={modules} levels={levels} />
         <LogsAccordionList logs={logs} />
+
       </DrawerContent>
     </Drawer>
   );
