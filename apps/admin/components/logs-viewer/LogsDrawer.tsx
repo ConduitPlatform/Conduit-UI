@@ -62,7 +62,8 @@ export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
         <DrawerTrigger asChild>
           <Button
             variant="ghost"
-            className="absolute top-1.5 right-1.5 w-8 h-8 rounded-md outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            size="sm"
+            className="absolute w-8 h-8 rounded-md outline-none top-2 right-2 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             <X className="flex-shrink-0 w-4 h-4" />
             <span className="sr-only">Close</span>

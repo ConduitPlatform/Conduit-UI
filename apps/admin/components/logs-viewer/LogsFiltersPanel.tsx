@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { Filter, RefreshCw } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,12 @@ import { SearchInput } from '@/components/ui/form-inputs/SearchInput';
 import LogsFiltersForm from './LogsFilterForm';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import { getModuleTitle, ModulesTypes } from '@/lib/models/logs-viewer';
+import {
+  getModuleTitle,
+  LogsData,
+  ModulesTypes,
+} from '@/lib/models/logs-viewer';
+import { getLogsQueryRange } from '@/lib/api/logs-viewer';
 
 type Module = {
   moduleName: ModulesTypes;
@@ -56,7 +61,7 @@ export default function LogsFiltersPanel({
         isLogsViewerPage && 'sticky z-40 top-[3.8rem]'
       )}
     >
-      <div className="flex items-center justify-between p-5">
+      <div className="flex items-center justify-between px-5 pt-8 pb-5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Label htmlFor="live-mode">Live</Label>
@@ -71,7 +76,14 @@ export default function LogsFiltersPanel({
           >
             <Filter className={iconClass} />
           </Toggle>
-          <Button type="button" variant="outline" size="icon">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={async () => {
+              await getLogsQueryRange(['core']);
+            }}
+          >
             <RefreshCw className={iconClass} />
           </Button>
         </div>

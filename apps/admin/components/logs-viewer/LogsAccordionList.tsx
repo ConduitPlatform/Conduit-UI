@@ -10,8 +10,14 @@ import { cn } from '@/lib/utils';
 import JsonViewer from './JsonViewer';
 import { Files } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '../ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { LogsData } from '@/lib/models/logs-viewer';
+import {
+  getFormattedDate,
+  getFormattedMessage,
+  getFormattedMetadata,
+  logBadgeBackgroundColorMap,
+} from '@/lib/models/logs-viewer/utils';
 
 type LogsAccordionListProps = {
   className?: string;
@@ -21,11 +27,8 @@ type LogsAccordionListProps = {
 export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
   const [value, setValue] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
+
   const iconClass = 'w-4 h-4 flex-shrink-0 text-current';
-  const getMainMessage = (log: LogsData) =>
-    log?.message.slice(0, log?.message?.indexOf('{"'));
-  const getMetaData = (log: LogsData) =>
-    log?.message?.slice(log?.message?.indexOf('{"'));
 
   const handleCopyToClipboard = async (json: object) => {
     try {
@@ -37,6 +40,14 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
     }
   };
 
+  if (logs.length === 0) {
+    return (
+      <div className="mx-auto mt-5 text-muted-foreground">
+        <p> There no available logs</p>
+      </div>
+    );
+  }
+
   return (
     <Accordion
       type="single"
@@ -45,7 +56,7 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
       onValueChange={setValue}
       className={cn('w-full overflow-x-auto main-scrollbar p-5', className)}
     >
-      {logs.map((log, index) => (
+      {logs.map(({ level, message, timestamp, module }, index) => (
         <AccordionItem
           key={index}
           value={`item-${index}`}
@@ -60,12 +71,16 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
             )}
           >
             <div className="flex items-start w-full gap-3">
-              <Badge className="bg-emerald-500">{log.level}</Badge>
-              {getMainMessage(log)}
+              {getFormattedDate(timestamp)}
+              <Badge className={logBadgeBackgroundColorMap[level]}>
+                {level}
+              </Badge>
+              <Badge className="bg-muted-foreground">{module}</Badge>{' '}
+              {getFormattedMessage(message)}
             </div>
           </AccordionTrigger>
           <AccordionContent className="relative pb-0">
-            <JsonViewer json={JSON.parse(getMetaData(log))} />
+            <JsonViewer json={getFormattedMetadata(message)} />
             {copied ? (
               <span className="absolute text-sm font-normal top-3 right-6 text-muted-foreground">
                 Copied!
@@ -73,7 +88,7 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
             ) : (
               <Button
                 onClick={() =>
-                  handleCopyToClipboard(JSON.parse(getMetaData(log)))
+                  handleCopyToClipboard(getFormattedMetadata(message))
                 }
                 type="button"
                 variant="ghost"

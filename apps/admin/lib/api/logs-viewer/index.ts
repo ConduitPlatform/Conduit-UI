@@ -1,4 +1,9 @@
-import { LogsData, LokiLogsData, ModulesTypes } from '@/lib/models/logs-viewer';
+import {
+  LogLevel,
+  LogsData,
+  LokiLogsData,
+  ModulesTypes,
+} from '@/lib/models/logs-viewer';
 import axios from 'axios';
 
 //TODO: remove to .env or change docker/loki configuration files
@@ -25,22 +30,54 @@ export const getLogsLevels = async (startDate?: number, endDate?: number) => {
 };
 
 export const getLogsQueryRange = async (
-  module?: ModulesTypes,
+  modules?: ModulesTypes | ModulesTypes[],
   levels?: string[],
   startDate?: number,
   endDate?: number,
   limit?: number
-) => {
-  let query = '';
-  if (module) {
-    query = `{module="${module}"`;
+): Promise<LogsData[]> => {
+  let query = '{';
+  let normalizedModules: ModulesTypes[] = [];
+
+  if (typeof modules === 'string') {
+    // Single module passed
+    normalizedModules = [modules];
+  } else if (Array.isArray(modules)) {
+    // Array of modules passed
+    normalizedModules = modules;
+  } else {
+    // No modules provided, use all modules
+    const allModules: ModulesTypes[] = [
+      'home',
+      'authentication',
+      'authorization',
+      'email',
+      'storage',
+      'forms',
+      'functions',
+      'pushNotifications',
+      'sms',
+      'chat',
+      'payments',
+      'database',
+      'router',
+      'settings',
+      'core',
+    ];
+    normalizedModules = allModules;
+  }
+
+  if (normalizedModules.length) {
+    const selectedModuleStr = normalizedModules.join('|');
+    query += `module=~"${selectedModuleStr}"`;
   }
 
   if (levels?.length) {
-    const selectedLevelsStr = levels?.join('|');
-    query = query.concat(', ', `level=~"${selectedLevelsStr}"`);
+    const selectedLevelsStr = levels.join('|');
+    query += `, level=~"${selectedLevelsStr}"`;
   }
-  query = query.concat('', '}');
+
+  query += '}';
 
   const res = await lokiInstance.get(`/loki/api/v1/query_range`, {
     params: {
@@ -52,16 +89,19 @@ export const getLogsQueryRange = async (
   });
 
   const logs: LogsData[] = [];
-  res.data.data.result.forEach((item: LokiLogsData) =>
-    item?.values?.forEach(value => {
-      logs.push({
-        timestamp: value?.[0],
-        message: value?.[1],
-        level: item?.stream?.level,
-        instance: item?.stream?.instance,
-      });
-    })
-  );
 
+  if (res.data.data.result) {
+    res.data.data.result.forEach((item: LokiLogsData) =>
+      item?.values?.forEach(value => {
+        logs.push({
+          timestamp: value?.[0],
+          message: value?.[1],
+          level: item?.stream?.level as LogLevel,
+          instance: item?.stream?.instance,
+          module: item?.stream?.module,
+        });
+      })
+    );
+  }
   return logs;
 };
