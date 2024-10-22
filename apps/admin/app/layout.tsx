@@ -21,10 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} style={{ overflow: 'hidden' }}>
         <main className={'h-dvh min-w-[1080px] overflow-auto'}>
-          <ProviderInjector>
-            {children}
-            {logsdrawer}
-          </ProviderInjector>
+          <ProviderInjector>{children}</ProviderInjector>
         </main>
         <Toaster />
       </body>

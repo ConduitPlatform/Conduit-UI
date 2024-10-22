@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Form } from '@/components/ui/form';
+
 import MultiOptionsField from '@/components/ui/form-inputs/MultiOptionsField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import {
@@ -13,6 +13,7 @@ import { usePathname } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
 import { cn } from '@/lib/utils';
+import { Form } from '@/components/ui/form';
 
 const limitOptions = ['100', '500', '1000', '5000'];
 
@@ -24,13 +25,6 @@ const timeOptions = [
   'Today',
 ];
 
-const levelsOptions = [
-  { label: 'Info', value: 'info' },
-  { label: 'Error', value: 'error' },
-  { label: 'Warning', value: 'warning' },
-  { label: 'Debug', value: 'debug' },
-];
-
 type Option = {
   label: string;
   value: string;
@@ -39,10 +33,12 @@ type Option = {
 
 interface LogsFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   moduleOptions?: Option[];
+  levelOptions?: Option[];
 }
 
 export default function LogsFiltersForm({
   moduleOptions,
+  levelOptions,
   ...restProps
 }: LogsFormProps) {
   const pathname = usePathname();
@@ -51,7 +47,6 @@ export default function LogsFiltersForm({
   const form = useForm<logsFormSchemaT>({
     resolver: zodResolver(logsFormSchema),
     defaultValues: {
-      limit: 0,
       level: '',
       module: '',
       startDate: new Date(),
@@ -75,8 +70,7 @@ export default function LogsFiltersForm({
             <MultiOptionsField
               label={'Level'}
               fieldName={'level'}
-              options={levelsOptions}
-              placeholder={'Select options'}
+              options={levelOptions}
               classNames={{
                 selectTrigger: cn('capitalize', selectTriggerClass),
               }}
@@ -86,7 +80,6 @@ export default function LogsFiltersForm({
               label={'Module'}
               fieldName={'module'}
               options={moduleOptions}
-              placeholder={'Select options'}
               className={formItemClass}
               classNames={{ selectTrigger: selectTriggerClass }}
             />
@@ -104,31 +97,29 @@ export default function LogsFiltersForm({
                 fieldName="startDate"
                 label={'Start date'}
                 className={formItemClass}
-                classNames={{ trigger: 'min-w-32' }}
                 showIcon
               />
               <DatePickerField
                 fieldName="endDate"
                 label={'End date'}
                 className={formItemClass}
-                classNames={{ trigger: 'min-w-32' }}
                 showIcon
               />
             </div>
           ) : (
             <SelectField
-              label={'Time'}
+              label="Time"
               options={timeOptions}
-              fieldName={'timeRange'}
+              fieldName="time"
               placeholder={'Select one option'}
               classNames={{ selectTrigger: selectTriggerClass }}
               className={formItemClass}
             />
           )}
           <SelectField
-            label={'Limit'}
+            label="Limit"
             options={limitOptions}
-            fieldName={'limit'}
+            fieldName="limit"
             placeholder={'Select one option'}
             classNames={{ selectTrigger: selectTriggerClass }}
             className={formItemClass}
@@ -137,7 +128,7 @@ export default function LogsFiltersForm({
             <MultiOptionsField
               label={'Level'}
               fieldName={'level'}
-              options={levelsOptions}
+              options={levelOptions}
               placeholder={'Select options'}
               classNames={{ selectTrigger: selectTriggerClass }}
               className={formItemClass}

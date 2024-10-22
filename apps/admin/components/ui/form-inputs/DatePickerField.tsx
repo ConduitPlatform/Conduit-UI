@@ -61,7 +61,6 @@ export const DatePickerField = ({
   const { field } = useController({
     name: fieldName,
     control,
-    defaultValue: new Date(),
   });
 
   const handleDateChange = (date: Date) => {

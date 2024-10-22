@@ -1,3 +1,5 @@
+import Module from 'module';
+
 export type ModulesTypes =
   | 'home'
   | 'authentication'
@@ -15,11 +17,20 @@ export type ModulesTypes =
   | 'settings'
   | 'core';
 
+export type LogLevel =
+  | 'critical'
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'debug'
+  | 'unknown';
+
 export interface LogsData {
   timestamp: string;
   message: string;
-  level: string;
+  level: LogLevel;
   instance?: string;
+  module?: ModulesTypes;
 }
 
 export interface LokiLogsData {
