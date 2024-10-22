@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Form } from '@/components/ui/form';
+
 import MultiOptionsField from '@/components/ui/form-inputs/MultiOptionsField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import {
@@ -13,6 +13,7 @@ import { usePathname } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
 import { cn } from '@/lib/utils';
+import { Form } from '@/components/ui/form';
 
 const limitOptions = ['100', '500', '1000', '5000'];
 
@@ -79,7 +80,9 @@ export default function LogsFiltersForm({
               label={'Module'}
               fieldName={'module'}
               options={moduleOptions}
-              placeholder={'Select options'}
+              className={formItemClass}
+              classNames={{ selectTrigger: selectTriggerClass }}
+            />
           </div>
         )}
         <div
