@@ -159,7 +159,7 @@ export default function LogsFiltersPanel({
     };
   }, [endDate, liveReloadChecked, requestDebounce, startDate]);
 
-  return (
+return (
     <div
       className={cn(
         'bg-background border-b border-b-input',
@@ -196,8 +196,6 @@ export default function LogsFiltersPanel({
             <RefreshCw
               className={cn(iconClass, liveReloadChecked && 'animate-spin')}
             />
-          <Button type="button" variant="outline" size="icon">
-            <RefreshCw className={iconClass} />
           </Button>
         </div>
         <SearchInput className="w-1/2 min-w-[200px]" />
