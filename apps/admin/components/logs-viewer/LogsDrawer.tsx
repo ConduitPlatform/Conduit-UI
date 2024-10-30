@@ -7,33 +7,65 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Logs, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
-import { LogsData, ModulesTypes } from '@/lib/models/logs-viewer';
+import { getLogsLevels, getLogsQueryRange } from '@/lib/api/logs-viewer';
+import { LogsData } from '@/lib/models/logs-viewer';
 
 const snapPoints = [0.5, 0.75, 1];
 
-type Module = {
-  moduleName: ModulesTypes;
-  serving: boolean;
-};
-
-type LogsDrawerProps = {
-  modules: Module[];
-  levels: string[];
-  logs: LogsData[];
-};
-
-export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
+export function LogsDrawer() {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
+  const [levels, setLevels] = useState<string[]>([]);
+  const [logs, setLogs] = useState<LogsData[]>([]);
+  const [drawerHeight, setDrawerHeight] = useState(0);
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
-  const isLogsViewerPage = pathname === '/logs-viewer';
+  const pathSegments = pathname.split('/')[1];
+  const currentModule = pathSegments ? pathSegments : 'core';
+  const isLogsViewerPage = pathSegments === 'logs-viewer';
+  const isCoreModulePage = currentModule === 'core';
 
   if (isLogsViewerPage) return;
+
+  useEffect(() => {
+    getLogsLevels().then(res => {
+      setLevels(res);
+    });
+    getLogsQueryRange({ modules: currentModule, limit: '100' }).then(res => {
+      setLogs(res);
+    });
+  }, []);
+
+  const refreshDrawerLogs = (data: {
+    modules: string[];
+    levels: string[];
+    startDate: number | undefined;
+    endDate: number | undefined;
+    limit: string | undefined;
+  }) => {
+    const logs = getLogsQueryRange({
+      ...data,
+      modules: currentModule,
+      limit: data.limit ? data.limit : '100',
+    });
+    return logs;
+  };
+
+  const calculateDrawerHeight = () => {
+    const windowHeight = window.innerHeight;
+    const visibleHeight = (snap as number)
+      ? windowHeight * (snap as number)
+      : windowHeight;
+    return visibleHeight;
+  };
+
+  useEffect(() => {
+    const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
+    setDrawerHeight(height);
+  }, [snap]);
 
   return (
     <Drawer
@@ -46,7 +78,7 @@ export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
       <DrawerTrigger asChild>
         <Button
           variant="outline"
-          className="absolute bottom-0 right-0 justify-start h-8 gap-1.5 border-l-0 rounded-b-none left-60 rounded-t-md border-r-none"
+          className="absolute bottom-0 right-0 justify-start h-8 gap-1.5 border-l-0 rounded-b-none left-0 rounded-t-md border-r-none"
         >
           <Logs className="w-5 h-5" />
           Logs
@@ -54,8 +86,8 @@ export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
       </DrawerTrigger>
       <DrawerContent
         className={cn(
-          'absolute left-60 right-0 rounded-t-md rounded-b-none h-full max-h-[91%]',
-          isHomePage && 'max-h-[99%]'
+          'absolute left-60 right-0 rounded-t-md rounded-b-none h-full max-h-[94%]',
+          isCoreModulePage && 'max-h-[99%]'
         )}
       >
         <DrawerTitle className="sr-only">List of logs with filters</DrawerTitle>
@@ -69,8 +101,15 @@ export function LogsDrawer({ modules, levels, logs }: LogsDrawerProps) {
             <span className="sr-only">Close</span>
           </Button>
         </DrawerTrigger>
-        <LogsFiltersPanel modules={modules} levels={levels} />
-        <LogsAccordionList logs={logs} />
+        <LogsFiltersPanel
+          levels={levels}
+          setLogs={setLogs}
+          drawerModule={currentModule}
+          refreshLogs={refreshDrawerLogs}
+        />
+        <div style={{ maxHeight: `${drawerHeight}px` }}>
+          <LogsAccordionList logs={logs} />
+        </div>
       </DrawerContent>
     </Drawer>
   );

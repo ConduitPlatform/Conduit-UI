@@ -1,11 +1,36 @@
 import LogsViewer from '@/components/logs-viewer/LogsViewer';
 import { getLogsLevels, getLogsQueryRange } from '@/lib/api/logs-viewer';
-import { getModules } from '@/lib/api/modules';
+import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 
 export default async function LogsViewerPage() {
-  const levels = await getLogsLevels();
-  const modules = await getModules();
-  const logs = await getLogsQueryRange('authentication');
+  const levelsData = await getLogsLevels();
 
-  return <LogsViewer modules={modules} levels={levels} logs={logs} />;
+  const logsData = await getLogsQueryRange({
+    modules: knownModuleNames,
+    limit: '100',
+  });
+
+  const refreshLogs = async (data: {
+    modules: string[];
+    levels: string[];
+    startDate: number | undefined;
+    endDate: number | undefined;
+    limit: string | undefined;
+  }) => {
+    'use server';
+    const logs = await getLogsQueryRange({
+      ...data,
+      modules: data.modules ? data.modules : knownModuleNames,
+      limit: data.limit ? data.limit : '100',
+    });
+    return logs;
+  };
+
+  return (
+    <LogsViewer
+      levelsData={levelsData}
+      logsData={logsData}
+      refreshLogs={refreshLogs}
+    />
+  );
 }
