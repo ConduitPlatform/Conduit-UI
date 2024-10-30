@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import {
   Accordion,
@@ -35,7 +36,6 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
   const [value, setValue] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const logsContainerRef = useRef<HTMLDivElement>(null);
-
   const iconClass = 'w-4 h-4 flex-shrink-0 text-current';
 
   const handleCopyToClipboard = async (json: object) => {
@@ -133,3 +133,4 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
     </Accordion>
   );
 }
+

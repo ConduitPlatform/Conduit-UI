@@ -1,4 +1,5 @@
 'use client';
+
 import { ChevronDown, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -63,6 +64,7 @@ const MultiOptionsField = ({
   } = {},
   ...restProps
 }: MultiOptionsFieldProps) => {
+
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -94,6 +96,7 @@ const MultiOptionsField = ({
   }, [containerRef]);
 
   const filteredOptions = options?.filter(
+
     option => !selectedOptions?.some(selected => selected === option.value)
   );
 
@@ -232,6 +235,7 @@ const MultiOptionsField = ({
     );
   }
   return renderMultiSelectInput();
+
 };
 
 export default MultiOptionsField;

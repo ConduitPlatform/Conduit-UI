@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Dispatch,
   SetStateAction,
@@ -195,6 +196,8 @@ export default function LogsFiltersPanel({
             <RefreshCw
               className={cn(iconClass, liveReloadChecked && 'animate-spin')}
             />
+          <Button type="button" variant="outline" size="icon">
+            <RefreshCw className={iconClass} />
           </Button>
         </div>
         <SearchInput className="w-1/2 min-w-[200px]" />
