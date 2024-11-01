@@ -113,5 +113,8 @@ export const syncTemplates = async () => {
 export const uploadTemplate = async (id: string) => {
   return axiosInstance
     .post('/email/templates/upload', { _id: id })
-    .then(res => res.data);
+    .then(res => res.data)
+    .catch(err => {
+      throw new Error(err.response?.data.message ?? err.message);
+    });
 };
