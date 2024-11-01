@@ -41,7 +41,7 @@ export const getTemplates = async (args: {
     templateDocuments: EmailTemplate[];
     count: number;
   };
-  return await axiosInstance
+  return axiosInstance
     .get<Response>('/email/templates', { params: args })
     .then(res => res.data);
 };
@@ -54,13 +54,13 @@ export const createTemplate = async (data: {
   externalManaged?: boolean;
   _id?: string; // externally managed
 }) => {
-  return await axiosInstance
+  return axiosInstance
     .post<EmailTemplate>('/email/templates', data)
     .then(res => res.data);
 };
 
 export const deleteTemplates = async (ids: string[]) => {
-  return await axiosInstance
+  return axiosInstance
     .delete<string>('/email/templates', { params: { ids } })
     .then(res => res.data);
 };
@@ -79,7 +79,7 @@ export const patchTemplates = async (
     body?: string;
   }
 ) => {
-  return await axiosInstance
+  return axiosInstance
     .put<EmailTemplate>(`/email/templates/${templateId}`, {
       ...args,
     })
@@ -112,6 +112,6 @@ export const syncTemplates = async () => {
 
 export const uploadTemplate = async (id: string) => {
   return axiosInstance
-    .post('/email/templates/upload', { id })
+    .post('/email/templates/upload', { _id: id })
     .then(res => res.data);
 };
