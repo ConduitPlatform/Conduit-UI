@@ -3,11 +3,10 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { User } from '@/lib/models/User';
 import { Switch } from '@/components/ui/switch';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { UseFormReturn, useWatch } from 'react-hook-form';
 import { useMemo } from 'react';
 
-export function useColumns() {
-  const formRef = useFormContext();
+export function useColumns({ formRef }: { formRef: UseFormReturn<any> }) {
   const creator = useWatch({
     control: formRef.control,
     name: 'creator',

@@ -1,4 +1,4 @@
-import { ModulesTypes } from './logs-viewer';
+import { ModulesTypes } from '@/lib/models/logs-viewer';
 
 export type Module = {
   moduleName: ModulesTypes;
