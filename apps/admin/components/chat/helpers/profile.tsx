@@ -43,7 +43,10 @@ export const Profile = ({
                 {logs.map(log => {
                   if ((log.user as User)._id === user._id)
                     return (
-                      <span className="text-xs text-muted-foreground">
+                      <span
+                        key={user._id}
+                        className="text-xs text-muted-foreground"
+                      >
                         {log.action.toUpperCase()}{' '}
                         {moment(log.createdAt).format('DD MMM YYYY')}
                       </span>
