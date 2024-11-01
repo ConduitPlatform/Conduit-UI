@@ -43,7 +43,7 @@ export function useColumns() {
         cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
-            onChange={e => {
+            onChange={() => {
               return row.getToggleSelectedHandler();
             }}
           />
@@ -129,12 +129,13 @@ export function useColumns() {
                 <AlertDialogAction
                   onClick={async () =>
                     uploadTemplate(props.row.original._id)
-                      .then(() =>
+                      .then(() => {
                         toast({
                           title: 'Email',
                           description: 'Template uploaded successfully',
-                        })
-                      )
+                        });
+                        router.refresh();
+                      })
                       .catch(err =>
                         toast({
                           title: 'Email',
