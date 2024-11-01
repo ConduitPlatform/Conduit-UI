@@ -1,9 +1,8 @@
-import { ModulesTypes } from '@/lib/models/logs-viewer';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
+import { Module as BaseModule } from '@/lib/models/Module';
 
-type Module = {
-  moduleName: ModulesTypes;
+type Module = BaseModule & {
   serving: boolean;
 };
 type LogsProps = {
