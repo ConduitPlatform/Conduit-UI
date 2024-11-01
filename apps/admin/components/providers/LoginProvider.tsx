@@ -36,7 +36,9 @@ export const LoginProvider = ({
       });
   }, [pathname, router]);
   return loading ? (
-    <Loader2 className="absolute top-[48vh] left-[48vw] h-28 w-28 animate-spin" />
+    <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+      <Loader2 className="h-28 w-28 animate-spin" />
+    </span>
   ) : (
     <>{children}</>
   );

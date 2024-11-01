@@ -57,7 +57,7 @@ const items = [
 ];
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex flex-col items-center justify-between min-h-screen p-24">
       <Stats
         stats={[
           { name: 'Requests', value: '0', unit: 'per second' },
@@ -80,11 +80,11 @@ export default function Home() {
         </p>
         <ul
           role="list"
-          className="mt-6 grid grid-cols-2 gap-6 border-b border-t border-border py-6"
+          className="grid grid-cols-2 gap-6 py-6 mt-6 border-t border-b border-border"
         >
           {items.map((item, itemIdx) => (
             <li key={itemIdx} className="flow-root">
-              <div className="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-secondary">
+              <div className="relative flex items-center p-2 -m-2 space-x-4 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-secondary">
                 <div
                   className={cn(
                     item.background,
@@ -109,7 +109,7 @@ export default function Home() {
             </li>
           ))}
         </ul>
-        <div className="mt-4 flex">
+        <div className="flex mt-4">
           <Link
             href="https://getconduit.dev/docs/overview/intro"
             className="text-sm font-medium text-indigo-600 hover:text-indigo-500"

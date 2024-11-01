@@ -16,6 +16,7 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { ListItem } from '@/components/ui/list-item';
+import { LogsDrawer } from '@/components/logs-viewer/LogsDrawer';
 
 const MODULE_NAMES: { [key: string]: string } = {
   settings: 'Settings',
@@ -221,7 +222,7 @@ export default function ModuleHeader({
           </NavigationMenu>
         </div>
       </div>
-      <div className="container mx-auto py-10">{children}</div>
+      <div className="container py-10 mx-auto">{children}</div>
     </div>
   );
 }

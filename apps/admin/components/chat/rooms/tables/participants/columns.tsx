@@ -6,11 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 import { useMemo } from 'react';
 
-export function useColumns({
-  formRef,
-}: {
-  formRef: UseFormReturn<any, any, undefined>;
-}) {
+export function useColumns({ formRef }: { formRef: UseFormReturn<any> }) {
   const creator = useWatch({
     control: formRef.control,
     name: 'creator',
