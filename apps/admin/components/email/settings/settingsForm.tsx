@@ -1,4 +1,4 @@
-import { EmailSettings } from '@/lib/models/Email';
+import { EmailSettings } from '@/lib/models/email';
 import {
   FormControl,
   FormDescription,
@@ -18,30 +18,22 @@ import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { useFormContext } from 'react-hook-form';
 
 interface Props {
-  control: any;
   edit: boolean;
   setEdit: (arg0: boolean) => void;
   data: EmailSettings;
-  watch: any;
-  reset: any;
 }
 
-export const SettingsForm = ({
-  control,
-  edit,
-  setEdit,
-  watch,
-  reset,
-  data,
-}: Props) => {
+export const SettingsForm = ({ edit, setEdit, data }: Props) => {
+  const form = useFormContext();
   return (
     <>
       <div className={'flex flex-col gap-4'}>
         <div className={'flex flex-row gap-x-5'}>
           <FormField
-            control={control}
+            control={form.control}
             name="sendingDomain"
             render={({ field }) => (
               <FormItem className="flex flex-col w-3/12">
@@ -62,7 +54,7 @@ export const SettingsForm = ({
             )}
           />
           <FormField
-            control={control}
+            control={form.control}
             name="transport"
             render={({ field }) => (
               <FormItem className={'w-3/12'}>
@@ -84,7 +76,7 @@ export const SettingsForm = ({
                         Mailgun{' '}
                         {data.transportSettings.mailgun &&
                           data.transportSettings.mailgun.apiKey !== '' &&
-                          watch('transport') !== 'mailgun' && <Cog />}
+                          form.watch('transport') !== 'mailgun' && <Cog />}
                       </div>
                     </SelectItem>
                     <SelectItem value={'mandrill'}>
@@ -92,7 +84,7 @@ export const SettingsForm = ({
                         Mandrill{' '}
                         {data.transportSettings.mandrill &&
                           data.transportSettings.mandrill.apiKey &&
-                          watch('transport') !== 'mandrill' && <Cog />}
+                          form.watch('transport') !== 'mandrill' && <Cog />}
                       </div>
                     </SelectItem>
                     <SelectItem value={'sendgrid'}>
@@ -100,7 +92,7 @@ export const SettingsForm = ({
                         SendGrid{' '}
                         {data.transportSettings.sendgrid &&
                           data.transportSettings.sendgrid.apiKey &&
-                          watch('transport') !== 'sendgrid' && <Cog />}
+                          form.watch('transport') !== 'sendgrid' && <Cog />}
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -112,10 +104,10 @@ export const SettingsForm = ({
         </div>
 
         <div className={'grid grid-cols-2 gap-4'}>
-          {watch('transport') === 'smtp' && (
+          {form.watch('transport') === 'smtp' && (
             <>
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.port"
                 render={({ field }) => (
                   <FormItem>
@@ -138,7 +130,7 @@ export const SettingsForm = ({
                 )}
               />
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.host"
                 render={({ field }) => (
                   <FormItem>
@@ -158,7 +150,7 @@ export const SettingsForm = ({
                 )}
               />
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.secure"
                 render={({ field }) => (
                   <FormItem className={'items-center'}>
@@ -176,7 +168,7 @@ export const SettingsForm = ({
                 )}
               />
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.ignoreTls"
                 render={({ field }) => (
                   <FormItem>
@@ -195,7 +187,7 @@ export const SettingsForm = ({
               />
               {/*auth*/}
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.auth.username"
                 render={({ field }) => (
                   <FormItem>
@@ -214,7 +206,7 @@ export const SettingsForm = ({
                 )}
               />
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.auth.password"
                 render={({ field }) => (
                   <FormItem>
@@ -234,7 +226,7 @@ export const SettingsForm = ({
                 )}
               />
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.smtp.auth.method"
                 render={({ field }) => (
                   <FormItem className={'w-3/12'}>
@@ -260,10 +252,10 @@ export const SettingsForm = ({
               />
             </>
           )}
-          {watch('transport') === 'mailgun' && (
+          {form.watch('transport') === 'mailgun' && (
             <>
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.mailgun.apiKey"
                 render={({ field }) => (
                   <FormItem>
@@ -283,7 +275,7 @@ export const SettingsForm = ({
                 )}
               />
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.mailgun.host"
                 render={({ field }) => (
                   <FormItem className={'w-4/12'}>
@@ -313,7 +305,7 @@ export const SettingsForm = ({
               />
 
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.mailgun.proxy"
                 render={({ field }) => (
                   <FormItem>
@@ -334,9 +326,9 @@ export const SettingsForm = ({
               />
             </>
           )}
-          {watch('transport') === 'mandrill' && (
+          {form.watch('transport') === 'mandrill' && (
             <FormField
-              control={control}
+              control={form.control}
               name="transportSettings.mandrill.apiKey"
               render={({ field }) => (
                 <FormItem>
@@ -356,10 +348,10 @@ export const SettingsForm = ({
               )}
             />
           )}
-          {watch('transport') === 'sendgrid' && (
+          {form.watch('transport') === 'sendgrid' && (
             <>
               <FormField
-                control={control}
+                control={form.control}
                 name="transportSettings.sendgrid.apiKey"
                 render={({ field }) => (
                   <FormItem>
@@ -378,6 +370,35 @@ export const SettingsForm = ({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="transportSettings.sendgrid.residency"
+                render={({ field }) => (
+                  <FormItem className={'w-4/12'}>
+                    <FormLabel>Sendgrid Host (EU or US)*</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!edit}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a sendgrid host" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className={'bg-white dark:bg-popover'}>
+                        <SelectItem value={'global'}>
+                          https://api.sendgrid.com (Global)
+                        </SelectItem>
+                        <SelectItem value={'eu'}>
+                          https://api.eu.sendgrid.com (EU)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </>
           )}
         </div>
@@ -390,7 +411,7 @@ export const SettingsForm = ({
               className={'dark:border-gray-500'}
               variant={'outline'}
               onClick={() => {
-                reset();
+                form.reset();
                 setEdit(false);
               }}
             >
