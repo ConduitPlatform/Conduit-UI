@@ -1,14 +1,16 @@
-import SidebarList from '@/components/navigation/sidebarList';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/navigation/appSidebar';
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={'flex'}>
-      <SidebarList />
-      <div className="relative flex-grow h-screen">{children}</div>
-    </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <main
+        className="relative flex flex-col flex-1 min-h-svh bg-background',
+        'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))]"
+      >
+        {children}
+      </main>
+    </SidebarProvider>
   );
 }

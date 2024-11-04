@@ -17,7 +17,11 @@ import { LogsData } from '@/lib/models/logs-viewer';
 
 const snapPoints = [0.5, 0.75, 1];
 
-export function LogsDrawer() {
+type LogsDrawerProps = {
+  isSidebarOpen?: boolean;
+};
+
+export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [levels, setLevels] = useState<string[]>([]);
   const [logs, setLogs] = useState<LogsData[]>([]);
@@ -86,8 +90,9 @@ export function LogsDrawer() {
       </DrawerTrigger>
       <DrawerContent
         className={cn(
-          'absolute left-60 right-0 rounded-t-md rounded-b-none h-full max-h-[94%]',
-          isCoreModulePage && 'max-h-[99%]'
+          'absolute  right-0 rounded-t-md rounded-b-none h-full max-h-[94%]',
+          isCoreModulePage && 'max-h-[99%]',
+          isSidebarOpen ? 'left-64' : 'left-0'
         )}
       >
         <DrawerTitle className="sr-only">List of logs with filters</DrawerTitle>

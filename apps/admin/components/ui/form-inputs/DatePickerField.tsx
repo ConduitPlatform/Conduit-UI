@@ -91,6 +91,5 @@ export const DatePickerField = ({
         </PopoverContent>
       </Popover>
     </div>
-
   );
 };

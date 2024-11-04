@@ -159,7 +159,7 @@ export default function LogsFiltersPanel({
     };
   }, [endDate, liveReloadChecked, requestDebounce, startDate]);
 
-return (
+  return (
     <div
       className={cn(
         'bg-background border-b border-b-input',
