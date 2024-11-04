@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
 import { ModulesTypes } from '@/lib/models/logs-viewer';
+import { useSidebar } from '../ui/sidebar';
 
 const snapPoints = [0.5, 0.75, 1];
 
@@ -44,7 +45,7 @@ export function LogsDrawer({ modules }: LogsDrawerProps) {
       <DrawerTrigger asChild>
         <Button
           variant="outline"
-          className="absolute bottom-0 right-0 justify-start h-8 gap-1.5 border-l-0 rounded-b-none left-60 rounded-t-md border-r-none"
+          className="absolute bottom-0 right-0 justify-start h-8 gap-1.5 border-l-0 rounded-b-none left-64 rounded-t-md border-r-none"
         >
           <Logs className="w-5 h-5" />
           Logs
@@ -52,7 +53,7 @@ export function LogsDrawer({ modules }: LogsDrawerProps) {
       </DrawerTrigger>
       <DrawerContent
         className={cn(
-          'absolute left-60 right-0 rounded-t-md rounded-b-none h-full max-h-[91%]',
+          'absolute left-64 right-0 rounded-t-md rounded-b-none h-full max-h-[91%]',
           isHomePage && 'max-h-[99%]'
         )}
       >

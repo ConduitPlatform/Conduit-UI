@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/navigation-menu';
 import { ListItem } from '@/components/ui/list-item';
 import { LogsDrawer } from '@/components/logs-viewer/LogsDrawer';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import SidebarCollapseTrigger from '@/components/navigation/sidebarCollapseTrigger';
 
 const MODULE_NAMES: { [key: string]: string } = {
   settings: 'Settings',
@@ -126,10 +128,13 @@ export default function ModuleHeader({
           'flex flex-row w-full justify-between p-4 border-b items-center sticky top-0 z-40 bg-background'
         }
       >
-        <h1 className={'font-light text-xl'}>{moduleName}</h1>
+        <div className="flex items-center gap-3">
+          <SidebarCollapseTrigger />
+          <h1 className={'font-light text-xl'}>{moduleName}</h1>
+        </div>
         <div className={'flex flex-row space-x-1.5'}>
           <NavigationMenu>
-            <NavigationMenuList>
+            <NavigationMenuList className="space-x-3">
               {restApp && (
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="border border-input bg-background hover:bg-accent hover:text-accent-foreground">
