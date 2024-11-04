@@ -61,6 +61,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-email-editor": "^1.7.11",
     "react-hook-form": "^7.45.1",
     "react-json-view-lite": "^1.5.0",
     "tailwind-merge": "^1.13.2",
