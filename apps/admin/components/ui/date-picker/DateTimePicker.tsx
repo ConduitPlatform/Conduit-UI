@@ -1,44 +1,52 @@
 'use client';
 
-import * as React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker, DayPickerSingleProps } from 'react-day-picker';
+import { DayPicker, DayPickerSingleProps, Matcher } from 'react-day-picker';
 import { Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { TimePickerInput } from './TimePickerInput';
+import { useRef } from 'react';
 
 export type DateTimePickerProps = Omit<
   DayPickerSingleProps,
   'mode' | 'onSelect'
 > & {
   showTimePicker?: boolean;
-  setDate: (date: Date) => void;
+  selectedDate?: Date;
+  setDate?: (value: Date | undefined) => void;
+  disabled?: Matcher | Matcher[];
 };
 
 function DateTimePicker({
   className,
   classNames,
   showOutsideDays = true,
+  selectedDate,
+  disabled = { after: new Date() },
   setDate: setGlobalDate,
   ...props
 }: DateTimePickerProps) {
-  const minuteRef = React.useRef<HTMLInputElement>(null);
-  const hourRef = React.useRef<HTMLInputElement>(null);
-  const { selected: selectedDate } = props as { selected: Date };
-  const setDate = (dateInput: Date) => {
-    const date = new Date(selectedDate);
-    date.setDate(dateInput.getDate());
-    date.setMonth(dateInput.getMonth());
-    date.setFullYear(dateInput.getFullYear());
-    setGlobalDate(date);
+  const minuteRef = useRef<HTMLInputElement>(null);
+  const hourRef = useRef<HTMLInputElement>(null);
+
+  const setDate = (dateInput: Date | undefined) => {
+    const date = selectedDate ? new Date(selectedDate) : new Date();
+
+    if (dateInput) {
+      date.setDate(dateInput.getDate());
+      date.setMonth(dateInput.getMonth());
+      date.setFullYear(dateInput.getFullYear());
+    }
+    setGlobalDate && setGlobalDate(date);
   };
+
   const setTime = (dateInput: Date | undefined) => {
     if (!dateInput) return;
-    const time = new Date(selectedDate);
+    const time = new Date(selectedDate ?? new Date());
     time.setHours(dateInput.getHours());
     time.setMinutes(dateInput.getMinutes());
-    setGlobalDate(time);
+    setGlobalDate && setGlobalDate(time);
   };
 
   return (
@@ -46,7 +54,8 @@ function DateTimePicker({
       <DayPicker
         mode="single"
         selected={selectedDate}
-        onSelect={setDate as any}
+        onSelect={setDate}
+        disabled={disabled}
         showOutsideDays={showOutsideDays}
         className={cn('p-3 border-input', className)}
         classNames={{

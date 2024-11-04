@@ -1,5 +1,5 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -44,6 +44,7 @@ export default function ModuleHeader({
   const [sockets, setSockets] = useState<boolean>(false); // client sockets
   const [graphqlAdmin, setGraphqlAdmin] = useState<boolean>(false);
   const [restAdmin, setRestAdmin] = useState<boolean>(false);
+
   const [baseUrl, setBaseUrl] = useState<string>('');
   const [adminUrl, setAdminUrl] = useState<string>('');
   const pathname = usePathname();
@@ -64,7 +65,13 @@ export default function ModuleHeader({
     });
   }, []);
 
-  if (!moduleName) return <>{children}</>;
+  if (!moduleName)
+    return (
+      <>
+        <LogsDrawer />
+        {children}
+      </>
+    );
 
   const RESTDocs: {
     title: string;
@@ -228,6 +235,7 @@ export default function ModuleHeader({
         </div>
       </div>
       <div className="container py-10 mx-auto">{children}</div>
+      <LogsDrawer />
     </div>
   );
 }
