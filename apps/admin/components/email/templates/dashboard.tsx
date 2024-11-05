@@ -31,8 +31,7 @@ export const TemplatesDashboard = ({
   const router = useRouter();
   return (
     <Tabs defaultValue="local">
-      <div className="flex w-full items-center justify-between">
-        <div></div>
+      <div className="flex w-full items-center justify-end">
         <TabsList>
           <TabsTrigger value="local">Local Conduit Templates</TabsTrigger>
           <TabsTrigger value="external">External Templates</TabsTrigger>
@@ -77,7 +76,7 @@ export const TemplatesDashboard = ({
         {isNil(external) ? (
           <span>External Templates are not available</span>
         ) : (
-          <ExternalTemplatesTable data={external} columns={columns} />
+          <ExternalTemplatesTable key={''} data={external} columns={columns} />
         )}
       </TabsContent>
     </Tabs>

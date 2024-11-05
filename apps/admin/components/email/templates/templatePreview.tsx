@@ -50,7 +50,9 @@ export const TemplatePreviewForm = ({
         )}
         className="space-y-4"
       >
-        <TemplateForm children={<>Save template details</>} />
+        <TemplateForm>
+          <>Save template details</>
+        </TemplateForm>
         <div className="flex justify-end">
           <Button
             type="button"

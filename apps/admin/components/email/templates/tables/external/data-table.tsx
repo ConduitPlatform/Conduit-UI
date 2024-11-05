@@ -2,7 +2,6 @@
 
 import {
   ColumnDef,
-  ColumnSort,
   flexRender,
   getCoreRowModel,
   useReactTable,
