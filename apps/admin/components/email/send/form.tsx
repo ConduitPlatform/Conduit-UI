@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -19,7 +19,15 @@ import { Button } from '@/components/ui/button';
 import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/lib/hooks/use-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import * as handlebars from 'handlebars';
 
 const schema = z.object({
   email: z.string().email(),
@@ -38,10 +46,41 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
   const { toast } = useToast();
   const [sender, setSender] = useState<string | undefined>(undefined);
   const [email, setEmail] = useState<string | undefined>(undefined);
+  const [variables, setVariables] = useState<string[]>([]);
+  const [template, setTemplate] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {},
+  });
+
+  useEffect(() => {
+    const templateName = form.watch('templateName');
+    const selected = templates.templateDocuments.find(
+      t => t.name === templateName
+    );
+    form.reset({
+      sender: selected?.sender,
+      subject: selected?.subject,
+      body: selected?.body,
+      templateName,
+    });
+    setTemplate(selected?.body);
+    setVariables(selected?.variables || []);
+  }, [form.watch('templateName')]);
+
+  useEffect(() => {
+    const watchVariables = form.watch('variables');
+    if (!watchVariables) return;
+    const compiledTemplate = handlebars.compile(template)(watchVariables);
+    form.setValue('body', compiledTemplate, {
+      shouldValidate: true,
+    });
+  }, [form.watch('variables')]);
+
+  const body = useWatch({
+    control: form.control,
+    name: 'body',
   });
 
   return (
@@ -62,6 +101,29 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
         )}
         className="flex flex-col space-y-5"
       >
+        <FormField
+          control={form.control}
+          name="templateName"
+          render={({ field }) => (
+            <FormItem className={'w-5/12'}>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a template" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className={'bg-white dark:bg-popover'}>
+                  {templates.templateDocuments.map(template => (
+                    <SelectItem key={template._id} value={template.name}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex space-x-2 items-baseline">
           <FormLabel className="text-lg text-muted-foreground">From</FormLabel>
           {!!sender ? (
@@ -160,12 +222,41 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
             </FormItem>
           )}
         />
-        <TextAreaField
-          label={''}
-          fieldName={'body'}
-          placeholder="Type here..."
-          className="h-96"
-        />
+
+        {form.watch('templateName') && variables && (
+          <div className="grid grid-cols-4 gap-5">
+            {variables.map(variable => (
+              <div className="space-y-1">
+                <span className="text-sm text-accent-foreground">
+                  {variable}
+                </span>
+                <Input
+                  className={'text-accent-foreground border-muted'}
+                  onChange={e => {
+                    form.setValue(
+                      'variables',
+                      {
+                        ...form.getValues('variables'),
+                        [variable]: e.currentTarget.value,
+                      },
+                      { shouldValidate: true }
+                    );
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {!!form.watch('templateName') ? (
+          <iframe srcDoc={body} className="bg-white"></iframe>
+        ) : (
+          <TextAreaField
+            label={''}
+            fieldName={'body'}
+            placeholder="Type here..."
+            className="h-96"
+          />
+        )}
         <Button type="submit" className="w-fit">
           Send Email
         </Button>

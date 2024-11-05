@@ -51,6 +51,7 @@
     "embla-carousel-react": "^8.1.8",
     "eslint": "^8.44.0",
     "eslint-config-next": "^14.2.0",
+    "handlebars": "^4.7.8",
     "lodash": "^4.17.21",
     "lucide-react": "^0.451.0",
     "moment": "^2.29.4",
