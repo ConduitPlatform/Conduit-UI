@@ -2,6 +2,7 @@
 import { axiosInstance } from '@/lib/api';
 import {
   EmailConfigResponse,
+  EmailPayload,
   EmailSettings,
   EmailTemplate,
   ExternalTemplate,
@@ -117,4 +118,8 @@ export const uploadTemplate = async (id: string) => {
     .catch(err => {
       throw new Error(err.response?.data.message ?? err.message);
     });
+};
+
+export const sendEmail = async (data: EmailPayload) => {
+  return axiosInstance.post(`/email/send`, data).then(res => res.data);
 };

@@ -33,3 +33,12 @@ export type ExternalTemplate = {
   createdAt: string;
   variables?: string[];
 };
+
+export type EmailPayload = {
+  email: string;
+  sender: string;
+  variables?: { [key: string]: any };
+  subject?: string;
+  body?: string;
+  templateName?: string;
+};
