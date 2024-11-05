@@ -1,5 +1,5 @@
 'use client';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/navigation-menu';
 import { ListItem } from '@/components/ui/list-item';
 import { LogsDrawer } from '@/components/logs-viewer/LogsDrawer';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import SidebarCollapseTrigger from '@/components/navigation/sidebarCollapseTrigger';
+import { useSidebar } from '@/components/ui/sidebar';
 
 const MODULE_NAMES: { [key: string]: string } = {
   settings: 'Settings',
@@ -44,7 +44,7 @@ export default function ModuleHeader({
   const [sockets, setSockets] = useState<boolean>(false); // client sockets
   const [graphqlAdmin, setGraphqlAdmin] = useState<boolean>(false);
   const [restAdmin, setRestAdmin] = useState<boolean>(false);
-
+  const { open } = useSidebar();
   const [baseUrl, setBaseUrl] = useState<string>('');
   const [adminUrl, setAdminUrl] = useState<string>('');
   const pathname = usePathname();
@@ -68,7 +68,7 @@ export default function ModuleHeader({
   if (!moduleName)
     return (
       <>
-        <LogsDrawer />
+        <LogsDrawer isSidebarOpen={open} />
         {children}
       </>
     );
@@ -156,7 +156,7 @@ export default function ModuleHeader({
                     REST
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="">
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-background">
                       {RESTDocs.map(component => (
                         <ListItem
                           key={component.title}
@@ -185,7 +185,7 @@ export default function ModuleHeader({
                     GraphQL
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-background">
                       {GraphQLDocs.map(component => (
                         <ListItem
                           key={component.title}
@@ -234,8 +234,10 @@ export default function ModuleHeader({
           </NavigationMenu>
         </div>
       </div>
-      <div className="container py-10 mx-auto">{children}</div>
-      <LogsDrawer />
+      <div className="container py-10 mx-auto overflow-x-auto main-scrollbar">
+        {children}
+      </div>
+      <LogsDrawer isSidebarOpen={open} />
     </div>
   );
 }

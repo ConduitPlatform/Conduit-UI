@@ -131,7 +131,7 @@ export const General = ({ data }: Props) => {
   };
 
   return (
-    <div className={'container mx-auto py-10 main-scrollbar'}>
+    <div className={'container mx-auto main-scrollbar'}>
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={'flex flex-col gap-4'}>
@@ -228,7 +228,7 @@ export const General = ({ data }: Props) => {
                 control={control}
                 name="transports.rest"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
+                  <FormItem className="flex flex-row items-center justify-between px-3 py-2 border rounded-md">
                     <div className="space-y-0.5">
                       <FormLabel className="text-base">REST</FormLabel>
                       <FormDescription className={'pr-2'}>
@@ -250,7 +250,7 @@ export const General = ({ data }: Props) => {
                 control={control}
                 name="transports.graphql"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
+                  <FormItem className="flex flex-row items-center justify-between px-3 py-2 border rounded-md">
                     <FormLabel className="text-base">GraphQL</FormLabel>
                     <FormControl>
                       <Switch
@@ -266,7 +266,7 @@ export const General = ({ data }: Props) => {
                 control={control}
                 name="transports.sockets"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
+                  <FormItem className="flex flex-row items-center justify-between px-3 py-2 border rounded-md">
                     <FormLabel className="text-base">WebSockets</FormLabel>
                     <FormControl>
                       <Switch
@@ -284,7 +284,7 @@ export const General = ({ data }: Props) => {
               name="cors.enabled"
               render={({ field }) => (
                 <FormItem className="flex items-center gap-4">
-                  <FormLabel className="text-2xl font-medium pt-2">
+                  <FormLabel className="pt-2 text-2xl font-medium">
                     Cross Origin Resource Sharing
                   </FormLabel>
                   <FormControl>
@@ -414,7 +414,7 @@ export const General = ({ data }: Props) => {
                   control={control}
                   name="cors.credentials"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <FormItem className="flex flex-row items-center justify-between p-4 border rounded-lg">
                       <FormLabel className="text-base">Credentials</FormLabel>
                       <FormControl>
                         <Switch
