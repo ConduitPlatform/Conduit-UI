@@ -86,11 +86,12 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
                   <FormControl>
                     <Input
                       className={'text-accent-foreground border-muted'}
+                      {...field}
+                      onBlur={() => setSender(form.watch('sender'))}
                       onKeyDown={e => {
                         e.stopPropagation();
                         if (e.key === 'Enter') setSender(form.watch('sender'));
                       }}
-                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -124,6 +125,7 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
                     <Input
                       className={'text-accent-foreground border-muted'}
                       {...field}
+                      onBlur={() => setEmail(form.watch('email'))}
                       onKeyDown={e => {
                         e.stopPropagation();
                         if (e.key === 'Enter') setEmail(form.watch('email'));
