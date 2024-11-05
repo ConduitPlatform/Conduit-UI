@@ -1,7 +1,7 @@
-import { ModulesTypes } from '@/lib/models/logs-viewer';
+import { knownModuleNames } from './logs-viewer/constants';
 
 export type Module = {
-  moduleName: ModulesTypes;
+  moduleName: (typeof knownModuleNames)[number];
   url: string;
   serving: boolean;
 };

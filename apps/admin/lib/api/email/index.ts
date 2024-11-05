@@ -53,10 +53,11 @@ export const createTemplate = async (data: {
   body: string;
   sender?: string;
   externalManaged?: boolean;
+  jsonTemplate?: string;
   _id?: string; // externally managed
 }) => {
   return axiosInstance
-    .post<EmailTemplate>('/email/templates', data)
+    .post<{ template: EmailTemplate }>('/email/templates', data)
     .then(res => res.data);
 };
 
@@ -74,16 +75,15 @@ export const deleteTemplate = async (id: string) => {
 
 export const patchTemplates = async (
   templateId: string,
-  args: {
+  data: {
     name?: string;
     subject?: string;
     body?: string;
+    jsonTemplate?: any;
   }
 ) => {
   return axiosInstance
-    .put<EmailTemplate>(`/email/templates/${templateId}`, {
-      ...args,
-    })
+    .patch<EmailTemplate>(`/email/templates/${templateId}`, data)
     .then(res => res.data);
 };
 

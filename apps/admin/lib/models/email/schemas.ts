@@ -7,6 +7,7 @@ export type EmailTemplate = {
   sender?: string;
   externalManaged: boolean;
   externalId?: string;
+  jsonTemplate?: any;
   createdAt: string | Date;
   updatedAt: string | Date;
 };

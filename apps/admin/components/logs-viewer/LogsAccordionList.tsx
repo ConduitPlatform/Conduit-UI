@@ -49,11 +49,13 @@ export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
   };
 
   useEffect(() => {
-    if (logsContainerRef.current) {
+    if (logsContainerRef.current && !value) {
       logsContainerRef.current.scrollTop =
         logsContainerRef.current.scrollHeight;
     }
   }, [logs]);
+
+  console.log(value);
 
   if (logs.length === 0) {
     return (

@@ -16,16 +16,15 @@ import {
 } from '@/components/ui/select';
 import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { Option } from '@/lib/models/logs-viewer';
-import { Fragment } from 'react';
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 interface SelectFieldProps extends SelectProps {
   label: string;
   fieldName?: string;
   description?: string;
   placeholder?: string;
-  options: Option[];
+  options: string[] | Option[];
   className?: string;
   classNames?: {
     selectItem?: string;
@@ -37,6 +36,7 @@ interface SelectFieldProps extends SelectProps {
     description?: string;
   };
 }
+
 const SelectField = ({
   fieldName,
   label,
@@ -55,62 +55,89 @@ const SelectField = ({
   } = {},
   ...restProps
 }: SelectFieldProps) => {
-  const DescriptionElement = fieldName ? FormDescription : 'span';
-  const LabelElement = fieldName ? FormLabel : Label;
-  const ItemWrapper = fieldName ? FormItem : 'div';
-  const InputWrapper = fieldName ? FormControl : Fragment;
-
-  const renderSelectInput = (field?: ControllerRenderProps<any>) => (
-    <ItemWrapper className={className}>
-      <LabelElement className={labelClassName}>{label}</LabelElement>
-      <Select
-        {...(field && { onValueChange: field.onChange })}
-        {...(field && { value: field.value })}
-        {...(field && { defaultValue: field.value })}
-        {...restProps}
-      >
-        <InputWrapper>
-          <SelectTrigger className={selectTriggerClassName}>
-            <SelectValue
-              placeholder={placeholder}
-              className={selectValueClassName}
-            />
-          </SelectTrigger>
-        </InputWrapper>
+  const SelectInput = () => (
+    <div className={className}>
+      <Label className={labelClassName}>{label}</Label>
+      <Select {...restProps}>
+        <SelectTrigger className={selectTriggerClassName}>
+          <SelectValue
+            placeholder={placeholder}
+            className={selectValueClassName}
+          />
+        </SelectTrigger>
         <SelectContent className={cn('bg-background', selectContentClassName)}>
-          {options.map(option => {
-            return (
-              <SelectItem
-                key={typeof option === 'string' ? option : option.value}
-                value={typeof option === 'string' ? option : option.value}
-                className={selectItemClassName}
-              >
-                {typeof option === 'string' ? option : option.label}
-              </SelectItem>
-            );
-          })}
+          {options.map((option: Option | string) => (
+            <SelectItem
+              key={typeof option === 'string' ? option : option.value}
+              value={typeof option === 'string' ? option : option.value}
+              className={selectItemClassName}
+            >
+              {typeof option === 'string' ? option : option.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       {description && (
-        <DescriptionElement className={descriptionClassName}>
-          {description}
-        </DescriptionElement>
+        <span className={descriptionClassName}>{description}</span>
       )}
-      {field && <FormMessage className={errorClassName} />}
-    </ItemWrapper>
+    </div>
   );
 
-  if (fieldName) {
+  const SelectInputWithForm = () => {
     const { control } = useFormContext();
+
+    if (!fieldName) {
+      return null;
+    }
 
     return (
       <FormField
         name={fieldName}
         control={control}
-        render={({ field }) => renderSelectInput(field)}
+        render={({ field }: { field: ControllerRenderProps<any> }) => (
+          <FormItem className={className}>
+            <FormLabel className={labelClassName}>{label}</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value}
+              defaultValue={field.value}
+              {...restProps}
+            >
+              <FormControl>
+                <SelectTrigger className={selectTriggerClassName}>
+                  <SelectValue
+                    placeholder={placeholder}
+                    className={selectValueClassName}
+                  />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent
+                className={cn('bg-background', selectContentClassName)}
+              >
+                {options.map((option: Option | string) => (
+                  <SelectItem
+                    key={typeof option === 'string' ? option : option.value}
+                    value={typeof option === 'string' ? option : option.value}
+                    className={selectItemClassName}
+                  >
+                    {typeof option === 'string' ? option : option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {description && (
+              <FormDescription className={descriptionClassName}>
+                {description}
+              </FormDescription>
+            )}
+            <FormMessage className={errorClassName} />
+          </FormItem>
+        )}
       />
     );
-  }
-  return renderSelectInput();
+  };
+
+  return fieldName ? <SelectInputWithForm /> : <SelectInput />;
 };
+
 export default SelectField;

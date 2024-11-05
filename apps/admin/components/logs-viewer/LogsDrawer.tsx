@@ -32,8 +32,6 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const isLogsViewerPage = pathSegments === 'logs-viewer';
   const isCoreModulePage = currentModule === 'core';
 
-  if (isLogsViewerPage) return;
-
   useEffect(() => {
     getLogsLevels().then(res => {
       setLevels(res);
@@ -41,7 +39,12 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     getLogsQueryRange({ modules: currentModule, limit: '100' }).then(res => {
       setLogs(res);
     });
-  }, []);
+  }, [currentModule]);
+
+  useEffect(() => {
+    const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
+    setDrawerHeight(height);
+  }, [snap]);
 
   const refreshDrawerLogs = (data: {
     modules: string[];
@@ -66,12 +69,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     return visibleHeight;
   };
 
-  useEffect(() => {
-    const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
-    setDrawerHeight(height);
-  }, [snap]);
-
-  return (
+  return !isLogsViewerPage ? (
     <Drawer
       modal={false}
       snapPoints={snapPoints}
@@ -117,5 +115,5 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         </div>
       </DrawerContent>
     </Drawer>
-  );
+  ) : null;
 }
