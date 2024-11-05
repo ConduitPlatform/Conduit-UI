@@ -1,6 +1,7 @@
 import { getModules } from '@/lib/api/modules';
 import { getExternalTemplates, getTemplates } from '@/lib/api/email';
 import { TemplatesDashboard } from '@/components/email/templates/dashboard';
+import { EmailEditorWrapper } from '@/components/email/email-editor';
 
 type EmailTemplatesParams = {
   searchParams: {
@@ -9,6 +10,7 @@ type EmailTemplatesParams = {
     search?: string;
     externalPageIndex?: number;
     sortByName?: boolean;
+    'editor-open'?: string;
   };
 };
 
@@ -19,6 +21,7 @@ export default async function EmailTemplates({
   const emailModuleAvailable = !!modules.find(
     m => m.moduleName === 'email' && m.serving
   );
+  const openEditor = searchParams['editor-open'] === 'true';
   if (!emailModuleAvailable) return <>Email module is not serving.</>;
 
   const templates = await getTemplates({
@@ -37,5 +40,11 @@ export default async function EmailTemplates({
   })
     .then(res => res)
     .catch(() => null);
-  return <TemplatesDashboard data={templates} external={external} />;
+
+  return (
+    <>
+      {openEditor ? <EmailEditorWrapper /> : null}
+      <TemplatesDashboard data={templates} external={external} />
+    </>
+  );
 }

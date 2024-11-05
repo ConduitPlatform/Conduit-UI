@@ -18,8 +18,7 @@ import { syncTemplates } from '@/lib/api/email';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { PlusCircleIcon } from 'lucide-react';
-import Link from 'next/link';
+import { CreateTemplateSheet } from '@/components/email/templates/createTemplateSheet';
 
 export const TemplatesDashboard = ({
   data,
@@ -64,9 +63,7 @@ export const TemplatesDashboard = ({
           >
             Pull
           </Button>
-          <Link href="/email/templates/new">
-            <PlusCircleIcon className="w-4 h-4" />
-          </Link>
+          <CreateTemplateSheet />
         </div>
         <div className={'pr-2 w-7/12 mt-5'}>
           <p className={'text-xs text-[#94A3B8]'}>
