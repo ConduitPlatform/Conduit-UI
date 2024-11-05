@@ -1,5 +1,5 @@
 import { generateMultiSelectOptions } from '@/lib/models/logs-viewer/utils';
-import MultiOptionsField from '@/components/ui/form-inputs/MultiOptionsField';
+import MultiOptionsField from '@/components/ui/form-inputs/MultiSelectField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import Link from 'next/link';
 import {
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import MultiSelectField from '@/components/ui/form-inputs/MultiSelectField';
 
 interface LogsFiltersOptionsProps
   extends React.FormHTMLAttributes<HTMLDivElement> {
@@ -122,7 +123,7 @@ export default function LogsFiltersOptions({
           classNames={{ selectTrigger: selectTriggerClass }}
           className={formItemClass}
         />
-        <MultiOptionsField
+        <MultiSelectField
           label="Level"
           options={levelOptions}
           selectedOptions={selectedLevels}
@@ -149,7 +150,7 @@ export default function LogsFiltersOptions({
   const renderViewerFilters = (
     <div className={cn(wrapperClass, className)} {...restProps}>
       <div className="grid grid-cols-2 gap-3 mb-2">
-        <MultiOptionsField
+        <MultiSelectField
           label="Level"
           options={levelOptions}
           selectedOptions={selectedLevels}
@@ -164,7 +165,7 @@ export default function LogsFiltersOptions({
           }}
           className={formItemClass}
         />
-        <MultiOptionsField
+        <MultiSelectField
           label="Module"
           options={moduleOptions}
           selectedOptions={selectedModules}

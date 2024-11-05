@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Form } from '@/components/ui/form';
-import MultiOptionsField from '@/components/ui/form-inputs/MultiOptionsField';
+import MultiOptionsField from '@/components/ui/form-inputs/MultiSelectField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import {
   logsFormSchema,
@@ -85,7 +85,7 @@ export default function LogsFiltersForm({
             <MultiOptionsField
               label={'Module'}
               fieldName={'module'}
-              options={moduleOptions}
+              options={moduleOptions!}
               placeholder={'Select options'}
               className={formItemClass}
               classNames={{ selectTrigger: selectTriggerClass }}
@@ -101,14 +101,12 @@ export default function LogsFiltersForm({
           {showModuleFilter ? (
             <div className="flex gap-3">
               <DatePickerField
-                fieldName="startDate"
                 label={'Start date'}
                 className={formItemClass}
                 classNames={{ trigger: 'min-w-32' }}
                 showIcon
               />
               <DatePickerField
-                fieldName="endDate"
                 label={'End date'}
                 className={formItemClass}
                 classNames={{ trigger: 'min-w-32' }}
