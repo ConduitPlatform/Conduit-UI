@@ -51,9 +51,9 @@ export const CreateTemplateSheet = () => {
             )}
             className="space-y-4"
           >
-            <TemplateForm
-              children={<>Save template details and continue to editor</>}
-            />
+            <TemplateForm>
+              <>Save template details and continue to editor</>
+            </TemplateForm>
           </form>
         </Form>
       </SheetContent>
