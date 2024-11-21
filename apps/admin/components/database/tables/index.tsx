@@ -1,7 +1,7 @@
 'use client';
 
 import { DataTable } from '@/components/database/tables/data-table';
-import { columns } from '@/components/database/tables/columns';
+import { useColumns } from '@/components/database/tables/columns';
 
 type ModelDataTableProps = {
   documents: {
@@ -16,7 +16,7 @@ export default function ModelDataTable({ documents }: ModelDataTableProps) {
       <div>filter</div>
       <DataTable
         docs={documents.documents}
-        columns={columns(documents.documents)}
+        columns={useColumns(documents.documents)}
       />
     </div>
   );
