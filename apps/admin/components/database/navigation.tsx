@@ -1,16 +1,5 @@
 'use client';
 
-import {
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
 import * as React from 'react';
 import { MigratedSchemas, PendingSchemas, Views } from '@/lib/models/database';
 import {
@@ -83,10 +72,10 @@ export const DatabaseNavigation = ({
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton variant="outline">
+            <Button className="w-full" variant="outline">
               {searchParams.get('module') ?? 'Select Module'}
               <ChevronDown className="ml-auto" />
-            </SidebarMenuButton>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
             {modules.map(module => (
