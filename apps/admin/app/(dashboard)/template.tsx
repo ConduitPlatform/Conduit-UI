@@ -19,6 +19,8 @@ import { ListItem } from '@/components/ui/list-item';
 import { LogsDrawer } from '@/components/logs-viewer/LogsDrawer';
 import SidebarCollapseTrigger from '@/components/navigation/sidebarCollapseTrigger';
 import { useSidebar } from '@/components/ui/sidebar';
+import { getDatabaseType } from '@/lib/api/database';
+import { Badge } from '@/components/ui/badge';
 
 const MODULE_NAMES: { [key: string]: string } = {
   settings: 'Settings',
@@ -47,6 +49,7 @@ export default function ModuleHeader({
   const { open } = useSidebar();
   const [baseUrl, setBaseUrl] = useState<string>('');
   const [adminUrl, setAdminUrl] = useState<string>('');
+  const [databaseType, setDatabaseType] = useState<string>('');
   const pathname = usePathname();
   const whichModule = pathname.split('/')[1];
   const moduleName = MODULE_NAMES[pathname.split('/')[1]];
@@ -63,6 +66,11 @@ export default function ModuleHeader({
       setGraphqlAdmin(res.config.transports.graphql);
       setRestAdmin(res.config.transports.rest);
     });
+    if (moduleName === 'Database') {
+      getDatabaseType().then(res => {
+        setDatabaseType(res.result);
+      });
+    }
   }, []);
 
   if (!moduleName)
@@ -129,7 +137,11 @@ export default function ModuleHeader({
   ];
 
   return (
-    <div className={'flex flex-col max-h-screen'}>
+    <div
+      className={
+        'flex flex-col h-full max-h-screen overflow-x-auto main-scrollbar'
+      }
+    >
       <div
         className={
           'flex flex-row w-full justify-between p-4 border-b items-center sticky top-0 z-40 bg-background'
@@ -137,7 +149,14 @@ export default function ModuleHeader({
       >
         <div className="flex items-center gap-3">
           <SidebarCollapseTrigger />
-          <h1 className={'font-light text-xl'}>{moduleName}</h1>
+          <div className="flex gap-x-3 items-center">
+            <h1 className={'font-light text-xl'}>{moduleName}</h1>
+            {moduleName === 'Database' ? (
+              <Badge variant="secondary">{databaseType}</Badge>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
         <div className={'flex flex-row space-x-1.5'}>
           <NavigationMenu>
