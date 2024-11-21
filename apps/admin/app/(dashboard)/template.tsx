@@ -234,9 +234,7 @@ export default function ModuleHeader({
           </NavigationMenu>
         </div>
       </div>
-      <div className="container py-10 mx-auto overflow-x-auto main-scrollbar">
-        {children}
-      </div>
+      {children}
       <LogsDrawer isSidebarOpen={open} />
     </div>
   );
