@@ -46,6 +46,7 @@ export const DatabaseNavigation = ({
     schemas: [],
     count: 0,
   });
+  const [value, setValue] = useState<string | undefined>(undefined);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -54,21 +55,22 @@ export const DatabaseNavigation = ({
     getSchemas({
       limit: 1000,
       enabled: true,
+      search: value,
       owner: searchParams.get('module')
         ? [searchParams.get('module') ?? '']
         : undefined,
     }).then(res => {
       setModels(res);
     });
-  }, [searchParams.get('module')]);
+  }, [searchParams.get('module'), value]);
 
   return (
     <DatabaseSidebar>
       <div className="sticky top-0 space-y-4">
         <Input
           placeholder="Search models..."
-          // value={value}
-          // onChange={e => setValue(e.target.value)}
+          value={value}
+          onChange={e => setValue(e.target.value)}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
