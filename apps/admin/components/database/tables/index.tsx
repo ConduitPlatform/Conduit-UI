@@ -16,6 +16,7 @@ export default function ModelDataTable({ documents }: ModelDataTableProps) {
       <div>filter</div>
       <DataTable
         docs={documents.documents}
+        count={documents.count}
         columns={useColumns(documents.documents)}
       />
     </div>
