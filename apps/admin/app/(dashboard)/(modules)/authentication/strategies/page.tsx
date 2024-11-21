@@ -49,7 +49,7 @@ export default async function Strategies({
       };
     });
   return (
-    <div className={'flex flex-col'}>
+    <div className={'flex flex-col container py-10'}>
       <div className={'flex flex-row justify-between border-b py-2'}>
         <h1> Active Strategies</h1>
         <StrategyList strategies={availableStrategies}>

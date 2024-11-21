@@ -41,10 +41,11 @@ export function UserActionsProvider({
         openUserEdit,
       }}
     >
-      <AddUserSheet defaultOpen={userAdd} onClose={() => setUserAdd(false)} />
-      <AddUserSheet defaultOpen={userEdit !== undefined} />
-
-      {children}
+      <div className="container py-10">
+        <AddUserSheet defaultOpen={userAdd} onClose={() => setUserAdd(false)} />
+        <AddUserSheet defaultOpen={userEdit !== undefined} />
+        {children}
+      </div>
     </UserActionsContext.Provider>
   );
 }

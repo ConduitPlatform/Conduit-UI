@@ -75,7 +75,7 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
   }, [searchParams.get('deleted')]);
 
   return (
-    <>
+    <div className="container py-10">
       <div className="w-full flex justify-between">
         <div className="flex gap-x-5 items-center">
           <Input
@@ -140,6 +140,6 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
         </Sheet>
       </div>
       <RoomsDataTable data={data} columns={useColumns()} />
-    </>
+    </div>
   );
 };
