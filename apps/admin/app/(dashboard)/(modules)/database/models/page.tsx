@@ -45,5 +45,5 @@ export default async function DatabaseModels({
     );
   }
 
-  return <ModelDataTable documents={docs} />;
+  return <ModelDataTable documents={docs} model={searchParams.model} />;
 }
