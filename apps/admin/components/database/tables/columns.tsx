@@ -23,8 +23,11 @@ import { Button } from '@/components/ui/button';
 import { ModelDetails } from '@/components/database/model';
 import { useToast } from '@/lib/hooks/use-toast';
 import { DocumentUpdateForm } from '@/components/database/docUpdate';
+import TooltipHelper from '@/components/ui/helpers/TooltipHelper';
+import moment from 'moment';
 
 const uuid = z.string().regex(/^[0-9a-f]{24}$/);
+const date = z.string().datetime();
 
 export const useColumns = (data: any, model: string) => {
   const { toast } = useToast();
@@ -35,6 +38,9 @@ export const useColumns = (data: any, model: string) => {
           Header: key,
           accessorKey: key,
           cell: ({ row, cell }) => {
+            if (key === '_id' || key === '__v') {
+              return <div>{cell.getValue()}</div>;
+            }
             if (uuid.safeParse(cell.getValue()).success && key !== '_id') {
               return (
                 <Sheet>
@@ -70,19 +76,33 @@ export const useColumns = (data: any, model: string) => {
                 </Sheet>
               );
             }
-            if (typeof cell.getValue() === 'object') {
+            if (date.safeParse(cell.getValue()).success) {
+              return (
+                <TooltipHelper content={cell.getValue()}>
+                  <span className="w-80">
+                    {moment(cell.getValue()).format('YYYY-MM-DD')}
+                  </span>
+                </TooltipHelper>
+              );
+            }
+            if (
+              typeof cell.getValue() === 'object' ||
+              typeof cell.getValue() === 'string' ||
+              typeof cell.getValue() === 'number' ||
+              typeof cell.getValue() === 'boolean'
+            ) {
               return (
                 <div className="flex justify-between group">
-                  <div className="w-60 truncate" key={key}>
+                  <div className="w-60 truncate">
                     {JSON.stringify(cell.getValue())}
                   </div>
-                  <Dialog key={key}>
+                  <Dialog>
                     <DialogTrigger asChild>
                       <button className="invisible group-hover:visible cursor-pointer">
                         <SquareArrowOutUpRight className="w-4 h-4 text-primary" />
                       </button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="min-w-fit max-w-4xl">
                       <DialogHeader>
                         <DialogTitle
                           className={'flex flex-row justify-between mt-5'}
@@ -96,6 +116,8 @@ export const useColumns = (data: any, model: string) => {
                         fieldName={key}
                         model={model}
                         value={JSON.stringify(cell.getValue(), null, 2)}
+                        label={''}
+                        placeholder={''}
                       />
                     </DialogContent>
                   </Dialog>
@@ -103,11 +125,7 @@ export const useColumns = (data: any, model: string) => {
               );
             }
             return (
-              <div className="w-60 truncate" key={key}>
-                {cell.getValue() ?? (
-                  <span className="text-secondary">NULL</span>
-                )}
-              </div>
+              cell.getValue() ?? <span className="text-secondary">NULL</span>
             );
           },
         };

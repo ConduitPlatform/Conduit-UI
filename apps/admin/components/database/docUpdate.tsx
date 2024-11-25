@@ -9,17 +9,18 @@ import { updateSchemaDocument } from '@/lib/api/database';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
+type DocumentUpdateFormProps = React.ComponentProps<typeof CodeField> & {
+  row: any;
+  model: string;
+};
+
 export const DocumentUpdateForm = ({
   value,
   row,
   fieldName,
   model,
-}: {
-  value: any;
-  row: any;
-  fieldName: string;
-  model: string;
-}) => {
+  ...rest
+}: DocumentUpdateFormProps) => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm({
@@ -31,25 +32,36 @@ export const DocumentUpdateForm = ({
   return (
     <Form {...form}>
       <form
-        className="space-y-4"
+        className="space-y-4 h-96 overflow-scroll"
         onSubmit={form.handleSubmit(data => {
-          updateSchemaDocument(model, row.original._id, {
-            ...row.original,
-            [fieldName]: JSON.parse(data.editedValue),
-          }).then(() => {
+          if (!data.editedValue) {
             toast({
               title: 'Database',
-              description: 'Document has been updated successfully',
+              description: 'Please enter a value to update the document',
             });
-            router.refresh();
-          });
+            return;
+          }
+          try {
+            updateSchemaDocument(model, row.original._id, {
+              ...row.original,
+              [fieldName]: JSON.parse(data.editedValue as string),
+            }).then(() => {
+              toast({
+                title: 'Database',
+                description: 'Document has been updated successfully',
+              });
+              router.refresh();
+            });
+          } catch (e) {
+            toast({
+              title: 'Database',
+              description: (e as Error).message,
+            });
+            return;
+          }
         })}
       >
-        <CodeField
-          label={''}
-          fieldName={'editedValue'}
-          placeholder={'{"key": "value"}'}
-        />
+        <CodeField fieldName={'editedValue'} {...rest} />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
