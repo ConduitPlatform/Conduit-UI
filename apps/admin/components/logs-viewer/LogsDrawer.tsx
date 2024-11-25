@@ -22,6 +22,7 @@ type LogsDrawerProps = {
 };
 
 export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
+  const [isAvailable, setIsAvailable] = useState<boolean>(false);
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [levels, setLevels] = useState<string[]>([]);
   const [logs, setLogs] = useState<LogsData[]>([]);
@@ -33,12 +34,18 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const isCoreModulePage = currentModule === 'core';
 
   useEffect(() => {
-    getLogsLevels().then(res => {
-      setLevels(res);
-    });
-    getLogsQueryRange({ modules: currentModule, limit: '100' }).then(res => {
-      setLogs(res);
-    });
+    getLogsLevels()
+      .then(res => {
+        setLevels(res);
+        setIsAvailable(true);
+      })
+      .catch(() => {});
+    getLogsQueryRange({ modules: currentModule, limit: '100' })
+      .then(res => {
+        setLogs(res);
+        setIsAvailable(true);
+      })
+      .catch(() => {});
   }, [currentModule]);
 
   useEffect(() => {
@@ -69,7 +76,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     return visibleHeight;
   };
 
-  return !isLogsViewerPage ? (
+  return !isLogsViewerPage && isAvailable ? (
     <Drawer
       modal={false}
       snapPoints={snapPoints}
