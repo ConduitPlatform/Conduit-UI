@@ -5,6 +5,7 @@ import ModelDataTable from '@/components/database/tables';
 
 type DatabaseModelsProps = {
   searchParams?: {
+    search?: string;
     model?: string;
     pageIndex?: number;
   };
@@ -17,9 +18,9 @@ export default async function DatabaseModels({
 }: DatabaseModelsProps) {
   const docs = await getSchemaDocs(
     searchParams?.model,
-    {
-      query: {},
-    },
+    searchParams?.search
+      ? { query: JSON.parse(searchParams.search) }
+      : undefined,
     {
       skip: searchParams?.pageIndex ? searchParams.pageIndex * 19 : 0,
       limit: 19,
