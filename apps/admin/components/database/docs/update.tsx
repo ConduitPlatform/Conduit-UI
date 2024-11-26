@@ -1,28 +1,24 @@
-'use client';
-
 import { useForm } from 'react-hook-form';
 import { CodeField } from '@/components/ui/form-inputs/CodeField';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import React from 'react';
-import { updateSchemaDocument } from '@/lib/api/database';
 import { useToast } from '@/lib/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 
 type DocumentUpdateFormProps = React.ComponentProps<typeof CodeField> & {
   row: any;
   model: string;
+  cb: (data: any) => void;
 };
 
 export const DocumentUpdateForm = ({
   value,
   row,
-  fieldName,
   model,
+  cb,
   ...rest
 }: DocumentUpdateFormProps) => {
   const { toast } = useToast();
-  const router = useRouter();
   const form = useForm({
     mode: 'onChange',
     defaultValues: {
@@ -41,27 +37,10 @@ export const DocumentUpdateForm = ({
             });
             return;
           }
-          try {
-            updateSchemaDocument(model, row.original._id, {
-              ...row.original,
-              [fieldName]: JSON.parse(data.editedValue as string),
-            }).then(() => {
-              toast({
-                title: 'Database',
-                description: 'Document has been updated successfully',
-              });
-              router.refresh();
-            });
-          } catch (e) {
-            toast({
-              title: 'Database',
-              description: (e as Error).message,
-            });
-            return;
-          }
+          cb(data);
         })}
       >
-        <CodeField fieldName={'editedValue'} {...rest} />
+        <CodeField {...rest} fieldName={'editedValue'} />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
