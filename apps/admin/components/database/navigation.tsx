@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { getSchemas } from '@/lib/api/database';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 type DatabaseNavigationProps = {
   data: {
@@ -32,7 +33,7 @@ type DatabaseNavigationProps = {
 
 const DatabaseSidebar = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="h-full w-80 px-2 py-2.5 text-sidebar-foreground bg-sidebar flex flex-col border space-y-4 relative">
+    <div className="row-span-11 overflow-auto col-span-1 px-2 py-2.5 text-sidebar-foreground flex flex-col bg-sidebar border space-y-4">
       {children}
     </div>
   );
@@ -66,7 +67,7 @@ export const DatabaseNavigation = ({
 
   return (
     <DatabaseSidebar>
-      <div className="sticky top-0 space-y-4">
+      <div className="w-full space-y-4">
         <Input
           placeholder="Search models..."
           value={value}
@@ -92,12 +93,12 @@ export const DatabaseNavigation = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="h-full sticky overflow-scroll space-y-4">
+      <div className="flex-1 space-y-4 overflow-auto ">
         <Collapsible defaultOpen className="group/collapsible">
-          <CollapsibleTrigger className="items-center flex">
+          <CollapsibleTrigger className="items-center flex w-full">
             <div className="flex space-x-3 text-sm font-medium text-sidebar-foreground/70">
               <span>All Models</span>
-              <span>{models.count}</span>
+              <Badge variant="secondary">{models.count}</Badge>
             </div>
             <ChevronDown className="w-4 h-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
@@ -126,10 +127,10 @@ export const DatabaseNavigation = ({
           </CollapsibleContent>
         </Collapsible>
         <Collapsible className="group/collapsible">
-          <CollapsibleTrigger className="items-center justify-between flex">
+          <CollapsibleTrigger className="items-center justify-between flex w-full ">
             <div className="flex space-x-3 text-sm font-medium text-sidebar-foreground/70">
               <span>All Views</span>
-              <span>{views.length}</span>
+              <Badge variant="secondary">{views.length}</Badge>
             </div>
             <ChevronUp className="w-4 h-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
@@ -153,10 +154,10 @@ export const DatabaseNavigation = ({
           </CollapsibleContent>
         </Collapsible>
         <Collapsible className="group/collapsible">
-          <CollapsibleTrigger className="items-center justify-between flex">
+          <CollapsibleTrigger className="items-center justify-between flex w-full ">
             <div className="flex space-x-3 text-sm font-medium text-sidebar-foreground/70">
               <span>Migrated Models</span>
-              <span>{migrated.length}</span>
+              <Badge variant="secondary">{migrated.length}</Badge>
             </div>
             <ChevronUp className="w-4 h-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
@@ -180,10 +181,12 @@ export const DatabaseNavigation = ({
           </CollapsibleContent>
         </Collapsible>
         <Collapsible className="group/collapsible">
-          <CollapsibleTrigger className="items-center flex">
+          <CollapsibleTrigger className="items-center flex w-full ">
             <div className="flex space-x-3 text-sm font-medium text-sidebar-foreground/70">
               <span>Pending Models</span>
-              <span>{pending.length}</span>
+              <Badge variant="secondary" className="items-center">
+                {pending.length}
+              </Badge>
             </div>
             <ChevronUp className="w-4 h-4 ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
@@ -207,7 +210,7 @@ export const DatabaseNavigation = ({
           </CollapsibleContent>
         </Collapsible>
       </div>
-      <div className="w-full sticky bottom-8 bg-background py-1">
+      <div className="bg-background py-1">
         <Button
           className="w-full"
           variant="outline"

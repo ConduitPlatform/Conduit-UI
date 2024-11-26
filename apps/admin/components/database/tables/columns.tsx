@@ -22,15 +22,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { ModelDetails } from '@/components/database/model';
 import { useToast } from '@/lib/hooks/use-toast';
-import { DocumentUpdateForm } from '@/components/database/docUpdate';
+import { DocumentUpdateForm } from '@/components/database/docs/update';
 import TooltipHelper from '@/components/ui/helpers/TooltipHelper';
 import moment from 'moment';
+import { updateSchemaDocument } from '@/lib/api/database';
+import { useRouter } from 'next/navigation';
 
 const uuid = z.string().regex(/^[0-9a-f]{24}$/);
 const date = z.string().datetime();
 
 export const useColumns = (data: any, model: string) => {
   const { toast } = useToast();
+  const router = useRouter();
+
   return useMemo<ColumnDef<any, any>[]>(
     () =>
       Object.keys(data[0]).map(key => {
@@ -87,7 +91,6 @@ export const useColumns = (data: any, model: string) => {
             }
             if (
               typeof cell.getValue() === 'object' ||
-              typeof cell.getValue() === 'string' ||
               typeof cell.getValue() === 'number' ||
               typeof cell.getValue() === 'boolean'
             ) {
@@ -118,6 +121,80 @@ export const useColumns = (data: any, model: string) => {
                         value={JSON.stringify(cell.getValue(), null, 2)}
                         label={''}
                         placeholder={''}
+                        cb={data => {
+                          try {
+                            updateSchemaDocument(model, row.original._id, {
+                              ...row.original,
+                              [key]: JSON.parse(data.editedValue as string),
+                            }).then(() => {
+                              toast({
+                                title: 'Database',
+                                description:
+                                  'Document has been updated successfully',
+                              });
+                              router.refresh();
+                            });
+                          } catch (e) {
+                            toast({
+                              title: 'Database',
+                              description: (e as Error).message,
+                            });
+                            return;
+                          }
+                        }}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              );
+            }
+            if (typeof cell.getValue() === 'string') {
+              return (
+                <div className="flex justify-between group">
+                  <div className="w-60 truncate">{cell.getValue()}</div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="invisible group-hover:visible cursor-pointer">
+                        <SquareArrowOutUpRight className="w-4 h-4 text-primary" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="min-w-fit max-w-4xl">
+                      <DialogHeader>
+                        <DialogTitle
+                          className={'flex flex-row justify-between mt-5'}
+                        >
+                          <span>Edit Document</span>
+                        </DialogTitle>
+                        <DialogDescription>On column {key}</DialogDescription>
+                      </DialogHeader>
+                      <DocumentUpdateForm
+                        row={row}
+                        fieldName={key}
+                        model={model}
+                        value={cell.getValue()}
+                        label={''}
+                        placeholder={''}
+                        cb={data => {
+                          try {
+                            updateSchemaDocument(model, row.original._id, {
+                              ...row.original,
+                              [key]: data.editedValue,
+                            }).then(() => {
+                              toast({
+                                title: 'Database',
+                                description:
+                                  'Document has been updated successfully',
+                              });
+                              router.refresh();
+                            });
+                          } catch (e) {
+                            toast({
+                              title: 'Database',
+                              description: (e as Error).message,
+                            });
+                            return;
+                          }
+                        }}
                       />
                     </DialogContent>
                   </Dialog>

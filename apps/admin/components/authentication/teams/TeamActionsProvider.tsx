@@ -43,14 +43,12 @@ export function TeamActionsProvider({
         openSubTeamAdd,
       }}
     >
-      <div className="container py-10">
-        <AddTeamSheet
-          defaultOpen={teamAdd}
-          onClose={() => setTeamAdd(false)}
-          parent={subTeamAdd}
-        />
-        {children}
-      </div>
+      <AddTeamSheet
+        defaultOpen={teamAdd}
+        onClose={() => setTeamAdd(false)}
+        parent={subTeamAdd}
+      />
+      {children}
     </TeamActionsContext.Provider>
   );
 }
