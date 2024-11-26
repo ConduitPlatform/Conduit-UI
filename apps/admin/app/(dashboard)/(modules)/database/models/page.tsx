@@ -5,7 +5,9 @@ import ModelDataTable from '@/components/database/tables';
 
 type DatabaseModelsProps = {
   searchParams?: {
+    search?: string;
     model?: string;
+    pageIndex?: number;
   };
 };
 
@@ -14,7 +16,16 @@ export const dynamic = 'force-dynamic';
 export default async function DatabaseModels({
   searchParams,
 }: DatabaseModelsProps) {
-  const docs = await getSchemaDocs(searchParams?.model);
+  const docs = await getSchemaDocs(
+    searchParams?.model,
+    searchParams?.search
+      ? { query: JSON.parse(searchParams.search) }
+      : undefined,
+    {
+      skip: searchParams?.pageIndex ? searchParams.pageIndex * 19 : 0,
+      limit: 19,
+    }
+  );
 
   if (!searchParams?.model) {
     return <></>;
@@ -35,5 +46,5 @@ export default async function DatabaseModels({
     );
   }
 
-  return <ModelDataTable documents={docs} />;
+  return <ModelDataTable documents={docs} model={searchParams.model} />;
 }

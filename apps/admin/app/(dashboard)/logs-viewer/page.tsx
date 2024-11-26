@@ -1,14 +1,23 @@
 import LogsViewer from '@/components/logs-viewer/LogsViewer';
 import { getLogsLevels, getLogsQueryRange } from '@/lib/api/logs-viewer';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
+import { LogsData } from '@/lib/models/logs-viewer';
 
 export default async function LogsViewerPage() {
-  const levelsData = await getLogsLevels();
+  let isAvailable = false;
+  let levelsData: string[] = [];
+  let logsData: LogsData[] = [];
 
-  const logsData = await getLogsQueryRange({
-    modules: knownModuleNames,
-    limit: '100',
-  });
+  try {
+    levelsData = await getLogsLevels();
+    logsData = await getLogsQueryRange({
+      modules: knownModuleNames,
+      limit: '100',
+    });
+    isAvailable = true;
+  } catch (e) {
+    console.error('Failed to fetch logs levels: ', e);
+  }
 
   const refreshLogs = async (data: {
     modules: string[];
@@ -18,13 +27,25 @@ export default async function LogsViewerPage() {
     limit: string | undefined;
   }) => {
     'use server';
-    const logs = await getLogsQueryRange({
+    return await getLogsQueryRange({
       ...data,
       modules: data.modules ? data.modules : knownModuleNames,
       limit: data.limit ? data.limit : '100',
-    });
-    return logs;
+    })
+      .then(res => res)
+      .catch(e => {
+        console.error('Failed to fetch logs levels: ', e);
+        return [];
+      });
   };
+
+  if (!isAvailable) {
+    return (
+      <div className="flex justify-center mt-10">
+        Logs Viewer is not available
+      </div>
+    );
+  }
 
   return (
     <LogsViewer

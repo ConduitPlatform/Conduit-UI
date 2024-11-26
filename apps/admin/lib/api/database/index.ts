@@ -105,3 +105,22 @@ export const getSchemaDocs = async (
     )
     .then(res => res.data);
 };
+
+export const getSchemaDocument = async (schemaName: string, id: string) => {
+  return await axiosInstance
+    .get(`/database/schemas/${schemaName}/docs/${id}`)
+    .then(res => res.data)
+    .catch(err => {
+      if (err.response.status === 404) throw new Error('not_found');
+    });
+};
+
+export const updateSchemaDocument = async (
+  schemaName: string,
+  id: string,
+  data: any
+) => {
+  return await axiosInstance
+    .put(`database/schemas/${schemaName}/docs/${id}`, { changedDocument: data })
+    .then(res => res.data);
+};
