@@ -39,7 +39,7 @@ export default function NotificationTokensTable({
   }, [debouncedSearchTerm]);
 
   return (
-    <div className="container py-10">
+    <>
       <div className={'flex flex-row justify-between pb-2'}>
         <Input
           placeholder={'Search'}
@@ -48,6 +48,6 @@ export default function NotificationTokensTable({
         />
       </div>
       <DataTable columns={columns} data={tokens} />
-    </div>
+    </>
   );
 }

@@ -19,7 +19,7 @@ export default async function Layout({
   if (!storageModuleAvailable) return <>Storage module is not serving.</>;
   return (
     <FileSystemActionsProvider>
-      <div className="space-y-5 container py-10">
+      <div className="space-y-5">
         <div>{children}</div>
         <div className="grid grid-flow-row auto-rows-max gap-10">
           {folders}
