@@ -8,6 +8,7 @@ type DatabaseModelsProps = {
     search?: string;
     model?: string;
     pageIndex?: number;
+    limit?: number;
   };
 };
 
@@ -22,8 +23,10 @@ export default async function DatabaseModels({
       ? { query: JSON.parse(searchParams.search) }
       : undefined,
     {
-      skip: searchParams?.pageIndex ? searchParams.pageIndex * 19 : 0,
-      limit: 19,
+      skip: searchParams?.pageIndex
+        ? searchParams.pageIndex * (searchParams?.limit ?? 20)
+        : 0,
+      limit: searchParams?.limit ?? 20,
     }
   );
 
