@@ -1,14 +1,19 @@
-import { getSchemaDocs } from '@/lib/api/database';
-import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
+import { getSchema, getSchemaDocs } from '@/lib/api/database';
+
 import ModelDataTable from '@/components/database/tables';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
+import { ModelEditor } from '@/components/database/modelEditor/model-editor';
+import * as React from 'react';
 
 type DatabaseModelsProps = {
   searchParams?: {
     search?: string;
     model?: string;
-    pageIndex?: number;
-    limit?: number;
+    modelId?: string;
+    pageIndex?: string;
+    limit?: string;
   };
 };
 
@@ -16,7 +21,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function DatabaseModels({
   searchParams,
-}: DatabaseModelsProps) {
+}: Readonly<DatabaseModelsProps>) {
+  if (!searchParams?.model || !searchParams?.modelId) {
+    return <></>;
+  }
+
   const docs = await getSchemaDocs(
     searchParams?.model,
     searchParams?.search
@@ -24,30 +33,31 @@ export default async function DatabaseModels({
       : undefined,
     {
       skip: searchParams?.pageIndex
-        ? searchParams.pageIndex * (searchParams?.limit ?? 20)
+        ? Number(searchParams.pageIndex) * Number(searchParams?.limit ?? 20)
         : 0,
-      limit: searchParams?.limit ?? 20,
+      limit: Number(searchParams?.limit ?? 20),
     }
   );
 
-  if (!searchParams?.model) {
-    return <></>;
-  }
-
-  if (!docs.count) {
-    return (
-      <div className="col-span-full flex flex-col items-center justify-center space-y-4">
-        <Button>
-          <PlusIcon className="w-4 h-4" />
-          <span>New document</span>
-        </Button>
-        <span className="text-gray-400 text-sm w-72">
-          No documents were found. Create your first document for model{' '}
-          {searchParams?.model}.
-        </span>
+  const schema = await getSchema(searchParams.modelId);
+  return (
+    <Tabs defaultValue="data" className="h-full">
+      <div className={'flex flex-row gap-x-2'}>
+        <TabsList className="grid grid-cols-2 w-[400px] ml-3">
+          <TabsTrigger value="data">Data</TabsTrigger>
+          <TabsTrigger value="policies">Policies</TabsTrigger>
+        </TabsList>
+        <ModelEditor schema={schema}>
+          <Button variant={'outline'} className={'gap-x-2'}>
+            {' '}
+            <Pencil className={'w-4 h-4'} /> Edit Model
+          </Button>
+        </ModelEditor>
       </div>
-    );
-  }
-
-  return <ModelDataTable documents={docs} model={searchParams.model} />;
+      <TabsContent value="data" className="h-full overflow-auto">
+        <ModelDataTable documents={docs} model={searchParams.model} />
+      </TabsContent>
+      <TabsContent value="policies">Policies</TabsContent>
+    </Tabs>
+  );
 }

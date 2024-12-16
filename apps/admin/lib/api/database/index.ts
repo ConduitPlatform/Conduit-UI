@@ -1,7 +1,12 @@
 'use server';
 
 import { axiosInstance } from '@/lib/api';
-import { DeclaredSchemas, PendingSchemas } from '@/lib/models/database';
+import {
+  DeclaredSchema,
+  PendingSchemas,
+  SchemaOptions,
+} from '@/lib/models/database';
+import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 
 export const getPendingSchemas = async (args: {
   skip?: number;
@@ -33,7 +38,7 @@ export const getSchemas = async (args: {
   owner?: string[];
 }) => {
   type Response = {
-    schemas: DeclaredSchemas[];
+    schemas: DeclaredSchema[];
     count: number;
   };
   return await axiosInstance
@@ -63,14 +68,21 @@ export const getSchemaExtensions = async (args: {
 
 export const getSchema = async (id: string) => {
   return await axiosInstance
-    .get<DeclaredSchemas>(`/database/schemas/${id}`)
+    .get<DeclaredSchema>(`/database/schemas/${id}`)
     .then(res => res.data);
 };
 
-// tODO
-export const createSchema = async (schema: DeclaredSchemas) => {
+export const createSchema = async (schema: Partial<DeclaredSchema>) => {
   return await axiosInstance
-    .post<DeclaredSchemas>('/database/schemas', schema)
+    .post<DeclaredSchema>('/database/schemas', schema)
+    .then(res => res.data);
+};
+export const patchSchema = async (
+  id: string,
+  schema: Partial<DeclaredSchema>
+) => {
+  return await axiosInstance
+    .patch<DeclaredSchema>(`/database/schemas/${id}`, schema)
     .then(res => res.data);
 };
 
@@ -105,6 +117,32 @@ export const getSchemaDocs = async (
     )
     .then(res => res.data);
 };
+export const getCustomEndpoints = async (args?: {
+  skip?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+  operation?: number;
+  schemaName?: string[];
+}) => {
+  return await axiosInstance
+    .get<{
+      customEndpoints: CustomEndpoint[];
+      count: number;
+    }>(`/database/customEndpoints`, {
+      params: args,
+    })
+    .then(res => res.data);
+};
+export const createCustomEndpoint = async (
+  endpoint: Partial<CustomEndpoint>
+) => {
+  return await axiosInstance
+    .post(`/database/customEndpoints`, {
+      ...endpoint,
+    })
+    .then(res => res.data);
+};
 
 export const getSchemaDocument = async (schemaName: string, id: string) => {
   return await axiosInstance
@@ -122,5 +160,17 @@ export const updateSchemaDocument = async (
 ) => {
   return await axiosInstance
     .put(`database/schemas/${schemaName}/docs/${id}`, { changedDocument: data })
+    .then(res => res.data);
+};
+
+export const updateSchema = async (
+  id: string,
+  data: {
+    fields?: { [key: string]: any };
+    conduitOptions?: SchemaOptions['conduit'];
+  }
+) => {
+  return await axiosInstance
+    .patch(`database/schemas/${id}`, data)
     .then(res => res.data);
 };

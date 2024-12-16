@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { MigratedSchemas, PendingSchemas, Views } from '@/lib/models/database';
 import {
   DropdownMenu,
@@ -17,10 +18,10 @@ import {
 } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
 import { getSchemas } from '@/lib/api/database';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { ModelEditor } from '@/components/database/modelEditor/model-editor';
 
 type DatabaseNavigationProps = {
   data: {
@@ -33,7 +34,7 @@ type DatabaseNavigationProps = {
 
 const DatabaseSidebar = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="row-span-11 overflow-auto col-span-1 px-2 py-2.5 text-sidebar-foreground flex flex-col bg-sidebar border space-y-4">
+    <div className="h-full min-w-60 px-2 py-2.5 text-sidebar-foreground flex flex-col bg-sidebar border space-y-4">
       {children}
     </div>
   );
@@ -51,6 +52,15 @@ export const DatabaseNavigation = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const [policies, setPolicies] = useState<boolean>(
+    !!searchParams.get('model')
+  );
+  const [open, setOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    setPolicies(!!searchParams.get('model'));
+  }, [searchParams.get('model')]);
 
   useEffect(() => {
     getSchemas({
@@ -83,6 +93,7 @@ export const DatabaseNavigation = ({
           <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
             {modules.map(module => (
               <DropdownMenuItem
+                key={module}
                 onSelect={() => {
                   router.push(`${pathname}?module=${module}`);
                 }}
@@ -117,6 +128,7 @@ export const DatabaseNavigation = ({
                   onClick={() => {
                     const params = new URLSearchParams(searchParams.toString());
                     params.set('model', model.name);
+                    params.set('modelId', model._id);
                     router.push(`${pathname}?${params.toString()}`);
                   }}
                 >
@@ -210,15 +222,13 @@ export const DatabaseNavigation = ({
           </CollapsibleContent>
         </Collapsible>
       </div>
-      <div className="bg-background py-1">
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={() => console.log('trigger drawer')}
-        >
-          <PlusIcon className="w-4 h-4" />
-          <span className="text-sm">New Model</span>
-        </Button>
+      <div className="bg-background py-1 space-y-4">
+        <ModelEditor>
+          <Button className="w-full" variant="outline">
+            <PlusIcon className="w-4 h-4" />
+            <span className="text-sm">New Model</span>
+          </Button>
+        </ModelEditor>
       </div>
     </DatabaseSidebar>
   );

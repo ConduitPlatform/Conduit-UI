@@ -20,6 +20,6 @@ export interface LokiLogsData {
 }
 
 export interface Option {
-  label: string;
-  value: string;
+  label: string | React.ReactNode;
+  value: any;
 }

@@ -24,7 +24,7 @@ interface SelectFieldProps extends SelectProps {
   fieldName?: string;
   description?: string;
   placeholder?: string;
-  options: string[] | Option[];
+  options: any[] | Option[];
   className?: string;
   classNames?: {
     selectItem?: string;

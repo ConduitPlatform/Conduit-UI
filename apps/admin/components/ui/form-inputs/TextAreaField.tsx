@@ -6,7 +6,7 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
-import { TextArea } from '@/components/ui/textArea';
+import { Textarea } from '@/components/ui/textarea';
 import React from 'react';
 
 interface TextAreaWithLabel
@@ -48,7 +48,7 @@ export const TextAreaField = ({
             {label}
           </FormLabel>
           <FormControl>
-            <TextArea
+            <Textarea
               className={inputClassName}
               placeholder={placeholder}
               {...field}

@@ -26,7 +26,7 @@ type AzureSettings = {
 };
 
 type AwsSettings = {
-  region: string;
+  region?: string;
   accessKeyId: string;
   secretAccessKey: string;
   accountId: string;

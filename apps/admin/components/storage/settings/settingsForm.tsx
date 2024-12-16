@@ -69,7 +69,7 @@ export const SettingsForm = ({
                     </SelectItem>
                     <SelectItem value={'aws'}>
                       <div className={'flex items-center gap-2'}>
-                        AWS{' '}
+                        S3{' '}
                         {data.aws &&
                           data.aws.accessKeyId !== '' &&
                           watch('provider') !== 'aws' && <Cog />}
@@ -151,7 +151,7 @@ export const SettingsForm = ({
             )}
           />
         </div>
-        <div className={'grid grid-cols-2 gap-4'}>
+        <div className={'grid grid-cols-2 gap-4 items-end'}>
           {watch('provider') === 'local' && (
             <FormField
               control={control}
@@ -304,7 +304,7 @@ export const SettingsForm = ({
                 name="aws.accessKeyId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Access Key ID</FormLabel>
+                    <FormLabel>Access Key ID*</FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
@@ -323,7 +323,7 @@ export const SettingsForm = ({
                 name="aws.secretAccessKey"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Secret Access Key</FormLabel>
+                    <FormLabel>Secret Access Key*</FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
@@ -342,7 +342,13 @@ export const SettingsForm = ({
                 name="aws.accountId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Account ID</FormLabel>
+                    <FormLabel>
+                      Account ID
+                      <p className={'text-xs text-[#94A3B8]'}>
+                        This is used for bucket uniqueness. If not using AWS you
+                        can leave empty
+                      </p>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}

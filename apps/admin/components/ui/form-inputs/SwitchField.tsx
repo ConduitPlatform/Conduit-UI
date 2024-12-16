@@ -16,15 +16,21 @@ interface SwitchFieldProps extends SwitchProps {
   label?: string;
   fieldName: string;
   className?: string;
+  classNames?: {
+    label?: string;
+    error?: string;
+  };
 }
 
 const SwitchField = ({
   label,
   fieldName,
   className,
+  classNames,
   children,
   ...switchRestProps
 }: SwitchFieldProps) => {
+  const { label: labelClassName, error: errorClassName } = classNames ?? {};
   const { control } = useFormContext();
 
   return (
@@ -37,7 +43,9 @@ const SwitchField = ({
           <div className="flex flex-row gap-2 items-center">
             {label && (
               <FormLabel>
-                <p className={'text-text-dark-gray'}>{label}</p>
+                <p className={cn('text-text-dark-gray', labelClassName)}>
+                  {label}
+                </p>
               </FormLabel>
             )}
             <FormControl>
@@ -48,7 +56,7 @@ const SwitchField = ({
               />
             </FormControl>
           </div>
-          <FormMessage className={'pl-2'} />
+          <FormMessage className={cn('pl-2', errorClassName)} />
         </FormItem>
       )}
     ></FormField>
