@@ -6,7 +6,7 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { useSearchParams } from 'next/navigation';
 import { FunctionModel } from '@/lib/models/functions';
 import { DataTable } from '@/components/functions/functions/data-table';
-import { columns } from '@/components/functions/functions/columns';
+import { useColumns } from '@/components/functions/functions/columns';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -57,7 +57,7 @@ export default function FunctionsTable({
           </Button>
         </Link>
       </div>
-      <DataTable columns={columns} data={functions} />
+      <DataTable columns={useColumns()} data={functions} />
     </>
   );
 }
