@@ -15,3 +15,14 @@ export type FunctionModel = {
   createdAt: string | Date;
   updatedAt: string | Date;
 };
+
+export type FunctionExecutionModel = {
+  _id: string;
+  functionName: string;
+  duration: number;
+  success: boolean;
+  error?: { [key: string]: any };
+  logs?: string[];
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};

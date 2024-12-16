@@ -1,7 +1,11 @@
 'use server';
 import { axiosInstance } from '@/lib/api';
 import { getModules } from '@/lib/api/modules';
-import { FunctionModel, FunctionsSettings } from '@/lib/models/functions';
+import {
+  FunctionExecutionModel,
+  FunctionModel,
+  FunctionsSettings,
+} from '@/lib/models/functions';
 
 type ConfigResponse = { config: FunctionsSettings };
 
@@ -50,13 +54,6 @@ export const getFunction = async (id: string): Promise<FunctionModel> => {
   return res.data;
 };
 
-export const addFunction = async (
-  data: Omit<FunctionModel, '_id' | 'createdAt' | 'updatedAt'>
-): Promise<FunctionModel> => {
-  const res = await axiosInstance.post(`/functions`, data);
-  return res.data;
-};
-
 export const editFunction = async (
   id: string,
   data: Omit<FunctionModel, '_id' | 'createdAt' | 'updatedAt'>
@@ -87,13 +84,24 @@ export const listFunctionExecutions = async (options: {
   limit?: number;
   sort?: string;
 }) => {
-  const res = await axiosInstance.get(`/functions/list/executions`, {
+  const res = await axiosInstance.get<{
+    functionsExecutions: FunctionExecutionModel[];
+    count: number;
+  }>(`/functions/list/executions`, {
     params: options,
   });
   return res.data;
 };
 
-export const getFunctionExecution = async (functionName: string) => {
-  const res = await axiosInstance.get(`/functions/executions/${functionName}`);
+export const getFunctionExecutions = async (
+  functionName: string,
+  options?: {
+    success?: boolean;
+  }
+) => {
+  const res = await axiosInstance.get<{
+    functionExecutions: FunctionExecutionModel[];
+    count: number;
+  }>(`/functions/executions/${functionName}`, { params: options });
   return res.data;
 };
