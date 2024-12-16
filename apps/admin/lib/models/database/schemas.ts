@@ -1,8 +1,9 @@
-type SchemaOptions = {
+export type SchemaOptions = {
   _id?: boolean;
   timestamps?: boolean;
   conduit?: {
-    cms: {
+    cms?: {
+      enabled: boolean;
       crudOperations: {
         create?: {
           enabled: boolean;

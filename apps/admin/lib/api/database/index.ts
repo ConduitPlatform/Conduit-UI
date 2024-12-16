@@ -1,7 +1,11 @@
 'use server';
 
 import { axiosInstance } from '@/lib/api';
-import { DeclaredSchemas, PendingSchemas } from '@/lib/models/database';
+import {
+  DeclaredSchemas,
+  PendingSchemas,
+  SchemaOptions,
+} from '@/lib/models/database';
 
 export const getPendingSchemas = async (args: {
   skip?: number;
@@ -122,5 +126,17 @@ export const updateSchemaDocument = async (
 ) => {
   return await axiosInstance
     .put(`database/schemas/${schemaName}/docs/${id}`, { changedDocument: data })
+    .then(res => res.data);
+};
+
+export const updateSchema = async (
+  id: string,
+  data: {
+    fields?: { [key: string]: any };
+    conduitOptions?: SchemaOptions['conduit'];
+  }
+) => {
+  return await axiosInstance
+    .patch(`database/schemas/${id}`, data)
     .then(res => res.data);
 };
