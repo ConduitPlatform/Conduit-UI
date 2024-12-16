@@ -1,5 +1,5 @@
 import { getFunctions } from '@/lib/api/functions';
-import FunctionsTable from '@/components/functions/functions/functions';
+import FunctionsTable from '@/components/functions/tables/functions/functions';
 
 export default async function FunctionsList({
   searchParams,

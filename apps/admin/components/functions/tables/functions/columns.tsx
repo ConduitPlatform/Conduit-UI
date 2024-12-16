@@ -1,6 +1,6 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
-import { Clipboard, EditIcon, SendIcon } from 'lucide-react';
+import { Clipboard, EditIcon, EyeIcon, SendIcon } from 'lucide-react';
 import Link from 'next/link';
 import { FunctionModel } from '@/lib/models/functions';
 import { DeleteAlert } from '@/components/helpers/delete';
@@ -61,6 +61,9 @@ export const useColumns = () => {
               </Link>
               <Link href={`/functions/test?function=${row.original._id}`}>
                 <SendIcon className={'w-4 h-4'} />
+              </Link>
+              <Link href={`/functions/functions/${row.original._id}`}>
+                <EyeIcon className={'w-4 h-4'} />
               </Link>
               <DeleteAlert
                 title={'Delete Function'}
