@@ -64,3 +64,36 @@ export const editFunction = async (
   const res = await axiosInstance.patch(`/functions/${id}`, data);
   return res.data;
 };
+
+export const uploadFunction = async (
+  data: Omit<FunctionModel, '_id' | 'createdAt' | 'updatedAt'>
+) => {
+  const res = await axiosInstance.post(`/functions/upload`, data);
+  return res.data;
+};
+
+export const deleteFunction = async (id: string) => {
+  const res = await axiosInstance.delete(`/functions/${id}`);
+  return res.data;
+};
+
+export const deleteManyFunctions = async (ids: string[]) => {
+  const res = await axiosInstance.delete(`/functions`, { params: { ids } });
+  return res.data;
+};
+
+export const listFunctionExecutions = async (options: {
+  skip?: number;
+  limit?: number;
+  sort?: string;
+}) => {
+  const res = await axiosInstance.get(`/functions/list/executions`, {
+    params: options,
+  });
+  return res.data;
+};
+
+export const getFunctionExecution = async (functionName: string) => {
+  const res = await axiosInstance.get(`/functions/executions/${functionName}`);
+  return res.data;
+};
