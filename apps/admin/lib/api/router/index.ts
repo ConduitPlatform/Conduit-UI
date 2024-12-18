@@ -27,3 +27,8 @@ export const patchRouterSettings = async (data: Partial<RouterSettings>) => {
     }
   );
 };
+
+export const getMiddlewares = async () => {
+  const res = await axiosInstance.get<string[]>(`/router/middlewares`);
+  return res.data;
+};

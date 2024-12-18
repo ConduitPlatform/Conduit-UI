@@ -1,3 +1,12 @@
+interface IWebInputsInterface {
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  event?: string;
+  bodyParams?: { [key: string]: any };
+  urlParams?: { [key: string]: any };
+  queryParams?: { [key: string]: any };
+  auth?: boolean;
+}
+
 export type FunctionModel = {
   _id: string;
   name: string;
@@ -9,8 +18,8 @@ export type FunctionModel = {
     | 'socket'
     | 'event'
     | 'cron';
-  inputs?: string;
-  returns?: string;
+  inputs?: IWebInputsInterface;
+  returns?: { [key: string]: any };
   timeout?: number;
   createdAt: string | Date;
   updatedAt: string | Date;
@@ -18,7 +27,7 @@ export type FunctionModel = {
 
 export type FunctionExecutionModel = {
   _id: string;
-  functionName: string;
+  function: string | FunctionModel;
   duration: number;
   success: boolean;
   error?: { [key: string]: any };

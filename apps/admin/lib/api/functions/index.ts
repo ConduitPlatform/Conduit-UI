@@ -94,7 +94,7 @@ export const listFunctionExecutions = async (options: {
 };
 
 export const getFunctionExecutions = async (
-  functionName: string,
+  functionId: string,
   options?: {
     success?: boolean;
   }
@@ -102,6 +102,6 @@ export const getFunctionExecutions = async (
   const res = await axiosInstance.get<{
     functionExecutions: FunctionExecutionModel[];
     count: number;
-  }>(`/functions/executions/${functionName}`, { params: options });
+  }>(`/functions/executions/${functionId}`, { params: options });
   return res.data;
 };

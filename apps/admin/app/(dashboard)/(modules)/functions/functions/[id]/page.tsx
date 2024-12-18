@@ -13,7 +13,7 @@ export default async function FunctionsList({
   };
 }) {
   const functionData = await getFunction(params.id);
-  const data = await getFunctionExecutions(functionData.name, {
+  const data = await getFunctionExecutions(functionData._id, {
     success: searchParams?.success
       ? searchParams.success === 'true'
       : undefined,
