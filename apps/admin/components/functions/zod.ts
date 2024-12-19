@@ -47,14 +47,7 @@ const urlParams = z
     z.object({
       params: z.object({
         name: z.string(),
-        type: z.enum([
-          'string',
-          'number',
-          'boolean',
-          'objectId',
-          'date',
-          'json',
-        ]),
+        type: z.nativeEnum(ParamsEnum), // exclude 'json' and 'date'
       }),
     })
   )

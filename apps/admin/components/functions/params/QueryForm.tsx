@@ -83,7 +83,7 @@ export const QueryParamsForm = () => {
                   <FormItem className="flex items-start space-x-1 space-y-0">
                     <FormControl>
                       <Checkbox
-                        checked={field.value?.required}
+                        checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
@@ -100,7 +100,7 @@ export const QueryParamsForm = () => {
                   <FormItem className="flex items-start space-x-1 space-y-0">
                     <FormControl>
                       <Checkbox
-                        checked={field.value?.isArray}
+                        checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>

@@ -1,9 +1,9 @@
 interface IWebInputsInterface {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   event?: string;
-  bodyParams?: { [key: string]: any };
-  urlParams?: { [key: string]: any };
-  queryParams?: { [key: string]: any };
+  bodyParams?: { [key: string]: any }[];
+  urlParams?: { [key: string]: any }[];
+  queryParams?: { [key: string]: any }[];
   auth?: boolean;
 }
 
@@ -19,7 +19,7 @@ export type FunctionModel = {
     | 'event'
     | 'cron';
   inputs?: IWebInputsInterface;
-  returns?: { [key: string]: any };
+  returns?: { name: string; type: any };
   timeout?: number;
   createdAt: string | Date;
   updatedAt: string | Date;

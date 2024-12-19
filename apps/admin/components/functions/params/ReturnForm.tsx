@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { InputField } from '@/components/ui/form-inputs/InputField';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FormControl,
   FormField,
@@ -25,6 +25,12 @@ export const ReturnParamsForm = () => {
   const [addReturn, setAddReturn] = React.useState(false);
   const form = useFormContext();
 
+  useEffect(() => {
+    if (form.watch('options.http.returnTypes')) {
+      setAddReturn(true);
+    }
+  }, []);
+
   return (
     <>
       <div className="max-h-96 space-y-1 overflow-auto">
@@ -37,7 +43,7 @@ export const ReturnParamsForm = () => {
             />
             <FormField
               control={form.control}
-              name={`options.http.returnTypes.params.type` as const}
+              name={`options.http.returnTypes.type` as const}
               render={({ field }) => (
                 <FormItem className="w-full space-y-0.5">
                   <Select
@@ -70,7 +76,11 @@ export const ReturnParamsForm = () => {
           </div>
         )}
       </div>
-      <Button type="button" onClick={() => setAddReturn(!addReturn)}>
+      <Button
+        type="button"
+        onClick={() => setAddReturn(!addReturn)}
+        disabled={addReturn}
+      >
         Add Parameter
       </Button>
     </>

@@ -22,12 +22,14 @@ import { BodyParamsForm } from '@/components/functions/params/BodyForm';
 import { QueryParamsForm } from '@/components/functions/params/QueryForm';
 import { UrlParamsForm } from '@/components/functions/params/UrlParams';
 import { ReturnParamsForm } from '@/components/functions/params/ReturnForm';
+import { FunctionModel } from '@/lib/models/functions';
 
 type ConfigFormProps = {
   middlewares: GetMiddlewaresResponseType;
+  data?: FunctionModel;
 };
 
-export const ConfigForm = ({ middlewares }: ConfigFormProps) => {
+export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
   const form = useFormContext();
   return (
     <div className="flex flex-col space-y-4">
@@ -86,6 +88,7 @@ export const ConfigForm = ({ middlewares }: ConfigFormProps) => {
                 <FormLabel>Verb</FormLabel>
                 <Select
                   onValueChange={value => {
+                    if (value === '') return;
                     field.onChange(value);
                     form.setValue('options.http.verb', value);
                   }}
