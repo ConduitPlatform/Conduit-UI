@@ -27,7 +27,7 @@ export type FunctionModel = {
 
 export type FunctionExecutionModel = {
   _id: string;
-  function: string | FunctionModel;
+  serverlessFunction: string | FunctionModel;
   duration: number;
   success: boolean;
   error?: { [key: string]: any };

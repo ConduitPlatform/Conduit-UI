@@ -38,6 +38,9 @@ export const CreateFunctionForm = ({
       options: {
         functionType: 'request',
         verb: 'GET',
+        http: {
+          verb: 'GET',
+        },
         middlewares: [],
       },
     },
@@ -56,8 +59,9 @@ export const CreateFunctionForm = ({
         inputs: {
           auth: options.middlewares.includes('authMiddleware'),
           method: options.http.verb,
-          ...options.http.queryParams,
-          ...options.http.urlParams,
+          queryParams: options.http.queryParams,
+          urlParams: options.http.urlParams,
+          bodyParams: (options.http as any)?.bodyParams,
         },
         returns: options.http.returnTypes,
       })
@@ -85,8 +89,9 @@ export const CreateFunctionForm = ({
         inputs: {
           auth: options.middlewares.includes('authMiddleware'),
           method: options.verb,
-          ...options.http.queryParams,
-          ...options.http.urlParams,
+          queryParams: options.http.queryParams,
+          urlParams: options.http.urlParams,
+          bodyParams: (options.http as any)?.bodyParams,
         },
         returns: options.http.returnTypes,
       })
