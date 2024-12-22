@@ -4,7 +4,7 @@ import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { Switch } from '@/components/ui/switch';
-import { FunctionsSettings } from '@/lib/models/Functions';
+import { FunctionsSettings } from '@/lib/models/functions';
 import { patchFunctionsSettings } from '@/lib/api/functions';
 
 interface Props {

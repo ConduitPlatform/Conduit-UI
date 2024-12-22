@@ -13,6 +13,7 @@ import {
   User,
   Logs,
   Settings,
+  CodeIcon,
 } from 'lucide-react';
 
 export const navList = {
@@ -135,26 +136,10 @@ export const navList = {
       ],
     },
     {
-      title: 'Forms',
-      url: '/forms',
-      icon: FormInputIcon,
+      title: 'Functions',
+      url: '/functions',
+      icon: CodeIcon,
       items: [
-        {
-          title: 'Dashboard',
-          url: '/forms',
-        },
-        {
-          title: 'Forms',
-          url: '/forms/forms',
-        },
-        {
-          title: 'Submissions',
-          url: '/forms/submissions',
-        },
-        {
-          title: 'Settings',
-          url: '/forms/settings',
-        },
         {
           title: 'Dashboard',
           url: '/functions',
