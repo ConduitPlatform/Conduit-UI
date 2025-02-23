@@ -33,7 +33,7 @@ type DatabaseNavigationProps = {
 
 const DatabaseSidebar = ({ children }: { children: React.ReactNode[] }) => {
   return (
-    <div className="row-span-11 overflow-auto col-span-1 px-2 py-2.5 text-sidebar-foreground flex flex-col bg-sidebar border space-y-4">
+    <div className="h-full min-w-60 px-2 py-2.5 text-sidebar-foreground flex flex-col bg-sidebar border space-y-4">
       {children}
     </div>
   );
@@ -51,6 +51,15 @@ export const DatabaseNavigation = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const [policies, setPolicies] = useState<boolean>(
+    !!searchParams.get('model')
+  );
+  const [open, setOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    setPolicies(!!searchParams.get('model'));
+  }, [searchParams.get('model')]);
 
   useEffect(() => {
     getSchemas({
@@ -210,7 +219,7 @@ export const DatabaseNavigation = ({
           </CollapsibleContent>
         </Collapsible>
       </div>
-      <div className="bg-background py-1">
+      <div className="bg-background py-1 space-y-4">
         <Button
           className="w-full"
           variant="outline"

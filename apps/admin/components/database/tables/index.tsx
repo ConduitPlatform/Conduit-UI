@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/lib/hooks/use-toast';
+import { PlusIcon } from 'lucide-react';
 
 type ModelDataTableProps = {
   documents: {
@@ -45,8 +46,23 @@ export default function ModelDataTable({
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  if (documents.count) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center space-y-4">
+        <Button>
+          <PlusIcon className="w-4 h-4" />
+          <span>New document</span>
+        </Button>
+        <span className="text-gray-400 text-sm w-72">
+          No documents were found. Create your first document for model{' '}
+          {searchParams.get('model')}.
+        </span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full col-span-full overflow-scroll">
+    <div className="flex flex-col h-full overflow-auto">
       <div className="flex justify-between items-center gap-x-2 py-2.5 px-4">
         <CodeEditor
           placeholder="Type query: { field: 'value'}"
@@ -69,7 +85,6 @@ export default function ModelDataTable({
           Find
         </Button>
       </div>
-
       <DataTable
         docs={documents.documents}
         count={documents.count}

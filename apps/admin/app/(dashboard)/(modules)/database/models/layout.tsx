@@ -14,7 +14,7 @@ export default async function DatabaseLayout({ children }: LayoutProps) {
   ]);
 
   return (
-    <div className="h-full w-full absolute left-0 grid grid-cols-10 grid-rows-12">
+    <div className="w-full absolute h-5/6 left-0 top-13 flex">
       <DatabaseNavigation
         data={{
           views: [],
@@ -23,7 +23,7 @@ export default async function DatabaseLayout({ children }: LayoutProps) {
         }}
         modules={modules.modules}
       />
-      <div className="col-span-9 grid w-full row-span-11">{children}</div>
+      <div className="w-full">{children}</div>
     </div>
   );
 }
