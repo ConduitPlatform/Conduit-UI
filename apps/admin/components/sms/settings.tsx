@@ -217,7 +217,7 @@ export const Settings = ({ data }: Props) => {
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
           <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">Storage Module</p>
+            <p className="text-2xl font-medium">SMS Module</p>
             <Switch
               checked={smsModule}
               onCheckedChange={() => {

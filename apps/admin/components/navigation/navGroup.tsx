@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 type MenuItem = {
   title: string;
@@ -66,10 +67,10 @@ export function NavGroup({ items, label, ...props }: NavGroupProps) {
                   tooltip={item.title}
                   isActive={isActive}
                 >
-                  <a href={item.url}>
+                  <Link href={item.url}>
                     <item.icon />
                     <span>{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
                 {item.items?.length ? (
                   <>
@@ -89,9 +90,9 @@ export function NavGroup({ items, label, ...props }: NavGroupProps) {
                                 asChild
                                 isActive={isSubItemActive}
                               >
-                                <a href={subItem.url}>
+                                <Link href={subItem.url}>
                                   <span>{subItem.title}</span>
-                                </a>
+                                </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           );

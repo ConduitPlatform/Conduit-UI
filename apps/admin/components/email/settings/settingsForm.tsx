@@ -138,7 +138,7 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
                     <FormControl>
                       <Input
                         disabled={!edit}
-                        type={'url'}
+                        type={'text'}
                         title={'SMTP Host'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}

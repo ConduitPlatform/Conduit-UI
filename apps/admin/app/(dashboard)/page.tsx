@@ -47,7 +47,7 @@ const items = [
     description: 'Add a function to your app to run code on the server.',
     icon: <FunctionSquare className="w-6 h-6" />,
     background: 'bg-indigo-500',
-    href: '/functions/create',
+    href: '/functions/functions/new',
   },
   {
     title: 'Create a custom query',
