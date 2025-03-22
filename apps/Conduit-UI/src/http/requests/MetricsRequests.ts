@@ -2,9 +2,9 @@
 import { ModulesTypes } from '../../models/logs/LogsModels';
 import { getRequestProm, NAMESPACE } from '../requestsConfig';
 
-const namespace = () => {
+const namespace = (noDelimeter = false) => {
   if (NAMESPACE && NAMESPACE.length > 0) {
-    return `,namespace="${NAMESPACE}"`;
+    return `${noDelimeter ? "" : ","}namespace="${NAMESPACE}"`;
   }
   return '';
 };
@@ -46,7 +46,7 @@ export const getModuleLatency = (body: {
         ? `avg_over_time(conduit_grpc_request_latency_seconds{module_name="${
             body.module
           }"${namespace()}}[10m])`
-        : `sum(avg_over_time(conduit_grpc_request_latency_seconds{${namespace()}}[5m]))`,
+        : `sum(avg_over_time(conduit_grpc_request_latency_seconds{${namespace(true)}}[5m]))`,
   });
 };
 
