@@ -12,6 +12,8 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^16.3.0",
+    "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.1.1",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.0.4",
@@ -25,6 +27,7 @@
     "@radix-ui/react-navigation-menu": "^1.2.0",
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-progress": "^1.1.0",
+    "@radix-ui/react-scroll-area": "^1.2.3",
     "@radix-ui/react-select": "^1.2.2",
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",

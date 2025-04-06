@@ -2,7 +2,7 @@
 
 import { axiosInstance } from '@/lib/api';
 import {
-  DeclaredSchemas,
+  DeclaredSchema,
   PendingSchemas,
   SchemaOptions,
 } from '@/lib/models/database';
@@ -37,7 +37,7 @@ export const getSchemas = async (args: {
   owner?: string[];
 }) => {
   type Response = {
-    schemas: DeclaredSchemas[];
+    schemas: DeclaredSchema[];
     count: number;
   };
   return await axiosInstance
@@ -67,14 +67,22 @@ export const getSchemaExtensions = async (args: {
 
 export const getSchema = async (id: string) => {
   return await axiosInstance
-    .get<DeclaredSchemas>(`/database/schemas/${id}`)
+    .get<DeclaredSchema>(`/database/schemas/${id}`)
     .then(res => res.data);
 };
 
 // tODO
-export const createSchema = async (schema: DeclaredSchemas) => {
+export const createSchema = async (schema: Partial<DeclaredSchema>) => {
   return await axiosInstance
-    .post<DeclaredSchemas>('/database/schemas', schema)
+    .post<DeclaredSchema>('/database/schemas', schema)
+    .then(res => res.data);
+};
+export const patchSchema = async (
+  id: string,
+  schema: Partial<DeclaredSchema>
+) => {
+  return await axiosInstance
+    .patch<DeclaredSchema>(`/database/schemas/${id}`, schema)
     .then(res => res.data);
 };
 

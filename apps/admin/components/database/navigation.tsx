@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { MigratedSchemas, PendingSchemas, Views } from '@/lib/models/database';
 import {
   DropdownMenu,
@@ -17,10 +18,10 @@ import {
 } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
 import { getSchemas } from '@/lib/api/database';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { ModelEditor } from '@/components/database/modelEditor/model-editor';
 
 type DatabaseNavigationProps = {
   data: {
@@ -92,6 +93,7 @@ export const DatabaseNavigation = ({
           <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
             {modules.map(module => (
               <DropdownMenuItem
+                key={module}
                 onSelect={() => {
                   router.push(`${pathname}?module=${module}`);
                 }}
@@ -126,6 +128,7 @@ export const DatabaseNavigation = ({
                   onClick={() => {
                     const params = new URLSearchParams(searchParams.toString());
                     params.set('model', model.name);
+                    params.set('modelId', model._id);
                     router.push(`${pathname}?${params.toString()}`);
                   }}
                 >
@@ -220,14 +223,12 @@ export const DatabaseNavigation = ({
         </Collapsible>
       </div>
       <div className="bg-background py-1 space-y-4">
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={() => console.log('trigger drawer')}
-        >
-          <PlusIcon className="w-4 h-4" />
-          <span className="text-sm">New Model</span>
-        </Button>
+        <ModelEditor>
+          <Button className="w-full" variant="outline">
+            <PlusIcon className="w-4 h-4" />
+            <span className="text-sm">New Model</span>
+          </Button>
+        </ModelEditor>
       </div>
     </DatabaseSidebar>
   );

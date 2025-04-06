@@ -36,7 +36,7 @@ export type SchemaOptions = {
   indexes?: any[];
 };
 
-export type DeclaredSchemas = {
+export type DeclaredSchema = {
   _id: string;
   name: string;
   parentSchema: string | null;
@@ -53,6 +53,11 @@ export type DeclaredSchemas = {
   collectionName: string;
   createdAt: string;
   updatedAt: string;
+};
+export type CreateSchema = {
+  name: string;
+  fields: any;
+  conduitOptions: {};
 };
 
 export type Views = {
