@@ -1,4 +1,5 @@
 import {
+  AssignmentActionEnum,
   ComparisonOperationEnum,
   LocationEnum,
   OperationsEnum,
@@ -73,6 +74,16 @@ export const comparisonOperations = [
   { value: ComparisonOperationEnum.LTE, label: 'Less Than or Equal' },
   { value: ComparisonOperationEnum.IN, label: 'In' },
   { value: ComparisonOperationEnum.NIN, label: 'Not In' },
+
+  // { value: 'search', label: 'Search' },
+] as const;
+// Comparison operations for the find part
+export const assignmentOperations = [
+  { value: AssignmentActionEnum.ASSIGN, label: 'Assign' },
+  { value: AssignmentActionEnum.INC, label: 'Increment' },
+  { value: AssignmentActionEnum.DEC, label: 'Decrement' },
+  { value: AssignmentActionEnum.PUSH, label: 'Add to array' },
+  { value: AssignmentActionEnum.PULL, label: 'Remove from array' },
 
   // { value: 'search', label: 'Search' },
 ] as const;

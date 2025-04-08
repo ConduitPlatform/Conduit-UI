@@ -11,6 +11,7 @@ import {
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import * as React from 'react';
+import { useEffect } from 'react';
 import {
   ArrowLeft,
   BinaryIcon as LogicalOr,
@@ -65,6 +66,7 @@ import { DeclaredSchema } from '@/lib/models/database';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
 import {
+  assignmentOperations,
   comparisonOperations,
   inputTypes,
   operationTypes,
@@ -167,7 +169,6 @@ export function QueryEditor({
   initialData,
 }: Readonly<QueryEditorProps>) {
   const [models, setModels] = React.useState<DeclaredSchema[]>([]);
-  const [modelFields, setModelFields] = React.useState<ModelField[]>([]);
   const [isModelDialogOpen, setIsModelDialogOpen] = React.useState(false);
   const [modelSearchTerm, setModelSearchTerm] = React.useState('');
   const [inputMode, setInputMode] = React.useState<'form' | 'json'>('form');
@@ -202,6 +203,73 @@ export function QueryEditor({
           }),
     },
   });
+  const selectedSchema = form.watch('selectedSchema');
+  const [modelFields, setModelFields] = React.useState<ModelField[]>([]);
+  const [modifiableFields, setModifiableFields] = React.useState<ModelField[]>(
+    []
+  );
+  useEffect(() => {
+    // parse DeclaredSchema and provide fields
+    if (!selectedSchema) return;
+    const parsedSchema = models.find(model => model._id === selectedSchema);
+    if (!parsedSchema) return;
+
+    setModelFields(
+      Object.keys(parsedSchema.fields).map((fieldName: any) => {
+        const isArray = Array.isArray(parsedSchema.fields);
+        const field = isArray
+          ? parsedSchema.fields[fieldName][0]
+          : parsedSchema.fields[fieldName];
+        return {
+          name: fieldName,
+          type: field.type,
+          isArray: isArray,
+        };
+      })
+    );
+    if (
+      parsedSchema?.modelOptions?.conduit?.permissions?.canModify ===
+      'Everything'
+    ) {
+      setModifiableFields(
+        Object.keys(parsedSchema.fields).map((fieldName: any) => {
+          const isArray = Array.isArray(parsedSchema.fields);
+          const field = isArray
+            ? parsedSchema.fields[fieldName][0]
+            : parsedSchema.fields[fieldName];
+          return {
+            name: fieldName,
+            type: field.type,
+            isArray: isArray,
+          };
+        })
+      );
+    } else if (
+      parsedSchema?.modelOptions?.conduit?.permissions?.canModify ===
+      'ExtensionOnly'
+    ) {
+      let fields = parsedSchema.extensions.filter(
+        extension => extension.ownerModule === 'database'
+      );
+      if (fields.length === 0) {
+        setModifiableFields([]);
+        return;
+      }
+      let resultingFields = Object.keys(fields[0]).map((fieldName: any) => {
+        const isArray = Array.isArray(fields[0]);
+        //@ts-expect-error
+        const field = isArray ? fields[0][fieldName][0] : fields[0][fieldName];
+        return {
+          name: fieldName,
+          type: field.type,
+          isArray: isArray,
+        };
+      });
+      setModifiableFields(resultingFields);
+    } else if (form.watch('operation') !== OperationsEnum.GET) {
+      form.setValue('operation', OperationsEnum.GET);
+    }
+  }, [models, selectedSchema]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -241,12 +309,6 @@ export function QueryEditor({
     form.setValue(`${path}`, updatedConditions);
   };
 
-  // Add a function to change a group's type (AND/OR)
-  //todo fix
-  const changeGroupType = (path: string, newType: 'AND' | 'OR') => {
-    form.setValue(`${path}.type`, newType);
-  };
-
   const {
     fields: setConditions,
     append: appendSetCondition,
@@ -272,44 +334,16 @@ export function QueryEditor({
       skip: 0,
       limit: 1000,
     });
-
-    setModels(schemas);
-  }, []);
-
-  // Mock function to fetch model fields
-  //todo fix
-  const fetchModelFields = React.useCallback(async (modelId: string) => {
-    // Simulate API call with delay
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    // Generate mock fields for the selected model
-    const mockFields = [
-      { name: '_id', type: 'string', isArray: false },
-      { name: 'name', type: 'string', isArray: false },
-      { name: 'email', type: 'string', isArray: false },
-      { name: 'age', type: 'number', isArray: false },
-      { name: 'isActive', type: 'boolean', isArray: false },
-      { name: 'createdAt', type: 'date', isArray: false },
-      { name: 'updatedAt', type: 'date', isArray: false },
-      { name: 'tags', type: 'string', isArray: true },
-      { name: 'address', type: 'object', isArray: false },
-      { name: 'friends', type: 'object', isArray: true },
-    ];
-
-    setModelFields(mockFields);
+    setModels(
+      schemas.filter(model => {
+        return model.modelOptions.conduit.permissions.canModify !== 'Nothing';
+      })
+    );
   }, []);
 
   React.useEffect(() => {
     fetchModels();
   }, [fetchModels]);
-
-  // Fetch model fields when model changes
-  React.useEffect(() => {
-    const modelId = form.watch('selectedSchema');
-    if (modelId) {
-      fetchModelFields(modelId);
-    }
-  }, [form.watch('selectedSchema'), fetchModelFields]);
 
   // Filter models based on search term
   const filteredModels = React.useMemo(() => {
@@ -478,11 +512,10 @@ export function QueryEditor({
   };
 
   // Function to get a readable description of a set condition
-  const getSetDescription = (condition: Assignment): string => {
+  const getSetDescription = (condition: Assignment, index: number): string => {
     const { schemaField, action, assignmentField } = condition;
-
-    if (!schemaField) return '';
-
+    if (!schemaField) return `Set #${index + 1}`;
+    if (!assignmentField.value) return `Set #${index + 1}`;
     let valueDisplay = '';
     if (assignmentField.type === ValueSourceTypeEnum.INPUT) {
       valueDisplay = `input:${assignmentField.value || 'not selected'}`;
@@ -492,7 +525,20 @@ export function QueryEditor({
       valueDisplay = `context:${assignmentField.value || 'not specified'}`;
     }
 
-    return `${schemaField} = ${valueDisplay}`;
+    switch (action) {
+      case AssignmentActionEnum.ASSIGN:
+        return `${schemaField} = ${valueDisplay}`;
+      case AssignmentActionEnum.INC:
+        return `${schemaField}+=${valueDisplay}`;
+      case AssignmentActionEnum.DEC:
+        return `${schemaField}-=${valueDisplay}`;
+      case AssignmentActionEnum.PUSH:
+        return `${schemaField}=${schemaField}.concat(${valueDisplay})`;
+      case AssignmentActionEnum.PULL:
+        return `${schemaField}=${schemaField}.remove(${valueDisplay})`;
+      default:
+        return `${schemaField} = ${valueDisplay}`;
+    }
   };
 
   // Replace the renderFindCondition function with a recursive function to render condition groups
@@ -637,19 +683,12 @@ export function QueryEditor({
     path = 'query',
     isNested = false
   ) => {
-    console.log('Group:', group);
-    console.log('Path:', path);
-    console.log('Is Nested:', isNested);
     //@ts-expect-error
     const obj = form.watch(`${path}`);
     //@ts-expect-error
     const groupType = obj['AND'] ? 'AND' : 'OR';
     //@ts-expect-error
     const conditions = form.watch(`${path}.${groupType}`) || [];
-    console.log('Group:', group);
-    console.log('Path:', path);
-    console.log('Is Nested:', isNested);
-    console.log('Group Type:', groupType);
     return (
       <div
         className={`border rounded-md p-4 mb-4 ${groupType === 'AND' ? 'border-blue-200' : 'border-amber-200'}`}
@@ -663,6 +702,7 @@ export function QueryEditor({
             )}
             <SelectField
               label={''}
+              //@ts-expect-error
               value={form.watch(path)['AND'] ? 'AND' : 'OR'}
               onValueChange={val => {
                 const current = form.watch(path as keyof QueryFormValues);
@@ -792,10 +832,6 @@ export function QueryEditor({
 
   // Render a set condition
   const renderSetCondition = (condition: any, index: number) => {
-    // Get a readable description
-    const setDescription = getSetDescription(condition);
-    const setTitle = setDescription || `Set #${index + 1}`;
-
     return (
       <Collapsible
         key={condition.id}
@@ -805,7 +841,9 @@ export function QueryEditor({
           <div className="flex items-center space-x-2 flex-grow">
             <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
-              <span className="font-medium truncate">{setTitle}</span>
+              <span className="font-medium truncate">
+                {getSetDescription(condition, index)}
+              </span>
             </CollapsibleTrigger>
 
             {form.watch(`assignments.${index}.schemaField`) && (
@@ -831,11 +869,11 @@ export function QueryEditor({
               <SelectField
                 label={'Field'}
                 fieldName={`assignments.${index}.schemaField`}
-                options={modelFields.map(modelField => ({
+                options={modifiableFields.map(modelField => ({
                   value: modelField.name,
                   label: (
                     <div className="flex items-center space-x-2">
-                      {getTypeIcon(modelField.type)}
+                      {getTypeIcon(modelField.type as ValueTypeEnum)}
                       <span>{modelField.name}</span>
                       {modelField.isArray && (
                         <Badge variant="outline" className="ml-1 text-xs">
@@ -844,6 +882,16 @@ export function QueryEditor({
                       )}
                     </div>
                   ),
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <SelectField
+                label={'Assignment Action'}
+                fieldName={`assignments.${index}.action`}
+                options={assignmentOperations.map(vs => ({
+                  label: vs.label,
+                  value: vs.value,
                 }))}
               />
             </div>
@@ -863,11 +911,11 @@ export function QueryEditor({
               ValueSourceTypeEnum.INPUT && (
               <div className="space-y-2">
                 <SelectField
-                  label={'Value Source'}
-                  fieldName={`assignments.${index}.assignmentField.type`}
-                  options={valueSourceTypes.map(vs => ({
-                    label: vs.label,
-                    value: vs.value,
+                  label={'Value from Input'}
+                  fieldName={`assignments.${index}.assignmentField.value`}
+                  options={form.watch(`inputs`).map(input => ({
+                    value: input.name,
+                    label: input.name,
                   }))}
                 />
               </div>
@@ -1033,8 +1081,20 @@ export function QueryEditor({
                               variant="ghost"
                               className="w-full justify-start text-left"
                               onClick={() => {
-                                form.setValue('selectedSchema', model._id);
-                                form.setValue('selectedSchemaName', model.name);
+                                form.setValue('selectedSchema', model._id, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                  shouldTouch: true,
+                                });
+                                form.setValue(
+                                  'selectedSchemaName',
+                                  model.name,
+                                  {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                    shouldTouch: true,
+                                  }
+                                );
                                 setIsModelDialogOpen(false);
                               }}
                             >

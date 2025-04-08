@@ -48,7 +48,7 @@ export type DeclaredSchema = {
     updatedAt: string;
   }[];
   compiledFields: any;
-  modelOptions: any;
+  modelOptions: SchemaOptions;
   ownerModule: string;
   collectionName: string;
   createdAt: string;
