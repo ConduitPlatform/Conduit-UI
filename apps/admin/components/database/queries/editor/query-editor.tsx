@@ -99,7 +99,7 @@ const conditionSchema = z.object({
 });
 
 // Create a recursive schema for condition groups
-//todo change
+// set to any due to TS issues
 const conditionGroupSchema: any = z
   .object({
     AND: z.array(
@@ -129,24 +129,24 @@ const setConditionSchema = z.object({
     value: z.string(),
   }),
 });
-
+const inputsSchema = z.array(
+  z.object({
+    name: z.string().min(1, 'Input name is required'),
+    type: z.nativeEnum(ValueTypeEnum),
+    location: z.nativeEnum(LocationEnum),
+    optional: z.boolean().default(false),
+    array: z.boolean().default(false),
+  })
+);
 // First, update the querySchema to include the authenticated field
 const querySchema = z.object({
   name: z.string().min(1, 'Query name is required'),
-  description: z.string().optional(),
+  endpointDescription: z.string().optional(),
   operation: z.nativeEnum(OperationsEnum),
   selectedSchema: z.string().min(1, 'Model is required'),
   selectedSchemaName: z.string(),
   authentication: z.boolean().default(false), // Add this line
-  inputs: z.array(
-    z.object({
-      name: z.string().min(1, 'Input name is required'),
-      type: z.nativeEnum(ValueTypeEnum),
-      location: z.nativeEnum(LocationEnum),
-      optional: z.boolean().default(false),
-      array: z.boolean().default(false),
-    })
-  ),
+  inputs: inputsSchema,
   inputsJson: z.string().optional(),
   query: conditionGroupSchema.default({
     AND: [],
@@ -179,7 +179,7 @@ export function QueryEditor({
     resolver: zodResolver(querySchema),
     defaultValues: {
       name: initialData?.name ?? '',
-      // description: initialData?.description ?? '',
+      endpointDescription: initialData?.endpointDescription ?? '',
       operation: initialData?.operation ?? 0,
       selectedSchema: initialData?.selectedSchema ?? undefined,
       selectedSchemaName: initialData?.selectedSchemaName ?? undefined,
@@ -277,7 +277,6 @@ export function QueryEditor({
   });
 
   // Add a function to add a condition to a group
-  //todo fix
   const addConditionToGroup = (path: string, condition: any) => {
     //@ts-expect-error
     const currentGroup = form.getValues(path);
@@ -287,7 +286,6 @@ export function QueryEditor({
   };
 
   // Add a function to add a nested group
-  //todo fix
   const addNestedGroup = (path: string, groupType: 'AND' | 'OR') => {
     //@ts-expect-error
     const currentGroup = form.getValues(path);
@@ -300,8 +298,8 @@ export function QueryEditor({
   };
 
   // Add a function to remove a condition or group from a parent group
-  //todo fix
   const removeFromGroup = (path: string, index: number) => {
+    //@ts-expect-error
     const currentGroup = form.getValues(path);
     const updatedConditions = [...currentGroup];
     updatedConditions.splice(index, 1);
@@ -320,6 +318,49 @@ export function QueryEditor({
 
   const operation = form.watch('operation');
   const inputs = form.watch('inputs');
+  useEffect(() => {
+    const model = form.watch('selectedSchema');
+    if (!model) return;
+    const selectedModel = models.find(modelItem => modelItem._id === model);
+    if (!selectedModel) return;
+    if (operation === OperationsEnum.POST) {
+      if (!selectedModel.modelOptions?.conduit?.permissions?.canCreate) {
+        toast({
+          title: 'Error',
+          description:
+            'This model does not support creating new entries through custom queries',
+          variant: 'destructive',
+        });
+        form.setValue('operation', OperationsEnum.GET);
+      }
+    } else if (
+      operation === OperationsEnum.PUT ||
+      operation === OperationsEnum.PATCH
+    ) {
+      if (
+        selectedModel.modelOptions?.conduit?.permissions?.canModify ===
+        'Nothing'
+      ) {
+        toast({
+          title: 'Error',
+          description:
+            'This model does not support modifying entries through custom queries',
+          variant: 'destructive',
+        });
+        form.setValue('operation', OperationsEnum.GET);
+      }
+    } else if (operation === OperationsEnum.DELETE) {
+      if (!selectedModel.modelOptions?.conduit?.permissions?.canDelete) {
+        toast({
+          title: 'Error',
+          description:
+            'This model does not support deleting entries through custom queries',
+          variant: 'destructive',
+        });
+        form.setValue('operation', OperationsEnum.GET);
+      }
+    }
+  }, [operation]);
 
   // Check if the operation supports set conditions
   const supportsSetConditions = [
@@ -336,7 +377,9 @@ export function QueryEditor({
     });
     setModels(
       schemas.filter(model => {
-        return model.modelOptions.conduit.permissions.canModify !== 'Nothing';
+        return (
+          model?.modelOptions?.conduit?.permissions?.canModify !== 'Nothing'
+        );
       })
     );
   }, []);
@@ -347,11 +390,46 @@ export function QueryEditor({
 
   // Filter models based on search term
   const filteredModels = React.useMemo(() => {
-    return models.filter(
-      model => model.name.toLowerCase().includes(modelSearchTerm.toLowerCase())
-      // || model.description.toLowerCase().includes(modelSearchTerm.toLowerCase()),
-    );
-  }, [models, modelSearchTerm]);
+    return models.filter(model => {
+      //match search term with model name
+      let match = model.name
+        .toLowerCase()
+        .includes(modelSearchTerm.toLowerCase());
+      // if the model is not modifiable, and the operation is not GET, do not show it
+      if (
+        model.modelOptions?.conduit?.permissions?.canModify === 'Nothing' &&
+        operation !== OperationsEnum.GET
+      ) {
+        match = false;
+      }
+      // if the model allows only ExtensionOnly modification, check if the operation is PUT or PATCH
+      else if (
+        model.modelOptions?.conduit?.permissions?.canModify ===
+          'ExtensionOnly' &&
+        (operation === OperationsEnum.PUT || operation === OperationsEnum.PATCH)
+      ) {
+        // Check if the model has an extension that allows modification
+        match = model.extensions.some(
+          extension => extension.ownerModule === 'database'
+        );
+      }
+      // if the model does not allow creating new entries, and the operation is POST, do not show it
+      else if (
+        !model.modelOptions?.conduit?.permissions?.canCreate &&
+        operation === OperationsEnum.POST
+      ) {
+        match = false;
+      }
+      // if the model does not allow deleting entries, and the operation is DELETE, do not show it
+      else if (
+        !model.modelOptions?.conduit?.permissions?.canDelete &&
+        operation === OperationsEnum.DELETE
+      ) {
+        match = false;
+      }
+      return match;
+    });
+  }, [models, modelSearchTerm, operation]);
 
   // Handle form submission
   const onSubmit = (data: QueryFormValues) => {
@@ -466,14 +544,6 @@ export function QueryEditor({
     setQueryMode(mode);
   };
 
-  // Check if placement is valid for the current operation
-  const isPlacementValid = (location: number) => {
-    if (location === LocationEnum.BODY) {
-      return ![OperationsEnum.GET, OperationsEnum.DELETE].includes(operation);
-    }
-    return true;
-  };
-
   // Add a helper function to count total conditions in a group (including nested ones)
   const countConditions = (group: any) => {
     if (!group || !group[Object.keys(group)[0]]) return 0;
@@ -564,13 +634,15 @@ export function QueryEditor({
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
               <span className="font-medium truncate">{conditionTitle}</span>
             </CollapsibleTrigger>
-
+            {/*@ts-expect-error*/}
             {form.watch(`${path}.schemaField`) && (
               <div className="flex items-center space-x-2">
                 <Badge variant="outline">
+                  {/*@ts-expect-error*/}
                   {form.watch(`${path}.operation`)}
                 </Badge>
                 <Badge variant="secondary">
+                  {/*@ts-expect-error*/}
                   {form.watch(`${path}.comparisonField.type`)}
                 </Badge>
               </div>
@@ -598,7 +670,7 @@ export function QueryEditor({
                   value: modelField.name,
                   label: (
                     <div className="flex items-center space-x-2">
-                      {getTypeIcon(modelField.type)}
+                      {getTypeIcon(modelField.type as ValueTypeEnum)}
                       <span>{modelField.name}</span>
                       {modelField.isArray && (
                         <Badge variant="outline" className="ml-1 text-xs">
@@ -635,6 +707,7 @@ export function QueryEditor({
               />
             </div>
 
+            {/*@ts-expect-error*/}
             {form.watch(`${path}.comparisonField.type`) ===
               ValueSourceTypeEnum.INPUT && (
               <div className="space-y-2">
@@ -650,6 +723,7 @@ export function QueryEditor({
               </div>
             )}
 
+            {/*@ts-expect-error*/}
             {form.watch(`${path}.comparisonField.type`) ===
               ValueSourceTypeEnum.CUSTOM && (
               <div className="space-y-2">
@@ -660,7 +734,7 @@ export function QueryEditor({
                 />
               </div>
             )}
-
+            {/*@ts-expect-error*/}
             {form.watch(`${path}.comparisonField.type`) ===
               ValueSourceTypeEnum.CONTEXT && (
               <div className="space-y-2">
@@ -706,12 +780,15 @@ export function QueryEditor({
               value={form.watch(path)['AND'] ? 'AND' : 'OR'}
               onValueChange={val => {
                 const current = form.watch(path as keyof QueryFormValues);
+                // @ts-ignore
                 if (current['AND']) {
                   form.setValue(path as keyof QueryFormValues, {
+                    // @ts-ignore
                     [val]: current['AND'],
                   });
                 } else {
                   form.setValue(path as keyof QueryFormValues, {
+                    // @ts-ignore
                     [val]: current['OR'],
                   });
                 }
@@ -997,7 +1074,7 @@ export function QueryEditor({
               <div className="space-y-2">
                 <TextAreaField
                   label={'Description'}
-                  fieldName={'description'}
+                  fieldName={'endpointDescription'}
                   placeholder="Describe what this query does"
                   rows={3}
                 />
@@ -1150,16 +1227,19 @@ export function QueryEditor({
                       key={field.id}
                       className="border rounded-md overflow-hidden"
                     >
-                      <div className="flex items-center justify-between p-3 bg-muted/30">
-                        <div className="flex items-center space-x-2 w-full justify-between mr-2">
-                          <CollapsibleTrigger className="flex items-center space-x-2  text-left">
+                      <div className="flex items-center justify-between p-3 bg-muted/30 cursor-pointer">
+                        <CollapsibleTrigger className="flex items-center space-x-2 flex-grow justify-between text-left cursor-pointer mr-2">
+                          <div
+                            className={
+                              'flex flex-row space-x-2 text-left items-center'
+                            }
+                          >
                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                             <span className="font-medium truncate">
                               {form.watch(`inputs.${index}.name`) ||
                                 `Input #${index + 1}`}
                             </span>
-                          </CollapsibleTrigger>
-
+                          </div>
                           {form.watch(`inputs.${index}.name`) && (
                             <div className="flex items-center space-x-2">
                               <div className="flex items-center space-x-1">
@@ -1197,8 +1277,7 @@ export function QueryEditor({
                               )}
                             </div>
                           )}
-                        </div>
-
+                        </CollapsibleTrigger>
                         <Button
                           type="button"
                           variant="destructive"
@@ -1388,8 +1467,8 @@ export function QueryEditor({
                   onClick={() => {
                     try {
                       const inputsJson = form.getValues('inputsJson');
-                      //todo add more complex validation
-                      JSON.parse(inputsJson ?? '[]');
+                      const parsed = JSON.parse(inputsJson ?? '[]');
+                      inputsSchema.parse(parsed);
                       toast({
                         title: 'Valid JSON',
                         description: 'Your JSON syntax is valid',
@@ -1412,103 +1491,104 @@ export function QueryEditor({
         </div>
 
         {/* Query Definition Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Query Definition</CardTitle>
-            <CardDescription>Define how your query will work</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs
-              value={queryMode}
-              onValueChange={value =>
-                handleQueryModeChange(value as 'form' | 'json')
-              }
-            >
-              <TabsList className="mb-4">
-                <TabsTrigger value="form">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Form
-                </TabsTrigger>
-                <TabsTrigger value="json">
-                  <FileJson className="w-4 h-4 mr-2" />
-                  JSON
-                </TabsTrigger>
-              </TabsList>
+        {form.watch('selectedSchema') && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Query Definition</CardTitle>
+              <CardDescription>Define how your query will work</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs
+                value={queryMode}
+                onValueChange={value =>
+                  handleQueryModeChange(value as 'form' | 'json')
+                }
+              >
+                <TabsList className="mb-4">
+                  <TabsTrigger value="form">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Form
+                  </TabsTrigger>
+                  <TabsTrigger value="json">
+                    <FileJson className="w-4 h-4 mr-2" />
+                    JSON
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="form" className="space-y-6">
-                {/* Find Conditions */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium flex items-center">
-                      <Filter className="w-5 h-5 mr-2" />
-                      Find Conditions
-                    </h3>
+                <TabsContent value="form" className="space-y-6">
+                  {/* Find Conditions */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-medium flex items-center">
+                        <Filter className="w-5 h-5 mr-2" />
+                        Find Conditions
+                      </h3>
+                    </div>
+
+                    {/* Replace the existing condition rendering with the new group renderer */}
+                    {renderConditionGroup('query')}
                   </div>
 
-                  {/* Replace the existing condition rendering with the new group renderer */}
-                  {renderConditionGroup('query')}
-                </div>
+                  {/* Set Conditions (only for create, update, patch) */}
+                  {supportsSetConditions && (
+                    <>
+                      <Separator />
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium flex items-center">
+                            <Settings className="w-5 h-5 mr-2" />
+                            Set Values
+                          </h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              appendSetCondition({
+                                schemaField: '',
+                                action: AssignmentActionEnum.ASSIGN,
+                                assignmentField: {
+                                  type: ValueSourceTypeEnum.INPUT,
+                                  value: '',
+                                },
+                              })
+                            }
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Set Value
+                          </Button>
+                        </div>
 
-                {/* Set Conditions (only for create, update, patch) */}
-                {supportsSetConditions && (
-                  <>
-                    <Separator />
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium flex items-center">
-                          <Settings className="w-5 h-5 mr-2" />
-                          Set Values
-                        </h3>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            appendSetCondition({
-                              schemaField: '',
-                              action: AssignmentActionEnum.ASSIGN,
-                              assignmentField: {
-                                type: ValueSourceTypeEnum.INPUT,
-                                value: '',
-                              },
-                            })
-                          }
-                        >
-                          <Plus className="mr-2 h-4 w-4" />
-                          Add Set Value
-                        </Button>
-                      </div>
-
-                      {setConditions.length === 0 ? (
-                        <div className="flex items-center justify-center p-6 border rounded-md bg-muted/20">
-                          <div className="text-center text-muted-foreground">
-                            <Settings className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                            <p>No set values defined</p>
-                            <p className="text-sm">
-                              Add values to set in your {operation} operation
-                            </p>
+                        {setConditions.length === 0 ? (
+                          <div className="flex items-center justify-center p-6 border rounded-md bg-muted/20">
+                            <div className="text-center text-muted-foreground">
+                              <Settings className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                              <p>No set values defined</p>
+                              <p className="text-sm">
+                                Add values to set in your {operation} operation
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          {setConditions.map((condition, index) =>
-                            renderSetCondition(condition, index)
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </TabsContent>
+                        ) : (
+                          <div className="space-y-2">
+                            {setConditions.map((condition, index) =>
+                              renderSetCondition(condition, index)
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </TabsContent>
 
-              <TabsContent value="json">
-                <div className="space-y-2">
-                  <TextAreaField
-                    label={'Query JSON'}
-                    fieldName={'queryJson'}
-                    rows={15}
-                    className="font-mono"
-                    placeholder={`{
+                <TabsContent value="json">
+                  <div className="space-y-2">
+                    <TextAreaField
+                      label={'Query JSON'}
+                      fieldName={'queryJson'}
+                      rows={15}
+                      className="font-mono"
+                      placeholder={`{
   "query": {
     "AND": [
       {
@@ -1546,52 +1626,59 @@ export function QueryEditor({
     }
   ]
 }`}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Define your query conditions using JSON format
-                  </p>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            {/* Update the footer text to use the countConditions function */}
-            <div className="text-sm text-muted-foreground">
-              {countConditions(form.watch('query'))} find condition
-              {countConditions(form.watch('query')) !== 1 ? 's' : ''} and
-              {supportsSetConditions
-                ? ` ${setConditions.length} set value${setConditions.length !== 1 ? 's' : ''}`
-                : ' no set values'}{' '}
-              defined
-            </div>
-            {queryMode === 'json' && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  try {
-                    const queryJson = form.getValues('queryJson');
-                    //todo more complex parsing
-                    JSON.parse(queryJson ?? '{}');
-                    toast({
-                      title: 'Valid JSON',
-                      description: 'Your JSON syntax is valid',
-                    });
-                  } catch (error) {
-                    toast({
-                      title: 'Invalid JSON',
-                      description: 'Please check your JSON syntax',
-                      variant: 'destructive',
-                    });
-                  }
-                }}
-              >
-                <Code className="mr-2 h-4 w-4" />
-                Validate JSON
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Define your query conditions using JSON format
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              {/* Update the footer text to use the countConditions function */}
+              <div className="text-sm text-muted-foreground">
+                {countConditions(form.watch('query'))} find condition
+                {countConditions(form.watch('query')) !== 1 ? 's' : ''} and
+                {supportsSetConditions
+                  ? ` ${setConditions.length} set value${setConditions.length !== 1 ? 's' : ''}`
+                  : ' no set values'}{' '}
+                defined
+              </div>
+              {queryMode === 'json' && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    try {
+                      const queryJson = form.getValues('queryJson');
+                      const parsed = JSON.parse(queryJson ?? '{}');
+                      if (parsed.query) {
+                        conditionGroupSchema.parse(parsed);
+                      }
+                      if (parsed.assignments) {
+                        z.array(setConditionSchema).parse(parsed.assignments);
+                      }
+
+                      toast({
+                        title: 'Valid JSON',
+                        description: 'Your JSON syntax is valid',
+                      });
+                    } catch (error) {
+                      toast({
+                        title: 'Invalid JSON',
+                        description: 'Please check your JSON syntax',
+                        variant: 'destructive',
+                      });
+                    }
+                  }}
+                >
+                  <Code className="mr-2 h-4 w-4" />
+                  Validate JSON
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
+        )}
       </form>
     </Form>
   );

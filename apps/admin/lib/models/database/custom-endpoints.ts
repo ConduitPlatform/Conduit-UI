@@ -72,6 +72,7 @@ export type CustomEndpoint = {
   _id: string;
   name: string;
   operation: OperationsEnum;
+  endpointDescription?: string;
   selectedSchema: string;
   selectedSchemaName: string;
   inputs: {
