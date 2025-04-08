@@ -68,8 +68,15 @@ import {
   comparisonOperations,
   inputTypes,
   operationTypes,
+  placementTypes,
   valueSourceTypes,
 } from './constants';
+import {
+  getPlacementIcon,
+  getPlacementName,
+  getReadableOperation,
+  getTypeIcon,
+} from '@/components/database/queries/editor/utils';
 
 interface ModelField {
   name: string;
@@ -80,11 +87,9 @@ interface ModelField {
 // Replace the existing findConditionSchema with a recursive schema that supports groups
 const conditionSchema = z.object({
   schemaField: z.string().min(1, 'Field is required'),
-  operation: z.enum(
-    comparisonOperations.map(op => op.value) as [string, ...string[]]
-  ),
+  operation: z.nativeEnum(ComparisonOperationEnum),
   comparisonField: z.object({
-    type: z.enum(valueSourceTypes.map(vs => vs.value) as [string, ...string[]]),
+    type: z.nativeEnum(ValueSourceTypeEnum),
     inputName: z.string().optional(),
     like: z.boolean().optional(),
     caseSensitiveLike: z.boolean().optional(),
@@ -116,9 +121,9 @@ const conditionGroupSchema: any = z
 // Define the schema for set conditions
 const setConditionSchema = z.object({
   schemaField: z.string().min(1, 'Field is required'),
-  action: z.number().min(0).max(4).int(),
+  action: z.nativeEnum(AssignmentActionEnum),
   assignmentField: z.object({
-    type: z.enum(valueSourceTypes.map(vs => vs.value) as [string, ...string[]]),
+    type: z.nativeEnum(ValueSourceTypeEnum),
     value: z.string(),
   }),
 });
@@ -127,15 +132,15 @@ const setConditionSchema = z.object({
 const querySchema = z.object({
   name: z.string().min(1, 'Query name is required'),
   description: z.string().optional(),
-  operation: z.number().min(0).max(4),
+  operation: z.nativeEnum(OperationsEnum),
   selectedSchema: z.string().min(1, 'Model is required'),
   selectedSchemaName: z.string(),
   authentication: z.boolean().default(false), // Add this line
   inputs: z.array(
     z.object({
       name: z.string().min(1, 'Input name is required'),
-      type: z.enum(inputTypes.map(type => type.value) as [string, ...string[]]),
-      location: z.number().min(0).max(2).int(),
+      type: z.nativeEnum(ValueTypeEnum),
+      location: z.nativeEnum(LocationEnum),
       optional: z.boolean().default(false),
       array: z.boolean().default(false),
     })
@@ -208,9 +213,9 @@ export function QueryEditor({
   const addConditionToGroup = (path: string, condition: any) => {
     //@ts-expect-error
     const currentGroup = form.getValues(path);
-    const updatedConditions = [...currentGroup.query, condition];
+    const updatedConditions = [...currentGroup, condition];
     //@ts-expect-error
-    form.setValue(`${path}.query`, updatedConditions);
+    form.setValue(`${path}`, updatedConditions);
   };
 
   // Add a function to add a nested group
@@ -221,19 +226,19 @@ export function QueryEditor({
     const newGroup = {
       [groupType]: [],
     };
-    const updatedConditions = [...currentGroup.query, newGroup];
+    const updatedConditions = [...currentGroup, newGroup];
     //@ts-expect-error
-    form.setValue(`${path}.query`, updatedConditions);
+    form.setValue(`${path}`, updatedConditions);
   };
 
   // Add a function to remove a condition or group from a parent group
   //todo fix
   const removeFromGroup = (path: string, index: number) => {
     const currentGroup = form.getValues(path);
-    const updatedConditions = [...currentGroup.query];
+    const updatedConditions = [...currentGroup];
     updatedConditions.splice(index, 1);
     //@ts-expect-error
-    form.setValue(`${path}.query`, updatedConditions);
+    form.setValue(`${path}`, updatedConditions);
   };
 
   // Add a function to change a group's type (AND/OR)
@@ -333,9 +338,9 @@ export function QueryEditor({
     // If in JSON mode for query, parse the JSON and update the conditions
     if (queryMode === 'json') {
       try {
-        const parsedQuery = JSON.parse(data.queryJson || '{}');
-        data.query = parsedQuery.query || { AND: [] };
-        data.assignments = parsedQuery.assignments || [];
+        const parsedQuery = JSON.parse(data.queryJson ?? '{}');
+        data.query = parsedQuery.query ?? { AND: [] };
+        data.assignments = parsedQuery.assignments ?? [];
       } catch (error) {
         toast({
           title: 'Invalid JSON',
@@ -438,7 +443,6 @@ export function QueryEditor({
   // Add a helper function to count total conditions in a group (including nested ones)
   const countConditions = (group: any) => {
     if (!group || !group[Object.keys(group)[0]]) return 0;
-
     return group[Object.keys(group)[0]].reduce(
       (count: number, condition: any) => {
         // If it's a group, recursively count its conditions
@@ -633,13 +637,19 @@ export function QueryEditor({
     path = 'query',
     isNested = false
   ) => {
+    console.log('Group:', group);
+    console.log('Path:', path);
+    console.log('Is Nested:', isNested);
     //@ts-expect-error
     const obj = form.watch(`${path}`);
     //@ts-expect-error
     const groupType = obj['AND'] ? 'AND' : 'OR';
     //@ts-expect-error
     const conditions = form.watch(`${path}.${groupType}`) || [];
-
+    console.log('Group:', group);
+    console.log('Path:', path);
+    console.log('Is Nested:', isNested);
+    console.log('Group Type:', groupType);
     return (
       <div
         className={`border rounded-md p-4 mb-4 ${groupType === 'AND' ? 'border-blue-200' : 'border-amber-200'}`}
@@ -653,7 +663,19 @@ export function QueryEditor({
             )}
             <SelectField
               label={''}
-              fieldName={`${path}.type`}
+              value={form.watch(path)['AND'] ? 'AND' : 'OR'}
+              onValueChange={val => {
+                const current = form.watch(path as keyof QueryFormValues);
+                if (current['AND']) {
+                  form.setValue(path as keyof QueryFormValues, {
+                    [val]: current['AND'],
+                  });
+                } else {
+                  form.setValue(path as keyof QueryFormValues, {
+                    [val]: current['OR'],
+                  });
+                }
+              }}
               options={[
                 { value: 'AND', label: 'AND' },
                 { value: 'OR', label: 'OR' },
@@ -681,7 +703,7 @@ export function QueryEditor({
               variant="outline"
               size="sm"
               onClick={() =>
-                addConditionToGroup(path, {
+                addConditionToGroup(`${path}.${groupType}`, {
                   schemaField: '',
                   operation: ComparisonOperationEnum.EQUAL,
                   comparisonField: {
@@ -700,7 +722,10 @@ export function QueryEditor({
               variant="outline"
               size="sm"
               onClick={() =>
-                addNestedGroup(path, groupType === 'AND' ? 'OR' : 'AND')
+                addNestedGroup(
+                  path === 'query' ? `${path}.${groupType}` : path,
+                  groupType === 'AND' ? 'OR' : 'AND'
+                )
               }
               className={
                 groupType === 'AND' ? 'text-amber-600' : 'text-blue-600'
@@ -746,16 +771,16 @@ export function QueryEditor({
                 // It's a group, render recursively
                 return renderConditionGroup(
                   condition,
-                  `${path}.${index}`,
+                  `${path}.${groupType}.${index}`,
                   true
                 );
               } else {
                 // It's a condition
                 return renderCondition(
                   condition,
-                  `${path}.${index}`,
+                  `${path}.${groupType}.${index}`,
                   index,
-                  path
+                  `${path}.${groupType}`
                 );
               }
             })
