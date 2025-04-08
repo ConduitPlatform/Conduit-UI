@@ -21,5 +21,5 @@ export interface LokiLogsData {
 
 export interface Option {
   label: string | React.ReactNode;
-  value: string;
+  value: any;
 }

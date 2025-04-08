@@ -92,7 +92,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
         <h1 className="text-2xl font-bold">Custom Queries</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 min-h-0">
+      <div className="w-full absolute h-5/6 left-0 top-13 flex gap-x-4">
         {/* Left sidebar with query list */}
         <QueryList
           queries={queries}
@@ -110,7 +110,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
         />
 
         {/* Right side - Query editor */}
-        <div className="md:col-span-2 border rounded-lg shadow-sm bg-background h-full overflow-auto">
+        <div className="w-full border rounded-lg shadow-sm bg-background h-full overflow-auto">
           {children}
         </div>
       </div>

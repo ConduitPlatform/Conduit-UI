@@ -14,22 +14,16 @@ import * as React from 'react';
 import {
   ArrowLeft,
   BinaryIcon as LogicalOr,
-  Braces,
-  Calendar,
   ChevronDown,
   Code,
   FileJson,
   Filter,
   FormInput,
-  Hash,
-  Key,
   Plus,
   PlusIcon as LogicalAnd,
-  Route,
   Save,
   Search,
   Settings,
-  ToggleLeft,
   Trash2,
 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -70,113 +64,18 @@ import { getSchemas } from '@/lib/api/database';
 import { DeclaredSchema } from '@/lib/models/database';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
-
-// Mock data for demonstration
-interface Model {
-  id: string;
-  name: string;
-  description: string;
-}
+import {
+  comparisonOperations,
+  inputTypes,
+  operationTypes,
+  valueSourceTypes,
+} from './constants';
 
 interface ModelField {
   name: string;
   type: string;
   isArray: boolean;
 }
-
-const operationTypes = [
-  {
-    value: OperationsEnum.GET,
-    label: 'Find',
-    description: 'Retrieve data from the database',
-  },
-  {
-    value: OperationsEnum.POST,
-    label: 'Create',
-    description: 'Insert new data into the database',
-  },
-  {
-    value: OperationsEnum.PUT,
-    label: 'Update',
-    description: 'Replace existing data in the database',
-  },
-  {
-    value: OperationsEnum.PATCH,
-    label: 'Patch',
-    description: 'Partially update existing data',
-  },
-  {
-    value: OperationsEnum.DELETE,
-    label: 'Delete',
-    description: 'Remove data from the database',
-  },
-] as const;
-
-// Update the inputTypes array to remove "array" as a type
-const inputTypes = [
-  { value: ValueTypeEnum.STRING, label: 'String' },
-  { value: ValueTypeEnum.NUMBER, label: 'Number' },
-  { value: ValueTypeEnum.BOOLEAN, label: 'Boolean' },
-  { value: ValueTypeEnum.DATE, label: 'Date' },
-  { value: ValueTypeEnum.OBJECT_ID, label: 'PrimaryId' },
-  { value: ValueTypeEnum.JSON, label: 'Object' },
-] as const;
-
-// Update the placementTypes array
-const placementTypes = [
-  {
-    value: LocationEnum.URL,
-    label: 'Path',
-    description: 'URL path parameter (/:id)',
-  },
-  {
-    value: LocationEnum.QUERY,
-    label: 'Search Parameter',
-    description: 'URL query parameter (?key=value)',
-  },
-  {
-    value: LocationEnum.BODY,
-    label: 'Body',
-    description: 'Request body (JSON)',
-  },
-] as const;
-
-// Comparison operations for the find part
-const comparisonOperations = [
-  { value: ComparisonOperationEnum.EQUAL, label: 'Equal' },
-  { value: ComparisonOperationEnum.NOT_EQUAL, label: 'Not Equal' },
-  { value: ComparisonOperationEnum.GT, label: 'Greater Than' },
-  { value: ComparisonOperationEnum.GTE, label: 'Greater Than or Equal' },
-  { value: ComparisonOperationEnum.LT, label: 'Less Than' },
-  { value: ComparisonOperationEnum.LTE, label: 'Less Than or Equal' },
-  { value: ComparisonOperationEnum.IN, label: 'In' },
-  { value: ComparisonOperationEnum.NIN, label: 'Not In' },
-
-  // { value: 'search', label: 'Search' },
-] as const;
-
-// Value source types
-const valueSourceTypes = [
-  { value: ValueSourceTypeEnum.INPUT, label: 'Input' },
-  { value: ValueSourceTypeEnum.CUSTOM, label: 'Custom Value' },
-  { value: ValueSourceTypeEnum.CONTEXT, label: 'Context Value' },
-] as const;
-
-// Helper function to convert operation codes to readable text
-const getReadableOperation = (op: ComparisonOperationEnum): string => {
-  const operationMap: Record<ComparisonOperationEnum, string> = {
-    [ComparisonOperationEnum.EQUAL]: 'equals',
-    [ComparisonOperationEnum.NOT_EQUAL]: 'does not equal',
-    [ComparisonOperationEnum.GT]: 'is greater than',
-    [ComparisonOperationEnum.GTE]: 'is greater than or equal to',
-    [ComparisonOperationEnum.LT]: 'is less than',
-    [ComparisonOperationEnum.LTE]: 'is less than or equal to',
-    [ComparisonOperationEnum.IN]: 'is in',
-    [ComparisonOperationEnum.NIN]: 'is not in',
-    // /search: 'matches search',
-  };
-  return operationMap[op];
-};
 
 // Replace the existing findConditionSchema with a recursive schema that supports groups
 const conditionSchema = z.object({
@@ -534,39 +433,6 @@ export function QueryEditor({
       return ![OperationsEnum.GET, OperationsEnum.DELETE].includes(operation);
     }
     return true;
-  };
-
-  // Add icons for input types and placements
-  const getTypeIcon = (type: ValueTypeEnum) => {
-    switch (type) {
-      case ValueTypeEnum.STRING:
-        return <FormInput className="h-4 w-4" />;
-      case ValueTypeEnum.NUMBER:
-        return <Hash className="h-4 w-4" />;
-      case ValueTypeEnum.BOOLEAN:
-        return <ToggleLeft className="h-4 w-4" />;
-      case ValueTypeEnum.DATE:
-        return <Calendar className="h-4 w-4" />;
-      case ValueTypeEnum.JSON:
-        return <Braces className="h-4 w-4" />;
-      case ValueTypeEnum.OBJECT_ID:
-        return <Key className="h-4 w-4" />;
-      default:
-        return <FormInput className="h-4 w-4" />;
-    }
-  };
-
-  const getPlacementIcon = (location: LocationEnum) => {
-    switch (location) {
-      case LocationEnum.URL:
-        return <Route className="h-4 w-4" />;
-      case LocationEnum.QUERY:
-        return <Search className="h-4 w-4" />;
-      case LocationEnum.BODY:
-        return <FileJson className="h-4 w-4" />;
-      default:
-        return <Search className="h-4 w-4" />;
-    }
   };
 
   // Add a helper function to count total conditions in a group (including nested ones)
@@ -1069,10 +935,15 @@ export function QueryEditor({
               {/* Add this after the description textarea: */}
               <div className="flex items-center space-x-2">
                 <InputField
+                  type={'checkbox'}
                   label={'Requires Authentication'}
                   fieldName={'authenticated'}
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  classNames={{ description: 'text-xs text-muted-foreground' }}
+                  classNames={{
+                    description: 'text-xs text-muted-foreground',
+                    input:
+                      'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
+                    // formItem: 'flex flex-row',
+                  }}
                   description={
                     ' When enabled, this query will only be accessible to authenticated users'
                   }
@@ -1083,6 +954,10 @@ export function QueryEditor({
                 <SelectField
                   label={'Operation'}
                   placeholder="Select operation"
+                  classNames={{
+                    selectTrigger:
+                      '[&>span>div]:flex-row [&>span>div]:items-center [&>span>div]:justify-start [&>span>div]:gap-2',
+                  }}
                   options={operationTypes.map(op => ({
                     value: op.value,
                     label: (
@@ -1191,8 +1066,8 @@ export function QueryEditor({
                       className="border rounded-md overflow-hidden"
                     >
                       <div className="flex items-center justify-between p-3 bg-muted/30">
-                        <div className="flex items-center space-x-2 flex-grow">
-                          <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                        <div className="flex items-center space-x-2 w-full justify-between mr-2">
+                          <CollapsibleTrigger className="flex items-center space-x-2  text-left">
                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                             <span className="font-medium truncate">
                               {form.watch(`inputs.${index}.name`) ||
@@ -1205,7 +1080,9 @@ export function QueryEditor({
                               <div className="flex items-center space-x-1">
                                 {getTypeIcon(
                                   ValueTypeEnum[
-                                    form.watch(`inputs.${index}.type`)
+                                    form.watch(
+                                      `inputs.${index}.type`
+                                    ) as keyof typeof ValueTypeEnum
                                   ]
                                 )}
                                 <Badge variant="outline" className="text-xs">
@@ -1219,7 +1096,9 @@ export function QueryEditor({
                                   form.watch(`inputs.${index}.location`)
                                 )}
                                 <Badge variant="secondary" className="text-xs">
-                                  {form.watch(`inputs.${index}.location`)}
+                                  {getPlacementName(
+                                    form.watch(`inputs.${index}.location`)
+                                  )}
                                 </Badge>
                               </div>
 
@@ -1310,7 +1189,7 @@ export function QueryEditor({
                                 ].includes(operation) && (
                                   <p className="text-xs text-destructive">
                                     Body parameters are not allowed for{' '}
-                                    {operation} operations
+                                    Find/Delete operations
                                   </p>
                                 )}
                             </div>
@@ -1320,43 +1199,47 @@ export function QueryEditor({
                             <div className="flex items-center space-x-2">
                               <InputField
                                 type="checkbox"
-                                id={`inputs.${index}.required`}
-                                label={'Required'}
-                                fieldName={`inputs.${index}.required`}
+                                id={`inputs.${index}.optional`}
+                                label={'Optional'}
+                                fieldName={`inputs.${index}.optional`}
                                 disabled={
                                   form.watch(`inputs.${index}.location`) ===
                                   LocationEnum.URL
                                 }
                                 classNames={{
+                                  formItem:
+                                    'flex flex-row items-center space-x-2',
+                                  input:
+                                    'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
                                   label:
                                     form.watch(`inputs.${index}.location`) ===
                                     LocationEnum.URL
                                       ? 'text-muted-foreground'
                                       : '',
                                 }}
-                                className={
-                                  'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary'
-                                }
                               />
                             </div>
 
                             <div className="flex items-center space-x-2">
                               <InputField
                                 type="checkbox"
-                                id={`inputs.${index}.isArray`}
+                                id={`inputs.${index}.array`}
                                 disabled={
                                   form.watch(`inputs.${index}.location`) ===
                                   LocationEnum.URL
                                 }
-                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                                 classNames={{
+                                  formItem:
+                                    'flex flex-row items-center space-x-2',
+                                  input:
+                                    'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
                                   label:
                                     form.watch(`inputs.${index}.location`) ===
                                     LocationEnum.URL
                                       ? 'text-muted-foreground'
                                       : '',
                                 }}
-                                fieldName={`inputs.${index}.isArray`}
+                                fieldName={`inputs.${index}.array`}
                                 label={'Is Array'}
                               />
                             </div>

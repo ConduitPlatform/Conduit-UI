@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getCustomEndpoints } from '@/lib/api/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
-import { QueryEditor } from '@/components/database/queries/query-editor';
+import { QueryEditor } from '@/components/database/queries/editor/query-editor';
 
 export default async function CustomQueries({
   params,

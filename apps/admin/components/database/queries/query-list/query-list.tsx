@@ -39,7 +39,7 @@ export function QueryList({
   loadMoreRef,
 }: Readonly<QueryListProps>) {
   return (
-    <div className="md:col-span-1 border rounded-lg shadow-sm flex flex-col h-full overflow-hidden">
+    <div className="w-2/12 border rounded-lg shadow-sm flex flex-col h-full overflow-hidden">
       <QueryFilters
         searchTerm={searchTerm}
         onSearchChange={onSearchChange}
