@@ -6,6 +6,7 @@ import {
   PendingSchemas,
   SchemaOptions,
 } from '@/lib/models/database';
+import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 
 export const getPendingSchemas = async (args: {
   skip?: number;
@@ -115,6 +116,23 @@ export const getSchemaDocs = async (
         params: args,
       }
     )
+    .then(res => res.data);
+};
+export const getCustomEndpoints = async (args?: {
+  skip?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+  operation?: number;
+  schemaName?: string[];
+}) => {
+  return await axiosInstance
+    .get<{
+      documents: CustomEndpoint[];
+      count: number;
+    }>(`/database/customEndpoints`, {
+      params: args,
+    })
     .then(res => res.data);
 };
 

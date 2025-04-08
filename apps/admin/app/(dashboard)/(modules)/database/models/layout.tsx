@@ -5,7 +5,9 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-export default async function DatabaseLayout({ children }: LayoutProps) {
+export default async function DatabaseLayout({
+  children,
+}: Readonly<LayoutProps>) {
   const pendingPromise = getPendingSchemas({ limit: 100 });
   const modulesPromise = getSchemaOwnerModules({ sort: 'name' });
   const [pending, modules] = await Promise.all([
