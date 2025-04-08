@@ -72,7 +72,6 @@ export const getSchema = async (id: string) => {
     .then(res => res.data);
 };
 
-// tODO
 export const createSchema = async (schema: Partial<DeclaredSchema>) => {
   return await axiosInstance
     .post<DeclaredSchema>('/database/schemas', schema)
@@ -128,10 +127,19 @@ export const getCustomEndpoints = async (args?: {
 }) => {
   return await axiosInstance
     .get<{
-      documents: CustomEndpoint[];
+      customEndpoints: CustomEndpoint[];
       count: number;
     }>(`/database/customEndpoints`, {
       params: args,
+    })
+    .then(res => res.data);
+};
+export const createCustomEndpoint = async (
+  endpoint: Partial<CustomEndpoint>
+) => {
+  return await axiosInstance
+    .post(`/database/customEndpoints`, {
+      ...endpoint,
     })
     .then(res => res.data);
 };

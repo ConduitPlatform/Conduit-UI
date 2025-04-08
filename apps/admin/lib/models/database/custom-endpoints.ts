@@ -85,6 +85,8 @@ export type CustomEndpoint = {
   returns: string;
   enabled: boolean;
   authentication?: boolean;
+  paginated?: boolean;
+  sorted?: boolean;
   query: Query;
   assignments: Assignment[];
   createdAt: string;

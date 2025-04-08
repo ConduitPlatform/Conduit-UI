@@ -92,7 +92,7 @@ const conditionSchema = z.object({
   operation: z.nativeEnum(ComparisonOperationEnum),
   comparisonField: z.object({
     type: z.nativeEnum(ValueSourceTypeEnum),
-    inputName: z.string().optional(),
+    value: z.string().optional(),
     like: z.boolean().optional(),
     caseSensitiveLike: z.boolean().optional(),
   }),
@@ -140,12 +140,17 @@ const inputsSchema = z.array(
 );
 // First, update the querySchema to include the authenticated field
 const querySchema = z.object({
-  name: z.string().min(1, 'Query name is required'),
+  name: z
+    .string()
+    .min(1, 'Query name is required')
+    .refine(s => !s.includes(' '), 'Query name cannot contain spaces'),
   endpointDescription: z.string().optional(),
   operation: z.nativeEnum(OperationsEnum),
   selectedSchema: z.string().min(1, 'Model is required'),
   selectedSchemaName: z.string(),
-  authentication: z.boolean().default(false), // Add this line
+  authentication: z.boolean().default(false),
+  paginated: z.boolean().default(true),
+  sorted: z.boolean().default(true),
   inputs: inputsSchema,
   inputsJson: z.string().optional(),
   query: conditionGroupSchema.default({
@@ -159,7 +164,7 @@ type QueryFormValues = z.infer<typeof querySchema>;
 
 interface QueryEditorProps {
   onBack?: () => void;
-  onSave?: (data: QueryFormValues) => void;
+  onSave?: (data: QueryFormValues) => Promise<void>;
   initialData?: Partial<CustomEndpoint>;
 }
 
@@ -184,6 +189,8 @@ export function QueryEditor({
       selectedSchema: initialData?.selectedSchema ?? undefined,
       selectedSchemaName: initialData?.selectedSchemaName ?? undefined,
       authentication: initialData?.authentication ?? false,
+      paginated: initialData?.paginated ?? false,
+      sorted: initialData?.sorted ?? false,
       inputs: initialData?.inputs ?? [],
       inputsJson: initialData?.inputs
         ? JSON.stringify(initialData.inputs)
@@ -437,6 +444,7 @@ export function QueryEditor({
     if (inputMode === 'json') {
       try {
         data.inputs = JSON.parse(data.inputsJson ?? '[]');
+        inputsSchema.parse(data.inputs);
       } catch (error) {
         toast({
           title: 'Invalid JSON',
@@ -453,6 +461,8 @@ export function QueryEditor({
         const parsedQuery = JSON.parse(data.queryJson ?? '{}');
         data.query = parsedQuery.query ?? { AND: [] };
         data.assignments = parsedQuery.assignments ?? [];
+        querySchema.parse(data.query);
+        z.array(setConditionSchema).parse(data.assignments);
       } catch (error) {
         toast({
           title: 'Invalid JSON',
@@ -462,9 +472,27 @@ export function QueryEditor({
         return;
       }
     }
+    if (operation === OperationsEnum.GET) {
+      data.paginated = true;
+      data.sorted = true;
+    }
 
     if (onSave) {
-      onSave(data);
+      onSave(data)
+        .then(() => {
+          'use client';
+          toast({
+            title: 'Query saved',
+            description: 'It will be available in a couple os seconds',
+          });
+        })
+        .catch(error => {
+          toast({
+            title: 'Error saving query',
+            description: error.message,
+            variant: 'destructive',
+          });
+        });
     } else {
       toast({
         title: 'Query saved',
@@ -1104,6 +1132,7 @@ export function QueryEditor({
                 <SelectField
                   label={'Operation'}
                   placeholder="Select operation"
+                  disabled={initialData?._id}
                   classNames={{
                     selectTrigger:
                       '[&>span>div]:flex-row [&>span>div]:items-center [&>span>div]:justify-start [&>span>div]:gap-2',
@@ -1133,7 +1162,11 @@ export function QueryEditor({
                   onOpenChange={setIsModelDialogOpen}
                 >
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      disabled={initialData?._id}
+                    >
                       {form.watch('selectedSchemaName') || 'Select a model'}
                     </Button>
                   </DialogTrigger>

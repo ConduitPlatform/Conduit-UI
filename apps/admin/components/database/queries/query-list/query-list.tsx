@@ -1,6 +1,5 @@
 'use client';
 
-import type * as React from 'react';
 import { Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { QueryListSkeleton } from './query-list-skeleton';
 import { QueryFilters } from './query-filters';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 import { DeclaredSchema } from '@/lib/models/database';
+import React from 'react';
 
 interface QueryListProps {
   queries: CustomEndpoint[];
@@ -26,8 +26,8 @@ interface QueryListProps {
 }
 
 export function QueryList({
-  queries,
-  models,
+  queries: initialQueries,
+  models: initialModels,
   selectedQuery,
   isLoading,
   searchTerm,
@@ -38,6 +38,8 @@ export function QueryList({
   onCreateQuery,
   loadMoreRef,
 }: Readonly<QueryListProps>) {
+  const queries = React.useMemo(() => initialQueries, [initialQueries]);
+  const models = React.useMemo(() => initialModels, [initialModels]);
   return (
     <div className="w-2/12 border rounded-lg shadow-sm flex flex-col h-full overflow-hidden">
       <QueryFilters
