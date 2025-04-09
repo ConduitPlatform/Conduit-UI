@@ -47,18 +47,22 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
       setIsAvailable(!!res.lokiUrl);
     });
   }, [currentModule]);
+
   useEffect(() => {
     getLogsLevels()
       .then(res => {
+        'use client';
         setLevels(res);
       })
-      .catch(() => {});
+      .catch();
     getLogsQueryRange({ modules: currentModule, limit: '100' })
       .then(res => {
+        'use client';
         setLogs(res);
       })
-      .catch(() => {});
-  }, [isAvailable]);
+      .catch();
+  }, [isAvailable, currentModule]);
+
   useEffect(() => {
     const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
     setDrawerHeight(height);

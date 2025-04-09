@@ -118,10 +118,10 @@ export function UserPickerProvider({
         <Dialog open={isOpen} onOpenChange={setOpen}>
           <DialogContent className={'max-w-fit'}>
             <DialogHeader>
-              <DialogTitle>{dialog.title ?? 'Are you sure?'}</DialogTitle>
+              <DialogTitle>{dialog.title ?? 'Users'}</DialogTitle>
               <DialogDescription>
                 {dialog.description ??
-                  "You'll lose your changes if you don't save them."}
+                  'You can select a user from the list below. You can also search for a user by email or id.'}
               </DialogDescription>
             </DialogHeader>
             <div className={'flex flex-row justify-between pb-2'}>
