@@ -1,6 +1,7 @@
+'use server';
 import { LogsData, LokiLogsData } from '@/lib/models/logs-viewer';
 import { getLokiClient } from '@/lib/loki/index';
-import { getEnv } from '@/lib/logic/EnvManager';
+import { _getEnv } from '@/lib/logic/EnvManager';
 
 export const getLogsLevels = async (
   startDate?: number,
@@ -37,7 +38,7 @@ export const getLogsQueryRange = async (data: {
   if (Array.isArray(modules)) {
     normalizedModules = modules;
   }
-  const { namespace } = await getEnv();
+  const { namespace } = await _getEnv();
   if (namespace && namespace.length > 0) {
     queryParts.push(`namespace="${namespace}"`);
   }

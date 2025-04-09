@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { LoginForm } from '@/components/login/loginForm';
 import Image from 'next/image';
 import { LoginIllustration } from '@/icons';
-import { getEnvs } from '@/lib/logic/EnvManager';
+import { _getEnvs } from '@/lib/logic/EnvManager';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 export const dynamic = 'force-dynamic';
 export default async function AuthenticationPage() {
-  const envs = await getEnvs();
+  const envs = await _getEnvs();
 
   return (
     <div className="grid h-full grid-cols lg:grid-cols-2">

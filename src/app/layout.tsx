@@ -12,11 +12,11 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className} style={{ overflow: 'hidden' }}>
         <main className={'h-dvh'}>
           <ProviderInjector>{children}</ProviderInjector>

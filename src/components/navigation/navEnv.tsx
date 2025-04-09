@@ -19,7 +19,7 @@ import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { useCallback, useEffect, useState } from 'react';
 import { switchEnv } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { getEnv, getEnvs } from '@/lib/logic/EnvManager';
+import { getEnvName, getEnvNames } from '@/lib/logic/EnvManager';
 
 export function NavEnv() {
   const { isMobile } = useSidebar();
@@ -27,13 +27,13 @@ export function NavEnv() {
   const [availableEnvs, setAvailableEnvs] = useState<string[]>();
   const router = useRouter();
   useEffect(() => {
-    getEnvs().then(res => {
+    getEnvNames().then(res => {
       'use client';
-      setAvailableEnvs(res.map(env => env.name));
+      setAvailableEnvs(res);
     });
-    getEnv().then(env => {
+    getEnvName().then(env => {
       'use client';
-      setEnv(env.name);
+      setEnv(env);
     });
   }, []);
 

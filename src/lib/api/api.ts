@@ -1,12 +1,12 @@
 'use server';
 import axios from 'axios';
 import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
-import { getEnv } from '@/lib/logic/EnvManager';
+import { _getEnv } from '@/lib/logic/EnvManager';
 import { redirect, RedirectType } from 'next/navigation';
 
 export const getApiClient = async (env?: string) => {
   const envCookie = (await cookies()).get('activeEnv');
-  const envDetails = await getEnv(env ?? envCookie?.value ?? 'Local');
+  const envDetails = await _getEnv(env ?? envCookie?.value ?? 'Local');
 
   const axiosInstance = axios.create({
     baseURL: envDetails.baseUrl,
@@ -19,9 +19,9 @@ export const getApiClient = async (env?: string) => {
     },
   });
   axiosInstance.interceptors.request.use(
-    config => {
+    async config => {
       if (config.headers.Authorization) return config;
-      const accessToken = (cookies() as unknown as UnsafeUnwrappedCookies).get(
+      const accessToken = (await cookies()).get(
         `${envDetails.name}AccessToken`
       );
       if (!accessToken) return config;

@@ -2,19 +2,26 @@ import LogsViewer from '@/components/logs-viewer/LogsViewer';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 import { LogsData } from '@/lib/models/logs-viewer';
 import { getLogsLevels, getLogsQueryRange } from '@/lib/loki/requests';
+import { isLokiEnabled } from '@/lib/logic/EnvManager';
 
 export default async function LogsViewerPage() {
-  let isAvailable = false;
+  let isAvailable = await isLokiEnabled();
   let levelsData: string[] = [];
   let logsData: LogsData[] = [];
 
+  if (!isAvailable) {
+    return (
+      <div className="flex justify-center mt-10">
+        Logs Viewer is not available
+      </div>
+    );
+  }
   try {
     levelsData = await getLogsLevels();
     logsData = await getLogsQueryRange({
       modules: knownModuleNames,
       limit: '100',
     });
-    isAvailable = true;
   } catch (e) {
     console.error('Failed to fetch logs levels: ', e);
   }
@@ -38,14 +45,6 @@ export default async function LogsViewerPage() {
         return [];
       });
   };
-
-  if (!isAvailable) {
-    return (
-      <div className="flex justify-center mt-10">
-        Logs Viewer is not available
-      </div>
-    );
-  }
 
   return (
     <LogsViewer

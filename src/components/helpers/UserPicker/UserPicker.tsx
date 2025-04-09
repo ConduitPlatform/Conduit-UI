@@ -44,9 +44,9 @@ export const useUserPicker = () => useContext(UserPickerContext);
 
 export function UserPickerProvider({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const [dialog, setDialog] = React.useState<PickerDialog | undefined>(
     undefined
   );

@@ -3,7 +3,7 @@
 import { isEmpty } from 'lodash';
 import { cookies } from 'next/headers';
 
-export const getEnvs = async () => {
+export const _getEnvs = async () => {
   let environments: {
     name: string;
     baseUrl: string;
@@ -49,7 +49,19 @@ export const getEnvs = async () => {
   return environments;
 };
 
-export const getEnv = async (env?: string) => {
+export const getEnvNames = async () => {
+  const envs = await _getEnvs();
+
+  return envs.map(env => env.name);
+};
+
+export const getEnvName = async () => {
+  const env = await _getEnv();
+
+  return env.name;
+};
+
+export const _getEnv = async (env?: string) => {
   let _env = env;
   if (!_env) {
     const cookie = (await cookies()).get('activeEnv');
@@ -59,11 +71,16 @@ export const getEnv = async (env?: string) => {
       _env = 'Local';
     }
   }
-  return getEnvs().then(environments => {
+  return _getEnvs().then(environments => {
     const envs = environments.filter(e => e.name === _env);
     if (envs.length === 0) {
       throw new Error('Environment not found');
     }
     return envs[0];
   });
+};
+
+export const isLokiEnabled = async () => {
+  const env = await _getEnv();
+  return !!env.lokiUrl;
 };

@@ -1,11 +1,11 @@
 'use server';
 import axios from 'axios';
 import { cookies } from 'next/headers';
-import { getEnv } from '@/lib/logic/EnvManager';
+import { _getEnv } from '@/lib/logic/EnvManager';
 
 export const getLokiClient = async (env?: string) => {
   const envCookie = (await cookies()).get('activeEnv');
-  const envDetails = await getEnv(env ?? envCookie?.value ?? 'Local');
+  const envDetails = await _getEnv(env ?? envCookie?.value ?? 'Local');
 
   const lokiInstance = axios.create({
     baseURL: envDetails.lokiUrl,

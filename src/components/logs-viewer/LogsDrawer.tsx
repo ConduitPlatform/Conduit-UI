@@ -14,7 +14,7 @@ import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
 import { LogsData } from '@/lib/models/logs-viewer';
 import { getLogsLevels, getLogsQueryRange } from '@/lib/loki/requests';
-import { getEnv } from '@/lib/logic/EnvManager';
+import { isLokiEnabled } from '@/lib/logic/EnvManager';
 
 const snapPoints = [0.5, 0.75, 1];
 
@@ -43,19 +43,37 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   );
 
   useEffect(() => {
-    getEnv().then(res => {
-      setIsAvailable(!!res.lokiUrl);
+    isLokiEnabled().then(res => {
+      'use client';
+      setIsAvailable(res);
     });
   }, [currentModule]);
 
+  const refreshDrawerLogs = useCallback(
+    async (data: {
+      modules: string[] | string;
+      levels?: string[];
+      startDate?: number | undefined;
+      endDate?: number | undefined;
+      limit?: string | undefined;
+    }) => {
+      return await getLogsQueryRange({
+        ...data,
+        modules: currentModule,
+        limit: data.limit ? data.limit : '100',
+      });
+    },
+    [currentModule]
+  );
   useEffect(() => {
+    if (!isAvailable) return;
     getLogsLevels()
       .then(res => {
         'use client';
         setLevels(res);
       })
       .catch();
-    getLogsQueryRange({ modules: currentModule, limit: '100' })
+    refreshDrawerLogs({ modules: currentModule })
       .then(res => {
         'use client';
         setLogs(res);
@@ -67,23 +85,6 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
     setDrawerHeight(height);
   }, [snap]);
-
-  const refreshDrawerLogs = useCallback(
-    async (data: {
-      modules: string[];
-      levels: string[];
-      startDate: number | undefined;
-      endDate: number | undefined;
-      limit: string | undefined;
-    }) => {
-      return await getLogsQueryRange({
-        ...data,
-        modules: currentModule,
-        limit: data.limit ? data.limit : '100',
-      });
-    },
-    [currentModule]
-  );
 
   const calculateDrawerHeight = () => {
     const windowHeight = window.innerHeight;
