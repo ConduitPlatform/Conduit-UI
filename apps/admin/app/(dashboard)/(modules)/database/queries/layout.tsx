@@ -13,9 +13,9 @@ type LayoutProps = {
 };
 
 export default function QueryLayout({ children }: Readonly<LayoutProps>) {
-  const [searchTerm, setSearchTerm] = React.useState(null);
-  const [selectedModel, setSelectedModel] = React.useState<string | null>(null);
-  const [selectedQuery, setSelectedQuery] = React.useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState<string>();
+  const [selectedModel, setSelectedModel] = React.useState<string>();
+  const [selectedQuery, setSelectedQuery] = React.useState<string>();
   const [queries, setQueries] = React.useState<CustomEndpoint[]>([]);
   const [models, setModels] = React.useState<DeclaredSchema[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -26,35 +26,43 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
     threshold: 0,
   });
 
-  const fetchQueries = React.useCallback(async () => {
-    setIsLoading(true);
+  const fetchQueries = React.useCallback(
+    async (
+      _page: number,
+      _term?: string,
+      _model?: string,
+      shouldClean?: boolean
+    ) => {
+      setIsLoading(true);
 
-    const { customEndpoints: newQueries } = await getCustomEndpoints({
-      skip: (page - 1) * 10,
-      limit: 10,
-      sort: 'createdAt',
-      search: !searchTerm || isEmpty(searchTerm) ? undefined : searchTerm,
-      schemaName: selectedModel ? [selectedModel] : undefined,
-    });
-    // check that newQueries are not already in the queries
-    const existingQueries = queries.map(query => query._id);
-    const filteredQueries =
-      newQueries?.filter(query => !existingQueries.includes(query._id)) ?? [];
+      const { customEndpoints: newQueries, count } = await getCustomEndpoints({
+        skip: (_page - 1) * 10,
+        limit: 10,
+        sort: 'createdAt',
+        search: !_term || isEmpty(_term) ? undefined : _term,
+        schemaName: _model ? [_model] : undefined,
+      });
+      debugger;
 
-    setQueries(prev => [...prev, ...(filteredQueries ?? [])]);
-    setHasMore(newQueries?.length > 0);
-    setIsLoading(false);
-    setPage(prev => prev + 1);
-  }, [
-    page,
-    searchTerm,
-    selectedModel,
-    setIsLoading,
-    queries,
-    setQueries,
-    setHasMore,
-    setPage,
-  ]);
+      setQueries(prev => {
+        if (shouldClean) {
+          return newQueries;
+        }
+        // check that newQueries are not already in the queries
+        const existingQueries = prev.map(query => query._id);
+        const filteredQueries =
+          newQueries?.filter(query => !existingQueries.includes(query._id)) ??
+          [];
+        return [...prev, ...(filteredQueries ?? [])];
+      });
+      setHasMore(
+        newQueries?.length > 0 && count > (_page - 1) * 10 + newQueries?.length
+      );
+      setPage(prev => prev + 1);
+      setIsLoading(false);
+    },
+    []
+  );
 
   // Mock function to fetch models
   const fetchModels = React.useCallback(async () => {
@@ -65,31 +73,29 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   // Initial data fetch
   React.useEffect(() => {
     fetchModels();
-    // fetchQueries();
   }, []);
 
   // Load more when scrolling to the bottom
   React.useEffect(() => {
     if (inView && hasMore && !isLoading) {
       console.log('Loading more queries...');
-      fetchQueries();
+      fetchQueries(page, searchTerm, selectedModel, false);
     }
-  }, [inView, hasMore, isLoading, fetchQueries]);
+  }, [inView, hasMore, isLoading, fetchQueries, page]);
 
   // Reset pagination and queries when searchTerm or selectedModel changes
   React.useEffect(() => {
-    if (searchTerm == null && !selectedModel) {
+    if (!searchTerm && !selectedModel) {
       return;
     }
     console.log('Reset: Loading more queries...');
     setPage(1);
-    setQueries([]);
-    fetchQueries();
+    fetchQueries(1, searchTerm, selectedModel, true);
   }, [searchTerm, selectedModel]);
 
   const handleCreateQuery = () => {
     router.push(`/database/queries/new`);
-    setSelectedQuery(null);
+    setSelectedQuery(undefined);
   };
 
   const handleSelectQuery = (id: string) => {
@@ -98,7 +104,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   };
 
   const handleModelChange = (value: string) => {
-    setSelectedModel(value === 'all' ? null : value);
+    setSelectedModel(value === 'all' ? undefined : value);
   };
 
   return (

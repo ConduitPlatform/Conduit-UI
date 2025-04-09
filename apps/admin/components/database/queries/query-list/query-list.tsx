@@ -13,11 +13,11 @@ import React from 'react';
 interface QueryListProps {
   queries: CustomEndpoint[];
   models: DeclaredSchema[];
-  selectedQuery: string | null;
+  selectedQuery?: string;
   isLoading: boolean;
   hasMore: boolean;
-  searchTerm: string;
-  selectedModel: string | null;
+  searchTerm?: string;
+  selectedModel?: string;
   onSearchChange: (value: string) => void;
   onModelChange: (value: string) => void;
   onQuerySelect: (id: string) => void;
@@ -43,7 +43,7 @@ export function QueryList({
   return (
     <div className="w-2/12 border rounded-lg shadow-sm flex flex-col h-full overflow-hidden">
       <QueryFilters
-        searchTerm={searchTerm}
+        searchTerm={searchTerm ?? ''}
         onSearchChange={onSearchChange}
         selectedModel={selectedModel}
         onModelChange={onModelChange}
@@ -53,6 +53,10 @@ export function QueryList({
       <div className="flex-1 overflow-hidden flex flex-col">
         <ScrollArea className="flex-1">
           <div className="p-4">
+            {isLoading &&
+              Array.from({ length: 3 }).map((_, i) => (
+                <QueryListSkeleton key={`skeleton-${i}`} />
+              ))}
             {queries.map(query => (
               <QueryListItem
                 key={query._id}
@@ -61,10 +65,7 @@ export function QueryList({
                 onClick={() => onQuerySelect(query._id)}
               />
             ))}
-            {isLoading &&
-              Array.from({ length: 3 }).map((_, i) => (
-                <QueryListSkeleton key={`skeleton-${i}`} />
-              ))}
+
             <div ref={loadMoreRef} className="h-4" />
           </div>
         </ScrollArea>
