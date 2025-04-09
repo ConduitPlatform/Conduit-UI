@@ -1,26 +1,42 @@
-FROM node:iron AS base
-
+FROM node:iron-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-RUN yarn install --frozen-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
+FROM node:iron-alpine AS builder
+WORKDIR /app
 
+COPY --from=deps /app/node_modules ./node_modules
+COPY ./.env .env.* ./
 COPY . .
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN yarn build
 
-FROM node:iron-alpine
-
+FROM node:iron-alpine AS runner
 WORKDIR /app
 
-COPY --from=base /app/package.json .
-COPY --from=base /app/yarn.lock .
-COPY --from=base /app/next.config.js .
-COPY --from=base /app/public ./public
-COPY --from=base /app/.next/standalone ./
-COPY --from=base /app/.next/static ./.next/static
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/yarn.lock ./yarn.lock
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 
 EXPOSE 3000
-ENV NODE_ENV production
+
+ENV PORT=3000
+
 CMD ["node", "server.js"]
