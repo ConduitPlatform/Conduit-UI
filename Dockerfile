@@ -1,14 +1,14 @@
-FROM node:iron as base
-
-COPY . /app
+FROM node:iron AS base
 
 WORKDIR /app
-RUN yarn
 
-RUN npx lerna run build
+COPY package.json yarn.lock ./
 
-RUN npx lerna clean -y && rm -rf node_modules
+RUN yarn install --frozen-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
 
+COPY . .
+
+RUN yarn build
 
 FROM node:iron-alpine
 
@@ -16,12 +16,11 @@ WORKDIR /app
 
 COPY --from=base /app/package.json .
 COPY --from=base /app/yarn.lock .
-COPY --from=base /app/apps/admin /app/apps/admin
+COPY --from=base /app/next.config.js .
+COPY --from=base /app/public ./public
+COPY --from=base /app/.next/standalone ./
+COPY --from=base /app/.next/static ./.next/static
 
-RUN yarn install --production --pure-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
+EXPOSE 3000
 
-WORKDIR /app/apps/admin
-
-EXPOSE 8080
-
-CMD ["yarn", "start"]
+CMD ["node", "server.js"]
