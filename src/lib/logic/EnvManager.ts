@@ -10,12 +10,14 @@ export const getEnvs = async () => {
     masterKey: string;
     lokiUrl?: string;
     promUrl?: string;
+    namespace?: string;
   }[];
   if (isEmpty(process.env.ENVIRONMENTS)) {
     const baseUrl = process.env.API_BASE_URL!;
     const masterKey = process.env.MASTER_KEY!;
     const lokiUrl = process.env.LOKI_URL;
     const promUrl = process.env.PROMETHEUS_URL;
+    const namespace = process.env.NAMESPACE;
     environments = [
       {
         name: 'Local',
@@ -23,6 +25,7 @@ export const getEnvs = async () => {
         masterKey,
         lokiUrl,
         promUrl,
+        namespace,
       },
     ];
   } else {
@@ -38,6 +41,7 @@ export const getEnvs = async () => {
         masterKey: parseEnvs[key].masterKey,
         lokiUrl: parseEnvs[key].lokiUrl,
         promUrl: parseEnvs[key].promUrl,
+        namespace: parseEnvs[key].namespace,
       });
     });
   }

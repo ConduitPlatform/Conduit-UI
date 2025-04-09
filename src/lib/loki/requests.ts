@@ -1,5 +1,6 @@
 import { LogsData, LokiLogsData } from '@/lib/models/logs-viewer';
 import { getLokiClient } from '@/lib/loki/index';
+import { getEnv } from '@/lib/logic/EnvManager';
 
 export const getLogsLevels = async (
   startDate?: number,
@@ -25,6 +26,7 @@ export const getLogsQueryRange = async (data: {
   limit?: string;
 }): Promise<LogsData[]> => {
   let query = '{';
+  const queryParts = [];
   let normalizedModules: string[] = [];
   const { modules, levels, startDate, endDate, limit, searchTerm } = data;
 
@@ -35,18 +37,22 @@ export const getLogsQueryRange = async (data: {
   if (Array.isArray(modules)) {
     normalizedModules = modules;
   }
+  const { namespace } = await getEnv();
+  if (namespace && namespace.length > 0) {
+    queryParts.push(`namespace="${namespace}"`);
+  }
 
   if (normalizedModules.length) {
     const selectedModuleStr = normalizedModules.join('|');
-    query += `module=~"${selectedModuleStr}"`;
+    queryParts.push(`module=~"${selectedModuleStr}"`);
   }
 
   if (levels?.length) {
     const selectedLevelsStr = levels.join('|');
-    query += `, level=~"${selectedLevelsStr}"`;
+    queryParts.push(`level=~"${selectedLevelsStr}"`);
   }
 
-  query += '}';
+  query += queryParts.join(',') + '}';
 
   if (searchTerm) {
     query += ` |~ "${searchTerm}"`;
