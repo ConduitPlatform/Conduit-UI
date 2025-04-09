@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8080",
+    "dev": "next dev --turbopack -p 8080",
     "build": "next build",
     "start": "next start -p 8080",
     "lint": "next lint",
@@ -56,12 +56,12 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.451.0",
     "moment": "^2.29.4",
-    "next": "^14.2.0",
+    "next": "15.2.5",
     "next-themes": "^0.2.1",
     "postcss": "^8.4.24",
-    "react": "^18.2.0",
+    "react": "19.1.0",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "19.1.0",
     "react-dropzone": "^14.2.3",
     "react-email-editor": "^1.7.11",
     "react-hook-form": "^7.45.1",
@@ -76,10 +76,10 @@
   "devDependencies": {
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.3.3",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.2.6",
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.2",
     "eslint": "^8.44.0",
-    "eslint-config-next": "^14.2.0",
+    "eslint-config-next": "15.2.5",
     "typescript": "^5.1.6",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
@@ -98,5 +98,9 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "resolutions": {
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.2"
   }
 }

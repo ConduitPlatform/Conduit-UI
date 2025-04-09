@@ -3,13 +3,12 @@ import { redirect } from 'next/navigation';
 import { getMiddlewares } from '@/lib/api/router';
 import { EditFunctionForm } from '@/components/functions/EditFunctionForm';
 
-export default async function FunctionsEdit({
-  searchParams,
-}: {
-  searchParams?: {
+export default async function FunctionsEdit(props: {
+  searchParams?: Promise<{
     function: string;
-  };
+  }>;
 }) {
+  const searchParams = await props.searchParams;
   if (!searchParams?.function) {
     return redirect('/functions/functions');
   }

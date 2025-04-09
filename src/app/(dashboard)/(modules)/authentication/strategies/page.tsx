@@ -6,11 +6,7 @@ import { StrategyCard } from '@/components/authentication/strategies/StrategyCar
 import strategyMap from '@/components/authentication/strategies/stategyMap.config';
 import { StrategyList } from '@/components/authentication/strategies/StrategyList';
 
-export default async function Strategies({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default async function Strategies() {
   const { config } = await getAuthenticationSettings();
   const enabledStrategies = Object.keys(config)
     .filter(

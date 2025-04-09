@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import SidebarCollapseTrigger from '@/components/navigation/sidebarCollapseTrigger';
 
 const items = [

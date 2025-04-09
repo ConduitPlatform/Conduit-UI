@@ -52,7 +52,7 @@ export const getEnvs = async () => {
 export const getEnv = async (env?: string) => {
   let _env = env;
   if (!_env) {
-    const cookie = await cookies().get('activeEnv');
+    const cookie = (await cookies()).get('activeEnv');
     if (cookie) {
       _env = cookie.value;
     } else {

@@ -10,13 +10,13 @@ export const adminLogin = async (
   const res = await (
     await getApiClient(environment)
   ).post('/login', { username, password });
-  cookies().set({
+  (await cookies()).set({
     name: `${environment}AccessToken`,
     value: res.data.token,
     httpOnly: true,
     maxAge: 72000,
   });
-  cookies().set({
+  (await cookies()).set({
     name: `activeEnv`,
     value: environment,
     httpOnly: true,
@@ -33,12 +33,12 @@ export const getAdmin = async () => {
 };
 
 export const adminLogout = async () => {
-  const activeEnv = cookies().get('activeEnv')!;
-  cookies().delete(`${activeEnv.value}AccessToken`);
-  cookies().delete(`activeEnv`);
+  const activeEnv = (await cookies()).get('activeEnv')!;
+  (await cookies()).delete(`${activeEnv.value}AccessToken`);
+  (await cookies()).delete(`activeEnv`);
 };
 export const switchEnv = async (env: string) => {
-  cookies().set({
+  (await cookies()).set({
     name: `activeEnv`,
     value: env,
     httpOnly: true,

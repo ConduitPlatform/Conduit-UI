@@ -5,16 +5,17 @@ import { ROOMS_LIMIT } from '@/components/chat/rooms/tables/rooms/utils';
 import { RoomsDashboard } from '@/components/chat/rooms/dashboard';
 
 type ChatRoomParams = {
-  searchParams?: {
+  searchParams?: Promise<{
     pageIndex?: number;
     search?: string;
     sort?: string[];
     users?: string[];
     deleted?: string;
-  };
+  }>;
 };
 
-export default async function ChatRooms({ searchParams }: ChatRoomParams) {
+export default async function ChatRooms(props: ChatRoomParams) {
+  const searchParams = await props.searchParams;
   const modules = await getModules();
   const chatModuleAvailable = !!modules.find(
     m => m.moduleName === 'chat' && m.serving

@@ -4,19 +4,20 @@ import { TemplatesDashboard } from '@/components/email/templates/dashboard';
 import { EmailEditorWrapper } from '@/components/email/email-editor';
 
 type EmailTemplatesParams = {
-  searchParams: {
+  searchParams: Promise<{
     pageIndex?: number;
     sort?: string;
     search?: string;
     externalPageIndex?: number;
     sortByName?: boolean;
     'editor-open'?: string;
-  };
+  }>;
 };
 
-export default async function EmailTemplates({
-  searchParams,
-}: EmailTemplatesParams) {
+export default async function EmailTemplates(
+  props: Readonly<EmailTemplatesParams>
+) {
+  const searchParams = await props.searchParams;
   const modules = await getModules();
   const emailModuleAvailable = !!modules.find(
     m => m.moduleName === 'email' && m.serving

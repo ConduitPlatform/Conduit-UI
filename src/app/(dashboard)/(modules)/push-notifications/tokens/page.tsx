@@ -1,17 +1,16 @@
 import { getTokens } from '@/lib/api/notifications';
 import NotificationTokensTable from '@/components/notifications/tokens/tokens';
 
-export default async function TokensPage({
-  searchParams,
-}: {
-  searchParams: {
+export default async function TokensPage(props: {
+  searchParams: Promise<{
     skip: number;
     limit: number;
     sort?: string;
     search?: string;
     platform?: string;
-  };
+  }>;
 }) {
+  const searchParams = await props.searchParams;
   const data = await getTokens(
     searchParams.skip ?? 0,
     searchParams.limit ?? 20,

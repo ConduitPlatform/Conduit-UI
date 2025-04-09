@@ -3,9 +3,10 @@ import { createCustomEndpoint, getCustomEndpoints } from '@/lib/api/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 import { QueryEditor } from '@/components/database/queries/editor/query-editor';
 
-export default async function CustomQueries({
-  params,
-}: Readonly<{ params: { id: string } }>) {
+export default async function CustomQueries(
+  props: Readonly<{ params: Promise<{ id: string }> }>
+) {
+  const params = await props.params;
   let initialData: Partial<CustomEndpoint> = {};
   const { id } = params;
   if (id !== 'new') {

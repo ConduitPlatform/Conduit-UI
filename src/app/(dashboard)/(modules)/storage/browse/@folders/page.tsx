@@ -5,13 +5,14 @@ import { NoContainerLayout } from '@/app/(dashboard)/(modules)/storage/browse/no
 import { SearchInput } from '@/components/storage/search';
 
 type FolderSlotParams = {
-  searchParams?: {
+  searchParams?: Promise<{
     container?: string;
     folderName?: string;
-  };
+  }>;
 };
 
-export default async function FoldersSlot({ searchParams }: FolderSlotParams) {
+export default async function FoldersSlot(props: FolderSlotParams) {
+  const searchParams = await props.searchParams;
   const modules = await getModules();
   const authzAvailable = !!modules.find(
     m => m.moduleName === 'authorization' && m.serving

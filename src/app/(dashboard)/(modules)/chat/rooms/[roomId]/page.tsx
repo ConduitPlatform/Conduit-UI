@@ -7,20 +7,19 @@ import { Participants } from '@/components/chat/rooms/participants';
 import { Invitations } from '@/components/chat/rooms/invitations';
 
 type ChatRoomParams = {
-  searchParams?: {
+  searchParams?: Promise<{
     pageIndex?: number;
     sort?: string;
     search?: string;
-  };
-  params: {
+  }>;
+  params: Promise<{
     roomId: string;
-  };
+  }>;
 };
 
-export default async function ChatRoomPage({
-  searchParams,
-  params,
-}: ChatRoomParams) {
+export default async function ChatRoomPage(props: ChatRoomParams) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
   const modules = await getModules();
   const chatModuleAvailable = !!modules.find(
     m => m.moduleName === 'chat' && m.serving

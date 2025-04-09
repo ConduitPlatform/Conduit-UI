@@ -4,17 +4,16 @@ import React from 'react';
 import { TemplatePreviewForm } from '@/components/email/templates/templatePreview';
 
 type EmailTemplateProps = {
-  params: {
+  params: Promise<{
     _id: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     'editor-open': string;
-  };
+  }>;
 };
-export default async function EmailTemplates({
-  params,
-  searchParams,
-}: EmailTemplateProps) {
+export default async function EmailTemplates(props: EmailTemplateProps) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const openEditor = searchParams['editor-open'] === 'true';
   const template = await getTemplates({ search: params._id });
   if (!template.templateDocuments.length) {

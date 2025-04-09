@@ -1,16 +1,15 @@
 import { getFunctions } from '@/lib/api/functions';
 import FunctionsTable from '@/components/functions/tables/functions/functions';
 
-export default async function FunctionsList({
-  searchParams,
-}: {
-  searchParams: {
+export default async function FunctionsList(props: {
+  searchParams: Promise<{
     skip: number;
     limit: number;
     sort?: string;
     search?: string;
-  };
+  }>;
 }) {
+  const searchParams = await props.searchParams;
   const data = await getFunctions({
     skip: searchParams.skip ?? 0,
     limit: searchParams.limit ?? 20,

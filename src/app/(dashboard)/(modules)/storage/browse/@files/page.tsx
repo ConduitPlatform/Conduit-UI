@@ -9,14 +9,15 @@ import { FilesGalleryView } from '@/components/storage/units/file/file-gallery-v
 import { FILES_LIMIT } from '@/components/storage/units/file/utils';
 
 type FileSlotParams = {
-  searchParams?: {
+  searchParams?: Promise<{
     container?: string;
     skip?: number;
     fileName?: string;
-  };
+  }>;
 };
 
-export default async function FilesSlot({ searchParams }: FileSlotParams) {
+export default async function FilesSlot(props: FileSlotParams) {
+  const searchParams = await props.searchParams;
   const modules = await getModules();
   const authzAvailable = !!modules.find(
     m => m.moduleName === 'authorization' && m.serving

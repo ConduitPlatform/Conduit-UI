@@ -8,20 +8,21 @@ import { ModelEditor } from '@/components/database/modelEditor/model-editor';
 import * as React from 'react';
 
 type DatabaseModelsProps = {
-  searchParams?: {
+  searchParams: Promise<{
     search?: string;
     model?: string;
     modelId?: string;
     pageIndex?: string;
     limit?: string;
-  };
+  }>;
 };
 
 export const dynamic = 'force-dynamic';
 
-export default async function DatabaseModels({
-  searchParams,
-}: Readonly<DatabaseModelsProps>) {
+export default async function DatabaseModels(
+  props: Readonly<DatabaseModelsProps>
+) {
+  const searchParams = await props.searchParams;
   if (!searchParams?.model || !searchParams?.modelId) {
     return <></>;
   }

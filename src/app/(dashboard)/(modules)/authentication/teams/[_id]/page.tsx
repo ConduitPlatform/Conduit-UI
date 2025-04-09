@@ -9,22 +9,21 @@ import TeamsTable from '@/components/authentication/teams/teams';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Teams({
-  searchParams,
-  params,
-}: {
-  searchParams: {
+export default async function Teams(props: {
+  searchParams: Promise<{
     skip: number;
     limit: number;
     mode?: string;
     sort?: string;
     search?: string;
     parentTeam?: string;
-  };
-  params: {
+  }>;
+  params: Promise<{
     _id: string;
-  };
+  }>;
 }) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
   const { skip, limit, ...queryParams } = searchParams;
   const team = await getTeam(params._id);
   let parentTeam;
