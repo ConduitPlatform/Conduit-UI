@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEnv } from '@/lib/logic/EnvManager';
 
 const isOnLogin = (url: string) => url.endsWith('/login');
 
@@ -11,6 +10,10 @@ const isSpecialPath = (url: string) => {
 
 export async function middleware(request: NextRequest) {
   if (isSpecialPath(request.url)) return NextResponse.next();
+  const originalUrl =
+    request.nextUrl.protocol +
+    request.headers.get('host') +
+    request.nextUrl.pathname;
   const cookieStore = request.cookies;
   const activeEnv = cookieStore.get('activeEnv')!;
   if (!activeEnv) {
@@ -28,30 +31,16 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
-  const envDetails = await getEnv(activeEnv.value);
-  const res = await fetch(`${envDetails.baseUrl}admins/me`, {
-    method: 'GET',
-    // @ts-ignore
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Bearer ${accessToken.value}`,
-      masterkey: envDetails.masterKey,
-    },
-  }).catch(() => null);
-  if (!res || res.status !== 200) {
-    if (request.method !== 'GET' && !isOnLogin(request.url)) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    } else if (isOnLogin(request.url)) {
-      return NextResponse.next();
-    }
-    return NextResponse.redirect(new URL('/login', request.url));
-  } else {
-    if (isOnLogin(request.url)) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    return NextResponse.next();
+  if (request.url.includes('session-timeout')) {
+    const response = NextResponse.redirect(new URL(`/login`, originalUrl));
+    response.cookies.delete(`${activeEnv.value}AccessToken`);
+    console.log('Redirecting from session timeout');
+    return response;
   }
+  if (isOnLogin(request.url)) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+  return NextResponse.next();
 }
 
 export const config = {

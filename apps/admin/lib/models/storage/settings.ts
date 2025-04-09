@@ -29,7 +29,7 @@ type AwsSettings = {
   region?: string;
   accessKeyId: string;
   secretAccessKey: string;
-  accountId: string;
+  accountId?: string;
   endpoint?: string;
 };
 

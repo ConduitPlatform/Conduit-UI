@@ -37,7 +37,7 @@ export const adminLogout = async () => {
   cookies().delete(`${activeEnv.value}AccessToken`);
   cookies().delete(`activeEnv`);
 };
-export const switchEnv = async env => {
+export const switchEnv = async (env: string) => {
   cookies().set({
     name: `activeEnv`,
     value: env,

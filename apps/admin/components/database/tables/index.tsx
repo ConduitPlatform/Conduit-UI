@@ -20,11 +20,12 @@ type ModelDataTableProps = {
 export default function ModelDataTable({
   documents,
   model,
-}: ModelDataTableProps) {
+}: Readonly<ModelDataTableProps>) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [value, setValue] = useState<string>(searchParams.get('search') ?? '');
+  const cols = useColumns(documents.documents, model);
 
   const triggerQuerySearch = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -60,7 +61,6 @@ export default function ModelDataTable({
       </div>
     );
   }
-
   return (
     <div className="flex flex-col h-full overflow-auto">
       <div className="flex justify-between items-center gap-x-2 py-2.5 px-4">
@@ -88,7 +88,7 @@ export default function ModelDataTable({
       <DataTable
         docs={documents.documents}
         count={documents.count}
-        columns={useColumns(documents.documents, model)}
+        columns={cols}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-name: Create and publish production Docker image
+name: Create and publish experimental Docker image
 on:
   workflow_dispatch:
   push:

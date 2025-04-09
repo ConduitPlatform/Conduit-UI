@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { cookies } from 'next/headers';
 import { getEnv } from '@/lib/logic/EnvManager';
+import { redirect, RedirectType } from 'next/navigation';
 
 export const getApiClient = async (env?: string) => {
   const envCookie = cookies().get('activeEnv');
@@ -34,6 +35,10 @@ export const getApiClient = async (env?: string) => {
       return response;
     },
     async error => {
+      const { response } = error;
+      if (response?.status === 401 && error.request.path !== '/admin/login') {
+        redirect('/login?session-timeout=true', RedirectType.replace);
+      }
       if (error.response) {
         // Server responded with a status code outside the range of 2xx
         console.error({

@@ -13,7 +13,7 @@ import { DeclaredSchema } from '@/lib/models/database';
 interface QueryFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  selectedModel: string | null;
+  selectedModel?: string;
   onModelChange: (value: string) => void;
   models: DeclaredSchema[];
 }

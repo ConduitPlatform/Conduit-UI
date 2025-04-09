@@ -1132,7 +1132,7 @@ export function QueryEditor({
                 <SelectField
                   label={'Operation'}
                   placeholder="Select operation"
-                  disabled={initialData?._id}
+                  disabled={!!initialData?._id}
                   classNames={{
                     selectTrigger:
                       '[&>span>div]:flex-row [&>span>div]:items-center [&>span>div]:justify-start [&>span>div]:gap-2',
@@ -1165,7 +1165,7 @@ export function QueryEditor({
                     <Button
                       variant="outline"
                       className="w-full justify-start"
-                      disabled={initialData?._id}
+                      disabled={!!initialData?._id}
                     >
                       {form.watch('selectedSchemaName') || 'Select a model'}
                     </Button>
