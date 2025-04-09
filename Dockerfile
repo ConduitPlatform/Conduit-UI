@@ -1,4 +1,4 @@
-FROM node:fermium as base
+FROM node:iron as base
 
 COPY . /app
 
@@ -10,18 +10,17 @@ RUN npx lerna run build
 RUN npx lerna clean -y && rm -rf node_modules
 
 
-FROM node:fermium-alpine
+FROM node:iron-alpine
 
 WORKDIR /app
 
-COPY --from=base /app/libraries/ui-components /app/libraries/ui-components
 COPY --from=base /app/package.json .
 COPY --from=base /app/yarn.lock .
-COPY --from=base /app/apps/Conduit-UI /app/apps/Conduit-UI
+COPY --from=base /app/apps/admin /app/apps/admin
 
 RUN yarn install --production --pure-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
 
-WORKDIR /app/apps/Conduit-UI
+WORKDIR /app/apps/admin
 
 EXPOSE 8080
 
