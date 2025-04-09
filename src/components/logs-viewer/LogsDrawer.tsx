@@ -7,7 +7,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Logs, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
@@ -29,10 +29,18 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const [logs, setLogs] = useState<LogsData[]>([]);
   const [drawerHeight, setDrawerHeight] = useState(0);
   const pathname = usePathname();
-  const pathSegments = pathname.split('/')[1];
-  const currentModule = pathSegments ? pathSegments : 'core';
-  const isLogsViewerPage = pathSegments === 'logs-viewer';
-  const isCoreModulePage = currentModule === 'core';
+  const currentModule = useMemo(
+    () => pathname.split('/')[1] ?? 'core',
+    [pathname]
+  );
+  const isLogsViewerPage = useMemo(
+    () => pathname.split('/')[1] === 'logs-viewer',
+    [pathname]
+  );
+  const isCoreModulePage = useMemo(
+    () => currentModule === 'core',
+    [currentModule]
+  );
 
   useEffect(() => {
     getEnv().then(res => {
@@ -56,27 +64,26 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     setDrawerHeight(height);
   }, [snap]);
 
-  const refreshDrawerLogs = (data: {
-    modules: string[];
-    levels: string[];
-    startDate: number | undefined;
-    endDate: number | undefined;
-    limit: string | undefined;
-  }) => {
-    const logs = getLogsQueryRange({
-      ...data,
-      modules: currentModule,
-      limit: data.limit ? data.limit : '100',
-    });
-    return logs;
-  };
+  const refreshDrawerLogs = useCallback(
+    async (data: {
+      modules: string[];
+      levels: string[];
+      startDate: number | undefined;
+      endDate: number | undefined;
+      limit: string | undefined;
+    }) => {
+      return await getLogsQueryRange({
+        ...data,
+        modules: currentModule,
+        limit: data.limit ? data.limit : '100',
+      });
+    },
+    [currentModule]
+  );
 
   const calculateDrawerHeight = () => {
     const windowHeight = window.innerHeight;
-    const visibleHeight = (snap as number)
-      ? windowHeight * (snap as number)
-      : windowHeight;
-    return visibleHeight;
+    return (snap as number) ? windowHeight * (snap as number) : windowHeight;
   };
 
   return !isLogsViewerPage && isAvailable ? (
