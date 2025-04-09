@@ -27,10 +27,10 @@ const AzureSchema = z.object({
 });
 
 const AwsSchema = z.object({
-  region: z.string().min(2),
+  region: z.string().min(2).optional(),
   accessKeyId: z.string().min(5),
   secretAccessKey: z.string().min(5),
-  accountId: z.string().min(5),
+  accountId: z.string().min(5).optional(),
   endpoint: z.string().optional(),
 });
 
