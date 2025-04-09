@@ -1,5 +1,5 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import { StorageSettings } from '@/lib/models/storage/settings';
 import { getModules } from '@/lib/api/modules';
 import {
@@ -10,14 +10,18 @@ import {
 } from '@/lib/models/storage';
 
 export const getStorageSettings = async () => {
-  const res = await axiosInstance.get<StorageConfigResponse>(`/config/storage`);
+  const res = await (
+    await getApiClient()
+  ).get<StorageConfigResponse>(`/config/storage`);
   return res.data;
 };
 
 export const patchStorageSettings = async (
   storageData: Partial<StorageSettings>
 ) => {
-  await axiosInstance.patch<StorageConfigResponse>(`/config/storage`, {
+  await (
+    await getApiClient()
+  ).patch<StorageConfigResponse>(`/config/storage`, {
     config: { ...storageData },
   });
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
@@ -43,7 +47,7 @@ export const getContainers = async (args: {
     containers: Container[];
     containersCount: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/storage/containers', { params: args })
     .then(res => res.data);
 };
@@ -52,13 +56,13 @@ export const createContainer = async (data: {
   name: string;
   isPublic?: boolean;
 }) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .post<Container>('/storage/containers', data)
     .then(res => res.data);
 };
 
 export const deleteContainer = async (id: string) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .delete<string>(`/storage/containers/${id}`)
     .then(res => res.data);
 };
@@ -75,7 +79,7 @@ export const getFolders = async (args: {
     folders: Folder[];
     folderCount: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/storage/folders', { params: args })
     .then(res => res.data);
 };
@@ -85,13 +89,13 @@ export const createFolder = async (data: {
   container: string;
   isPublic?: boolean;
 }) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .post<Folder>('/storage/folders', data)
     .then(res => res.data);
 };
 
 export const deleteFolder = async (id: string) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .delete<string>(`/storage/folders/${id}`)
     .then(res => res.data);
 };
@@ -108,19 +112,19 @@ export const getFiles = async (args: {
     files: ConduitFile[];
     filesCount: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/storage/files', { params: args })
     .then(res => res.data);
 };
 
 export const getFileById = async (id: string) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .get<ConduitFile>(`/storage/files/${id}`)
     .then(res => res.data);
 };
 
 export const deleteFileById = async (id: string) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .delete<string>(`/storage/files/${id}`)
     .then(res => res.data);
 };
@@ -134,7 +138,7 @@ export const createFile = async (data: {
   mimeType?: string;
   isPublic?: string;
 }) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .post<ConduitFile>('/storage/files', data)
     .then(res => res.data);
 };
@@ -152,7 +156,7 @@ export const fileUpload = async (data: {
     file: ConduitFile;
     url: string;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .post<Response>('/storage/files/upload', data)
     .then(res => res.data);
 };
@@ -172,13 +176,15 @@ export const patchFileUpload = async (
     file: ConduitFile;
     url: string;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .patch<Response>(`/storage/files/upload/${id}`, data)
     .then(res => res.data);
 };
 
 export const getFileUrl = async (id: string, args?: { redirect?: boolean }) => {
-  return await axiosInstance
+  return await (
+    await getApiClient()
+  )
     .get<{
       result: string;
       redirect?: boolean;

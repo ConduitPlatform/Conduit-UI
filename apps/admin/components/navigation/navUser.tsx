@@ -1,18 +1,18 @@
 'use client';
 
-import { ChevronsUpDown, LogOut, User, Sun } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Sun } from 'lucide-react';
 
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSub,
   DropdownMenuSubContent,
-  DropdownMenuTrigger,
   DropdownMenuSubTrigger,
-  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
@@ -25,19 +25,25 @@ import {
   DropdownMenuSeparator,
 } from '@radix-ui/react-dropdown-menu';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { getAdmin } from '@/lib/api';
+import { useCallback, useEffect, useState } from 'react';
+import { adminLogout, getAdmin } from '@/lib/api';
 import { Admin } from '@/lib/models/User';
+import { useRouter } from 'next/navigation';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const [user, setUser] = useState<Admin>();
   const { theme, setTheme } = useTheme();
-
+  const router = useRouter();
   useEffect(() => {
     getAdmin().then(user => {
       setUser(user);
     });
+  }, []);
+
+  const logout = useCallback(async () => {
+    await adminLogout();
+    router.replace('/login');
   }, []);
 
   return (
@@ -115,7 +121,7 @@ export function NavUser() {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
             </DropdownMenuGroup>
-            <DropdownMenuItem className="gap-2">
+            <DropdownMenuItem className="gap-2" onClick={logout}>
               <LogOut className="w-4 h-4" />
               Log out
             </DropdownMenuItem>

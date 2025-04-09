@@ -3,33 +3,20 @@ import axios from 'axios';
 import { cookies } from 'next/headers';
 import { getEnv } from '@/lib/logic/EnvManager';
 
-export const getApiClient = async (env?: string) => {
+export const getLokiClient = async (env?: string) => {
   const envCookie = cookies().get('activeEnv');
   const envDetails = await getEnv(env ?? envCookie?.value ?? 'Local');
 
-  const axiosInstance = axios.create({
-    baseURL: envDetails.baseUrl,
-    withCredentials: true,
-    timeout: 50000, // request timeout in milliseconds
+  const lokiInstance = axios.create({
+    baseURL: envDetails.lokiUrl,
+    timeout: 50000,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      masterkey: envDetails.masterKey,
     },
   });
-  axiosInstance.interceptors.request.use(
-    config => {
-      if (config.headers.Authorization) return config;
-      const accessToken = cookies().get(`${envDetails.name}AccessToken`);
-      if (!accessToken) return config;
-      config.headers.Authorization = `Bearer ${accessToken.value}`;
-      return config;
-    },
-    error => {
-      return Promise.reject(error);
-    }
-  );
-  axiosInstance.interceptors.response.use(
+
+  lokiInstance.interceptors.response.use(
     response => {
       return response;
     },
@@ -63,5 +50,6 @@ export const getApiClient = async (env?: string) => {
       return Promise.reject(error);
     }
   );
-  return axiosInstance;
+
+  return lokiInstance;
 };

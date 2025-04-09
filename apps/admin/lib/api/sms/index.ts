@@ -1,17 +1,19 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import { getModules } from '@/lib/api/modules';
 import { SmsSettings } from '@/lib/models/Sms';
 
 type ConfigResponse = { config: SmsSettings };
 
 export const getSmsSettings = async () => {
-  const res = await axiosInstance.get<ConfigResponse>(`/config/sms`);
+  const res = await (await getApiClient()).get<ConfigResponse>(`/config/sms`);
   return res.data;
 };
 
 export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/sms`, {
+  await (
+    await getApiClient()
+  ).patch<ConfigResponse>(`/config/sms`, {
     config: { ...smsData },
   });
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
@@ -29,6 +31,6 @@ export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
 };
 
 export const testSendSMS = async (smsData: { to: string; message: string }) => {
-  const res = await axiosInstance.post(`/sms/send`, { ...smsData });
+  const res = await (await getApiClient()).post(`/sms/send`, { ...smsData });
   return 'ok';
 };

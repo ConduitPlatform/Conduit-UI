@@ -8,18 +8,20 @@ import { LoaderIcon } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { adminLogin } from '@/lib/api';
+import SelectField from '@/components/ui/form-inputs/SelectField';
 
-export function LoginForm() {
+export function LoginForm({ envs }: { envs: string[] }) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [username, setUsername] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
+  const [environment, setEnvironment] = React.useState<string>(envs[0]);
   const router = useRouter();
   const { toast } = useToast();
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    adminLogin(username, password)
+    adminLogin(username, password, environment)
       .then(() => {
         setIsLoading(false);
         toast({
@@ -69,6 +71,15 @@ export function LoginForm() {
             disabled={isLoading}
             value={password}
             onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          <SelectField
+            label={'Environment'}
+            placeholder={'Select Environment'}
+            options={envs}
+            value={environment}
+            onValueChange={e => setEnvironment(e)}
           />
         </div>
         <Button disabled={isLoading} className="w-full">

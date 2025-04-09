@@ -1,5 +1,5 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import { getModules } from '@/lib/api/modules';
 import {
   FunctionExecutionModel,
@@ -10,14 +10,18 @@ import {
 type ConfigResponse = { config: FunctionsSettings };
 
 export const getFunctionsSettings = async () => {
-  const res = await axiosInstance.get<ConfigResponse>(`/config/functions`);
+  const res = await (
+    await getApiClient()
+  ).get<ConfigResponse>(`/config/functions`);
   return res.data;
 };
 
 export const patchFunctionsSettings = async (
   functionsData: Partial<FunctionsSettings>
 ) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/functions`, {
+  await (
+    await getApiClient()
+  ).patch<ConfigResponse>(`/config/functions`, {
     config: { ...functionsData },
   });
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
@@ -43,14 +47,16 @@ export const getFunctions = async (options: {
   functions: FunctionModel[];
   count: number;
 }> => {
-  const res = await axiosInstance.get(`/functions`, {
+  const res = await (
+    await getApiClient()
+  ).get(`/functions`, {
     params: options,
   });
   return res.data;
 };
 
 export const getFunction = async (id: string): Promise<FunctionModel> => {
-  const res = await axiosInstance.get(`/functions/${id}`);
+  const res = await (await getApiClient()).get(`/functions/${id}`);
   return res.data;
 };
 
@@ -58,24 +64,26 @@ export const editFunction = async (
   id: string,
   data: Omit<FunctionModel, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<FunctionModel> => {
-  const res = await axiosInstance.patch(`/functions/${id}`, data);
+  const res = await (await getApiClient()).patch(`/functions/${id}`, data);
   return res.data;
 };
 
 export const uploadFunction = async (
   data: Omit<FunctionModel, '_id' | 'createdAt' | 'updatedAt'>
 ) => {
-  const res = await axiosInstance.post(`/functions/upload`, data);
+  const res = await (await getApiClient()).post(`/functions/upload`, data);
   return res.data;
 };
 
 export const deleteFunction = async (id: string) => {
-  const res = await axiosInstance.delete(`/functions/${id}`);
+  const res = await (await getApiClient()).delete(`/functions/${id}`);
   return res.data;
 };
 
 export const deleteManyFunctions = async (ids: string[]) => {
-  const res = await axiosInstance.delete(`/functions`, { params: { ids } });
+  const res = await (
+    await getApiClient()
+  ).delete(`/functions`, { params: { ids } });
   return res.data;
 };
 
@@ -84,7 +92,9 @@ export const listFunctionExecutions = async (options: {
   limit?: number;
   sort?: string;
 }) => {
-  const res = await axiosInstance.get<{
+  const res = await (
+    await getApiClient()
+  ).get<{
     functionsExecutions: FunctionExecutionModel[];
     count: number;
   }>(`/functions/list/executions`, {
@@ -99,7 +109,9 @@ export const getFunctionExecutions = async (
     success?: boolean;
   }
 ) => {
-  const res = await axiosInstance.get<{
+  const res = await (
+    await getApiClient()
+  ).get<{
     functionExecutions: FunctionExecutionModel[];
     count: number;
   }>(`/functions/executions/${functionId}`, { params: options });

@@ -2,7 +2,7 @@
 import { LogsData } from '@/lib/models/logs-viewer';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import SidebarCollapseTrigger from '../navigation/sidebarCollapseTrigger';
 
 type LogsViewerProps = {
@@ -21,7 +21,7 @@ export default function LogsViewer({
   levelsData,
   logsData,
   refreshLogs,
-}: LogsViewerProps) {
+}: Readonly<LogsViewerProps>) {
   const [logs, setLogs] = useState(logsData);
 
   return (

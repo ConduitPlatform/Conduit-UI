@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getEnv } from '@/lib/logic/EnvManager';
 
 const isOnLogin = (url: string) => url.endsWith('/login');
 
@@ -11,7 +12,15 @@ const isSpecialPath = (url: string) => {
 export async function middleware(request: NextRequest) {
   if (isSpecialPath(request.url)) return NextResponse.next();
   const cookieStore = request.cookies;
-  const accessToken = cookieStore.get('accessToken');
+  const activeEnv = cookieStore.get('activeEnv')!;
+  if (!activeEnv) {
+    if (isOnLogin(request.url)) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+  const accessToken = cookieStore.get(`${activeEnv.value}AccessToken`);
   if (!accessToken) {
     if (isOnLogin(request.url)) {
       return NextResponse.next();
@@ -19,14 +28,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
-  const res = await fetch(`${process.env.API_BASE_URL}/admins/me`, {
+  const envDetails = await getEnv(activeEnv.value);
+  const res = await fetch(`${envDetails.baseUrl}admins/me`, {
     method: 'GET',
     // @ts-ignore
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${accessToken!.value}`,
-      masterkey: process.env.MASTER_KEY,
+      Authorization: `Bearer ${accessToken.value}`,
+      masterkey: envDetails.masterKey,
     },
   }).catch(() => null);
   if (!res || res.status !== 200) {

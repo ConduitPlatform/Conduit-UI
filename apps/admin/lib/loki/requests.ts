@@ -1,59 +1,13 @@
-'use server';
 import { LogsData, LokiLogsData } from '@/lib/models/logs-viewer';
-import axios from 'axios';
-
-//TODO: remove to .env or change docker/loki configuration files
-const LOKI_BASE_URL = 'http://localhost:3100';
-
-const lokiInstance = axios.create({
-  baseURL: LOKI_BASE_URL,
-  timeout: 50000,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-});
-
-lokiInstance.interceptors.response.use(
-  response => {
-    return response;
-  },
-  async error => {
-    if (error.response) {
-      // Server responded with a status code outside the range of 2xx
-      console.error({
-        message: error.message,
-        status: error.response.status,
-        statusText: error.response.statusText,
-        url: error.config.url,
-        method: error.config.method,
-        data: error.response.data,
-        headers: error.response.headers,
-      });
-    } else if (error.request) {
-      // Request was made but no response was received
-      console.error({
-        message: error.message,
-        url: error.config.url,
-        method: error.config.method,
-        request: error.request,
-      });
-    } else {
-      // Something happened in setting up the request
-      console.error({
-        message: error.message,
-        config: error.config,
-      });
-    }
-    return Promise.reject(error);
-  }
-);
+import { getLokiClient } from '@/lib/loki/index';
 
 export const getLogsLevels = async (
   startDate?: number,
   endDate?: number
 ): Promise<string[]> => {
-  const res = await lokiInstance.get('/loki/api/v1/label/level/values', {
+  const res = await (
+    await getLokiClient()
+  ).get('/loki/api/v1/label/level/values', {
     params: {
       start: startDate,
       end: endDate,
@@ -98,7 +52,9 @@ export const getLogsQueryRange = async (data: {
     query += ` |~ "${searchTerm}"`;
   }
 
-  const res = await lokiInstance.get(`/loki/api/v1/query_range`, {
+  const res = await (
+    await getLokiClient()
+  ).get(`/loki/api/v1/query_range`, {
     params: {
       query: query,
       start: startDate,

@@ -1,5 +1,5 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import { TeamUser, User } from '@/lib/models/User';
 import {
   AuthenticationConfig,
@@ -17,7 +17,9 @@ export const getUsers = async (
     provider?: string;
   }
 ): Promise<{ users: User[]; count: number }> => {
-  const res = await axiosInstance.get(`/authentication/users`, {
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/users`, {
     params: {
       skip,
       limit,
@@ -31,14 +33,18 @@ export const createUser = async (
   email: string,
   password: string
 ): Promise<User> => {
-  const res = await axiosInstance.post(`/authentication/users`, {
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/users`, {
     email,
     password,
   });
   return res.data;
 };
 export const getTeam = async (teamId: string): Promise<Team> => {
-  const res = await axiosInstance.get(`/authentication/teams/${teamId}`);
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/teams/${teamId}`);
   return res.data;
 };
 export const getTeams = async (
@@ -50,7 +56,9 @@ export const getTeams = async (
     parentTeam?: string;
   }
 ): Promise<{ teams: Team[]; count: number }> => {
-  const res = await axiosInstance.get(`/authentication/teams`, {
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/teams`, {
     params: {
       skip,
       limit,
@@ -68,16 +76,15 @@ export const getTeamMembers = async (
     search?: string;
   }
 ): Promise<{ members: TeamUser[]; count: number }> => {
-  const res = await axiosInstance.get(
-    `/authentication/teams/${teamId}/members`,
-    {
-      params: {
-        skip,
-        limit,
-        ...params,
-      },
-    }
-  );
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/teams/${teamId}/members`, {
+    params: {
+      skip,
+      limit,
+      ...params,
+    },
+  });
   return res.data;
 };
 export const addTeamMembers = async (
@@ -87,12 +94,11 @@ export const addTeamMembers = async (
   members: TeamUser[];
   count: number;
 }> => {
-  const res = await axiosInstance.post(
-    `/authentication/teams/${teamId}/members`,
-    {
-      members: members.map(member => member._id),
-    }
-  );
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/teams/${teamId}/members`, {
+    members: members.map(member => member._id),
+  });
   return res.data;
 };
 export const createTeam = async (
@@ -102,7 +108,9 @@ export const createTeam = async (
     parentTeam?: string;
   }
 ): Promise<Team> => {
-  const res = await axiosInstance.post(`/authentication/teams`, {
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/teams`, {
     name,
     ...params,
   });
@@ -113,28 +121,33 @@ export const updateTeam = async (data: {
   name?: string;
   isDefault?: boolean;
 }): Promise<Team> => {
-  const res = await axiosInstance.patch(`/authentication/teams/${data._id}`, {
+  const res = await (
+    await getApiClient()
+  ).patch(`/authentication/teams/${data._id}`, {
     ...data,
   });
   return res.data;
 };
 export const deleteTeam = async (teamId: string) => {
-  const res = await axiosInstance.delete(`/authentication/teams/${teamId}`);
+  const res = await (
+    await getApiClient()
+  ).delete(`/authentication/teams/${teamId}`);
   return res.data;
 };
 export const getAuthenticationSettings =
   async (): Promise<AuthenticationConfigResponse> => {
-    const res = await axiosInstance.get<AuthenticationConfigResponse>(
-      'config/authentication'
-    );
+    const res = await (
+      await getApiClient()
+    ).get<AuthenticationConfigResponse>('config/authentication');
     return res.data;
   };
 
 export const patchAuthenticationSettings = async (
   data: Partial<AuthenticationConfig>
 ) => {
-  await axiosInstance.patch<AuthenticationConfigResponse>(
-    `/config/authentication`,
-    { config: { ...data } }
-  );
+  await (
+    await getApiClient()
+  ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
+    config: { ...data },
+  });
 };

@@ -1,5 +1,5 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import {
   EmailConfigResponse,
   EmailPayload,
@@ -10,12 +10,16 @@ import {
 import { getModules } from '@/lib/api/modules';
 
 export const getEmailSettings = async () => {
-  const res = await axiosInstance.get<EmailConfigResponse>('config/email');
+  const res = await (
+    await getApiClient()
+  ).get<EmailConfigResponse>('config/email');
   return res.data;
 };
 
 export const patchEmailSettings = async (data: Partial<EmailSettings>) => {
-  await axiosInstance.patch<EmailConfigResponse>(`/config/email`, {
+  await (
+    await getApiClient()
+  ).patch<EmailConfigResponse>(`/config/email`, {
     config: { ...data },
   });
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
@@ -42,7 +46,7 @@ export const getTemplates = async (args: {
     templateDocuments: EmailTemplate[];
     count: number;
   };
-  return axiosInstance
+  return (await getApiClient())
     .get<Response>('/email/templates', { params: args })
     .then(res => res.data);
 };
@@ -56,19 +60,19 @@ export const createTemplate = async (data: {
   jsonTemplate?: string;
   _id?: string; // externally managed
 }) => {
-  return axiosInstance
+  return (await getApiClient())
     .post<{ template: EmailTemplate }>('/email/templates', data)
     .then(res => res.data);
 };
 
 export const deleteTemplates = async (ids: string[]) => {
-  return axiosInstance
+  return (await getApiClient())
     .delete<string>('/email/templates', { params: { ids } })
     .then(res => res.data);
 };
 
 export const deleteTemplate = async (id: string) => {
-  await axiosInstance
+  await (await getApiClient())
     .delete<any>(`/email/templates/${id}`)
     .then(res => res.data);
 };
@@ -82,7 +86,7 @@ export const patchTemplates = async (
     jsonTemplate?: any;
   }
 ) => {
-  return axiosInstance
+  return (await getApiClient())
     .patch<EmailTemplate>(`/email/templates/${templateId}`, data)
     .then(res => res.data);
 };
@@ -96,7 +100,7 @@ export const getExternalTemplates = async (args: {
     templateDocuments: ExternalTemplate[];
     count: number;
   };
-  return axiosInstance
+  return (await getApiClient())
     .get<Response>('/email/externalTemplates', { params: args })
     .then(res => res.data);
 };
@@ -106,13 +110,13 @@ export const syncTemplates = async () => {
     updated: EmailTemplate[];
     count: number;
   };
-  return axiosInstance
+  return (await getApiClient())
     .put<Response>('/email/syncExternalTemplates')
     .then(res => res.data);
 };
 
 export const uploadTemplate = async (id: string) => {
-  return axiosInstance
+  return (await getApiClient())
     .post('/email/templates/upload', { _id: id })
     .then(res => res.data)
     .catch(err => {
@@ -121,5 +125,5 @@ export const uploadTemplate = async (id: string) => {
 };
 
 export const sendEmail = async (data: EmailPayload) => {
-  return axiosInstance.post(`/email/send`, data).then(res => res.data);
+  return (await getApiClient()).post(`/email/send`, data).then(res => res.data);
 };

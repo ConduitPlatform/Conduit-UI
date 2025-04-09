@@ -21,7 +21,7 @@ import { LogsData } from '@/lib/models/logs-viewer';
 import { getTimestamp } from '@/lib/models/logs-viewer/utils';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 import { debounce, throttle } from 'lodash';
-import { getLogsLevels } from '@/lib/api/logs-viewer';
+import { getLogsLevels } from '@/lib/loki/requests';
 
 type LogsFiltersPanelProps = {
   className?: string;
@@ -47,7 +47,7 @@ export default function LogsFiltersPanel({
   open = false,
   drawerModule,
   refreshLogs,
-}: LogsFiltersPanelProps) {
+}: Readonly<LogsFiltersPanelProps>) {
   const [openFilters, setOpenFilters] = useState(open);
   const iconClass = 'w-4 h-4 flex-shrink-0';
   const pathname = usePathname();

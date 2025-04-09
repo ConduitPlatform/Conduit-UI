@@ -32,7 +32,10 @@ type LogsAccordionListProps = {
   logs: LogsData[];
 };
 
-export function LogsAccordionList({ className, logs }: LogsAccordionListProps) {
+export function LogsAccordionList({
+  className,
+  logs,
+}: Readonly<LogsAccordionListProps>) {
   const [value, setValue] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const logsContainerRef = useRef<HTMLDivElement>(null);

@@ -51,6 +51,7 @@
     "cmdk": "^1.0.0",
     "date-fns": "^2.30.0",
     "decimal.js": "^10.4.3",
+    "dotenv": "^16.4.7",
     "embla-carousel-react": "^8.1.8",
     "eslint": "^8.44.0",
     "eslint-config-next": "^14.2.0",

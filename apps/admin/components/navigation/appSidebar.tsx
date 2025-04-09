@@ -15,6 +15,7 @@ import { NavGroup } from './navGroup';
 import Image from 'next/image';
 import { NavUser } from './navUser';
 import { navList } from './navList.config';
+import { NavEnv } from '@/components/navigation/navEnv';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -39,6 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavGroup items={navList.navSecondary} className="mt-3" label="Tools" />
       </SidebarContent>
       <SidebarFooter>
+        <NavEnv />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

@@ -12,8 +12,9 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
-import { getLogsLevels, getLogsQueryRange } from '@/lib/api/logs-viewer';
 import { LogsData } from '@/lib/models/logs-viewer';
+import { getLogsLevels, getLogsQueryRange } from '@/lib/loki/requests';
+import { getEnv } from '@/lib/logic/EnvManager';
 
 const snapPoints = [0.5, 0.75, 1];
 
@@ -34,20 +35,22 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const isCoreModulePage = currentModule === 'core';
 
   useEffect(() => {
+    getEnv().then(res => {
+      setIsAvailable(!!res.lokiUrl);
+    });
+  }, [currentModule]);
+  useEffect(() => {
     getLogsLevels()
       .then(res => {
         setLevels(res);
-        setIsAvailable(true);
       })
       .catch(() => {});
     getLogsQueryRange({ modules: currentModule, limit: '100' })
       .then(res => {
         setLogs(res);
-        setIsAvailable(true);
       })
       .catch(() => {});
-  }, [currentModule]);
-
+  }, [isAvailable]);
   useEffect(() => {
     const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
     setDrawerHeight(height);

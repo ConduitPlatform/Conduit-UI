@@ -1,16 +1,18 @@
 'use server';
 import { Admin } from '@/lib/models/User';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 
 export const getAdminById = async (id: string) => {
-  const res = await axiosInstance.get(`/admins/${id}`);
+  const res = await (await getApiClient()).get(`/admins/${id}`);
   return res.data;
 };
 export const getAdmins = async (
   skip: number,
   limit: number
 ): Promise<{ admins: Admin[]; count: number }> => {
-  const res = await axiosInstance.get(`/admins`, {
+  const res = await (
+    await getApiClient()
+  ).get(`/admins`, {
     params: {
       skip,
       limit,
@@ -19,18 +21,20 @@ export const getAdmins = async (
   return res.data;
 };
 export const postNewAdminUser = async (username: string, password: string) => {
-  await axiosInstance.post(`/admins`, { username, password });
+  await (await getApiClient()).post(`/admins`, { username, password });
 };
 
 export const changeAdminsPasswordById = async (
   adminId: string,
   newPassword: string
 ) => {
-  await axiosInstance.put(`/admins/${adminId}/change-password`, {
+  await (
+    await getApiClient()
+  ).put(`/admins/${adminId}/change-password`, {
     newPassword,
   });
 };
 
 export const deleteAdmin = async (id: string) => {
-  await axiosInstance.delete(`/admins/${id}`);
+  await (await getApiClient()).delete(`/admins/${id}`);
 };

@@ -1,17 +1,21 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import { RouterSettings } from '@/lib/models/Router';
 import { getModules } from '@/lib/api/modules';
 
 type ConfigResponse = { config: RouterSettings };
 
 export const getRouterSettings = async () => {
-  const res = await axiosInstance.get<ConfigResponse>(`/config/router`, {});
+  const res = await (
+    await getApiClient()
+  ).get<ConfigResponse>(`/config/router`, {});
   return res.data;
 };
 
 export const patchRouterSettings = async (data: Partial<RouterSettings>) => {
-  await axiosInstance.patch<ConfigResponse>(`/config/router`, {
+  await (
+    await getApiClient()
+  ).patch<ConfigResponse>(`/config/router`, {
     config: { ...data },
   });
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
@@ -29,6 +33,6 @@ export const patchRouterSettings = async (data: Partial<RouterSettings>) => {
 };
 
 export const getMiddlewares = async () => {
-  const res = await axiosInstance.get<string[]>(`/router/middlewares`);
+  const res = await (await getApiClient()).get<string[]>(`/router/middlewares`);
   return res.data;
 };

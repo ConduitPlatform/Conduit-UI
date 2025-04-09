@@ -1,7 +1,7 @@
 import LogsViewer from '@/components/logs-viewer/LogsViewer';
-import { getLogsLevels, getLogsQueryRange } from '@/lib/api/logs-viewer';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 import { LogsData } from '@/lib/models/logs-viewer';
+import { getLogsLevels, getLogsQueryRange } from '@/lib/loki/requests';
 
 export default async function LogsViewerPage() {
   let isAvailable = false;

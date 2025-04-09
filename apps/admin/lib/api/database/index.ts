@@ -1,6 +1,6 @@
 'use server';
 
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import {
   DeclaredSchema,
   PendingSchemas,
@@ -18,13 +18,13 @@ export const getPendingSchemas = async (args: {
     schemas: PendingSchemas[];
     count: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/database/introspection/schemas', { params: args })
     .then(res => res.data);
 };
 
 export const getPendingSchema = async (id: string) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .get<PendingSchemas>(`/database/introspection/schemas/${id}`)
     .then(res => res.data);
 };
@@ -41,13 +41,13 @@ export const getSchemas = async (args: {
     schemas: DeclaredSchema[];
     count: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/database/schemas', { params: args })
     .then(res => res.data);
 };
 
 export const getSchemaOwnerModules = async (args: { sort?: string }) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .get<{ modules: string[] }>('/database/schemas/owners', { params: args })
     .then(res => res.data);
 };
@@ -61,19 +61,19 @@ export const getSchemaExtensions = async (args: {
     schemasExtensions: any[];
     count: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/database/schemas/extensions', { params: args })
     .then(res => res.data);
 };
 
 export const getSchema = async (id: string) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .get<DeclaredSchema>(`/database/schemas/${id}`)
     .then(res => res.data);
 };
 
 export const createSchema = async (schema: Partial<DeclaredSchema>) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .post<DeclaredSchema>('/database/schemas', schema)
     .then(res => res.data);
 };
@@ -81,13 +81,13 @@ export const patchSchema = async (
   id: string,
   schema: Partial<DeclaredSchema>
 ) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .patch<DeclaredSchema>(`/database/schemas/${id}`, schema)
     .then(res => res.data);
 };
 
 export const getDatabaseType = async () => {
-  return await axiosInstance
+  return await (await getApiClient())
     .get<{ result: string }>('/database/database-type')
     .then(res => res.data);
 };
@@ -104,7 +104,9 @@ export const getSchemaDocs = async (
   }
 ) => {
   if (!schemaName) return { documents: [], count: 0 };
-  return await axiosInstance
+  return await (
+    await getApiClient()
+  )
     .post<{
       documents: any[];
       count: number;
@@ -125,7 +127,9 @@ export const getCustomEndpoints = async (args?: {
   operation?: number;
   schemaName?: string[];
 }) => {
-  return await axiosInstance
+  return await (
+    await getApiClient()
+  )
     .get<{
       customEndpoints: CustomEndpoint[];
       count: number;
@@ -137,7 +141,9 @@ export const getCustomEndpoints = async (args?: {
 export const createCustomEndpoint = async (
   endpoint: Partial<CustomEndpoint>
 ) => {
-  return await axiosInstance
+  return await (
+    await getApiClient()
+  )
     .post(`/database/customEndpoints`, {
       ...endpoint,
     })
@@ -145,7 +151,9 @@ export const createCustomEndpoint = async (
 };
 
 export const getSchemaDocument = async (schemaName: string, id: string) => {
-  return await axiosInstance
+  return await (
+    await getApiClient()
+  )
     .get(`/database/schemas/${schemaName}/docs/${id}`)
     .then(res => res.data)
     .catch(err => {
@@ -158,7 +166,7 @@ export const updateSchemaDocument = async (
   id: string,
   data: any
 ) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .put(`database/schemas/${schemaName}/docs/${id}`, { changedDocument: data })
     .then(res => res.data);
 };
@@ -170,7 +178,7 @@ export const updateSchema = async (
     conduitOptions?: SchemaOptions['conduit'];
   }
 ) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .patch(`database/schemas/${id}`, data)
     .then(res => res.data);
 };

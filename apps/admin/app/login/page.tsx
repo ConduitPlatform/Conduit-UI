@@ -2,13 +2,16 @@ import { Metadata } from 'next';
 import { LoginForm } from '@/components/login/loginForm';
 import Image from 'next/image';
 import { LoginIllustration } from '@/icons';
+import { getEnvs } from '@/lib/logic/EnvManager';
 
 export const metadata: Metadata = {
   title: 'Authentication',
   description: 'Authentication forms built using the components.',
 };
 
-export default function AuthenticationPage() {
+export default async function AuthenticationPage() {
+  const envs = await getEnvs();
+
   return (
     <div className="grid h-full grid-cols lg:grid-cols-2">
       <div className="items-center hidden h-full text-white dark:border-r lg:flex bg-primary dark:bg-primary-foreground">
@@ -29,7 +32,7 @@ export default function AuthenticationPage() {
               Enter your username/password to login to your account.
             </p>
           </div>
-          <LoginForm />
+          <LoginForm envs={envs.map(env => env.name)} />
         </div>
       </div>
     </div>

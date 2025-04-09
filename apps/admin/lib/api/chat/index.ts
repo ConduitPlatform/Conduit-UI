@@ -1,5 +1,5 @@
 'use server';
-import { axiosInstance } from '@/lib/api';
+import { getApiClient } from '@/lib/api';
 import { getModules } from '@/lib/api/modules';
 import {
   ChatConfigResponse,
@@ -10,12 +10,16 @@ import {
 } from '@/lib/models/chat';
 
 export const getChatSettings = async () => {
-  const res = await axiosInstance.get<ChatConfigResponse>(`/config/chat`);
+  const res = await (
+    await getApiClient()
+  ).get<ChatConfigResponse>(`/config/chat`);
   return res.data;
 };
 
 export const patchChatSettings = async (chatData: Partial<ChatSettings>) => {
-  await axiosInstance.patch<ChatConfigResponse>('/config/chat', {
+  await (
+    await getApiClient()
+  ).patch<ChatConfigResponse>('/config/chat', {
     config: { ...chatData },
   });
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
@@ -45,13 +49,13 @@ export const getMessages = async (args: {
     messages: ChatMessage[];
     count: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/chat/messages', { params: args })
     .then(res => res.data);
 };
 
 export const deleteMessages = async (ids: string[]) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .delete<string>('/chat/messages', { params: { ids } })
     .then(res => res.data);
 };
@@ -69,7 +73,7 @@ export const getRooms = async (args: {
     chatRoomDocuments: ChatRoom[];
     count: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>('/chat/rooms', { params: args })
     .then(res => res.data);
 };
@@ -80,7 +84,7 @@ export const getRoomById = async (
     populate?: string[];
   }
 ) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .get<ChatRoom>(`/chat/rooms/${roomId}`, { params: args })
     .then(res => res.data);
 };
@@ -90,13 +94,13 @@ export const createRoom = async (data: {
   participants: string[];
   creator: string;
 }) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .post<ChatRoom>('/chat/rooms', data)
     .then(res => res.data);
 };
 
 export const deleteRooms = async (ids: string[]) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .delete<string>('/chat/rooms', { params: { ids } })
     .then(res => res.data);
 };
@@ -107,7 +111,9 @@ export const removeUsersFromRoom = async (
     users: string[];
   }
 ) => {
-  return await axiosInstance
+  return await (
+    await getApiClient()
+  )
     .put<string>(`/chat/room/${roomId}/remove`, {
       users: args.users,
     })
@@ -120,7 +126,7 @@ export const addUsersToRoom = async (
     users: string[];
   }
 ) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .put<string>(`/chat/rooms/${roomId}/add`, { users: args.users })
     .then(res => res.data);
 };
@@ -138,7 +144,7 @@ export const getRoomInvitations = async (
     invitations: InvitationToken[];
     count: number;
   };
-  return await axiosInstance
+  return await (await getApiClient())
     .get<Response>(`/chat/invitations/${roomId}`, { params: args })
     .then(res => res.data);
 };
@@ -149,7 +155,7 @@ export const deleteRoomInvitations = async (
     invitations: string[];
   }
 ) => {
-  return await axiosInstance
+  return await (await getApiClient())
     .delete(`/chat/invitations/${roomId}`, { params: args })
     .then(res => res.data);
 };
