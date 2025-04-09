@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Authentication',
   description: 'Authentication forms built using the components.',
 };
-
+export const dynamic = 'force-dynamic';
 export default async function AuthenticationPage() {
   const envs = await getEnvs();
 
