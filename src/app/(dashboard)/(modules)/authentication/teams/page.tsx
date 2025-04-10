@@ -24,18 +24,10 @@ export default async function Teams(props: {
         Teams feature inactive go to Authentication Settings to activate
       </div>
     );
-  const refreshTeams = async (search: string) => {
-    'use server';
-    const { teams, count } = await getTeams(skip ?? 0, limit ?? 20, {
-      ...queryParams,
-      search,
-    });
-    return teams;
-  };
 
   return (
     <TeamActionsProvider>
-      <TeamsTable data={data.teams} refreshData={refreshTeams} />
+      <TeamsTable data={data.teams} count={data.count} />
     </TeamActionsProvider>
   );
 }

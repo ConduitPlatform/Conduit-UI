@@ -16,12 +16,12 @@ export default function TeamProfile({
   parentTeam,
   memberCount,
   subTeamCount,
-}: {
+}: Readonly<{
   team: Team;
   parentTeam?: Team;
   memberCount: number;
   subTeamCount: number;
-}) {
+}>) {
   const [team, setTeam] = useState<Team>(initialTeam);
   const router = useRouter();
   const { addAlert } = useAlerts();

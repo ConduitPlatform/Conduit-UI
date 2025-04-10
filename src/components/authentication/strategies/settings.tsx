@@ -5,14 +5,20 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import * as React from 'react';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { CheckIcon, ChevronDown, LoaderIcon, LucideX } from 'lucide-react';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { patchAuthenticationSettings } from '@/lib/api/authentication';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { UrlTagInput } from '@/components/ui/form-inputs/TagInputField';
 
 const tokensSchema = z.object({
   httpOnly: z.boolean().default(true),
@@ -69,8 +75,11 @@ const FormSchema = z.object({
   }),
   redirectUris: z.object({
     allowAny: z.boolean().default(false),
-    whitelistedUris: z.array(z.string()).default([]),
+    whitelistedUris: z.array(
+      z.string().url({ message: 'Please enter a valid URL' })
+    ),
   }),
+  anonymousUsers: z.boolean().default(false),
   teams: teamsSchema,
   clients: clientsSchema,
   accessTokens: accessTokenSchema,
@@ -93,7 +102,7 @@ export const AuthenticationSettings = ({ data }: Props) => {
 
   const onSubmit = async (formData: formSchema) => {
     setEdit(false);
-    const { id, dismiss } = toast({
+    const { dismiss } = toast({
       title: 'Authentication',
       description: (
         <div className={'flex flex-row items-center space-x-2.5'}>
@@ -154,258 +163,348 @@ export const AuthenticationSettings = ({ data }: Props) => {
                   className="underline"
                   target="_blank"
                 >
-                  more
+                  more.
                 </a>
-                .
               </p>
             </div>
 
-            <h1 className="text-2xl font-medium pt-2">Access Token settings</h1>
-            <div className={'flex flex-col space-y-4'}>
-              <div className={'flex flex-row space-x-4'}>
-                <InputField
-                  label={'JWT Secret'}
-                  fieldName={'accessTokens.jwtSecret'}
-                  defaultValue={'S3CR3T'}
-                  disabled={!edit}
-                />
-                <InputField
-                  type={'number'}
-                  label={'Expiry Period (ms)'}
-                  fieldName={'accessTokens.expiryPeriod'}
-                  defaultValue={3600000}
-                  onChange={e => {
-                    form.setValue(
-                      'accessTokens.expiryPeriod',
-                      parseInt(e.target.value)
-                    );
-                  }}
-                  disabled={!edit}
-                />
+            <Collapsible
+              key={`access-tokens`}
+              className="border rounded-md overflow-hidden mb-4"
+            >
+              <div className="flex items-center justify-between p-3 bg-muted/30">
+                <div className="flex items-center space-x-2 flex-grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                    <span className="font-medium truncate text-xl">
+                      Access Token settings
+                    </span>
+                  </CollapsibleTrigger>
+                </div>
               </div>
-              <SwitchField
-                label={'Use Cookies'}
-                fieldName={'accessTokens.setCookie'}
-                disabled={!edit}
-              />
-              {form.watch('accessTokens.setCookie') && (
-                <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <InputField
-                    label={'Domain'}
-                    fieldName={'accessTokens.domain'}
-                    disabled={!edit}
-                  />
-                  <InputField
-                    label={'Path'}
-                    fieldName={'accessTokens.path'}
-                    disabled={!edit}
-                  />
-                  <InputField
-                    label={'SameSite'}
-                    fieldName={'accessTokens.sameSite'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Secure'}
-                    fieldName={'accessTokens.secure'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'HTTP Only'}
-                    fieldName={'accessTokens.httpOnly'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Signed'}
-                    fieldName={'accessTokens.signed'}
-                    disabled={!edit}
-                  />
-                </div>
-              )}
-            </div>
-            <h1 className="text-2xl font-medium pt-2 flex flex-row items-center gap-x-3">
-              Refresh Token settings{' '}
-              <SwitchField
-                label={''}
-                fieldName={'refreshTokens.enabled'}
-                disabled={!edit}
-              />
-            </h1>
-            {form.watch('refreshTokens.enabled') && (
-              <div className={'flex flex-col space-y-4'}>
-                <div className={'flex flex-row space-x-4'}>
-                  <InputField
-                    type={'number'}
-                    label={'Expiry Period (ms)'}
-                    fieldName={'refreshTokens.expiryPeriod'}
-                    defaultValue={86400000 * 7}
-                    onChange={e => {
-                      form.setValue(
-                        'refreshTokens.expiryPeriod',
-                        parseInt(e.target.value)
-                      );
-                    }}
-                    disabled={!edit}
-                  />
-                </div>
-                <SwitchField
-                  label={'Use Cookies'}
-                  fieldName={'refreshTokens.setCookie'}
-                  disabled={!edit}
-                />
-                {form.watch('refreshTokens.setCookie') && (
-                  <div className={'grid grid-cols-2 gap-4 items-center'}>
+
+              <CollapsibleContent className={'p-4'}>
+                <div className={'flex flex-col space-y-4 '}>
+                  <div className={'flex flex-row space-x-4'}>
                     <InputField
-                      label={'Domain'}
-                      fieldName={'refreshTokens.domain'}
+                      label={'JWT Secret'}
+                      fieldName={'accessTokens.jwtSecret'}
+                      defaultValue={'S3CR3T'}
                       disabled={!edit}
                     />
                     <InputField
-                      label={'Path'}
-                      fieldName={'refreshTokens.path'}
-                      disabled={!edit}
-                    />
-                    <InputField
-                      label={'SameSite'}
-                      fieldName={'refreshTokens.sameSite'}
-                      disabled={!edit}
-                    />
-                    <SwitchField
-                      label={'Secure'}
-                      fieldName={'refreshTokens.secure'}
-                      disabled={!edit}
-                    />
-                    <SwitchField
-                      label={'HTTP Only'}
-                      fieldName={'refreshTokens.httpOnly'}
-                      disabled={!edit}
-                    />
-                    <SwitchField
-                      label={'Signed'}
-                      fieldName={'refreshTokens.signed'}
+                      type={'number'}
+                      label={'Expiry Period (ms)'}
+                      fieldName={'accessTokens.expiryPeriod'}
+                      defaultValue={3600000}
+                      onChange={e => {
+                        form.setValue(
+                          'accessTokens.expiryPeriod',
+                          parseInt(e.target.value)
+                        );
+                      }}
                       disabled={!edit}
                     />
                   </div>
+                  <SwitchField
+                    label={'Use Cookies'}
+                    fieldName={'accessTokens.setCookie'}
+                    disabled={!edit}
+                  />
+                  {form.watch('accessTokens.setCookie') && (
+                    <div className={'grid grid-cols-2 gap-4 items-center'}>
+                      <InputField
+                        label={'Domain'}
+                        fieldName={'accessTokens.domain'}
+                        disabled={!edit}
+                      />
+                      <InputField
+                        label={'Path'}
+                        fieldName={'accessTokens.path'}
+                        disabled={!edit}
+                      />
+                      <InputField
+                        label={'SameSite'}
+                        fieldName={'accessTokens.sameSite'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Secure'}
+                        fieldName={'accessTokens.secure'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'HTTP Only'}
+                        fieldName={'accessTokens.httpOnly'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Signed'}
+                        fieldName={'accessTokens.signed'}
+                        disabled={!edit}
+                      />
+                    </div>
+                  )}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+            <Collapsible
+              key={`refresh-tokens`}
+              className="border rounded-md overflow-hidden mb-4"
+            >
+              <div className="flex items-center justify-between p-3 bg-muted/30">
+                <div className="flex items-center space-x-2 flex-grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                    <span className="font-medium truncate text-xl">
+                      Refresh Token settings
+                    </span>
+                  </CollapsibleTrigger>
+                </div>
+              </div>
+
+              <CollapsibleContent className={'p-4 space-y-4'}>
+                <SwitchField
+                  label={'Enabled'}
+                  fieldName={'refreshTokens.enabled'}
+                  disabled={!edit}
+                />
+                {form.watch('refreshTokens.enabled') && (
+                  <div className={'flex flex-col space-y-4'}>
+                    <div className={'flex flex-row space-x-4'}>
+                      <InputField
+                        type={'number'}
+                        label={'Expiry Period (ms)'}
+                        fieldName={'refreshTokens.expiryPeriod'}
+                        defaultValue={86400000 * 7}
+                        onChange={e => {
+                          form.setValue(
+                            'refreshTokens.expiryPeriod',
+                            parseInt(e.target.value)
+                          );
+                        }}
+                        disabled={!edit}
+                      />
+                    </div>
+                    <SwitchField
+                      label={'Use Cookies'}
+                      fieldName={'refreshTokens.setCookie'}
+                      disabled={!edit}
+                    />
+                    {form.watch('refreshTokens.setCookie') && (
+                      <div className={'grid grid-cols-2 gap-4 items-center'}>
+                        <InputField
+                          label={'Domain'}
+                          fieldName={'refreshTokens.domain'}
+                          disabled={!edit}
+                        />
+                        <InputField
+                          label={'Path'}
+                          fieldName={'refreshTokens.path'}
+                          disabled={!edit}
+                        />
+                        <InputField
+                          label={'SameSite'}
+                          fieldName={'refreshTokens.sameSite'}
+                          disabled={!edit}
+                        />
+                        <SwitchField
+                          label={'Secure'}
+                          fieldName={'refreshTokens.secure'}
+                          disabled={!edit}
+                        />
+                        <SwitchField
+                          label={'HTTP Only'}
+                          fieldName={'refreshTokens.httpOnly'}
+                          disabled={!edit}
+                        />
+                        <SwitchField
+                          label={'Signed'}
+                          fieldName={'refreshTokens.signed'}
+                          disabled={!edit}
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
+              </CollapsibleContent>
+            </Collapsible>
+            <Collapsible
+              key={`teams-settings`}
+              className="border rounded-md overflow-hidden mb-4"
+            >
+              <div className="flex items-center justify-between p-3 bg-muted/30">
+                <div className="flex items-center space-x-2 flex-grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                    <span className="font-medium truncate text-xl">
+                      Teams settings
+                    </span>
+                  </CollapsibleTrigger>
+                </div>
               </div>
-            )}
 
-            <Separator className={'my-3'} />
-            <h1 className="text-2xl font-medium pt-2 flex flex-row items-center gap-x-3">
-              Teams settings{' '}
-              <SwitchField
-                label={''}
-                fieldName={'teams.enabled'}
-                disabled={!edit}
-              />
-            </h1>
-            {form.watch('teams.enabled') && (
-              <div className={'flex flex-col space-y-4'}>
-                <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <SwitchField
-                    label={'Enable default team'}
-                    fieldName={'teams.enableDefaultTeam'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Allow add without invite'}
-                    fieldName={'teams.allowAddWithoutInvite'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Allow registration without an invite'}
-                    fieldName={'teams.allowRegistrationWithoutInvite'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Allow email mismatch for invites'}
-                    fieldName={'teams.allowEmailMismatchForInvites'}
-                    disabled={!edit}
-                  />
-                </div>
-                <h1 className="text-xl font-medium pt-2">Invites</h1>
-                <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <SwitchField
-                    label={'Enabled'}
-                    fieldName={'teams.invites.enabled'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Send email'}
-                    fieldName={'teams.invites.sendEmail'}
-                    disabled={!edit}
-                  />
-                  <InputField
-                    label={'Invite URL'}
-                    fieldName={'teams.invites.inviteUrl'}
-                    disabled={!edit}
-                  />
+              <CollapsibleContent className={'p-4 space-y-4'}>
+                <SwitchField
+                  label={'Enabled'}
+                  fieldName={'teams.enabled'}
+                  disabled={!edit}
+                />
+                {form.watch('teams.enabled') && (
+                  <div className={'flex flex-col space-y-4'}>
+                    <div className={'grid grid-cols-2 gap-4 items-center'}>
+                      <SwitchField
+                        label={'Enable default team'}
+                        fieldName={'teams.enableDefaultTeam'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Allow add without invite'}
+                        fieldName={'teams.allowAddWithoutInvite'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Allow registration without an invite'}
+                        fieldName={'teams.allowRegistrationWithoutInvite'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Allow email mismatch for invites'}
+                        fieldName={'teams.allowEmailMismatchForInvites'}
+                        disabled={!edit}
+                      />
+                    </div>
+                    <h1 className="text-xl font-medium pt-2">Invites</h1>
+                    <div className={'grid grid-cols-2 gap-4 items-center'}>
+                      <SwitchField
+                        label={'Enabled'}
+                        fieldName={'teams.invites.enabled'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Send email'}
+                        fieldName={'teams.invites.sendEmail'}
+                        disabled={!edit}
+                      />
+                      <InputField
+                        label={'Invite URL'}
+                        fieldName={'teams.invites.inviteUrl'}
+                        disabled={!edit}
+                      />
+                    </div>
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+            <Collapsible
+              key={`client-settings`}
+              className="border rounded-md overflow-hidden mb-4"
+            >
+              <div className="flex items-center justify-between p-3 bg-muted/30">
+                <div className="flex items-center space-x-2 flex-grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                    <span className="font-medium truncate text-xl">
+                      Session & redirect settings
+                    </span>
+                  </CollapsibleTrigger>
                 </div>
               </div>
-            )}
 
-            <Separator className={'my-3'} />
-            <h1 className="text-2xl font-medium pt-2">Client settings</h1>
-            <div className={'flex flex-col space-y-4'}>
-              <SwitchField
-                label={'Multiple user sessions in different clients'}
-                fieldName={'clients.multipleUserSessions'}
-                disabled={!edit}
-              />
-              <SwitchField
-                label={'Multiple same-client sessions'}
-                fieldName={'clients.multipleClientLogins'}
-                disabled={!edit}
-              />
-            </div>
-            <Separator className={'my-3'} />
-            <h1 className="text-2xl font-medium pt-2 flex flex-row items-center gap-x-3">
-              Captcha{' '}
-              <SwitchField
-                label={''}
-                fieldName={'captcha.enabled'}
-                disabled={!edit}
-              />
-            </h1>
-            {form.watch('captcha.enabled') && (
-              <div className={'flex flex-col space-y-4'}>
-                <h1 className="text-lg font-medium pt-2">
-                  Enabled for the following routes:
-                </h1>
-                <div className={'grid grid-cols-2 gap-4 items-center'}>
+              <CollapsibleContent className={'p-4 space-y-4'}>
+                <div className={'grid grid-cols-2 space-y-4'}>
                   <SwitchField
-                    label={'Login'}
-                    fieldName={'captcha.routes.login'}
+                    label={'Multiple user sessions in different clients'}
+                    fieldName={'clients.multipleUserSessions'}
                     disabled={!edit}
                   />
                   <SwitchField
-                    label={'Register'}
-                    fieldName={'captcha.routes.register'}
+                    label={'Multiple same-client sessions'}
+                    fieldName={'clients.multipleClientLogins'}
                     disabled={!edit}
                   />
                   <SwitchField
-                    label={'OAuth2'}
-                    fieldName={'captcha.routes.oAuth2'}
+                    label={'Allow anonymous users'}
+                    fieldName={'anonymousUsers'}
                     disabled={!edit}
+                  />
+                  <SwitchField
+                    label={'Allow any Redirect URI'}
+                    fieldName={'redirectUris.allowAny'}
+                    disabled={!edit}
+                  />
+                  <UrlTagInput
+                    name="redirectUris.whitelistedUris"
+                    label="Whitelisted URLs"
+                    description="Enter the URLs you want to whitelist for your application"
+                    placeholder="Type a URL and press Enter or Space..."
+                    className={'col-span-2'}
                   />
                 </div>
-                <h1 className="text-lg font-medium pt-2">
-                  Acceptable Platforms
-                </h1>
-                <div className={'grid grid-cols-2 gap-4 items-center'}>
-                  <SwitchField
-                    label={'Android'}
-                    fieldName={'captcha.acceptablePlatform.android'}
-                    disabled={!edit}
-                  />
-                  <SwitchField
-                    label={'Web'}
-                    fieldName={'captcha.acceptablePlatform.web'}
-                    disabled={!edit}
-                  />
+              </CollapsibleContent>
+            </Collapsible>
+            <Collapsible
+              key={`captcha-settings`}
+              className="border rounded-md overflow-hidden mb-4"
+            >
+              <div className="flex items-center justify-between p-3 bg-muted/30">
+                <div className="flex items-center space-x-2 flex-grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                    <span className="font-medium truncate text-xl">
+                      Captcha settings
+                    </span>
+                  </CollapsibleTrigger>
                 </div>
               </div>
-            )}
+
+              <CollapsibleContent className={'p-4 space-y-4'}>
+                <SwitchField
+                  label={'Enabled'}
+                  fieldName={'captcha.enabled'}
+                  disabled={!edit}
+                />
+                {form.watch('captcha.enabled') && (
+                  <div className={'flex flex-col space-y-4'}>
+                    <h1 className="text-lg font-medium pt-2">
+                      Enabled for the following routes:
+                    </h1>
+                    <div className={'grid grid-cols-2 gap-4 items-center'}>
+                      <SwitchField
+                        label={'Login'}
+                        fieldName={'captcha.routes.login'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Register'}
+                        fieldName={'captcha.routes.register'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'OAuth2'}
+                        fieldName={'captcha.routes.oAuth2'}
+                        disabled={!edit}
+                      />
+                    </div>
+                    <h1 className="text-lg font-medium pt-2">
+                      Acceptable Platforms
+                    </h1>
+                    <div className={'grid grid-cols-2 gap-4 items-center'}>
+                      <SwitchField
+                        label={'Android'}
+                        fieldName={'captcha.acceptablePlatform.android'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Web'}
+                        fieldName={'captcha.acceptablePlatform.web'}
+                        disabled={!edit}
+                      />
+                    </div>
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
           </div>
           <div className={'w-full py-4 flex justify-end'}>
             {edit ? (

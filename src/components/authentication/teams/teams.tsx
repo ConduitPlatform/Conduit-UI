@@ -8,20 +8,27 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { Team } from '@/lib/models/Team';
 import { useTeamActions } from '@/components/authentication/teams/TeamActionsProvider';
 import { AddTeamSheet } from '@/components/authentication/teams/addTeamSheet/addTeamSheet';
-import { TeamDataTable } from '@/components/authentication/teams/TeamsTable/data-table';
 import { useSearchParams } from 'next/navigation';
+import { DataTable } from '../components/data-table';
+import EmptyTeams from '@/components/authentication/teams/TeamsTable/emptyTeams';
+import { getTeams } from '@/lib/api/authentication';
 
 export default function TeamsTable({
   data,
-  refreshData,
   parentTeamId,
-}: {
+  count: initialCount,
+}: Readonly<{
   data: Team[];
-  refreshData: (searchString: string) => Promise<Team[]>;
+  count: number;
   parentTeamId?: string;
-}) {
+}>) {
   const searchParams = useSearchParams();
   const [teams, setTeams] = useState<Team[]>(data);
+  const [count, setCount] = useState<number>(initialCount);
+  useEffect(() => {
+    setTeams(data);
+    setCount(initialCount);
+  }, [data, initialCount]);
   const [search, setSearch] = useState<string>(
     searchParams.get('search') ?? ''
   );
@@ -35,11 +42,16 @@ export default function TeamsTable({
       params.delete('search');
     }
     window.history.pushState(null, '', `?${params.toString()}`);
-    if (debouncedSearchTerm === '') {
-      setTeams(data);
-      return;
-    }
-    refreshData(debouncedSearchTerm).then(teams => setTeams(teams));
+    const skip = parseInt(searchParams.get('skip') ?? '0');
+    const limit = parseInt(searchParams.get('limit') ?? '10');
+    getTeams(skip, limit, {
+      parentTeam: params.get('parentTeam') ?? '',
+      sort: params.get('sort') ?? '',
+      search,
+    }).then(data => {
+      setTeams(data.teams);
+      setCount(data.count);
+    });
   }, [debouncedSearchTerm]);
 
   return (
@@ -59,17 +71,17 @@ export default function TeamsTable({
           <Button variant="outline">Add Team</Button>
         </AddTeamSheet>
       </div>
-      <TeamDataTable
-        columns={columns}
-        data={teams}
-        teamAdd={() => {
-          if (parentTeamId) {
-            openSubTeamAdd(parentTeamId);
-          } else {
-            openTeamAdd();
-          }
-        }}
-      />
+      <DataTable columns={columns} data={teams} count={count}>
+        <EmptyTeams
+          teamAdd={() => {
+            if (parentTeamId) {
+              openSubTeamAdd(parentTeamId);
+            } else {
+              openTeamAdd();
+            }
+          }}
+        />
+      </DataTable>
     </>
   );
 }

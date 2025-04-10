@@ -223,13 +223,16 @@ export default function ModuleHeader({
                 <NavigationMenuItem>
                   <Link href="https://admin.socket.io/" target={'_blank'}>
                     <NavigationMenuLink
+                      asChild
                       className={navigationMenuTriggerStyle({
                         className:
                           'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
                       })}
                     >
-                      <SocketIcon className={'mr-2 w-3 h-3'} />
-                      Socket.io
+                      <span>
+                        <SocketIcon className={'mr-2 w-3 h-3'} />
+                        Socket.io
+                      </span>
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
@@ -240,6 +243,7 @@ export default function ModuleHeader({
                   target={'_blank'}
                 >
                   <NavigationMenuLink
+                    asChild
                     className={navigationMenuTriggerStyle({
                       className:
                         'border border-input bg-background hover:bg-accent hover:text-accent-foreground',

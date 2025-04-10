@@ -1,6 +1,6 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowRightIcon, CheckIcon, Clipboard } from 'lucide-react';
+import { ArrowRightIcon, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Team } from '@/lib/models/Team';
 import Link from 'next/link';
@@ -46,10 +46,22 @@ export const columns: ColumnDef<Team>[] = [
     accessorKey: 'parentTeam',
     header: 'Parent Team ID',
     cell: cell => {
-      return cell.getValue() ? (
-        <CheckIcon className={'w-4 h-4'} />
-      ) : (
-        <span> - </span>
+      const val: string = cell.getValue() as string;
+      if (!val) {
+        return <span>-</span>;
+      }
+      return (
+        <div className={'flex flex-row group'}>
+          {cell.getValue() as string}
+          <Clipboard
+            className={
+              'w-4 h-4 ml-2 invisible group-hover:visible cursor-pointer '
+            }
+            onClick={() => {
+              navigator.clipboard.writeText(cell.getValue() as string);
+            }}
+          />
+        </div>
       );
     },
   },

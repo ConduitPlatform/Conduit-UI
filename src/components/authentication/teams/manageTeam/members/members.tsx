@@ -6,30 +6,33 @@ import { Button } from '@/components/ui/button';
 // @ts-ignore
 import { useDebounce } from '@uidotdev/usehooks';
 import { useSearchParams } from 'next/navigation';
-import { MemberDataTable } from '@/components/authentication/teams/manageTeam/members/data-table';
 import { columns } from '@/components/authentication/teams/manageTeam/members/columns';
 import { useUserPicker } from '@/components/helpers/UserPicker/UserPicker';
-import { addTeamMembers } from '@/lib/api/authentication';
+import { addTeamMembers, getTeamMembers } from '@/lib/api/authentication';
+import { DataTable } from '@/components/authentication/components/data-table';
+import EmptyTeamMembers from '@/components/authentication/teams/manageTeam/members/emptyTeamMembers';
 
 export default function MembersTable({
   data,
   teamId,
-  count,
-  refreshData,
-}: {
+  count: initialCount,
+}: Readonly<{
   data: TeamUser[];
   count: number;
   teamId: string;
-  refreshData: (searchString: string) => Promise<TeamUser[]>;
-}) {
+}>) {
   const searchParams = useSearchParams();
   const { openPicker } = useUserPicker();
 
+  const [count, setCount] = useState<number>(initialCount);
   const [users, setUsers] = useState<TeamUser[]>(data);
   const [search, setSearch] = useState<string>(
     searchParams.get('search') ?? ''
   );
-  const debouncedSearchTerm = useDebounce(search, 300);
+  useEffect(() => {
+    setUsers(data);
+    setCount(initialCount);
+  }, [data, initialCount]);
   const pickUser = useCallback(() => {
     openPicker(pickedUsers => {
       addTeamMembers(teamId, pickedUsers).then(() => {
@@ -41,6 +44,7 @@ export default function MembersTable({
     });
   }, []);
 
+  const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('search', search);
@@ -48,11 +52,15 @@ export default function MembersTable({
       params.delete('search');
     }
     window.history.pushState(null, '', `?${params.toString()}`);
-    if (debouncedSearchTerm === '') {
-      setUsers(data);
-      return;
-    }
-    refreshData(debouncedSearchTerm).then(users => setUsers(users));
+    const skip = parseInt(searchParams.get('skip') ?? '0');
+    const limit = parseInt(searchParams.get('limit') ?? '10');
+    getTeamMembers(teamId, skip, limit, {
+      sort: params.get('sort') ?? '',
+      search,
+    }).then(data => {
+      setUsers(data.members);
+      setCount(data.count);
+    });
   }, [debouncedSearchTerm]);
 
   return (
@@ -67,7 +75,9 @@ export default function MembersTable({
           Add Member
         </Button>
       </div>
-      <MemberDataTable columns={columns} data={users} memberAdd={pickUser} />
+      <DataTable columns={columns} data={users} count={count}>
+        <EmptyTeamMembers memberAdd={pickUser} />
+      </DataTable>
     </>
   );
 }

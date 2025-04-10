@@ -46,8 +46,10 @@ export default async function Strategies() {
     });
   return (
     <div className={'flex flex-col'}>
-      <div className={'flex flex-row justify-between border-b py-2'}>
-        <h1> Active Strategies</h1>
+      <div
+        className={'flex flex-row justify-between border-b py-2 items-center'}
+      >
+        <h1 className={'font-2xl font-bold'}> Active Strategies</h1>
         <StrategyList strategies={availableStrategies}>
           <Button variant="outline">Add Strategy</Button>
         </StrategyList>

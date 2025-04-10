@@ -43,9 +43,7 @@ export const AddUserSheet = ({
   onClose?: () => void;
   defaultOpen?: boolean;
 }) => {
-  const [open, setOpen] = useState(
-    defaultOpen !== undefined ? defaultOpen : false
-  );
+  const [open, setOpen] = useState(defaultOpen ?? false);
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -127,7 +125,7 @@ export const AddUserSheet = ({
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent side="right">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} autoComplete={'off'}>
             <SheetHeader>
               <SheetTitle>Add User</SheetTitle>
               <SheetDescription>
@@ -146,6 +144,7 @@ export const AddUserSheet = ({
                       <Input
                         placeholder="mail@conduit.com"
                         className="col-span-3"
+                        autoComplete={'off'}
                         {...field}
                       />
                     </FormControl>
@@ -163,6 +162,7 @@ export const AddUserSheet = ({
                       <Input
                         placeholder="very secret"
                         type="password"
+                        autoComplete={'new-password'}
                         className="col-span-3"
                         {...field}
                       />

@@ -153,6 +153,7 @@ export const AddAdminSheet = ({
                       <Input
                         placeholder="Enter a username"
                         className="col-span-3"
+                        autoComplete={'off'}
                         {...field}
                       />
                     </FormControl>
@@ -190,6 +191,7 @@ export const AddAdminSheet = ({
                         placeholder="very secret"
                         type="password"
                         className="col-span-3"
+                        autoComplete={'off'}
                         {...field}
                       />
                     </FormControl>

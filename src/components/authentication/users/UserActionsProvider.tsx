@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 
 type UserActionsProvider = {
@@ -22,9 +22,9 @@ export const useUserActions = () => useContext(UserActionsContext);
 
 export function UserActionsProvider({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
   const [userEdit, setUserEdit] = React.useState<string | undefined>(undefined);
   const openUserAdd = () => {
@@ -34,15 +34,21 @@ export function UserActionsProvider({
     setUserEdit(userId);
   };
 
+  const contextValues = useMemo(
+    () => ({
+      openUserAdd,
+      openUserEdit,
+    }),
+    []
+  );
+
   return (
-    <UserActionsContext.Provider
-      value={{
-        openUserAdd,
-        openUserEdit,
-      }}
-    >
+    <UserActionsContext.Provider value={contextValues}>
       <AddUserSheet defaultOpen={userAdd} onClose={() => setUserAdd(false)} />
-      <AddUserSheet defaultOpen={userEdit !== undefined} />
+      <AddUserSheet
+        defaultOpen={userEdit !== undefined}
+        onClose={() => setUserEdit(undefined)}
+      />
       {children}
     </UserActionsContext.Provider>
   );

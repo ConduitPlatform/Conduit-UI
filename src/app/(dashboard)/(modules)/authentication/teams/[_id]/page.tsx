@@ -9,19 +9,21 @@ import TeamsTable from '@/components/authentication/teams/teams';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Teams(props: {
-  searchParams: Promise<{
-    skip: number;
-    limit: number;
-    mode?: string;
-    sort?: string;
-    search?: string;
-    parentTeam?: string;
-  }>;
-  params: Promise<{
-    _id: string;
-  }>;
-}) {
+export default async function Teams(
+  props: Readonly<{
+    searchParams: Promise<{
+      skip: number;
+      limit: number;
+      mode?: string;
+      sort?: string;
+      search?: string;
+      parentTeam?: string;
+    }>;
+    params: Promise<{
+      _id: string;
+    }>;
+  }>
+) {
   const params = await props.params;
   const searchParams = await props.searchParams;
   const { skip, limit, ...queryParams } = searchParams;
@@ -31,36 +33,16 @@ export default async function Teams(props: {
     parentTeam = await getTeam(team.parentTeam);
   }
 
-  const data = await getTeams(skip ?? 0, limit ?? 20, {
+  const data = await getTeams(skip ?? 0, limit ?? 10, {
     ...queryParams,
     parentTeam: params._id,
   });
   const userData = await getTeamMembers(
     params._id,
     searchParams.skip ?? 0,
-    searchParams.limit ?? 20,
+    searchParams.limit ?? 10,
     { ...searchParams }
   );
-
-  const refreshTeams = async (search: string) => {
-    'use server';
-    const { teams, count } = await getTeams(skip ?? 0, limit ?? 20, {
-      ...queryParams,
-      parentTeam: params._id,
-      search,
-    });
-    return teams;
-  };
-  const refreshUsers = async (search: string) => {
-    'use server';
-    const { members } = await getTeamMembers(
-      params._id,
-      searchParams.skip ?? 0,
-      searchParams.limit ?? 20,
-      { ...searchParams, search }
-    );
-    return members;
-  };
 
   return (
     <div className={'flex flex-col w-full gap-y-2'}>
@@ -89,9 +71,8 @@ export default async function Teams(props: {
           <MemberActionsProvider>
             <MembersTable
               data={userData.members}
-              count={data.count}
+              count={userData.count}
               teamId={team._id}
-              refreshData={refreshUsers}
             />
           </MemberActionsProvider>
         </TabsContent>
@@ -99,8 +80,8 @@ export default async function Teams(props: {
           <TeamActionsProvider>
             <TeamsTable
               data={data.teams}
-              refreshData={refreshTeams}
               parentTeamId={team._id}
+              count={data.count}
             />
           </TeamActionsProvider>
         </TabsContent>

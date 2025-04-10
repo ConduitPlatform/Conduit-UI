@@ -28,7 +28,7 @@ import { useAlerts } from '@/components/providers/AlertProvider';
 import { Team } from '@/lib/models/Team';
 
 const FormSchema = z.object({
-  name: z.string().nonempty('Name is required'),
+  name: z.string().min(1, 'Name is required'),
 });
 
 export const AddTeamSheet = ({
@@ -44,9 +44,7 @@ export const AddTeamSheet = ({
   defaultOpen?: boolean;
   parent?: string;
 }) => {
-  const [open, setOpen] = useState(
-    defaultOpen !== undefined ? defaultOpen : false
-  );
+  const [open, setOpen] = useState(defaultOpen ?? false);
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

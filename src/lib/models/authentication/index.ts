@@ -39,8 +39,3 @@ export type AuthenticationConfig = BaseAuthenticationSettings &
 export type AuthenticationConfigResponse = {
   config: AuthenticationConfig;
 };
-export type AuthenticationConfigSchemaResponse = {
-  config: {
-    [key: string]: string | boolean | number | string[] | boolean[] | number[];
-  };
-};

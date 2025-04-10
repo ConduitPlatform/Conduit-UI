@@ -71,7 +71,7 @@ export const StrategyList: React.FC<StrategySettingsProps> = ({
                 >
                   <CardHeader>
                     <CardTitle className={'flex flex-row justify-between'}>
-                      <p>{strategy.name}</p>
+                      <span>{strategy.name}</span>
                     </CardTitle>
                     <CardDescription>{strategy.description}</CardDescription>
                   </CardHeader>

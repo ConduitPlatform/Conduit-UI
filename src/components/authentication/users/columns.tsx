@@ -10,6 +10,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -48,12 +49,18 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      const payment = row.original;
+    cell: function CellComponent({ row }) {
+      const user = row.original;
+      const { openUserEdit } = useUserActions();
 
       return (
         <div className={'flex flex-row'}>
-          <Button variant={'ghost'} size={'sm'} title="edit">
+          <Button
+            variant={'ghost'}
+            size={'sm'}
+            title="edit"
+            onClick={() => openUserEdit(user._id)}
+          >
             <Pencil className={'w-4 h-4'} />
           </Button>
           <Button variant={'ghost'} size={'sm'} title="block">
