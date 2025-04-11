@@ -18,6 +18,27 @@ export const getLogsLevels = async (
   return res.data.data;
 };
 
+export const getModules = async (
+  startDate?: number,
+  endDate?: number
+): Promise<string[]> => {
+  const { namespace } = await _getEnv();
+  let query;
+  if (namespace && namespace.length > 0) {
+    query = `{namespace="${namespace}}"`;
+  }
+  const res = await (
+    await getLokiClient()
+  ).get('/loki/api/v1/label/module/values', {
+    params: {
+      start: startDate,
+      end: endDate,
+      query: query,
+    },
+  });
+  return res.data.data;
+};
+
 export const getLogsQueryRange = async (data: {
   modules?: string[] | string;
   searchTerm?: string;
@@ -58,7 +79,7 @@ export const getLogsQueryRange = async (data: {
   if (searchTerm) {
     query += ` |~ "${searchTerm}"`;
   }
-
+  console.log('query', query);
   const res = await (
     await getLokiClient()
   ).get(`/loki/api/v1/query_range`, {

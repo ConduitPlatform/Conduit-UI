@@ -2,11 +2,7 @@ import { generateMultiSelectOptions } from '@/lib/models/logs-viewer/utils';
 import MultiSelectField from '@/components/ui/form-inputs/MultiSelectField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import Link from 'next/link';
-import {
-  knownModuleNames,
-  limitOptions,
-  timeOptions,
-} from '@/lib/models/logs-viewer/constants';
+import { limitOptions, timeOptions } from '@/lib/models/logs-viewer/constants';
 import { cn } from '@/lib/utils';
 import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
 import { Dispatch, SetStateAction, useEffect } from 'react';
@@ -15,6 +11,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 interface LogsFiltersOptionsProps
   extends React.FormHTMLAttributes<HTMLDivElement> {
   levels: string[];
+  modules: string[];
   type?: 'drawer' | 'viewer';
   logsFilters: {
     selectedLevels: string[];
@@ -41,6 +38,7 @@ interface LogsFiltersOptionsProps
 export default function LogsFiltersOptions({
   type = 'drawer',
   levels,
+  modules,
   logsFilters,
   setLogsFilters,
   disabledPopover = false,
@@ -65,7 +63,7 @@ export default function LogsFiltersOptions({
   const formItemClass = 'space-y-1';
 
   const levelOptions = generateMultiSelectOptions(levels);
-  const moduleOptions = generateMultiSelectOptions(knownModuleNames);
+  const moduleOptions = generateMultiSelectOptions(modules);
 
   const updateURLParams = () => {
     const params = new URLSearchParams();

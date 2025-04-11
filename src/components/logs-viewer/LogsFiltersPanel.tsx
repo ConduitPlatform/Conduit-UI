@@ -19,7 +19,6 @@ import { usePathname } from 'next/navigation';
 import LogsFiltersOptions from './LogsFiltersOptions';
 import { LogsData } from '@/lib/models/logs-viewer';
 import { getTimestamp } from '@/lib/models/logs-viewer/utils';
-import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 import { debounce, throttle } from 'lodash';
 import { getLogsLevels } from '@/lib/loki/requests';
 
@@ -27,6 +26,7 @@ type LogsFiltersPanelProps = {
   className?: string;
   setLogs: Dispatch<SetStateAction<LogsData[]>>;
   levels: string[];
+  modules: string[];
   open?: boolean;
   type?: 'drawer' | 'viewer';
   drawerModule?: string;
@@ -43,6 +43,7 @@ export default function LogsFiltersPanel({
   className,
   levels,
   setLogs,
+  modules,
   type = 'drawer',
   open = false,
   drawerModule,
@@ -85,7 +86,7 @@ export default function LogsFiltersPanel({
     refreshLogs({
       modules:
         logsFilters.selectedModules.length === 0
-          ? knownModuleNames
+          ? modules
           : logsFilters.selectedModules,
       levels: logsFilters.selectedLevels,
       startDate: liveReloadChecked ? undefined : startDate,
@@ -203,6 +204,7 @@ export default function LogsFiltersPanel({
       {openFilters && (
         <LogsFiltersOptions
           levels={levels}
+          modules={modules}
           type={type}
           setLogsFilters={setLogsFilters}
           logsFilters={logsFilters}

@@ -1,14 +1,18 @@
 import LogsViewer from '@/components/logs-viewer/LogsViewer';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 import { LogsData } from '@/lib/models/logs-viewer';
-import { getLogsLevels, getLogsQueryRange } from '@/lib/loki/requests';
+import {
+  getLogsLevels,
+  getLogsQueryRange,
+  getModules,
+} from '@/lib/loki/requests';
 import { isLokiEnabled } from '@/lib/logic/EnvManager';
 
 export default async function LogsViewerPage() {
   let isAvailable = await isLokiEnabled();
   let levelsData: string[] = [];
   let logsData: LogsData[] = [];
-
+  let modules: string[] = [...knownModuleNames];
   if (!isAvailable) {
     return (
       <div className="flex justify-center mt-10">
@@ -18,8 +22,14 @@ export default async function LogsViewerPage() {
   }
   try {
     levelsData = await getLogsLevels();
+    const fetchedModules = await getModules();
+    if (fetchedModules.length > 0) {
+      modules = knownModuleNames.concat(
+        fetchedModules.filter(module => !knownModuleNames.includes(module))
+      );
+    }
     logsData = await getLogsQueryRange({
-      modules: knownModuleNames,
+      modules,
       limit: '100',
     });
   } catch (e) {
@@ -36,7 +46,7 @@ export default async function LogsViewerPage() {
     'use server';
     return await getLogsQueryRange({
       ...data,
-      modules: data.modules ? data.modules : knownModuleNames,
+      modules: data.modules ? data.modules : modules,
       limit: data.limit ? data.limit : '100',
     })
       .then(res => res)
@@ -50,6 +60,7 @@ export default async function LogsViewerPage() {
     <LogsViewer
       levelsData={levelsData}
       logsData={logsData}
+      modules={modules}
       refreshLogs={refreshLogs}
     />
   );

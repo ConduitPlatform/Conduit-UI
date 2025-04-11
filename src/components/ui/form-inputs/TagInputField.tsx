@@ -55,8 +55,8 @@ export function UrlTagInput<
       <Controller
         control={formContext.control}
         name={name}
-        //@ts-ignore
         render={({ field }) => (
+          //@ts-ignore
           <UrlTagInputField
             {...field}
             disabled={disabled}

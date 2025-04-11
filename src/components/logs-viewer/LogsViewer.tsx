@@ -8,6 +8,7 @@ import SidebarCollapseTrigger from '../navigation/sidebarCollapseTrigger';
 type LogsViewerProps = {
   levelsData: string[];
   logsData: LogsData[];
+  modules: string[];
   refreshLogs: (data: {
     modules: string[];
     levels: string[];
@@ -20,6 +21,7 @@ type LogsViewerProps = {
 export default function LogsViewer({
   levelsData,
   logsData,
+  modules,
   refreshLogs,
 }: Readonly<LogsViewerProps>) {
   const [logs, setLogs] = useState(logsData);
@@ -34,6 +36,7 @@ export default function LogsViewer({
         refreshLogs={refreshLogs}
         setLogs={setLogs}
         levels={levelsData}
+        modules={modules}
         open
         type="viewer"
       />

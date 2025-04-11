@@ -13,8 +13,13 @@ import { cn } from '@/lib/utils';
 import { LogsAccordionList } from './LogsAccordionList';
 import LogsFiltersPanel from './LogsFiltersPanel';
 import { LogsData } from '@/lib/models/logs-viewer';
-import { getLogsLevels, getLogsQueryRange } from '@/lib/loki/requests';
+import {
+  getLogsLevels,
+  getLogsQueryRange,
+  getModules,
+} from '@/lib/loki/requests';
 import { isLokiEnabled } from '@/lib/logic/EnvManager';
+import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 
 const snapPoints = [0.5, 0.75, 1];
 
@@ -26,11 +31,17 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [levels, setLevels] = useState<string[]>([]);
+  const [modules, setModules] = useState<string[]>([]);
   const [logs, setLogs] = useState<LogsData[]>([]);
   const [drawerHeight, setDrawerHeight] = useState(0);
   const pathname = usePathname();
   const currentModule = useMemo(
-    () => pathname.split('/')[1] ?? 'core',
+    () =>
+      pathname.split('/').length > 1
+        ? pathname.split('/')[1] === ''
+          ? 'core'
+          : pathname.split('/')[1]
+        : 'core',
     [pathname]
   );
   const isLogsViewerPage = useMemo(
@@ -53,9 +64,9 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     async (data: {
       modules: string[] | string;
       levels?: string[];
-      startDate?: number | undefined;
-      endDate?: number | undefined;
-      limit?: string | undefined;
+      startDate?: number;
+      endDate?: number;
+      limit?: string;
     }) => {
       return await getLogsQueryRange({
         ...data,
@@ -73,13 +84,25 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         setLevels(res);
       })
       .catch();
+    getModules()
+      .then(res => {
+        'use client';
+        let validModules = knownModuleNames;
+        if (res.length > 0) {
+          validModules = knownModuleNames.concat(
+            res.filter(module => !knownModuleNames.includes(module))
+          );
+        }
+        setModules(validModules);
+      })
+      .catch();
     refreshDrawerLogs({ modules: currentModule })
       .then(res => {
         'use client';
         setLogs(res);
       })
       .catch();
-  }, [isAvailable, currentModule]);
+  }, [isAvailable, currentModule, pathname]);
 
   useEffect(() => {
     const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
@@ -129,6 +152,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         <LogsFiltersPanel
           levels={levels}
           setLogs={setLogs}
+          modules={modules}
           drawerModule={currentModule}
           refreshLogs={refreshDrawerLogs}
         />
