@@ -137,11 +137,7 @@ export default function ModuleHeader({
   ];
 
   return (
-    <div
-      className={
-        'flex flex-col h-full max-h-screen overflow-x-auto main-scrollbar'
-      }
-    >
+    <div className={'flex flex-col overflow-x-auto no-scrollbar'}>
       <div
         className={
           'flex flex-row w-full justify-between p-4 border-b items-center sticky top-0 z-40 bg-background'
@@ -257,8 +253,10 @@ export default function ModuleHeader({
           </NavigationMenu>
         </div>
       </div>
-      <div className="container static py-10 mx-auto overflow-x-auto main-scrollbar">
-        {children}
+      <div className={'w-full h-full max-h-[90vh] main-scrollbar top-10'}>
+        <div className="container static py-10 mx-auto overflow-x-auto">
+          {children}
+        </div>
       </div>
       <LogsDrawer isSidebarOpen={open} />
     </div>

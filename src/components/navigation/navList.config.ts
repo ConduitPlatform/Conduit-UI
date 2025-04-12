@@ -46,6 +46,10 @@ export const navList = {
           url: '/authentication/teams',
         },
         {
+          title: 'Permissions Models',
+          url: '/authentication/permissions-models',
+        },
+        {
           title: 'Strategies',
           url: '/authentication/strategies',
         },
@@ -63,6 +67,18 @@ export const navList = {
         {
           title: 'Dashboard',
           url: '/authorization',
+        },
+        {
+          title: 'Resources',
+          url: '/authorization/resources',
+        },
+        {
+          title: 'Relations',
+          url: '/authorization/relations',
+        },
+        {
+          title: 'Permissions',
+          url: '/authorization/permissions',
         },
         {
           title: 'Settings',

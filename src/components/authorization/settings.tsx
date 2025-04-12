@@ -4,8 +4,8 @@ import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { Switch } from '@/components/ui/switch';
-import { AuthorizationSettings } from '@/lib/models/Authorization';
 import { patchAuthorizationSettings } from '@/lib/api/authorization';
+import { AuthorizationSettings } from '@/lib/models/authorization/settings';
 
 interface Props {
   data: AuthorizationSettings;

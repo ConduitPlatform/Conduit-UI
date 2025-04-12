@@ -41,6 +41,21 @@ export const createUser = async (
   });
   return res.data;
 };
+export const deleteUser = async (userId: string): Promise<string> => {
+  const res = await (
+    await getApiClient()
+  ).delete(`/authentication/users/${userId}`);
+  return res.data;
+};
+export const blockUnblockUser = async (
+  userId: string,
+  block: boolean
+): Promise<string> => {
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/users/${userId}/${block ? 'block' : 'unblock'}`);
+  return res.data;
+};
 export const getTeam = async (teamId: string): Promise<Team> => {
   const res = await (
     await getApiClient()

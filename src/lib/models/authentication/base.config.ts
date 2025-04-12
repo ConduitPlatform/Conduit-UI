@@ -33,5 +33,7 @@ export type BaseAuthenticationSettings = {
     allowAny: boolean;
     whitelistedUris: string[];
   };
-  anonymousUsers: boolean;
+  anonymousUsers: {
+    enabled: boolean;
+  };
 };

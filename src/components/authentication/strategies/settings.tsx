@@ -79,7 +79,9 @@ const FormSchema = z.object({
       z.string().url({ message: 'Please enter a valid URL' })
     ),
   }),
-  anonymousUsers: z.boolean().default(false),
+  anonymousUsers: z.object({
+    enabled: z.boolean().default(false),
+  }),
   teams: teamsSchema,
   clients: clientsSchema,
   accessTokens: accessTokenSchema,
@@ -425,7 +427,7 @@ export const AuthenticationSettings = ({ data }: Props) => {
                   />
                   <SwitchField
                     label={'Allow anonymous users'}
-                    fieldName={'anonymousUsers'}
+                    fieldName={'anonymousUsers.enabled'}
                     disabled={!edit}
                   />
                   <SwitchField

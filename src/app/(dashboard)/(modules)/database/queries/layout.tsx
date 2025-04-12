@@ -109,10 +109,6 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
 
   return (
     <div className="h-full flex flex-col w-full overflow-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Custom Queries</h1>
-      </div>
-
       <div className="w-full absolute h-5/6 left-0 top-13 flex gap-x-4">
         {/* Left sidebar with query list */}
         <QueryList

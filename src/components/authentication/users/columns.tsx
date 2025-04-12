@@ -51,7 +51,8 @@ export const columns: ColumnDef<User>[] = [
     id: 'actions',
     cell: function CellComponent({ row }) {
       const user = row.original;
-      const { openUserEdit } = useUserActions();
+      const { openUserEdit, deleteUser, blockUser, unblockUser } =
+        useUserActions();
 
       return (
         <div className={'flex flex-row'}>
@@ -63,14 +64,32 @@ export const columns: ColumnDef<User>[] = [
           >
             <Pencil className={'w-4 h-4'} />
           </Button>
-          <Button variant={'ghost'} size={'sm'} title="block">
-            <XCircle className={'w-4 h-4'} />
-          </Button>
+          {user.active ? (
+            <Button
+              variant={'ghost'}
+              size={'sm'}
+              title="block"
+              onClick={() => blockUser(user._id)}
+            >
+              <XCircle className={'w-4 h-4'} />
+            </Button>
+          ) : (
+            <Button
+              variant={'ghost'}
+              size={'sm'}
+              title="unblock"
+              onClick={() => unblockUser(user._id)}
+            >
+              <CheckIcon className={'w-4 h-4'} />
+            </Button>
+          )}
+
           <Button
             variant={'ghost'}
             size={'sm'}
             className={'text-destructive'}
             title="delete"
+            onClick={() => deleteUser(user._id)}
           >
             <Trash className={'w-4 h-4'} />
           </Button>

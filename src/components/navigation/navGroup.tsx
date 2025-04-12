@@ -44,7 +44,9 @@ export function NavGroup({ items, label, ...props }: NavGroupProps) {
     const isActive =
       item.url === '/' ? pathname === item.url : pathname.startsWith(item.url);
     const hasActiveSubItem =
-      item.items?.some(subItem => pathname === subItem.url) ?? false;
+      item.items?.some(
+        subItem => pathname === subItem.url || pathname.startsWith(subItem.url)
+      ) ?? false;
     return isActive || hasActiveSubItem;
   };
 
@@ -83,7 +85,17 @@ export function NavGroup({ items, label, ...props }: NavGroupProps) {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items.map(subItem => {
-                          const isSubItemActive = pathname === subItem.url;
+                          const isSubItemActive =
+                            pathname.startsWith(subItem.url) &&
+                            subItem.url !== '/' &&
+                            subItem.url.length ===
+                              Math.max(
+                                ...item.items!.map(item =>
+                                  pathname.startsWith(item.url)
+                                    ? item.url.length
+                                    : 0
+                                )
+                              );
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton
