@@ -1,19 +1,17 @@
 import {
   BellDot,
+  CodeIcon,
   Database,
-  Cog,
-  FormInputIcon,
   HardDrive,
   Home,
   KeyRound,
+  Logs,
   LucideMail,
   LucideMessageSquare,
   MessagesSquare,
   Router,
-  User,
-  Logs,
   Settings,
-  CodeIcon,
+  User,
 } from 'lucide-react';
 
 export const navList = {
@@ -144,6 +142,10 @@ export const navList = {
         {
           title: 'Send',
           url: '/email/send',
+        },
+        {
+          title: 'Records',
+          url: '/email/records',
         },
         {
           title: 'Settings',

@@ -14,11 +14,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Cog } from 'lucide-react';
+import { ChevronDown, Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useFormContext } from 'react-hook-form';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { InputField } from '@/components/ui/form-inputs/InputField';
+import SwitchField from '@/components/ui/form-inputs/SwitchField';
+import * as React from 'react';
 
 interface Props {
   edit: boolean;
@@ -118,6 +126,82 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
             )}
           />
         </div>
+        <Collapsible
+          key={`access-tokens`}
+          className="border rounded-md overflow-hidden mb-4"
+        >
+          <div className="flex items-center justify-between p-3 bg-muted/30">
+            <div className="flex items-center space-x-2 flex-grow">
+              <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                <span className="font-medium truncate text-xl">
+                  Email Storage
+                </span>
+              </CollapsibleTrigger>
+            </div>
+          </div>
+
+          <CollapsibleContent className={'p-4'}>
+            <div className={'flex flex-col space-y-4 '}>
+              <div className={'flex flex-row space-x-4'}>
+                <SwitchField
+                  label={'Store Emails'}
+                  fieldName={'storeEmails.enabled'}
+                  disabled={!edit}
+                />
+              </div>
+              <span>
+                By default emails are stored only in the Database. For larger
+                emails it's recommended to use blob storage
+              </span>
+              <div className={'flex flex-row space-x-4 items-center'}>
+                <SwitchField
+                  label={'Store in Blob Storage'}
+                  fieldName={'storeEmails.storage.enabled'}
+                  disabled={!edit}
+                />
+                {form.watch('storeEmails.storage.enabled') && (
+                  <div className={'grid grid-cols-2 gap-4 items-center'}>
+                    <InputField
+                      label={'Container'}
+                      fieldName={'storeEmails.storage.container'}
+                      disabled={!edit}
+                    />
+                    <InputField
+                      label={'Folder'}
+                      fieldName={'storeEmails.storage.folder'}
+                      disabled={!edit}
+                    />
+                  </div>
+                )}
+              </div>
+              <span>Setup old email cleanup:</span>
+              <div className={'flex flex-row space-x-4 items-center'}>
+                <SwitchField
+                  label={'Enable cleanup'}
+                  fieldName={'storeEmails.cleanupSettings.enabled'}
+                  disabled={!edit}
+                />
+                {form.watch('storeEmails.cleanupSettings.enabled') && (
+                  <div className={'grid grid-cols-2 gap-4 items-center'}>
+                    <InputField
+                      label={'Cleanup interval (ms)'}
+                      type={'number'}
+                      fieldName={'storeEmails.cleanupSettings.repeat'}
+                      disabled={!edit}
+                    />
+                    <InputField
+                      label={'Deletion limit per run'}
+                      type={'number'}
+                      fieldName={'storeEmails.cleanupSettings.limit'}
+                      disabled={!edit}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         <div className={'grid grid-cols-2 gap-4'}>
           {form.watch('transport') === 'smtp' && (

@@ -89,7 +89,7 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
         onSubmit={form.handleSubmit(
           async data => {
             await sendEmail(data)
-              .then(() => router.push('/email'))
+              .then(() => router.push('/email/records'))
               .catch(err =>
                 toast({
                   title: 'Email',

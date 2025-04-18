@@ -3,7 +3,22 @@ export type EmailSettings = {
   sendingDomain: string;
   transport: TransportProviders;
   transportSettings: TransportSettings;
+  storeEmails: StorageSettings;
 };
+
+export interface StorageSettings {
+  enabled: boolean;
+  storage: {
+    enabled: boolean;
+    container: string;
+    folder: string;
+  };
+  cleanupSettings: {
+    enabled: boolean;
+    repeat: number;
+    limit: number;
+  };
+}
 
 export type TransportProviders =
   | 'mailgun'
@@ -25,7 +40,7 @@ export interface TransportSettings {
 export interface MailgunSettings {
   apiKey: string;
   host: string;
-  proxy: string;
+  proxy?: string;
 }
 
 export interface SmtpSettings {

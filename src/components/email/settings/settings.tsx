@@ -24,6 +24,19 @@ const FormSchema = z
     sendingDomain: z.string({
       required_error: 'You need to provide the Sending Domain',
     }),
+    storeEmails: z.object({
+      enabled: z.boolean().default(false),
+      storage: z.object({
+        enabled: z.boolean().default(false),
+        container: z.string(),
+        folder: z.string(),
+      }),
+      cleanupSettings: z.object({
+        enabled: z.boolean().default(false),
+        repeat: z.number().int(),
+        limit: z.number().int(),
+      }),
+    }),
     transport: z.union([
       z.literal('mailgun'),
       z.literal('smtp'),
@@ -36,7 +49,7 @@ const FormSchema = z
       mailgun: z.object({
         apiKey: z.string(),
         host: z.string(),
-        proxy: z.string(),
+        proxy: z.string().optional(),
       }),
       smtp: z.object({
         port: z.number().int().default(587),
@@ -74,7 +87,7 @@ const FormSchema = z
         case 'mailgun':
           return !isEmpty(schema.transportSettings.mailgun);
         case 'smtp':
-          return !isEmpty(schema.transportSettings.smtp.auth);
+          return !isEmpty(schema.transportSettings.smtp);
         case 'mandrill':
           return !isEmpty(schema.transportSettings.mandrill);
         case 'sendgrid':

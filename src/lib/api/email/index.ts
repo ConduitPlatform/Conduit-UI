@@ -3,6 +3,7 @@ import { getApiClient } from '@/lib/api';
 import {
   EmailConfigResponse,
   EmailPayload,
+  EmailRecord,
   EmailSettings,
   EmailTemplate,
   ExternalTemplate,
@@ -126,4 +127,40 @@ export const uploadTemplate = async (id: string) => {
 
 export const sendEmail = async (data: EmailPayload) => {
   return (await getApiClient()).post(`/email/send`, data).then(res => res.data);
+};
+
+export const reSendEmail = async (emailRecordId: string) => {
+  return (await getApiClient())
+    .post(`/email/resend`, { emailRecordId })
+    .then(res => res.data);
+};
+
+export const fetchEmailStatus = async (messageId: string) => {
+  return (await getApiClient())
+    .get<{
+      statusInfo: any;
+    }>(`/email/status`, { params: { messageId } })
+    .then(res => res.data);
+};
+
+export const fetchRecords = async (args: {
+  skip: number;
+  limit: number;
+  messageId?: string;
+  templateId?: string;
+  receiver?: string;
+  sender?: string;
+  cc?: string[];
+  replyTo?: string;
+  startDate?: string;
+  endDate?: string;
+  sort?: string;
+}) => {
+  type Response = {
+    records: EmailRecord[];
+    count: number;
+  };
+  return (await getApiClient())
+    .get<Response>('/email/record', { params: args })
+    .then(res => res.data);
 };
