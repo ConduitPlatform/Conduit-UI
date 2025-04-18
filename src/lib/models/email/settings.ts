@@ -5,13 +5,21 @@ export type EmailSettings = {
   transportSettings: TransportSettings;
 };
 
-export type TransportProviders = 'mailgun' | 'smtp' | 'mandrill' | 'sendgrid';
+export type TransportProviders =
+  | 'mailgun'
+  | 'smtp'
+  | 'mandrill'
+  | 'sendgrid'
+  | 'mailersend'
+  | 'amazonSes';
 
 export interface TransportSettings {
   mailgun: MailgunSettings;
   smtp: SmtpSettings;
   mandrill: MandrillSettings;
   sendgrid: SendgridSettings;
+  mailersend: MailersendSettings;
+  amazonSes: AmazonSesSettings;
 }
 
 export interface MailgunSettings {
@@ -39,4 +47,16 @@ export interface MandrillSettings {
 export interface SendgridSettings {
   apiKey: string;
   residency: string;
+}
+
+export interface MailersendSettings {
+  host: string;
+  port: number;
+  apiKey: string;
+}
+
+export interface AmazonSesSettings {
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
 }

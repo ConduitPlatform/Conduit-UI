@@ -29,6 +29,8 @@ const FormSchema = z
       z.literal('smtp'),
       z.literal('mandrill'),
       z.literal('sendgrid'),
+      z.literal('mailersend'),
+      z.literal('amazonSes'),
     ]),
     transportSettings: z.object({
       mailgun: z.object({
@@ -54,6 +56,16 @@ const FormSchema = z
         apiKey: z.string(),
         residency: z.string(),
       }),
+      mailersend: z.object({
+        host: z.string(),
+        port: z.number().int().default(587),
+        apiKey: z.string(),
+      }),
+      amazonSes: z.object({
+        region: z.string(),
+        accessKeyId: z.string(),
+        secretAccessKey: z.string(),
+      }),
     }),
   })
   .refine(
@@ -67,6 +79,10 @@ const FormSchema = z
           return !isEmpty(schema.transportSettings.mandrill);
         case 'sendgrid':
           return !isEmpty(schema.transportSettings.sendgrid);
+        case 'mailersend':
+          return !isEmpty(schema.transportSettings.mailersend);
+        case 'amazonSes':
+          return !isEmpty(schema.transportSettings.amazonSes);
         default:
           return false;
       }

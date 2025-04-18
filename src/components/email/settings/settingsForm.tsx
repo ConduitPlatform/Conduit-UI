@@ -95,6 +95,22 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
                           form.watch('transport') !== 'sendgrid' && <Cog />}
                       </div>
                     </SelectItem>
+                    <SelectItem value={'mailersend'}>
+                      <div className={'flex items-center gap-2'}>
+                        MailerSend{' '}
+                        {data.transportSettings.mailersend &&
+                          data.transportSettings.mailersend.apiKey &&
+                          form.watch('transport') !== 'mailersend' && <Cog />}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value={'amazonSes'}>
+                      <div className={'flex items-center gap-2'}>
+                        Amazon SES{' '}
+                        {data.transportSettings.amazonSes &&
+                          data.transportSettings.amazonSes.accessKeyId &&
+                          form.watch('transport') !== 'amazonSes' && <Cog />}
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -395,6 +411,137 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+          {form.watch('transport') === 'mailersend' && (
+            <>
+              <FormField
+                control={form.control}
+                name="transportSettings.mailersend.apiKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>API Key*</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'password'}
+                        title={'API KEY'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="transportSettings.mailersend.host"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>MailerSend SMTP Host*</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'text'}
+                        title={'SMTP Host'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="transportSettings.mailersend.port"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>MailerSend SMTP Port*</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'number'}
+                        title={'SMTP Port'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                        onChange={e => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+          {form.watch('transport') === 'amazonSes' && (
+            <>
+              <FormField
+                control={form.control}
+                name="transportSettings.amazonSes.region"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Region</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'text'}
+                        title={'Region'}
+                        placeholder={'ex. us-east-1'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="transportSettings.amazonSes.accessKeyId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Access Key ID*</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'text'}
+                        title={'Access Key ID'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="transportSettings.amazonSes.secretAccessKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Secret Access Key*</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'password'}
+                        title={'Secret Access Key'}
+                        placeholder={'Enter a value'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
