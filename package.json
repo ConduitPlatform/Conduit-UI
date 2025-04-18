@@ -53,6 +53,7 @@
     "dotenv": "^16.4.7",
     "embla-carousel-react": "^8.1.8",
     "handlebars": "^4.7.8",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.451.0",
     "moment": "^2.29.4",
@@ -77,6 +78,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.3.3",
     "@types/react": "19.1.0",

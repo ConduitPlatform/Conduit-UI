@@ -152,7 +152,7 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
               </div>
               <span>
                 By default emails are stored only in the Database. For larger
-                emails it's recommended to use blob storage
+                emails it&apos;s recommended to use blob storage
               </span>
               <div className={'flex flex-row space-x-4 items-center'}>
                 <SwitchField

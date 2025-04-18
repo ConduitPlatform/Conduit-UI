@@ -28,16 +28,32 @@ export const ModelEditorField = ({
   removeField,
   availableModels,
   mode = 'new',
+  disabled,
+  extended,
+  fieldPath: parentPath,
 }: {
   form: any;
   field: any;
   index: number;
+  fieldPath?: string;
   availableModels: string[];
   removeField: (index: number) => void;
   mode?: 'new' | 'edit';
+  disabled: boolean;
+  extended?: boolean;
 }) => {
-  const fieldPath = useMemo(() => `fields.${index}`, [index]);
-  const fieldId = useMemo(() => field?.id ?? `fields.${index}`, [field]);
+  debugger;
+  const fieldPath = useMemo(
+    () =>
+      parentPath
+        ? `${parentPath}.${index}`
+        : `${extended ? 'extendedFields' : 'fields'}.${index}`,
+    [index, parentPath]
+  );
+  const fieldId = useMemo(
+    () => field?.id ?? `${extended ? 'extendedFields' : 'fields'}.${index}`,
+    [field]
+  );
   const isDefaultField = defaultFields.some(df => df.name === field?.name);
 
   return (
@@ -51,7 +67,7 @@ export const ModelEditorField = ({
               placeholder="Field name"
               fieldName={`${fieldPath}.name`}
               className={'mt-2'}
-              disabled={mode === 'edit' || isDefaultField}
+              disabled={mode === 'edit' || isDefaultField || disabled}
             />
             <SelectField
               key={generateKey(fieldId, `${fieldPath}.type`)}
@@ -69,7 +85,7 @@ export const ModelEditorField = ({
                   value: type.name,
                 };
               })}
-              disabled={mode === 'edit'}
+              disabled={mode === 'edit' || disabled}
             />
           </div>
           {['Boolean', 'String', 'Number'].includes(
@@ -80,6 +96,7 @@ export const ModelEditorField = ({
                 key={generateKey(fieldId, `${fieldPath}.default`)}
                 label={'Default Value'}
                 fieldName={`${fieldPath}.default`}
+                disabled={disabled}
               />
             </div>
           )}
@@ -90,11 +107,13 @@ export const ModelEditorField = ({
                 label={'Enum Type'}
                 options={enumTypes.map(type => ({ label: type, value: type }))}
                 fieldName={`${fieldPath}.enumType`}
+                disabled={disabled}
               />
               <InputField
                 key={generateKey(fieldId, `${fieldPath}.enumValues`)}
                 label={'Enum Values (comma-separated)'}
                 fieldName={`${fieldPath}.enumValues`}
+                disabled={disabled}
               />
             </>
           )}
@@ -103,8 +122,12 @@ export const ModelEditorField = ({
             <div key={generateKey(fieldId, `${fieldPath}.type`)}>
               <Label htmlFor={`${fieldPath}.relatedModel`}>Related Model</Label>
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
+                <DialogTrigger asChild disabled={disabled}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    disabled={disabled}
+                  >
                     {/*// @ts-ignore*/}
                     {form.watch(`${fieldPath}.relatedModel`) ||
                       'Select Related Model'}
@@ -139,6 +162,7 @@ export const ModelEditorField = ({
                 type="button"
                 variant="outline"
                 size="sm"
+                disabled={disabled}
                 onClick={() => {
                   const newId = `${Math.random().toString(36).substring(2, 9)}`;
                   // @ts-ignore
@@ -169,10 +193,12 @@ export const ModelEditorField = ({
                     <ModelEditorField
                       key={`${field.id}_${nestedField.id}`}
                       form={form}
+                      fieldPath={`${fieldPath}.fields`}
                       field={nestedField}
                       index={nestedIndex}
                       removeField={removeField}
                       availableModels={availableModels}
+                      disabled={disabled}
                     />
                   ))}
               </div>
@@ -185,6 +211,7 @@ export const ModelEditorField = ({
                   key={generateKey(fieldId, `${fieldPath}.required`)}
                   fieldName={`${fieldPath}.required`}
                   label={'Required'}
+                  disabled={disabled}
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -192,6 +219,7 @@ export const ModelEditorField = ({
                   key={generateKey(fieldId, `${fieldPath}.unique`)}
                   fieldName={`${fieldPath}.unique`}
                   label={'Unique'}
+                  disabled={disabled}
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -199,13 +227,14 @@ export const ModelEditorField = ({
                   key={generateKey(fieldId, `${fieldPath}.isArray`)}
                   fieldName={`${fieldPath}.isArray`}
                   label={'Is Array'}
-                  disabled={mode === 'edit'}
+                  disabled={mode === 'edit' || disabled}
                 />
               </div>
               <Button
                 type="button"
                 variant="destructive"
                 size="icon"
+                disabled={disabled}
                 onClick={() => removeField(index)}
               >
                 <Trash2 className="h-4 w-4" />

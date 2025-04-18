@@ -43,9 +43,7 @@ export default function ModuleResourcePage({
   );
 
   return (
-    <div className="w-full h-5/6 absolute left-0 top-13 flex gap-x-4 flex-col px-4 ">
-      <h1 className="text-3xl font-bold mb-6">Permission Models</h1>
-
+    <div className="w-full flex gap-x-4 flex-col px-4 ">
       <div className="flex flex-row gap-6 overflow-auto">
         <div className="">
           <ResourceList

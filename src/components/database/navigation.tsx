@@ -22,6 +22,7 @@ import { getSchemas } from '@/lib/api/database';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ModelEditor } from '@/components/database/modelEditor/model-editor';
+import { isEmpty } from 'lodash';
 
 type DatabaseNavigationProps = {
   data: {
@@ -53,23 +54,17 @@ export const DatabaseNavigation = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [policies, setPolicies] = useState<boolean>(
-    !!searchParams.get('model')
-  );
-  const [open, setOpen] = useState<boolean>(false);
-
   useEffect(() => {
-    setPolicies(!!searchParams.get('model'));
-  }, [searchParams.get('model')]);
-
-  useEffect(() => {
+    let modulePick = searchParams.get('module');
+    let owner: string[] | undefined;
+    if (!isEmpty(modulePick) && modulePick !== 'all') {
+      owner = [modulePick as string];
+    }
     getSchemas({
       limit: 1000,
       enabled: true,
       search: value,
-      owner: searchParams.get('module')
-        ? [searchParams.get('module') ?? '']
-        : undefined,
+      owner: owner,
     }).then(res => {
       setModels(res);
     });
@@ -91,6 +86,14 @@ export const DatabaseNavigation = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+            <DropdownMenuItem
+              key={'all'}
+              onSelect={() => {
+                router.push(`${pathname}?module=all`);
+              }}
+            >
+              <span>Any</span>
+            </DropdownMenuItem>
             {modules.map(module => (
               <DropdownMenuItem
                 key={module}

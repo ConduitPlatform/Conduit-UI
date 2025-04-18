@@ -3,29 +3,36 @@
 import { DataTable } from '@/components/database/tables/data-table';
 import { useColumns } from '@/components/database/tables/columns';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/lib/hooks/use-toast';
 import { PlusIcon } from 'lucide-react';
+import { DeclaredSchema } from '@/lib/models/database';
 
 type ModelDataTableProps = {
   documents: {
     documents: any[];
     count: number;
   };
-  model: string;
+  schema: DeclaredSchema;
 };
 
 export default function ModelDataTable({
-  documents,
-  model,
+  documents: initialData,
+  schema,
 }: Readonly<ModelDataTableProps>) {
+  const documents = useMemo(
+    () => initialData.documents,
+    [initialData.documents]
+  );
+  const count = useMemo(() => initialData.count, [initialData.count]);
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [value, setValue] = useState<string>(searchParams.get('search') ?? '');
-  const cols = useColumns(documents.documents, model);
+  const cols = useColumns(documents, schema);
 
   const triggerQuerySearch = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -47,7 +54,20 @@ export default function ModelDataTable({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  if (documents.count) {
+  if (!count) {
+    if (
+      schema.ownerModule !== 'database' &&
+      schema.modelOptions?.conduit?.permissions?.canCreate === false
+    ) {
+      return (
+        <div className="h-full flex flex-col items-center justify-center space-y-4">
+          <span className="text-gray-400 text-sm w-72">
+            Nothing here, maybe try creating a new document for model{' '}
+            {schema.name}.
+          </span>
+        </div>
+      );
+    }
     return (
       <div className="h-full flex flex-col items-center justify-center space-y-4">
         <Button>
@@ -56,7 +76,7 @@ export default function ModelDataTable({
         </Button>
         <span className="text-gray-400 text-sm w-72">
           No documents were found. Create your first document for model{' '}
-          {searchParams.get('model')}.
+          {schema.name}.
         </span>
       </div>
     );
@@ -85,11 +105,7 @@ export default function ModelDataTable({
           Find
         </Button>
       </div>
-      <DataTable
-        docs={documents.documents}
-        count={documents.count}
-        columns={cols}
-      />
+      <DataTable docs={documents} count={count} columns={cols} />
     </div>
   );
 }

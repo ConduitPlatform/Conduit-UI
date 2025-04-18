@@ -1,15 +1,20 @@
 'use server';
 import { getApiClient } from '@/lib/api';
 import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
 
 export const adminLogin = async (
   username: string,
   password: string,
   environment: string
-) => {
+): Promise<boolean> => {
   const res = await (
     await getApiClient(environment)
   ).post('/login', { username, password });
+  const token = res.data.token;
+  const decodedToken = jwt.decode(token) as { twoFaRequired?: boolean };
+  const twoFaRequired = decodedToken?.twoFaRequired || false;
+
   (await cookies()).set({
     name: `${environment}AccessToken`,
     value: res.data.token,
@@ -22,7 +27,21 @@ export const adminLogin = async (
     httpOnly: true,
     maxAge: 72000,
   });
-  return res.data;
+  return twoFaRequired;
+};
+
+export const loginSecondFactor = async (code: string, environment: string) => {
+  const res = await (
+    await getApiClient(environment)
+  ).post('/verify-twofa', { code });
+
+  (await cookies()).set({
+    name: `${environment}AccessToken`,
+    value: res.data.result,
+    httpOnly: true,
+    maxAge: 72000,
+  });
+  return 'OK';
 };
 
 export const getAdmin = async () => {

@@ -86,6 +86,15 @@ export const patchSchema = async (
     .then(res => res.data);
 };
 
+export const updateExtensions = async (
+  id: string,
+  fields: DeclaredSchema['fields']
+) => {
+  return await (await getApiClient())
+    .post<DeclaredSchema>(`/database/schemas/${id}/extensions`, { fields })
+    .then(res => res.data);
+};
+
 export const getDatabaseType = async () => {
   return await (await getApiClient())
     .get<{ result: string }>('/database/database-type')

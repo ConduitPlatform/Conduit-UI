@@ -976,6 +976,7 @@ export default function ResourceEditor({
         <ResourceSelectionModal
           open={isResourceSelectionOpen}
           onOpenChange={setIsResourceSelectionOpen}
+          selectForRelation={false}
           selectedResources={
             currentResource.relations &&
             Array.isArray(
