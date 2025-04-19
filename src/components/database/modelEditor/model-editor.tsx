@@ -162,16 +162,12 @@ export function ModelEditor({
       let fields = [];
       for (const extension of schema.extensions) {
         fields.push(
-          ...Object.entries(extension.fields).map(
-            ([name, field]: [string, any]) => {
-              return {
-                ...field,
-                id: `${name}_${field.type}`,
-                name,
-                ownerModule: extension.ownerModule,
-              };
-            }
-          )
+          ...extractFields(extension.fields).map(field => {
+            return {
+              ...field,
+              ownerModule: extension.ownerModule,
+            };
+          })
         );
       }
       return fields;
