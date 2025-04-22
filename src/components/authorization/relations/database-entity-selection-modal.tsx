@@ -23,6 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { getSchemaDocs } from '@/lib/api/database';
+import { isObject } from 'lodash';
 
 interface DatabaseEntitySelectionModalProps {
   open: boolean;
@@ -33,7 +34,7 @@ interface DatabaseEntitySelectionModalProps {
   description?: string;
 }
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 export default function DatabaseEntitySelectionModal({
   open,
@@ -97,7 +98,7 @@ export default function DatabaseEntitySelectionModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
+      <DialogContent className="max-w-[80vw] max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{title ?? `Select ${entityType}`}</DialogTitle>
           <DialogDescription>
@@ -119,7 +120,7 @@ export default function DatabaseEntitySelectionModal({
           />
         </div>
 
-        <ScrollArea className="flex-1 border rounded-md">
+        <ScrollArea className="border rounded-md h-[60vh] w-full">
           <Table>
             <TableHeader>
               <TableRow>
@@ -159,8 +160,10 @@ export default function DatabaseEntitySelectionModal({
                       {entity._id}
                     </TableCell>
                     {displayFields.map(field => (
-                      <TableCell key={field}>
-                        {entity[field as keyof typeof entity]}
+                      <TableCell key={field} className="max-w-[250px] truncate">
+                        {isObject(entity[field as keyof typeof entity])
+                          ? JSON.stringify(entity[field as keyof typeof entity])
+                          : entity[field as keyof typeof entity]?.toString()}
                       </TableCell>
                     ))}
                   </TableRow>

@@ -252,6 +252,5 @@ export const useColumns = (data: any, schema: DeclaredSchema) => {
         : [],
     [data]
   );
-  console.log(res);
   return res;
 };

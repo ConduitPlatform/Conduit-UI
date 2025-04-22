@@ -112,13 +112,36 @@ const extractFields = (fields: DeclaredSchema['fields']): any[] => {
         name,
       };
     } else if (isObject(field) && !field.hasOwnProperty('type')) {
-      const group = {
+      if (Array.isArray(field)) {
+        return {
+          ...field[0],
+          id: `${name}_${field[0].type}`,
+          name,
+          isArray: true,
+        };
+      }
+      return {
         type: 'Group',
         fields: extractFields(field),
         id: `${name}_Group`,
         name,
       };
-      return group;
+    } else if (isObject(field) && field.hasOwnProperty('type')) {
+      if (isObject((field as any).type)) {
+        return {
+          type: 'Group',
+          fields: extractFields((field as any).type),
+          id: `${name}_Group`,
+          name,
+          required: (field as any).required ?? false,
+        };
+      } else {
+        return {
+          ...field,
+          id: `${name}_${field.type}`,
+          name,
+        };
+      }
     } else {
       return {
         ...field,
@@ -161,6 +184,7 @@ export function ModelEditor({
     if (schema) {
       let fields = [];
       for (const extension of schema.extensions) {
+        debugger;
         fields.push(
           ...extractFields(extension.fields).map(field => {
             return {
@@ -416,6 +440,9 @@ export function ModelEditor({
     const isDefaultField = defaultFields.some(df => df.name === field.name);
     const FieldIcon = fieldTypes.find(t => t.name === field.type)?.icon || Type;
 
+    if (typeof field.type !== 'string') {
+      console.log(field);
+    }
     return (
       <Draggable
         key={field.id}

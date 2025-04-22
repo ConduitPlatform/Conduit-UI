@@ -18,7 +18,7 @@ export default function ModuleResourcePage({
 }>) {
   const resources = useMemo(() => defaultResources, [defaultResources]);
   const [selectedResource, setSelectedResource] =
-    useState<ResourceDefinition | null>(null);
+    useState<ResourceDefinition | null>(defaultResources?.[0] || null);
 
   useEffect(() => {
     if (resources.length === 1) {
@@ -45,13 +45,15 @@ export default function ModuleResourcePage({
   return (
     <div className="w-full flex gap-x-4 flex-col px-4 ">
       <div className="flex flex-row gap-6 overflow-auto">
-        <div className="">
-          <ResourceList
-            resources={resources}
-            onSelect={setSelectedResource}
-            moduleName="Authentication"
-          />
-        </div>
+        {resources.length > 1 && (
+          <div className="">
+            <ResourceList
+              resources={resources}
+              onSelect={setSelectedResource}
+              moduleName="Authentication"
+            />
+          </div>
+        )}
 
         <div className="flex-grow">
           {selectedResource ? (
