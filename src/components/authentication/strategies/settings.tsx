@@ -441,6 +441,7 @@ export const AuthenticationSettings = ({ data }: Props) => {
                     description="Enter the URLs you want to whitelist for your application"
                     placeholder="Type a URL and press Enter or Space..."
                     className={'col-span-2'}
+                    disabled={!edit}
                   />
                 </div>
               </CollapsibleContent>

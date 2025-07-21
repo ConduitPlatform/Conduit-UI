@@ -23,6 +23,10 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ModelEditor } from '@/components/database/modelEditor/model-editor';
 import { isEmpty } from 'lodash';
+import ExportImportDialog from '@/components/ui/export-import-dialog';
+import { exportSchemas, importSchemas } from '@/lib/api/database';
+import { Download, Upload } from 'lucide-react';
+import { useToast } from '@/lib/hooks/use-toast';
 
 type DatabaseNavigationProps = {
   data: {
@@ -50,6 +54,8 @@ export const DatabaseNavigation = ({
     count: 0,
   });
   const [value, setValue] = useState<string | undefined>(undefined);
+  const [exportImportDialog, setExportImportDialog] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -69,6 +75,63 @@ export const DatabaseNavigation = ({
       setModels(res);
     });
   }, [searchParams.get('module'), value]);
+
+  const handleExport = () => {
+    exportSchemas()
+      .then(res => {
+        const json = JSON.stringify(res, null, 2);
+        const href = URL.createObjectURL(
+          new Blob([json], { type: 'application/json' })
+        );
+        const link = document.createElement('a');
+        link.download = 'conduit-schemas.json';
+        link.href = href;
+        link.click();
+        URL.revokeObjectURL(href);
+        toast({
+          title: 'Export Successful',
+          description: 'Database schemas have been exported successfully.',
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        toast({
+          title: 'Export Failed',
+          description: 'Failed to export database schemas.',
+          variant: 'destructive',
+        });
+      });
+  };
+
+  const handleImport = (imp: any) => {
+    importSchemas(imp)
+      .then(() => {
+        toast({
+          title: 'Import Successful',
+          description: 'Database schemas have been imported successfully.',
+        });
+        // Refresh the models list
+        getSchemas({
+          limit: 1000,
+          enabled: true,
+          search: value,
+          owner:
+            searchParams.get('module') && searchParams.get('module') !== 'all'
+              ? [searchParams.get('module') as string]
+              : undefined,
+        }).then(res => {
+          setModels(res);
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        toast({
+          title: 'Import Failed',
+          description: 'Failed to import database schemas.',
+          variant: 'destructive',
+        });
+      });
+  };
 
   return (
     <DatabaseSidebar>
@@ -232,7 +295,27 @@ export const DatabaseNavigation = ({
             <span className="text-sm">New Model</span>
           </Button>
         </ModelEditor>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1"
+            onClick={() => setExportImportDialog(true)}
+          >
+            <Download className="w-4 h-4 mr-1" />
+            Export/Import
+          </Button>
+        </div>
       </div>
+
+      <ExportImportDialog
+        title="Database Schemas"
+        open={exportImportDialog}
+        onOpenChange={setExportImportDialog}
+        onExport={handleExport}
+        onImport={handleImport}
+        importInfo="WARNING: Database Schemas with the same name will be overridden"
+      />
     </DatabaseSidebar>
   );
 };

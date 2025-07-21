@@ -191,3 +191,27 @@ export const updateSchema = async (
     .patch(`database/schemas/${id}`, data)
     .then(res => res.data);
 };
+
+export const exportSchemas = async () => {
+  return await (await getApiClient())
+    .get('/database/schemas/export')
+    .then(res => res.data);
+};
+
+export const importSchemas = async (data: any) => {
+  return await (await getApiClient())
+    .post('/database/schemas/import', data)
+    .then(res => res.data);
+};
+
+export const exportCustomEndpoints = async () => {
+  return await (await getApiClient())
+    .get('/database/customEndpoints/export')
+    .then(res => res.data);
+};
+
+export const importCustomEndpoints = async (data: any) => {
+  return await (await getApiClient())
+    .post('/database/customEndpoints/import', data)
+    .then(res => res.data);
+};
