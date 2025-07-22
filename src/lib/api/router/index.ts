@@ -36,3 +36,44 @@ export const getMiddlewares = async () => {
   const res = await (await getApiClient()).get<string[]>(`/router/middlewares`);
   return res.data;
 };
+
+export const getRoutes = async () => {
+  const res = await (await getApiClient()).get(`/router/routes`);
+  return res.data;
+};
+
+export const getSecurityClients = async () => {
+  const res = await (await getApiClient()).get(`/router/security/client`);
+  return res.data;
+};
+
+export const createSecurityClient = async (data: {
+  platform: string;
+  domain?: string;
+  alias?: string;
+  notes?: string;
+}) => {
+  const res = await (
+    await getApiClient()
+  ).post(`/router/security/client`, data);
+  return res.data;
+};
+
+export const updateSecurityClient = async (
+  id: string,
+  data: {
+    platform?: string;
+    domain?: string;
+    alias?: string;
+    notes?: string;
+  }
+) => {
+  const res = await (
+    await getApiClient()
+  ).put(`/router/security/client/${id}`, data);
+  return res.data;
+};
+
+export const deleteSecurityClient = async (id: string) => {
+  await (await getApiClient()).delete(`/router/security/client/${id}`);
+};

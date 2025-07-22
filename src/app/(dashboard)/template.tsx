@@ -35,6 +35,7 @@ const MODULE_NAMES: { [key: string]: string } = {
   router: 'Router',
   functions: 'Functions',
   'push-notifications': 'Notifications',
+  payments: 'Payments',
 };
 export default function ModuleHeader({
   children,

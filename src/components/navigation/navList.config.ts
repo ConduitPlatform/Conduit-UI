@@ -12,6 +12,7 @@ import {
   Router,
   Settings,
   User,
+  CreditCard,
 } from 'lucide-react';
 
 export const navList = {
@@ -150,6 +151,37 @@ export const navList = {
         {
           title: 'Settings',
           url: '/email/settings',
+        },
+      ],
+    },
+    {
+      title: 'Payments',
+      url: '/payments',
+      icon: CreditCard,
+      items: [
+        {
+          title: 'Dashboard',
+          url: '/payments',
+        },
+        {
+          title: 'Customers',
+          url: '/payments/customers',
+        },
+        {
+          title: 'Products',
+          url: '/payments/products',
+        },
+        {
+          title: 'Transactions',
+          url: '/payments/transactions',
+        },
+        {
+          title: 'Subscriptions',
+          url: '/payments/subscriptions',
+        },
+        {
+          title: 'Settings',
+          url: '/payments/settings',
         },
       ],
     },

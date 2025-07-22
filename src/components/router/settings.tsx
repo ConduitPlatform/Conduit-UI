@@ -56,6 +56,9 @@ const FormSchema = z
       sockets: z.boolean(),
       proxy: z.boolean(),
     }),
+    security: z.object({
+      clientValidation: z.boolean(),
+    }),
   })
   .refine(
     schema => {
@@ -452,6 +455,32 @@ export const Settings = ({ data }: Props) => {
                 />
               </div>
             )}
+            <Separator className={'my-3'} />
+            <FormField
+              control={control}
+              name="security.clientValidation"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-4">
+                  <FormLabel className="text-2xl font-medium">
+                    Security Client Validation
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      disabled={!edit}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <div className="mt-2 mb-4">
+              <p className="text-sm text-muted-foreground">
+                When enabled, the router will validate security clients for all
+                requests. This requires security clients to be configured in the
+                Security section.
+              </p>
+            </div>
             <Separator className={'my-3'} />
             <FormField
               control={control}
