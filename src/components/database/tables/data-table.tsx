@@ -35,15 +35,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DocumentEditorButton } from '@/components/database/docs/document-editor-button';
+import { DeclaredSchema } from '@/lib/models/database';
 
 export function DataTable({
   docs,
   count,
   columns,
+  schema,
 }: {
   docs: any[];
   count: number;
   columns: ColumnDef<any, any>[];
+  schema: DeclaredSchema;
 }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -55,6 +59,7 @@ export function DataTable({
     pageSize: limit,
   });
   const router = useRouter();
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   useEffect(() => {
     setPagination({
@@ -62,6 +67,20 @@ export function DataTable({
       pageSize: limit,
     });
   }, []);
+
+  // Check for horizontal overflow
+  useEffect(() => {
+    const checkOverflow = () => {
+      const tableContainer = document.querySelector('.table-scroll-container');
+      if (tableContainer) {
+        setHasOverflow(tableContainer.scrollWidth > tableContainer.clientWidth);
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [docs]);
 
   useEffect(() => {
     const params = createQueryString(
@@ -93,9 +112,21 @@ export function DataTable({
     router.push(`${pathname}?${params}`);
   }, [limit]);
 
+  // Add document editor column
+  const columnsWithActions = [
+    ...columns,
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }: { row: any }) => (
+        <DocumentEditorButton document={row.original} schema={schema} />
+      ),
+    },
+  ];
+
   const table = useReactTable({
     data: docs,
-    columns,
+    columns: columnsWithActions,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
@@ -163,54 +194,168 @@ export function DataTable({
   );
 
   return (
-    <>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                return (
-                  <TableHead key={header.id} className="border">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map(row => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="border">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                <div className="text-center">
-                  <h3 className="mt-2 text-sm font-semibold text-foreground">
-                    No data
-                  </h3>
-                </div>
-              </TableCell>
-            </TableRow>
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      {/* Table container with sticky header and scrollable body */}
+      <div className="flex-1 overflow-hidden relative">
+        <div className="table-scroll-container relative overflow-x-auto overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 scroll-smooth h-full">
+          {/* Scroll indicator overlay */}
+          {hasOverflow && (
+            <>
+              <div className="absolute top-0 left-0 w-4 h-full bg-gradient-to-r from-background/80 to-transparent pointer-events-none z-30" />
+              <div className="absolute top-0 right-0 w-4 h-full bg-gradient-to-l from-background/80 to-transparent pointer-events-none z-30" />
+            </>
           )}
-        </TableBody>
-      </Table>
-      <div className="flex items-center justify-center space-x-3 my-2">
+
+          {/* Use direct table element to avoid wrapper div interference */}
+          <table
+            className="w-full border-collapse caption-bottom text-sm"
+            style={{ minWidth: '1200px', tableLayout: 'fixed', width: '100%' }}
+          >
+            <thead className="[&_tr]:border-b">
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr
+                  key={headerGroup.id}
+                  className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                >
+                  {headerGroup.headers.map((header, index) => {
+                    const isFirstColumn = index === 0; // _id column
+                    const isLastColumn =
+                      index === headerGroup.headers.length - 1; // Last column (actions)
+                    const isSticky = isFirstColumn || isLastColumn;
+
+                    return (
+                      <th
+                        key={header.id}
+                        className={`h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 border whitespace-nowrap bg-background ${
+                          isSticky ? 'sticky' : ''
+                        } ${
+                          isFirstColumn
+                            ? 'left-0 shadow-[2px_0_8px_rgba(0,0,0,0.1)]'
+                            : ''
+                        } ${
+                          isLastColumn
+                            ? 'right-0 shadow-[-2px_0_8px_rgba(0,0,0,0.1)]'
+                            : ''
+                        }`}
+                        style={{
+                          width: isLastColumn
+                            ? '100px'
+                            : header.id === '_id'
+                              ? '150px'
+                              : '180px',
+                          minWidth: isLastColumn ? '100px' : '120px',
+                          maxWidth: isLastColumn ? '100px' : '250px',
+                          position: 'sticky',
+                          top: 0,
+                          zIndex: 40,
+                          backgroundColor: 'hsl(var(--background))',
+                          ...(isFirstColumn && {
+                            left: 0,
+                            zIndex: 50, // Higher than header z-index
+                          }),
+                          ...(isLastColumn && {
+                            right: 0,
+                            zIndex: 50, // Higher than header z-index
+                            boxShadow: '-2px 0 8px rgba(0,0,0,0.1)',
+                            transform: 'translateZ(0)',
+                          }),
+                        }}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="[&_tr:last-child]:border-0">
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map(row => (
+                  <tr
+                    key={row.id}
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell, index) => {
+                      const isFirstColumn = index === 0; // _id column
+                      const isLastColumn =
+                        index === row.getVisibleCells().length - 1; // Last column (actions)
+                      const isSticky = isFirstColumn || isLastColumn;
+
+                      return (
+                        <td
+                          key={cell.id}
+                          className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 border bg-background ${
+                            isSticky ? 'sticky' : ''
+                          } ${
+                            isFirstColumn
+                              ? 'left-0 shadow-[2px_0_8px_rgba(0,0,0,0.1)]'
+                              : ''
+                          } ${
+                            isLastColumn
+                              ? 'right-0 shadow-[-2px_0_8px_rgba(0,0,0,0.1)]'
+                              : ''
+                          }`}
+                          style={{
+                            width: isLastColumn
+                              ? '100px'
+                              : cell.column.id === '_id'
+                                ? '150px'
+                                : '180px',
+                            minWidth: isLastColumn ? '100px' : '120px',
+                            maxWidth: isLastColumn ? '100px' : '250px',
+                            ...(isFirstColumn && {
+                              position: 'sticky',
+                              left: 0,
+                              zIndex: 30,
+                            }),
+                            ...(isLastColumn && {
+                              position: 'sticky',
+                              right: 0,
+                              zIndex: 30,
+                              backgroundColor: 'hsl(var(--background))',
+                              boxShadow: '-2px 0 8px rgba(0,0,0,0.1)',
+                              transform: 'translateZ(0)',
+                            }),
+                          }}
+                        >
+                          <div className="truncate">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))
+              ) : (
+                <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <td
+                    colSpan={columns.length + 1}
+                    className="h-24 text-center p-4 align-middle [&:has([role=checkbox])]:pr-0"
+                  >
+                    <div className="text-center">
+                      <h3 className="mt-2 text-sm font-semibold text-foreground">
+                        No data
+                      </h3>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Sticky pagination at the bottom */}
+      <div className="flex items-center justify-center space-x-3 py-4 px-4 bg-background border-t flex-shrink-0">
         <Pagination className="w-fit mx-0">
           <PaginationContent>
             <PaginationItem>
@@ -245,6 +390,6 @@ export function DataTable({
           </SelectContent>
         </Select>
       </div>
-    </>
+    </div>
   );
 }

@@ -82,8 +82,8 @@ export default function ModelDataTable({
     );
   }
   return (
-    <div className="flex flex-col h-full overflow-auto">
-      <div className="flex justify-between items-center gap-x-2 py-2.5 px-4">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex justify-between items-center gap-x-2 py-2.5 px-4 flex-shrink-0">
         <CodeEditor
           placeholder="Type query: { field: 'value'}"
           padding={15}
@@ -105,7 +105,14 @@ export default function ModelDataTable({
           Find
         </Button>
       </div>
-      <DataTable docs={documents} count={count} columns={cols} />
+      <div className="flex-1 overflow-hidden">
+        <DataTable
+          docs={documents}
+          count={count}
+          columns={cols}
+          schema={schema}
+        />
+      </div>
     </div>
   );
 }

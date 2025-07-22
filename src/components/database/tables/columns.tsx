@@ -65,7 +65,11 @@ export const useColumns = (data: any, schema: DeclaredSchema) => {
               accessorKey: key,
               cell: ({ row, cell }) => {
                 if (key === '_id' || key === '__v') {
-                  return <div>{cell.getValue()}</div>;
+                  return (
+                    <div className="truncate max-w-[100px]">
+                      {cell.getValue()}
+                    </div>
+                  );
                 }
                 if (uuid.safeParse(cell.getValue()).success && key !== '_id') {
                   return (
@@ -105,7 +109,7 @@ export const useColumns = (data: any, schema: DeclaredSchema) => {
                 if (date.safeParse(cell.getValue()).success) {
                   return (
                     <TooltipHelper content={cell.getValue()}>
-                      <span className="w-80">
+                      <span className="truncate max-w-[120px] block">
                         {moment(cell.getValue()).format('YYYY-MM-DD')}
                       </span>
                     </TooltipHelper>
@@ -118,7 +122,7 @@ export const useColumns = (data: any, schema: DeclaredSchema) => {
                 ) {
                   return (
                     <div className="flex justify-between group">
-                      <div className="w-60 truncate">
+                      <div className="truncate max-w-[200px]">
                         {JSON.stringify(cell.getValue())}
                       </div>
                       {canEditValue(key) && (
@@ -183,7 +187,9 @@ export const useColumns = (data: any, schema: DeclaredSchema) => {
                 if (typeof cell.getValue() === 'string') {
                   return (
                     <div className="flex justify-between group">
-                      <div className="w-60 truncate">{cell.getValue()}</div>
+                      <div className="truncate max-w-[200px]">
+                        {cell.getValue()}
+                      </div>
                       {canEditValue(key) && (
                         <Dialog>
                           <DialogTrigger asChild>
