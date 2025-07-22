@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -21,6 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/lib/hooks/use-toast';
 import { updateSchemaDocument } from '@/lib/api/database';
 import { DeclaredSchema } from '@/lib/models/database';
@@ -35,6 +36,8 @@ import {
   CheckCircle,
   Info,
   RotateCcw,
+  Lock,
+  Shield,
 } from 'lucide-react';
 
 // Form input components
@@ -65,6 +68,7 @@ interface FieldConfig {
   isArray?: boolean;
   isNestedObject?: boolean;
   nestedFields?: any;
+  isExtensionField?: boolean;
 }
 
 interface PendingField {
@@ -76,6 +80,105 @@ interface PendingField {
 interface PendingDeletion {
   fieldName: string;
 }
+
+interface PermissionAnalysis {
+  canEdit: boolean;
+  canAddFields: boolean;
+  canDeleteFields: boolean;
+  canModifyExistingFields: boolean;
+  canModifyExtensionFields: boolean;
+  restrictedFields: string[];
+  extensionFields: string[];
+  permissionLevel: 'Everything' | 'Nothing' | 'ExtensionOnly';
+}
+
+// Utility function to analyze schema permissions
+const analyzePermissions = (schema: DeclaredSchema): PermissionAnalysis => {
+  const permissions = schema.modelOptions?.conduit?.permissions;
+  const isDatabaseModule = schema.ownerModule === 'database';
+
+  // If database module owns the schema, full permissions
+  if (isDatabaseModule) {
+    return {
+      canEdit: true,
+      canAddFields: true,
+      canDeleteFields: true,
+      canModifyExistingFields: true,
+      canModifyExtensionFields: true,
+      restrictedFields: [],
+      extensionFields: [],
+      permissionLevel: 'Everything',
+    };
+  }
+
+  // Get extension fields from schema extensions
+  const extensionFields =
+    schema.extensions?.flatMap(ext => Object.keys(ext.fields || {})) || [];
+
+  if (!permissions) {
+    return {
+      canEdit: false,
+      canAddFields: false,
+      canDeleteFields: false,
+      canModifyExistingFields: false,
+      canModifyExtensionFields: false,
+      restrictedFields: Object.keys(schema.compiledFields || {}),
+      extensionFields,
+      permissionLevel: 'Nothing',
+    };
+  }
+
+  const canModify = permissions.canModify || 'Nothing';
+  const canCreate = permissions.canCreate || false;
+  const canDelete = permissions.canDelete || false;
+  const extendable = permissions.extendable || false;
+
+  let canModifyExistingFields = false;
+  let canModifyExtensionFields = false;
+  let restrictedFields: string[] = [];
+
+  switch (canModify) {
+    case 'Everything':
+      canModifyExistingFields = true;
+      canModifyExtensionFields = true;
+      break;
+    case 'ExtensionOnly':
+      canModifyExtensionFields = true;
+      // Core fields are restricted
+      restrictedFields = Object.keys(schema.compiledFields || {}).filter(
+        field => !extensionFields.includes(field)
+      );
+      break;
+    case 'Nothing':
+    default:
+      // All fields are restricted
+      restrictedFields = Object.keys(schema.compiledFields || {});
+      break;
+  }
+
+  return {
+    canEdit: canModify !== 'Nothing',
+    canAddFields: extendable && canCreate,
+    canDeleteFields: canDelete,
+    canModifyExistingFields,
+    canModifyExtensionFields,
+    restrictedFields,
+    extensionFields,
+    permissionLevel: canModify,
+  };
+};
+
+// Utility function to check if a field is an extension field
+const isExtensionField = (
+  fieldName: string,
+  schema: DeclaredSchema
+): boolean => {
+  return (
+    schema.extensions?.some(ext =>
+      Object.keys(ext.fields || {}).includes(fieldName)
+    ) || false
+  );
+};
 
 export function DocumentEditor({
   document,
@@ -97,6 +200,9 @@ export function DocumentEditor({
   // Separate form for add field dialog
   const addFieldForm = useForm();
 
+  // Analyze permissions
+  const permissions = useMemo(() => analyzePermissions(schema), [schema]);
+
   // Parse schema fields to get field configurations
   useEffect(() => {
     if (schema && schema.compiledFields) {
@@ -112,6 +218,8 @@ export function DocumentEditor({
           ) {
             return; // Skip system fields
           }
+
+          const isExtension = isExtensionField(fieldName, schema);
 
           // Check if this is a nested object (has properties but no type)
           if (
@@ -129,6 +237,7 @@ export function DocumentEditor({
               isArray: false,
               isNestedObject: true,
               nestedFields: fieldConfig,
+              isExtensionField: isExtension,
             });
           } else {
             // This is a regular field
@@ -141,6 +250,7 @@ export function DocumentEditor({
               description: fieldConfig.description,
               relatedModel: fieldConfig.relatedModel || fieldConfig.model, // Support both relatedModel and model
               isArray: fieldConfig.isArray || false,
+              isExtensionField: isExtension,
             });
           }
         }
@@ -172,7 +282,7 @@ export function DocumentEditor({
             if (value) {
               if (typeof value === 'string') {
                 value = new Date(value);
-              } else if (typeof value === 'object' && value.$date) {
+              } else if (value && typeof value === 'object' && value.$date) {
                 // Handle MongoDB date format
                 value = new Date(value.$date);
               } else if (value instanceof Date) {
@@ -183,7 +293,7 @@ export function DocumentEditor({
           }
 
           // Handle ObjectId values (convert from MongoDB format)
-          if (typeof value === 'object' && value.$oid) {
+          if (value && typeof value === 'object' && value.$oid) {
             value = value.$oid;
           }
 
@@ -193,7 +303,7 @@ export function DocumentEditor({
           }
 
           // Handle nested objects - ensure they're properly formatted as JSON strings
-          if (field.isNestedObject && typeof value === 'object') {
+          if (field.isNestedObject && value && typeof value === 'object') {
             value = JSON.stringify(value, null, 2);
           }
 
@@ -265,7 +375,7 @@ export function DocumentEditor({
           if (value) {
             if (typeof value === 'string') {
               value = new Date(value);
-            } else if (typeof value === 'object' && value.$date) {
+            } else if (value && typeof value === 'object' && value.$date) {
               value = new Date(value.$date);
             } else if (value instanceof Date) {
               value = value;
@@ -274,7 +384,7 @@ export function DocumentEditor({
         }
 
         // Handle ObjectId values
-        if (typeof value === 'object' && value.$oid) {
+        if (value && typeof value === 'object' && value.$oid) {
           value = value.$oid;
         }
 
@@ -289,6 +399,17 @@ export function DocumentEditor({
     setIsSubmitting(true);
 
     try {
+      // Check if editing is allowed
+      if (!permissions.canEdit) {
+        toast({
+          title: 'Permission Denied',
+          description: 'You do not have permission to edit this document.',
+          variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Filter out unchanged values and system fields
       const updatedData: any = {};
       let hasChanges = false;
@@ -297,6 +418,11 @@ export function DocumentEditor({
       fieldConfigs.forEach(field => {
         // Skip if field is marked for deletion
         if (pendingDeletions.some(pd => pd.fieldName === field.name)) {
+          return;
+        }
+
+        // Check if field modification is allowed
+        if (!canModifyField(field)) {
           return;
         }
 
@@ -323,28 +449,30 @@ export function DocumentEditor({
         }
       });
 
-      // Add pending fields
-      pendingFields.forEach(pendingField => {
-        let value = pendingField.value;
+      // Add pending fields (only if allowed)
+      if (permissions.canAddFields) {
+        pendingFields.forEach(pendingField => {
+          let value = pendingField.value;
 
-        // Parse JSON strings back to objects for nested objects
-        if (pendingField.config.isNestedObject && typeof value === 'string') {
-          try {
-            value = JSON.parse(value);
-          } catch (error) {
-            console.warn(
-              `Failed to parse JSON for pending field ${pendingField.name}:`,
-              error
-            );
+          // Parse JSON strings back to objects for nested objects
+          if (pendingField.config.isNestedObject && typeof value === 'string') {
+            try {
+              value = JSON.parse(value);
+            } catch (error) {
+              console.warn(
+                `Failed to parse JSON for pending field ${pendingField.name}:`,
+                error
+              );
+            }
           }
-        }
 
-        updatedData[pendingField.name] = value;
-        hasChanges = true;
-      });
+          updatedData[pendingField.name] = value;
+          hasChanges = true;
+        });
+      }
 
-      // Check if there are any pending deletions
-      if (pendingDeletions.length > 0) {
+      // Check if there are any pending deletions (only if allowed)
+      if (pendingDeletions.length > 0 && permissions.canDeleteFields) {
         hasChanges = true;
       }
 
@@ -382,6 +510,7 @@ export function DocumentEditor({
   const renderFieldInput = (field: FieldConfig) => {
     const fieldName = field.name;
     const isRequired = field.required;
+    const canModify = canModifyField(field);
 
     const commonProps = {
       fieldName,
@@ -389,6 +518,7 @@ export function DocumentEditor({
       placeholder: `Enter ${field.name}`,
       required: isRequired,
       description: field.description,
+      disabled: !canModify,
     };
 
     switch (field.type) {
@@ -470,11 +600,32 @@ export function DocumentEditor({
   };
 
   const canDeleteField = (field: FieldConfig) => {
+    // Check if field deletion is allowed by permissions
+    if (!permissions.canDeleteFields) {
+      return false;
+    }
+
     return (
       !field.required &&
       (document[field.name] !== undefined ||
         pendingFields.some(pf => pf.name === field.name))
     );
+  };
+
+  const canModifyField = (field: FieldConfig) => {
+    if (permissions.permissionLevel === 'Everything') {
+      return true;
+    }
+
+    if (permissions.permissionLevel === 'ExtensionOnly') {
+      return field.isExtensionField;
+    }
+
+    return false;
+  };
+
+  const canAddNewField = (field: FieldConfig) => {
+    return permissions.canAddFields;
   };
 
   const deleteField = (fieldName: string) => {
@@ -547,6 +698,30 @@ export function DocumentEditor({
           <DialogDescription>
             Edit the entire document with schema-aware field validation.
           </DialogDescription>
+
+          {/* Permission Status */}
+          {!permissions.canEdit && (
+            <Alert variant="destructive">
+              <Lock className="h-4 w-4" />
+              <AlertDescription>
+                You do not have permission to edit this document. This schema is
+                owned by the "{schema.ownerModule}" module.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {permissions.canEdit &&
+            permissions.permissionLevel !== 'Everything' && (
+              <Alert>
+                <Shield className="h-4 w-4" />
+                <AlertDescription>
+                  Limited editing permissions:{' '}
+                  {permissions.permissionLevel === 'ExtensionOnly'
+                    ? 'You can only modify extension fields'
+                    : 'Some fields are restricted'}
+                </AlertDescription>
+              </Alert>
+            )}
         </DialogHeader>
 
         <Form {...form}>
@@ -579,6 +754,17 @@ export function DocumentEditor({
                             <Badge variant="outline" className="text-xs">
                               {field.type}
                             </Badge>
+                            {field.isExtensionField && (
+                              <Badge variant="secondary" className="text-xs">
+                                Extension
+                              </Badge>
+                            )}
+                            {!canModifyField(field) && (
+                              <Badge variant="destructive" className="text-xs">
+                                <Lock className="h-3 w-3 mr-1" />
+                                Restricted
+                              </Badge>
+                            )}
                           </div>
                           {canDeleteField(field) && (
                             <Button
@@ -769,6 +955,7 @@ export function DocumentEditor({
                                   variant="outline"
                                   size="sm"
                                   onClick={() => addMissingField(field)}
+                                  disabled={!canAddNewField(field)}
                                 >
                                   <Plus className="h-4 w-4 mr-1" />
                                   Add Field
@@ -808,7 +995,7 @@ export function DocumentEditor({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !permissions.canEdit}
                   className="min-w-[100px]"
                 >
                   {isSubmitting ? (
