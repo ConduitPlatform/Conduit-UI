@@ -226,7 +226,7 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
         {form.watch('templateName') && variables && (
           <div className="grid grid-cols-4 gap-5">
             {variables.map(variable => (
-              <div className="space-y-1">
+              <div key={variable} className="space-y-1">
                 <span className="text-sm text-accent-foreground">
                   {variable}
                 </span>

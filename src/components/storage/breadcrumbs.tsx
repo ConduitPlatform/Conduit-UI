@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
 import {
   Breadcrumb,
@@ -35,7 +36,7 @@ export const BreadCrumbs = ({
           <ContainerDialog refreshContainers={refreshContainers} />
         </BreadcrumbItem>
         {folders.map((folder, index) => (
-          <>
+          <React.Fragment key={`${folder}-${index}`}>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <button
@@ -50,7 +51,7 @@ export const BreadCrumbs = ({
                 {isEmpty(folder) ? '/' : folder}
               </button>
             </BreadcrumbItem>
-          </>
+          </React.Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>

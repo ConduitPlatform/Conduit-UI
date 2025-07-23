@@ -138,14 +138,14 @@ const extractFields = (fields: DeclaredSchema['fields']): any[] => {
       } else {
         return {
           ...field,
-          id: `${name}_${field.type}`,
+          id: `${name}_${(field as any).type}`,
           name,
         };
       }
     } else {
       return {
         ...field,
-        id: `${name}_${field.type}`,
+        id: `${name}_${(field as any).type}`,
         name,
       };
     }

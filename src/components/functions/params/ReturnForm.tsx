@@ -63,7 +63,7 @@ export const ReturnParamsForm = () => {
                     </FormControl>
                     <SelectContent>
                       {ParamsEnumValues.map(([key, value]) => (
-                        <SelectItem value={value}>
+                        <SelectItem key={value} value={value}>
                           <div className={'flex items-center gap-2'}>{key}</div>
                         </SelectItem>
                       ))}

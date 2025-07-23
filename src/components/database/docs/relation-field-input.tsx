@@ -138,6 +138,17 @@ export function RelationFieldInput({
     }
   }, [relatedModel, page, searchTerm]);
 
+  // Initialize selected documents from form value
+  useEffect(() => {
+    if (value) {
+      if (isArray && Array.isArray(value)) {
+        setSelectedDocuments(value);
+      } else if (!isArray && value) {
+        setSelectedDocuments([value]);
+      }
+    }
+  }, [value, isArray]);
+
   const loadDocuments = async () => {
     if (!relatedModel) return;
 
@@ -221,17 +232,6 @@ export function RelationFieldInput({
       name={fieldName}
       control={control}
       render={({ field }) => {
-        // Initialize selected documents from form value
-        useEffect(() => {
-          if (field.value) {
-            if (isArray && Array.isArray(field.value)) {
-              setSelectedDocuments(field.value);
-            } else if (!isArray && field.value) {
-              setSelectedDocuments([field.value]);
-            }
-          }
-        }, [field.value, isArray]);
-
         const handleConfirm = () => {
           const value = isArray
             ? selectedDocuments

@@ -191,8 +191,9 @@ export const PaymentsSettingsForm = ({
                     </Button>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Your Stripe secret key. This should start with "sk_test_"
-                    for testing or "sk_live_" for production.
+                    Your Stripe secret key. This should start with
+                    &quot;sk_test_&quot; for testing or &quot;sk_live_&quot; for
+                    production.
                   </p>
                 </div>
               </div>

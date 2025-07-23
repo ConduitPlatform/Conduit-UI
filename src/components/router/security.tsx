@@ -415,8 +415,8 @@ export const SecurityClients = ({ data }: Props) => {
                 No Security Clients
               </h3>
               <p className="text-muted-foreground text-center mb-4">
-                You haven't created any security clients yet. Create your first
-                client to get started.
+                You haven&apos;t created any security clients yet. Create your
+                first client to get started.
               </p>
               <Button onClick={() => setIsCreateOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />

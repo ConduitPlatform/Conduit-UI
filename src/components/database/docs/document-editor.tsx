@@ -705,7 +705,7 @@ export function DocumentEditor({
               <Lock className="h-4 w-4" />
               <AlertDescription>
                 You do not have permission to edit this document. This schema is
-                owned by the "{schema.ownerModule}" module.
+                owned by the &quot;{schema.ownerModule}&quot; module.
               </AlertDescription>
             </Alert>
           )}
@@ -1025,7 +1025,7 @@ export function DocumentEditor({
           <DialogHeader>
             <DialogTitle>Add Field: {addingField?.name}</DialogTitle>
             <DialogDescription>
-              Provide a value for the field "{addingField?.name}" (
+              Provide a value for the field &quot;{addingField?.name}&quot; (
               {addingField?.type}).
             </DialogDescription>
           </DialogHeader>

@@ -37,7 +37,7 @@ export const Invitations = ({
       </div>
       <div className="h-56 overflow-auto flex flex-col gap-y-3">
         {invites.invitations.map(invite => (
-          <>
+          <React.Fragment key={invite._id}>
             <div className="flex justify-between">
               <div className="flex gap-x-1 items-center">
                 <Profile
@@ -72,7 +72,7 @@ export const Invitations = ({
               )}
             </div>
             <span>{invite.token}</span>
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>
