@@ -1,5 +1,4 @@
 import { FileSystemActionsProvider } from '@/components/storage/FileSystemActionsProvider';
-import { getModules } from '@/lib/api/modules';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -12,11 +11,6 @@ export default async function Layout({
   files,
   folders,
 }: LayoutProps) {
-  const modules = await getModules();
-  const storageModuleAvailable = !!modules.find(
-    m => m.moduleName === 'storage' && m.serving
-  );
-  if (!storageModuleAvailable) return <>Storage module is not serving.</>;
   return (
     <FileSystemActionsProvider>
       <div className="space-y-5">

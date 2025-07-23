@@ -1,4 +1,3 @@
-import { getModules } from '@/lib/api/modules';
 import { getRooms } from '@/lib/api/chat';
 import Decimal from 'decimal.js';
 import { ROOMS_LIMIT } from '@/components/chat/rooms/tables/rooms/utils';
@@ -16,11 +15,6 @@ type ChatRoomParams = {
 
 export default async function ChatRooms(props: ChatRoomParams) {
   const searchParams = await props.searchParams;
-  const modules = await getModules();
-  const chatModuleAvailable = !!modules.find(
-    m => m.moduleName === 'chat' && m.serving
-  );
-  if (!chatModuleAvailable) return <>Chat module is not serving.</>;
 
   const skip = searchParams?.pageIndex
     ? new Decimal(searchParams?.pageIndex).mul(ROOMS_LIMIT).toNumber()
