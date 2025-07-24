@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { EmailTemplate } from '@/lib/models/email';
 import { Button } from '@/components/ui/button';
 import { Code, Edit, ExternalLink } from 'lucide-react';
-import { TemplatePreview } from '@/components/email/templates/TemplatePreview';
+import { TemplatePreview } from '@/components/email/templates/templatePreview';
 import { TemplateEditor } from '@/components/email/templates/TemplateEditor';
 import { CodeEditor } from '@/components/email/templates/CodeEditor';
 import { HtmlViewer } from '@/components/email/templates/HtmlViewer';
