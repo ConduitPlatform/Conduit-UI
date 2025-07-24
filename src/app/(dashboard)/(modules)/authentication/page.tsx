@@ -1,10 +1,10 @@
 import React from 'react';
-import { User, Users, Shield, Settings, Plus, Key } from 'lucide-react';
+import { Key, Plus, Settings, User, Users } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getAuthenticationMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';

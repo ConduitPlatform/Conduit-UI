@@ -1,10 +1,10 @@
 import React from 'react';
-import { Bell, Plus, Settings, Send, Users, History } from 'lucide-react';
+import { Bell, History, Send, Settings, Users } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
-  getPushNotificationMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
+  getPushNotificationMetrics,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';

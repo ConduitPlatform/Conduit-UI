@@ -1,17 +1,10 @@
 import React from 'react';
-import {
-  CreditCard,
-  Plus,
-  Settings,
-  Users,
-  DollarSign,
-  History,
-} from 'lucide-react';
+import { CreditCard, DollarSign, History, Settings, Users } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getModuleMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';

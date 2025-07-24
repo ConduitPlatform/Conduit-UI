@@ -1,10 +1,10 @@
 import React from 'react';
-import { Database, Plus, Settings, Search, FileText } from 'lucide-react';
+import { Database, FileText, Plus, Search, Settings } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getDatabaseMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';

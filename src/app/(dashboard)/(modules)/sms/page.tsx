@@ -1,17 +1,10 @@
 import React from 'react';
-import {
-  MessageSquare,
-  Plus,
-  Settings,
-  Send,
-  History,
-  Users,
-} from 'lucide-react';
+import { History, MessageSquare, Send, Settings, Users } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getModuleMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';

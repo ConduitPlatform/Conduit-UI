@@ -1,10 +1,10 @@
 import React from 'react';
-import { Mail, Plus, Settings, Send, FileText, History } from 'lucide-react';
+import { FileText, History, Mail, Plus, Send, Settings } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getEmailMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';

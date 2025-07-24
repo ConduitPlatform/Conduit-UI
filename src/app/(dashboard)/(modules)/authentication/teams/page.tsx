@@ -1,7 +1,6 @@
 import { getTeams } from '@/lib/api/authentication';
 import { TeamActionsProvider } from '@/components/authentication/teams/TeamActionsProvider';
 import TeamsTable from '@/components/authentication/teams/teams';
-import { Team } from '@/lib/models/Team';
 
 export default async function Teams(props: {
   searchParams: Promise<{

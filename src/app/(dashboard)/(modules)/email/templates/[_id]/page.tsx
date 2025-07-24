@@ -1,10 +1,10 @@
 'use client';
 
 import { getTemplates } from '@/lib/api/email';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EmailTemplate } from '@/lib/models/email';
 import { Button } from '@/components/ui/button';
-import { Edit, Eye, Code, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Code, Edit, ExternalLink } from 'lucide-react';
 import { TemplatePreview } from '@/components/email/templates/TemplatePreview';
 import { TemplateEditor } from '@/components/email/templates/TemplateEditor';
 import { CodeEditor } from '@/components/email/templates/CodeEditor';
@@ -13,7 +13,6 @@ import {
   canUseVisualEditor,
   isExternallyManaged,
 } from '@/lib/utils/template-utils';
-import { patchTemplates } from '@/lib/api/email';
 import { useToast } from '@/lib/hooks/use-toast';
 
 type EmailTemplateProps = {

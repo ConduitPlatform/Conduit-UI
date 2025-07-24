@@ -1,10 +1,10 @@
 import React from 'react';
-import { HardDrive, Plus, Settings, Folder, File, Upload } from 'lucide-react';
+import { File, Folder, HardDrive, Plus, Settings, Upload } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
-  getStorageMetrics,
-  getModuleUptime,
   getModuleStatus,
+  getModuleUptime,
+  getStorageMetrics,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
