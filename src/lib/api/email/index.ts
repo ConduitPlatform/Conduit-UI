@@ -84,6 +84,7 @@ export const patchTemplates = async (
     name?: string;
     subject?: string;
     body?: string;
+    sender?: string;
     jsonTemplate?: any;
   }
 ) => {

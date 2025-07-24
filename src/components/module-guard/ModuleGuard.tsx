@@ -3,8 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { useModuleAvailability } from '@/contexts/ModuleAvailabilityContext';
 import {
-  getModuleNameFromPath,
   getModuleDisplayName,
+  getModuleNameFromPath,
 } from '@/lib/utils/module-utils';
 import { ModuleNotFound } from '@/components/module-not-found/ModuleNotFound';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -40,12 +40,24 @@ export function ModuleGuard({ children }: ModuleGuardProps) {
   // Check if module is available and serving
   const available = isModuleAvailable(moduleName);
   const serving = isModuleServing(moduleName);
-
+  const isSettingsRoute = pathname.startsWith(
+    `/${moduleName.toLowerCase()}/settings`
+  );
   // If module is not available or not serving, show module not found
-  if (!available || !serving) {
+  if (!available) {
     // Map the API module name to the URL path for display name lookup
     const urlPath = pathname.split('/')[1];
     const displayName = getModuleDisplayName(urlPath);
+    return (
+      <ModuleNotFound
+        moduleName={displayName}
+        isAvailable={available}
+        isServing={serving}
+      />
+    );
+  } else if (!serving && !isSettingsRoute) {
+    // If module is not serving and not on settings route, show module not found
+    const displayName = getModuleDisplayName(moduleName);
     return (
       <ModuleNotFound
         moduleName={displayName}

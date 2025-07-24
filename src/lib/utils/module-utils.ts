@@ -78,6 +78,6 @@ export function filterNavigationByModules(
     }
 
     const moduleName = MODULE_URL_TO_NAME[item.url];
-    return isModuleServing(modules, moduleName);
+    return isModuleAvailable(modules, moduleName);
   });
 }

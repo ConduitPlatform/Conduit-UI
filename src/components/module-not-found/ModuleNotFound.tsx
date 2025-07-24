@@ -57,7 +57,7 @@ export function ModuleNotFound({
       return '/';
     }
     if (!isServing) {
-      return '/settings/general';
+      return `/${moduleName.toLowerCase()}/settings`;
     }
     return '/';
   };
