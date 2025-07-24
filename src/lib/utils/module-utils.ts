@@ -32,6 +32,22 @@ export const MODULE_URL_TO_NAME: Record<string, string> = {
   '/settings': 'settings',
 };
 
+// Map API module names to URL paths
+export const MODULE_NAME_TO_URL: Record<string, string> = {
+  authentication: 'authentication',
+  authorization: 'authorization',
+  database: 'database',
+  storage: 'storage',
+  chat: 'chat',
+  email: 'email',
+  sms: 'sms',
+  router: 'router',
+  functions: 'functions',
+  pushNotifications: 'push-notifications', // API module name maps to URL path
+  payments: 'payments',
+  settings: 'settings',
+};
+
 // Core routes that should always be available (not subject to module filtering)
 const CORE_ROUTES = ['/', '/settings', '/logs-viewer'];
 
@@ -42,6 +58,20 @@ export function getModuleNameFromPath(path: string): string | null {
 
   const firstSegment = segments[0];
   return MODULE_URL_TO_NAME[`/${firstSegment}`] || null;
+}
+
+// Get API module name from URL path (for use in dashboard pages)
+export function getApiModuleNameFromPath(path: string): string | null {
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length === 0) return null;
+
+  const firstSegment = segments[0];
+  return MODULE_URL_TO_NAME[`/${firstSegment}`] || null;
+}
+
+// Get URL path from module name
+export function getModuleUrlFromName(moduleName: string): string | null {
+  return MODULE_NAME_TO_URL[moduleName] || null;
 }
 
 // Get display name for a module

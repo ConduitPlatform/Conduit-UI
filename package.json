@@ -15,6 +15,8 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@azure/core-auth": "^1.10.0",
+    "@azure/identity": "^4.10.2",
     "@hello-pangea/dnd": "^16.3.0",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.1.1",

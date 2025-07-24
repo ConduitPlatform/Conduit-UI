@@ -13,6 +13,16 @@ interface ModuleGuardProps {
   children: React.ReactNode;
 }
 
+// Helper function to convert kebab-case URL to camelCase module name
+function getApiModuleName(urlPath: string): string {
+  const moduleMappings: Record<string, string> = {
+    'push-notifications': 'pushNotifications',
+    // Add other mappings as needed
+  };
+
+  return moduleMappings[urlPath] || urlPath;
+}
+
 export function ModuleGuard({ children }: ModuleGuardProps) {
   const pathname = usePathname();
   const { modules, isLoading, isModuleAvailable, isModuleServing } =
@@ -37,16 +47,20 @@ export function ModuleGuard({ children }: ModuleGuardProps) {
     return <>{children}</>;
   }
 
+  // Get the URL path segment for display name lookup
+  const urlPath = pathname.split('/')[1];
+
+  // Convert to API module name for availability checks
+  const apiModuleName = getApiModuleName(urlPath);
+
   // Check if module is available and serving
-  const available = isModuleAvailable(moduleName);
-  const serving = isModuleServing(moduleName);
-  const isSettingsRoute = pathname.startsWith(
-    `/${moduleName.toLowerCase()}/settings`
-  );
-  // If module is not available or not serving, show module not found
+  const available = isModuleAvailable(apiModuleName);
+  const serving = isModuleServing(apiModuleName);
+  const isSettingsRoute = pathname.startsWith(`/${urlPath}/settings`);
+  const isDashboardRoute = pathname === `/${urlPath}`;
+
+  // If module is not available, show module not found
   if (!available) {
-    // Map the API module name to the URL path for display name lookup
-    const urlPath = pathname.split('/')[1];
     const displayName = getModuleDisplayName(urlPath);
     return (
       <ModuleNotFound
@@ -55,9 +69,9 @@ export function ModuleGuard({ children }: ModuleGuardProps) {
         isServing={serving}
       />
     );
-  } else if (!serving && !isSettingsRoute) {
-    // If module is not serving and not on settings route, show module not found
-    const displayName = getModuleDisplayName(moduleName);
+  } else if (!serving && !isSettingsRoute && !isDashboardRoute) {
+    // If module is not serving and not on settings or dashboard route, show module not found
+    const displayName = getModuleDisplayName(urlPath);
     return (
       <ModuleNotFound
         moduleName={displayName}
@@ -67,6 +81,6 @@ export function ModuleGuard({ children }: ModuleGuardProps) {
     );
   }
 
-  // Module is available and serving, render children
+  // Module is available and either serving or on dashboard/settings route, render children
   return <>{children}</>;
 }

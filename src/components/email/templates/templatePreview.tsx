@@ -157,7 +157,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               </h4>
               <p className="text-sm text-orange-700">
                 This template is managed by an external system. To modify this
-                template, please update it in the external email provider's
+                template, please update it in the external email provider&apos;s
                 interface.
               </p>
             </div>

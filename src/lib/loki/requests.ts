@@ -79,7 +79,6 @@ export const getLogsQueryRange = async (data: {
   if (searchTerm) {
     query += ` |~ "${searchTerm}"`;
   }
-  console.log('query', query);
   const res = await (
     await getLokiClient()
   ).get(`/loki/api/v1/query_range`, {
