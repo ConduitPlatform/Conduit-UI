@@ -40,5 +40,6 @@ jobs:
         with:
           context: .
           push: true
+          no-cache: true
           tags: |
-            ghcr.io/conduitplatform/conduit-ui:experimental         
+            ghcr.io/conduitplatform/conduit-ui:experimental
