@@ -1,6 +1,5 @@
 'use server';
 
-import { _getEnv } from '@/lib/logic/EnvManager';
 import { getKubernetesLabelsRecord } from './k8s-utils';
 
 export interface MetricQuery {
@@ -14,12 +13,6 @@ export interface MetricQuery {
     | 'duration'
     | 'bytes'
     | 'requests_per_second';
-}
-
-// Helper functions
-async function getNamespace(): Promise<string | undefined> {
-  const envDetails = await _getEnv();
-  return envDetails.namespace;
 }
 
 async function getKubernetesLabels(): Promise<Record<string, string>> {
@@ -40,7 +33,12 @@ async function buildLabels(
   // Add additional labels
   if (additionalLabels) {
     Object.entries(additionalLabels).forEach(([key, value]) => {
-      labels.push(`${key}="${value}"`);
+      if (value.includes('~')) {
+        // Handle regex patterns
+        labels.push(`${key}=~"${value.replace('~', '')}"`);
+      } else {
+        labels.push(`${key}="${value}"`);
+      }
     });
   }
 
@@ -87,39 +85,59 @@ export async function moduleHealth(moduleName: string): Promise<MetricQuery> {
   };
 }
 
-// HTTP request metrics (filtered by module)
-export async function httpRequestsByModule(
+// HTTP requests for specific module (using route path)
+export async function httpRequestsForModule(
   moduleName: string
 ): Promise<MetricQuery> {
-  const labels = await buildLabels();
+  const labels = await buildLabels({ route: `~${moduleName}.*` });
   return {
     name: 'HTTP Requests',
-    expression: `rate(http_request_duration_seconds_count${labels}[5m])`,
+    expression: `sum(rate(cnd_http_request_duration_seconds_count${labels}[5m])) by (route)`,
     description: `HTTP requests for ${moduleName} module`,
     format: 'requests_per_second',
   };
 }
 
-export async function httpErrorsByModule(
-  moduleName: string
-): Promise<MetricQuery> {
+// Total HTTP requests across all modules
+export async function totalHttpRequests(): Promise<MetricQuery> {
   const labels = await buildLabels();
   return {
-    name: 'HTTP Errors',
-    expression: `rate(http_request_duration_seconds_count${labels}[5m])`,
-    description: `HTTP errors for ${moduleName} module`,
+    name: 'Total HTTP Requests',
+    expression: `sum(rate(cnd_http_request_duration_seconds_count${labels}[5m]))`,
+    description: 'Total HTTP requests per second across all modules',
     format: 'requests_per_second',
   };
 }
 
-export async function httpLatencyByModule(
-  moduleName: string
-): Promise<MetricQuery> {
+// HTTP errors filtered by status codes (4xx and 5xx)
+export async function httpErrorsByStatus(): Promise<MetricQuery> {
+  const labels = await buildLabels({ code: `~4..|5..` });
+  return {
+    name: 'HTTP Errors',
+    expression: `sum(rate(cnd_http_request_duration_seconds_count${labels}[5m])) by (code)`,
+    description: 'HTTP errors (4xx and 5xx status codes) per second',
+    format: 'requests_per_second',
+  };
+}
+
+// Average HTTP latency across all modules
+export async function averageHttpLatency(): Promise<MetricQuery> {
+  const labels = await buildLabels();
+  return {
+    name: 'Average HTTP Latency',
+    expression: `histogram_quantile(0.95, sum(rate(cnd_http_request_duration_seconds_bucket${labels}[5m])) by (le))`,
+    description: 'Average HTTP latency across all modules',
+    format: 'duration',
+  };
+}
+
+// Simple HTTP latency using average instead of quantile
+export async function simpleHttpLatency(): Promise<MetricQuery> {
   const labels = await buildLabels();
   return {
     name: 'HTTP Latency',
-    expression: `histogram_quantile(0.95, rate(http_request_duration_seconds_bucket${labels}[5m]))`,
-    description: `HTTP latency for ${moduleName} module`,
+    expression: `sum(rate(cnd_http_request_duration_seconds_sum${labels}[5m])) / sum(rate(cnd_http_request_duration_seconds_count${labels}[5m]))`,
+    description: 'Average HTTP latency across all modules',
     format: 'duration',
   };
 }

@@ -1,124 +1,258 @@
-import { Stats } from '@/components/stats/stats';
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
+  AlertTriangle,
+  CheckCircle,
+  CloudIcon,
+  CreditCard,
   Database,
   FunctionSquare,
   HardDrive,
   ListIcon,
   LucideMail,
-  User,
+  MessageSquare,
+  Router,
+  Server,
+  Users,
+  XCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import SidebarCollapseTrigger from '@/components/navigation/sidebarCollapseTrigger';
+import { PlatformMetrics } from '@/components/dashboard/PlatformMetrics';
+import { ModuleHealthGrid } from '@/components/dashboard/ModuleHealthGrid';
+import { SystemPerformanceCharts } from '@/components/dashboard/SystemPerformanceCharts';
+import {
+  getAllModuleStatuses,
+  getErrorRateChart,
+  getPlatformMetrics,
+  getPlatformOverview,
+  getRequestVolumeChart,
+  getResponseTimeChart,
+  getSystemResourcesChart,
+} from '@/lib/prometheus/metrics';
 
-const items = [
+// Icon mapping for modules
+const moduleIcons: Record<string, React.ReactNode> = {
+  authentication: <Users className="h-5 w-5" />,
+  database: <Database className="h-5 w-5" />,
+  email: <LucideMail className="h-5 w-5" />,
+  storage: <HardDrive className="h-5 w-5" />,
+  functions: <FunctionSquare className="h-5 w-5" />,
+  chat: <MessageSquare className="h-5 w-5" />,
+  payments: <CreditCard className="h-5 w-5" />,
+  router: <Router className="h-5 w-5" />,
+  pushNotifications: <CloudIcon className="h-5 w-5" />,
+  sms: <MessageSquare className="h-5 w-5" />,
+};
+
+const quickActions = [
   {
-    title: 'Setup auth',
-    description: 'Add authentication to your app to keep your users safe.',
-    icon: <User className="w-6 h-6" />,
+    title: 'Setup Authentication',
+    description: 'Configure user authentication and authorization.',
+    icon: <Users className="w-6 h-6" />,
     background: 'bg-pink-500',
     href: '/authentication/settings',
   },
   {
-    title: 'Create a model',
-    description:
-      'Data is the heart of your app. Create a model to get started.',
+    title: 'Create Database Model',
+    description: 'Design your data structure with models.',
     icon: <Database className="w-6 h-6" />,
     background: 'bg-yellow-500',
     href: '/database/models/create',
   },
   {
-    title: 'Setup storage',
-    description: 'Upload files to your app as easy as 1,2,3.',
+    title: 'Setup Storage',
+    description: 'Configure file storage for your application.',
     icon: <HardDrive className="w-6 h-6" />,
     background: 'bg-green-500',
     href: '/storage/settings',
   },
   {
-    title: 'Setup email',
-    description: 'Send emails to your users to keep them engaged.',
+    title: 'Configure Email',
+    description: 'Set up email sending capabilities.',
     icon: <LucideMail className="w-6 h-6" />,
     background: 'bg-blue-500',
     href: '/email/settings',
   },
   {
-    title: 'Add a function',
-    description: 'Add a function to your app to run code on the server.',
+    title: 'Add Server Function',
+    description: 'Create custom server-side functions.',
     icon: <FunctionSquare className="w-6 h-6" />,
     background: 'bg-indigo-500',
     href: '/functions/functions/new',
   },
   {
-    title: 'Create a custom query',
-    description: 'Create a custom query to fetch data from your database.',
+    title: 'Create Custom Query',
+    description: 'Build custom database queries.',
     icon: <ListIcon className="w-6 h-6" />,
     background: 'bg-purple-500',
     href: '/database/queries/create',
   },
 ];
-export default function Home() {
+
+export default async function Home() {
+  // Fetch real platform data
+  const [platformMetrics, moduleStatuses, platformOverview] = await Promise.all(
+    [getPlatformMetrics(), getAllModuleStatuses(), getPlatformOverview()]
+  );
+
+  // Fetch chart data for system performance
+  const [
+    requestVolumeChart,
+    responseTimeChart,
+    errorRateChart,
+    systemResourcesChart,
+  ] = await Promise.all([
+    getRequestVolumeChart('1h'),
+    getResponseTimeChart('1h'),
+    getErrorRateChart('1h'),
+    getSystemResourcesChart('1h'),
+  ]);
+
+  // Add icons to module statuses
+  const moduleStatusesWithIcons = moduleStatuses.map(module => ({
+    ...module,
+    icon: moduleIcons[module.iconName] || (
+      <div className="w-5 h-5 bg-gray-300 rounded" />
+    ),
+  }));
+
   return (
     <>
       <SidebarCollapseTrigger className="absolute left-3 top-3" />
-      <div className="flex flex-col items-center justify-between min-h-screen p-24">
-        <Stats
-          stats={[
-            { name: 'Requests', value: '0', unit: 'per second' },
-            {
-              name: 'Avg latency',
-              value: 'N/A',
-              unit: 'ms',
-            },
-            { name: 'Users', value: 'N/A' },
-            { name: 'Active Routes', value: '0' },
-          ]}
-        />
-
-        <div>
-          <h2 className="text-base font-semibold leading-6 text-foreground">
-            Quick Actions
-          </h2>
-          <p className="mt-1 text-sm text-foreground">
-            Not sure what to do next? Check below
-          </p>
-          <ul
-            role="list"
-            className="grid grid-cols-2 gap-6 py-6 mt-6 border-t border-b border-border"
-          >
-            {items.map((item, itemIdx) => (
-              <li key={itemIdx} className="flow-root">
-                <div className="relative flex items-center p-2 -m-2 space-x-4 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-secondary">
-                  <div
-                    className={cn(
-                      item.background,
-                      'flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg'
-                    )}
-                  >
-                    {item.icon}
-                  </div>
+      <div className="p-4 space-y-4 max-h-[calc(100vh-48px)] overflow-y-auto">
+        {/* Platform Status Header */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <Server className="h-6 w-6 text-green-600" />
                   <div>
-                    <h3 className="text-sm font-medium text-foreground">
-                      <Link href={item.href} className="focus:outline-none">
-                        <span className="absolute inset-0" aria-hidden="true" />
-                        <span>{item.title}</span>
-                        <span aria-hidden="true"> &rarr;</span>
-                      </Link>
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {item.description}
+                    <h1 className="text-xl font-bold">Conduit Platform</h1>
+                    <p className="text-sm text-muted-foreground">
+                      Platform Performance Dashboard
                     </p>
                   </div>
                 </div>
-              </li>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-green-600">
+                    {platformOverview.uptime}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Uptime</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold">
+                    {platformOverview.activeModules}/
+                    {platformOverview.totalModules}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Active Modules
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold">
+                    {platformOverview.platformVersion}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Platform Version
+                  </div>
+                </div>
+                <Badge
+                  className={cn(
+                    platformOverview.overallStatus === 'healthy' &&
+                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-400',
+                    platformOverview.overallStatus === 'warning' &&
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-400',
+                    platformOverview.overallStatus === 'critical' &&
+                      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-400'
+                  )}
+                >
+                  {platformOverview.overallStatus === 'healthy' && (
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                  )}
+                  {platformOverview.overallStatus === 'warning' && (
+                    <AlertTriangle className="h-3 w-3 mr-1" />
+                  )}
+                  {platformOverview.overallStatus === 'critical' && (
+                    <XCircle className="h-3 w-3 mr-1" />
+                  )}
+                  {platformOverview.overallStatus}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Key Performance Metrics */}
+        <div>
+          <h2 className="text-lg font-semibold mb-3">Platform Performance</h2>
+          <PlatformMetrics metrics={platformMetrics} />
+        </div>
+
+        {/* Module Health Grid */}
+        <div>
+          <h2 className="text-lg font-semibold mb-3">Module Health</h2>
+          <ModuleHealthGrid modules={moduleStatusesWithIcons} />
+        </div>
+
+        {/* System Performance Charts */}
+        <div>
+          <SystemPerformanceCharts
+            initialData={{
+              requestVolume: requestVolumeChart,
+              responseTime: responseTimeChart,
+              errorRate: errorRateChart,
+              systemResources: systemResourcesChart,
+            }}
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Get started with common tasks and configurations
+          </p>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {quickActions.map((item, itemIdx) => (
+              <Link key={itemIdx} href={item.href}>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                  <CardContent className="p-3">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={cn(
+                          item.background,
+                          'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-white'
+                        )}
+                      >
+                        {item.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-foreground">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
-          </ul>
-          <div className="flex mt-4">
+          </div>
+          <div className="flex mt-6">
             <Link
               href="https://getconduit.dev/docs/overview/intro"
               className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               target="_blank"
             >
-              Or read the docs
+              View full documentation
               <span aria-hidden="true"> &rarr;</span>
             </Link>
           </div>
