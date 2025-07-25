@@ -73,6 +73,14 @@ export const SettingsForm = ({
                         watch('providerName') !== 'oneSignal' && <Cog />}
                     </div>
                   </SelectItem>
+                  <SelectItem value={'sns'}>
+                    <div className={'flex items-center gap-2'}>
+                      AWS SNS{' '}
+                      {data.sns &&
+                        data.sns.accessKeyId !== '' &&
+                        watch('providerName') !== 'sns' && <Cog />}
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -211,6 +219,105 @@ export const SettingsForm = ({
               </CardContent>
             </Card>
           </>
+        )}
+        {watch('providerName') === 'sns' && (
+          <div className={'grid grid-cols-2 gap-4'}>
+            <FormField
+              control={control}
+              name="snsAccessKeyId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Access Key ID</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      title={'Access Key ID'}
+                      placeholder={'Enter a value'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="snsSecretAccessKey"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Secret Access Key</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      title={'Secret Access Key'}
+                      placeholder={'Enter a value'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="snsRegion"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Region</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      title={'Region'}
+                      placeholder={'Enter a value'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="snsGcmApplicationArn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>GCM Application ARN</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      title={'GCM Application ARN'}
+                      placeholder={'Enter a value'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="snsApnsApplicationArn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>APNS Application ARN</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!edit}
+                      title={'APNS Application ARN'}
+                      placeholder={'Enter a value'}
+                      className={'text-accent-foreground'}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         )}
       </div>
       <div className={'py-4 flex justify-end'}>

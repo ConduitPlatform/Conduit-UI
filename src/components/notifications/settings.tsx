@@ -18,12 +18,17 @@ interface Props {
 
 const FormSchema = z
   .object({
-    providerName: z.enum(['firebase', 'oneSignal', 'basic']),
+    providerName: z.enum(['firebase', 'oneSignal', 'sns', 'basic']),
     appId: z.string().optional(),
     apiKey: z.string().optional(),
     projectId: z.string().optional(),
     clientEmail: z.string().optional(),
     privateKey: z.string().optional(),
+    snsAccessKeyId: z.string().optional(),
+    snsSecretAccessKey: z.string().optional(),
+    snsRegion: z.string().optional(),
+    snsGcmApplicationArn: z.string().optional(),
+    snsApnsApplicationArn: z.string().optional(),
   })
   .refine(
     schema => {
@@ -37,6 +42,15 @@ const FormSchema = z
         (schema.projectId === '' ||
           schema.clientEmail === '' ||
           schema.privateKey === '')
+      )
+        return false;
+      if (
+        schema.providerName === 'sns' &&
+        (schema.snsAccessKeyId === '' ||
+          schema.snsSecretAccessKey === '' ||
+          schema.snsRegion === '' ||
+          schema.snsGcmApplicationArn === '' ||
+          schema.snsApnsApplicationArn === '')
       )
         return false;
       return true;
@@ -67,6 +81,11 @@ export const Settings = ({ data }: Props) => {
       projectId: data.firebase?.projectId,
       clientEmail: data.firebase?.clientEmail,
       privateKey: data.firebase?.privateKey,
+      snsAccessKeyId: data.sns?.accessKeyId,
+      snsSecretAccessKey: data.sns?.secretAccessKey,
+      snsRegion: data.sns?.region,
+      snsGcmApplicationArn: data.sns?.gcmApplicationArn,
+      snsApnsApplicationArn: data.sns?.apnsApplicationArn,
     },
   });
 
@@ -89,6 +108,7 @@ export const Settings = ({ data }: Props) => {
       providerName: data.providerName,
       firebase: undefined,
       onesignal: undefined,
+      sns: undefined,
     };
     if (
       data.providerName === 'firebase' &&
@@ -106,6 +126,22 @@ export const Settings = ({ data }: Props) => {
       notificationData.onesignal = {
         appId: data.appId,
         apiKey: data.apiKey,
+      };
+    }
+    if (
+      data.providerName === 'sns' &&
+      data.snsAccessKeyId &&
+      data.snsSecretAccessKey &&
+      data.snsRegion &&
+      data.snsGcmApplicationArn &&
+      data.snsApnsApplicationArn
+    ) {
+      notificationData.sns = {
+        accessKeyId: data.snsAccessKeyId,
+        secretAccessKey: data.snsSecretAccessKey,
+        region: data.snsRegion,
+        gcmApplicationArn: data.snsGcmApplicationArn,
+        apnsApplicationArn: data.snsApnsApplicationArn,
       };
     }
     patchNotificationSettings(notificationData)

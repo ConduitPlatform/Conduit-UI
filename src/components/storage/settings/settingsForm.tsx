@@ -150,6 +150,27 @@ export const SettingsForm = ({
               </FormItem>
             )}
           />
+          <FormField
+            control={control}
+            name="suffixOnNameConflict"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 w-3/12">
+                <FormLabel className="text-base">
+                  Suffix on Name Conflict
+                  <p className={'text-xs text-[#94A3B8]'}>
+                    Add suffix to files when there&apos;s a naming conflict
+                  </p>
+                </FormLabel>
+                <FormControl>
+                  <Switch
+                    disabled={!edit}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
         <div className={'grid grid-cols-2 gap-4 items-end'}>
           {watch('provider') === 'local' && (
@@ -383,6 +404,28 @@ export const SettingsForm = ({
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="aws.usePathStyle"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <FormLabel className="text-base">
+                      Use Path Style
+                      <p className={'text-xs text-[#94A3B8]'}>
+                        Use path style addressing for S3 buckets (only for
+                        non-AWS S3 compatible providers)
+                      </p>
+                    </FormLabel>
+                    <FormControl>
+                      <Switch
+                        disabled={!edit}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />

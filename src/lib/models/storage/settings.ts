@@ -11,6 +11,7 @@ export type StorageSettings = {
   aws: AwsSettings;
   aliyun: Aliyun;
   local: LocalSettings;
+  suffixOnNameConflict?: boolean;
 };
 
 type AuthorizationProps = {
@@ -31,6 +32,7 @@ type AwsSettings = {
   secretAccessKey: string;
   accountId?: string;
   endpoint?: string;
+  usePathStyle?: boolean;
 };
 
 type Aliyun = {
