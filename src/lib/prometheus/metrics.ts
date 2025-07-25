@@ -855,21 +855,20 @@ export async function getPlatformOverview(): Promise<{
   totalModules: number;
   platformVersion: string;
 }> {
+  const moduleNames = [
+    'authentication',
+    'authorization',
+    'database',
+    'storage',
+    'chat',
+    'email',
+    'sms',
+    'router',
+    'functions',
+    'pushNotifications',
+    'payments',
+  ];
   try {
-    const moduleNames = [
-      'authentication',
-      'authorization',
-      'database',
-      'storage',
-      'chat',
-      'email',
-      'sms',
-      'router',
-      'functions',
-      'pushNotifications',
-      'payments',
-    ];
-
     // Get status of all modules
     const moduleStatuses = await Promise.all(
       moduleNames.map(async moduleName => {
@@ -913,7 +912,7 @@ export async function getPlatformOverview(): Promise<{
     return {
       overallStatus,
       uptime: `${avgUptime.toFixed(1)}%`,
-      activeModules: healthyCount + warningCount,
+      activeModules: healthyCount,
       totalModules: moduleNames.length,
       platformVersion: '1.0.0', // This could be fetched from a config or API
     };
@@ -922,7 +921,7 @@ export async function getPlatformOverview(): Promise<{
       overallStatus: 'warning',
       uptime: 'Unknown',
       activeModules: 0,
-      totalModules: 12,
+      totalModules: moduleNames.length,
       platformVersion: '1.0.0',
     };
   }
