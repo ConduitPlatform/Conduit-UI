@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Product, RecurringEnum } from '@/lib/models/payments';
+import { Product, RecurringEnum, ValidityEnum } from '@/lib/models/payments';
 import { createProduct } from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,12 @@ export function AddProductDialog({
     stripe: {
       priceId: '',
     },
+    // New virtual currency fields
+    creditType: '',
+    creditAmount: 0,
+    validityAmount: 0,
+    validityUnit: 'days',
+    rollover: false,
   });
 
   const { toast } = useToast();
@@ -57,7 +63,10 @@ export function AddProductDialog({
     setLoading(true);
 
     try {
-      await createProduct(formData as Product);
+      await createProduct({
+        ...formData,
+        value: convertDollarsToCents(formData.value as number),
+      } as Product);
       toast({
         title: 'Success',
         description: 'Product created successfully',
@@ -74,6 +83,12 @@ export function AddProductDialog({
         stripe: {
           priceId: '',
         },
+        // New virtual currency fields
+        creditType: '',
+        creditAmount: 0,
+        validityAmount: 0,
+        validityUnit: 'days',
+        rollover: false,
       });
     } catch (error) {
       toast({
@@ -122,20 +137,15 @@ export function AddProductDialog({
 
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="value">
-                Price (in dollars, will be stored as cents)
-              </Label>
+              <Label htmlFor="value">Price</Label>
               <Input
                 id="value"
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.value ? (formData.value / 100).toFixed(2) : ''}
+                value={formData.value}
                 onChange={e =>
-                  handleChange(
-                    'value',
-                    convertDollarsToCents(parseFloat(e.target.value) || 0)
-                  )
+                  handleChange('value', parseFloat(e.target.value) || 0)
                 }
                 required
               />
@@ -213,10 +223,10 @@ export function AddProductDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={RecurringEnum.day}>Day</SelectItem>
-                    <SelectItem value={RecurringEnum.week}>Week</SelectItem>
-                    <SelectItem value={RecurringEnum.month}>Month</SelectItem>
-                    <SelectItem value={RecurringEnum.year}>Year</SelectItem>
+                    <SelectItem value={RecurringEnum.day}>Days</SelectItem>
+                    <SelectItem value={RecurringEnum.week}>Weeks</SelectItem>
+                    <SelectItem value={RecurringEnum.month}>Months</SelectItem>
+                    <SelectItem value={RecurringEnum.year}>Years</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -231,6 +241,120 @@ export function AddProductDialog({
               onChange={e => handleChange('stripe', e.target.value)}
               placeholder="price_..."
             />
+          </div>
+
+          {/* Virtual Currency Section */}
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="hasVirtualCurrency"
+                checked={!!formData.creditType}
+                onCheckedChange={checked => {
+                  if (!checked) {
+                    handleChange('creditType', '');
+                    handleChange('creditAmount', 0);
+                    handleChange('validityAmount', 0);
+                    handleChange('validityUnit', 'day');
+                    handleChange('rollover', false);
+                  } else {
+                    handleChange('creditType', 'credits');
+                    handleChange('creditAmount', 0);
+                    handleChange('validityAmount', 0);
+                    handleChange('validityUnit', 'day');
+                    handleChange('rollover', false);
+                  }
+                }}
+              />
+              <Label htmlFor="hasVirtualCurrency">
+                Virtual Currency Product
+              </Label>
+            </div>
+
+            {formData.creditType && (
+              <div className="space-y-4 pl-4 border-l-2 border-gray-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="creditType">Credit Type</Label>
+                    <Input
+                      id="creditType"
+                      value={formData.creditType}
+                      onChange={e => handleChange('creditType', e.target.value)}
+                      placeholder="e.g., minutes, tokens, credits"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="creditAmount">Credit Amount</Label>
+                    <Input
+                      id="creditAmount"
+                      type="number"
+                      min="0"
+                      value={formData.creditAmount}
+                      onChange={e =>
+                        handleChange(
+                          'creditAmount',
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="validityAmount">
+                      Validity Period Amount
+                    </Label>
+                    <Input
+                      id="validityAmount"
+                      type="number"
+                      min="0"
+                      value={formData.validityAmount}
+                      onChange={e =>
+                        handleChange(
+                          'validityAmount',
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      placeholder="0 for no expiry"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="validityUnit">Validity Unit</Label>
+                    <Select
+                      value={formData.validityUnit}
+                      onValueChange={value =>
+                        handleChange('validityUnit', value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={ValidityEnum.day}>Days</SelectItem>
+                        <SelectItem value={ValidityEnum.week}>Weeks</SelectItem>
+                        <SelectItem value={ValidityEnum.month}>
+                          Months
+                        </SelectItem>
+                        <SelectItem value={ValidityEnum.year}>Years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="rollover"
+                    checked={formData.rollover}
+                    onCheckedChange={checked =>
+                      handleChange('rollover', checked)
+                    }
+                  />
+                  <Label htmlFor="rollover">Credits Roll Over on Renewal</Label>
+                </div>
+              </div>
+            )}
           </div>
 
           <DialogFooter>

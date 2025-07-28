@@ -133,6 +133,7 @@ export function ProductsTable() {
                   <TableHead>VAT</TableHead>
                   <TableHead>Currency</TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Virtual Currency</TableHead>
                   <TableHead>Recurring</TableHead>
                   <TableHead>Stripe Price ID</TableHead>
                   <TableHead>Created</TableHead>
@@ -142,13 +143,13 @@ export function ProductsTable() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center">
+                    <TableCell colSpan={10} className="text-center">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center">
+                    <TableCell colSpan={10} className="text-center">
                       No products found
                     </TableCell>
                   </TableRow>
@@ -171,6 +172,29 @@ export function ProductsTable() {
                         >
                           {product.isSubscription ? 'Subscription' : 'One-time'}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {product.creditType ? (
+                          <div className="space-y-1">
+                            <Badge variant="outline" className="text-xs">
+                              {product.creditType}
+                            </Badge>
+                            <div className="text-xs text-muted-foreground">
+                              {product.creditAmount} credits
+                              {product.validityAmount &&
+                                product.validityAmount > 0 && (
+                                  <span>
+                                    {' '}
+                                    • {product.validityAmount}{' '}
+                                    {product.validityUnit}
+                                  </span>
+                                )}
+                              {product.rollover && <span> • Rollover</span>}
+                            </div>
+                          </div>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>
                         {product.isSubscription

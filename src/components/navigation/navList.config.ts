@@ -168,6 +168,10 @@ export const navList = {
           url: '/payments/customers',
         },
         {
+          title: 'Balances',
+          url: '/payments/balances',
+        },
+        {
           title: 'Products',
           url: '/payments/products',
         },

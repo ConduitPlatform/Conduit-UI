@@ -67,9 +67,6 @@ export function AddCustomerDialog({
         phoneNumber: '',
         address: '',
         postCode: '',
-        stripe: {
-          customerId: '',
-        },
       });
     } catch (error) {
       toast({
@@ -83,17 +80,10 @@ export function AddCustomerDialog({
   };
 
   const handleChange = (field: keyof Customer, value: string) => {
-    if (field === 'stripe') {
-      setFormData(prev => ({
-        ...prev,
-        stripe: { customerId: value },
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleUserPicker = () => {
@@ -218,7 +208,6 @@ export function AddCustomerDialog({
                 id="stripeId"
                 value={formData.stripe?.customerId}
                 onChange={e => handleChange('stripe', e.target.value)}
-                required
               />
             </div>
           </div>

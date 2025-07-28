@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Customer } from '@/lib/models/payments';
 import { getCustomers } from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
@@ -31,10 +31,11 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, MoreHorizontal, Search, Trash2, Edit } from 'lucide-react';
+import { Edit, Eye, MoreHorizontal, Plus, Search } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
 import { AddCustomerDialog } from './add-customer-dialog';
 import { EditCustomerDialog } from './edit-customer-dialog';
+import { CustomerDetails } from './customer-details';
 
 export function CustomersTable() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -52,6 +53,16 @@ export function CustomersTable() {
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null
   );
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [selectedCustomerForDetails, setSelectedCustomerForDetails] =
+    useState<Customer | null>(null);
+
+  // Cleanup effect to ensure state is reset when dialog closes
+  useEffect(() => {
+    if (!showDetailsDialog && selectedCustomerForDetails) {
+      setSelectedCustomerForDetails(null);
+    }
+  }, [showDetailsDialog, selectedCustomerForDetails]);
 
   const { toast } = useToast();
 
@@ -99,6 +110,11 @@ export function CustomersTable() {
   const handleDeleteClick = (customer: Customer) => {
     setCustomerToDelete(customer);
     setShowDeleteDialog(true);
+  };
+
+  const handleViewDetails = (customer: Customer) => {
+    setSelectedCustomerForDetails(customer);
+    setShowDetailsDialog(true);
   };
 
   const totalPages = Math.ceil(totalCount / limit);
@@ -190,6 +206,12 @@ export function CustomersTable() {
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
+                              onClick={() => handleViewDetails(customer)}
+                            >
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               onClick={() => handleEdit(customer)}
                             >
                               <Edit className="mr-2 h-4 w-4" />
@@ -243,6 +265,7 @@ export function CustomersTable() {
       </Card>
 
       <AddCustomerDialog
+        key="add-customer-dialog"
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
         onSuccess={() => {
@@ -253,6 +276,7 @@ export function CustomersTable() {
 
       {selectedCustomer && (
         <EditCustomerDialog
+          key="edit-customer-dialog"
           open={showEditDialog}
           onOpenChange={setShowEditDialog}
           customer={selectedCustomer}
@@ -263,8 +287,29 @@ export function CustomersTable() {
           }}
         />
       )}
+      <Dialog
+        key="customer-details-dialog"
+        open={showDetailsDialog}
+        onOpenChange={setShowDetailsDialog}
+      >
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          {selectedCustomerForDetails && (
+            <CustomerDetails
+              customer={selectedCustomerForDetails}
+              onClose={() => {
+                setShowDetailsDialog(false);
+                setSelectedCustomerForDetails(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <Dialog
+        key="delete-customer-dialog"
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Customer</DialogTitle>

@@ -34,6 +34,12 @@ export interface Product {
     subscriptionId?: string;
     priceId: string;
   };
+  // New virtual currency fields
+  creditType?: string;
+  creditAmount?: number;
+  validityAmount?: number;
+  validityUnit?: string;
+  rollover?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -43,6 +49,12 @@ export enum RecurringEnum {
   week = 'week',
   month = 'month',
   year = 'year',
+}
+export enum ValidityEnum {
+  day = 'days',
+  week = 'weeks',
+  month = 'months',
+  year = 'years',
 }
 
 export interface Transaction {
@@ -116,4 +128,17 @@ export interface PaymentsConfig {
     enabled: boolean;
     webhookSecret?: string;
   };
+}
+
+export interface CustomerBalance {
+  _id?: string;
+  customer: string | any; // Can be Customer object or string
+  creditType: string;
+  amount: number;
+  expiry?: string;
+  rollover: boolean;
+  source: string;
+  processed: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }

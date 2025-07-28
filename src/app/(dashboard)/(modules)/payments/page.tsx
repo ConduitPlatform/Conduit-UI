@@ -1,5 +1,12 @@
 import React from 'react';
-import { CreditCard, DollarSign, History, Settings, Users } from 'lucide-react';
+import {
+  CreditCard,
+  DollarSign,
+  History,
+  Settings,
+  Users,
+  Wallet,
+} from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getModuleMetrics,
@@ -57,6 +64,12 @@ export default async function PaymentsDashboard() {
       description: 'Manage payment products',
       icon: <CreditCard className="h-4 w-4" />,
       href: '/payments/products',
+    },
+    {
+      title: 'Balances',
+      description: 'View customer balances',
+      icon: <Wallet className="h-4 w-4" />,
+      href: '/payments/balances',
     },
     {
       title: 'Transactions',

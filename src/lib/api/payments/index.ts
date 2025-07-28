@@ -1,6 +1,11 @@
 'use server';
 import { getApiClient } from '@/lib/api';
-import { Customer, PaymentsConfig, Product } from '@/lib/models/payments';
+import {
+  Customer,
+  CustomerBalance,
+  PaymentsConfig,
+  Product,
+} from '@/lib/models/payments';
 
 export interface PaymentsRequest {
   skip: number;
@@ -114,5 +119,43 @@ export const getPaymentSettings = async () => {
 export const updatePaymentSettings = async (data: PaymentsConfig) => {
   return (await getApiClient())
     .patch(`/config/payments`, { config: data })
+    .then(res => res.data);
+};
+
+// Customer Balances
+export const getCustomerBalances = async (
+  userId: string,
+  creditType?: string
+) => {
+  type Response = {
+    balances: CustomerBalance[];
+    count: number;
+  };
+  const params: any = { userId };
+  if (creditType) {
+    params.creditType = creditType;
+  }
+  return (await getApiClient())
+    .get<Response>(`/payments/balances`, { params })
+    .then(res => res.data);
+};
+
+export const grantBalance = async (data: {
+  userId: string;
+  creditType: string;
+  amount: number;
+  expiry?: string;
+}) => {
+  return (await getApiClient())
+    .post<CustomerBalance>(`/payments/balances`, data)
+    .then(res => res.data);
+};
+
+export const updateBalance = async (
+  balanceId: string,
+  data: Partial<CustomerBalance>
+) => {
+  return (await getApiClient())
+    .patch<CustomerBalance>(`/payments/balances/${balanceId}`, data)
     .then(res => res.data);
 };

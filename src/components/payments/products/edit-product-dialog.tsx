@@ -216,6 +216,112 @@ export function EditProductDialog({
             />
           </div>
 
+          {/* Virtual Currency Section */}
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="hasVirtualCurrency"
+                checked={!!formData.creditType}
+                onCheckedChange={checked => {
+                  if (!checked) {
+                    handleChange('creditType', '');
+                    handleChange('creditAmount', 0);
+                    handleChange('validityAmount', 0);
+                    handleChange('validityUnit', 'days');
+                    handleChange('rollover', false);
+                  }
+                }}
+              />
+              <Label htmlFor="hasVirtualCurrency">
+                Virtual Currency Product
+              </Label>
+            </div>
+
+            {formData.creditType && (
+              <div className="space-y-4 pl-4 border-l-2 border-gray-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="creditType">Credit Type</Label>
+                    <Input
+                      id="creditType"
+                      value={formData.creditType}
+                      onChange={e => handleChange('creditType', e.target.value)}
+                      placeholder="e.g., minutes, tokens, credits"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="creditAmount">Credit Amount</Label>
+                    <Input
+                      id="creditAmount"
+                      type="number"
+                      min="0"
+                      value={formData.creditAmount}
+                      onChange={e =>
+                        handleChange(
+                          'creditAmount',
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="validityAmount">
+                      Validity Period Amount
+                    </Label>
+                    <Input
+                      id="validityAmount"
+                      type="number"
+                      min="0"
+                      value={formData.validityAmount}
+                      onChange={e =>
+                        handleChange(
+                          'validityAmount',
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      placeholder="0 for no expiry"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="validityUnit">Validity Unit</Label>
+                    <Select
+                      value={formData.validityUnit}
+                      onValueChange={value =>
+                        handleChange('validityUnit', value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="days">Days</SelectItem>
+                        <SelectItem value="weeks">Weeks</SelectItem>
+                        <SelectItem value="months">Months</SelectItem>
+                        <SelectItem value="years">Years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="rollover"
+                    checked={formData.rollover}
+                    onCheckedChange={checked =>
+                      handleChange('rollover', checked)
+                    }
+                  />
+                  <Label htmlFor="rollover">Credits Roll Over on Renewal</Label>
+                </div>
+              </div>
+            )}
+          </div>
+
           <DialogFooter>
             <Button
               type="button"
