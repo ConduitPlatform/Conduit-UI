@@ -9,6 +9,7 @@ import { Form } from '@/components/ui/form';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
+import SelectField from '@/components/ui/form-inputs/SelectField';
 
 type authStrategyFormType = z.infer<typeof authStrategySchema>;
 const authStrategySchema = z.object({
@@ -16,9 +17,12 @@ const authStrategySchema = z.object({
   verification: z.object({
     required: z.boolean().default(false),
     send_email: z.boolean().default(false),
+    method: z.string().default(''),
     redirect_uri: z.string().default(''),
+    resend_threshold: z.number().int().min(0).default(60000),
   }),
   forgot_password_redirect_uri: z.string().default(''),
+  username_auth_enabled: z.boolean().default(false),
 });
 
 export const LocalConfigForm: React.FC<
@@ -49,13 +53,34 @@ export const LocalConfigForm: React.FC<
             )}
           </div>
           {form.watch('verification.send_email') && (
-            <InputField
-              fieldName={'.verification.redirect_uri'}
-              label={'Verification redirect URI'}
-              description={
-                'Specify where the user will be redirected to after verifying their email'
-              }
-            />
+            <>
+              <SelectField
+                fieldName={'verification.method'}
+                label={'Verification method'}
+                options={[
+                  { label: 'Link', value: 'link' },
+                  { label: 'Code', value: 'code' },
+                ]}
+                description={
+                  'Specify if the user will receive a link or a code to verify their email'
+                }
+              />
+              <InputField
+                fieldName={'verification.redirect_uri'}
+                label={'Verification redirect URI'}
+                description={
+                  'Specify where the user will be redirected to after verifying their email'
+                }
+              />
+              <InputField
+                fieldName={'verification.resend_threshold'}
+                label={'Verification Resend Threshold (ms)'}
+                type={'number'}
+                description={
+                  'Specify the threshold in milliseconds for resending verification emails'
+                }
+              />
+            </>
           )}
           <div className={'flex flex-row gap-x-1 items-center'}>
             <InputField
@@ -63,6 +88,15 @@ export const LocalConfigForm: React.FC<
               label={'Forgot password redirect URI'}
               description={
                 'Specify where the user will be redirected to after clicking the forgot password link in their email'
+              }
+            />
+          </div>
+          <div className={'flex flex-row gap-x-1 items-center'}>
+            <InputField
+              fieldName={'username_auth_enabled'}
+              label={'Username authentication enabled'}
+              description={
+                'Specify whether users can login using usernames instead of email addresses'
               }
             />
           </div>
