@@ -92,12 +92,9 @@ export const LocalConfigForm: React.FC<
             />
           </div>
           <div className={'flex flex-row gap-x-1 items-center'}>
-            <InputField
+            <SwitchField
               fieldName={'username_auth_enabled'}
               label={'Username authentication enabled'}
-              description={
-                'Specify whether users can login using usernames instead of email addresses'
-              }
             />
           </div>
           <div className={'flex flex-row gap-1 mt-4 justify-end'}>
