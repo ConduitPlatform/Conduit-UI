@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, FileText, Plus, Search, Settings } from 'lucide-react';
+import { Database, FileText, Plus, Search, Settings, Database as ExplorerIcon } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getDatabaseMetrics,
@@ -46,6 +46,12 @@ export default async function DatabaseDashboard() {
 
   // Quick actions
   const quickActions: QuickAction[] = [
+    {
+      title: 'Database Explorer',
+      description: 'Connect to and explore databases',
+      icon: <ExplorerIcon className="h-4 w-4" />,
+      href: '/database/explorer',
+    },
     {
       title: 'Create Model',
       description: 'Create a new database model',
