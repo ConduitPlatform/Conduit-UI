@@ -49,7 +49,7 @@ export const CreateContainerDialog = ({
           createContainer(data)
             .then(res => {
               toast({
-                title: 'STORAGE',
+                title: 'Create Container',
                 description: 'New Container Created',
               });
               callback(res);
@@ -59,8 +59,9 @@ export const CreateContainerDialog = ({
             })
             .catch(() => {
               toast({
-                title: 'STORAGE',
-                description: 'Container already exists',
+                title: 'Create Container',
+                variant: 'destructive',
+                description: 'Failed to create',
               });
             })
         )}
