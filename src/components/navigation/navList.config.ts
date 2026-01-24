@@ -320,6 +320,10 @@ export const navList = {
           title: 'Admin Users',
           url: '/settings/admin-users',
         },
+        {
+          title: 'API Tokens',
+          url: '/settings/api-tokens',
+        },
       ],
     },
   ],
