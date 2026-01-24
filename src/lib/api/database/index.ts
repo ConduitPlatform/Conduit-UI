@@ -176,7 +176,9 @@ export const updateSchemaDocument = async (
   data: any
 ) => {
   return await (await getApiClient())
-    .put(`database/schemas/${schemaName}/docs/${id}`, { changedDocument: data })
+    .put(`/database/schemas/${schemaName}/docs/${id}`, {
+      changedDocument: data,
+    })
     .then(res => res.data);
 };
 
@@ -188,7 +190,7 @@ export const updateSchema = async (
   }
 ) => {
   return await (await getApiClient())
-    .patch(`database/schemas/${id}`, data)
+    .patch(`/database/schemas/${id}`, data)
     .then(res => res.data);
 };
 

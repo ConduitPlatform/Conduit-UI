@@ -42,7 +42,6 @@ export const ModelEditorField = ({
   disabled: boolean;
   extended?: boolean;
 }) => {
-  debugger;
   const fieldPath = useMemo(
     () =>
       parentPath
@@ -196,7 +195,15 @@ export const ModelEditorField = ({
                       fieldPath={`${fieldPath}.fields`}
                       field={nestedField}
                       index={nestedIndex}
-                      removeField={removeField}
+                      removeField={(idx: number) => {
+                        // Remove nested field from the parent's fields array
+                        const currentFields =
+                          form.getValues(`${fieldPath}.fields`) || [];
+                        const updatedFields = currentFields.filter(
+                          (_: any, i: number) => i !== idx
+                        );
+                        form.setValue(`${fieldPath}.fields`, updatedFields);
+                      }}
                       availableModels={availableModels}
                       disabled={disabled}
                     />

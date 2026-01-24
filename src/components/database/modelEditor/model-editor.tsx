@@ -44,6 +44,7 @@ import { ModelIndexField } from '@/components/database/modelEditor/model-index-f
 import { Form } from '@/components/ui/form';
 import {
   createSchema,
+  getSchemas,
   patchSchema,
   updateExtensions,
 } from '@/lib/api/database';
@@ -58,7 +59,7 @@ const fieldSchema = z.object({
   unique: z.boolean().default(false),
   isArray: z.boolean().default(false),
   default: z.any().optional(),
-  enumValues: z.array(z.string()).optional(),
+  enumValues: z.union([z.string(), z.array(z.string())]).optional(),
   enumType: z.enum(enumTypes).optional(),
   relatedModel: z.string().optional(),
   fields: z.array(z.lazy((): any => fieldSchema)).optional(),
@@ -72,7 +73,7 @@ const extendedFieldSchema = z.object({
   unique: z.boolean().default(false),
   isArray: z.boolean().default(false),
   default: z.any().optional(),
-  enumValues: z.array(z.any()).optional(),
+  enumValues: z.union([z.string(), z.array(z.any())]).optional(),
   enumType: z.enum(enumTypes).optional(),
   relatedModel: z.string().optional(),
   fields: z.array(z.lazy((): any => fieldSchema)).optional(),
@@ -152,6 +153,59 @@ const extractFields = (fields: DeclaredSchema['fields']): any[] => {
   });
 };
 
+/**
+ * Transforms a form field to the backend API format.
+ * Handles: Relations (model property), Enums (array values), Groups (nested objects), Arrays (wrapped in brackets)
+ */
+const transformFieldForApi = (field: any): any => {
+  const { id, name, isArray, relatedModel, enumValues, fields, type, ...rest } =
+    field;
+
+  let fieldDef: any = { type, ...rest };
+
+  // Handle Group/Nested: becomes object with nested structure
+  if (type === 'Group' && fields?.length) {
+    const nestedObj: Record<string, any> = {};
+    fields.forEach((f: any) => {
+      nestedObj[f.name] = transformFieldForApi(f);
+    });
+    // For groups with required flag, wrap in object with type as nested structure
+    if (rest.required) {
+      fieldDef = { type: nestedObj, required: true };
+    } else {
+      fieldDef = nestedObj;
+    }
+  } else {
+    // Handle Relation: rename relatedModel to model
+    if (type === 'Relation' && relatedModel) {
+      fieldDef.model = relatedModel;
+    }
+
+    // Handle Enum: parse comma-separated values to array
+    if (type === 'Enum') {
+      if (typeof enumValues === 'string') {
+        fieldDef.enumValues = enumValues
+          .split(',')
+          .map((v: string) => v.trim())
+          .filter(Boolean);
+      } else if (Array.isArray(enumValues)) {
+        fieldDef.enumValues = enumValues;
+      }
+    }
+  }
+
+  // Clean up UI-only properties that shouldn't be sent to API
+  delete fieldDef.relatedModel;
+  delete fieldDef.fields;
+
+  // Handle isArray: wrap definition in array
+  if (isArray) {
+    return [fieldDef];
+  }
+
+  return fieldDef;
+};
+
 export function ModelEditor({
   children,
   schema,
@@ -184,7 +238,6 @@ export function ModelEditor({
     if (schema) {
       let fields = [];
       for (const extension of schema.extensions) {
-        debugger;
         fields.push(
           ...extractFields(extension.fields).map(field => {
             return {
@@ -313,22 +366,11 @@ export function ModelEditor({
     const fieldsObject: { [key: string]: any } = {};
 
     if (extensionOnly) {
-      let fields = data.extendedFields.filter(
+      const extensionFields = data.extendedFields.filter(
         field => field.ownerModule === 'database'
       );
-      fields.forEach(field => {
-        const newField = { ...field };
-        if (newField.fields && newField.fields.length > 0) {
-          newField.fields = newField.fields.map(f => {
-            delete f.id;
-            return f;
-          });
-        }
-        // @ts-ignore
-        delete newField.id;
-        // @ts-ignore
-        delete newField.ownerModule;
-        fieldsObject[newField.name] = newField;
+      extensionFields.forEach(field => {
+        fieldsObject[field.name] = transformFieldForApi(field);
       });
       await updateExtensions(schema!._id, fieldsObject);
       toast({
@@ -339,18 +381,10 @@ export function ModelEditor({
       setHasUnsavedChanges(false);
       return;
     }
-    // besides removing the id fields as below, also turn the fields array into an object, with each field name as the key
+
+    // Transform each field to the API format and build the fields object
     data.fields.forEach(field => {
-      const newField = { ...field };
-      if (newField.fields && newField.fields.length > 0) {
-        newField.fields = newField.fields.map(f => {
-          delete f.id;
-          return f;
-        });
-      }
-      // @ts-ignore
-      delete newField.id;
-      fieldsObject[newField.name] = newField;
+      fieldsObject[field.name] = transformFieldForApi(field);
     });
     let request = {
       fields: fieldsObject,
@@ -511,6 +545,19 @@ export function ModelEditor({
       setHasUnsavedChanges(true);
     }
   }, [form]);
+
+  // Fetch available models for Relation field selection
+  React.useEffect(() => {
+    if (isEditorOpen) {
+      getSchemas({ limit: 1000 })
+        .then(({ schemas }) => {
+          setAvailableModels(schemas.map(s => s.name));
+        })
+        .catch(err => {
+          console.error('Failed to fetch available models:', err);
+        });
+    }
+  }, [isEditorOpen]);
 
   return (
     <>
