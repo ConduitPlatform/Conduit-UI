@@ -3,6 +3,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Module } from '@/lib/models/Module';
 import { getModules } from '@/lib/api/modules';
+import {
+  isModuleAvailable as checkModuleAvailable,
+  isModuleServing as checkModuleServing,
+} from '@/lib/utils/module-utils';
 
 interface ModuleAvailabilityContextType {
   modules: Module[];
@@ -40,13 +44,11 @@ export function ModuleAvailabilityProvider({
   }, []);
 
   const isModuleAvailable = (moduleName: string): boolean => {
-    return modules.some(module => module.moduleName === moduleName);
+    return checkModuleAvailable(modules, moduleName);
   };
 
   const isModuleServing = (moduleName: string): boolean => {
-    return modules.some(
-      module => module.moduleName === moduleName && module.serving
-    );
+    return checkModuleServing(modules, moduleName);
   };
 
   const value: ModuleAvailabilityContextType = {

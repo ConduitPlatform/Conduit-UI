@@ -9,20 +9,51 @@ import {
   ExternalTemplate,
 } from '@/lib/models/email';
 import { getModules } from '@/lib/api/modules';
+import { CommunicationsConfigResponse } from '@/lib/models/communications';
+import {
+  isModuleProvidedByCommunications,
+  extractModuleConfigFromCommunications,
+  buildCommunicationsPatchPayload,
+} from '@/lib/utils/config-utils';
 
-export const getEmailSettings = async () => {
+export const getEmailSettings = async (): Promise<EmailConfigResponse> => {
+  const isCommunications = await isModuleProvidedByCommunications('email');
+
+  if (isCommunications) {
+    const res = await (
+      await getApiClient()
+    ).get<CommunicationsConfigResponse>('/config/communications');
+    const emailConfig = extractModuleConfigFromCommunications<EmailSettings>(
+      res.data.config,
+      'email'
+    );
+    return { config: emailConfig };
+  }
+
   const res = await (
     await getApiClient()
-  ).get<EmailConfigResponse>('config/email');
+  ).get<EmailConfigResponse>('/config/email');
   return res.data;
 };
 
 export const patchEmailSettings = async (data: Partial<EmailSettings>) => {
-  await (
-    await getApiClient()
-  ).patch<EmailConfigResponse>(`/config/email`, {
-    config: { ...data },
-  });
+  const isCommunications = await isModuleProvidedByCommunications('email');
+
+  if (isCommunications) {
+    await (
+      await getApiClient()
+    ).patch<CommunicationsConfigResponse>(
+      '/config/communications',
+      buildCommunicationsPatchPayload('email', data)
+    );
+  } else {
+    await (
+      await getApiClient()
+    ).patch<EmailConfigResponse>('/config/email', {
+      config: { ...data },
+    });
+  }
+
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
     async (resolve, reject) => {
       setTimeout(async () => {

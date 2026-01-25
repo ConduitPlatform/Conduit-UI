@@ -42,6 +42,7 @@ export const moduleNameByPath = {
   database: 'database',
   router: 'router',
   settings: 'settings',
+  communications: 'communications',
   core: '',
 } as const;
 

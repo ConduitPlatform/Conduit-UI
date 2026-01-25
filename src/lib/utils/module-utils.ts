@@ -1,5 +1,12 @@
 import { Module } from '@/lib/models/Module';
 
+// Modules that the Communications module provides (for backward compatibility)
+export const COMMUNICATIONS_PROVIDED_MODULES = [
+  'email',
+  'pushNotifications',
+  'sms',
+];
+
 // Map module names to their display names
 export const MODULE_DISPLAY_NAMES: Record<string, string> = {
   authentication: 'Authentication',
@@ -14,6 +21,7 @@ export const MODULE_DISPLAY_NAMES: Record<string, string> = {
   'push-notifications': 'Notifications',
   payments: 'Payments',
   settings: 'Settings',
+  communications: 'Communications',
 };
 
 // Map module URLs to their module names (API module names)
@@ -79,21 +87,43 @@ export function getModuleDisplayName(moduleName: string): string {
   return MODULE_DISPLAY_NAMES[moduleName] || moduleName;
 }
 
-// Check if a module is available and serving
+// Check if a module is available
 export function isModuleAvailable(
   modules: Module[],
   moduleName: string
 ): boolean {
-  return modules.some(module => module.moduleName === moduleName);
+  // Direct check for the module
+  if (modules.some(module => module.moduleName === moduleName)) {
+    return true;
+  }
+
+  // If looking for a legacy module, check if communications provides it
+  if (COMMUNICATIONS_PROVIDED_MODULES.includes(moduleName)) {
+    return modules.some(module => module.moduleName === 'communications');
+  }
+
+  return false;
 }
 
 export function isModuleServing(
   modules: Module[],
   moduleName: string
 ): boolean {
-  return modules.some(
-    module => module.moduleName === moduleName && module.serving
-  );
+  // Direct check for the module
+  const directModule = modules.find(module => module.moduleName === moduleName);
+  if (directModule) {
+    return directModule.serving;
+  }
+
+  // Fallback to communications check for legacy modules
+  if (COMMUNICATIONS_PROVIDED_MODULES.includes(moduleName)) {
+    const commsModule = modules.find(
+      module => module.moduleName === 'communications'
+    );
+    return commsModule?.serving ?? false;
+  }
+
+  return false;
 }
 
 // Filter navigation items based on available modules

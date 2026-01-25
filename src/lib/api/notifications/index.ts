@@ -3,24 +3,58 @@ import { getApiClient } from '@/lib/api';
 import { NotificationSettings } from '@/lib/models/Notification';
 import { getModules } from '@/lib/api/modules';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
+import { CommunicationsConfigResponse } from '@/lib/models/communications';
+import {
+  isModuleProvidedByCommunications,
+  extractModuleConfigFromCommunications,
+  buildCommunicationsPatchPayload,
+} from '@/lib/utils/config-utils';
 
 type ConfigResponse = { config: NotificationSettings };
 
-export const getNotificationSettings = async () => {
+export const getNotificationSettings = async (): Promise<ConfigResponse> => {
+  const isCommunications =
+    await isModuleProvidedByCommunications('pushNotifications');
+
+  if (isCommunications) {
+    const res = await (
+      await getApiClient()
+    ).get<CommunicationsConfigResponse>('/config/communications');
+    const pushConfig =
+      extractModuleConfigFromCommunications<NotificationSettings>(
+        res.data.config,
+        'pushNotifications'
+      );
+    return { config: pushConfig };
+  }
+
   const res = await (
     await getApiClient()
-  ).get<ConfigResponse>(`/config/pushNotifications`, {});
+  ).get<ConfigResponse>('/config/pushNotifications', {});
   return res.data;
 };
 
 export const patchNotificationSettings = async (
   data: Partial<NotificationSettings>
 ) => {
-  await (
-    await getApiClient()
-  ).patch<ConfigResponse>(`/config/pushNotifications`, {
-    config: { ...data },
-  });
+  const isCommunications =
+    await isModuleProvidedByCommunications('pushNotifications');
+
+  if (isCommunications) {
+    await (
+      await getApiClient()
+    ).patch<CommunicationsConfigResponse>(
+      '/config/communications',
+      buildCommunicationsPatchPayload('pushNotifications', data)
+    );
+  } else {
+    await (
+      await getApiClient()
+    ).patch<ConfigResponse>('/config/pushNotifications', {
+      config: { ...data },
+    });
+  }
+
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
     async (resolve, reject) => {
       setTimeout(async () => {
