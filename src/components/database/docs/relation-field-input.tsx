@@ -86,11 +86,6 @@ export function RelationFieldInput({
   // Load existing relations if value is provided
   useEffect(() => {
     if (value && relatedModel) {
-      console.log(`Loading existing relations for ${fieldName}:`, {
-        value,
-        relatedModel,
-        isArray,
-      });
       const loadExistingRelations = async () => {
         try {
           const targetSchema = schemas.find(s => s.name === relatedModel);
@@ -105,9 +100,7 @@ export function RelationFieldInput({
           for (const id of ids) {
             if (id) {
               try {
-                console.log(`Loading document ${id} from ${relatedModel}`);
                 const doc = await getSchemaDocument(relatedModel, id);
-                console.log(`Document response:`, doc);
                 if (doc) {
                   existingDocs.push({
                     _id: id,
@@ -120,7 +113,6 @@ export function RelationFieldInput({
             }
           }
 
-          console.log(`Setting selected documents:`, existingDocs);
           setSelectedDocuments(existingDocs);
         } catch (error) {
           console.error('Error loading existing relations:', error);

@@ -2,11 +2,17 @@
 import { LogsData, LokiLogsData } from '@/lib/models/logs-viewer';
 import { getLokiClient } from '@/lib/loki/index';
 import { _getEnv } from '@/lib/logic/EnvManager';
+import { getLokiAvailabilityCore } from '@/lib/observability/lokiAvailabilityCore';
+import { isLokiReady } from '@/lib/observability/guards';
 
 export const getLogsLevels = async (
   startDate?: number,
   endDate?: number
 ): Promise<string[]> => {
+  const availability = await getLokiAvailabilityCore();
+  if (!isLokiReady(availability)) {
+    return [];
+  }
   const res = await (
     await getLokiClient()
   ).get('/loki/api/v1/label/level/values', {
@@ -22,6 +28,10 @@ export const getModules = async (
   startDate?: number,
   endDate?: number
 ): Promise<string[]> => {
+  const availability = await getLokiAvailabilityCore();
+  if (!isLokiReady(availability)) {
+    return [];
+  }
   const { namespace } = await _getEnv();
   let query;
   if (namespace && namespace.length > 0) {
@@ -47,6 +57,10 @@ export const getLogsQueryRange = async (data: {
   endDate?: number;
   limit?: string;
 }): Promise<LogsData[]> => {
+  const availability = await getLokiAvailabilityCore();
+  if (!isLokiReady(availability)) {
+    return [];
+  }
   let query = '{';
   const queryParts = [];
   let normalizedModules: string[] = [];

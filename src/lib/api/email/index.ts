@@ -144,7 +144,7 @@ export const syncTemplates = async () => {
     count: number;
   };
   return (await getApiClient())
-    .put<Response>('/email/syncExternalTemplates')
+    .patch<Response>('/email/syncExternalTemplates')
     .then(res => res.data);
 };
 

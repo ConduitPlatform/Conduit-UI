@@ -9,6 +9,7 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarRail,
 } from '@/components/ui/sidebar';
 import { NavGroup } from './navGroup';
 
@@ -35,15 +36,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [modules, isLoading]);
 
   return (
-    <Sidebar variant="inset" {...props} className="border-r border-r-border">
+    <Sidebar
+      variant="sidebar"
+      collapsible="icon"
+      {...props}
+      className="border-r border-r-border"
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className="sticky top-0 z-10 flex items-center h-11 bg-background">
+            <div className="sticky top-0 z-10 flex items-center h-9 bg-background">
               <Image
-                className="w-auto h-8"
+                className="w-auto h-7"
                 width={178}
-                height={32}
+                height={28}
                 src="/conduitLogo.svg"
                 alt="Conduit Logo"
               />
@@ -76,6 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavEnv />
         <NavUser />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }

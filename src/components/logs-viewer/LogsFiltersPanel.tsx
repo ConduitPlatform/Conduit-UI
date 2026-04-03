@@ -50,7 +50,7 @@ export default function LogsFiltersPanel({
   refreshLogs,
 }: Readonly<LogsFiltersPanelProps>) {
   const [openFilters, setOpenFilters] = useState(open);
-  const iconClass = 'w-4 h-4 flex-shrink-0';
+  const iconClass = 'w-4 h-4 shrink-0';
   const pathname = usePathname();
   const isLogsViewerPage = pathname === '/logs-viewer';
   const [logsFilters, setLogsFilters] = useState({

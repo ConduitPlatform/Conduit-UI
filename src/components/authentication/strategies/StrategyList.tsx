@@ -19,9 +19,10 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { LoaderIcon } from 'lucide-react';
-import { patchAuthenticationSettings } from '@/lib/api/authentication';
+import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { patchAuthenticationSettingsMerged } from '@/lib/api/authentication';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/lib/hooks/use-toast';
 
 export interface StrategySettingsProps {
   strategies: StrategyInterface[];
@@ -37,15 +38,46 @@ export const StrategyList: React.FC<StrategySettingsProps> = ({
     React.useState<StrategyInterface | null>(null);
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
+
   const activateStrategy = async () => {
+    if (!selectedStrategy) return;
     setLoading(true);
-    patchAuthenticationSettings({
-      [selectedStrategy?.key as string]: { enabled: true },
-    }).then(() => {
-      setLoading(false);
+    try {
+      await patchAuthenticationSettingsMerged({
+        [selectedStrategy.key as string]: { enabled: true },
+      });
+      toast({
+        title: 'Strategy',
+        description: (
+          <div className={'flex flex-row items-center space-x-2.5'}>
+            <CheckIcon className={'w-8 h-8'} />
+            <p className="text-sm text-foreground">
+              Strategy added successfully.
+            </p>
+          </div>
+        ),
+      });
       setOpen(false);
       router.refresh();
-    });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast({
+        title: 'Strategy',
+        description: (
+          <div className={'flex flex-col'}>
+            <div className={'flex flex-row text-destructive items-center'}>
+              <LucideX className={'w-8 h-8'} />
+              <p className="text-sm">Failed to add strategy:</p>
+            </div>
+            <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
+              <code className="text-sm text-foreground">{message}</code>
+            </pre>
+          </div>
+        ),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -38,7 +38,7 @@ export const TextAreaField = ({
       control={control}
       name={fieldName}
       render={({ field }) => (
-        <FormItem className={cn('w-full space-y-0.5', formItemClassName)}>
+        <FormItem className={cn('w-full space-y-1.5', formItemClassName)}>
           <FormLabel
             className={cn(
               'flex gap-2 pl-1 text-base font-medium text-text-body',

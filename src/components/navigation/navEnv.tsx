@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronsUpDown, Sun } from 'lucide-react';
+import { ChevronsUpDown, Globe } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -37,11 +37,14 @@ export function NavEnv() {
     });
   }, []);
 
-  const _switchEnv = useCallback(async (env: string) => {
-    await switchEnv(env);
-    setEnv(env);
-    router.replace('/');
-  }, []);
+  const _switchEnv = useCallback(
+    async (env: string) => {
+      await switchEnv(env);
+      setEnv(env);
+      router.replace('/');
+    },
+    [router]
+  );
 
   return (
     <SidebarMenu>
@@ -52,17 +55,15 @@ export function NavEnv() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex items-center flex-1 gap-2 text-sm leading-tight text-left">
-                <span className="font-semibold truncate">Environment:</span>
-                <span className="flex items-center justify-center p-2 border rounded-full bg-muted border-border">
-                  {env}
-                </span>
+              <Globe className="size-4 shrink-0" />
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">{env}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-md bg-background"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-md bg-background"
             side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
@@ -76,7 +77,7 @@ export function NavEnv() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="h-[1px] bg-accent my-1.5" />
+            <DropdownMenuSeparator className="h-px bg-accent my-1.5" />
             {availableEnvs?.map(availableEnv => (
               <DropdownMenuItem
                 key={availableEnv}
@@ -86,7 +87,7 @@ export function NavEnv() {
                 }}
                 disabled={availableEnv === env}
               >
-                <Sun className="w-4 h-4" />
+                <Globe className="w-4 h-4" />
                 {availableEnv}{' '}
                 {env === availableEnv && (
                   <span className="text-xs text-muted-foreground">

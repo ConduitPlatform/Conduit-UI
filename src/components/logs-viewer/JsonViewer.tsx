@@ -16,7 +16,7 @@ const customLightStyles = {
   container: 'bg-secondary m-3 p-3 rounded-lg ',
   label: 'text-primary',
   nullValue: 'text-[#007f9b]',
-  stringValue: 'text-[#007373] break-words',
+  stringValue: 'text-[#007373] wrap-break-word',
   booleanValue: 'text-[#ce921a]',
   numberValue: 'text-[#8a4db2] font-medium',
 };
@@ -26,7 +26,7 @@ const customDarkStyles = {
   container: 'bg-secondary m-3 p-3 rounded-lg',
   label: 'text-primary',
   nullValue: 'text-[#00b3ff]',
-  stringValue: 'text-[#00dcdc] break-words',
+  stringValue: 'text-[#00dcdc] wrap-break-word',
   booleanValue: 'text-[#eab305]',
   numberValue: 'text-[#dd8cff] font-medium',
 };

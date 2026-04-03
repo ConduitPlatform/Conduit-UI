@@ -115,7 +115,7 @@ export const navList = {
         },
         {
           title: 'Models',
-          url: '/database/models',
+          url: '/database/models-new',
         },
         {
           title: 'Introspection',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, FileText, Plus, Search, Settings } from 'lucide-react';
+import { Database, FileText, Plus, Search } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getDatabaseMetrics,
@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function DatabaseDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getDatabaseMetrics();
 
@@ -47,34 +49,28 @@ export default async function DatabaseDashboard() {
   // Quick actions
   const quickActions: QuickAction[] = [
     {
-      title: 'Create Model',
-      description: 'Create a new database model',
+      title: 'Models',
+      description: 'Create and manage CMS schemas',
       icon: <Plus className="h-4 w-4" />,
-      href: '/database/models/create',
+      href: '/database/models-new',
     },
     {
-      title: 'View Models',
-      description: 'Browse and manage database models',
+      title: 'Browse models',
+      description: 'Open the schema and data explorer',
       icon: <FileText className="h-4 w-4" />,
-      href: '/database/models',
+      href: '/database/models-new',
     },
     {
       title: 'Custom Queries',
-      description: 'Create and manage custom queries',
+      description: 'Create and manage custom endpoints',
       icon: <Search className="h-4 w-4" />,
       href: '/database/queries',
     },
     {
       title: 'Introspection',
-      description: 'Introspect existing database schemas',
+      description: 'Import pending schemas from the database',
       icon: <Search className="h-4 w-4" />,
       href: '/database/introspection',
-    },
-    {
-      title: 'Settings',
-      description: 'Database module configuration',
-      icon: <Settings className="h-4 w-4" />,
-      href: '/database/settings',
     },
   ];
 
@@ -87,6 +83,7 @@ export default async function DatabaseDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function RouterDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getRouterMetrics();
 
@@ -59,10 +61,10 @@ export default async function RouterDashboard() {
       href: '/router/security',
     },
     {
-      title: 'Network',
-      description: 'View network configuration',
+      title: 'Routes graph',
+      description: 'Visualize registered routes',
       icon: <Network className="h-4 w-4" />,
-      href: '/router/network',
+      href: '/router/vizualize',
     },
     {
       title: 'Settings',
@@ -81,7 +83,8 @@ export default async function RouterDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
-      ></ModuleDashboard>
+        prometheusState={promAvailability.state}
+      />
     </div>
   );
 }

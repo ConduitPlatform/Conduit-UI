@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import React from 'react';
 import { StrategyFormProps } from '@/components/authentication/strategies/interface/StrategyFormProps.interface';
 import { Form } from '@/components/ui/form';
@@ -21,7 +21,7 @@ export const MagicLinkConfigForm: React.FC<
   StrategyFormProps<authStrategyFormType>
 > = ({ data, onSubmit, onCancel }) => {
   const form = useForm<authStrategyFormType>({
-    resolver: zodResolver(authStrategySchema),
+    resolver: rhfZodResolver(authStrategySchema),
     defaultValues: data ? { ...data } : {},
   });
   const { isSubmitting } = form.formState;

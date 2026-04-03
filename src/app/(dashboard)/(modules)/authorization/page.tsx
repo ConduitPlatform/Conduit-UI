@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function AuthorizationDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getAuthorizationMetrics();
 
@@ -66,10 +68,10 @@ export default async function AuthorizationDashboard() {
       href: '/authorization/permissions',
     },
     {
-      title: 'Users',
-      description: 'Manage user permissions',
+      title: 'Authentication users',
+      description: 'Manage platform users (subjects for permissions)',
       icon: <Users className="h-4 w-4" />,
-      href: '/authorization/users',
+      href: '/authentication/users',
     },
     {
       title: 'Settings',
@@ -88,6 +90,7 @@ export default async function AuthorizationDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

@@ -34,9 +34,7 @@ export const QuickActionsCard: React.FC<QuickActionsCardProps> = ({
       <CardContent className="space-y-3">
         {actions.map((action, index) => (
           <div key={index} className="flex items-center space-x-3">
-            <div className="flex-shrink-0 text-muted-foreground">
-              {action.icon}
-            </div>
+            <div className="shrink-0 text-muted-foreground">{action.icon}</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground">
                 {action.title}

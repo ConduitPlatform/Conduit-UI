@@ -1,0 +1,21 @@
+---
+description: Server-only Prometheus, Loki, and env-bound data; Next.js use server boundaries
+globs: src/lib/prometheus/**,src/lib/loki/**,src/lib/observability/**,src/lib/logic/EnvManager.ts
+alwaysApply: false
+---
+
+# Server-side metrics, logs, and secrets
+
+## Rules
+
+1. **Never import Prometheus or Loki HTTP clients, or `EnvManager` / cookie-backed env resolution, from Client Components** except through explicit **Server Actions** defined in a dedicated file that starts with `'use server';` and exports **only async** functions (e.g. [`lokiAvailability.actions.ts`](mdc:src/lib/observability/lokiAvailability.actions.ts)).
+
+2. **File-level `'use server'`** means every export must be an async Server Action. Do **not** add synchronous function exports to such a file. Put sync helpers (e.g. building config from `Environment`) in a sibling module with **`import 'server-only';`** at the top (e.g. [`envConfig.ts`](mdc:src/lib/prometheus/envConfig.ts)).
+
+3. Use **`import 'server-only';`** in modules that must never run in the browser: Prometheus env config, observability guards, and any code that touches secrets or admin backends. This fails the build if a Client Component imports the module by mistake.
+
+4. **Prometheus HTTP**: [`client.ts`](mdc:src/lib/prometheus/client.ts) uses `'use server';` — all exports there are async server actions. Sync env mapping lives in [`envConfig.ts`](mdc:src/lib/prometheus/envConfig.ts) with `server-only`.
+
+5. **Loki from the client**: only import [`getLokiAvailability`](mdc:src/lib/observability/lokiAvailability.actions.ts) from the actions file. Do **not** import [`lokiAvailabilityCore.ts`](mdc:src/lib/observability/lokiAvailabilityCore.ts) from client code.
+
+6. **Shared types** for props (`ObservabilityServiceState`, etc.) stay in [`types.ts`](mdc:src/lib/observability/types.ts) with no `server-only` so Client Components can import types only.

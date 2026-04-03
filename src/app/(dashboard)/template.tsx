@@ -7,20 +7,29 @@ import { getRouterSettings } from '@/lib/api/router';
 import { getAdminSettings } from '@/lib/api/settings';
 import { ScalarIcon, SocketIcon } from '@/icons';
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
-import { ListItem } from '@/components/ui/list-item';
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { LogsDrawer } from '@/components/logs-viewer/LogsDrawer';
-import SidebarCollapseTrigger from '@/components/navigation/sidebarCollapseTrigger';
 import { useSidebar } from '@/components/ui/sidebar';
 import { getDatabaseType } from '@/lib/api/database';
 import { Badge } from '@/components/ui/badge';
+import { ChevronDown, BookOpen } from 'lucide-react';
 
 const MODULE_NAMES: { [key: string]: string } = {
   settings: 'Settings',
@@ -72,7 +81,7 @@ export default function ModuleHeader({
         setDatabaseType(res.result);
       });
     }
-  }, []);
+  }, [moduleName]);
 
   if (!moduleName)
     return (
@@ -137,125 +146,152 @@ export default function ModuleHeader({
     },
   ];
 
+  const pathSegments = pathname.split('/').filter(Boolean);
+
   return (
-    <div className={'flex flex-col overflow-x-auto no-scrollbar'}>
-      <div
-        className={
-          'flex flex-row w-full justify-between p-4 border-b items-center sticky top-0 z-40 bg-background'
-        }
-      >
-        <div className="flex items-center gap-3">
-          <SidebarCollapseTrigger />
-          <div className="flex gap-x-3 items-center">
-            <h1 className={'font-light text-xl'}>{moduleName}</h1>
-            {moduleName === 'Database' ? (
-              <Badge variant="secondary">{databaseType}</Badge>
-            ) : (
-              <></>
-            )}
-          </div>
+    <div className="flex flex-col overflow-x-auto no-scrollbar">
+      <div className="flex flex-row w-full justify-between px-4 py-2 border-b items-center sticky top-0 z-40 bg-background min-h-10">
+        <div className="flex items-center gap-3 min-w-0">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Dashboard</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {pathSegments.length > 0 && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    {pathSegments.length === 1 ? (
+                      <BreadcrumbPage className="flex items-center gap-2">
+                        {moduleName}
+                        {moduleName === 'Database' && databaseType && (
+                          <Badge variant="secondary" className="ml-1">
+                            {databaseType}
+                          </Badge>
+                        )}
+                      </BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink asChild>
+                        <Link href={`/${pathSegments[0]}`}>
+                          {moduleName}
+                          {moduleName === 'Database' && databaseType && (
+                            <Badge variant="secondary" className="ml-1">
+                              {databaseType}
+                            </Badge>
+                          )}
+                        </Link>
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                  {pathSegments.length > 1 && (
+                    <>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>
+                          {pathSegments[pathSegments.length - 1]
+                            .split('-')
+                            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                            .join(' ')}
+                        </BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </>
+                  )}
+                </>
+              )}
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
-        <div className={'flex flex-row space-x-1.5'}>
-          <NavigationMenu>
-            <NavigationMenuList className="space-x-3">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                Docs
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
               {restApp && (
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
                     <Image
-                      src={'/swagger.svg'}
-                      alt={'swagger'}
-                      width={16}
-                      height={16}
-                      className={'mr-2'}
+                      src="/swagger.svg"
+                      alt=""
+                      width={14}
+                      height={14}
+                      className="mr-2"
                     />
-                    <ScalarIcon className={'mr-2 w-3 h-3'} />
+                    <ScalarIcon className="mr-2 h-3.5 w-3.5" />
                     REST
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="">
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-background">
-                      {RESTDocs.map(component => (
-                        <ListItem
-                          key={component.title}
-                          title={component.title}
-                          href={component.href}
-                          downloadUrl={component.download}
-                          enabled={component.enabled}
-                        >
-                          {component.description}
-                        </ListItem>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {RESTDocs.filter(d => d.enabled).map(doc => (
+                      <DropdownMenuItem key={doc.title} asChild>
+                        <Link href={doc.href} target="_blank" rel="noopener">
+                          {doc.title}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
               )}
               {(graphqlApp || graphqlAdmin) && (
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
                     <Image
-                      src={'/graphql.svg'}
-                      alt={'graphql'}
-                      width={16}
-                      height={16}
-                      className={'mr-2'}
+                      src="/graphql.svg"
+                      alt=""
+                      width={14}
+                      height={14}
+                      className="mr-2"
                     />
                     GraphQL
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-background">
-                      {GraphQLDocs.map(component => (
-                        <ListItem
-                          key={component.title}
-                          title={component.title}
-                          href={component.href}
-                          enabled={component.enabled}
-                        >
-                          {component.description}
-                        </ListItem>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {GraphQLDocs.filter(d => d.enabled).map(doc => (
+                      <DropdownMenuItem key={doc.title} asChild>
+                        <Link href={doc.href} target="_blank" rel="noopener">
+                          {doc.title}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
               )}
               {sockets && (
-                <NavigationMenuItem>
-                  <Link href="https://admin.socket.io/" target={'_blank'}>
-                    <NavigationMenuLink
-                      asChild
-                      className={navigationMenuTriggerStyle({
-                        className:
-                          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-                      })}
-                    >
-                      <span>
-                        <SocketIcon className={'mr-2 w-3 h-3'} />
-                        Socket.io
-                      </span>
-                    </NavigationMenuLink>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="https://admin.socket.io/"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <SocketIcon className="mr-2 h-3.5 w-3.5" />
+                    Socket.io
                   </Link>
-                </NavigationMenuItem>
+                </DropdownMenuItem>
               )}
-              <NavigationMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
                 <Link
                   href={`https://getconduit.dev/docs/modules/${whichModule}`}
-                  target={'_blank'}
+                  target="_blank"
+                  rel="noopener"
                 >
-                  <NavigationMenuLink
-                    asChild
-                    className={navigationMenuTriggerStyle({
-                      className:
-                        'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-                    })}
-                  >
-                    Documentation
-                  </NavigationMenuLink>
+                  Documentation
                 </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-      <div className={'w-full h-full max-h-[90vh] main-scrollbar top-10'}>
-        <div className="container static py-10 mx-auto overflow-x-auto">
+      <div className="w-full h-full max-h-[90vh] main-scrollbar top-10">
+        <div className="px-6 py-4 mx-auto max-w-(--breakpoint-2xl) overflow-x-auto">
           {children}
         </div>
       </div>

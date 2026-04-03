@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import { LucideX, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ const FormSchema = z.object({
 
 export const TestSendForm = ({ token }: Props) => {
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
   });
   const { openPicker } = useUserPicker();
   const { reset, handleSubmit, setValue, watch } = form;

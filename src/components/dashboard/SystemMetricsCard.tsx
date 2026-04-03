@@ -46,7 +46,7 @@ export function SystemMetricsCard({ metrics }: SystemMetricsCardProps) {
               key={index}
               className="flex items-center gap-3 p-3 border rounded-lg"
             >
-              <div className="flex-shrink-0">{getMetricIcon(metric.name)}</div>
+              <div className="shrink-0">{getMetricIcon(metric.name)}</div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   {metric.name}
@@ -58,7 +58,7 @@ export function SystemMetricsCard({ metrics }: SystemMetricsCardProps) {
                   {metric.description}
                 </div>
               </div>
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div
                   className={`w-3 h-3 rounded-full ${
                     metric.status === 'healthy'

@@ -1,6 +1,6 @@
 'use server';
 import axios from 'axios';
-import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { _getEnv } from '@/lib/logic/EnvManager';
 import { redirect, RedirectType } from 'next/navigation';
 
@@ -42,30 +42,17 @@ export const getApiClient = async (env?: string) => {
         redirect('/login?session-timeout=true', RedirectType.replace);
       }
       if (error.response) {
-        // Server responded with a status code outside the range of 2xx
-        console.error({
-          message: error.message,
-          status: error.response.status,
-          statusText: error.response.statusText,
-          url: error.config.url,
-          method: error.config.method,
-          data: error.response.data,
-          headers: error.response.headers,
-        });
+        console.error(
+          `[API Error] ${error.config?.method?.toUpperCase()} ${error.config?.url} -> ${error.response.status}`,
+          error.response.data
+        );
       } else if (error.request) {
-        // Request was made but no response was received
-        console.error({
-          message: error.message,
-          url: error.config.url,
-          method: error.config.method,
-          request: error.request,
-        });
+        console.error(
+          `[API Error] ${error.config?.method?.toUpperCase()} ${error.config?.url} -> No response`,
+          error.message
+        );
       } else {
-        // Something happened in setting up the request
-        console.error({
-          message: error.message,
-          config: error.config,
-        });
+        console.error('[API Error] Request setup failed:', error.message);
       }
       return Promise.reject(error);
     }

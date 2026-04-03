@@ -7,8 +7,15 @@ export const getLokiClient = async (env?: string) => {
   const envCookie = (await cookies()).get('activeEnv');
   const envDetails = await _getEnv(env ?? envCookie?.value ?? 'Local');
 
+  const lokiUrl = envDetails.lokiUrl?.trim();
+  if (!lokiUrl) {
+    throw new Error(
+      'LOKI_URL is not configured for this environment. Set it to enable log viewing.'
+    );
+  }
+
   const lokiInstance = axios.create({
-    baseURL: envDetails.lokiUrl,
+    baseURL: lokiUrl.replace(/\/$/, ''),
     timeout: 50000,
     headers: {
       'Content-Type': 'application/json',
@@ -22,30 +29,17 @@ export const getLokiClient = async (env?: string) => {
     },
     async error => {
       if (error.response) {
-        // Server responded with a status code outside the range of 2xx
-        console.error({
-          message: error.message,
-          status: error.response.status,
-          statusText: error.response.statusText,
-          url: error.config.url,
-          method: error.config.method,
-          data: error.response.data,
-          headers: error.response.headers,
-        });
+        console.error(
+          `[Loki Error] ${error.config?.method?.toUpperCase()} ${error.config?.url} -> ${error.response.status}`,
+          error.response.data
+        );
       } else if (error.request) {
-        // Request was made but no response was received
-        console.error({
-          message: error.message,
-          url: error.config.url,
-          method: error.config.method,
-          request: error.request,
-        });
+        console.error(
+          `[Loki Error] ${error.config?.method?.toUpperCase()} ${error.config?.url} -> No response`,
+          error.message
+        );
       } else {
-        // Something happened in setting up the request
-        console.error({
-          message: error.message,
-          config: error.config,
-        });
+        console.error('[Loki Error] Request setup failed:', error.message);
       }
       return Promise.reject(error);
     }

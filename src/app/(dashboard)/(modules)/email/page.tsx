@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function EmailDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getEmailMetrics();
 
@@ -56,7 +58,7 @@ export default async function EmailDashboard() {
       title: 'Create Template',
       description: 'Create a new email template',
       icon: <Plus className="h-4 w-4" />,
-      href: '/email/templates/create',
+      href: '/email/templates',
     },
     {
       title: 'Templates',
@@ -87,6 +89,7 @@ export default async function EmailDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

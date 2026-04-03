@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function StorageDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getStorageMetrics();
 
@@ -47,28 +49,28 @@ export default async function StorageDashboard() {
   // Quick actions
   const quickActions: QuickAction[] = [
     {
-      title: 'Upload File',
-      description: 'Upload a new file to storage',
+      title: 'Browse storage',
+      description: 'Upload files, create folders, and manage containers',
       icon: <Upload className="h-4 w-4" />,
-      href: '/storage/upload',
+      href: '/storage/browse',
     },
     {
-      title: 'Browse Files',
+      title: 'Files',
       description: 'Browse and manage stored files',
       icon: <File className="h-4 w-4" />,
       href: '/storage/browse',
     },
     {
-      title: 'Create Folder',
-      description: 'Create a new storage folder',
+      title: 'Folders',
+      description: 'Organize folders in the browser',
       icon: <Plus className="h-4 w-4" />,
-      href: '/storage/folders/create',
+      href: '/storage/browse',
     },
     {
-      title: 'Manage Folders',
-      description: 'Organize storage folders',
+      title: 'Containers',
+      description: 'Switch containers from browse',
       icon: <Folder className="h-4 w-4" />,
-      href: '/storage/folders',
+      href: '/storage/browse',
     },
     {
       title: 'Settings',
@@ -87,6 +89,7 @@ export default async function StorageDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

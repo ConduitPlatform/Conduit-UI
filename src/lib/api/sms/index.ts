@@ -63,5 +63,5 @@ export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
 
 export const testSendSMS = async (smsData: { to: string; message: string }) => {
   const res = await (await getApiClient()).post(`/sms/send`, { ...smsData });
-  return 'ok';
+  return res.data;
 };

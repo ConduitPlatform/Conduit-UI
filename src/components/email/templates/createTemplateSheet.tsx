@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { TemplateForm } from '@/components/email/templates/templateForm';
 import { createTemplate } from '@/lib/api/email';
 import { useRouter } from 'next/navigation';
@@ -26,7 +26,7 @@ export const CreateTemplateSheet = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+    resolver: rhfZodResolver(schema),
     defaultValues: {
       body: dummyHTML,
     },
@@ -47,7 +47,7 @@ export const CreateTemplateSheet = () => {
                 );
                 router.push(`/email/templates/${templateId}?editor-open=true`);
               },
-              errors => console.log(errors)
+              () => undefined
             )}
             className="space-y-4"
           >

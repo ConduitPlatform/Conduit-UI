@@ -3,6 +3,8 @@
 import React from 'react';
 import { createPrometheusClient, instantQuery, queryRange } from './client';
 import * as MetricQueries from './queries';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
+import { isPrometheusReady } from '@/lib/observability/guards';
 
 export interface FormattedMetric {
   name: string;
@@ -20,8 +22,16 @@ export interface MetricChartData {
   labels: string[];
 }
 
-// Helper functions
 async function getMetricValue(query: any): Promise<FormattedMetric> {
+  const availability = await getPrometheusAvailability();
+  if (!isPrometheusReady(availability)) {
+    return {
+      name: query.name,
+      value: 'No data',
+      description: query.description,
+      status: 'warning',
+    };
+  }
   try {
     const config = await createPrometheusClient();
     const data = await instantQuery(config, query.expression);
@@ -73,6 +83,10 @@ async function getMetricChart(
   end: number,
   step: string = '1m'
 ): Promise<MetricChartData> {
+  const availability = await getPrometheusAvailability();
+  if (!isPrometheusReady(availability)) {
+    return { timestamps: [], values: [], labels: [] };
+  }
   try {
     const config = await createPrometheusClient();
     const data = await queryRange(config, query.expression, start, end, step);
@@ -355,25 +369,21 @@ export async function getRouterMetrics(): Promise<FormattedMetric[]> {
   return metrics;
 }
 
-// NEW: Function to determine overall module status
 export async function getModuleStatus(
   moduleName: string
 ): Promise<'healthy' | 'warning' | 'critical' | 'unknown'> {
   try {
-    // Get the module health state metric
     const moduleHealthQuery = await MetricQueries.moduleHealth(moduleName);
     const healthMetric = await getMetricValue(moduleHealthQuery);
 
-    // If we have a valid health metric, use it
     if (healthMetric.value !== 'No data' && healthMetric.value !== 'Error') {
       const healthValue = parseFloat(healthMetric.value);
       // conduit_module_health_state: 0 = not healthy, 1 = healthy
       if (healthValue === 1) return 'healthy';
       if (healthValue === 0) return 'critical';
-      return 'unknown'; // Any other value is unexpected
+      return 'unknown';
     }
 
-    // Fallback: check error rate and other critical metrics
     const errorRateQuery = await MetricQueries.moduleErrors(moduleName);
     const errorMetric = await getMetricValue(errorRateQuery);
 
@@ -383,7 +393,6 @@ export async function getModuleStatus(
       return 'warning';
     }
 
-    // If no health data and no critical issues found, assume unknown
     return 'unknown';
   } catch (error) {
     console.error(`Error determining status for ${moduleName}:`, error);
@@ -391,10 +400,8 @@ export async function getModuleStatus(
   }
 }
 
-// NEW: Function to get platform-wide metrics for home dashboard
 export async function getPlatformMetrics(): Promise<FormattedMetric[]> {
   try {
-    // Get all available modules
     const moduleNames = [
       'authentication',
       'authorization',
@@ -409,22 +416,11 @@ export async function getPlatformMetrics(): Promise<FormattedMetric[]> {
       'payments',
     ];
 
-    // 1. Total Requests - Aggregate from all modules
     const totalRequests = await getTotalRequests(moduleNames);
-
-    // 2. Average Response Time - Use system-wide latency
     const avgResponseTime = await getAverageResponseTime();
-
-    // 3. Active Users - From authentication
     const activeUsers = await getActiveUsers();
-
-    // 4. Error Rate - Aggregate from all modules
     const errorRate = await getErrorRate(moduleNames);
-
-    // 5. Storage Usage - From storage metrics
     const storageUsage = await getStorageUsage();
-
-    // 6. DB Connections - From database metrics
     const dbConnections = await getDatabaseConnections();
 
     return [
@@ -437,17 +433,14 @@ export async function getPlatformMetrics(): Promise<FormattedMetric[]> {
     ];
   } catch (error) {
     console.error('Error fetching platform metrics:', error);
-    // Return default metrics if there's an error
     return getDefaultPlatformMetrics();
   }
 }
 
-// Helper function to get total requests across all modules
 async function getTotalRequests(
   moduleNames: string[]
 ): Promise<FormattedMetric> {
   try {
-    // Use the HTTP request histogram for accurate total requests
     const query = await MetricQueries.totalHttpRequests();
     const metric = await getMetricValue(query);
 
@@ -470,7 +463,6 @@ async function getTotalRequests(
   }
 }
 
-// Helper function to get average response time
 async function getAverageResponseTime(): Promise<FormattedMetric> {
   try {
     // Try the simple latency query first (more reliable)
@@ -513,7 +505,6 @@ async function getAverageResponseTime(): Promise<FormattedMetric> {
   }
 }
 
-// Helper function to get active users
 async function getActiveUsers(): Promise<FormattedMetric> {
   try {
     const query = await MetricQueries.loggedInUsers();
@@ -536,7 +527,6 @@ async function getActiveUsers(): Promise<FormattedMetric> {
   }
 }
 
-// Helper function to get error rate across all modules
 async function getErrorRate(moduleNames: string[]): Promise<FormattedMetric> {
   try {
     // Get total HTTP errors (4xx and 5xx status codes)
@@ -572,7 +562,6 @@ async function getErrorRate(moduleNames: string[]): Promise<FormattedMetric> {
   }
 }
 
-// Helper function to get storage usage
 async function getStorageUsage(): Promise<FormattedMetric> {
   try {
     const query = await MetricQueries.totalStorageSize();
@@ -597,7 +586,6 @@ async function getStorageUsage(): Promise<FormattedMetric> {
   }
 }
 
-// Helper function to get database connections
 async function getDatabaseConnections(): Promise<FormattedMetric> {
   try {
     // Use active resources as a proxy for DB connections
@@ -621,7 +609,6 @@ async function getDatabaseConnections(): Promise<FormattedMetric> {
   }
 }
 
-// Helper function to get default metrics when real data is unavailable
 function getDefaultPlatformMetrics(): FormattedMetric[] {
   return [
     {
@@ -667,11 +654,10 @@ function getDefaultPlatformMetrics(): FormattedMetric[] {
   ];
 }
 
-// NEW: Function to get all module statuses for the home dashboard
 export async function getAllModuleStatuses(): Promise<
   Array<{
     name: string;
-    status: 'healthy' | 'warning' | 'critical';
+    status: 'healthy' | 'warning' | 'critical' | 'unknown';
     uptime: string;
     requests: string;
     iconName: string;
@@ -699,8 +685,17 @@ export async function getAllModuleStatuses(): Promise<
     { name: 'router', displayName: 'Router', href: '/router' },
   ];
 
-  const statuses = await Promise.all(
-    moduleConfigs.map(async config => {
+  type ModuleStatusRow = {
+    name: string;
+    status: 'healthy' | 'warning' | 'critical' | 'unknown';
+    uptime: string;
+    requests: string;
+    iconName: string;
+    href: string;
+  };
+
+  const statuses: ModuleStatusRow[] = await Promise.all(
+    moduleConfigs.map(async (config): Promise<ModuleStatusRow> => {
       try {
         const status = await getModuleStatus(config.name);
         const uptime = await getModuleUptime(config.name);
@@ -714,10 +709,10 @@ export async function getAllModuleStatuses(): Promise<
           iconName: config.name,
           href: config.href,
         };
-      } catch (error) {
+      } catch {
         return {
           name: config.displayName,
-          status: 'unknown' as any,
+          status: 'unknown',
           uptime: 'Unknown',
           requests: '0/sec',
           iconName: config.name,
@@ -730,10 +725,8 @@ export async function getAllModuleStatuses(): Promise<
   return statuses;
 }
 
-// Helper function to get module request rate
 async function getModuleRequestRate(moduleName: string): Promise<string> {
   try {
-    // Use HTTP requests filtered by route path for the specific module
     const query = await MetricQueries.httpRequestsForModule(moduleName);
     const metric = await getMetricValue(query);
     return `${metric.value}`;
@@ -816,7 +809,6 @@ export async function getSystemResourcesChart(
   }
 }
 
-// Helper functions for time ranges
 function getTimeRangeSeconds(timeRange: '1h' | '6h' | '24h' | '7d'): number {
   switch (timeRange) {
     case '1h':
@@ -847,7 +839,6 @@ function getStepForTimeRange(timeRange: '1h' | '6h' | '24h' | '7d'): string {
   }
 }
 
-// NEW: Function to get platform overview data
 export async function getPlatformOverview(): Promise<{
   overallStatus: 'healthy' | 'warning' | 'critical';
   uptime: string;

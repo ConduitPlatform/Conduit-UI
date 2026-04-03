@@ -8,8 +8,7 @@ import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-interface LogsFiltersOptionsProps
-  extends React.FormHTMLAttributes<HTMLDivElement> {
+interface LogsFiltersOptionsProps extends React.FormHTMLAttributes<HTMLDivElement> {
   levels: string[];
   modules: string[];
   type?: 'drawer' | 'viewer';
@@ -137,7 +136,7 @@ export default function LogsFiltersOptions({
       </div>
       <Link
         href={`logs-viewer/?${searchParams}`}
-        className="self-end mt-2 text-sm text-muted-foreground hover:dark:text-white hover:underline hover:text-primary"
+        className="self-end mt-2 text-sm text-muted-foreground dark:hover:text-white hover:underline hover:text-primary"
       >
         More filters
       </Link>

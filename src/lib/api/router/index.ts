@@ -77,3 +77,73 @@ export const updateSecurityClient = async (
 export const deleteSecurityClient = async (id: string) => {
   await (await getApiClient()).delete(`/router/security/client/${id}`);
 };
+
+export const getAppRouteMiddlewares = async (path: string, action: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<{ middlewares: string[] }>('/router/route-middlewares', {
+    params: { path, action },
+  });
+  return res.data;
+};
+
+export const patchAppRouteMiddlewares = async (
+  path: string,
+  action: string,
+  middlewares: string[]
+) => {
+  const res = await (
+    await getApiClient()
+  ).patch<string>(
+    '/router/patch-middleware',
+    { middlewares },
+    { params: { path, action } }
+  );
+  return res.data;
+};
+
+export const listRouterProxyRoutes = async (params?: {
+  skip?: number;
+  limit?: number;
+  sort?: string;
+}) => {
+  const res = await (await getApiClient()).get('/router/proxy', { params });
+  return res.data;
+};
+
+export const getRouterProxyRoute = async (id: string) => {
+  const res = await (await getApiClient()).get(`/router/proxy/${id}`);
+  return res.data;
+};
+
+export const createRouterProxyRoute = async (data: {
+  path: string;
+  target: string;
+  action: string;
+  routeDescription?: string;
+  middlewares?: string[];
+  proxyMiddlewareOptions?: Record<string, unknown>;
+}) => {
+  const res = await (await getApiClient()).post('/router/proxy', data);
+  return res.data;
+};
+
+export const updateRouterProxyRoute = async (
+  id: string,
+  data: Partial<{
+    path: string;
+    target: string;
+    action: string;
+    routeDescription: string;
+    middlewares: string[];
+    proxyMiddlewareOptions: Record<string, unknown>;
+  }>
+) => {
+  const res = await (await getApiClient()).put(`/router/proxy/${id}`, data);
+  return res.data;
+};
+
+export const deleteRouterProxyRoute = async (id: string) => {
+  const res = await (await getApiClient()).delete(`/router/proxy/${id}`);
+  return res.data;
+};

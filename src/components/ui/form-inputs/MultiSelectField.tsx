@@ -90,22 +90,21 @@ const MultiSelectField = ({
 
   const classNames = {
     container:
-      'flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-transparent pl-3 py-2 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5',
+      'flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-transparent pl-3 py-2 pr-8 text-sm ring-offset-background focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5',
     removeButton:
-      'flex items-center justify-center p-[3px] -mr-1 rounded-md outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
-    removeIcon:
-      'flex-shrink-0 w-3 h-3 text-muted-foreground hover:text-foreground',
+      'flex items-center justify-center p-[3px] -mr-1 rounded-md outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
+    removeIcon: 'shrink-0 w-3 h-3 text-muted-foreground hover:text-foreground',
     dropdownIconContainer:
-      'absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-none text-muted-foreground top-1/2 right-1',
-    dropdownIcon: 'flex-shrink-0 w-4 h-4',
+      'absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-hidden text-muted-foreground top-1/2 right-1',
+    dropdownIcon: 'shrink-0 w-4 h-4',
     clearButton:
-      'absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-none hover:text-foreground text-muted-foreground top-1/2 right-1',
-    clearIcon: 'flex-shrink-0 w-4 h-4',
+      'absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-hidden hover:text-foreground text-muted-foreground top-1/2 right-1',
+    clearIcon: 'shrink-0 w-4 h-4',
     commandListContainer:
-      'absolute z-10 w-full border rounded-md shadow-md outline-none top-1 bg-background animate-in',
+      'absolute z-10 w-full border rounded-md shadow-md outline-hidden top-1 bg-background animate-in',
     commandEmpty: 'p-2 text-sm text-center text-muted-foreground',
     inputField:
-      'flex-1 bg-transparent outline-none placeholder:text-muted-foreground',
+      'flex-1 bg-transparent outline-hidden placeholder:text-muted-foreground',
   };
 
   const MultiSelect = () => {
@@ -256,7 +255,7 @@ const MultiSelectField = ({
         name={fieldName!}
         control={control}
         render={({ field }) => (
-          <FormItem className={className}>
+          <FormItem className={cn('space-y-1.5', className)}>
             <FormLabel className={labelClassName}>{label}</FormLabel>
             <FormControl>
               <Command className="relative overflow-visible bg-transparent">

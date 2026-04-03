@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, MessageSquare, Send, Settings, Users } from 'lucide-react';
+import { MessageSquare, Send, Settings } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getModuleMetrics,
@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function SmsDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const apiModuleName = getApiModuleNameFromPath('/sms') || 'sms';
   const metrics = await getModuleMetrics(apiModuleName);
@@ -48,27 +50,15 @@ export default async function SmsDashboard() {
   const quickActions: QuickAction[] = [
     {
       title: 'Send SMS',
-      description: 'Send a new SMS message',
+      description: 'Send a test SMS message',
       icon: <Send className="h-4 w-4" />,
       href: '/sms/send',
     },
     {
-      title: 'Message History',
-      description: 'View SMS sending history',
-      icon: <History className="h-4 w-4" />,
-      href: '/sms/history',
-    },
-    {
-      title: 'Manage Contacts',
-      description: 'Manage SMS recipients',
-      icon: <Users className="h-4 w-4" />,
-      href: '/sms/contacts',
-    },
-    {
-      title: 'Test SMS',
-      description: 'Test SMS functionality',
+      title: 'SMS settings',
+      description: 'Provider and module configuration',
       icon: <MessageSquare className="h-4 w-4" />,
-      href: '/sms/test',
+      href: '/sms/settings',
     },
     {
       title: 'Settings',
@@ -87,6 +77,7 @@ export default async function SmsDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

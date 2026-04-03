@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import {
   Form,
   FormControl,
@@ -103,7 +103,7 @@ export const SecurityClients = ({ data }: Props) => {
   );
 
   const createForm = useForm<CreateSecurityClientRequest>({
-    resolver: zodResolver(CreateClientSchema),
+    resolver: rhfZodResolver(CreateClientSchema),
     defaultValues: {
       platform: '',
       domain: '',
@@ -113,7 +113,9 @@ export const SecurityClients = ({ data }: Props) => {
   });
 
   const updateForm = useForm<UpdateSecurityClientRequest>({
-    resolver: zodResolver(UpdateClientSchema),
+    resolver: rhfZodResolver(
+      UpdateClientSchema
+    ) as Resolver<UpdateSecurityClientRequest>,
     defaultValues: {
       platform: '',
       domain: '',
@@ -174,9 +176,7 @@ export const SecurityClients = ({ data }: Props) => {
         ),
       });
 
-      console.log('Creating security client with data:', formData);
-      const response = await createSecurityClient(formData);
-      console.log('Security client creation response:', response);
+      await createSecurityClient(formData);
 
       // Refresh the clients list
       const updatedData = await getSecurityClients();
@@ -216,9 +216,7 @@ export const SecurityClients = ({ data }: Props) => {
         ),
       });
 
-      console.log('Updating security client with data:', formData);
-      const response = await updateSecurityClient(editingClient._id, formData);
-      console.log('Security client update response:', response);
+      await updateSecurityClient(editingClient._id, formData);
 
       // Refresh the clients list
       const updatedData = await getSecurityClients();
@@ -257,9 +255,7 @@ export const SecurityClients = ({ data }: Props) => {
         ),
       });
 
-      console.log('Deleting security client with ID:', clientId);
       await deleteSecurityClient(clientId);
-      console.log('Security client deleted successfully');
 
       // Refresh the clients list
       const updatedData = await getSecurityClients();

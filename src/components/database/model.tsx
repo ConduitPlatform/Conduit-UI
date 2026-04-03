@@ -17,7 +17,6 @@ export const ModelDetails = ({
     getSchemaDocument(modelName, id)
       .then(res => setModel(res))
       .catch(err => {
-        console.log(err);
         if (err.message === 'not_found') setModel('not_found');
       });
   }, []);

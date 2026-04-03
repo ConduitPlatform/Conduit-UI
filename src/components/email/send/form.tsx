@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { getTemplates, sendEmail } from '@/lib/api/email';
 import { Input } from '@/components/ui/input';
 import { Participant } from '@/components/email/send/participants';
@@ -35,7 +35,7 @@ const schema = z.object({
   subject: z.string().optional(),
   body: z.string().optional(),
   templateName: z.string().optional(),
-  variables: z.record(z.string()).optional(),
+  variables: z.record(z.string(), z.string()).optional(),
 });
 
 type SendEmailFormProps = {
@@ -50,7 +50,7 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
   const [template, setTemplate] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+    resolver: rhfZodResolver(schema),
     defaultValues: {},
   });
 
@@ -97,7 +97,7 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
                 })
               );
           },
-          errors => console.log('errors: ', errors)
+          () => undefined
         )}
         className="flex flex-col space-y-5"
       >

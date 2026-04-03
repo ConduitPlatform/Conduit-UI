@@ -83,7 +83,7 @@ const EntityNode = ({
 
   return (
     <div className="px-4 py-2 shadow-md border border-gray-300 rounded-md bg-white min-w-[140px] text-center">
-      <Handle type="target" position={Position.Left} className="!bg-gray-400" />
+      <Handle type="target" position={Position.Left} className="bg-gray-400!" />
       <div className="flex items-center justify-center gap-2">
         {getIcon()}
         <div className="font-medium text-background">{data.label}</div>
@@ -92,7 +92,7 @@ const EntityNode = ({
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-gray-400"
+        className="bg-gray-400!"
       />
     </div>
   );
@@ -100,11 +100,11 @@ const EntityNode = ({
 
 const RelationNode = ({ data }: { data: { relation: string } }) => {
   return (
-    <div className="px-3 py-1 shadow-sm border border-purple-200 rounded-md bg-purple-50 min-w-[100px] text-center">
+    <div className="px-3 py-1 shadow-xs border border-purple-200 rounded-md bg-purple-50 min-w-[100px] text-center">
       <Handle
         type="target"
         position={Position.Left}
-        className="!bg-purple-400"
+        className="bg-purple-400!"
       />
       <div className="flex items-center justify-center gap-1">
         <Link className="h-3.5 w-3.5 text-purple-600" />
@@ -115,7 +115,7 @@ const RelationNode = ({ data }: { data: { relation: string } }) => {
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-purple-400"
+        className="bg-purple-400!"
       />
     </div>
   );
@@ -123,11 +123,11 @@ const RelationNode = ({ data }: { data: { relation: string } }) => {
 
 const PermissionNode = ({ data }: { data: { permission: string } }) => {
   return (
-    <div className="px-3 py-1 shadow-sm border border-green-200 rounded-md bg-green-50 min-w-[100px] text-center">
+    <div className="px-3 py-1 shadow-xs border border-green-200 rounded-md bg-green-50 min-w-[100px] text-center">
       <Handle
         type="target"
         position={Position.Left}
-        className="!bg-green-400"
+        className="bg-green-400!"
       />
       <div className="flex items-center justify-center gap-1">
         <Shield className="h-3.5 w-3.5 text-green-600" />
@@ -138,7 +138,7 @@ const PermissionNode = ({ data }: { data: { permission: string } }) => {
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-green-400"
+        className="bg-green-400!"
       />
     </div>
   );
@@ -356,7 +356,7 @@ export default function PermissionGraphVisualizer({
             <Background />
             <Panel
               position="top-left"
-              className="bg-white p-2 rounded shadow-sm border text-sm"
+              className="bg-white p-2 rounded shadow-xs border text-sm"
             >
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={'text-background'}>
@@ -393,7 +393,7 @@ export default function PermissionGraphVisualizer({
             </Panel>
             <Panel
               position="bottom-left"
-              className="bg-white p-2 rounded shadow-sm border text-xs"
+              className="bg-white p-2 rounded shadow-xs border text-xs"
             >
               <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                 <div className="flex items-center gap-1">

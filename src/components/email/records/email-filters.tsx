@@ -135,7 +135,7 @@ export function EmailFilters({
   };
 
   return (
-    <div className="bg-background border-input border-2 rounded-lg shadow">
+    <div className="bg-background border-input border-2 rounded-lg shadow-sm">
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center">
           <h2 className="text-xl font-semibold">Filter Emails</h2>

@@ -98,7 +98,11 @@ export const Settings = ({ data }: Props) => {
               }}
             />
           </div>
-          <div className={'pr-2'}>
+          <div className={'pr-2 space-y-2'}>
+            <p className={'text-xs text-[#94A3B8]'}>
+              Functions execute with the same privileges as the Conduit server.
+              Only enable if you trust all admin users to author safe code.
+            </p>
             <p className={'text-xs text-[#94A3B8]'}>
               To see more information regarding the Functions config, visit our
               docs.

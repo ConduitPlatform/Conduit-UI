@@ -9,6 +9,7 @@ import * as React from 'react';
 import ModuleResourcePage from '@/components/authorization/resources/moduleResourcePage';
 import { getResourceDefinition } from '@/lib/api/authorization';
 import { ResourceDefinition } from '@/lib/models/authorization';
+import { redirect } from 'next/navigation';
 
 type DatabaseModelsProps = {
   searchParams: Promise<{
@@ -27,7 +28,7 @@ export default async function DatabaseModels(
 ) {
   const searchParams = await props.searchParams;
   if (!searchParams?.model || !searchParams?.modelId) {
-    return <></>;
+    redirect('/database/models-new');
   }
 
   const docs = await getSchemaDocs(

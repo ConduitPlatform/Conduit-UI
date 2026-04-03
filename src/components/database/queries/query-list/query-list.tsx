@@ -96,7 +96,7 @@ export function QueryList({
       });
   };
   return (
-    <div className="w-2/12 border rounded-lg shadow-sm flex flex-col h-full overflow-hidden">
+    <div className="w-2/12 border rounded-lg shadow-xs flex flex-col h-full overflow-hidden">
       <QueryFilters
         searchTerm={searchTerm ?? ''}
         onSearchChange={onSearchChange}

@@ -1,4 +1,7 @@
-import { ResourceDefinition } from '@/lib/models/authorization';
+import {
+  CreateResourceDefinition,
+  ResourceDefinition,
+} from '@/lib/models/authorization';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,28 +28,34 @@ export default async function ResourceDetailPage({
       },
       {} as Record<string, { _id: string; name: string }>
     );
-  const handleSaveResource = async (updatedResource: ResourceDefinition) => {
+  const handleSaveResource = async (
+    updatedResource: ResourceDefinition | CreateResourceDefinition
+  ) => {
     'use server';
-    const { resourceDefinition } =
-      await patchResourceDefinition(updatedResource);
-    return resourceDefinition;
+    if (!('_id' in updatedResource)) {
+      throw new Error('Resource id is required to save');
+    }
+    await patchResourceDefinition(updatedResource);
   };
 
   if (!resource) {
     return (
       <div className="container mx-auto py-6">
-        <Link href={'/authorization/resources'}>
-          <Button variant="ghost" className="mb-4" asChild>
-            <ArrowLeft className="h-4 w-4 mr-2" />
+        <Button variant="ghost" className="mb-4" asChild>
+          <Link
+            href="/authorization/resources"
+            className="inline-flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
             Back to Resources
-          </Button>
-        </Link>
+          </Link>
+        </Button>
 
         <div className="flex justify-center items-center h-[60vh]">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Resource Not Found</h2>
             <p className="text-muted-foreground">
-              The resource with ID `&quot;{resourceId}`&quot; does not exist or
+              The resource with ID &quot;{resourceId}&quot; does not exist or
               you don&apos;t have permission to view it.
             </p>
           </div>
@@ -57,12 +66,15 @@ export default async function ResourceDetailPage({
 
   return (
     <div className="container mx-auto py-6">
-      <Link href={'/authorization/resources'}>
-        <Button variant="ghost" className="mb-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+      <Button variant="ghost" className="mb-4" asChild>
+        <Link
+          href="/authorization/resources"
+          className="inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
           Back to Resources
-        </Button>
-      </Link>
+        </Link>
+      </Button>
 
       <Tabs defaultValue="editor">
         <TabsList className="mb-6">
@@ -71,10 +83,7 @@ export default async function ResourceDetailPage({
         </TabsList>
 
         <TabsContent value="editor">
-          <ResourceEditor
-            resource={resource}
-            onSave={handleSaveResource as any}
-          />
+          <ResourceEditor resource={resource} onSave={handleSaveResource} />
         </TabsContent>
 
         <TabsContent value="visualizer">

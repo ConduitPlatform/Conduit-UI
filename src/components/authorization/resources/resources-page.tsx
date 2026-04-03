@@ -89,7 +89,7 @@ export default function ResourcesPageComponent({
           />
         </div>
 
-        <div className="flex-grow">
+        <div className="grow">
           {isCreatingNew ? (
             <ResourceEditor onSave={handleSaveResource} />
           ) : selectedResource ? (

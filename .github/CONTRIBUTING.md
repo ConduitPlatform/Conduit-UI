@@ -38,13 +38,13 @@ Welcome! We are really excited that you are interested in contributing to Condui
 
 ## Development Setup
 
-You will need [Node.js](http://nodejs.org) and [yarn](https://yarnpkg.com/en/docs/install).
+You will need [Node.js](http://nodejs.org) (24+) and [pnpm](https://pnpm.io/installation). Enable Corepack (`corepack enable`) or install pnpm globally.
 
 After cloning the repo, run:
 
 ``` bash
-yarn install
-yarn dev
+pnpm install
+pnpm dev
 ```
 
 ### Committing Changes
@@ -55,13 +55,13 @@ Commit messages should follow the [commit message convention](https://github.com
 
 ``` bash
 # watch and auto re-build the application
-$ yarn dev
+$ pnpm dev
 
-# build all dist files, including npm packages
-$ yarn build
+# production build
+$ pnpm build
 
-# recursively remove everything within the directory you choose
-$ yarn clean
+# lint
+$ pnpm lint
 ```
 
 There are some other scripts available in the `scripts` section of the `package.json` file.

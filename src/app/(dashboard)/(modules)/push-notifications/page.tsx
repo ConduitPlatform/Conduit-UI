@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, History, Send, Settings, Users } from 'lucide-react';
+import { Bell, Send, Settings, Users } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getModuleStatus,
@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function PushNotificationsDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getPushNotificationMetrics();
 
@@ -49,27 +51,21 @@ export default async function PushNotificationsDashboard() {
   const quickActions: QuickAction[] = [
     {
       title: 'Send Notification',
-      description: 'Send a push notification',
+      description: 'Test send to users or devices',
       icon: <Send className="h-4 w-4" />,
-      href: '/push-notifications/send',
+      href: '/push-notifications/test',
     },
     {
       title: 'Manage Tokens',
-      description: 'Manage device tokens',
+      description: 'View registered device tokens',
       icon: <Bell className="h-4 w-4" />,
       href: '/push-notifications/tokens',
     },
     {
-      title: 'User Management',
-      description: 'Manage notification recipients',
+      title: 'Platform users',
+      description: 'Manage users for targeted notifications',
       icon: <Users className="h-4 w-4" />,
-      href: '/push-notifications/users',
-    },
-    {
-      title: 'History',
-      description: 'View notification history',
-      icon: <History className="h-4 w-4" />,
-      href: '/push-notifications/history',
+      href: '/authentication/users',
     },
     {
       title: 'Settings',
@@ -88,6 +84,7 @@ export default async function PushNotificationsDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

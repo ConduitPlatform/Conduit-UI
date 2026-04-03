@@ -92,7 +92,7 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
             }}
             value={deleted}
           >
-            <SelectTrigger className="rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm border-0 focus:ring-0">
+            <SelectTrigger className="rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-xs border-0 focus:ring-0">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -105,7 +105,7 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
             <button
               onClick={pickUsers}
               type="button"
-              className="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               <span className="text-muted-foreground">Users</span>
               {!!users.length ? (

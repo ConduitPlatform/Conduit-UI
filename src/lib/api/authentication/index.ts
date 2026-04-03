@@ -1,4 +1,5 @@
 'use server';
+import merge from 'lodash/merge';
 import { getApiClient } from '@/lib/api';
 import { TeamUser, User } from '@/lib/models/User';
 import {
@@ -165,4 +166,116 @@ export const patchAuthenticationSettings = async (
   ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
     config: { ...data },
   });
+};
+
+/** Read–modify–write: merges `partial` into current config before PATCH (safe for strategy-only updates). */
+export const patchAuthenticationSettingsMerged = async (
+  partial: Partial<AuthenticationConfig>
+) => {
+  const { config } = await getAuthenticationSettings();
+  const merged = merge({}, config, partial) as AuthenticationConfig;
+  await patchAuthenticationSettings(merged);
+};
+
+export const patchUser = async (
+  userId: string,
+  data: Partial<{
+    email: string;
+    isVerified: boolean;
+    hasTwoFA: boolean;
+    phoneNumber: string;
+    twoFaMethod: string;
+  }>
+) => {
+  const res = await (
+    await getApiClient()
+  ).patch<User>(`/authentication/users/${userId}`, data);
+  return res.data;
+};
+
+export const deleteUsers = async (ids: string[]) => {
+  const res = await (
+    await getApiClient()
+  ).delete<string>('/authentication/users', { params: { ids } });
+  return res.data;
+};
+
+export const toggleUsersBlock = async (ids: string[], block: boolean) => {
+  const res = await (
+    await getApiClient()
+  ).post<string>('/authentication/users/toggle', { ids, block });
+  return res.data;
+};
+
+export type AuthService = {
+  _id: string;
+  name: string;
+  [key: string]: unknown;
+};
+
+export const getServices = async (params?: {
+  skip?: number;
+  limit?: number;
+  sort?: string;
+}) => {
+  const res = await (
+    await getApiClient()
+  ).get<{
+    services: AuthService[];
+    count: number;
+  }>('/authentication/services', { params });
+  return res.data;
+};
+
+export const createService = async (name: string) => {
+  const res = await (
+    await getApiClient()
+  ).post<{
+    name: string;
+    token: string;
+  }>('/authentication/services', { name });
+  return res.data;
+};
+
+export const deleteService = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).delete<string>(`/authentication/services/${id}`);
+  return res.data;
+};
+
+export const renewServiceToken = async (serviceId: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<{
+    name: string;
+    token: string;
+  }>(`/authentication/services/${serviceId}/token`);
+  return res.data;
+};
+
+export const removeTeamMembers = async (
+  teamId: string,
+  memberIds: string[]
+) => {
+  const res = await (
+    await getApiClient()
+  ).delete<string>(`/authentication/teams/${teamId}/members`, {
+    params: { members: memberIds },
+  });
+  return res.data;
+};
+
+export const patchTeamMembersRoles = async (
+  teamId: string,
+  memberIds: string[],
+  role: string
+) => {
+  const res = await (
+    await getApiClient()
+  ).patch<string>(`/authentication/teams/${teamId}/members`, {
+    members: memberIds,
+    role,
+  });
+  return res.data;
 };

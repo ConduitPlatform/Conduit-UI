@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getAuthenticationSettings } from '@/lib/api/authentication';
 import { Button } from '@/components/ui/button';
 import React from 'react';

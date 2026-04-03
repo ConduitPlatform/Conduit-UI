@@ -60,6 +60,14 @@ export function DataTable({
   });
   const router = useRouter();
   const [hasOverflow, setHasOverflow] = useState(false);
+  type Density = 'compact' | 'comfortable' | 'spacious';
+  const [density, setDensity] = useState<Density>('comfortable');
+  const densityClasses: Record<Density, { header: string; cell: string }> = {
+    compact: { header: 'h-8 px-2 py-1.5', cell: 'px-2 py-1.5' },
+    comfortable: { header: 'h-10 px-3 py-2', cell: 'px-3 py-2.5' },
+    spacious: { header: 'h-12 px-4 py-3', cell: 'px-4 py-4' },
+  };
+  const { header: headerDensity, cell: cellDensity } = densityClasses[density];
 
   useEffect(() => {
     setPagination({
@@ -201,8 +209,8 @@ export function DataTable({
           {/* Scroll indicator overlay */}
           {hasOverflow && (
             <>
-              <div className="absolute top-0 left-0 w-4 h-full bg-gradient-to-r from-background/80 to-transparent pointer-events-none z-30" />
-              <div className="absolute top-0 right-0 w-4 h-full bg-gradient-to-l from-background/80 to-transparent pointer-events-none z-30" />
+              <div className="absolute top-0 left-0 w-4 h-full bg-linear-to-r from-background/80 to-transparent pointer-events-none z-30" />
+              <div className="absolute top-0 right-0 w-4 h-full bg-linear-to-l from-background/80 to-transparent pointer-events-none z-30" />
             </>
           )}
 
@@ -226,7 +234,7 @@ export function DataTable({
                     return (
                       <th
                         key={header.id}
-                        className={`h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 border whitespace-nowrap bg-background ${
+                        className={`${headerDensity} text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 border whitespace-nowrap bg-background ${
                           isSticky ? 'sticky' : ''
                         } ${
                           isFirstColumn
@@ -290,7 +298,7 @@ export function DataTable({
                       return (
                         <td
                           key={cell.id}
-                          className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 border bg-background ${
+                          className={`${cellDensity} align-middle [&:has([role=checkbox])]:pr-0 border bg-background ${
                             isSticky ? 'sticky' : ''
                           } ${
                             isFirstColumn
@@ -339,7 +347,7 @@ export function DataTable({
                 <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                   <td
                     colSpan={columns.length + 1}
-                    className="h-24 text-center p-4 align-middle [&:has([role=checkbox])]:pr-0"
+                    className="h-24 text-center px-3 py-2.5 align-middle [&:has([role=checkbox])]:pr-0"
                   >
                     <div className="text-center">
                       <h3 className="mt-2 text-sm font-semibold text-foreground">
@@ -355,7 +363,7 @@ export function DataTable({
       </div>
 
       {/* Sticky pagination at the bottom */}
-      <div className="flex items-center justify-center space-x-3 py-4 px-4 bg-background border-t flex-shrink-0">
+      <div className="flex items-center justify-center gap-2 py-2 px-3 bg-background border-t shrink-0">
         <Pagination className="w-fit mx-0">
           <PaginationContent>
             <PaginationItem>
@@ -373,6 +381,19 @@ export function DataTable({
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+        <Select
+          value={density}
+          onValueChange={value => setDensity(value as Density)}
+        >
+          <SelectTrigger className="w-fit min-w-28">
+            <SelectValue placeholder="Density" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="compact">Compact</SelectItem>
+            <SelectItem value="comfortable">Comfortable</SelectItem>
+            <SelectItem value="spacious">Spacious</SelectItem>
+          </SelectContent>
+        </Select>
         <Select
           onValueChange={value => {
             setLimit(Number(value));

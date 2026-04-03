@@ -11,13 +11,21 @@ import { useRouter } from 'next/navigation';
 import { adminLogin, loginSecondFactor } from '@/lib/api';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 
-export function LoginForm({ envs }: { envs: string[] }) {
+export function LoginForm({
+  envs,
+  defaultEnv,
+}: {
+  envs: string[];
+  defaultEnv?: string;
+}) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [username, setUsername] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const [code, setCode] = React.useState<string>('');
   const [twoFaRequired, setTwoFaRequired] = React.useState<boolean>(false);
-  const [environment, setEnvironment] = React.useState<string>(envs[0]);
+  const [environment, setEnvironment] = React.useState<string>(() =>
+    defaultEnv && envs.includes(defaultEnv) ? defaultEnv : envs[0]
+  );
   const router = useRouter();
   const { toast } = useToast();
 

@@ -46,6 +46,8 @@ import {
 } from '@/components/ui/select';
 import Link from 'next/link';
 import { Relation, ResourceDefinition } from '@/lib/models/authorization';
+import { reconstructRelationIndexes } from '@/lib/api/authorization';
+import { toast } from '@/lib/hooks/use-toast';
 
 type Props = {
   relations: Relation[];
@@ -84,6 +86,7 @@ export default function RelationsList({
   const [isValidSearch, setIsValidSearch] = useState(true);
   const [count, setCount] = useState(initialCount);
   const [relationToDelete, setRelationToDelete] = useState<string | null>(null);
+  const [reindexing, setReindexing] = useState(false);
   // Calculate pagination
   const totalPages = useMemo(() => Math.ceil(count / ITEMS_PER_PAGE), [count]);
   const resourceTypes = useMemo(
@@ -98,7 +101,6 @@ export default function RelationsList({
       subjectType: subjectTypeFilter === 'any' ? undefined : subjectTypeFilter,
       resourceType: targetTypeFilter === 'any' ? undefined : targetTypeFilter,
     }).then(data => {
-      'use client';
       setRelations(data.relations);
       setCurrentPage(1);
       setCount(data.count);
@@ -157,9 +159,30 @@ export default function RelationsList({
   return (
     <div className="container mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <Button>
+        <Button
+          disabled={reindexing}
+          onClick={async () => {
+            setReindexing(true);
+            try {
+              const msg = await reconstructRelationIndexes(false);
+              toast({
+                title: 'Re-index started',
+                description: String(msg),
+              });
+            } catch (e: unknown) {
+              const err = e as { message?: string };
+              toast({
+                title: 'Re-index failed',
+                description: err.message,
+                variant: 'destructive',
+              });
+            } finally {
+              setReindexing(false);
+            }
+          }}
+        >
           <RefreshCcw className="h-4 w-4 mr-2" />
-          Re-index
+          {reindexing ? 'Re-indexing…' : 'Re-index'}
         </Button>
         <Link href="/authorization/relations/create">
           <Button>

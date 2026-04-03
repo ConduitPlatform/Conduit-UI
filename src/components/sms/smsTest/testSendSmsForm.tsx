@@ -1,7 +1,7 @@
 'use client';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { InputField } from '@/components/ui/form-inputs/InputField';
@@ -16,7 +16,7 @@ const FormSchema = z.object({
 
 export const TestSendSmsForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
   });
   const { reset, handleSubmit, setValue, watch } = form;
 

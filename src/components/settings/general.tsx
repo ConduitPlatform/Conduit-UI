@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import {
   Form,
   FormControl,
@@ -60,7 +60,7 @@ interface Props {
 export const General = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
   });
 

@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import * as z from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { useForm } from 'react-hook-form';
 import {
   Form,
@@ -38,7 +38,7 @@ export const TwoFASheet = ({ hasTwoFa }: { hasTwoFa: boolean }) => {
   const { addAlert } = useAlerts();
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
   });
 
   const { reset, formState, handleSubmit, control } = form;

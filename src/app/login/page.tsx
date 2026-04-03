@@ -9,7 +9,12 @@ export const metadata: Metadata = {
   description: 'Authentication forms built using the components.',
 };
 export const dynamic = 'force-dynamic';
-export default async function AuthenticationPage() {
+export default async function AuthenticationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ env?: string }>;
+}) {
+  const { env } = await searchParams;
   const envs = await _getEnvs();
 
   return (
@@ -32,7 +37,7 @@ export default async function AuthenticationPage() {
               Enter your username/password to login to your account.
             </p>
           </div>
-          <LoginForm envs={envs.map(env => env.name)} />
+          <LoginForm envs={envs.map(e => e.name)} defaultEnv={env} />
         </div>
       </div>
     </div>

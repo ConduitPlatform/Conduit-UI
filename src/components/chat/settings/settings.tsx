@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
@@ -39,7 +39,7 @@ export const Settings = ({
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
   });
 

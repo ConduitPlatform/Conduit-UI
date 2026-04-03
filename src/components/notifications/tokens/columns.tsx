@@ -4,6 +4,7 @@ import { Clipboard, SendIcon, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 import Link from 'next/link';
+import { toast } from '@/lib/hooks/use-toast';
 
 export const columns: ColumnDef<NotificationToken>[] = [
   {
@@ -61,6 +62,14 @@ export const columns: ColumnDef<NotificationToken>[] = [
             size={'sm'}
             className={'text-destructive'}
             title="delete"
+            type="button"
+            onClick={() =>
+              toast({
+                title: 'Cannot delete token',
+                description:
+                  'The push notifications admin API does not expose token deletion.',
+              })
+            }
           >
             <Trash className={'w-4 h-4'} />
           </Button>

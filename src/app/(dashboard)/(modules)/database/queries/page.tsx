@@ -1,5 +1,5 @@
-import { EmptyState } from '@/components/database/queries/empty-state';
+import { redirect } from 'next/navigation';
 
-export default async function QueriesPage() {
-  return <EmptyState />;
+export default function QueriesPage() {
+  redirect('/database/queries/new');
 }

@@ -13,9 +13,11 @@ import {
   RequestOptions,
   SocketOptions,
 } from '@/components/functions/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { CodeField } from '@/components/ui/form-inputs/CodeField';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { TriangleAlert } from 'lucide-react';
 import { GetMiddlewaresResponseType } from '@/app/(dashboard)/(modules)/functions/functions/new/page';
 import { uploadFunction } from '@/lib/api/functions';
 import { toast } from '@/lib/hooks/use-toast';
@@ -31,7 +33,7 @@ export const CreateFunctionForm = ({
   const router = useRouter();
   const form = useForm<z.infer<typeof schema>>({
     mode: 'onChange',
-    resolver: zodResolver(schema),
+    resolver: rhfZodResolver(schema),
     shouldUnregister: false,
     defaultValues: {
       functionType: 'request',
@@ -208,9 +210,22 @@ export const CreateFunctionForm = ({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(submit, errors => console.log(errors))}
+        onSubmit={form.handleSubmit(submit, () => undefined)}
         className="space-y-4"
       >
+        <Alert variant="warning">
+          <TriangleAlert className="h-4 w-4" />
+          <div>
+            <AlertTitle>
+              Function code runs with full server privileges.
+            </AlertTitle>
+            <AlertDescription>
+              Use this only for admin-authored logic. It executes in the same
+              process as Conduit with access to the full SDK — not a sandbox for
+              tenant-submitted or untrusted code.
+            </AlertDescription>
+          </div>
+        </Alert>
         <div className="w-full grid grid-cols-2 gap-x-5 min-h-[600px]">
           <div className="col-span-1 overflow-visible">
             <ConfigForm middlewares={middlewares} />

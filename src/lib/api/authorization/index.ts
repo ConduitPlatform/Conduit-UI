@@ -128,6 +128,38 @@ export const checkPermission = async (permission: CheckPermission) => {
   return res.data;
 };
 
+export const checkPermissionCan = async (permission: CheckPermission) => {
+  const res = await (
+    await getApiClient()
+  ).get<CheckPermissionResponse>(`/authorization/permissions/can`, {
+    params: {
+      ...permission,
+    },
+  });
+  return res.data;
+};
+
+export const reconstructRelationIndexes = async (soft?: boolean) => {
+  const res = await (
+    await getApiClient()
+  ).post<string>(
+    '/authorization/indexer/reconstruct',
+    soft === undefined ? {} : { soft }
+  );
+  return res.data;
+};
+
+export const createManyRelations = async (data: {
+  subject: string;
+  relation: string;
+  resources: string[];
+}) => {
+  const res = await (
+    await getApiClient()
+  ).post<unknown>('/authorization/relations/many', data);
+  return res.data;
+};
+
 export const getAuthorizationSettings = async () => {
   const res = await (
     await getApiClient()

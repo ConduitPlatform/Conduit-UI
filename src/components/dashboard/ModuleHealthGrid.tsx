@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export interface ModuleHealth {
   name: string;
-  status: 'healthy' | 'warning' | 'critical';
+  status: 'healthy' | 'warning' | 'critical' | 'unknown';
   uptime: string;
   requests: string;
   icon: React.ReactNode;

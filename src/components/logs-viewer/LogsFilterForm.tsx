@@ -7,7 +7,7 @@ import {
   logsFormSchema,
   logsFormSchemaT,
 } from '@/lib/models/logs-viewer/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -49,13 +49,14 @@ export default function LogsFiltersForm({
   const showModuleFilter = pathname === '/logs-viewer';
 
   const form = useForm<logsFormSchemaT>({
-    resolver: zodResolver(logsFormSchema),
+    resolver: rhfZodResolver(logsFormSchema),
     defaultValues: {
       limit: 0,
       level: '',
       module: '',
       startDate: new Date(),
       endDate: new Date(),
+      timeRange: '',
     },
   });
 
@@ -145,7 +146,7 @@ export default function LogsFiltersForm({
         {!showModuleFilter && (
           <Link
             href="/logs-viewer"
-            className="self-end mt-2 text-sm text-muted-foreground hover:dark:text-white hover:underline hover:text-primary"
+            className="self-end mt-2 text-sm text-muted-foreground dark:hover:text-white hover:underline hover:text-primary"
           >
             More filters
           </Link>

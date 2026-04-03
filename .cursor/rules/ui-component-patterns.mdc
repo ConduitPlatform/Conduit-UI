@@ -261,7 +261,7 @@ export const LoadingSpinner = () => (
 
 ```typescript
 // Good
-<div className="flex items-center justify-between p-4 bg-card border border-border rounded-lg shadow-sm">
+<div className="flex items-center justify-between p-4 bg-card border border-border rounded-lg shadow-xs">
 
 // Avoid arbitrary values when design tokens exist
 <div className="p-[13px] bg-[#f1f5f9]"> // Bad

@@ -42,7 +42,6 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
         search: !_term || isEmpty(_term) ? undefined : _term,
         schemaName: _model ? [_model] : undefined,
       });
-      debugger;
 
       setQueries(prev => {
         if (shouldClean) {
@@ -78,7 +77,6 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   // Load more when scrolling to the bottom
   React.useEffect(() => {
     if (inView && hasMore && !isLoading) {
-      console.log('Loading more queries...');
       fetchQueries(page, searchTerm, selectedModel, false);
     }
   }, [inView, hasMore, isLoading, fetchQueries, page]);
@@ -88,7 +86,6 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
     if (!searchTerm && !selectedModel) {
       return;
     }
-    console.log('Reset: Loading more queries...');
     setPage(1);
     fetchQueries(1, searchTerm, selectedModel, true);
   }, [searchTerm, selectedModel]);
@@ -127,7 +124,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
         />
 
         {/* Right side - Query editor */}
-        <div className="w-full border rounded-lg shadow-sm bg-background h-full overflow-auto">
+        <div className="w-full border rounded-lg shadow-xs bg-background h-full overflow-auto">
           {children}
         </div>
       </div>

@@ -170,12 +170,24 @@ export const getSchemaDocument = async (schemaName: string, id: string) => {
     });
 };
 
+export const createSchemaDocument = async (schemaName: string, data: any) => {
+  return await (
+    await getApiClient()
+  )
+    .post(`/database/schemas/${schemaName}/docs`, {
+      inputDocument: data,
+    })
+    .then(res => res.data);
+};
+
 export const updateSchemaDocument = async (
   schemaName: string,
   id: string,
   data: any
 ) => {
-  return await (await getApiClient())
+  return await (
+    await getApiClient()
+  )
     .put(`/database/schemas/${schemaName}/docs/${id}`, {
       changedDocument: data,
     })
@@ -215,5 +227,126 @@ export const exportCustomEndpoints = async () => {
 export const importCustomEndpoints = async (data: any) => {
   return await (await getApiClient())
     .post('/database/customEndpoints/import', data)
+    .then(res => res.data);
+};
+
+export const deleteSchema = async (id: string, deleteData: boolean) => {
+  return await (
+    await getApiClient()
+  )
+    .delete<string>(`/database/schemas/${id}`, {
+      params: { deleteData },
+    })
+    .then(res => res.data);
+};
+
+export const deleteSchemas = async (ids: string[], deleteData: boolean) => {
+  return await (
+    await getApiClient()
+  )
+    .delete<string>('/database/schemas', {
+      params: { ids, deleteData },
+    })
+    .then(res => res.data);
+};
+
+export const toggleSchema = async (id: string) => {
+  return await (
+    await getApiClient()
+  )
+    .post<{
+      name: string;
+      enabled: boolean;
+    }>(`/database/schemas/${id}/toggle`)
+    .then(res => res.data);
+};
+
+export const toggleSchemas = async (ids: string[], enabled: boolean) => {
+  return await (
+    await getApiClient()
+  )
+    .post<{
+      updatedSchemas: DeclaredSchema[];
+      enabled: boolean;
+    }>('/database/schemas/toggle', { ids, enabled })
+    .then(res => res.data);
+};
+
+export const deleteSchemaDocument = async (
+  schemaName: string,
+  documentId: string
+) => {
+  return await (await getApiClient())
+    .delete(`/database/schemas/${schemaName}/docs/${documentId}`)
+    .then(res => res.data);
+};
+
+export const getIntrospectionStatus = async () => {
+  return await (
+    await getApiClient()
+  )
+    .get<{
+      foreignSchemas: string[];
+      foreignSchemaCount: number;
+      pendingSchemas: string[];
+      pendingSchemasCount: number;
+      importedSchemas: string[];
+      importedSchemaCount: number;
+    }>('/database/introspection')
+    .then(res => res.data);
+};
+
+export const runIntrospection = async () => {
+  return await (await getApiClient())
+    .post<string>('/database/introspection')
+    .then(res => res.data);
+};
+
+export const finalizePendingSchemas = async (schemas: PendingSchemas[]) => {
+  return await (await getApiClient())
+    .post<string>('/database/introspection/schemas/finalize', { schemas })
+    .then(res => res.data);
+};
+
+export const patchCustomEndpoint = async (
+  id: string,
+  data: Partial<CustomEndpoint>
+) => {
+  return await (await getApiClient())
+    .patch(`/database/customEndpoints/${id}`, data)
+    .then(res => res.data);
+};
+
+export const deleteCustomEndpoint = async (id: string) => {
+  return await (await getApiClient())
+    .delete(`/database/customEndpoints/${id}`)
+    .then(res => res.data);
+};
+
+export const createSchemaIndexes = async (
+  schemaId: string,
+  indexes: unknown[]
+) => {
+  return await (await getApiClient())
+    .post(`/database/schemas/${schemaId}/indexes`, { indexes })
+    .then(res => res.data);
+};
+
+export const getSchemaIndexes = async (schemaId: string) => {
+  return await (await getApiClient())
+    .get<{ indexes: unknown[] }>(`/database/schemas/${schemaId}/indexes`)
+    .then(res => res.data);
+};
+
+export const deleteSchemaIndexes = async (
+  schemaId: string,
+  indexNames: string[]
+) => {
+  return await (
+    await getApiClient()
+  )
+    .delete(`/database/schemas/${schemaId}/indexes`, {
+      params: { indexNames },
+    })
     .then(res => res.data);
 };

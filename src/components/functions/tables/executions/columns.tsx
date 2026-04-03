@@ -2,13 +2,11 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Clipboard } from 'lucide-react';
 import { FunctionExecutionModel } from '@/lib/models/functions';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 
 export const useColumns = () => {
-  const router = useRouter();
   const { toast } = useToast();
 
   return useMemo<ColumnDef<FunctionExecutionModel>[]>(
@@ -69,7 +67,11 @@ export const useColumns = () => {
               size="sm"
               type="button"
               onClick={() => {
-                console.log('re-run');
+                toast({
+                  title: 'Re-run unavailable',
+                  description:
+                    'Re-executing a past run is not supported by the admin API.',
+                });
               }}
             >
               Re-run
@@ -78,6 +80,6 @@ export const useColumns = () => {
         },
       },
     ],
-    []
+    [toast]
   );
 };

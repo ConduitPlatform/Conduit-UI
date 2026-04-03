@@ -106,7 +106,7 @@ export default function PermissionPathVisualizer({
               className={`p-4 border ${getStepColor(step.type)}`}
             >
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center border">
+                <div className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center border">
                   {getStepIcon(step.type)}
                 </div>
                 <div className="flex-1">

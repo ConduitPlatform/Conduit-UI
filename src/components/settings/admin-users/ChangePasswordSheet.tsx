@@ -10,7 +10,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { ReactNode, useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import {
@@ -51,7 +51,7 @@ export const ChangePasswordSheet = ({
   const [open, setOpen] = useState(false);
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
   });
 
   const { formState, reset, control, handleSubmit } = form;

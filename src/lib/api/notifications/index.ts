@@ -119,3 +119,26 @@ export const sendNotifications = async (params: {
   });
   return res.data;
 };
+
+export const sendPushNotification = async (data: Record<string, unknown>) => {
+  const res = await (
+    await getApiClient()
+  ).post('/pushNotifications/send', data);
+  return res.data;
+};
+
+export const sendManyPushNotifications = async (
+  data: Record<string, unknown>
+) => {
+  const res = await (
+    await getApiClient()
+  ).post('/pushNotifications/sendMany', data);
+  return res.data;
+};
+
+export const getPushTokensForUser = async (userId: string) => {
+  const res = await (
+    await getApiClient()
+  ).get(`/pushNotifications/token/user/${userId}`);
+  return res.data;
+};

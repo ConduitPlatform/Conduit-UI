@@ -163,7 +163,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   return (
-    <div className="fixed z-50 inset-0 bg-background/80 backdrop-blur-sm">
+    <div className="fixed z-50 inset-0 bg-background/80 backdrop-blur-xs">
       <div className="h-full w-full flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-background">

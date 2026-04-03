@@ -148,7 +148,7 @@ export const DatabaseNavigation = ({
               <ChevronDown className="ml-auto" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+          <DropdownMenuContent className="w-(--radix-popper-anchor-width)">
             <DropdownMenuItem
               key={'all'}
               onSelect={() => {
@@ -216,6 +216,7 @@ export const DatabaseNavigation = ({
             {views.map(model => (
               <div key={model._id}>
                 <button
+                  type="button"
                   className={cn(
                     `${
                       searchParams.get('model') === model.name
@@ -224,6 +225,12 @@ export const DatabaseNavigation = ({
                     }`,
                     'text-start w-full p-2 text-sm font-medium rounded-lg'
                   )}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set('model', model.name);
+                    params.set('modelId', model._id);
+                    router.push(`${pathname}?${params.toString()}`);
+                  }}
                 >
                   <span>{model.name}</span>
                 </button>
@@ -243,6 +250,7 @@ export const DatabaseNavigation = ({
             {migrated.map(model => (
               <div key={model._id}>
                 <button
+                  type="button"
                   className={cn(
                     `${
                       searchParams.get('model') === model.name
@@ -251,6 +259,12 @@ export const DatabaseNavigation = ({
                     }`,
                     'text-start w-full p-2 text-sm font-medium rounded-lg'
                   )}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set('model', model.name);
+                    params.set('modelId', model._id);
+                    router.push(`${pathname}?${params.toString()}`);
+                  }}
                 >
                   <span>{model.name}</span>
                 </button>
@@ -272,6 +286,7 @@ export const DatabaseNavigation = ({
             {pending.map(model => (
               <div key={model._id}>
                 <button
+                  type="button"
                   className={cn(
                     `${
                       searchParams.get('model') === model.name
@@ -280,6 +295,12 @@ export const DatabaseNavigation = ({
                     }`,
                     'text-start w-full p-2 text-sm font-medium rounded-lg'
                   )}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set('model', model.name);
+                    params.set('modelId', model._id);
+                    router.push(`${pathname}?${params.toString()}`);
+                  }}
                 >
                   <span>{model.name}</span>
                 </button>

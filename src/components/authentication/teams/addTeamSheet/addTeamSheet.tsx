@@ -12,7 +12,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import * as z from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { useForm } from 'react-hook-form';
 import {
   Form,
@@ -47,7 +47,7 @@ export const AddTeamSheet = ({
   const [open, setOpen] = useState(defaultOpen ?? false);
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
   });
   useEffect(() => {
     if (defaultOpen !== undefined) setOpen(defaultOpen);

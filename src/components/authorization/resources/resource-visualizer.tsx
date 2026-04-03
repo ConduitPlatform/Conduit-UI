@@ -79,19 +79,19 @@ const ResourceNode = ({
           <Handle
             type="target"
             position={Position.Left}
-            className="!bg-indigo-500"
+            className="bg-indigo-500!"
           />
           <Handle
             type="source"
             position={Position.Right}
-            className="!bg-indigo-500"
+            className="bg-indigo-500!"
           />
         </>
       ) : (
         <Handle
           type="source"
           position={Position.Right}
-          className="!bg-gray-400"
+          className="bg-gray-400!"
         />
       )}
     </div>
@@ -100,16 +100,16 @@ const ResourceNode = ({
 
 const RelationNode = ({ data }: { data: { relations: string[] } }) => {
   return (
-    <div className="bg-purple-50 border border-purple-200 rounded-md p-3 shadow-sm min-w-[150px]">
+    <div className="bg-purple-50 border border-purple-200 rounded-md p-3 shadow-xs min-w-[150px]">
       <Handle
         type="target"
         position={Position.Left}
-        className="!bg-purple-400"
+        className="bg-purple-400!"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-purple-400"
+        className="bg-purple-400!"
       />
       <div className="font-medium text-purple-900 mb-2 text-center">
         Relations
@@ -194,7 +194,7 @@ const SinglePermissionNode = ({
   const icon = getPermissionIcon(category);
 
   return (
-    <div className={`border rounded-md p-2 shadow-sm ${colorClass}`}>
+    <div className={`border rounded-md p-2 shadow-xs ${colorClass}`}>
       <Handle
         type="target"
         position={Position.Left}
@@ -551,7 +551,7 @@ export default function ResourceVisualizer({
 
   // Legend for permission categories
   const renderLegend = () => (
-    <div className="bg-white p-2 rounded shadow-sm border text-sm">
+    <div className="bg-white p-2 rounded shadow-xs border text-sm">
       <div className="font-medium mb-1 text-primary-foreground">
         Permission Types:
       </div>
@@ -610,7 +610,7 @@ export default function ResourceVisualizer({
                 <Background />
                 <Panel
                   position="top-left"
-                  className="bg-white p-2 rounded shadow-sm border text-sm text-muted-foreground"
+                  className="bg-white p-2 rounded shadow-xs border text-sm text-muted-foreground"
                 >
                   <div className="flex items-center gap-2">
                     <Info className="h-4 w-4" />

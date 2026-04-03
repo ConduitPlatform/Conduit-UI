@@ -6,7 +6,7 @@ description: Project structure and architecture guidelines for Conduit UI
 # Project Structure & Architecture Guide
 
 ## Overview
-Conduit UI is a Next.js 15 admin panel for the Conduit Platform with React Server Components, built with TypeScript, Tailwind CSS, and shadcn/ui components.
+Conduit UI is a Next.js 16 admin panel for the Conduit Platform with React Server Components, built with TypeScript, Tailwind CSS, and shadcn/ui components.
 
 ## Directory Structure
 
@@ -29,10 +29,10 @@ Each module follows a consistent structure under `src/components/[module-name]/`
 - Dialog/modal components
 
 ### Key Configuration Files
-- [package.json](mdc:package.json) - Dependencies and scripts (Node.js 20+ required)
+- [package.json](mdc:package.json) - Dependencies and scripts (Node.js 24+ required)
 - [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration with path mapping
 - [tailwind.config.js](mdc:tailwind.config.js) - Tailwind CSS with custom design system
-- [next.config.js](mdc:next.config.js) - Next.js configuration with dotenv support
+- [next.config.ts](mdc:next.config.ts) - Next.js configuration (env from `.env*` files, loaded by Next)
 - [components.json](mdc:components.json) - shadcn/ui component configuration
 
 ## Architecture Patterns

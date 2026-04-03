@@ -70,7 +70,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-md bg-background"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-md bg-background"
             side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
@@ -90,7 +90,7 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="h-[1px] bg-accent my-1.5" />
+            <DropdownMenuSeparator className="h-px bg-accent my-1.5" />
             <DropdownMenuGroup>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="gap-2">

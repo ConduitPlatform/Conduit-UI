@@ -62,8 +62,7 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
           setError(undefined);
           onImport?.(json);
         },
-        err => {
-          console.log(err);
+        () => {
           setError('Could not parse json file for import');
         }
       );
@@ -108,7 +107,7 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
               <CardContent className="space-y-4">
                 {exportInfo && (
                   <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                    <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                     <p className="text-sm text-blue-700 dark:text-blue-300">
                       {exportInfo}
                     </p>
@@ -141,7 +140,7 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
               <CardContent className="space-y-4">
                 {importInfo && (
                   <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
                     <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">
                       {importInfo}
                     </p>
@@ -171,7 +170,7 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
         <DialogFooter className="flex-col sm:flex-row gap-2">
           {error && (
             <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive w-full sm:w-auto">
-              <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+              <AlertTriangle className="h-4 w-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}

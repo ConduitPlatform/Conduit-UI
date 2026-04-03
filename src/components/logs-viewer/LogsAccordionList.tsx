@@ -39,7 +39,7 @@ export function LogsAccordionList({
   const [value, setValue] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const logsContainerRef = useRef<HTMLDivElement>(null);
-  const iconClass = 'w-4 h-4 flex-shrink-0 text-current';
+  const iconClass = 'w-4 h-4 shrink-0 text-current';
 
   const handleCopyToClipboard = async (json: object) => {
     try {
@@ -57,8 +57,6 @@ export function LogsAccordionList({
         logsContainerRef.current.scrollHeight;
     }
   }, [logs]);
-
-  console.log(value);
 
   if (logs.length === 0) {
     return (

@@ -100,18 +100,17 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
   }, []);
 
   const getExpiryStatus = (expiry?: string) => {
-    if (!expiry) return { status: 'never', color: 'default' };
+    if (!expiry) return { status: 'never' as const, color: 'default' as const };
 
     const expiryDate = new Date(expiry);
     const now = new Date();
 
     if (expiryDate < now) {
-      return { status: 'expired', color: 'destructive' };
+      return { status: 'expired' as const, color: 'destructive' as const };
     } else if (expiryDate.getTime() - now.getTime() < 7 * 24 * 60 * 60 * 1000) {
-      return { status: 'expiring-soon', color: 'secondary' };
-    } else {
-      return { status: 'active', color: 'default' };
+      return { status: 'expiring-soon' as const, color: 'secondary' as const };
     }
+    return { status: 'active' as const, color: 'default' as const };
   };
 
   const totalBalanceByType = balances.reduce(
@@ -338,7 +337,7 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
                               )}
                             </TableCell>
                             <TableCell>
-                              <Badge variant={expiryStatus.color as any}>
+                              <Badge variant={expiryStatus.color}>
                                 {expiryStatus.status === 'never' && 'Active'}
                                 {expiryStatus.status === 'active' && 'Active'}
                                 {expiryStatus.status === 'expiring-soon' &&

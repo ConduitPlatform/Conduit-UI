@@ -1,16 +1,17 @@
 'use client';
 import { TeamUser } from '@/lib/models/User';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 // @ts-ignore
 import { useDebounce } from '@uidotdev/usehooks';
 import { useSearchParams } from 'next/navigation';
-import { columns } from '@/components/authentication/teams/manageTeam/members/columns';
+import { getTeamMemberColumns } from '@/components/authentication/teams/manageTeam/members/columns';
 import { useUserPicker } from '@/components/helpers/UserPicker/UserPicker';
 import { addTeamMembers, getTeamMembers } from '@/lib/api/authentication';
 import { DataTable } from '@/components/authentication/components/data-table';
 import EmptyTeamMembers from '@/components/authentication/teams/manageTeam/members/emptyTeamMembers';
+import { toast } from '@/lib/hooks/use-toast';
 
 export default function MembersTable({
   data,
@@ -45,6 +46,37 @@ export default function MembersTable({
   }, []);
 
   const debouncedSearchTerm = useDebounce(search, 300);
+
+  const refreshMembers = useCallback(() => {
+    const skip = parseInt(searchParams.get('skip') ?? '0');
+    const limit = parseInt(searchParams.get('limit') ?? '10');
+    void getTeamMembers(teamId, skip, limit, {
+      sort: searchParams.get('sort') || undefined,
+      search: search || undefined,
+    })
+      .then(data => {
+        setUsers(data.members);
+        setCount(data.count);
+      })
+      .catch((e: unknown) => {
+        console.error('Failed to refresh team members', e);
+        toast({
+          title: 'Failed to load team members',
+          description: e instanceof Error ? e.message : undefined,
+          variant: 'destructive',
+        });
+      });
+  }, [teamId, searchParams, search]);
+
+  const columns = useMemo(
+    () =>
+      getTeamMemberColumns({
+        teamId,
+        onChanged: refreshMembers,
+      }),
+    [teamId, refreshMembers]
+  );
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('search', search);
@@ -55,12 +87,25 @@ export default function MembersTable({
     const skip = parseInt(searchParams.get('skip') ?? '0');
     const limit = parseInt(searchParams.get('limit') ?? '10');
     getTeamMembers(teamId, skip, limit, {
-      sort: params.get('sort') ?? '',
-      search,
-    }).then(data => {
-      setUsers(data.members);
-      setCount(data.count);
-    });
+      sort: params.get('sort') || undefined,
+      search: search || undefined,
+    })
+      .then(data => {
+        setUsers(data.members);
+        setCount(data.count);
+      })
+      .catch((e: unknown) => {
+        console.error('Failed to refresh team members', e);
+        toast({
+          title: 'Failed to load team members',
+          description: e instanceof Error ? e.message : undefined,
+          variant: 'destructive',
+        });
+      });
+    // Intentionally only depend on debouncedSearchTerm: including searchParams causes
+    // an infinite loop with window.history.pushState when switching Members/Teams tabs.
+    // teamId/search/searchParams read from latest closure when debounce fires.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync URL + fetch only on debounced search
   }, [debouncedSearchTerm]);
 
   return (

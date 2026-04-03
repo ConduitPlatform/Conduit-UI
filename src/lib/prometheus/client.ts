@@ -4,6 +4,7 @@ import axios, { AxiosInstance } from 'axios';
 import { cookies } from 'next/headers';
 import { _getEnv } from '@/lib/logic/EnvManager';
 import { ClientSecretCredential } from '@azure/identity';
+import { prometheusConfigFromEnvironment } from '@/lib/prometheus/envConfig';
 
 export interface PrometheusConfig {
   baseUrl: string;
@@ -30,7 +31,6 @@ export interface MetricMetadata {
   unit?: string;
 }
 
-// Helper function to get Azure token using App Registration
 async function getAzureAppRegistrationToken(
   tenantId: string,
   clientId: string,
@@ -53,7 +53,6 @@ async function getAzureAppRegistrationToken(
   }
 }
 
-// Helper function to get Azure token based on configuration
 async function getAzureToken(config: PrometheusConfig): Promise<string | null> {
   if (
     config.azureTenantId &&
@@ -69,29 +68,26 @@ async function getAzureToken(config: PrometheusConfig): Promise<string | null> {
   return null;
 }
 
-// Helper function to create axios client with authentication
 async function createAuthenticatedClient(
-  config: PrometheusConfig
+  config: PrometheusConfig,
+  options?: { timeoutMs?: number }
 ): Promise<AxiosInstance> {
   const client = axios.create({
     baseURL: config.baseUrl,
-    timeout: 30000,
+    timeout: options?.timeoutMs ?? 30000,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
   });
 
-  // Add authentication interceptor
   client.interceptors.request.use(async requestConfig => {
     if (config.useAzureAuth) {
-      // For Azure authentication, get the token
       const token = await getAzureToken(config);
       if (token) {
         requestConfig.headers.Authorization = `Bearer ${token}`;
       }
     } else if (config.username && config.password) {
-      // Basic authentication
       const auth = Buffer.from(
         `${config.username}:${config.password}`
       ).toString('base64');
@@ -103,7 +99,19 @@ async function createAuthenticatedClient(
   return client;
 }
 
-// Exported async functions
+/** Lightweight reachability check (short timeout). */
+export async function prometheusHealthCheck(
+  config: PrometheusConfig
+): Promise<boolean> {
+  try {
+    const client = await createAuthenticatedClient(config, { timeoutMs: 8000 });
+    await client.get('/api/v1/status');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function queryRange(
   config: PrometheusConfig,
   expression: string,
@@ -177,34 +185,20 @@ export async function getLabelValues(
   return response.data.data;
 }
 
-// Factory function to create Prometheus client from environment
+/**
+ * Prometheus config for the active (or named) environment.
+ * Requires PROMETHEUS_URL — set e.g. http://localhost:9090 for local metrics.
+ */
 export async function createPrometheusClient(
   env?: string
 ): Promise<PrometheusConfig> {
   const envCookie = (await cookies()).get('activeEnv');
   const envDetails = await _getEnv(env ?? envCookie?.value ?? 'Local');
-
-  // For local development, use localhost:9090
-  const baseUrl = envDetails.promUrl || 'http://localhost:9090';
-
-  // Check if we should use Azure Auth
-  const useAzureAuth = envDetails.azAuth === 'true';
-
-  // For local development, we might not need authentication
-  const username = envDetails.promUsername;
-  const password = envDetails.promPassword;
-
-  // Azure App Registration configuration
-  const azureTenantId = envDetails.azTenantId;
-  const azureClientId = envDetails.azClientId;
-  const azureClientSecret = envDetails.azClientSecret;
-  return {
-    baseUrl,
-    username,
-    password,
-    useAzureAuth,
-    azureTenantId,
-    azureClientId,
-    azureClientSecret,
-  };
+  const config = prometheusConfigFromEnvironment(envDetails);
+  if (!config) {
+    throw new Error(
+      'PROMETHEUS_URL is not configured for this environment. Set it to enable metrics.'
+    );
+  }
+  return config;
 }

@@ -47,8 +47,6 @@ export default function UsersTable({
       limit,
       debouncedSearchTerm ? { search: debouncedSearchTerm } : {}
     ).then(data => {
-      'use client';
-      debugger;
       setCount(data.count);
       setUsers(data.users);
     });

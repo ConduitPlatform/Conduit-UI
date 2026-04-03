@@ -12,7 +12,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import * as z from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { useForm } from 'react-hook-form';
 import {
   Form,
@@ -50,26 +50,37 @@ export const AddAdminSheet = ({
   defaultOpen,
   onClose,
   onSuccess,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: {
   children?: ReactNode;
   onSuccess?: (user: Admin) => void;
   onClose?: () => void;
   defaultOpen?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) => {
-  const [open, setOpen] = useState(
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(
     defaultOpen !== undefined ? defaultOpen : false
   );
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (!isControlled) setUncontrolledOpen(next);
+    controlledOnOpenChange?.(next);
+  };
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
   });
   const router = useRouter();
 
   const { formState, reset, control, handleSubmit } = form;
 
   useEffect(() => {
-    if (defaultOpen !== undefined) setOpen(defaultOpen);
-  }, [defaultOpen]);
+    if (defaultOpen !== undefined && !isControlled)
+      setUncontrolledOpen(defaultOpen);
+  }, [defaultOpen, isControlled]);
 
   useEffect(() => {
     if (!open && formState.isSubmitted) {
@@ -94,7 +105,7 @@ export const AddAdminSheet = ({
     } else if (!open) {
       onClose?.();
     }
-  }, [open]);
+  }, [open, setOpen]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     postNewAdminUser(data.username, data.password)
@@ -111,7 +122,6 @@ export const AddAdminSheet = ({
         router.refresh();
       })
       .catch(err => {
-        console.log(err.message);
         toast({
           title: 'New Admin',
           description: (
@@ -130,7 +140,7 @@ export const AddAdminSheet = ({
   }
 
   return (
-    <Sheet open={open} onOpenChange={open => setOpen(open)}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent side="right">
         <Form {...form}>

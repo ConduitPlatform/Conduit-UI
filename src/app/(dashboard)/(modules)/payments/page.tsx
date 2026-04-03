@@ -18,8 +18,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function PaymentsDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const apiModuleName = getApiModuleNameFromPath('/payments') || 'payments';
   const metrics = await getModuleMetrics(apiModuleName);
@@ -100,6 +102,7 @@ export default async function PaymentsDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

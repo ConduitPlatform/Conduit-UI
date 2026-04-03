@@ -1,7 +1,7 @@
 'use client';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { InputField } from '@/components/ui/form-inputs/InputField';
@@ -24,7 +24,7 @@ export const AppleConfigForm: React.FC<
   StrategyFormProps<authStrategyFormType>
 > = ({ data, onSubmit, onCancel }) => {
   const form = useForm<authStrategyFormType>({
-    resolver: zodResolver(authStrategySchema),
+    resolver: rhfZodResolver(authStrategySchema),
     defaultValues: data ? { ...data } : {},
   });
   const { isSubmitting } = form.formState;

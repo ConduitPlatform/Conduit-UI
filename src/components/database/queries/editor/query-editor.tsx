@@ -27,7 +27,7 @@ import {
   Settings,
   Trash2,
 } from 'lucide-react';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { Separator } from '@/components/ui/separator';
 import {
   Dialog,
@@ -181,7 +181,7 @@ export function QueryEditor({
 
   // Update the form defaultValues to include the authenticated field
   const form = useForm<QueryFormValues>({
-    resolver: zodResolver(querySchema),
+    resolver: rhfZodResolver(querySchema),
     defaultValues: {
       name: initialData?.name ?? '',
       endpointDescription: initialData?.endpointDescription ?? '',
@@ -285,33 +285,27 @@ export function QueryEditor({
 
   // Add a function to add a condition to a group
   const addConditionToGroup = (path: string, condition: any) => {
-    //@ts-expect-error
-    const currentGroup = form.getValues(path);
+    const currentGroup = form.getValues(path as any) as unknown[];
     const updatedConditions = [...currentGroup, condition];
-    //@ts-expect-error
-    form.setValue(`${path}`, updatedConditions);
+    form.setValue(path as any, updatedConditions);
   };
 
   // Add a function to add a nested group
   const addNestedGroup = (path: string, groupType: 'AND' | 'OR') => {
-    //@ts-expect-error
-    const currentGroup = form.getValues(path);
+    const currentGroup = form.getValues(path as any) as unknown[];
     const newGroup = {
       [groupType]: [],
     };
     const updatedConditions = [...currentGroup, newGroup];
-    //@ts-expect-error
-    form.setValue(`${path}`, updatedConditions);
+    form.setValue(path as any, updatedConditions);
   };
 
   // Add a function to remove a condition or group from a parent group
   const removeFromGroup = (path: string, index: number) => {
-    //@ts-expect-error
-    const currentGroup = form.getValues(path);
+    const currentGroup = form.getValues(path as any) as unknown[];
     const updatedConditions = [...currentGroup];
     updatedConditions.splice(index, 1);
-    //@ts-expect-error
-    form.setValue(`${path}`, updatedConditions);
+    form.setValue(path as any, updatedConditions);
   };
 
   const {
@@ -657,8 +651,8 @@ export function QueryEditor({
         className="border rounded-md overflow-hidden mb-4"
       >
         <div className="flex items-center justify-between p-3 bg-muted/30">
-          <div className="flex items-center space-x-2 flex-grow">
-            <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+          <div className="flex items-center space-x-2 grow">
+            <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
               <span className="font-medium truncate">{conditionTitle}</span>
             </CollapsibleTrigger>
@@ -943,8 +937,8 @@ export function QueryEditor({
         className="border rounded-md overflow-hidden mb-4"
       >
         <div className="flex items-center justify-between p-3 bg-muted/30">
-          <div className="flex items-center space-x-2 flex-grow">
-            <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+          <div className="flex items-center space-x-2 grow">
+            <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
               <span className="font-medium truncate">
                 {getSetDescription(condition, index)}
@@ -1261,7 +1255,7 @@ export function QueryEditor({
                       className="border rounded-md overflow-hidden"
                     >
                       <div className="flex items-center justify-between p-3 bg-muted/30 cursor-pointer">
-                        <CollapsibleTrigger className="flex items-center space-x-2 flex-grow justify-between text-left cursor-pointer mr-2">
+                        <CollapsibleTrigger className="flex items-center space-x-2 grow justify-between text-left cursor-pointer mr-2">
                           <div
                             className={
                               'flex flex-row space-x-2 text-left items-center'

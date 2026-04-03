@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function ChatDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getChatMetrics();
 
@@ -47,28 +49,28 @@ export default async function ChatDashboard() {
   // Quick actions
   const quickActions: QuickAction[] = [
     {
-      title: 'Create Room',
-      description: 'Create a new chat room',
-      icon: <Plus className="h-4 w-4" />,
-      href: '/chat/rooms/create',
-    },
-    {
       title: 'Chat Rooms',
-      description: 'Manage chat rooms',
+      description: 'View rooms and create a room from the list',
       icon: <MessageSquare className="h-4 w-4" />,
       href: '/chat/rooms',
     },
     {
-      title: 'Send Message',
-      description: 'Send a message to a room',
-      icon: <Send className="h-4 w-4" />,
-      href: '/chat/send',
+      title: 'New room',
+      description: 'Open rooms — use Create Room in the toolbar',
+      icon: <Plus className="h-4 w-4" />,
+      href: '/chat/rooms',
     },
     {
-      title: 'Manage Users',
-      description: 'Manage chat participants',
+      title: 'Open a room',
+      description: 'Pick a room to view messages',
+      icon: <Send className="h-4 w-4" />,
+      href: '/chat/rooms',
+    },
+    {
+      title: 'Platform users',
+      description: 'Manage users who can be added to rooms',
       icon: <Users className="h-4 w-4" />,
-      href: '/chat/users',
+      href: '/authentication/users',
     },
     {
       title: 'Settings',
@@ -87,6 +89,7 @@ export default async function ChatDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

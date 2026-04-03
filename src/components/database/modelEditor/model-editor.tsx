@@ -10,7 +10,7 @@ import {
   Type,
 } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import * as z from 'zod';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
@@ -253,7 +253,7 @@ export function ModelEditor({
     }
   }, [schema]);
   const form = useForm<ModelFormValues>({
-    resolver: zodResolver(modelSchema),
+    resolver: rhfZodResolver(modelSchema),
     defaultValues: {},
   });
   useEffect(() => {
@@ -474,9 +474,6 @@ export function ModelEditor({
     const isDefaultField = defaultFields.some(df => df.name === field.name);
     const FieldIcon = fieldTypes.find(t => t.name === field.type)?.icon || Type;
 
-    if (typeof field.type !== 'string') {
-      console.log(field);
-    }
     return (
       <Draggable
         key={field.id}
@@ -494,7 +491,7 @@ export function ModelEditor({
           >
             <DragHandleDots2Icon className="w-4 h-4 mr-2" />
             <FieldIcon className="w-4 h-4 mr-2" />
-            <span className="flex-grow">{field.name || 'Unnamed Field'}</span>
+            <span className="grow">{field.name || 'Unnamed Field'}</span>
             {disableEdits && <Badge variant="outline">view only</Badge>}
             {field.hasOwnProperty('ownerModule') && (
               <Badge variant="outline">{field.ownerModule}</Badge>
@@ -518,7 +515,7 @@ export function ModelEditor({
             onClick={() => setSelectedItemId(index.id)}
           >
             <DragHandleDots2Icon className="w-4 h-4 mr-2" />
-            <span className="flex-grow">{index.name || 'Unnamed Index'}</span>
+            <span className="grow">{index.name || 'Unnamed Index'}</span>
             <Badge variant="outline">{index.type}</Badge>
           </div>
         )}

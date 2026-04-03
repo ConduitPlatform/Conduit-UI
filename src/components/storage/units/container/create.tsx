@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { createContainer } from '@/lib/api/storage';
 import { Input } from '@/components/ui/input';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
@@ -36,7 +36,7 @@ export const CreateContainerDialog = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: rhfZodResolver(formSchema),
     defaultValues: {
       name: '',
     },

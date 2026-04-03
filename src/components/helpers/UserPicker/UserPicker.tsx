@@ -77,7 +77,6 @@ export function UserPickerProvider({
       getUsers((page - 1) * fetchParams.limit, fetchParams.limit, {
         search: searchString,
       }).then(data => {
-        console.log(data);
         setFetchParams({
           ...fetchParams,
           page,

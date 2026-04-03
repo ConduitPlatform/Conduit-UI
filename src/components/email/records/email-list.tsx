@@ -82,7 +82,7 @@ export function EmailList({
   };
 
   return (
-    <div className="bg-background border-2 border-input rounded-lg shadow">
+    <div className="bg-background border-2 border-input rounded-lg shadow-sm">
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Email Records</h3>

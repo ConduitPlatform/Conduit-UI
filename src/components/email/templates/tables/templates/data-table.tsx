@@ -117,7 +117,7 @@ export const TemplatesTable = ({
       {(table.getIsSomePageRowsSelected() ||
         table.getIsAllPageRowsSelected()) && (
         <div className="absolute inset-x-1/2 bottom-10 text-sm text-black w-full">
-          <div className="inline-flex gap-x-5 items-center rounded-3xl px-5 py-2.5 shadow bg-gray-100">
+          <div className="inline-flex gap-x-5 items-center rounded-3xl px-5 py-2.5 shadow-sm bg-gray-100">
             <span>{Object.keys(rowSelection).length} Selected</span>
             <button
               className="border border-input px-2 py-1 rounded-md font-medium ring-offset-background"

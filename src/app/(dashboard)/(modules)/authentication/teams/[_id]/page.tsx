@@ -41,7 +41,10 @@ export default async function Teams(
     params._id,
     searchParams.skip ?? 0,
     searchParams.limit ?? 10,
-    { ...searchParams }
+    {
+      sort: searchParams.sort || undefined,
+      search: searchParams.search || undefined,
+    }
   );
 
   return (

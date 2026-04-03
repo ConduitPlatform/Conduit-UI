@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function FunctionsDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const apiModuleName = getApiModuleNameFromPath('/functions') || 'functions';
   const metrics = await getModuleMetrics(apiModuleName);
@@ -41,34 +43,34 @@ export default async function FunctionsDashboard() {
     uptime: uptime,
     version: '1.0.0',
     instances: 1,
-    description: 'Serverless function execution and management',
+    description: 'Admin-defined server-side code execution',
   };
 
   // Quick actions
   const quickActions: QuickAction[] = [
     {
       title: 'Create Function',
-      description: 'Create a new serverless function',
+      description: 'Upload a new serverless function',
       icon: <Plus className="h-4 w-4" />,
-      href: '/functions/create',
+      href: '/functions/functions/new',
     },
     {
       title: 'View Functions',
       description: 'Browse and manage functions',
       icon: <Code className="h-4 w-4" />,
-      href: '/functions/list',
+      href: '/functions/functions',
     },
     {
-      title: 'Execute Function',
-      description: 'Test and execute functions',
+      title: 'Test sandbox',
+      description: 'Open the functions test page',
       icon: <Play className="h-4 w-4" />,
-      href: '/functions/execute',
+      href: '/functions/test',
     },
     {
       title: 'Execution History',
-      description: 'View function execution logs',
+      description: 'Open a function to see its executions',
       icon: <History className="h-4 w-4" />,
-      href: '/functions/history',
+      href: '/functions/functions',
     },
     {
       title: 'Settings',
@@ -87,6 +89,7 @@ export default async function FunctionsDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

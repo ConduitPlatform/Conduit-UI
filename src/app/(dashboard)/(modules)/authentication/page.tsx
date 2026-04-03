@@ -11,8 +11,10 @@ import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 
 export default async function AuthenticationDashboard() {
+  const promAvailability = await getPrometheusAvailability();
   // Fetch metrics
   const metrics = await getAuthenticationMetrics();
 
@@ -51,7 +53,7 @@ export default async function AuthenticationDashboard() {
       title: 'Add User',
       description: 'Create a new user account',
       icon: <Plus className="h-4 w-4" />,
-      href: '/authentication/users/add',
+      href: '/authentication/users',
     },
     {
       title: 'Manage Users',
@@ -88,6 +90,7 @@ export default async function AuthenticationDashboard() {
         metrics={metricCards}
         systemMetrics={systemMetrics}
         quickActions={quickActions}
+        prometheusState={promAvailability.state}
       />
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { DragAndDropField } from '@/components/ui/form-inputs/DropzoneField';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { useFileSystemActions } from '@/components/storage/FileSystemActionsProvider';
@@ -23,7 +23,7 @@ export const CreateFileForm = () => {
     attachedFile: z.instanceof(File),
   });
   const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+    resolver: rhfZodResolver(schema),
   });
 
   const submit = async (data: z.infer<typeof schema>) => {

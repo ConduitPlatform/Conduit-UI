@@ -26,8 +26,6 @@ export default function ModuleResourcePage({
     }
   }, [resources]);
 
-  useEffect(() => {}, []);
-
   const handleSaveResource = useCallback(
     async (resource: ResourceDefinition | CreateResourceDefinition) => {
       if ('_id' in resource) {
@@ -55,7 +53,7 @@ export default function ModuleResourcePage({
           </div>
         )}
 
-        <div className="flex-grow">
+        <div className="grow">
           {selectedResource ? (
             <ResourceEditor
               resource={selectedResource}

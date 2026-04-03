@@ -1,16 +1,20 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker, DayPickerSingleProps, Matcher } from 'react-day-picker';
+import { DayPicker, type DayPickerProps, type Matcher } from 'react-day-picker';
 import { Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { TimePickerInput } from './TimePickerInput';
 import { useRef } from 'react';
 
+import 'react-day-picker/style.css';
+
+type SingleModeDayPickerProps = Extract<DayPickerProps, { mode: 'single' }>;
+
 export type DateTimePickerProps = Omit<
-  DayPickerSingleProps,
-  'mode' | 'onSelect'
+  SingleModeDayPickerProps,
+  'mode' | 'onSelect' | 'selected'
 > & {
   showTimePicker?: boolean;
   selectedDate?: Date;
@@ -25,20 +29,23 @@ function DateTimePicker({
   selectedDate,
   disabled = { after: new Date() },
   setDate: setGlobalDate,
+  showTimePicker: _showTimePicker,
   ...props
 }: DateTimePickerProps) {
   const minuteRef = useRef<HTMLInputElement>(null);
   const hourRef = useRef<HTMLInputElement>(null);
 
-  const setDate = (dateInput: Date | undefined) => {
-    const date = selectedDate ? new Date(selectedDate) : new Date();
-
-    if (dateInput) {
-      date.setDate(dateInput.getDate());
-      date.setMonth(dateInput.getMonth());
-      date.setFullYear(dateInput.getFullYear());
+  const handleSelect = (selected: Date | undefined) => {
+    if (!setGlobalDate) return;
+    if (!selected) {
+      setGlobalDate(undefined);
+      return;
     }
-    setGlobalDate && setGlobalDate(date);
+    const date = selectedDate ? new Date(selectedDate) : new Date();
+    date.setDate(selected.getDate());
+    date.setMonth(selected.getMonth());
+    date.setFullYear(selected.getFullYear());
+    setGlobalDate(date);
   };
 
   const setTime = (dateInput: Date | undefined) => {
@@ -54,7 +61,7 @@ function DateTimePicker({
       <DayPicker
         mode="single"
         selected={selectedDate}
-        onSelect={setDate}
+        onSelect={handleSelect}
         disabled={disabled}
         showOutsideDays={showOutsideDays}
         className={cn('p-3 border-input', className)}
@@ -62,40 +69,55 @@ function DateTimePicker({
           months:
             'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
           month: 'space-y-4',
-          caption: 'flex justify-center pt-1 relative items-center',
+          month_caption: 'flex justify-center pt-1 relative items-center',
           caption_label: 'text-sm font-medium',
           nav: 'space-x-1 flex items-center',
-          nav_button: cn(
+          button_previous: cn(
             buttonVariants({ variant: 'outline' }),
-            'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
+            'absolute left-1 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
           ),
-          nav_button_previous: 'absolute left-1',
-          nav_button_next: 'absolute right-1',
-          table: 'w-full border-collapse space-y-1',
-          head_row: 'flex',
-          head_cell:
+          button_next: cn(
+            buttonVariants({ variant: 'outline' }),
+            'absolute right-1 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
+          ),
+          month_grid: 'w-full border-collapse space-y-1',
+          weekdays: 'flex',
+          weekday:
             'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
-          row: 'flex w-full',
-          cell: 'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
-          day: cn(
+          week: 'flex w-full',
+          day: 'relative h-9 w-9 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected].range_end)]:rounded-r-md [&:has([aria-selected].outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md',
+          day_button: cn(
             buttonVariants({ variant: 'ghost' }),
             'h-9 w-9 p-0 font-normal aria-selected:opacity-100'
           ),
-          day_range_end: 'day-range-end',
-          day_selected:
+          range_end: 'range-end',
+          selected:
             'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-          day_today: 'bg-accent text-accent-foreground',
-          day_outside:
-            'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
-          day_disabled: 'text-muted-foreground opacity-50',
-          day_range_middle:
+          today: 'bg-accent text-accent-foreground',
+          outside:
+            'outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
+          disabled: 'text-muted-foreground opacity-50',
+          range_middle:
             'aria-selected:bg-accent aria-selected:text-accent-foreground',
-          day_hidden: 'invisible',
+          hidden: 'invisible',
           ...classNames,
         }}
         components={{
-          IconLeft: ({ ...props }) => <ChevronLeft className="w-4 h-4" />,
-          IconRight: ({ ...props }) => <ChevronRight className="w-4 h-4" />,
+          Chevron: ({ orientation, className: chevronClassName }) => {
+            if (orientation === 'left') {
+              return (
+                <ChevronLeft className={cn('h-4 w-4', chevronClassName)} />
+              );
+            }
+            if (orientation === 'right') {
+              return (
+                <ChevronRight className={cn('h-4 w-4', chevronClassName)} />
+              );
+            }
+            return (
+              <span className={cn('inline-block h-4 w-4', chevronClassName)} />
+            );
+          },
         }}
         {...props}
       />

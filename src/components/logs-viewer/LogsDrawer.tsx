@@ -18,7 +18,8 @@ import {
   getLogsQueryRange,
   getModules,
 } from '@/lib/loki/requests';
-import { isLokiEnabled } from '@/lib/logic/EnvManager';
+import { getLokiAvailability } from '@/lib/observability/lokiAvailability.actions';
+import type { LokiAvailability } from '@/lib/observability/types';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
 
 const snapPoints = [0.5, 0.75, 1];
@@ -28,7 +29,8 @@ type LogsDrawerProps = {
 };
 
 export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const [lokiAvailability, setLokiAvailability] =
+    useState<LokiAvailability | null>(null);
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [levels, setLevels] = useState<string[]>([]);
   const [modules, setModules] = useState<string[]>([]);
@@ -54,10 +56,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   );
 
   useEffect(() => {
-    isLokiEnabled().then(res => {
-      'use client';
-      setIsAvailable(res);
-    });
+    getLokiAvailability().then(setLokiAvailability);
   }, [currentModule]);
 
   const refreshDrawerLogs = useCallback(
@@ -76,8 +75,14 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     },
     [currentModule]
   );
+  const lokiReady = lokiAvailability?.state === 'ready';
+  const showLogsUi =
+    !isLogsViewerPage &&
+    lokiAvailability &&
+    lokiAvailability.state !== 'not_configured';
+
   useEffect(() => {
-    if (!isAvailable) return;
+    if (!lokiReady) return;
     getLogsLevels()
       .then(res => {
         'use client';
@@ -102,7 +107,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         setLogs(res);
       })
       .catch();
-  }, [isAvailable, currentModule, pathname]);
+  }, [lokiReady, currentModule, pathname, refreshDrawerLogs]);
 
   useEffect(() => {
     const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
@@ -114,7 +119,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     return (snap as number) ? windowHeight * (snap as number) : windowHeight;
   };
 
-  return !isLogsViewerPage && isAvailable ? (
+  return showLogsUi ? (
     <Drawer
       modal={false}
       snapPoints={snapPoints}
@@ -135,7 +140,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         className={cn(
           'absolute  right-0 rounded-t-md rounded-b-none h-full max-h-[94%]',
           isCoreModulePage && 'max-h-[99%]',
-          isSidebarOpen ? 'left-64' : 'left-0'
+          isSidebarOpen ? 'left-56' : 'left-0'
         )}
       >
         <DrawerTitle className="sr-only">List of logs with filters</DrawerTitle>
@@ -143,22 +148,31 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="absolute w-8 h-8 rounded-md outline-none top-2 right-2 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            className="absolute w-8 h-8 rounded-md outline-hidden top-2 right-2 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
-            <X className="flex-shrink-0 w-4 h-4" />
+            <X className="shrink-0 w-4 h-4" />
             <span className="sr-only">Close</span>
           </Button>
         </DrawerTrigger>
-        <LogsFiltersPanel
-          levels={levels}
-          setLogs={setLogs}
-          modules={modules}
-          drawerModule={currentModule}
-          refreshLogs={refreshDrawerLogs}
-        />
-        <div style={{ maxHeight: `${drawerHeight}px` }}>
-          <LogsAccordionList logs={logs} />
-        </div>
+        {lokiReady ? (
+          <>
+            <LogsFiltersPanel
+              levels={levels}
+              setLogs={setLogs}
+              modules={modules}
+              drawerModule={currentModule}
+              refreshLogs={refreshDrawerLogs}
+            />
+            <div style={{ maxHeight: `${drawerHeight}px` }}>
+              <LogsAccordionList logs={logs} />
+            </div>
+          </>
+        ) : (
+          <div className="p-6 text-center text-sm text-muted-foreground">
+            Cannot reach Loki at the configured URL. Check that Loki is running
+            and that LOKI_URL is correct.
+          </div>
+        )}
       </DrawerContent>
     </Drawer>
   ) : null;

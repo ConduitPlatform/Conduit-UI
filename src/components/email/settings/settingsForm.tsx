@@ -131,8 +131,8 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
           className="border rounded-md overflow-hidden mb-4"
         >
           <div className="flex items-center justify-between p-3 bg-muted/30">
-            <div className="flex items-center space-x-2 flex-grow">
-              <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+            <div className="flex items-center space-x-2 grow">
+              <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
                 <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                 <span className="font-medium truncate text-xl">
                   Email Storage

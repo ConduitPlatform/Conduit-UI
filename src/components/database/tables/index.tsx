@@ -70,7 +70,17 @@ export default function ModelDataTable({
     }
     return (
       <div className="h-full flex flex-col items-center justify-center space-y-4">
-        <Button>
+        <Button
+          type="button"
+          onClick={() => {
+            router.push(`/database/models-new/${schema._id}?tab=data`);
+            toast({
+              title: 'Data explorer',
+              description:
+                'Use “New Document” on the Data tab to create a row.',
+            });
+          }}
+        >
           <PlusIcon className="w-4 h-4" />
           <span>New document</span>
         </Button>
@@ -83,7 +93,7 @@ export default function ModelDataTable({
   }
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex justify-between items-center gap-x-2 py-2.5 px-4 flex-shrink-0">
+      <div className="flex justify-between items-center gap-x-2 py-2.5 px-4 shrink-0">
         <CodeEditor
           placeholder="Type query: { field: 'value'}"
           padding={15}

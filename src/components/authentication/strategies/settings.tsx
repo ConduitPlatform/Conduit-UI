@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import * as React from 'react';
@@ -96,7 +96,7 @@ export const AuthenticationSettings = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
   type formSchema = z.infer<typeof FormSchema>;
   const form = useForm<formSchema>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
   });
 
@@ -175,8 +175,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
               className="border rounded-md overflow-hidden mb-4"
             >
               <div className="flex items-center justify-between p-3 bg-muted/30">
-                <div className="flex items-center space-x-2 flex-grow">
-                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                <div className="flex items-center space-x-2 grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                     <span className="font-medium truncate text-xl">
                       Access Token settings
@@ -255,8 +255,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
               className="border rounded-md overflow-hidden mb-4"
             >
               <div className="flex items-center justify-between p-3 bg-muted/30">
-                <div className="flex items-center space-x-2 flex-grow">
-                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                <div className="flex items-center space-x-2 grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                     <span className="font-medium truncate text-xl">
                       Refresh Token settings
@@ -336,8 +336,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
               className="border rounded-md overflow-hidden mb-4"
             >
               <div className="flex items-center justify-between p-3 bg-muted/30">
-                <div className="flex items-center space-x-2 flex-grow">
-                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                <div className="flex items-center space-x-2 grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                     <span className="font-medium truncate text-xl">
                       Teams settings
@@ -403,8 +403,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
               className="border rounded-md overflow-hidden mb-4"
             >
               <div className="flex items-center justify-between p-3 bg-muted/30">
-                <div className="flex items-center space-x-2 flex-grow">
-                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                <div className="flex items-center space-x-2 grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                     <span className="font-medium truncate text-xl">
                       Session & redirect settings
@@ -451,8 +451,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
               className="border rounded-md overflow-hidden mb-4"
             >
               <div className="flex items-center justify-between p-3 bg-muted/30">
-                <div className="flex items-center space-x-2 flex-grow">
-                  <CollapsibleTrigger className="flex items-center space-x-2 flex-grow text-left">
+                <div className="flex items-center space-x-2 grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
                     <span className="font-medium truncate text-xl">
                       Captcha settings

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import {
   Dialog,
   DialogContent,
@@ -52,7 +52,7 @@ export const BaseFolderForm = ({
 }: FolderFormProps) => {
   const [open, isOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: rhfZodResolver(formSchema),
     defaultValues: {
       name: '',
     },

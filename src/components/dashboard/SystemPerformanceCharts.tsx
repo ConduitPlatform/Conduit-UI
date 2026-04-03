@@ -35,9 +35,11 @@ import {
   fetchErrorRateChartAction,
   fetchSystemResourcesChartAction,
 } from '@/lib/prometheus/metrics';
+import type { ObservabilityServiceState } from '@/lib/observability/types';
 
 export interface SystemPerformanceChartsProps {
   className?: string;
+  prometheusState: ObservabilityServiceState;
   initialData?: {
     requestVolume: MetricChartData;
     responseTime: MetricChartData;
@@ -130,7 +132,8 @@ const getStatusColor = (value: number, metric: string): string => {
 
 export const SystemPerformanceCharts: React.FC<
   SystemPerformanceChartsProps
-> = ({ className, initialData }) => {
+> = ({ className, initialData, prometheusState }) => {
+  const promReady = prometheusState === 'ready';
   const [timeRange, setTimeRange] = useState<'1h' | '6h' | '24h' | '7d'>('1h');
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -148,6 +151,7 @@ export const SystemPerformanceCharts: React.FC<
   >(initialData?.systemResources);
 
   const fetchAll = async (range: '1h' | '6h' | '24h' | '7d') => {
+    if (!promReady) return;
     setIsLoading(true);
     const [req, resp, err, sys] = await Promise.all([
       fetchRequestVolumeChartAction(range),
@@ -163,17 +167,19 @@ export const SystemPerformanceCharts: React.FC<
   };
 
   useEffect(() => {
+    if (!promReady) return;
     if (!initialData || timeRange !== '1h') {
       fetchAll(timeRange);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeRange]);
+  }, [timeRange, promReady]);
 
   const handleTimeRangeChange = (range: '1h' | '6h' | '24h' | '7d') => {
     setTimeRange(range);
   };
 
   const handleRefresh = async () => {
+    if (!promReady) return;
     setIsRefreshing(true);
     await fetchAll(timeRange);
     setIsRefreshing(false);
@@ -202,6 +208,36 @@ export const SystemPerformanceCharts: React.FC<
     errorRateData.length > 0 ||
     cpuData.length > 0 ||
     memoryData.length > 0;
+
+  if (!promReady) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Monitor className="h-5 w-5" />
+            <span>System Performance</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 flex items-center justify-center text-muted-foreground">
+            <div className="text-center max-w-md px-2">
+              <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm font-medium text-foreground">
+                {prometheusState === 'not_configured'
+                  ? 'Prometheus is not configured'
+                  : 'Prometheus is unreachable'}
+              </p>
+              <p className="text-xs mt-2">
+                {prometheusState === 'not_configured'
+                  ? 'Set PROMETHEUS_URL for this environment to load performance charts (for example http://localhost:9090 for local development).'
+                  : 'The UI could not reach Prometheus at the configured URL. Verify the service, URL, and authentication settings.'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (

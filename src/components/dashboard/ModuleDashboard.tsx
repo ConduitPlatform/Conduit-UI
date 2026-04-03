@@ -8,6 +8,8 @@ import { ModuleStatusCard, ModuleStatus } from './ModuleStatusCard';
 import { SystemMetricsCard } from './SystemMetricsCard';
 import { FormattedMetric } from '@/lib/prometheus/metrics';
 import { cn } from '@/lib/utils';
+import { PrometheusUnavailableBanner } from '@/components/dashboard/PrometheusUnavailableBanner';
+import type { ObservabilityServiceState } from '@/lib/observability/types';
 
 export interface ModuleDashboardProps {
   moduleName: string;
@@ -18,6 +20,8 @@ export interface ModuleDashboardProps {
   quickActions: QuickAction[];
   children?: React.ReactNode;
   className?: string;
+  /** When set and not `ready`, shows a banner above metrics. */
+  prometheusState?: ObservabilityServiceState;
 }
 
 export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
@@ -29,9 +33,13 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
   quickActions,
   children,
   className,
+  prometheusState,
 }) => {
   return (
     <div className={cn('space-y-6', className)}>
+      {prometheusState && prometheusState !== 'ready' && (
+        <PrometheusUnavailableBanner state={prometheusState} />
+      )}
       {/* Header */}
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">

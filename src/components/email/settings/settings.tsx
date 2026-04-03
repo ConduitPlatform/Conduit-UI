@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
 import { patchEmailSettings } from '@/lib/api/email';
@@ -22,7 +22,7 @@ const FormSchema = z
   .object({
     active: z.boolean(),
     sendingDomain: z.string({
-      required_error: 'You need to provide the Sending Domain',
+      error: 'You need to provide the Sending Domain',
     }),
     storeEmails: z.object({
       enabled: z.boolean().default(false),
@@ -119,7 +119,7 @@ export const Settings = ({ data }: Props) => {
   }, [data]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
   });
 
@@ -295,11 +295,7 @@ export const Settings = ({ data }: Props) => {
         </div>
         {emailModule && (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, err => {
-                console.log(err);
-              })}
-            >
+            <form onSubmit={form.handleSubmit(onSubmit, () => undefined)}>
               <SettingsForm edit={edit} setEdit={setEdit} data={data} />
             </form>
           </Form>

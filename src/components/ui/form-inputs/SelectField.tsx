@@ -95,7 +95,7 @@ const SelectField = ({
         name={fieldName}
         control={control}
         render={({ field }: { field: ControllerRenderProps<any> }) => (
-          <FormItem className={className}>
+          <FormItem className={cn('space-y-1.5', className)}>
             <FormLabel className={labelClassName}>{label}</FormLabel>
             <Select
               onValueChange={field.onChange}

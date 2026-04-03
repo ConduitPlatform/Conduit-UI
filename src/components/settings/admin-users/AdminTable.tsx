@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { AddAdminSheet } from '@/components/settings/admin-users/AddAdminSheet';
 import Columns from '@/components/settings/admin-users/columns';
 import EmptyAdmins from '@/components/settings/admin-users/emptyUsers';
+import { useState } from 'react';
 
 export default function AdminTable({
   data,
@@ -15,10 +16,12 @@ export default function AdminTable({
   count: number;
   loggedUser: Admin;
 }>) {
+  const [addOpen, setAddOpen] = useState(false);
+
   return (
     <div className="container mx-auto py-10">
       <div className={'flex flex-row justify-end pb-2'}>
-        <AddAdminSheet>
+        <AddAdminSheet open={addOpen} onOpenChange={setAddOpen}>
           <Button variant="outline">Create</Button>
         </AddAdminSheet>
       </div>
@@ -27,7 +30,7 @@ export default function AdminTable({
         count={count}
         data={data}
       >
-        <EmptyAdmins userAdd={() => {}} />
+        <EmptyAdmins userAdd={() => setAddOpen(true)} />
       </DataTable>
     </div>
   );

@@ -13,7 +13,7 @@ import {
   RequestOptions,
   SocketOptions,
 } from '@/components/functions/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { rhfZodResolver } from '@/lib/zod-form';
 import { CodeField } from '@/components/ui/form-inputs/CodeField';
 import { Button } from '@/components/ui/button';
 import { GetMiddlewaresResponseType } from '@/app/(dashboard)/(modules)/functions/functions/new/page';
@@ -34,7 +34,7 @@ export const EditFunctionForm = ({
   const router = useRouter();
   const form = useForm<z.infer<typeof schema>>({
     mode: 'onChange',
-    resolver: zodResolver(schema),
+    resolver: rhfZodResolver(schema),
     defaultValues: {
       functionName: functionData.name,
       functionCode: functionData.functionCode,
@@ -252,7 +252,7 @@ export const EditFunctionForm = ({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(submit, errors => console.log(errors))}
+        onSubmit={form.handleSubmit(submit, () => undefined)}
         className="space-y-4"
       >
         <div className="w-full grid grid-cols-2 gap-x-5 min-h-[600px]">

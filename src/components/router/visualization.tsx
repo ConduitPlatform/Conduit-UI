@@ -161,7 +161,7 @@ interface Props {
 
 // Memoized legend component
 const Legend = memo(() => (
-  <div className="bg-white p-3 rounded shadow-sm border text-sm space-y-2">
+  <div className="bg-white p-3 rounded shadow-xs border text-sm space-y-2">
     <div className="font-semibold text-gray-900 mb-2">Legend</div>
     <div className="flex items-center gap-2">
       <div className="w-4 h-4 bg-blue-50 border-2 border-blue-200 rounded"></div>
@@ -208,7 +208,7 @@ Legend.displayName = 'Legend';
 
 // Memoized info panel component
 const InfoPanel = memo(() => (
-  <div className="bg-white p-3 rounded shadow-sm border text-sm">
+  <div className="bg-white p-3 rounded shadow-xs border text-sm">
     <div className="flex items-center gap-2">
       <Info className="h-4 w-4 text-blue-600" />
       <span className="text-gray-700 font-medium">
