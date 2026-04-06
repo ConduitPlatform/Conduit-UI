@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Customer, CustomerBalance, Transaction } from '@/lib/models/payments';
 import { getCustomerBalances, getTransactions } from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -16,9 +15,24 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { EditBalanceDialog } from '@/components/payments/balances/edit-balance-dialog';
+import { DeleteBalanceDialog } from '@/components/payments/balances/delete-balance-dialog';
 import { useToast } from '@/lib/hooks/use-toast';
 import { formatCentsToCurrency } from '@/lib/utils';
+import {
+  formatTransactionProducts,
+  transactionDisplayCurrency,
+} from '@/lib/payments/display-helpers';
+import { TransactionsTable } from '@/components/payments/transactions/transactions-table';
 
 interface CustomerDetailsProps {
   customer: Customer;
@@ -31,6 +45,11 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
   const [loadingBalances, setLoadingBalances] = useState(false);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [editBalance, setEditBalance] = useState<CustomerBalance | null>(null);
+  const [showEditBalance, setShowEditBalance] = useState(false);
+  const [balanceToDelete, setBalanceToDelete] =
+    useState<CustomerBalance | null>(null);
+  const [showDeleteBalance, setShowDeleteBalance] = useState(false);
 
   const { toast } = useToast();
 
@@ -77,14 +96,17 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
   useEffect(() => {
     if (activeTab === 'balances') {
       fetchBalances();
-    } else if (activeTab === 'transactions') {
-      fetchTransactions();
     }
   }, [activeTab, customer._id]);
 
-  // Reset to overview tab when component unmounts or customer changes
   useEffect(() => {
     setActiveTab('overview');
+  }, [customer._id]);
+
+  useEffect(() => {
+    if (!customer._id) return;
+    void fetchTransactions();
+    void fetchBalances();
   }, [customer._id]);
 
   // Cleanup effect when component unmounts
@@ -239,9 +261,7 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
                     >
                       <div>
                         <p className="font-medium">
-                          {typeof transaction.product === 'string'
-                            ? transaction.product
-                            : transaction.product?.name || 'Unknown Product'}
+                          {formatTransactionProducts(transaction)}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {transaction.status} •{' '}
@@ -255,8 +275,8 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
                       <div className="text-right">
                         <p className="font-medium">
                           {formatCentsToCurrency(
-                            transaction.priceWithVat,
-                            'USD'
+                            transaction.priceWithVat ?? 0,
+                            transactionDisplayCurrency(transaction)
                           )}
                         </p>
                         <p className="text-sm text-muted-foreground">
@@ -288,18 +308,19 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
                       <TableHead>Status</TableHead>
                       <TableHead>Rollover</TableHead>
                       <TableHead>Created</TableHead>
+                      <TableHead className="w-[50px]" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loadingBalances ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center">
+                        <TableCell colSpan={8} className="text-center">
                           Loading...
                         </TableCell>
                       </TableRow>
                     ) : balances.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center">
+                        <TableCell colSpan={8} className="text-center">
                           No balances found
                         </TableCell>
                       </TableRow>
@@ -361,6 +382,42 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
                                   ).toLocaleDateString()
                                 : '-'}
                             </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0"
+                                    type="button"
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditBalance(balance);
+                                      setShowEditBalance(true);
+                                    }}
+                                  >
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit amount
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() => {
+                                      setBalanceToDelete(balance);
+                                      setShowDeleteBalance(true);
+                                    }}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
                           </TableRow>
                         );
                       })
@@ -375,78 +432,16 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
         <TabsContent value="transactions" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Transaction History</CardTitle>
+              <CardTitle>Transaction history</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Quantity</TableHead>
-                      <TableHead>Provider</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loadingTransactions ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center">
-                          Loading...
-                        </TableCell>
-                      </TableRow>
-                    ) : transactions.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center">
-                          No transactions found
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      transactions.map(transaction => (
-                        <TableRow key={transaction._id}>
-                          <TableCell className="font-medium">
-                            {typeof transaction.product === 'string'
-                              ? transaction.product
-                              : transaction.product?.name || 'Unknown Product'}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                transaction.status === 'completed'
-                                  ? 'default'
-                                  : 'secondary'
-                              }
-                            >
-                              {transaction.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {formatCentsToCurrency(
-                              transaction.priceWithVat,
-                              'USD'
-                            )}
-                          </TableCell>
-                          <TableCell>{transaction.quantity}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {transaction.provider}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {transaction.createdAt
-                              ? new Date(
-                                  transaction.createdAt
-                                ).toLocaleDateString()
-                              : '-'}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              {customer._id ? (
+                <TransactionsTable
+                  customerId={customer._id}
+                  embedded
+                  title={undefined}
+                />
+              ) : null}
             </CardContent>
           </Card>
         </TabsContent>
@@ -464,6 +459,20 @@ export function CustomerDetails({ customer, onClose }: CustomerDetailsProps) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <EditBalanceDialog
+        open={showEditBalance}
+        onOpenChange={setShowEditBalance}
+        balance={editBalance}
+        onSuccess={fetchBalances}
+      />
+
+      <DeleteBalanceDialog
+        open={showDeleteBalance}
+        onOpenChange={setShowDeleteBalance}
+        balance={balanceToDelete}
+        onSuccess={fetchBalances}
+      />
     </div>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { CustomerBalance } from '@/lib/models/payments';
 import { getCustomerBalances } from '@/lib/api/payments';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -15,9 +14,20 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
 import { GrantBalanceDialog } from '@/components/payments/balances/grant-balance-dialog';
+import { EditBalanceDialog } from '@/components/payments/balances/edit-balance-dialog';
+import { DeleteBalanceDialog } from '@/components/payments/balances/delete-balance-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function CustomerBalancesPage() {
   const [balances, setBalances] = useState<CustomerBalance[]>([]);
@@ -27,6 +37,11 @@ export default function CustomerBalancesPage() {
   const [search, setSearch] = useState('');
   const [totalCount, setTotalCount] = useState(0);
   const [showGrantDialog, setShowGrantDialog] = useState(false);
+  const [editBalance, setEditBalance] = useState<CustomerBalance | null>(null);
+  const [showEditBalance, setShowEditBalance] = useState(false);
+  const [balanceToDelete, setBalanceToDelete] =
+    useState<CustomerBalance | null>(null);
+  const [showDeleteBalance, setShowDeleteBalance] = useState(false);
 
   const { toast } = useToast();
 
@@ -149,18 +164,19 @@ export default function CustomerBalancesPage() {
                   <TableHead>Status</TableHead>
                   <TableHead>Rollover</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead className="w-[50px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center">
+                    <TableCell colSpan={8} className="text-center">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : filteredBalances.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center">
+                    <TableCell colSpan={8} className="text-center">
                       {userId
                         ? 'No balances found'
                         : 'Enter a user ID to view balances'}
@@ -214,6 +230,42 @@ export default function CustomerBalancesPage() {
                             ? new Date(balance.createdAt).toLocaleDateString()
                             : '-'}
                         </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0"
+                                type="button"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditBalance(balance);
+                                  setShowEditBalance(true);
+                                }}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit amount
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  setBalanceToDelete(balance);
+                                  setShowDeleteBalance(true);
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
                       </TableRow>
                     );
                   })
@@ -233,6 +285,20 @@ export default function CustomerBalancesPage() {
           }
           setShowGrantDialog(false);
         }}
+      />
+
+      <EditBalanceDialog
+        open={showEditBalance}
+        onOpenChange={setShowEditBalance}
+        balance={editBalance}
+        onSuccess={fetchBalances}
+      />
+
+      <DeleteBalanceDialog
+        open={showDeleteBalance}
+        onOpenChange={setShowDeleteBalance}
+        balance={balanceToDelete}
+        onSuccess={fetchBalances}
       />
     </div>
   );

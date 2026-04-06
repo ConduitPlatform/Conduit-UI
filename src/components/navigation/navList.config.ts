@@ -176,6 +176,10 @@ export const navList = {
           url: '/payments/products',
         },
         {
+          title: 'Redeem codes',
+          url: '/payments/redeem-codes',
+        },
+        {
           title: 'Transactions',
           url: '/payments/transactions',
         },

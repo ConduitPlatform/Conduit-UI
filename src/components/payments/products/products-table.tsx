@@ -133,9 +133,10 @@ export function ProductsTable() {
                   <TableHead>VAT</TableHead>
                   <TableHead>Currency</TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Trial</TableHead>
                   <TableHead>Virtual Currency</TableHead>
                   <TableHead>Recurring</TableHead>
-                  <TableHead>Stripe Price ID</TableHead>
+                  <TableHead>Stripe</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
@@ -143,21 +144,35 @@ export function ProductsTable() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center">
+                    <TableCell colSpan={11} className="text-center">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center">
+                    <TableCell colSpan={11} className="text-center">
                       No products found
                     </TableCell>
                   </TableRow>
                 ) : (
                   products.map(product => (
                     <TableRow key={product._id}>
-                      <TableCell className="font-medium">
-                        {product.name}
+                      <TableCell className="font-medium max-w-[200px]">
+                        <span
+                          className="line-clamp-2"
+                          title={
+                            product.productDescription?.trim()
+                              ? product.productDescription
+                              : undefined
+                          }
+                        >
+                          {product.name}
+                        </span>
+                        {product.productDescription?.trim() ? (
+                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                            {product.productDescription}
+                          </p>
+                        ) : null}
                       </TableCell>
                       <TableCell>
                         {formatCentsToCurrency(product.value, product.currency)}
@@ -172,6 +187,16 @@ export function ProductsTable() {
                         >
                           {product.isSubscription ? 'Subscription' : 'One-time'}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {product.isSubscription &&
+                        (product.trialDays ?? 0) > 0 ? (
+                          <Badge variant="secondary" className="text-xs">
+                            {product.trialDays}-day trial
+                          </Badge>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>
                         {product.creditType ? (
@@ -202,16 +227,30 @@ export function ProductsTable() {
                           : '-'}
                       </TableCell>
                       <TableCell>
-                        {product.stripe?.priceId ? (
-                          <Badge
-                            variant="outline"
-                            className="font-mono text-xs"
-                          >
-                            {product.stripe.priceId}
-                          </Badge>
-                        ) : (
-                          '-'
-                        )}
+                        <div className="flex flex-col gap-1">
+                          {product.stripe?.priceId ? (
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs w-fit max-w-[140px] truncate"
+                              title={product.stripe.priceId}
+                            >
+                              {product.stripe.priceId}
+                            </Badge>
+                          ) : null}
+                          {product.stripe?.subscriptionId ? (
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs w-fit max-w-[140px] truncate"
+                              title={product.stripe.subscriptionId}
+                            >
+                              {product.stripe.subscriptionId}
+                            </Badge>
+                          ) : null}
+                          {!product.stripe?.priceId &&
+                          !product.stripe?.subscriptionId
+                            ? '-'
+                            : null}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {product.createdAt

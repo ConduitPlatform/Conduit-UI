@@ -11,6 +11,7 @@ export const ProductFormSchema = z.object({
   recurringCount: z.number().min(1, 'Recurring count must be at least 1'),
   stripe: z.object({
     priceId: z.string().optional(),
+    subscriptionId: z.string().optional(),
   }),
   creditType: z.string().optional(),
   creditAmount: z
@@ -23,6 +24,11 @@ export const ProductFormSchema = z.object({
     .optional(),
   validityUnit: z.string().optional(),
   rollover: z.boolean().optional(),
+  productDescription: z.string().optional(),
+  trialDays: z.number().min(0).optional(),
+  supportsMultipleSeats: z.boolean().optional(),
+  recurringDate: z.number().min(0).max(28).optional(),
+  maxOverdueDays: z.number().min(0).optional(),
 });
 
 export const EditProductFormSchema = z.object({
@@ -35,6 +41,7 @@ export const EditProductFormSchema = z.object({
   recurringCount: z.number().min(1, 'Recurring count must be at least 1'),
   stripe: z.object({
     priceId: z.string().optional(),
+    subscriptionId: z.string().optional(),
   }),
   creditType: z.string().optional(),
   creditAmount: z
@@ -47,6 +54,11 @@ export const EditProductFormSchema = z.object({
     .optional(),
   validityUnit: z.string().optional(),
   rollover: z.boolean().optional(),
+  productDescription: z.string().optional(),
+  trialDays: z.number().min(0).optional(),
+  supportsMultipleSeats: z.boolean().optional(),
+  recurringDate: z.number().min(0).max(28).optional(),
+  maxOverdueDays: z.number().min(0).optional(),
 });
 
 export const CustomerFormSchema = z.object({

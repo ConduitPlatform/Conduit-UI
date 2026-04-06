@@ -5,6 +5,9 @@ import {
   CustomerBalance,
   PaymentsConfig,
   Product,
+  RedeemCode,
+  Subscription,
+  Transaction,
 } from '@/lib/models/payments';
 
 export interface PaymentsRequest {
@@ -13,6 +16,9 @@ export interface PaymentsRequest {
   search?: string;
   productId?: string;
   customerId?: string;
+  status?: string;
+  provider?: string;
+  populate?: string[];
 }
 
 // Customers
@@ -80,12 +86,49 @@ export const updateProduct = async (productId: string, data: Product) => {
 // Transactions
 export const getTransactions = async (params: PaymentsRequest) => {
   type Response = {
-    transactionDocuments: any[];
+    transactionDocuments: Transaction[];
     count: number;
   };
+  const requestParams = {
+    ...params,
+    populate: params.populate ?? ['customer', 'products.product'],
+  };
   return (await getApiClient())
-    .get<Response>(`/payments/transactions`, { params })
+    .get<Response>(`/payments/transactions`, { params: requestParams })
     .then(res => res.data);
+};
+
+export const getTransaction = async (id: string, populate?: string[]) => {
+  return (await getApiClient())
+    .get<Transaction>(`/payments/transactions/${id}`, {
+      params: populate?.length ? { populate } : undefined,
+    })
+    .then(res => res.data);
+};
+
+export type UpdateTransactionBody = {
+  status?: string;
+  price?: number;
+  priceWithVat?: number;
+};
+
+export const updateTransaction = async (
+  id: string,
+  data: UpdateTransactionBody
+) => {
+  return (await getApiClient())
+    .patch<{
+      updatedTransaction: Transaction;
+    }>(`/payments/transactions/${id}`, data)
+    .then(res => res.data.updatedTransaction);
+};
+
+export const cancelTransaction = async (id: string) => {
+  return (await getApiClient())
+    .patch<{
+      updatedTransaction: Transaction;
+    }>(`/payments/transactions/${id}/cancel`)
+    .then(res => res.data.updatedTransaction);
 };
 
 // Note: DELETE endpoint for transactions doesn't exist in the API
@@ -98,12 +141,50 @@ export const getTransactions = async (params: PaymentsRequest) => {
 // Subscriptions
 export const getSubscriptions = async (params: PaymentsRequest) => {
   type Response = {
-    subscriptionDocuments: any[];
+    subscriptionDocuments: Subscription[];
     count: number;
   };
+  const requestParams = {
+    ...params,
+    populate: params.populate ?? ['product', 'customer'],
+  };
   return (await getApiClient())
-    .get<Response>(`/payments/subscriptions`, { params })
+    .get<Response>(`/payments/subscriptions`, { params: requestParams })
     .then(res => res.data);
+};
+
+export const getSubscription = async (id: string, populate?: string[]) => {
+  return (await getApiClient())
+    .get<Subscription>(`/payments/subscriptions/${id}`, {
+      params: populate?.length ? { populate } : undefined,
+    })
+    .then(res => res.data);
+};
+
+export type UpdateSubscriptionBody = {
+  status?: string;
+  activeUntil?: string;
+  nextPayment?: string;
+  isTrial?: boolean;
+};
+
+export const updateSubscription = async (
+  id: string,
+  data: UpdateSubscriptionBody
+) => {
+  return (await getApiClient())
+    .patch<{
+      updatedSubscription: Subscription;
+    }>(`/payments/subscriptions/${id}`, data)
+    .then(res => res.data.updatedSubscription);
+};
+
+export const cancelSubscription = async (id: string) => {
+  return (await getApiClient())
+    .patch<{
+      updatedSubscription: Subscription;
+    }>(`/payments/subscriptions/${id}/cancel`)
+    .then(res => res.data.updatedSubscription);
 };
 
 // Configuration
@@ -153,9 +234,51 @@ export const grantBalance = async (data: {
 
 export const updateBalance = async (
   balanceId: string,
-  data: Partial<CustomerBalance>
+  data: { amount?: number }
 ) => {
   return (await getApiClient())
-    .patch<CustomerBalance>(`/payments/balances/${balanceId}`, data)
+    .patch<{
+      updatedBalance: CustomerBalance | null;
+    }>(`/payments/balances/${balanceId}`, data)
+    .then(res => res.data.updatedBalance);
+};
+
+// Redeem codes (requires payments.redeemCodes in module config)
+export interface RedeemCodesListParams {
+  skip: number;
+  limit: number;
+  search?: string;
+  productId?: string;
+  isUsed?: boolean;
+  populate?: string[];
+}
+
+export const getRedeemCodes = async (params: RedeemCodesListParams) => {
+  type Response = {
+    redeemCodeDocuments: RedeemCode[];
+    count: number;
+  };
+  const requestParams = {
+    ...params,
+    populate: params.populate ?? ['product'],
+  };
+  return (await getApiClient())
+    .get<Response>(`/payments/redeem-codes`, { params: requestParams })
+    .then(res => res.data);
+};
+
+export const createRedeemCodes = async (data: {
+  productId: string;
+  codes: string[];
+  validUntil?: string;
+}) => {
+  return (await getApiClient())
+    .post<unknown>(`/payments/redeem-code`, data)
+    .then(res => res.data);
+};
+
+export const deleteRedeemCode = async (id: string) => {
+  return (await getApiClient())
+    .delete(`/payments/redeem-codes/${id}`)
     .then(res => res.data);
 };

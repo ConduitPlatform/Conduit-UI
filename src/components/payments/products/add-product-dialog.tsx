@@ -6,6 +6,7 @@ import { createProduct } from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -39,14 +40,20 @@ export function AddProductDialog({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
+    productDescription: '',
     value: 0, // This will be stored in cents
     vat: 0,
     currency: 'USD',
     isSubscription: false,
+    trialDays: 0,
+    supportsMultipleSeats: false,
     recurring: RecurringEnum.month,
     recurringCount: 1,
+    recurringDate: 0,
+    maxOverdueDays: 1,
     stripe: {
       priceId: '',
+      subscriptionId: '',
     },
     // New virtual currency fields
     creditType: '',
@@ -74,14 +81,20 @@ export function AddProductDialog({
       onSuccess();
       setFormData({
         name: '',
+        productDescription: '',
         value: 0, // This will be stored in cents
         vat: 0,
         currency: 'USD',
         isSubscription: false,
+        trialDays: 0,
+        supportsMultipleSeats: false,
         recurring: RecurringEnum.month,
         recurringCount: 1,
+        recurringDate: 0,
+        maxOverdueDays: 1,
         stripe: {
           priceId: '',
+          subscriptionId: '',
         },
         // New virtual currency fields
         creditType: '',
@@ -102,22 +115,27 @@ export function AddProductDialog({
   };
 
   const handleChange = (field: keyof Product, value: any) => {
-    if (field === 'stripe') {
-      setFormData(prev => ({
-        ...prev,
-        stripe: { priceId: value },
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const setStripeField = (key: 'priceId' | 'subscriptionId', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      stripe: {
+        ...prev.stripe,
+        priceId: prev.stripe?.priceId ?? '',
+        subscriptionId: prev.stripe?.subscriptionId ?? '',
+        [key]: value,
+      },
+    }));
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Product</DialogTitle>
           <DialogDescription>
@@ -132,6 +150,17 @@ export function AddProductDialog({
               value={formData.name}
               onChange={e => handleChange('name', e.target.value)}
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="productDescription">Description (optional)</Label>
+            <Textarea
+              id="productDescription"
+              value={formData.productDescription ?? ''}
+              onChange={e => handleChange('productDescription', e.target.value)}
+              placeholder="Shown to admins and in integrations"
+              rows={3}
             />
           </div>
 
@@ -194,53 +223,142 @@ export function AddProductDialog({
           </div>
 
           {formData.isSubscription && (
-            <div className="grid grid-cols-2 gap-4">
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="recurringCount">Recurring Count</Label>
+                  <Input
+                    id="recurringCount"
+                    type="number"
+                    min="1"
+                    value={formData.recurringCount}
+                    onChange={e =>
+                      handleChange(
+                        'recurringCount',
+                        parseInt(e.target.value) || 1
+                      )
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="recurring">Recurring Period</Label>
+                  <Select
+                    value={formData.recurring}
+                    onValueChange={value =>
+                      handleChange('recurring', value as RecurringEnum)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={RecurringEnum.day}>Days</SelectItem>
+                      <SelectItem value={RecurringEnum.week}>Weeks</SelectItem>
+                      <SelectItem value={RecurringEnum.month}>
+                        Months
+                      </SelectItem>
+                      <SelectItem value={RecurringEnum.year}>Years</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="recurringCount">Recurring Count</Label>
+                <Label htmlFor="trialDays">Trial period (days)</Label>
                 <Input
-                  id="recurringCount"
+                  id="trialDays"
                   type="number"
-                  min="1"
-                  value={formData.recurringCount}
+                  min="0"
+                  value={formData.trialDays ?? 0}
+                  onChange={e =>
+                    handleChange('trialDays', parseInt(e.target.value) || 0)
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Number of free trial days before first charge (0 = no trial).
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="supportsMultipleSeats"
+                  checked={!!formData.supportsMultipleSeats}
+                  onCheckedChange={checked =>
+                    handleChange('supportsMultipleSeats', checked)
+                  }
+                />
+                <Label htmlFor="supportsMultipleSeats">
+                  Supports multiple seats
+                </Label>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="recurringDate">Renewal day of month</Label>
+                <Input
+                  id="recurringDate"
+                  type="number"
+                  min="0"
+                  max="28"
+                  value={formData.recurringDate ?? 0}
                   onChange={e =>
                     handleChange(
-                      'recurringCount',
-                      parseInt(e.target.value) || 1
+                      'recurringDate',
+                      Math.min(28, Math.max(0, parseInt(e.target.value) || 0))
                     )
                   }
-                  required
                 />
+                <p className="text-xs text-muted-foreground">
+                  0 = same day as billing start; otherwise day 1–28.
+                </p>
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="recurring">Recurring Period</Label>
-                <Select
-                  value={formData.recurring}
-                  onValueChange={value =>
-                    handleChange('recurring', value as RecurringEnum)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={RecurringEnum.day}>Days</SelectItem>
-                    <SelectItem value={RecurringEnum.week}>Weeks</SelectItem>
-                    <SelectItem value={RecurringEnum.month}>Months</SelectItem>
-                    <SelectItem value={RecurringEnum.year}>Years</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="maxOverdueDays">Max overdue (grace days)</Label>
+                <Input
+                  id="maxOverdueDays"
+                  type="number"
+                  min="0"
+                  value={formData.maxOverdueDays ?? 1}
+                  onChange={e => {
+                    const n = parseInt(e.target.value, 10);
+                    handleChange(
+                      'maxOverdueDays',
+                      Number.isNaN(n) ? 1 : Math.max(0, n)
+                    );
+                  }}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Extra days after renewal before marking overdue.
+                </p>
               </div>
-            </div>
+            </>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="stripeId">Stripe Price ID (Optional)</Label>
-            <Input
-              id="stripeId"
-              value={formData.stripe?.priceId}
-              onChange={e => handleChange('stripe', e.target.value)}
-              placeholder="price_..."
-            />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="stripePriceId">Stripe Price ID (optional)</Label>
+              <Input
+                id="stripePriceId"
+                value={formData.stripe?.priceId ?? ''}
+                onChange={e => setStripeField('priceId', e.target.value)}
+                placeholder="price_..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="stripeSubscriptionId">
+                Stripe product ID (optional)
+              </Label>
+              <Input
+                id="stripeSubscriptionId"
+                value={formData.stripe?.subscriptionId ?? ''}
+                onChange={e => setStripeField('subscriptionId', e.target.value)}
+                placeholder="prod_..."
+              />
+              <p className="text-xs text-muted-foreground">
+                Backend stores Stripe product id here for subscription products.
+              </p>
+            </div>
           </div>
 
           {/* Virtual Currency Section */}

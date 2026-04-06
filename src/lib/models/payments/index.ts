@@ -32,7 +32,7 @@ export interface Product {
   maxOverdueDays?: number;
   stripe?: {
     subscriptionId?: string;
-    priceId: string;
+    priceId?: string;
   };
   // New virtual currency fields
   creditType?: string;
@@ -79,17 +79,47 @@ export interface Transaction {
   updatedAt?: string;
 }
 
+export type SubscriptionStatus = 'active' | 'canceled' | 'expired' | 'overdue';
+
+export type SubscriptionManagedBy =
+  | 'module'
+  | 'appstore'
+  | 'play-store'
+  | 'revenuecat'
+  | 'custom';
+
 export interface Subscription {
   _id?: string;
-  product: string;
-  userId: string;
-  customerId: string;
-  iamport: {
-    nextPaymentId: string;
-  };
-  activeUntil: string;
-  transactions: Transaction[];
+  product: string | Product;
   provider: string;
+  customer: string | Customer;
+  activeUntil: string;
+  firstPayment?: string;
+  nextPayment?: string;
+  lastPayment?: string;
+  defaultPaymentMethod?: string;
+  options?: {
+    seatCount?: number;
+    vatExempt?: boolean;
+  };
+  upgradingTo?: string | Product;
+  isTrial?: boolean;
+  managedBy?: SubscriptionManagedBy;
+  status?: SubscriptionStatus;
+  providerMetadata?: unknown;
+  transactions?: Transaction[];
+  createdAt?: string;
+  updatedAt?: string;
+  /** Legacy flat shape from some API responses */
+  userId?: string;
+  customerId?: string;
+}
+
+export interface RedeemCode {
+  _id?: string;
+  product: string | Product;
+  code: string;
+  validUntil?: string;
   createdAt?: string;
   updatedAt?: string;
 }

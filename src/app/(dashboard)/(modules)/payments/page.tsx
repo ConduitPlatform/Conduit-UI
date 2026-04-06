@@ -4,6 +4,7 @@ import {
   DollarSign,
   History,
   Settings,
+  Tag,
   Users,
   Wallet,
 } from 'lucide-react';
@@ -66,6 +67,12 @@ export default async function PaymentsDashboard() {
       description: 'Manage payment products',
       icon: <CreditCard className="h-4 w-4" />,
       href: '/payments/products',
+    },
+    {
+      title: 'Redeem codes',
+      description: 'Create and manage product redeem codes',
+      icon: <Tag className="h-4 w-4" />,
+      href: '/payments/redeem-codes',
     },
     {
       title: 'Balances',
