@@ -73,6 +73,7 @@
     "react-json-view-lite": "^2.5.0",
     "reactflow": "^11.11.4",
     "recharts": "^3.8.1",
+    "rehype-prism-plus": "^2.0.2",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.2.2",
