@@ -21,13 +21,13 @@ interface QueryListProps {
   models: DeclaredSchema[];
   selectedQuery?: string;
   isLoading: boolean;
-  hasMore: boolean;
   searchTerm?: string;
   selectedModel?: string;
   onSearchChange: (value: string) => void;
   onModelChange: (value: string) => void;
   onQuerySelect: (id: string) => void;
   onCreateQuery: () => void;
+  onDeleteQuery?: (id: string) => void;
   loadMoreRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -42,6 +42,7 @@ export function QueryList({
   onModelChange,
   onQuerySelect,
   onCreateQuery,
+  onDeleteQuery,
   loadMoreRef,
 }: Readonly<QueryListProps>) {
   const queries = React.useMemo(() => initialQueries, [initialQueries]);
@@ -118,6 +119,7 @@ export function QueryList({
                 query={query}
                 isSelected={selectedQuery === query._id}
                 onClick={() => onQuerySelect(query._id)}
+                onDelete={onDeleteQuery}
               />
             ))}
 

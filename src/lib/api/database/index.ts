@@ -147,6 +147,13 @@ export const getCustomEndpoints = async (args?: {
     })
     .then(res => res.data);
 };
+
+export const getCustomEndpoint = async (id: string) => {
+  return await (await getApiClient())
+    .get<CustomEndpoint>(`/database/customEndpoints/${id}`)
+    .then(res => res.data);
+};
+
 export const createCustomEndpoint = async (
   endpoint: Partial<CustomEndpoint>
 ) => {

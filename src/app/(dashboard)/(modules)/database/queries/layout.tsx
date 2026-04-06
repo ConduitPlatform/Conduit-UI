@@ -3,10 +3,15 @@ import * as React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { QueryList } from '@/components/database/queries/query-list/query-list';
 import { useRouter } from 'next/navigation';
-import { getCustomEndpoints, getSchemas } from '@/lib/api/database';
+import {
+  deleteCustomEndpoint,
+  getCustomEndpoints,
+  getSchemas,
+} from '@/lib/api/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 import { DeclaredSchema } from '@/lib/models/database';
 import { isEmpty } from 'lodash';
+import { useToast } from '@/lib/hooks/use-toast';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -22,6 +27,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   const [hasMore, setHasMore] = React.useState(true);
   const [page, setPage] = React.useState(1);
   const router = useRouter();
+  const { toast } = useToast();
   const { ref, inView } = useInView({
     threshold: 0,
   });
@@ -104,6 +110,35 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
     setSelectedModel(value === 'all' ? undefined : value);
   };
 
+  const handleDeleteQuery = React.useCallback(
+    async (id: string) => {
+      if (!window.confirm('Delete this custom query? This cannot be undone.')) {
+        return;
+      }
+      try {
+        await deleteCustomEndpoint(id);
+        setQueries(prev => prev.filter(q => q._id !== id));
+        if (selectedQuery === id) {
+          setSelectedQuery(undefined);
+          router.push('/database/queries/new');
+        }
+        toast({
+          title: 'Query deleted',
+          description: 'The custom query was removed.',
+        });
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: 'Delete failed',
+          description:
+            error instanceof Error ? error.message : 'Could not delete query.',
+          variant: 'destructive',
+        });
+      }
+    },
+    [router, selectedQuery, toast]
+  );
+
   return (
     <div className="h-full flex flex-col w-full overflow-auto">
       <div className="w-full absolute h-5/6 left-0 top-13 flex gap-x-4">
@@ -119,6 +154,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
           onModelChange={handleModelChange}
           onQuerySelect={handleSelectQuery}
           onCreateQuery={handleCreateQuery}
+          onDeleteQuery={handleDeleteQuery}
           /*@ts-ignore*/
           loadMoreRef={ref}
         />

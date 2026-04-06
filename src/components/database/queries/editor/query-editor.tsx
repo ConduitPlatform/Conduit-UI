@@ -36,6 +36,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/lib/hooks/use-toast';
@@ -86,7 +96,6 @@ interface ModelField {
   isArray: boolean;
 }
 
-// Replace the existing findConditionSchema with a recursive schema that supports groups
 const conditionSchema = z.object({
   schemaField: z.string().min(1, 'Field is required'),
   operation: z.nativeEnum(ComparisonOperationEnum),
@@ -98,7 +107,6 @@ const conditionSchema = z.object({
   }),
 });
 
-// Create a recursive schema for condition groups
 // set to any due to TS issues
 const conditionGroupSchema: any = z
   .object({
@@ -120,7 +128,6 @@ const conditionGroupSchema: any = z
     })
   );
 
-// Define the schema for set conditions
 const setConditionSchema = z.object({
   schemaField: z.string().min(1, 'Field is required'),
   action: z.nativeEnum(AssignmentActionEnum),
@@ -138,7 +145,6 @@ const inputsSchema = z.array(
     array: z.boolean().default(false),
   })
 );
-// First, update the querySchema to include the authenticated field
 const querySchema = z.object({
   name: z
     .string()
@@ -149,8 +155,8 @@ const querySchema = z.object({
   selectedSchema: z.string().min(1, 'Model is required'),
   selectedSchemaName: z.string(),
   authentication: z.boolean().default(false),
-  paginated: z.boolean().default(true),
-  sorted: z.boolean().default(true),
+  paginated: z.boolean().default(false),
+  sorted: z.boolean().default(false),
   inputs: inputsSchema,
   inputsJson: z.string().optional(),
   query: conditionGroupSchema.default({
@@ -165,12 +171,14 @@ type QueryFormValues = z.infer<typeof querySchema>;
 interface QueryEditorProps {
   onBack?: () => void;
   onSave?: (data: QueryFormValues) => Promise<void>;
+  onDelete?: () => Promise<void>;
   initialData?: Partial<CustomEndpoint>;
 }
 
 export function QueryEditor({
   onBack,
   onSave,
+  onDelete,
   initialData,
 }: Readonly<QueryEditorProps>) {
   const [models, setModels] = React.useState<DeclaredSchema[]>([]);
@@ -178,8 +186,8 @@ export function QueryEditor({
   const [modelSearchTerm, setModelSearchTerm] = React.useState('');
   const [inputMode, setInputMode] = React.useState<'form' | 'json'>('form');
   const [queryMode, setQueryMode] = React.useState<'form' | 'json'>('form');
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
-  // Update the form defaultValues to include the authenticated field
   const form = useForm<QueryFormValues>({
     resolver: rhfZodResolver(querySchema),
     defaultValues: {
@@ -216,7 +224,6 @@ export function QueryEditor({
     []
   );
   useEffect(() => {
-    // parse DeclaredSchema and provide fields
     if (!selectedSchema) return;
     const parsedSchema = models.find(model => model._id === selectedSchema);
     if (!parsedSchema) return;
@@ -283,14 +290,12 @@ export function QueryEditor({
     name: 'inputs',
   });
 
-  // Add a function to add a condition to a group
   const addConditionToGroup = (path: string, condition: any) => {
     const currentGroup = form.getValues(path as any) as unknown[];
     const updatedConditions = [...currentGroup, condition];
     form.setValue(path as any, updatedConditions);
   };
 
-  // Add a function to add a nested group
   const addNestedGroup = (path: string, groupType: 'AND' | 'OR') => {
     const currentGroup = form.getValues(path as any) as unknown[];
     const newGroup = {
@@ -300,7 +305,6 @@ export function QueryEditor({
     form.setValue(path as any, updatedConditions);
   };
 
-  // Add a function to remove a condition or group from a parent group
   const removeFromGroup = (path: string, index: number) => {
     const currentGroup = form.getValues(path as any) as unknown[];
     const updatedConditions = [...currentGroup];
@@ -363,14 +367,12 @@ export function QueryEditor({
     }
   }, [operation]);
 
-  // Check if the operation supports set conditions
   const supportsSetConditions = [
     OperationsEnum.POST,
     OperationsEnum.PUT,
     OperationsEnum.PATCH,
   ].includes(operation);
 
-  // Mock function to fetch models
   const fetchModels = React.useCallback(async () => {
     const { schemas } = await getSchemas({
       skip: 0,
@@ -389,7 +391,6 @@ export function QueryEditor({
     fetchModels();
   }, [fetchModels]);
 
-  // Filter models based on search term
   const filteredModels = React.useMemo(() => {
     return models.filter(model => {
       //match search term with model name
@@ -432,7 +433,6 @@ export function QueryEditor({
     });
   }, [models, modelSearchTerm, operation]);
 
-  // Handle form submission
   const onSubmit = (data: QueryFormValues) => {
     // If in JSON mode for inputs, parse the JSON and update the inputs
     if (inputMode === 'json') {
@@ -474,7 +474,6 @@ export function QueryEditor({
     if (onSave) {
       onSave(data)
         .then(() => {
-          'use client';
           toast({
             title: 'Query saved',
             description: 'It will be available in a couple os seconds',
@@ -499,7 +498,6 @@ export function QueryEditor({
     }
   };
 
-  // Sync form inputs with JSON when switching modes
   const handleInputModeChange = (mode: 'form' | 'json') => {
     if (mode === 'json' && inputMode === 'form') {
       // Convert form inputs to JSON
@@ -523,7 +521,6 @@ export function QueryEditor({
     setInputMode(mode);
   };
 
-  // Sync query conditions with JSON when switching modes
   const handleQueryModeChange = (mode: 'form' | 'json') => {
     if (mode === 'json' && queryMode === 'form') {
       // Convert form conditions to JSON
@@ -566,7 +563,6 @@ export function QueryEditor({
     setQueryMode(mode);
   };
 
-  // Add a helper function to count total conditions in a group (including nested ones)
   const countConditions = (group: any) => {
     if (!group || !group[Object.keys(group)[0]]) return 0;
     return group[Object.keys(group)[0]].reduce(
@@ -585,7 +581,6 @@ export function QueryEditor({
     );
   };
 
-  // Function to get a readable description of a condition
   const getConditionDescription = (condition: Comparison): string => {
     const { schemaField, operation, comparisonField } = condition;
 
@@ -603,7 +598,6 @@ export function QueryEditor({
     return `${schemaField} ${getReadableOperation(operation)} ${valueDisplay}`;
   };
 
-  // Function to get a readable description of a set condition
   const getSetDescription = (condition: Assignment, index: number): string => {
     const { schemaField, action, assignmentField } = condition;
     if (!schemaField) return `Set #${index + 1}`;
@@ -633,8 +627,6 @@ export function QueryEditor({
     }
   };
 
-  // Replace the renderFindCondition function with a recursive function to render condition groups
-  // First, add a new function to render a single condition
   const renderCondition = (
     condition: Comparison,
     path: string,
@@ -773,7 +765,6 @@ export function QueryEditor({
     );
   };
 
-  // Update the group rendering to include visual indicators for AND/OR
   const renderConditionGroup = (
     group: any,
     path = 'query',
@@ -929,7 +920,6 @@ export function QueryEditor({
     );
   };
 
-  // Render a set condition
   const renderSetCondition = (condition: any, index: number) => {
     return (
       <Collapsible
@@ -1063,17 +1053,62 @@ export function QueryEditor({
               </Button>
             )}
             <h2 className="text-2xl font-bold">
-              {initialData ? 'Edit Query' : 'Create New Query'}
+              {initialData?._id ? 'Edit Query' : 'Create New Query'}
             </h2>
           </div>
-          <Button type="submit">
-            <Save className="mr-2 h-4 w-4" />
-            Save Query
-          </Button>
+          <div className="flex items-center gap-2">
+            {onDelete && (
+              <>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
+                <AlertDialog
+                  open={deleteDialogOpen}
+                  onOpenChange={setDeleteDialogOpen}
+                >
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete custom query?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This removes the custom endpoint from the platform. This
+                        action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={e => {
+                          e.preventDefault();
+                          void onDelete().catch((error: Error) => {
+                            toast({
+                              title: 'Error deleting query',
+                              description: error.message,
+                              variant: 'destructive',
+                            });
+                          });
+                        }}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
+            <Button type="submit">
+              <Save className="mr-2 h-4 w-4" />
+              Save Query
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Information */}
           <Card>
             <CardHeader>
               <CardTitle>Query Information</CardTitle>
@@ -1088,9 +1123,6 @@ export function QueryEditor({
                   fieldName={'name'}
                   placeholder="Enter query name"
                 />
-                {/*{form.formState.errors.name && (*/}
-                {/*  <p className='text-sm text-destructive'>{form.formState.errors.name.message}</p>*/}
-                {/*)}*/}
               </div>
 
               <div className="space-y-2">
@@ -1102,19 +1134,15 @@ export function QueryEditor({
                 />
               </div>
 
-              {/* Now add the checkbox in the Query Information card, after the description field */}
-              {/* In the CardContent of the first Card (Query Information) */}
-              {/* Add this after the description textarea: */}
               <div className="flex items-center space-x-2">
                 <InputField
                   type={'checkbox'}
                   label={'Requires Authentication'}
-                  fieldName={'authenticated'}
+                  fieldName={'authentication'}
                   classNames={{
                     description: 'text-xs text-muted-foreground',
                     input:
                       'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
-                    // formItem: 'flex flex-row',
                   }}
                   description={
                     ' When enabled, this query will only be accessible to authenticated users'
@@ -1144,9 +1172,6 @@ export function QueryEditor({
                   }))}
                   fieldName={'operation'}
                 />
-                {/*{form.formState.errors.operation && (*/}
-                {/*  <p className='text-sm text-destructive'>{form.formState.errors.operation.message}</p>*/}
-                {/*)}*/}
               </div>
 
               <div className="space-y-2">
@@ -1204,7 +1229,6 @@ export function QueryEditor({
                             >
                               <div className="flex flex-col">
                                 <span>{model.name}</span>
-                                {/*<span className='text-xs text-muted-foreground truncate'>{model.description}</span>*/}
                               </div>
                             </Button>
                           ))}
@@ -1222,7 +1246,6 @@ export function QueryEditor({
             </CardContent>
           </Card>
 
-          {/* Inputs Section */}
           <Card>
             <CardHeader>
               <CardTitle>Query Inputs</CardTitle>
@@ -1348,15 +1371,6 @@ export function QueryEditor({
                                 label={'Placement'}
                                 fieldName={`inputs.${index}.location`}
                                 placeholder="Select placement"
-                                // onValueChange={(value) => {
-                                //   field.onChange(value);
-                                //   // If changing to path, disable array and make required
-                                //   if (value === 'path') {
-                                //     form.setValue(`inputs.${index}.isArray`, false);
-                                //     form.setValue(`inputs.${index}.required`, true);
-                                //   }
-                                // }}
-                                // disabled={field.value === 'body' && !isPlacementValid('body')}
                                 options={placementTypes.map(place => ({
                                   value: place.value,
                                   label: (
@@ -1517,7 +1531,6 @@ export function QueryEditor({
           </Card>
         </div>
 
-        {/* Query Definition Section */}
         {form.watch('selectedSchema') && (
           <Card>
             <CardHeader>
@@ -1543,7 +1556,6 @@ export function QueryEditor({
                 </TabsList>
 
                 <TabsContent value="form" className="space-y-6">
-                  {/* Find Conditions */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-medium flex items-center">
@@ -1552,11 +1564,9 @@ export function QueryEditor({
                       </h3>
                     </div>
 
-                    {/* Replace the existing condition rendering with the new group renderer */}
                     {renderConditionGroup('query')}
                   </div>
 
-                  {/* Set Conditions (only for create, update, patch) */}
                   {supportsSetConditions && (
                     <>
                       <Separator />
@@ -1662,7 +1672,6 @@ export function QueryEditor({
               </Tabs>
             </CardContent>
             <CardFooter className="flex justify-between">
-              {/* Update the footer text to use the countConditions function */}
               <div className="text-sm text-muted-foreground">
                 {countConditions(form.watch('query'))} find condition
                 {countConditions(form.watch('query')) !== 1 ? 's' : ''} and
