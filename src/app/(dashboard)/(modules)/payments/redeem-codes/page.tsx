@@ -6,6 +6,7 @@ import { getPaymentSettings } from '@/lib/api/payments';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { RedeemCodesTable } from '@/components/payments/redeem-codes/redeem-codes-table';
 import { Button } from '@/components/ui/button';
+import { PageHeader, PageTitle } from '@/components/ui/page-header';
 
 export default function RedeemCodesPage() {
   const [enabled, setEnabled] = useState<boolean | null>(null);
@@ -23,7 +24,9 @@ export default function RedeemCodesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Redeem codes</h1>
+      <PageHeader>
+        <PageTitle>Redeem codes</PageTitle>
+      </PageHeader>
 
       {enabled === null ? (
         <p className="text-sm text-muted-foreground">Loading…</p>

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@uidotdev/usehooks';
 import { useSearchParams } from 'next/navigation';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
-import { DataTable } from '@/components/notifications/tokens/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { columns } from '@/components/notifications/tokens/columns';
 
 export default function NotificationTokensTable({

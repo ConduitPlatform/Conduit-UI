@@ -33,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useChartColors } from '@/lib/hooks/useChartColors';
 
 // Types from the parent component
 interface PermissionStep {
@@ -156,6 +157,8 @@ export default function PermissionGraphVisualizer({
   open,
   onOpenChange,
 }: PermissionGraphVisualizerProps) {
+  const colors = useChartColors();
+
   // Create nodes and edges from the permission path
   const { initialNodes, initialEdges } = useMemo(() => {
     const nodes: Node[] = [];
@@ -221,10 +224,10 @@ export default function PermissionGraphVisualizer({
           id: `e-${fromId}-${relationId}`,
           source: fromId,
           target: relationId,
-          style: { stroke: '#9333ea' },
+          style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#9333ea',
+            color: colors.chart5,
           },
         });
 
@@ -233,10 +236,10 @@ export default function PermissionGraphVisualizer({
           id: `e-${relationId}-${toId}`,
           source: relationId,
           target: toId,
-          style: { stroke: '#9333ea' },
+          style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#9333ea',
+            color: colors.chart5,
           },
         });
       }
@@ -258,10 +261,10 @@ export default function PermissionGraphVisualizer({
           id: `e-${fromId}-${permissionId}`,
           source: fromId,
           target: permissionId,
-          style: { stroke: '#16a34a' },
+          style: { stroke: colors.chart2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#16a34a',
+            color: colors.chart2,
           },
         });
 
@@ -270,10 +273,10 @@ export default function PermissionGraphVisualizer({
           id: `e-${permissionId}-${toId}`,
           source: permissionId,
           target: toId,
-          style: { stroke: '#16a34a' },
+          style: { stroke: colors.chart2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#16a34a',
+            color: colors.chart2,
           },
         });
       }
@@ -285,18 +288,18 @@ export default function PermissionGraphVisualizer({
           source: fromId,
           target: toId,
           label: 'inherits',
-          labelStyle: { fill: '#3b82f6', fontWeight: 500 },
-          style: { stroke: '#3b82f6' },
+          labelStyle: { fill: colors.chart1, fontWeight: 500 },
+          style: { stroke: colors.chart1 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#3b82f6',
+            color: colors.chart1,
           },
         });
       }
     });
 
     return { initialNodes: nodes, initialEdges: edges };
-  }, [path]);
+  }, [path, colors]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -350,7 +353,7 @@ export default function PermissionGraphVisualizer({
             panOnScroll={true}
             panOnDrag={true}
             defaultZoom={zoomLevel}
-            style={{ background: '#f8fafc' }}
+            style={{ background: colors.background }}
           >
             <Controls showInteractive={false} />
             <Background />

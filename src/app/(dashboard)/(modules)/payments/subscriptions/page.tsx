@@ -1,16 +1,21 @@
 import { SubscriptionsTable } from '@/components/payments/subscriptions/subscriptions-table';
+import {
+  PageHeader,
+  PageTitle,
+  PageDescription,
+} from '@/components/ui/page-header';
 
 export default function SubscriptionsPage() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <PageHeader>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Subscriptions</h1>
-          <p className="text-muted-foreground">
+          <PageTitle>Subscriptions</PageTitle>
+          <PageDescription>
             View and manage active subscriptions.
-          </p>
+          </PageDescription>
         </div>
-      </div>
+      </PageHeader>
 
       <SubscriptionsTable />
     </div>

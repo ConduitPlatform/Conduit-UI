@@ -236,14 +236,8 @@ export function DataTable({
                         key={header.id}
                         className={`${headerDensity} text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 border whitespace-nowrap bg-background ${
                           isSticky ? 'sticky' : ''
-                        } ${
-                          isFirstColumn
-                            ? 'left-0 shadow-[2px_0_8px_rgba(0,0,0,0.1)]'
-                            : ''
-                        } ${
-                          isLastColumn
-                            ? 'right-0 shadow-[-2px_0_8px_rgba(0,0,0,0.1)]'
-                            : ''
+                        } ${isFirstColumn ? 'left-0' : ''} ${
+                          isLastColumn ? 'right-0' : ''
                         }`}
                         style={{
                           width: isLastColumn
@@ -263,8 +257,8 @@ export function DataTable({
                           }),
                           ...(isLastColumn && {
                             right: 0,
-                            zIndex: 50, // Higher than header z-index
-                            boxShadow: '-2px 0 8px rgba(0,0,0,0.1)',
+                            zIndex: 50,
+                            boxShadow: 'var(--shadow-sticky-reverse)',
                             transform: 'translateZ(0)',
                           }),
                         }}
@@ -300,14 +294,8 @@ export function DataTable({
                           key={cell.id}
                           className={`${cellDensity} align-middle [&:has([role=checkbox])]:pr-0 border bg-background ${
                             isSticky ? 'sticky' : ''
-                          } ${
-                            isFirstColumn
-                              ? 'left-0 shadow-[2px_0_8px_rgba(0,0,0,0.1)]'
-                              : ''
-                          } ${
-                            isLastColumn
-                              ? 'right-0 shadow-[-2px_0_8px_rgba(0,0,0,0.1)]'
-                              : ''
+                          } ${isFirstColumn ? 'left-0' : ''} ${
+                            isLastColumn ? 'right-0' : ''
                           }`}
                           style={{
                             width: isLastColumn
@@ -327,7 +315,7 @@ export function DataTable({
                               right: 0,
                               zIndex: 30,
                               backgroundColor: 'hsl(var(--background))',
-                              boxShadow: '-2px 0 8px rgba(0,0,0,0.1)',
+                              boxShadow: 'var(--shadow-sticky-reverse)',
                               transform: 'translateZ(0)',
                             }),
                           }}

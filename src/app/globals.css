@@ -52,12 +52,48 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+  --color-chart-grid: hsl(var(--chart-grid));
+
+  --color-surface-dark-gray: hsl(var(--surface-dark-gray));
+  --color-text-light: hsl(var(--text-light));
+  --color-text-dark-gray: hsl(var(--text-dark-gray));
+  --color-text-light-gray: hsl(var(--text-light-gray));
+  --color-border-dark-gray: hsl(var(--border-dark-gray));
+
+  --color-code-bg: hsl(var(--code-bg));
+  --color-code-text: hsl(var(--code-text));
+
+  --color-json-null: hsl(var(--json-null));
+  --color-json-string: hsl(var(--json-string));
+  --color-json-boolean: hsl(var(--json-boolean));
+  --color-json-number: hsl(var(--json-number));
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --shadow-1:
+    0 1px 2px 0 rgb(17 24 39 / 0.04), 0 1px 3px 0 rgb(17 24 39 / 0.06);
+  --shadow-2:
+    0 1px 3px 0 rgb(17 24 39 / 0.06), 0 4px 8px -1px rgb(17 24 39 / 0.08);
+  --shadow-3:
+    0 2px 4px 0 rgb(17 24 39 / 0.06), 0 8px 16px -2px rgb(17 24 39 / 0.08),
+    0 1px 2px 0 rgb(17 24 39 / 0.04);
+  --shadow-4:
+    0 4px 8px 0 rgb(17 24 39 / 0.06), 0 16px 32px -4px rgb(17 24 39 / 0.1),
+    0 2px 4px 0 rgb(17 24 39 / 0.04);
+  --shadow-sticky: 2px 0 8px rgb(17 24 39 / 0.08);
+  --shadow-sticky-reverse: -2px 0 8px rgb(17 24 39 / 0.08);
+
+  --ease-productive: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-accordion-down: accordion-down 0.2s var(--ease-productive);
+  --animate-accordion-up: accordion-up 0.2s var(--ease-productive);
 
   @keyframes accordion-down {
     from {
@@ -117,11 +153,11 @@
 
     &::-webkit-scrollbar-track {
       border-radius: 100vh;
-      background: #434343;
+      background: hsl(var(--scrollbar-track));
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #b3b4bd;
+      background: hsl(var(--scrollbar-thumb));
       border-radius: 100vh;
     }
   }
@@ -150,16 +186,42 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
     --ring: 215 20.2% 65.1%;
+
+    --chart-1: 217 91% 60%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 0 84% 60%;
+    --chart-4: 43 96% 56%;
+    --chart-5: 262 83% 58%;
+    --chart-grid: 210 17% 95%;
+
+    --surface-dark-gray: 222 47% 11%;
+    --text-light: 210 40% 98%;
+    --text-dark-gray: 215 16% 47%;
+    --text-light-gray: 215 16% 57%;
+    --border-dark-gray: 214 32% 80%;
+
+    --code-bg: 215 28% 13%;
+    --code-text: 213 16% 82%;
+
+    --json-null: 189 100% 30%;
+    --json-string: 180 100% 23%;
+    --json-boolean: 40 77% 46%;
+    --json-number: 280 42% 50%;
+
+    --scrollbar-track: 0 0% 26%;
+    --scrollbar-thumb: 233 6% 72%;
 
     --radius: 0.5rem;
 
-    /* Spacing scale */
-    --spacing-page: 1.5rem;
-    --spacing-section: 1.5rem;
-    --spacing-card: 1rem;
-    --spacing-form-field: 1rem;
-    --spacing-form-item: 0.375rem;
+    --overlay: 0 0% 0% / 0.6;
+
     --sidebar-width: 14rem;
     --sidebar-width-icon: 3.5rem;
     --header-height: 2.5rem;
@@ -171,7 +233,7 @@
     --sidebar-accent: 210 40% 96.1%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 214.3 31.8% 80%;
-    --sidebar-ring: 239, 84%, 67%;
+    --sidebar-ring: 239 84% 67%;
   }
 
   .dark {
@@ -204,6 +266,32 @@
 
     --ring: 217.2 32.6% 17.5%;
 
+    --chart-1: 217 91% 60%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 0 62% 31%;
+    --chart-4: 43 96% 56%;
+    --chart-5: 262 83% 58%;
+    --chart-grid: 217 33% 25%;
+
+    --surface-dark-gray: 222 47% 11%;
+    --text-light: 210 40% 98%;
+    --text-dark-gray: 215 20% 65%;
+    --text-light-gray: 215 16% 57%;
+    --border-dark-gray: 217 33% 35%;
+
+    --code-bg: 215 28% 13%;
+    --code-text: 213 16% 82%;
+
+    --json-null: 197 100% 50%;
+    --json-string: 180 100% 43%;
+    --json-boolean: 49 96% 46%;
+    --json-number: 279 70% 77%;
+
+    --scrollbar-track: 0 0% 26%;
+    --scrollbar-thumb: 233 6% 72%;
+
+    --overlay: 0 0% 0% / 0.7;
+
     --sidebar-background: 222.2 84% 4.9%;
     --sidebar-foreground: 240 5% 72%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -211,7 +299,7 @@
     --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 240 4.8% 89%;
     --sidebar-border: 217.2 32.6% 35%;
-    --sidebar-ring: 239, 84%, 67%;
+    --sidebar-ring: 239 84% 67%;
   }
 }
 
@@ -221,5 +309,33 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-synthesis: none;
+  }
+}
+
+button:not(:disabled):active,
+[role='button']:not(:disabled):active {
+  transform: scale(0.97);
+  transition: transform 120ms ease;
+}
+
+@media (hover: none) {
+  .group-hover\:opacity-100 {
+    opacity: 1;
+  }
+
+  tr:hover {
+    background-color: transparent !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

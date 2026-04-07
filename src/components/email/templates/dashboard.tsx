@@ -71,7 +71,7 @@ export const TemplatesDashboard = ({
           </div>
 
           <div className={'pr-2 w-7/12 mt-5'}>
-            <p className={'text-xs text-[#94A3B8]'}>
+            <p className={'text-xs text-muted-foreground'}>
               Warning: Pulling templates will overwrite only local changes, any
               external templates not registered in the system will not be
               synced.

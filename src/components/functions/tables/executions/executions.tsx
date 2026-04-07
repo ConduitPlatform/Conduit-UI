@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { FunctionExecutionModel, FunctionModel } from '@/lib/models/functions';
-import { DataTable } from '@/components/functions/tables/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { useColumns } from '@/components/functions/tables/executions/columns';
 
 export default function FunctionExecutionTable({

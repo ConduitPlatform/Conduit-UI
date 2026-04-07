@@ -92,7 +92,7 @@ const MultiSelectField = ({
     container:
       'flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-transparent pl-3 py-2 pr-8 text-sm ring-offset-background focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5',
     removeButton:
-      'flex items-center justify-center p-[3px] -mr-1 rounded-md outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
+      'flex items-center justify-center p-0.5 -mr-1 rounded-md outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2',
     removeIcon: 'shrink-0 w-3 h-3 text-muted-foreground hover:text-foreground',
     dropdownIconContainer:
       'absolute flex items-center justify-center transform -translate-x-1 -translate-y-1/2 rounded-md outline-hidden text-muted-foreground top-1/2 right-1',

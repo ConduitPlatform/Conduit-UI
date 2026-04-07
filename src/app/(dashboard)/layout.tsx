@@ -1,6 +1,7 @@
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/appSidebar';
 import { CommandPalette } from '@/components/navigation/commandPalette';
+import { ShortcutSheet } from '@/components/navigation/ShortcutSheet';
 import { ModuleAvailabilityProvider } from '@/contexts/ModuleAvailabilityContext';
 import { ModuleGuard } from '@/components/module-guard/ModuleGuard';
 
@@ -15,6 +16,7 @@ export default function Layout({
           <ModuleGuard>{children}</ModuleGuard>
         </main>
         <CommandPalette />
+        <ShortcutSheet />
       </SidebarProvider>
     </ModuleAvailabilityProvider>
   );

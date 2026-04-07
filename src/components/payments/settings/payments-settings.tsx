@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { PaymentsSettingsForm } from './payments-settings-form';
 
 export function PaymentsSettings() {
@@ -91,9 +92,7 @@ export function PaymentsSettings() {
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to update with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{err.message}</code>
-              </pre>
+              <ErrorPre>{err.message}</ErrorPre>
             </div>
           ),
         });
@@ -141,9 +140,7 @@ export function PaymentsSettings() {
               <LucideX className={'w-8 h-8'} />
               <p className="text-sm">Failed to update with:</p>
             </div>
-            <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-              <code className="text-sm text-foreground">{error.message}</code>
-            </pre>
+            <ErrorPre>{error.message}</ErrorPre>
           </div>
         ),
       });
@@ -202,7 +199,7 @@ export function PaymentsSettings() {
             />
           </div>
           <div className={'pr-2 w-7/12'}>
-            <p className={'text-xs text-[#94A3B8]'}>
+            <p className={'text-xs text-muted-foreground'}>
               Configure payment providers and general settings for the payments
               module. You can enable multiple payment providers simultaneously.
             </p>

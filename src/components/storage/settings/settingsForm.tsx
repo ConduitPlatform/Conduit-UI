@@ -157,7 +157,7 @@ export const SettingsForm = ({
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 w-3/12">
                 <FormLabel className="text-base">
                   Suffix on Name Conflict
-                  <p className={'text-xs text-[#94A3B8]'}>
+                  <p className={'text-xs text-muted-foreground'}>
                     Add suffix to files when there&apos;s a naming conflict
                   </p>
                 </FormLabel>
@@ -365,7 +365,7 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>
                       Account ID
-                      <p className={'text-xs text-[#94A3B8]'}>
+                      <p className={'text-xs text-muted-foreground'}>
                         This is used for bucket uniqueness. If not using AWS you
                         can leave empty
                       </p>
@@ -390,7 +390,7 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>
                       Endpoint
-                      <p className={'text-xs text-[#94A3B8]'}>
+                      <p className={'text-xs text-muted-foreground'}>
                         This field should be empty if using AWS S3
                       </p>
                     </FormLabel>
@@ -414,7 +414,7 @@ export const SettingsForm = ({
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <FormLabel className="text-base">
                       Use Path Style
-                      <p className={'text-xs text-[#94A3B8]'}>
+                      <p className={'text-xs text-muted-foreground'}>
                         Use path style addressing for S3 buckets (only for
                         non-AWS S3 compatible providers)
                       </p>

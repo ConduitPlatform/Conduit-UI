@@ -1,16 +1,21 @@
 import { ProductsTable } from '@/components/payments/products/products-table';
+import {
+  PageHeader,
+  PageTitle,
+  PageDescription,
+} from '@/components/ui/page-header';
 
 export default function ProductsPage() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <PageHeader>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-muted-foreground">
+          <PageTitle>Products</PageTitle>
+          <PageDescription>
             Manage your products and subscription offerings.
-          </p>
+          </PageDescription>
         </div>
-      </div>
+      </PageHeader>
 
       <ProductsTable />
     </div>

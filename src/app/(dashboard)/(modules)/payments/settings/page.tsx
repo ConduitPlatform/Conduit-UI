@@ -1,18 +1,21 @@
 import { PaymentsSettings } from '@/components/payments/settings/payments-settings';
+import {
+  PageHeader,
+  PageTitle,
+  PageDescription,
+} from '@/components/ui/page-header';
 
 export default function PaymentsSettingsPage() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <PageHeader>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Payment Settings
-          </h1>
-          <p className="text-muted-foreground">
+          <PageTitle>Payment Settings</PageTitle>
+          <PageDescription>
             Configure your payment providers and settings.
-          </p>
+          </PageDescription>
         </div>
-      </div>
+      </PageHeader>
 
       <PaymentsSettings />
     </div>

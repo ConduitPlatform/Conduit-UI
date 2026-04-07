@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
@@ -171,11 +172,9 @@ export const Settings = ({ data }: Props) => {
                   <LucideX className={'w-8 h-8'} />
                   <p className="text-sm">Failed to add with:</p>
                 </div>
-                <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                  <code className="text-sm text-foreground">
-                    Activation was not successful. Check the logs for more info
-                  </code>
-                </pre>
+                <ErrorPre>
+                  Activation was not successful. Check the logs for more info
+                </ErrorPre>
               </div>
             ),
           });
@@ -190,9 +189,7 @@ export const Settings = ({ data }: Props) => {
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to add with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{error.message}</code>
-              </pre>
+              <ErrorPre>{error.message}</ErrorPre>
             </div>
           ),
         });
@@ -253,11 +250,7 @@ export const Settings = ({ data }: Props) => {
                       <LucideX className={'w-8 h-8'} />
                       <p className="text-sm">Failed to update with:</p>
                     </div>
-                    <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                      <code className="text-sm text-foreground">
-                        {err.message}
-                      </code>
-                    </pre>
+                    <ErrorPre>{err.message}</ErrorPre>
                   </div>
                 ),
               });
@@ -307,11 +300,7 @@ export const Settings = ({ data }: Props) => {
                   <LucideX className={'w-8 h-8'} />
                   <p className="text-sm">Failed to update with:</p>
                 </div>
-                <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                  <code className="text-sm text-foreground">
-                    The file is not valid
-                  </code>
-                </pre>
+                <ErrorPre>The file is not valid</ErrorPre>
               </div>
             ),
           });
@@ -334,7 +323,7 @@ export const Settings = ({ data }: Props) => {
             />
           </div>
           <div className={'pr-2'}>
-            <p className={'text-xs text-[#94A3B8]'}>
+            <p className={'text-xs text-muted-foreground'}>
               To see more information regarding the Push Notifications config,
               visit our{' '}
               <a

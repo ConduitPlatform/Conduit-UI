@@ -26,6 +26,7 @@ import { Admin } from '@/lib/models/User';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { postNewAdminUser } from '@/lib/api/settings/admins';
 import { LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { useRouter } from 'next/navigation';
 
 const FormSchema = z
@@ -130,9 +131,7 @@ export const AddAdminSheet = ({
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to add with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{err.message}</code>
-              </pre>
+              <ErrorPre>{err.message}</ErrorPre>
             </div>
           ),
         });

@@ -122,7 +122,8 @@ export const RoomsDashboard = ({ data }: { data: ChatRoomsResponse }) => {
             {!!users.length && (
               <button
                 onClick={resetPickedUsers}
-                className="disabled:text-muted-foreground"
+                type="button"
+                className="disabled:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <XIcon />
               </button>

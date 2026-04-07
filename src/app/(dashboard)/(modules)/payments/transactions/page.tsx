@@ -1,16 +1,21 @@
 import { TransactionsTable } from '@/components/payments/transactions/transactions-table';
+import {
+  PageHeader,
+  PageTitle,
+  PageDescription,
+} from '@/components/ui/page-header';
 
 export default function TransactionsPage() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <PageHeader>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground">
+          <PageTitle>Transactions</PageTitle>
+          <PageDescription>
             View and manage payment transactions.
-          </p>
+          </PageDescription>
         </div>
-      </div>
+      </PageHeader>
 
       <TransactionsTable />
     </div>

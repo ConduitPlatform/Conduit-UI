@@ -10,6 +10,17 @@ import { FormattedMetric } from '@/lib/prometheus/metrics';
 import { cn } from '@/lib/utils';
 import { PrometheusUnavailableBanner } from '@/components/dashboard/PrometheusUnavailableBanner';
 import type { ObservabilityServiceState } from '@/lib/observability/types';
+import { motion } from 'motion/react';
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.03 } },
+};
+
+const fadeUp = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
+};
 
 export interface ModuleDashboardProps {
   moduleName: string;
@@ -36,22 +47,25 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
   prometheusState,
 }) => {
   return (
-    <div className={cn('space-y-6', className)}>
+    <motion.div
+      className={cn('space-y-6', className)}
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
       {prometheusState && prometheusState !== 'ready' && (
         <PrometheusUnavailableBanner state={prometheusState} />
       )}
-      {/* Header */}
-      <div className="flex items-center space-x-4">
+      <motion.div className="flex items-center space-x-4" variants={fadeUp}>
         <div className="flex items-center space-x-2">
           {moduleIcon}
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight text-balance">
             {moduleName} Dashboard
           </h1>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Top Row: Status, Quick Actions, Module Info */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <motion.div className="grid gap-4 md:grid-cols-3" variants={fadeUp}>
         <ModuleStatusCard module={moduleStatus} />
         <QuickActionsCard actions={quickActions} />
         <Card>
@@ -87,27 +101,24 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
             </div>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
-      {/* Metrics Row */}
-      <div>
+      <motion.div variants={fadeUp}>
         <h2 className="text-xl font-semibold mb-4">Key Metrics</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric, index) => (
             <MetricCard key={index} {...metric} />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* System Metrics Row */}
       {systemMetrics && systemMetrics.length > 0 && (
-        <div>
+        <motion.div variants={fadeUp}>
           <SystemMetricsCard metrics={systemMetrics} />
-        </div>
+        </motion.div>
       )}
 
-      {/* Additional Content */}
-      {children && <div>{children}</div>}
-    </div>
+      {children && <motion.div variants={fadeUp}>{children}</motion.div>}
+    </motion.div>
   );
 };

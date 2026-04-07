@@ -14,6 +14,11 @@ import {
   isExternallyManaged,
 } from '@/lib/utils/template-utils';
 import { useToast } from '@/lib/hooks/use-toast';
+import {
+  PageHeader,
+  PageTitle,
+  PageActions,
+} from '@/components/ui/page-header';
 
 type EmailTemplateProps = {
   params: Promise<{
@@ -174,9 +179,9 @@ export default function EmailTemplates(props: EmailTemplateProps) {
 
   return (
     <div className="flex flex-col space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-medium">Template: {template.name}</h1>
-        <div className="flex space-x-2">
+      <PageHeader>
+        <PageTitle>Template: {template.name}</PageTitle>
+        <PageActions>
           {!isExternallyManaged(template) && (
             <Button
               variant="outline"
@@ -191,8 +196,8 @@ export default function EmailTemplates(props: EmailTemplateProps) {
             <Edit className="h-4 w-4" />
             Edit Template
           </Button>
-        </div>
-      </div>
+        </PageActions>
+      </PageHeader>
 
       <TemplatePreview
         template={template}

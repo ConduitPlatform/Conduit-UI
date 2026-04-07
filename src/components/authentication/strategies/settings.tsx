@@ -9,6 +9,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, ChevronDown, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { patchAuthenticationSettings } from '@/lib/api/authentication';
 import { InputField } from '@/components/ui/form-inputs/InputField';
@@ -125,9 +126,7 @@ export const AuthenticationSettings = ({ data }: Props) => {
               <LucideX className={'w-8 h-8'} />
               <p className="text-sm">Failed to update with:</p>
             </div>
-            <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-              <code className="text-sm text-foreground">{err.message}</code>
-            </pre>
+            <ErrorPre>{err.message}</ErrorPre>
           </div>
         ),
       });
@@ -155,7 +154,7 @@ export const AuthenticationSettings = ({ data }: Props) => {
           <div className={'flex flex-col gap-4'}>
             <div className={'flex flex-col gap-2'}>
               <p className={'text-2xl font-medium'}>General</p>
-              <p className={'text-xs text-[#94A3B8] w-9/12'}>
+              <p className={'text-xs text-muted-foreground w-9/12'}>
                 Authentication provides you with various authentication
                 strategies for your application/platform. You can configure
                 those, along with two-factor authentication, biometric/passkey

@@ -9,7 +9,7 @@ import { Team } from '@/lib/models/Team';
 import { useTeamActions } from '@/components/authentication/teams/TeamActionsProvider';
 import { AddTeamSheet } from '@/components/authentication/teams/addTeamSheet/addTeamSheet';
 import { useSearchParams } from 'next/navigation';
-import { DataTable } from '../components/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import EmptyTeams from '@/components/authentication/teams/TeamsTable/emptyTeams';
 import { getTeams } from '@/lib/api/authentication';
 

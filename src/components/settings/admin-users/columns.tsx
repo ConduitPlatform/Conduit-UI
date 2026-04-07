@@ -8,6 +8,7 @@ import {
   Trash,
   UserCheck,
 } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
 import { ChangePasswordSheet } from '@/components/settings/admin-users/ChangePasswordSheet';
@@ -63,11 +64,7 @@ export default function Columns({ loggedUser }: Props): ColumnDef<Admin>[] {
                       <LucideX className={'w-8 h-8'} />
                       <p className="text-sm">Failed to add with:</p>
                     </div>
-                    <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                      <code className="text-sm text-foreground">
-                        {err.message}
-                      </code>
-                    </pre>
+                    <ErrorPre>{err.message}</ErrorPre>
                   </div>
                 ),
               });

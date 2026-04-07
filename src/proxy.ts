@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const isOnLogin = (url: string) => url.endsWith('/login');
+const isOnLogin = (request: NextRequest) => {
+  const p = request.nextUrl.pathname;
+  return p === '/login' || p === '/login/';
+};
 
 export default function proxy(request: NextRequest) {
   const originalUrl =
@@ -10,7 +13,7 @@ export default function proxy(request: NextRequest) {
   const cookieStore = request.cookies;
   const activeEnvCookie = cookieStore.get('activeEnv');
   if (!activeEnvCookie) {
-    if (isOnLogin(request.url)) {
+    if (isOnLogin(request)) {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(new URL('/login', request.url));
@@ -18,7 +21,7 @@ export default function proxy(request: NextRequest) {
   }
   const accessToken = cookieStore.get(`${activeEnvCookie.value}AccessToken`);
   if (!accessToken) {
-    if (isOnLogin(request.url)) {
+    if (isOnLogin(request)) {
       return NextResponse.next();
     } else {
       const loginUrl = new URL('/login', request.url);
@@ -31,7 +34,7 @@ export default function proxy(request: NextRequest) {
     response.cookies.delete(`${activeEnvCookie.value}AccessToken`);
     return response;
   }
-  if (isOnLogin(request.url)) {
+  if (isOnLogin(request)) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   return NextResponse.next();

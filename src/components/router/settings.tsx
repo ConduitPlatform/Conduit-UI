@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { CaptchaProvider, RouterSettings } from '@/lib/models/Router';
 import { patchRouterSettings } from '@/lib/api/router';
 
@@ -128,9 +129,7 @@ export const Settings = ({ data }: Props) => {
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to update with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{err.message}</code>
-              </pre>
+              <ErrorPre>{err.message}</ErrorPre>
             </div>
           ),
         });
@@ -143,7 +142,7 @@ export const Settings = ({ data }: Props) => {
           <div className={'flex flex-col gap-4'}>
             <div className={'flex flex-col gap-2'}>
               <p className={'text-2xl font-medium'}>General</p>
-              <p className={'text-xs text-[#94A3B8] w-9/12'}>
+              <p className={'text-xs text-muted-foreground w-9/12'}>
                 Router provides a way for modules to register application routes
                 for REST and GraphQL APIs. Endpoint documentation is
                 automatically generated so as to further facilitate development.
@@ -352,7 +351,7 @@ export const Settings = ({ data }: Props) => {
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Allowed Methods
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                        <p className={'text-xs text-muted-foreground w-9/12'}>
                           Make sure Methods are comma-separated
                         </p>
                       </FormLabel>
@@ -376,7 +375,7 @@ export const Settings = ({ data }: Props) => {
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Allowed Headers
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                        <p className={'text-xs text-muted-foreground w-9/12'}>
                           Make sure Headers are comma-separated
                         </p>
                       </FormLabel>
@@ -400,7 +399,7 @@ export const Settings = ({ data }: Props) => {
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Exposed Headers
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                        <p className={'text-xs text-muted-foreground w-9/12'}>
                           Make sure Methods are comma-separated
                         </p>
                       </FormLabel>

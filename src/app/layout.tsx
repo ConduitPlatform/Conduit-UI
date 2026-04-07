@@ -17,7 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} style={{ overflow: 'hidden' }}>
+      <body
+        className={`${inter.className} antialiased`}
+        style={{ overflow: 'hidden' }}
+      >
         <main className={'h-dvh'}>
           <ProviderInjector>{children}</ProviderInjector>
         </main>

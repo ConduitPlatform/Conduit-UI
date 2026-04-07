@@ -33,7 +33,10 @@ export const Participants = ({ room }: { room: RoomResponse }) => {
         <div className="flex items-center gap-x-2">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button>
+              <button
+                type="button"
+                className="focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
                 <PlusIcon className="w-4 h-4" />
               </button>
             </SheetTrigger>

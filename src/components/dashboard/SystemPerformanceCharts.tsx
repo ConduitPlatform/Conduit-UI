@@ -67,7 +67,7 @@ const timeRangeOptions = [
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="p-3 border rounded-lg shadow-lg bg-white text-black dark:bg-zinc-900 dark:text-zinc-100">
+      <div className="p-3 rounded-lg bg-popover text-popover-foreground border border-border shadow-[var(--shadow-2)]">
         <p className="text-sm font-medium">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
@@ -108,25 +108,25 @@ const getStatusColor = (value: number, metric: string): string => {
   switch (metric) {
     case 'responseTime':
       return value > 1
-        ? 'text-red-600'
+        ? 'text-destructive'
         : value > 0.5
-          ? 'text-yellow-600'
-          : 'text-green-600';
+          ? 'text-chart-4'
+          : 'text-chart-2';
     case 'errorRate':
       return value > 5
-        ? 'text-red-600'
+        ? 'text-destructive'
         : value > 1
-          ? 'text-yellow-600'
-          : 'text-green-600';
+          ? 'text-chart-4'
+          : 'text-chart-2';
     case 'cpu':
     case 'memory':
       return value > 80
-        ? 'text-red-600'
+        ? 'text-destructive'
         : value > 60
-          ? 'text-yellow-600'
-          : 'text-green-600';
+          ? 'text-chart-4'
+          : 'text-chart-2';
     default:
-      return 'text-gray-600';
+      return 'text-muted-foreground';
   }
 };
 
@@ -338,7 +338,10 @@ export const SystemPerformanceCharts: React.FC<
             </div>
             <ResponsiveContainer width="100%" height={80}>
               <LineChart data={requestVolumeData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  className="stroke-chart-grid"
+                />
                 <XAxis
                   dataKey="time"
                   tick={{ fontSize: 10 }}
@@ -349,7 +352,7 @@ export const SystemPerformanceCharts: React.FC<
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="#3b82f6"
+                  className="stroke-chart-1"
                   strokeWidth={2}
                   dot={false}
                 />
@@ -384,15 +387,17 @@ export const SystemPerformanceCharts: React.FC<
               </div>
               <ResponsiveContainer width="100%" height={80}>
                 <AreaChart data={responseTimeData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    className="stroke-chart-grid"
+                  />
                   <XAxis dataKey="time" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Area
                     type="monotone"
                     dataKey="value"
-                    stroke="#10b981"
-                    fill="#10b981"
+                    className="stroke-chart-2 fill-chart-2"
                     fillOpacity={0.3}
                   />
                 </AreaChart>
@@ -423,11 +428,18 @@ export const SystemPerformanceCharts: React.FC<
               </div>
               <ResponsiveContainer width="100%" height={80}>
                 <BarChart data={errorRateData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    className="stroke-chart-grid"
+                  />
                   <XAxis dataKey="time" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="value" fill="#ef4444" radius={[2, 2, 0, 0]} />
+                  <Bar
+                    dataKey="value"
+                    className="fill-chart-3"
+                    radius={[2, 2, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -443,7 +455,10 @@ export const SystemPerformanceCharts: React.FC<
             </div>
             <ResponsiveContainer width="100%" height={80}>
               <ComposedChart data={cpuData.length > 0 ? cpuData : memoryData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  className="stroke-chart-grid"
+                />
                 <XAxis dataKey="time" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip content={<CustomTooltip />} />
@@ -451,7 +466,7 @@ export const SystemPerformanceCharts: React.FC<
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#f59e0b"
+                    className="stroke-chart-4"
                     strokeWidth={2}
                     name="CPU"
                     dot={false}
@@ -461,7 +476,7 @@ export const SystemPerformanceCharts: React.FC<
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#8b5cf6"
+                    className="stroke-chart-5"
                     strokeWidth={2}
                     name="Memory"
                     dot={false}
@@ -472,13 +487,13 @@ export const SystemPerformanceCharts: React.FC<
             <div className="flex justify-center space-x-4 mt-2 text-xs text-muted-foreground">
               {cpuData.length > 0 && (
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-amber-500 rounded"></div>
+                  <div className="w-3 h-3 bg-chart-4 rounded"></div>
                   <span>CPU</span>
                 </div>
               )}
               {memoryData.length > 0 && (
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-purple-500 rounded"></div>
+                  <div className="w-3 h-3 bg-chart-5 rounded"></div>
                   <span>Memory</span>
                 </div>
               )}

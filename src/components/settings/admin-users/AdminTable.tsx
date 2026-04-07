@@ -1,5 +1,5 @@
 'use client';
-import { DataTable } from '@/components/authentication/components/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { Admin } from '@/lib/models/User';
 import { Button } from '@/components/ui/button';
 import { AddAdminSheet } from '@/components/settings/admin-users/AddAdminSheet';

@@ -7,6 +7,7 @@ import { EmailFilters } from '@/components/email/records/email-filters';
 import { EmailDetail } from '@/components/email/records/email-detail';
 import { EmailList } from '@/components/email/records/email-list';
 import { fetchRecords } from '@/lib/api/email';
+import { PageHeader, PageTitle } from '@/components/ui/page-header';
 
 export default function EmailPage() {
   const searchParams = useSearchParams();
@@ -106,7 +107,9 @@ export default function EmailPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-3xl font-bold">Email Management</h1>
+      <PageHeader>
+        <PageTitle>Email Management</PageTitle>
+      </PageHeader>
 
       <EmailFilters
         initialFilters={{

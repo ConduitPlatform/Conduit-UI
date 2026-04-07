@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { AdminSettings, CoreEnv, CoreSettings } from '@/lib/models/Settings';
 import { patchAdminSettings, patchCoreSettings } from '@/lib/api/settings';
 
@@ -88,9 +89,7 @@ export const General = ({ data }: Props) => {
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to update with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{err.message}</code>
-              </pre>
+              <ErrorPre>{err.message}</ErrorPre>
             </div>
           ),
         });
@@ -121,9 +120,7 @@ export const General = ({ data }: Props) => {
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to add with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{err.message}</code>
-              </pre>
+              <ErrorPre>{err.message}</ErrorPre>
             </div>
           ),
         });
@@ -166,7 +163,7 @@ export const General = ({ data }: Props) => {
             <Separator className={'my-3'} />
             <div>
               <p className={'text-2xl font-medium'}>Routing</p>
-              <p className={'text-xs text-[#94A3B8]'}>
+              <p className={'text-xs text-muted-foreground'}>
                 For specifics about different kinds of administrative routes,
                 visit{' '}
                 <a
@@ -325,7 +322,7 @@ export const General = ({ data }: Props) => {
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Allowed Methods
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                        <p className={'text-xs text-muted-foreground w-9/12'}>
                           Make sure Methods are comma-separated
                         </p>
                       </FormLabel>
@@ -349,7 +346,7 @@ export const General = ({ data }: Props) => {
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Allowed Headers
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                        <p className={'text-xs text-muted-foreground w-9/12'}>
                           Make sure Headers are comma-separated
                         </p>
                       </FormLabel>
@@ -373,7 +370,7 @@ export const General = ({ data }: Props) => {
                     <FormItem className={'w-full'}>
                       <FormLabel>
                         Exposed Headers
-                        <p className={'text-xs text-[#94A3B8] w-9/12'}>
+                        <p className={'text-xs text-muted-foreground w-9/12'}>
                           Make sure Headers are comma-separated
                         </p>
                       </FormLabel>

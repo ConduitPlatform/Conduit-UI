@@ -230,7 +230,7 @@ export const CreateFunctionForm = ({
           <div className="col-span-1 overflow-visible">
             <ConfigForm middlewares={middlewares} />
           </div>
-          <div className="flex flex-col bg-[#161b22] text-sm col-span-1 p-5 h-full text-[#c9d1d9]">
+          <div className="flex flex-col bg-code-bg text-sm col-span-1 p-5 h-full text-code-text">
             <span>module.exports = function(grpcSdk, req, res) {' {'}</span>
             <CodeField
               label={''}

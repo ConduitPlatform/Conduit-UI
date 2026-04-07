@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@uidotdev/usehooks';
 import { useSearchParams } from 'next/navigation';
 import { FunctionModel } from '@/lib/models/functions';
-import { DataTable } from '@/components/functions/tables/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { useColumns } from '@/components/functions/tables/functions/columns';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';

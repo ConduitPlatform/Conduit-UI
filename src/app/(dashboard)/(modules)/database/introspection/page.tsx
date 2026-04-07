@@ -1,5 +1,10 @@
 import { getPendingSchemas } from '@/lib/api/database';
 import { IntrospectionClient } from './introspection-client';
+import {
+  PageHeader,
+  PageTitle,
+  PageDescription,
+} from '@/components/ui/page-header';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,11 +13,15 @@ export default async function DatabaseIntrospectionPage() {
 
   return (
     <div className="p-6 max-w-3xl">
-      <h1 className="text-2xl font-semibold mb-2">Database introspection</h1>
-      <p className="text-muted-foreground text-sm mb-6">
-        Discover collections from your database adapter and promote them to
-        Conduit CMS schemas.
-      </p>
+      <PageHeader>
+        <div>
+          <PageTitle>Database introspection</PageTitle>
+          <PageDescription>
+            Discover collections from your database adapter and promote them to
+            Conduit CMS schemas.
+          </PageDescription>
+        </div>
+      </PageHeader>
       <IntrospectionClient initialPending={initialPending} />
     </div>
   );

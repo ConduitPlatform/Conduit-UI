@@ -33,6 +33,7 @@ import {
 } from '@/lib/prometheus/metrics';
 import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 import { PrometheusUnavailableBanner } from '@/components/dashboard/PrometheusUnavailableBanner';
+import { PageTitle } from '@/components/ui/page-header';
 
 const moduleIcons: Record<string, React.ReactNode> = {
   authentication: <Users className="h-5 w-5" />,
@@ -141,7 +142,7 @@ export default async function Home() {
               <div className="flex items-center space-x-2">
                 <Server className="h-6 w-6 text-green-600" />
                 <div>
-                  <h1 className="text-xl font-bold">Conduit Platform</h1>
+                  <PageTitle className="text-xl">Conduit Platform</PageTitle>
                   <p className="text-sm text-muted-foreground">
                     Platform Performance Dashboard
                   </p>

@@ -42,18 +42,8 @@ export function ModelSwitcher({
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState('');
 
-  // Keyboard shortcut to open
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen(open => !open);
-      }
-    };
-
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
+  // Cmd+K is reserved for the global command palette.
+  // This switcher is opened via its trigger button.
 
   // Filter schemas based on search
   const filteredSchemas = React.useMemo(() => {

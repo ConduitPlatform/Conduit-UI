@@ -10,7 +10,7 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
 import { useSearchParams } from 'next/navigation';
 import { getUsers } from '@/lib/api/authentication';
-import { DataTable } from '@/components/authentication/components/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import EmptyUsers from '@/components/authentication/users/emptyUsers';
 
 export default function UsersTable({

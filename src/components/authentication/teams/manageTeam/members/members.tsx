@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { getTeamMemberColumns } from '@/components/authentication/teams/manageTeam/members/columns';
 import { useUserPicker } from '@/components/helpers/UserPicker/UserPicker';
 import { addTeamMembers, getTeamMembers } from '@/lib/api/authentication';
-import { DataTable } from '@/components/authentication/components/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import EmptyTeamMembers from '@/components/authentication/teams/manageTeam/members/emptyTeamMembers';
 import { toast } from '@/lib/hooks/use-toast';
 

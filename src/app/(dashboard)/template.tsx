@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import { getRouterSettings } from '@/lib/api/router';
 import { getAdminSettings } from '@/lib/api/settings';
 import { ScalarIcon, SocketIcon } from '@/icons';
@@ -291,9 +292,14 @@ export default function ModuleHeader({
         </div>
       </div>
       <div className="w-full h-full max-h-[90vh] main-scrollbar top-10">
-        <div className="px-6 py-4 mx-auto max-w-(--breakpoint-2xl) overflow-x-auto">
+        <motion.div
+          className="px-6 py-4 mx-auto max-w-(--breakpoint-2xl) overflow-x-auto"
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        >
           {children}
-        </div>
+        </motion.div>
       </div>
       <LogsDrawer isSidebarOpen={open} />
     </div>

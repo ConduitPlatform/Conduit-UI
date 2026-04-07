@@ -102,7 +102,7 @@ export default function ResourceList({
           />
         </div>
 
-        <ScrollArea className="h-[50vh)]">
+        <ScrollArea className="h-[50vh]">
           {filteredResources.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {searchTerm

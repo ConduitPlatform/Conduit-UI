@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { toast } from '@/lib/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
@@ -116,11 +117,9 @@ export const Settings = ({ data }: Props) => {
                   <LucideX className={'w-8 h-8'} />
                   <p className="text-sm">Failed to update with:</p>
                 </div>
-                <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                  <code className="text-sm text-foreground">
-                    Activation was not successful. Check the logs for more info
-                  </code>
-                </pre>
+                <ErrorPre>
+                  Activation was not successful. Check the logs for more info
+                </ErrorPre>
               </div>
             ),
           });
@@ -135,9 +134,7 @@ export const Settings = ({ data }: Props) => {
                 <LucideX className={'w-8 h-8'} />
                 <p className="text-sm">Failed to update with:</p>
               </div>
-              <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                <code className="text-sm text-foreground">{error.message}</code>
-              </pre>
+              <ErrorPre>{error.message}</ErrorPre>
             </div>
           ),
         });
@@ -198,11 +195,7 @@ export const Settings = ({ data }: Props) => {
                       <LucideX className={'w-8 h-8'} />
                       <p className="text-sm">Failed to update with:</p>
                     </div>
-                    <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-                      <code className="text-sm text-foreground">
-                        {err.message}
-                      </code>
-                    </pre>
+                    <ErrorPre>{err.message}</ErrorPre>
                   </div>
                 ),
               });
@@ -226,7 +219,7 @@ export const Settings = ({ data }: Props) => {
             />
           </div>
           <div className={'pr-2'}>
-            <p className={'text-xs text-[#94A3B8]'}>
+            <p className={'text-xs text-muted-foreground'}>
               To an idea on how to setup your SMS provider take a look at the
               documentation.
             </p>

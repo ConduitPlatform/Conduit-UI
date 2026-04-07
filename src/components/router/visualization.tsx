@@ -41,6 +41,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { RouterRoutesResponse } from '@/lib/models/Router';
+import { useChartColors } from '@/lib/hooks/useChartColors';
 
 // Memoized custom node components for better performance
 const ModuleNode = memo(
@@ -227,11 +228,13 @@ const RouterGraph = memo(
     edges,
     onNodesChange,
     onEdgesChange,
+    gridColor,
   }: {
     nodes: Node[];
     edges: Edge[];
     onNodesChange: any;
     onEdgesChange: any;
+    gridColor: string;
   }) => (
     <div className="w-full h-[800px] border rounded-md overflow-hidden bg-gray-50">
       <ReactFlow
@@ -266,7 +269,7 @@ const RouterGraph = memo(
         edgesFocusable={false}
       >
         <Controls showInteractive={false} />
-        <Background color="#e5e7eb" gap={20} />
+        <Background color={gridColor} gap={20} />
         <Panel position="top-left">
           <InfoPanel />
         </Panel>
@@ -281,6 +284,7 @@ const RouterGraph = memo(
 RouterGraph.displayName = 'RouterGraph';
 
 export const RouterVisualization = ({ data }: Props) => {
+  const colors = useChartColors();
   const [activeTab, setActiveTab] = useState<'graph' | 'list'>('graph');
   const [collapsedModules, setCollapsedModules] = useState<
     Record<string, boolean>
@@ -403,7 +407,7 @@ export const RouterVisualization = ({ data }: Props) => {
         id: `e-${routerNodeId}-${middlewareNodeId}`,
         source: routerNodeId,
         target: middlewareNodeId,
-        style: { stroke: '#3b82f6', strokeWidth: 2 },
+        style: { stroke: colors.chart1, strokeWidth: 2 },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 20,
@@ -481,7 +485,7 @@ export const RouterVisualization = ({ data }: Props) => {
                 source: middlewareNodeId,
                 target: routeNodeId,
                 style: {
-                  stroke: '#8b5cf6',
+                  stroke: colors.chart5,
                   strokeWidth: 1.5,
                   strokeDasharray: isOptional ? '8,4' : '5,5',
                 },
@@ -501,7 +505,7 @@ export const RouterVisualization = ({ data }: Props) => {
             source: routerNodeId,
             target: routeNodeId,
             style: {
-              stroke: '#3b82f6',
+              stroke: colors.chart1,
               strokeWidth: 1.5,
               strokeDasharray: '3,3',
             },
@@ -555,7 +559,7 @@ export const RouterVisualization = ({ data }: Props) => {
             id: `e-${routeNodeId}-${moduleNodeId}`,
             source: routeNodeId,
             target: moduleNodeId,
-            style: { stroke: '#10b981', strokeWidth: 2 },
+            style: { stroke: colors.chart2, strokeWidth: 2 },
             markerEnd: {
               type: MarkerType.ArrowClosed,
               width: 20,
@@ -568,7 +572,7 @@ export const RouterVisualization = ({ data }: Props) => {
     );
 
     return { initialNodes: nodes, initialEdges: edges };
-  }, [data]);
+  }, [data, colors]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -830,6 +834,7 @@ export const RouterVisualization = ({ data }: Props) => {
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                gridColor={colors.chartGrid}
               />
             </ReactFlowProvider>
           </TabsContent>

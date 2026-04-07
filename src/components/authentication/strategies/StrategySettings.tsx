@@ -14,6 +14,7 @@ import { patchAuthenticationSettingsMerged } from '@/lib/api/authentication';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/hooks/use-toast';
 import { CheckIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 
 export interface StrategySettingsProps {
   strategy: StrategyInterface;
@@ -55,9 +56,7 @@ export const StrategySettings: React.FC<StrategySettingsProps> = ({
               <LucideX className={'w-8 h-8'} />
               <p className="text-sm">Failed to save settings:</p>
             </div>
-            <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-              <code className="text-sm text-foreground">{message}</code>
-            </pre>
+            <ErrorPre>{message}</ErrorPre>
           </div>
         ),
       });

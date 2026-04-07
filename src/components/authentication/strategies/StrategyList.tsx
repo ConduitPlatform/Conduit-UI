@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
+import { ErrorPre } from '@/components/ui/error-pre';
 import { patchAuthenticationSettingsMerged } from '@/lib/api/authentication';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/hooks/use-toast';
@@ -69,9 +70,7 @@ export const StrategyList: React.FC<StrategySettingsProps> = ({
               <LucideX className={'w-8 h-8'} />
               <p className="text-sm">Failed to add strategy:</p>
             </div>
-            <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4 text-destructive">
-              <code className="text-sm text-foreground">{message}</code>
-            </pre>
+            <ErrorPre>{message}</ErrorPre>
           </div>
         ),
       });

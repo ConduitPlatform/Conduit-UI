@@ -28,6 +28,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  PageHeader,
+  PageTitle,
+  PageActions,
+} from '@/components/ui/page-header';
 
 export default function CustomerBalancesPage() {
   const [balances, setBalances] = useState<CustomerBalance[]>([]);
@@ -98,13 +103,15 @@ export default function CustomerBalancesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Customer Balances</h1>
-        <Button onClick={() => setShowGrantDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Grant Balance
-        </Button>
-      </div>
+      <PageHeader>
+        <PageTitle>Customer Balances</PageTitle>
+        <PageActions>
+          <Button onClick={() => setShowGrantDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Grant Balance
+          </Button>
+        </PageActions>
+      </PageHeader>
 
       <Card>
         <CardHeader>

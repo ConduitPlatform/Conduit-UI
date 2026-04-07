@@ -35,6 +35,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ResourceDefinition } from '@/lib/models/authorization';
+import { useChartColors } from '@/lib/hooks/useChartColors';
 
 // Custom node types
 const ResourceNode = ({
@@ -237,6 +238,7 @@ export default function ResourceVisualizer({
   resourceMap = {},
   basePath = '/authorization/resources',
 }: Readonly<ResourceVisualizerProps>) {
+  const colors = useChartColors();
   const [activeTab, setActiveTab] = useState<'graph' | 'details'>('graph');
 
   // Create nodes and edges from the resource data
@@ -320,7 +322,7 @@ export default function ResourceVisualizer({
           id: `e-${resourceNodeId}-${relationNodeId}`,
           source: resourceNodeId,
           target: relationNodeId,
-          style: { stroke: '#8b5cf6' },
+          style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
           },
@@ -331,7 +333,7 @@ export default function ResourceVisualizer({
           id: `e-${relationNodeId}-main`,
           source: relationNodeId,
           target: 'main',
-          style: { stroke: '#8b5cf6' },
+          style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
           },
@@ -405,12 +407,12 @@ export default function ResourceVisualizer({
               style: {
                 stroke:
                   category === 'read'
-                    ? '#3b82f6'
+                    ? colors.chart1
                     : category === 'write'
-                      ? '#10b981'
+                      ? colors.chart2
                       : category === 'delete'
-                        ? '#ef4444'
-                        : '#8b5cf6',
+                        ? colors.chart3
+                        : colors.chart5,
               },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
@@ -424,7 +426,7 @@ export default function ResourceVisualizer({
     );
 
     return { initialNodes: nodes, initialEdges: edges };
-  }, [resource, resourceMap, basePath]);
+  }, [resource, resourceMap, basePath, colors]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);

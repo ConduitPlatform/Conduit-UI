@@ -7,6 +7,11 @@ import { AuthenticationConfig } from '@/lib/models/authentication';
 import { StrategyCard } from '@/components/authentication/strategies/StrategyCard';
 import strategyMap from '@/components/authentication/strategies/stategyMap.config';
 import { StrategyList } from '@/components/authentication/strategies/StrategyList';
+import {
+  PageHeader,
+  PageTitle,
+  PageActions,
+} from '@/components/ui/page-header';
 
 export default async function Strategies() {
   const { config } = await getAuthenticationSettings();
@@ -48,14 +53,14 @@ export default async function Strategies() {
     });
   return (
     <div className={'flex flex-col'}>
-      <div
-        className={'flex flex-row justify-between border-b py-2 items-center'}
-      >
-        <h1 className={'font-2xl font-bold'}> Active Strategies</h1>
-        <StrategyList strategies={availableStrategies}>
-          <Button variant="outline">Add Strategy</Button>
-        </StrategyList>
-      </div>
+      <PageHeader className="border-b py-2">
+        <PageTitle>Active Strategies</PageTitle>
+        <PageActions>
+          <StrategyList strategies={availableStrategies}>
+            <Button variant="outline">Add Strategy</Button>
+          </StrategyList>
+        </PageActions>
+      </PageHeader>
       <div className={'grid grid-cols-6 gap-3 py-5'}>
         {enabledStrategies.map(strategy => (
           <StrategyCard
