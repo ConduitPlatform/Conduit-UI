@@ -100,7 +100,6 @@ const SelectField = ({
             <Select
               onValueChange={field.onChange}
               value={field.value}
-              defaultValue={field.value}
               {...restProps}
             >
               <FormControl>

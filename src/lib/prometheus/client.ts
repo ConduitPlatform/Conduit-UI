@@ -105,8 +105,15 @@ export async function prometheusHealthCheck(
 ): Promise<boolean> {
   try {
     const client = await createAuthenticatedClient(config, { timeoutMs: 8000 });
-    await client.get('/api/v1/status');
-    return true;
+    // /-/ready is the standard Prometheus readiness probe;
+    // fall back to /api/v1/status/buildinfo for compatible backends.
+    try {
+      await client.get('/-/ready');
+      return true;
+    } catch {
+      await client.get('/api/v1/status/buildinfo');
+      return true;
+    }
   } catch {
     return false;
   }

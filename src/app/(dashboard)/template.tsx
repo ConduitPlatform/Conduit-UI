@@ -3,7 +3,6 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
 import { getRouterSettings } from '@/lib/api/router';
 import { getAdminSettings } from '@/lib/api/settings';
 import { ScalarIcon, SocketIcon } from '@/icons';
@@ -27,10 +26,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { LogsDrawer } from '@/components/logs-viewer/LogsDrawer';
-import { useSidebar } from '@/components/ui/sidebar';
 import { getDatabaseType } from '@/lib/api/database';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, BookOpen } from 'lucide-react';
+import { EnvIndicator } from '@/components/navigation/EnvIndicator';
 
 const MODULE_NAMES: { [key: string]: string } = {
   settings: 'Settings',
@@ -57,7 +56,6 @@ export default function ModuleHeader({
   const [sockets, setSockets] = useState<boolean>(false); // client sockets
   const [graphqlAdmin, setGraphqlAdmin] = useState<boolean>(false);
   const [restAdmin, setRestAdmin] = useState<boolean>(false);
-  const { open } = useSidebar();
   const [baseUrl, setBaseUrl] = useState<string>('');
   const [adminUrl, setAdminUrl] = useState<string>('');
   const [databaseType, setDatabaseType] = useState<string>('');
@@ -87,8 +85,8 @@ export default function ModuleHeader({
   if (!moduleName)
     return (
       <>
-        <LogsDrawer isSidebarOpen={open} />
-        {children}
+        <LogsDrawer isSidebarOpen={false} />
+        <div className="page-enter-children">{children}</div>
       </>
     );
 
@@ -204,7 +202,8 @@ export default function ModuleHeader({
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
+          <EnvIndicator />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -292,16 +291,11 @@ export default function ModuleHeader({
         </div>
       </div>
       <div className="w-full h-full max-h-[90vh] main-scrollbar top-10">
-        <motion.div
-          className="px-6 py-4 mx-auto max-w-(--breakpoint-2xl) overflow-x-auto"
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="page-enter-children px-6 py-4 mx-auto max-w-(--breakpoint-2xl) overflow-x-auto">
           {children}
-        </motion.div>
+        </div>
       </div>
-      <LogsDrawer isSidebarOpen={open} />
+      <LogsDrawer isSidebarOpen={false} />
     </div>
   );
 }

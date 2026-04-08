@@ -67,13 +67,27 @@ const InputField = ({
           </FormLabel>
 
           <FormControl>
-            <Input
-              type={type}
-              placeholder={placeholder}
-              {...field}
-              {...restInputProps}
-              className={inputClassName}
-            />
+            {type === 'checkbox' ? (
+              <Input
+                type="checkbox"
+                placeholder={placeholder}
+                name={field.name}
+                ref={field.ref}
+                onBlur={field.onBlur}
+                className={inputClassName}
+                {...restInputProps}
+                checked={Boolean(field.value)}
+                onChange={e => field.onChange(e.target.checked)}
+              />
+            ) : (
+              <Input
+                type={type}
+                placeholder={placeholder}
+                {...field}
+                {...restInputProps}
+                className={inputClassName}
+              />
+            )}
           </FormControl>
 
           {description && (

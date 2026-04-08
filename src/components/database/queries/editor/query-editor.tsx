@@ -96,9 +96,18 @@ interface ModelField {
   isArray: boolean;
 }
 
+/** Radix Select passes string values; API may return numbers for these enums. */
+const numericEnum = (e: Parameters<typeof z.nativeEnum>[0]) =>
+  z.preprocess(val => {
+    if (val === '' || val === undefined || val === null) return val;
+    if (typeof val === 'number' && !Number.isNaN(val)) return val;
+    const n = Number(val);
+    return Number.isNaN(n) ? val : n;
+  }, z.nativeEnum(e));
+
 const conditionSchema = z.object({
   schemaField: z.string().min(1, 'Field is required'),
-  operation: z.nativeEnum(ComparisonOperationEnum),
+  operation: numericEnum(ComparisonOperationEnum),
   comparisonField: z.object({
     type: z.nativeEnum(ValueSourceTypeEnum),
     value: z.string().optional(),
@@ -130,7 +139,7 @@ const conditionGroupSchema: any = z
 
 const setConditionSchema = z.object({
   schemaField: z.string().min(1, 'Field is required'),
-  action: z.nativeEnum(AssignmentActionEnum),
+  action: numericEnum(AssignmentActionEnum),
   assignmentField: z.object({
     type: z.nativeEnum(ValueSourceTypeEnum),
     value: z.string(),
@@ -140,7 +149,7 @@ const inputsSchema = z.array(
   z.object({
     name: z.string().min(1, 'Input name is required'),
     type: z.nativeEnum(ValueTypeEnum),
-    location: z.nativeEnum(LocationEnum),
+    location: numericEnum(LocationEnum),
     optional: z.boolean().default(false),
     array: z.boolean().default(false),
   })
@@ -151,7 +160,7 @@ const querySchema = z.object({
     .min(1, 'Query name is required')
     .refine(s => !s.includes(' '), 'Query name cannot contain spaces'),
   endpointDescription: z.string().optional(),
-  operation: z.nativeEnum(OperationsEnum),
+  operation: numericEnum(OperationsEnum),
   selectedSchema: z.string().min(1, 'Model is required'),
   selectedSchemaName: z.string(),
   authentication: z.boolean().default(false),
@@ -193,10 +202,10 @@ export function QueryEditor({
     defaultValues: {
       name: initialData?.name ?? '',
       endpointDescription: initialData?.endpointDescription ?? '',
-      operation: initialData?.operation ?? 0,
+      operation: Number(initialData?.operation ?? 0),
       selectedSchema: initialData?.selectedSchema ?? undefined,
       selectedSchemaName: initialData?.selectedSchemaName ?? undefined,
-      authentication: initialData?.authentication ?? false,
+      authentication: Boolean(initialData?.authentication),
       paginated: initialData?.paginated ?? false,
       sorted: initialData?.sorted ?? false,
       inputs: initialData?.inputs ?? [],
@@ -218,6 +227,11 @@ export function QueryEditor({
           }),
     },
   });
+  const {
+    formState: { isDirty, isSubmitting },
+    reset,
+    getValues,
+  } = form;
   const selectedSchema = form.watch('selectedSchema');
   const [modelFields, setModelFields] = React.useState<ModelField[]>([]);
   const [modifiableFields, setModifiableFields] = React.useState<ModelField[]>(
@@ -321,7 +335,7 @@ export function QueryEditor({
     name: 'assignments',
   });
 
-  const operation = form.watch('operation');
+  const operation = form.watch('operation') as OperationsEnum;
   const inputs = form.watch('inputs');
   useEffect(() => {
     const model = form.watch('selectedSchema');
@@ -478,6 +492,7 @@ export function QueryEditor({
             title: 'Query saved',
             description: 'It will be available in a couple os seconds',
           });
+          reset(getValues());
         })
         .catch(error => {
           toast({
@@ -1101,7 +1116,11 @@ export function QueryEditor({
                 </AlertDialog>
               </>
             )}
-            <Button type="submit">
+            <Button
+              type="submit"
+              variant={isDirty ? 'default' : 'outline'}
+              disabled={!isDirty || isSubmitting}
+            >
               <Save className="mr-2 h-4 w-4" />
               Save Query
             </Button>
@@ -1308,11 +1327,15 @@ export function QueryEditor({
 
                               <div className="flex items-center space-x-1">
                                 {getPlacementIcon(
-                                  form.watch(`inputs.${index}.location`)
+                                  form.watch(
+                                    `inputs.${index}.location`
+                                  ) as LocationEnum
                                 )}
                                 <Badge variant="secondary" className="text-xs">
                                   {getPlacementName(
-                                    form.watch(`inputs.${index}.location`)
+                                    form.watch(
+                                      `inputs.${index}.location`
+                                    ) as LocationEnum
                                   )}
                                 </Badge>
                               </div>

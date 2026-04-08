@@ -2,31 +2,25 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ModelDetailLoading() {
   return (
-    <div className="flex flex-col h-full w-full p-6 gap-6">
-      {/* Header skeleton */}
+    <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-6 w-24" />
-          <Skeleton className="h-6 w-20" />
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-5 w-20 rounded-md" />
+          <Skeleton className="h-5 w-16 rounded-md" />
         </div>
-        <Skeleton className="h-10 w-32" />
+        <Skeleton className="h-8 w-28 rounded-md" />
       </div>
 
-      {/* Tabs skeleton */}
-      <Skeleton className="h-10 w-72" />
+      <Skeleton className="h-8 w-64 rounded-md" />
 
-      {/* Content skeleton */}
-      <div className="flex-1 grid grid-cols-3 gap-6">
-        <div className="col-span-2 space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
+      <div className="flex-1 grid grid-cols-3 gap-4">
+        <div className="col-span-2 space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-lg" />
+          ))}
         </div>
-        <div className="space-y-4">
-          <Skeleton className="h-full w-full" />
-        </div>
+        <Skeleton className="h-full w-full rounded-lg" />
       </div>
     </div>
   );

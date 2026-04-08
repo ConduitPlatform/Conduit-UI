@@ -35,7 +35,7 @@ export const getModules = async (
   const { namespace } = await _getEnv();
   let query;
   if (namespace && namespace.length > 0) {
-    query = `{namespace="${namespace}}"`;
+    query = `{namespace="${namespace}"}`;
   }
   const res = await (
     await getLokiClient()

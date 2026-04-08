@@ -1,4 +1,3 @@
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/appSidebar';
 import { CommandPalette } from '@/components/navigation/commandPalette';
 import { ShortcutSheet } from '@/components/navigation/ShortcutSheet';
@@ -10,14 +9,14 @@ export default function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ModuleAvailabilityProvider>
-      <SidebarProvider defaultOpen={false}>
+      <div className="flex w-full">
         <AppSidebar />
-        <main className="relative flex flex-col flex-1 min-h-svh bg-background">
+        <main className="relative flex flex-col flex-1 min-h-svh bg-background md:ml-[52px]">
           <ModuleGuard>{children}</ModuleGuard>
         </main>
         <CommandPalette />
         <ShortcutSheet />
-      </SidebarProvider>
+      </div>
     </ModuleAvailabilityProvider>
   );
 }

@@ -2,15 +2,17 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { MetricCard, MetricCardProps } from './MetricCard';
 import { QuickActionsCard, QuickAction } from './QuickActionsCard';
 import { ModuleStatusCard, ModuleStatus } from './ModuleStatusCard';
 import { SystemMetricsCard } from './SystemMetricsCard';
 import { FormattedMetric } from '@/lib/prometheus/metrics';
 import { cn } from '@/lib/utils';
-import { PrometheusUnavailableBanner } from '@/components/dashboard/PrometheusUnavailableBanner';
+import { statusDotClassName } from '@/lib/status';
 import type { ObservabilityServiceState } from '@/lib/observability/types';
 import { motion } from 'motion/react';
+import { Info } from 'lucide-react';
 
 const staggerContainer = {
   animate: { transition: { staggerChildren: 0.03 } },
@@ -31,7 +33,6 @@ export interface ModuleDashboardProps {
   quickActions: QuickAction[];
   children?: React.ReactNode;
   className?: string;
-  /** When set and not `ready`, shows a banner above metrics. */
   prometheusState?: ObservabilityServiceState;
 }
 
@@ -54,15 +55,27 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
       animate="animate"
     >
       {prometheusState && prometheusState !== 'ready' && (
-        <PrometheusUnavailableBanner state={prometheusState} />
+        <Alert className="border-status-warning/30 bg-status-warning/5">
+          <Info className="size-4" />
+          <AlertDescription>
+            {prometheusState === 'not_configured'
+              ? 'Metrics are disabled for this environment. Set PROMETHEUS_URL to enable.'
+              : 'Cannot reach Prometheus at the configured URL.'}
+          </AlertDescription>
+        </Alert>
       )}
-      <motion.div className="flex items-center space-x-4" variants={fadeUp}>
-        <div className="flex items-center space-x-2">
+
+      <motion.div className="flex items-center gap-3" variants={fadeUp}>
+        <div className="flex items-center gap-2">
           {moduleIcon}
-          <h1 className="text-2xl font-semibold tracking-tight text-balance">
+          <h1 className="text-lg font-semibold tracking-tight text-balance">
             {moduleName} Dashboard
           </h1>
         </div>
+        <span
+          className={statusDotClassName(moduleStatus.status, 'size-2.5')}
+          title={moduleStatus.status}
+        />
       </motion.div>
 
       <motion.div className="grid gap-4 md:grid-cols-3" variants={fadeUp}>
@@ -95,7 +108,9 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
               {moduleStatus.instances !== undefined && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Instances:</span>
-                  <span className="font-medium">{moduleStatus.instances}</span>
+                  <span className="font-medium tabular-nums">
+                    {moduleStatus.instances}
+                  </span>
                 </div>
               )}
             </div>
@@ -104,7 +119,7 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
       </motion.div>
 
       <motion.div variants={fadeUp}>
-        <h2 className="text-xl font-semibold mb-4">Key Metrics</h2>
+        <h2 className="text-base font-semibold mb-3">Key Metrics</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric, index) => (
             <MetricCard key={index} {...metric} />

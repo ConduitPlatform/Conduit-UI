@@ -402,24 +402,14 @@ export async function getModuleStatus(
 
 export async function getPlatformMetrics(): Promise<FormattedMetric[]> {
   try {
-    const moduleNames = [
-      'authentication',
-      'authorization',
-      'database',
-      'storage',
-      'chat',
-      'email',
-      'sms',
-      'router',
-      'functions',
-      'pushNotifications',
-      'payments',
-    ];
-
-    const totalRequests = await getTotalRequests(moduleNames);
+    const totalRequests = await getTotalRequests(
+      CANONICAL_MODULES as unknown as string[]
+    );
     const avgResponseTime = await getAverageResponseTime();
     const activeUsers = await getActiveUsers();
-    const errorRate = await getErrorRate(moduleNames);
+    const errorRate = await getErrorRate(
+      CANONICAL_MODULES as unknown as string[]
+    );
     const storageUsage = await getStorageUsage();
     const dbConnections = await getDatabaseConnections();
 
@@ -654,6 +644,27 @@ function getDefaultPlatformMetrics(): FormattedMetric[] {
   ];
 }
 
+const MODULE_CONFIGS = [
+  {
+    name: 'authentication',
+    displayName: 'Authentication',
+    href: '/authentication',
+  },
+  { name: 'database', displayName: 'Database', href: '/database' },
+  { name: 'email', displayName: 'Email', href: '/email' },
+  { name: 'storage', displayName: 'Storage', href: '/storage' },
+  { name: 'functions', displayName: 'Functions', href: '/functions' },
+  { name: 'chat', displayName: 'Chat', href: '/chat' },
+  { name: 'sms', displayName: 'SMS', href: '/sms' },
+  {
+    name: 'pushNotifications',
+    displayName: 'Push Notifications',
+    href: '/push-notifications',
+  },
+  { name: 'payments', displayName: 'Payments', href: '/payments' },
+  { name: 'router', displayName: 'Router', href: '/router' },
+] as const;
+
 export async function getAllModuleStatuses(): Promise<
   Array<{
     name: string;
@@ -664,27 +675,6 @@ export async function getAllModuleStatuses(): Promise<
     href: string;
   }>
 > {
-  const moduleConfigs = [
-    {
-      name: 'authentication',
-      displayName: 'Authentication',
-      href: '/authentication',
-    },
-    { name: 'database', displayName: 'Database', href: '/database' },
-    { name: 'email', displayName: 'Email', href: '/email' },
-    { name: 'storage', displayName: 'Storage', href: '/storage' },
-    { name: 'functions', displayName: 'Functions', href: '/functions' },
-    { name: 'chat', displayName: 'Chat', href: '/chat' },
-    { name: 'sms', displayName: 'SMS', href: '/sms' },
-    {
-      name: 'pushNotifications',
-      displayName: 'Push Notifications',
-      href: '/push-notifications',
-    },
-    { name: 'payments', displayName: 'Payments', href: '/payments' },
-    { name: 'router', displayName: 'Router', href: '/router' },
-  ];
-
   type ModuleStatusRow = {
     name: string;
     status: 'healthy' | 'warning' | 'critical' | 'unknown';
@@ -695,7 +685,7 @@ export async function getAllModuleStatuses(): Promise<
   };
 
   const statuses: ModuleStatusRow[] = await Promise.all(
-    moduleConfigs.map(async (config): Promise<ModuleStatusRow> => {
+    MODULE_CONFIGS.map(async (config): Promise<ModuleStatusRow> => {
       try {
         const status = await getModuleStatus(config.name);
         const uptime = await getModuleUptime(config.name);
@@ -839,39 +829,38 @@ function getStepForTimeRange(timeRange: '1h' | '6h' | '24h' | '7d'): string {
   }
 }
 
+const CANONICAL_MODULES = [
+  'authentication',
+  'database',
+  'email',
+  'storage',
+  'functions',
+  'chat',
+  'sms',
+  'pushNotifications',
+  'payments',
+  'router',
+] as const;
+
 export async function getPlatformOverview(): Promise<{
   overallStatus: 'healthy' | 'warning' | 'critical';
   uptime: string;
   activeModules: number;
   totalModules: number;
-  platformVersion: string;
+  criticalCount: number;
+  warningCount: number;
 }> {
-  const moduleNames = [
-    'authentication',
-    'authorization',
-    'database',
-    'storage',
-    'chat',
-    'email',
-    'sms',
-    'router',
-    'functions',
-    'pushNotifications',
-    'payments',
-  ];
   try {
-    // Get status of all modules
     const moduleStatuses = await Promise.all(
-      moduleNames.map(async moduleName => {
+      CANONICAL_MODULES.map(async moduleName => {
         try {
           return await getModuleStatus(moduleName);
         } catch {
-          return 'unknown';
+          return 'unknown' as const;
         }
       })
     );
 
-    // Calculate overall status
     const criticalCount = moduleStatuses.filter(s => s === 'critical').length;
     const warningCount = moduleStatuses.filter(s => s === 'warning').length;
     const healthyCount = moduleStatuses.filter(s => s === 'healthy').length;
@@ -885,37 +874,51 @@ export async function getPlatformOverview(): Promise<{
       overallStatus = 'healthy';
     }
 
-    // Get average uptime
-    const uptimes = await Promise.all(
-      moduleNames.map(async moduleName => {
-        try {
-          const uptime = await getModuleUptime(moduleName);
-          return parseFloat(uptime.replace('%', '')) || 0;
-        } catch {
-          return 0;
-        }
-      })
-    );
-
-    const avgUptime =
-      uptimes.reduce((sum, uptime) => sum + uptime, 0) / uptimes.length;
+    const uptime = await getProcessUptimeFormatted();
 
     return {
       overallStatus,
-      uptime: `${avgUptime.toFixed(1)}%`,
+      uptime,
       activeModules: healthyCount,
-      totalModules: moduleNames.length,
-      platformVersion: '1.0.0', // This could be fetched from a config or API
+      totalModules: CANONICAL_MODULES.length,
+      criticalCount,
+      warningCount,
     };
   } catch (error) {
     return {
       overallStatus: 'warning',
       uptime: 'Unknown',
       activeModules: 0,
-      totalModules: moduleNames.length,
-      platformVersion: '1.0.0',
+      totalModules: CANONICAL_MODULES.length,
+      criticalCount: 0,
+      warningCount: 0,
     };
   }
+}
+
+async function getProcessUptimeFormatted(): Promise<string> {
+  try {
+    const query = await MetricQueries.processUptime();
+    const metric = await getMetricValue(query);
+    if (metric.value === 'No data' || metric.value === 'Error') {
+      return 'Unknown';
+    }
+    const seconds = parseFloat(metric.value.replace(/[^\d.]/g, ''));
+    if (isNaN(seconds)) return metric.value;
+    return formatUptimeDuration(seconds);
+  } catch {
+    return 'Unknown';
+  }
+}
+
+function formatUptimeDuration(totalSeconds: number): string {
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
 }
 
 export async function fetchRequestVolumeChartAction(

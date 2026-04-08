@@ -1,36 +1,33 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Loading() {
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
-        <Skeleton className="h-10 w-32" />
-        <Skeleton className="h-10 w-40" />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-8 w-28 rounded-md" />
       </div>
 
-      <Skeleton className="h-12 w-64 mb-6" />
-
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <Skeleton className="h-6 w-48 mb-2" />
-              <Skeleton className="h-4 w-64" />
-            </div>
-            <Skeleton className="h-9 w-24" />
+      <div className="rounded-lg border border-border overflow-hidden">
+        <div className="flex items-center gap-4 px-3 py-2 border-b border-border">
+          <Skeleton className="h-8 w-full rounded-md" />
+        </div>
+        <div className="flex items-center gap-4 px-3 py-2 border-b border-border">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-3 w-32" />
+          <Skeleton className="h-3 w-20 ml-auto" />
+        </div>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 px-3 py-3 border-b border-border/40 last:border-b-0"
+          >
+            <Skeleton className="h-3.5 w-32" />
+            <Skeleton className="h-3.5 w-48" />
+            <Skeleton className="h-3.5 w-16 ml-auto" />
           </div>
-          <Skeleton className="h-10 w-full mt-2" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-full" />
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        ))}
+      </div>
     </div>
   );
 }
