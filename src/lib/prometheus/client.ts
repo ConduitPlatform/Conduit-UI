@@ -99,21 +99,36 @@ async function createAuthenticatedClient(
   return client;
 }
 
+function isPrometheusLabelsResponse(data: unknown): boolean {
+  if (!data || typeof data !== 'object') return false;
+  const body = data as { status?: string; data?: unknown };
+  return body.status === 'success' && Array.isArray(body.data);
+}
+
 /** Lightweight reachability check (short timeout). */
 export async function prometheusHealthCheck(
   config: PrometheusConfig
 ): Promise<boolean> {
   try {
     const client = await createAuthenticatedClient(config, { timeoutMs: 8000 });
-    // /-/ready is the standard Prometheus readiness probe;
-    // fall back to /api/v1/status/buildinfo for compatible backends.
     try {
       await client.get('/-/ready');
       return true;
     } catch {
+      /* try next */
+    }
+    try {
       await client.get('/api/v1/status/buildinfo');
       return true;
+    } catch {
+      /* try next */
     }
+    const labelsRes = await client.get('/api/v1/labels');
+    return (
+      labelsRes.status >= 200 &&
+      labelsRes.status < 300 &&
+      isPrometheusLabelsResponse(labelsRes.data)
+    );
   } catch {
     return false;
   }
