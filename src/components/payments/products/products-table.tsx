@@ -1,8 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Product, RecurringEnum } from '@/lib/models/payments';
-import { getProducts } from '@/lib/api/payments';
+import { useState, useEffect, useCallback } from 'react';
+import { isAxiosError } from 'axios';
+import { Product } from '@/lib/models/payments';
+import {
+  deleteProduct,
+  getProducts,
+  retireProduct,
+  unretireProduct,
+} from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -29,13 +35,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, MoreHorizontal, Search, Trash2, Edit } from 'lucide-react';
+import {
+  Plus,
+  MoreHorizontal,
+  Search,
+  Trash2,
+  Edit,
+  Copy,
+  Ban,
+  RotateCcw,
+} from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
-import { formatCentsToCurrency } from '@/lib/utils';
+import { formatCentsToCurrency, cn } from '@/lib/utils';
 import { AddProductDialog } from './add-product-dialog';
 import { EditProductDialog } from './edit-product-dialog';
+
+function apiErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { message?: string } | undefined;
+    if (data?.message && typeof data.message === 'string') return data.message;
+  }
+  if (error instanceof Error) return error.message;
+  return fallback;
+}
 
 export function ProductsTable() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -48,11 +73,18 @@ export function ProductsTable() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showRetireDialog, setShowRetireDialog] = useState(false);
+  const [showUnretireDialog, setShowUnretireDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [productToRetire, setProductToRetire] = useState<Product | null>(null);
+  const [productToUnretire, setProductToUnretire] = useState<Product | null>(
+    null
+  );
+  const [actionLoading, setActionLoading] = useState(false);
 
   const { toast } = useToast();
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getProducts({
@@ -62,7 +94,7 @@ export function ProductsTable() {
       });
       setProducts(response.productDocuments);
       setTotalCount(response.count);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to fetch products',
@@ -71,21 +103,86 @@ export function ProductsTable() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, search, toast]);
 
   useEffect(() => {
     fetchProducts();
-  }, [page, search]);
+  }, [fetchProducts]);
 
-  // Note: Delete functionality not available in API
+  const copyProductId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      toast({
+        title: 'Copied',
+        description: 'Product ID copied to clipboard.',
+      });
+    } catch {
+      toast({
+        title: 'Copy failed',
+        description: 'Could not copy to clipboard.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleDelete = async () => {
-    toast({
-      title: 'Not Available',
-      description: 'Delete functionality is not available in the current API',
-      variant: 'destructive',
-    });
-    setShowDeleteDialog(false);
-    setProductToDelete(null);
+    if (!productToDelete?._id) return;
+    setActionLoading(true);
+    try {
+      await deleteProduct(productToDelete._id);
+      toast({ title: 'Product deleted' });
+      setShowDeleteDialog(false);
+      setProductToDelete(null);
+      await fetchProducts();
+    } catch (error) {
+      toast({
+        title: 'Could not delete',
+        description: apiErrorMessage(error, 'Delete failed'),
+        variant: 'destructive',
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRetire = async () => {
+    if (!productToRetire?._id) return;
+    setActionLoading(true);
+    try {
+      await retireProduct(productToRetire._id);
+      toast({ title: 'Product retired' });
+      setShowRetireDialog(false);
+      setProductToRetire(null);
+      await fetchProducts();
+    } catch (error) {
+      toast({
+        title: 'Could not retire',
+        description: apiErrorMessage(error, 'Retire failed'),
+        variant: 'destructive',
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnretire = async () => {
+    if (!productToUnretire?._id) return;
+    setActionLoading(true);
+    try {
+      await unretireProduct(productToUnretire._id);
+      toast({ title: 'Product active again' });
+      setShowUnretireDialog(false);
+      setProductToUnretire(null);
+      await fetchProducts();
+    } catch (error) {
+      toast({
+        title: 'Could not unretire',
+        description: apiErrorMessage(error, 'Unretire failed'),
+        variant: 'destructive',
+      });
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleEdit = (product: Product) => {
@@ -98,7 +195,18 @@ export function ProductsTable() {
     setShowDeleteDialog(true);
   };
 
+  const handleRetireClick = (product: Product) => {
+    setProductToRetire(product);
+    setShowRetireDialog(true);
+  };
+
+  const handleUnretireClick = (product: Product) => {
+    setProductToUnretire(product);
+    setShowUnretireDialog(true);
+  };
+
   const totalPages = Math.ceil(totalCount / limit);
+  const colSpan = 13;
 
   return (
     <div className="space-y-4">
@@ -129,6 +237,8 @@ export function ProductsTable() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead className="min-w-[140px]">Product ID</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>VAT</TableHead>
                   <TableHead>Currency</TableHead>
@@ -144,13 +254,13 @@ export function ProductsTable() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center">
+                    <TableCell colSpan={colSpan} className="text-center">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center">
+                    <TableCell colSpan={colSpan} className="text-center">
                       No products found
                     </TableCell>
                   </TableRow>
@@ -173,6 +283,37 @@ export function ProductsTable() {
                             {product.productDescription}
                           </p>
                         ) : null}
+                      </TableCell>
+                      <TableCell>
+                        {product._id ? (
+                          <div className="flex items-center gap-1 group max-w-[200px]">
+                            <span
+                              className="font-mono text-xs tabular-nums truncate"
+                              title={product._id}
+                            >
+                              {product._id}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 shrink-0 opacity-70 hover:opacity-100"
+                              title="Copy product ID"
+                              onClick={() => copyProductId(product._id!)}
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        ) : (
+                          '—'
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {product.retiredAt ? (
+                          <Badge variant="secondary">Retired</Badge>
+                        ) : (
+                          <Badge variant="outline">Active</Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         {formatCentsToCurrency(product.value, product.currency)}
@@ -273,14 +414,28 @@ export function ProductsTable() {
                               <Edit className="mr-2 h-4 w-4" />
                               Edit
                             </DropdownMenuItem>
-                            {/* Delete functionality not available in API */}
-                            {/* <DropdownMenuItem
+                            {product.retiredAt ? (
+                              <DropdownMenuItem
+                                onClick={() => handleUnretireClick(product)}
+                              >
+                                <RotateCcw className="mr-2 h-4 w-4" />
+                                Unretire
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                onClick={() => handleRetireClick(product)}
+                              >
+                                <Ban className="mr-2 h-4 w-4" />
+                                Retire
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
                               onClick={() => handleDeleteClick(product)}
-                              className="text-red-600"
+                              className="text-destructive focus:text-destructive"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete
-                            </DropdownMenuItem> */}
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -342,23 +497,111 @@ export function ProductsTable() {
         />
       )}
 
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <Dialog open={showRetireDialog} onOpenChange={setShowRetireDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Retire product</DialogTitle>
+            <DialogDescription>
+              Retiring stops new purchases, new subscription sign-ups, and
+              redeem-code use for this product. Existing subscriptions can still
+              renew; RevenueCat webhooks still resolve this product ID.
+            </DialogDescription>
+          </DialogHeader>
+          <Alert variant="warning">
+            <AlertTitle>Redeem codes</AlertTitle>
+            <AlertDescription>
+              Outstanding redeem codes for this product will fail until you
+              unretire or delete those codes in Redeem codes.
+            </AlertDescription>
+          </Alert>
+          <Alert variant="destructive">
+            <AlertTitle>Stores and RevenueCat</AlertTitle>
+            <AlertDescription>
+              Remove or hide the SKU from App Store Connect, Google Play, and
+              RevenueCat offerings separately—Conduit does not sync those
+              dashboards automatically.
+            </AlertDescription>
+          </Alert>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowRetireDialog(false);
+                setProductToRetire(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRetire}
+              disabled={actionLoading}
+              className={cn('bg-amber-600 hover:bg-amber-600/90 text-white')}
+            >
+              Retire product
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showUnretireDialog} onOpenChange={setShowUnretireDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
+            <DialogTitle>Unretire product</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this product? This action cannot
-              be undone.
+              This product will be available for new purchases and redeem-code
+              creation again.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
+              onClick={() => {
+                setShowUnretireDialog(false);
+                setProductToUnretire(null);
+              }}
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <Button onClick={handleUnretire} disabled={actionLoading}>
+              Unretire
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Delete product</DialogTitle>
+            <DialogDescription>
+              Permanently remove this product record. Only allowed when no
+              subscriptions and no redeem codes reference it.
+            </DialogDescription>
+          </DialogHeader>
+          <Alert variant="destructive">
+            <AlertTitle>Risk</AlertTitle>
+            <AlertDescription>
+              App Store, Play, and RevenueCat map purchases to this Conduit
+              product ID. Deleting breaks webhook mapping and history for that
+              ID. Prefer retiring unless you are sure this product was never
+              shipped.
+            </AlertDescription>
+          </Alert>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setProductToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={actionLoading}
+            >
               Delete
             </Button>
           </DialogFooter>

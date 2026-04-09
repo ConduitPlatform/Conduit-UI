@@ -40,6 +40,7 @@ export interface Product {
   validityAmount?: number;
   validityUnit?: string;
   rollover?: boolean;
+  retiredAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

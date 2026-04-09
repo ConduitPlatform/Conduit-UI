@@ -76,12 +76,23 @@ export const updateProduct = async (productId: string, data: Product) => {
     .then(res => res.data);
 };
 
-// Note: DELETE endpoint for products doesn't exist in the API
-// export const deleteProducts = async (ids: string[]) => {
-//   return (await getApiClient())
-//     .delete(`/payments/products`, { data: { ids } })
-//     .then(res => res.data);
-// };
+export const retireProduct = async (productId: string) => {
+  return (await getApiClient())
+    .post<Product>(`/payments/products/${productId}/retire`)
+    .then(res => res.data);
+};
+
+export const unretireProduct = async (productId: string) => {
+  return (await getApiClient())
+    .post<Product>(`/payments/products/${productId}/unretire`)
+    .then(res => res.data);
+};
+
+export const deleteProduct = async (productId: string) => {
+  return (await getApiClient())
+    .delete(`/payments/products/${productId}`)
+    .then(res => res.data);
+};
 
 // Transactions
 export const getTransactions = async (params: PaymentsRequest) => {

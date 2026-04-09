@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { isAxiosError } from 'axios';
 import type { Product } from '@/lib/models/payments';
 import { createRedeemCodes, getProducts } from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
@@ -52,10 +53,12 @@ export function CreateRedeemCodesDialog({
     (async () => {
       try {
         const res = await getProducts({ skip: 0, limit: 500 });
-        setProducts(res.productDocuments);
-        if (res.productDocuments.length && !productId) {
-          setProductId(res.productDocuments[0]._id!);
-        }
+        const eligible = res.productDocuments.filter(p => !p.retiredAt);
+        setProducts(eligible);
+        setProductId(current => {
+          if (current) return current;
+          return eligible[0]?._id ?? '';
+        });
       } catch {
         toast({
           title: 'Error',
@@ -64,7 +67,14 @@ export function CreateRedeemCodesDialog({
         });
       }
     })();
-  }, [open]);
+  }, [open, toast]);
+
+  useEffect(() => {
+    if (!open || products.length === 0) return;
+    if (productId && !products.some(p => p._id === productId)) {
+      setProductId(products[0]._id!);
+    }
+  }, [open, products, productId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,10 +104,15 @@ export function CreateRedeemCodesDialog({
       setValidUntil('');
       onSuccess();
       onOpenChange(false);
-    } catch {
+    } catch (error) {
+      let message = 'Failed to create redeem codes.';
+      if (isAxiosError(error)) {
+        const data = error.response?.data as { message?: string } | undefined;
+        if (data?.message) message = data.message;
+      }
       toast({
         title: 'Error',
-        description: 'Failed to create redeem codes.',
+        description: message,
         variant: 'destructive',
       });
     } finally {
@@ -120,7 +135,8 @@ export function CreateRedeemCodesDialog({
             <Label>Product</Label>
             {products.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No products found. Create a product first.
+                No active (non-retired) products. Create a product or unretire
+                one first.
               </p>
             ) : (
               <Select value={productId} onValueChange={setProductId}>
