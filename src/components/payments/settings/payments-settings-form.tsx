@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { CurrencyCombobox } from '@/components/payments/currency-combobox';
 import {
   Select,
   SelectContent,
@@ -78,24 +79,18 @@ export const PaymentsSettingsForm = ({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="defaultCurrency">Default Currency</Label>
-                <Select
+                <CurrencyCombobox
+                  id="defaultCurrency"
                   value={config.defaultCurrency || 'USD'}
                   onValueChange={value =>
                     onConfigChange('defaultCurrency', value)
                   }
                   disabled={!edit}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USD">USD</SelectItem>
-                    <SelectItem value="EUR">EUR</SelectItem>
-                    <SelectItem value="GBP">GBP</SelectItem>
-                    <SelectItem value="CAD">CAD</SelectItem>
-                    <SelectItem value="AUD">AUD</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder="Select default currency…"
+                />
+                <p className="text-xs text-muted-foreground">
+                  ISO 4217 code used when a currency is not specified elsewhere.
+                </p>
               </div>
             </div>
 

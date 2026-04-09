@@ -1,11 +1,17 @@
 import { z } from 'zod';
+import { isValidIso4217Code } from '@/lib/payments/iso4217';
 import { RecurringEnum, ValidityEnum } from './index';
+
+const iso4217Currency = z
+  .string()
+  .min(1, 'Currency is required')
+  .refine(c => isValidIso4217Code(c), 'Must be a valid ISO 4217 currency code');
 
 export const ProductFormSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   value: z.number().min(0, 'Price must be 0 or greater'),
   vat: z.number().min(0, 'VAT must be 0 or greater'),
-  currency: z.string().min(1, 'Currency is required'),
+  currency: iso4217Currency,
   isSubscription: z.boolean(),
   recurring: z.nativeEnum(RecurringEnum),
   recurringCount: z.number().min(1, 'Recurring count must be at least 1'),
@@ -35,7 +41,7 @@ export const EditProductFormSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   value: z.number().min(0, 'Price must be 0 or greater'),
   vat: z.number().min(0, 'VAT must be 0 or greater'),
-  currency: z.string().min(1, 'Currency is required'),
+  currency: iso4217Currency,
   isSubscription: z.boolean(),
   recurring: z.nativeEnum(RecurringEnum),
   recurringCount: z.number().min(1, 'Recurring count must be at least 1'),
@@ -97,7 +103,13 @@ export const GrantBalanceFormSchema = z.object({
 export const PaymentsSettingsFormSchema = z.object({
   active: z.boolean(),
   secretKey: z.string().optional(),
-  defaultCurrency: z.string().optional(),
+  defaultCurrency: z
+    .string()
+    .optional()
+    .refine(
+      c => c === undefined || c === '' || isValidIso4217Code(c),
+      'Must be a valid ISO 4217 currency code'
+    ),
   sendEmail: z.boolean().optional(),
   redeemCodes: z.boolean().optional(),
   stripe: z.object({

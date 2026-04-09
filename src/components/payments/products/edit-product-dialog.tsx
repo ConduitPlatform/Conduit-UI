@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { CurrencyCombobox } from '@/components/payments/currency-combobox';
 import {
   Select,
   SelectContent,
@@ -24,7 +25,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/lib/hooks/use-toast';
-import { convertDollarsToCents } from '@/lib/utils';
+import {
+  convertDollarsToCents,
+  formatCentsToMajorString,
+  parseMoneyInputString,
+} from '@/lib/utils';
 
 interface EditProductDialogProps {
   open: boolean;
@@ -41,19 +46,49 @@ export function EditProductDialog({
 }: EditProductDialogProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Product>(product);
+  const [priceInput, setPriceInput] = useState(() =>
+    formatCentsToMajorString(product.value)
+  );
+  const [vatInput, setVatInput] = useState(() => String(product.vat ?? 0));
 
   const { toast } = useToast();
 
   useEffect(() => {
     setFormData(product);
+    setPriceInput(formatCentsToMajorString(product.value));
+    setVatInput(String(product.vat ?? 0));
   }, [product]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const priceMajor = parseMoneyInputString(priceInput);
+    const vatParsed = parseMoneyInputString(vatInput);
+    if (priceMajor === null || priceMajor < 0) {
+      toast({
+        title: 'Invalid price',
+        description: 'Enter a valid amount (e.g. 9.99 or 9,99).',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (vatParsed === null || vatParsed < 0) {
+      toast({
+        title: 'Invalid VAT',
+        description: 'Enter a valid percentage (e.g. 21 or 21,5).',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await updateProduct(product._id!, formData);
+      await updateProduct(product._id!, {
+        ...formData,
+        value: convertDollarsToCents(priceMajor),
+        vat: vatParsed,
+      });
       toast({
         title: 'Success',
         description: 'Product updated successfully',
@@ -122,20 +157,16 @@ export function EditProductDialog({
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="value">
-                Price (in dollars, will be stored as cents)
+                Price (major units; stored as minor units)
               </Label>
               <Input
                 id="value"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.value ? (formData.value / 100).toFixed(2) : ''}
-                onChange={e =>
-                  handleChange(
-                    'value',
-                    convertDollarsToCents(parseFloat(e.target.value) || 0)
-                  )
-                }
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                value={priceInput}
+                onChange={e => setPriceInput(e.target.value)}
+                placeholder="e.g. 9.99 or 9,99"
                 required
               />
             </div>
@@ -143,31 +174,24 @@ export function EditProductDialog({
               <Label htmlFor="vat">VAT (%)</Label>
               <Input
                 id="vat"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.vat}
-                onChange={e =>
-                  handleChange('vat', parseFloat(e.target.value) || 0)
-                }
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                value={vatInput}
+                onChange={e => setVatInput(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="currency">Currency</Label>
-              <Select
-                value={formData.currency}
+              <CurrencyCombobox
+                id="currency"
+                value={formData.currency ?? 'USD'}
                 onValueChange={value => handleChange('currency', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                </SelectContent>
-              </Select>
+              />
+              <p className="text-xs text-muted-foreground">
+                ISO 4217 code (search by code or name).
+              </p>
             </div>
           </div>
 
