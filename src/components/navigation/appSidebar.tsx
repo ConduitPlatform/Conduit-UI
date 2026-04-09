@@ -13,20 +13,24 @@ import {
   filterNavigationByModules,
   MODULE_URL_TO_NAME,
 } from '@/lib/utils/module-utils';
+import type { HealthStatus } from '@/lib/status';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 function useFilteredGroups(groups: NavGroup[]) {
-  const { modules, isLoading, isModuleServing } = useModuleAvailability();
+  const { modules, isLoading, isModuleServing, getModuleHealth } =
+    useModuleAvailability();
 
   return React.useMemo(() => {
     if (isLoading)
       return {
         filteredGroups: groups,
         servingMap: {} as Record<string, boolean>,
+        healthMap: {} as Record<string, HealthStatus | undefined>,
       };
 
     const servingMap: Record<string, boolean> = {};
+    const healthMap: Record<string, HealthStatus | undefined> = {};
     const filteredGroups = groups
       .map(group => ({
         ...group,
@@ -34,14 +38,15 @@ function useFilteredGroups(groups: NavGroup[]) {
           const moduleName = MODULE_URL_TO_NAME[item.url];
           if (moduleName) {
             servingMap[item.url] = isModuleServing(moduleName);
+            healthMap[item.url] = getModuleHealth(moduleName);
           }
           return item;
         }),
       }))
       .filter(group => group.items.length > 0);
 
-    return { filteredGroups, servingMap };
-  }, [groups, modules, isLoading, isModuleServing]);
+    return { filteredGroups, servingMap, healthMap };
+  }, [groups, modules, isLoading, isModuleServing, getModuleHealth]);
 }
 
 function SidebarSkeleton() {
@@ -60,7 +65,8 @@ interface SidebarRailContentProps {
 
 function SidebarRailContent({ className }: SidebarRailContentProps) {
   const { isLoading } = useModuleAvailability();
-  const { filteredGroups, servingMap } = useFilteredGroups(navGroups);
+  const { filteredGroups, servingMap, healthMap } =
+    useFilteredGroups(navGroups);
 
   return (
     <nav
@@ -87,6 +93,7 @@ function SidebarRailContent({ className }: SidebarRailContentProps) {
                   key={item.url}
                   item={item}
                   serving={servingMap[item.url]}
+                  healthStatus={healthMap[item.url]}
                 />
               ))}
             </React.Fragment>

@@ -1,10 +1,15 @@
 'use server';
 
-import React from 'react';
 import { createPrometheusClient, instantQuery, queryRange } from './client';
 import * as MetricQueries from './queries';
-import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
+import {
+  getPrometheusAvailability,
+  type PrometheusAvailability,
+} from '@/lib/observability/prometheusAvailability';
 import { isPrometheusReady } from '@/lib/observability/guards';
+import type { HealthStatus } from '@/lib/status';
+import type { Module } from '@/lib/models/Module';
+import { COMMUNICATIONS_PROVIDED_MODULES } from '@/lib/utils/module-utils';
 
 export interface FormattedMetric {
   name: string;
@@ -437,7 +442,6 @@ async function getTotalRequests(
     return {
       name: 'Total Requests',
       value: metric.value,
-      unit: '/sec',
       description: 'Total HTTP requests per second across all modules',
       trend: 'stable',
       status: metric.status,
@@ -446,7 +450,6 @@ async function getTotalRequests(
     return {
       name: 'Total Requests',
       value: '0',
-      unit: '/sec',
       description: 'Total HTTP requests per second across all modules',
       status: 'warning',
     };
@@ -464,7 +467,6 @@ async function getAverageResponseTime(): Promise<FormattedMetric> {
       return {
         name: 'Avg Response Time',
         value: simpleMetric.value,
-        unit: 'ms',
         description: 'Average HTTP response time across all modules',
         trend: 'stable',
         status: simpleMetric.status,
@@ -478,7 +480,6 @@ async function getAverageResponseTime(): Promise<FormattedMetric> {
     return {
       name: 'Avg Response Time',
       value: metric.value,
-      unit: 'ms',
       description: 'Average HTTP response time across all modules',
       trend: 'stable',
       status: metric.status,
@@ -488,7 +489,6 @@ async function getAverageResponseTime(): Promise<FormattedMetric> {
     return {
       name: 'Avg Response Time',
       value: 'N/A',
-      unit: 'ms',
       description: 'Average HTTP response time across all modules',
       status: 'warning',
     };
@@ -535,7 +535,6 @@ async function getErrorRate(moduleNames: string[]): Promise<FormattedMetric> {
     return {
       name: 'Error Rate',
       value: formatValue(errorRate, 'percentage'),
-      unit: '%',
       description: 'HTTP error rate across all modules',
       trend: 'stable',
       status:
@@ -545,7 +544,6 @@ async function getErrorRate(moduleNames: string[]): Promise<FormattedMetric> {
     return {
       name: 'Error Rate',
       value: 'N/A',
-      unit: '%',
       description: 'HTTP error rate across all modules',
       status: 'warning',
     };
@@ -560,7 +558,6 @@ async function getStorageUsage(): Promise<FormattedMetric> {
     return {
       name: 'Storage Usage',
       value: metric.value,
-      unit: 'GB',
       description: 'Total storage usage',
       trend: 'stable',
       status: metric.status,
@@ -569,7 +566,6 @@ async function getStorageUsage(): Promise<FormattedMetric> {
     return {
       name: 'Storage Usage',
       value: 'N/A',
-      unit: 'GB',
       description: 'Total storage usage',
       status: 'warning',
     };
@@ -604,14 +600,12 @@ function getDefaultPlatformMetrics(): FormattedMetric[] {
     {
       name: 'Total Requests',
       value: '0',
-      unit: '/sec',
       description: 'Total requests per second across all modules',
       status: 'warning',
     },
     {
       name: 'Avg Response Time',
       value: 'N/A',
-      unit: 'ms',
       description: 'Average response time across the platform',
       status: 'warning',
     },
@@ -624,14 +618,12 @@ function getDefaultPlatformMetrics(): FormattedMetric[] {
     {
       name: 'Error Rate',
       value: 'N/A',
-      unit: '%',
       description: 'Error rate across all modules',
       status: 'warning',
     },
     {
       name: 'Storage Usage',
       value: 'N/A',
-      unit: 'GB',
       description: 'Total storage usage',
       status: 'warning',
     },
@@ -649,6 +641,11 @@ const MODULE_CONFIGS = [
     name: 'authentication',
     displayName: 'Authentication',
     href: '/authentication',
+  },
+  {
+    name: 'authorization',
+    displayName: 'Authorization',
+    href: '/authorization',
   },
   { name: 'database', displayName: 'Database', href: '/database' },
   { name: 'email', displayName: 'Email', href: '/email' },
@@ -719,9 +716,12 @@ async function getModuleRequestRate(moduleName: string): Promise<string> {
   try {
     const query = await MetricQueries.httpRequestsForModule(moduleName);
     const metric = await getMetricValue(query);
-    return `${metric.value}`;
-  } catch (error) {
-    return '0/sec';
+    if (metric.value === 'No data' || metric.value === 'Error') {
+      return '';
+    }
+    return metric.value;
+  } catch {
+    return '';
   }
 }
 
@@ -831,6 +831,7 @@ function getStepForTimeRange(timeRange: '1h' | '6h' | '24h' | '7d'): string {
 
 const CANONICAL_MODULES = [
   'authentication',
+  'authorization',
   'database',
   'email',
   'storage',
@@ -966,4 +967,123 @@ export async function fetchSystemResourcesChartAction(
       memory: { timestamps: [], values: [], labels: [] },
     };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Unified module state resolution
+// ---------------------------------------------------------------------------
+
+export interface ResolvedModuleState {
+  name: string;
+  iconName: string;
+  href: string;
+  deployed: boolean;
+  serving: boolean;
+  health: HealthStatus;
+  vanished: boolean;
+  requests: string;
+  uptime: string;
+}
+
+function expandCommunicationsModules(modules: Module[]): Module[] {
+  const comms = modules.find(m => m.moduleName === 'communications');
+  if (!comms) return modules;
+
+  const expanded = [...modules];
+  for (const sub of COMMUNICATIONS_PROVIDED_MODULES) {
+    if (!expanded.some(m => m.moduleName === sub)) {
+      expanded.push({
+        moduleName: sub,
+        url: comms.url,
+        serving: comms.serving,
+      } as Module);
+    }
+  }
+  return expanded;
+}
+
+async function isModuleReportingMetrics(moduleName: string): Promise<boolean> {
+  try {
+    const config = await createPrometheusClient();
+    const query = await MetricQueries.moduleHealth(moduleName);
+    const data = await instantQuery(config, query.expression);
+    return !!(data.result && data.result.length > 0);
+  } catch {
+    return false;
+  }
+}
+
+export async function resolveModuleStates(
+  rawModules: Module[],
+  promAvailability: PrometheusAvailability
+): Promise<ResolvedModuleState[]> {
+  const modules = expandCommunicationsModules(rawModules);
+  const deployedMap = new Map(modules.map(m => [m.moduleName, m]));
+  const promReady = isPrometheusReady(promAvailability);
+
+  return Promise.all(
+    MODULE_CONFIGS.map(async (config): Promise<ResolvedModuleState> => {
+      const mod = deployedMap.get(config.name);
+      const deployed = !!mod;
+      const serving = mod?.serving ?? false;
+
+      let health: HealthStatus;
+      let vanished = false;
+      let requests = '';
+      let uptime = 'Unknown';
+
+      if (!deployed) {
+        if (promReady) {
+          const reporting = await isModuleReportingMetrics(config.name);
+          if (reporting) {
+            vanished = true;
+            health = 'critical';
+          } else {
+            health = 'unknown';
+          }
+        } else {
+          health = 'unknown';
+        }
+      } else if (!serving) {
+        health = 'warning';
+      } else if (promReady) {
+        const promStatus = await getModuleStatus(config.name);
+        health = promStatus === 'unknown' ? 'healthy' : promStatus;
+        requests = await getModuleRequestRate(config.name);
+        uptime = await getModuleUptime(config.name);
+      } else {
+        health = 'healthy';
+      }
+
+      return {
+        name: config.displayName,
+        iconName: config.name,
+        href: config.href,
+        deployed,
+        serving,
+        health,
+        vanished,
+        requests,
+        uptime,
+      };
+    })
+  );
+}
+
+export async function getModuleHealthMap(
+  modules: Module[]
+): Promise<Record<string, HealthStatus>> {
+  const promAvailability = await getPrometheusAvailability();
+  const states = await resolveModuleStates(modules, promAvailability);
+  const map: Record<string, HealthStatus> = {};
+  for (const state of states) {
+    if (state.deployed || state.vanished) {
+      map[state.iconName] = state.health;
+    }
+  }
+  return map;
+}
+
+export async function getPlatformUptime(): Promise<string> {
+  return getProcessUptimeFormatted();
 }

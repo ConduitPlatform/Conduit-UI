@@ -14,13 +14,19 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import type { NavItem } from './navList.config';
+import type { HealthStatus } from '@/lib/status';
 
 interface SidebarNavItemProps {
   item: NavItem;
   serving?: boolean;
+  healthStatus?: HealthStatus;
 }
 
-export function SidebarNavItem({ item, serving }: SidebarNavItemProps) {
+export function SidebarNavItem({
+  item,
+  serving,
+  healthStatus,
+}: SidebarNavItemProps) {
   const pathname = usePathname();
   const Icon = item.icon;
 
@@ -54,9 +60,13 @@ export function SidebarNavItem({ item, serving }: SidebarNavItemProps) {
         <span
           className={cn(
             'absolute -bottom-0.5 -right-0.5 size-[5px] rounded-full',
-            serving
-              ? 'bg-status-healthy shadow-[0_0_4px_hsl(var(--status-healthy))]'
-              : 'bg-status-unknown'
+            !serving
+              ? 'bg-status-warning shadow-[0_0_4px_hsl(var(--status-warning))]'
+              : healthStatus === 'critical'
+                ? 'bg-status-critical shadow-[0_0_4px_hsl(var(--status-critical))]'
+                : healthStatus === 'warning'
+                  ? 'bg-status-warning shadow-[0_0_4px_hsl(var(--status-warning))]'
+                  : 'bg-status-healthy shadow-[0_0_4px_hsl(var(--status-healthy))]'
           )}
           aria-hidden="true"
         />

@@ -85,14 +85,23 @@ export async function moduleHealth(moduleName: string): Promise<MetricQuery> {
   };
 }
 
+export async function moduleAbsent(moduleName: string): Promise<MetricQuery> {
+  const labels = await buildLabels({ module_name: moduleName });
+  return {
+    name: 'Module Absent',
+    expression: `absent(cnd_module_health_state${labels})`,
+    description: `Detects if ${moduleName} has stopped reporting metrics`,
+  };
+}
+
 // HTTP requests for specific module (using route path)
 export async function httpRequestsForModule(
   moduleName: string
 ): Promise<MetricQuery> {
-  const labels = await buildLabels({ route: `~${moduleName}.*` });
+  const labels = await buildLabels({ route: `~.*/${moduleName}/.*` });
   return {
     name: 'HTTP Requests',
-    expression: `sum(rate(cnd_http_request_duration_seconds_count${labels}[5m])) by (route)`,
+    expression: `sum(rate(cnd_http_request_duration_seconds_count${labels}[5m]))`,
     description: `HTTP requests for ${moduleName} module`,
     format: 'requests_per_second',
   };

@@ -5,7 +5,8 @@ import { EnvIndicator } from '@/components/navigation/EnvIndicator';
 interface StatusBarProps {
   overallStatus: HealthStatus;
   uptime: string;
-  activeModules: number;
+  healthyCount: number;
+  servingCount: number;
   totalModules: number;
   criticalCount: number;
   warningCount: number;
@@ -39,7 +40,8 @@ function StatusDot({
 export function StatusBar({
   overallStatus,
   uptime,
-  activeModules,
+  healthyCount,
+  servingCount,
   totalModules,
   criticalCount,
   warningCount,
@@ -47,6 +49,10 @@ export function StatusBar({
 }: Readonly<StatusBarProps>) {
   const issueCount = criticalCount + warningCount;
   const summary = getStatusSummary(overallStatus, issueCount);
+
+  const moduleFraction = prometheusReady
+    ? `${healthyCount} / ${totalModules} healthy`
+    : `${servingCount} / ${totalModules} serving`;
 
   return (
     <div className="flex h-9 shrink-0 items-center justify-between border-b border-border px-5">
@@ -61,7 +67,7 @@ export function StatusBar({
         <EnvIndicator />
 
         <span className="text-xs text-muted-foreground tabular-nums">
-          {activeModules} / {totalModules} modules
+          {moduleFraction}
         </span>
 
         {prometheusReady && uptime !== 'Unknown' && (

@@ -1,8 +1,8 @@
 import {
-  getAllModuleStatuses,
+  resolveModuleStates,
   getErrorRateChart,
   getPlatformMetrics,
-  getPlatformOverview,
+  getPlatformUptime,
   getRequestVolumeChart,
   getResponseTimeChart,
   getSystemResourcesChart,
@@ -14,6 +14,7 @@ import { BentoMetrics } from '@/components/dashboard/BentoMetrics';
 import { ActiveModuleGrid } from '@/components/dashboard/ActiveModuleGrid';
 import { PerformanceCharts } from '@/components/dashboard/PerformanceCharts';
 import { CmdPaletteHint } from '@/components/dashboard/CmdPaletteHint';
+import type { HealthStatus } from '@/lib/status';
 
 const emptyChart = {
   timestamps: [] as number[],
@@ -28,9 +29,23 @@ export default async function Home() {
   ]);
   const promReady = promAvailability.state === 'ready';
 
-  const [platformOverview, moduleStatuses, platformMetrics] = await Promise.all(
-    [getPlatformOverview(), getAllModuleStatuses(), getPlatformMetrics()]
-  );
+  const [resolvedStates, platformMetrics, uptime] = await Promise.all([
+    resolveModuleStates(modules, promAvailability),
+    getPlatformMetrics(),
+    getPlatformUptime(),
+  ]);
+
+  const visible = resolvedStates.filter(s => s.deployed || s.vanished);
+  const healthyCount = visible.filter(s => s.health === 'healthy').length;
+  const warningCount = visible.filter(s => s.health === 'warning').length;
+  const criticalCount = visible.filter(s => s.health === 'critical').length;
+  const servingCount = visible.filter(s => s.serving).length;
+  const issueCount = warningCount + criticalCount;
+
+  let overallStatus: HealthStatus;
+  if (criticalCount > 0) overallStatus = 'critical';
+  else if (warningCount > 0) overallStatus = 'warning';
+  else overallStatus = 'healthy';
 
   const [
     requestVolumeChart,
@@ -53,27 +68,24 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Status strip — outside scrollable area */}
       <StatusBar
-        overallStatus={platformOverview.overallStatus}
-        uptime={platformOverview.uptime}
-        activeModules={platformOverview.activeModules}
-        totalModules={platformOverview.totalModules}
-        criticalCount={platformOverview.criticalCount}
-        warningCount={platformOverview.warningCount}
+        overallStatus={overallStatus}
+        uptime={uptime}
+        healthyCount={healthyCount}
+        servingCount={servingCount}
+        totalModules={visible.length}
+        criticalCount={criticalCount}
+        warningCount={warningCount}
         prometheusReady={promReady}
       />
 
-      {/* Command palette hint — outside scrollable area */}
       <div className="px-5 pt-2.5 pb-0 shrink-0">
         <CmdPaletteHint />
       </div>
 
-      {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto main-scrollbar px-5 pt-4 pb-8 space-y-4">
-        <ActiveModuleGrid modules={modules} moduleStatuses={moduleStatuses} />
+        <ActiveModuleGrid resolvedStates={resolvedStates} />
 
-        {/* Bottom split: metrics 2fr + chart 3fr */}
         <section className="grid gap-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <BentoMetrics metrics={platformMetrics} />
