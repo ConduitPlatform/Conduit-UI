@@ -2,6 +2,7 @@ export type SchemaOptions = {
   _id?: boolean;
   timestamps?: boolean;
   conduit?: {
+    imported?: boolean;
     cms?: {
       enabled: boolean;
       crudOperations: {

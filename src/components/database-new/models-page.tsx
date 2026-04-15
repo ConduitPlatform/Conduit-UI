@@ -10,8 +10,17 @@ import { ModelSwitcher } from './model-switcher';
 import { SchemaEditor } from './schema-editor';
 import { DataExplorer } from './data-explorer';
 import { SettingsPanel } from './settings-panel';
+import { ExtensionsPanel } from './extensions-panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database, Table2, Settings, Plus, ArrowLeft } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import {
+  Database,
+  Table2,
+  Settings,
+  Plus,
+  ArrowLeft,
+  Puzzle,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -20,6 +29,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+
+export type ModelsNewTab = 'schema' | 'data' | 'extensions' | 'settings';
+
+function normalizeTab(tab: string | undefined): ModelsNewTab {
+  if (
+    tab === 'schema' ||
+    tab === 'data' ||
+    tab === 'extensions' ||
+    tab === 'settings'
+  ) {
+    return tab;
+  }
+  return 'schema';
+}
 
 type ModelsNewPageProps = {
   schemas: DeclaredSchema[];
@@ -31,7 +54,7 @@ type ModelsNewPageProps = {
     count: number;
   };
   authResource?: ResourceDefinition | null;
-  initialTab?: 'schema' | 'data' | 'settings';
+  initialTab?: ModelsNewTab;
 };
 
 export function ModelsNewPage({
@@ -44,15 +67,21 @@ export function ModelsNewPage({
   initialTab = 'schema',
 }: ModelsNewPageProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = React.useState(initialTab);
+  const [activeTab, setActiveTab] = React.useState(() =>
+    normalizeTab(initialTab)
+  );
   const [isCreatingNew, setIsCreatingNew] = React.useState(false);
+
+  React.useEffect(() => {
+    setActiveTab(normalizeTab(initialTab));
+  }, [initialTab]);
 
   const handleModelSelect = (modelId: string) => {
     router.push(`/database/models-new/${modelId}`);
   };
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab as 'schema' | 'data' | 'settings');
+    setActiveTab(normalizeTab(tab));
     if (selectedModelId) {
       router.push(`/database/models-new/${selectedModelId}?tab=${tab}`, {
         scroll: false,
@@ -158,6 +187,20 @@ export function ModelsNewPage({
               <Table2 className="w-4 h-4" />
               Data
             </TabsTrigger>
+            <TabsTrigger value="extensions" className="gap-2">
+              <Puzzle className="w-4 h-4" />
+              Extensions
+              {selectedSchema &&
+                selectedSchema.extensions &&
+                selectedSchema.extensions.length > 0 && (
+                  <Badge
+                    variant="secondary"
+                    className="ml-0.5 h-5 min-w-5 px-1.5 font-normal tabular-nums"
+                  >
+                    {selectedSchema.extensions.length}
+                  </Badge>
+                )}
+            </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="w-4 h-4" />
               Settings
@@ -181,9 +224,23 @@ export function ModelsNewPage({
           )}
         </TabsContent>
 
+        <TabsContent
+          value="extensions"
+          className="flex-1 overflow-auto m-0 p-0"
+        >
+          {selectedSchema && (
+            <ExtensionsPanel
+              schema={selectedSchema}
+              availableModels={schemas.map(s => s.name)}
+              onSave={handleSchemaUpdated}
+            />
+          )}
+        </TabsContent>
+
         <TabsContent value="settings" className="flex-1 overflow-auto m-0 p-0">
           {selectedSchema && (
             <SettingsPanel
+              key={selectedSchema._id}
               schema={selectedSchema}
               authResource={authResource}
               onSave={handleSchemaUpdated}

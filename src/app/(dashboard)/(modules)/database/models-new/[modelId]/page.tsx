@@ -4,7 +4,10 @@ import {
   getSchemaDocs,
   getSchemaOwnerModules,
 } from '@/lib/api/database';
-import { ModelsNewPage } from '@/components/database-new/models-page';
+import {
+  ModelsNewPage,
+  type ModelsNewTab,
+} from '@/components/database-new/models-page';
 import { getResourceDefinition } from '@/lib/api/authorization';
 import { ResourceDefinition } from '@/lib/models/authorization';
 
@@ -53,6 +56,15 @@ export default async function ModelDetailPage(props: Readonly<PageProps>) {
     resource = authResource ?? null;
   }
 
+  const tabParam = searchParams?.tab;
+  const initialTab: ModelsNewTab | undefined =
+    tabParam === 'schema' ||
+    tabParam === 'data' ||
+    tabParam === 'extensions' ||
+    tabParam === 'settings'
+      ? tabParam
+      : undefined;
+
   return (
     <ModelsNewPage
       schemas={schemasData.schemas}
@@ -61,9 +73,7 @@ export default async function ModelDetailPage(props: Readonly<PageProps>) {
       selectedSchema={schema}
       documents={docs}
       authResource={resource}
-      initialTab={
-        searchParams?.tab as 'schema' | 'data' | 'settings' | undefined
-      }
+      initialTab={initialTab}
     />
   );
 }

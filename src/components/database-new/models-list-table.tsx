@@ -151,13 +151,11 @@ export function ModelsListTable({
                       </div>
                       <div>
                         <p className="font-medium">{schema.name}</p>
-                        {schema.extensions &&
-                          Object.keys(schema.extensions).length > 0 && (
-                            <p className="text-xs text-muted-foreground">
-                              {Object.keys(schema.extensions).length}{' '}
-                              extension(s)
-                            </p>
-                          )}
+                        {schema.extensions && schema.extensions.length > 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            {schema.extensions.length} extension(s)
+                          </p>
+                        )}
                       </div>
                     </div>
                   </TableCell>

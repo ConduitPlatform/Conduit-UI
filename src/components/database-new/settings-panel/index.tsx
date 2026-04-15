@@ -6,6 +6,7 @@ import { ResourceDefinition } from '@/lib/models/authorization';
 import { deleteSchema, patchSchema } from '@/lib/api/database';
 import { useRouter } from 'next/navigation';
 import { CrudPermissions } from './crud-permissions';
+import { deriveCrudOperationsFromSchema } from './crud-state';
 import { AuthSettings } from './auth-settings';
 import { IndicesConfig } from './indices-config';
 import { Button } from '@/components/ui/button';
@@ -30,9 +31,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Save, Trash2, AlertTriangle, Info, ExternalLink } from 'lucide-react';
+import { Save, Trash2, AlertTriangle, Info } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
-import Link from 'next/link';
 
 type SettingsPanelProps = {
   schema: DeclaredSchema;
@@ -49,20 +49,9 @@ export function SettingsPanel({
   const [isSaving, setIsSaving] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
-  // Ensure all CRUD operations have proper defaults
-  const defaultCrudOperations = {
-    create: { enabled: true, authenticated: false },
-    read: { enabled: true, authenticated: false },
-    update: { enabled: true, authenticated: false },
-    delete: { enabled: true, authenticated: false },
-  };
-  const schemaCrud = schema.modelOptions?.conduit?.cms?.crudOperations;
-  const [crudOperations, setCrudOperations] = React.useState({
-    create: schemaCrud?.create ?? defaultCrudOperations.create,
-    read: schemaCrud?.read ?? defaultCrudOperations.read,
-    update: schemaCrud?.update ?? defaultCrudOperations.update,
-    delete: schemaCrud?.delete ?? defaultCrudOperations.delete,
-  });
+  const [crudOperations, setCrudOperations] = React.useState(() =>
+    deriveCrudOperationsFromSchema(schema)
+  );
   const [authEnabled, setAuthEnabled] = React.useState(
     schema.modelOptions?.conduit?.authorization?.enabled ?? false
   );
@@ -185,43 +174,6 @@ export function SettingsPanel({
           )}
           disabled={!isOwnedByDatabase}
         />
-
-        <Separator />
-
-        {/* Extensions */}
-        {schema.extensions && schema.extensions.length > 0 && (
-          <>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Extensions</CardTitle>
-                <CardDescription>
-                  Schema extensions from other modules
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {schema.extensions.map((ext, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 rounded-md border"
-                    >
-                      <div>
-                        <p className="font-medium">{ext.ownerModule}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {Object.keys(ext.fields || {}).length} fields
-                        </p>
-                      </div>
-                      <Badge variant="outline">
-                        {new Date(ext.updatedAt).toLocaleDateString()}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Separator />
-          </>
-        )}
 
         {/* Danger Zone */}
         {isOwnedByDatabase && (
