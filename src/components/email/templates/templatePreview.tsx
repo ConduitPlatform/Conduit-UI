@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { EmailTemplate } from '@/lib/models/email';
 import {
-  canUseVisualEditor,
   isExternallyManaged,
   generateSampleData,
   compileHandlebarsTemplate,
@@ -28,7 +27,6 @@ import { useToast } from '@/lib/hooks/use-toast';
 interface TemplatePreviewProps {
   template: EmailTemplate;
   onEdit?: () => void;
-  onConvertToVisual?: () => void;
   onViewHtml?: () => void;
   onTemplateUpdate?: () => void;
 }
@@ -36,7 +34,6 @@ interface TemplatePreviewProps {
 export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   template,
   onEdit,
-  onConvertToVisual,
   onViewHtml,
   onTemplateUpdate,
 }) => {
@@ -121,19 +118,6 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     setIsEditing(false);
   };
 
-  // Get template status
-  const getTemplateStatus = () => {
-    if (isExternallyManaged(template)) {
-      return { type: 'external', label: 'External', color: 'bg-orange-500' };
-    } else if (canUseVisualEditor(template)) {
-      return { type: 'visual', label: 'Visual Editor', color: 'bg-green-500' };
-    } else {
-      return { type: 'code', label: 'Code Editor', color: 'bg-blue-500' };
-    }
-  };
-
-  const status = getTemplateStatus();
-
   if (isExternallyManaged(template)) {
     return (
       <Card>
@@ -143,8 +127,8 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               <ExternalLink className="h-5 w-5 text-orange-500" />
               <span>External Template</span>
             </CardTitle>
-            <Badge variant="secondary" className={status.color}>
-              {status.label}
+            <Badge variant="secondary" className="bg-orange-500">
+              External
             </Badge>
           </div>
         </CardHeader>
@@ -199,30 +183,19 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             <Eye className="h-5 w-5" />
             <span>Template Preview</span>
           </CardTitle>
-          <div className="flex items-center space-x-2">
-            <Badge variant="secondary" className={status.color}>
-              {status.label}
-            </Badge>
-            <div className="flex space-x-2">
-              {onViewHtml && (
-                <Button variant="outline" size="sm" onClick={onViewHtml}>
-                  <Code className="h-4 w-4 mr-2" />
-                  View HTML
-                </Button>
-              )}
-              {!canUseVisualEditor(template) && onConvertToVisual && (
-                <Button variant="outline" size="sm" onClick={onConvertToVisual}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Open Visual Editor
-                </Button>
-              )}
-              {onEdit && (
-                <Button size="sm" onClick={onEdit}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Template
-                </Button>
-              )}
-            </div>
+          <div className="flex space-x-2">
+            {onViewHtml && (
+              <Button variant="outline" size="sm" onClick={onViewHtml}>
+                <Code className="h-4 w-4 mr-2" />
+                View HTML
+              </Button>
+            )}
+            {onEdit && (
+              <Button size="sm" onClick={onEdit}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Template
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -390,9 +363,6 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <strong>Name:</strong> {template.name}
-                    </div>
-                    <div>
-                      <strong>Type:</strong> {status.label}
                     </div>
                     <div>
                       <strong>Subject:</strong> {template.subject || 'Not set'}

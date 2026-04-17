@@ -1,8 +1,5 @@
 import * as handlebars from 'handlebars';
 
-/**
- * Extract Handlebars variables from HTML template
- */
 export function extractHandlebarsVariables(html: string): string[] {
   const regex = /\{\{([^}]+)\}\}/g;
   const matches = html.match(regex);
@@ -11,7 +8,6 @@ export function extractHandlebarsVariables(html: string): string[] {
   return matches
     .map(match => match.replace(/\{\{|\}\}/g, '').trim())
     .filter(variable => {
-      // Filter out Handlebars helpers and partials
       return (
         !variable.startsWith('#') &&
         !variable.startsWith('/') &&
@@ -20,12 +16,9 @@ export function extractHandlebarsVariables(html: string): string[] {
         !variable.startsWith('else')
       );
     })
-    .filter((variable, index, arr) => arr.indexOf(variable) === index); // Remove duplicates
+    .filter((variable, index, arr) => arr.indexOf(variable) === index);
 }
 
-/**
- * Validate Handlebars template syntax
- */
 export function validateHandlebarsTemplate(html: string): {
   isValid: boolean;
   error?: string;
@@ -42,9 +35,6 @@ export function validateHandlebarsTemplate(html: string): {
   }
 }
 
-/**
- * Compile Handlebars template with variables
- */
 export function compileHandlebarsTemplate(
   html: string,
   variables: Record<string, any>
@@ -54,133 +44,16 @@ export function compileHandlebarsTemplate(
     return template(variables);
   } catch (error) {
     console.error('Failed to compile Handlebars template:', error);
-    return html; // Return original HTML if compilation fails
+    return html;
   }
 }
 
-/**
- * Create a minimal fallback design that's guaranteed to work
- */
-export function createFallbackDesign(): any {
-  return {
-    body: {
-      rows: [
-        {
-          cells: [
-            {
-              content: {
-                blocks: [
-                  {
-                    type: 'text',
-                    data: {
-                      text: '<p>Template content</p>',
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    },
-    counters: {},
-    metadata: {
-      version: '1.0',
-    },
-  };
-}
-
-/**
- * Create a basic visual editor design from HTML
- */
-export function createBasicVisualDesign(html: string) {
-  // Ensure we have valid HTML content
-  const safeHtml = html || '<p>Template content</p>';
-
-  // Create a more robust design structure that the visual editor expects
-  return {
-    body: {
-      rows: [
-        {
-          cells: [
-            {
-              content: {
-                blocks: [
-                  {
-                    type: 'text',
-                    data: {
-                      text: safeHtml,
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    },
-    counters: {},
-    design: {
-      body: {
-        rows: [
-          {
-            cells: [
-              {
-                content: {
-                  blocks: [
-                    {
-                      type: 'text',
-                      data: {
-                        text: safeHtml,
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-    // Add additional properties that the editor might expect
-    metadata: {
-      version: '1.0',
-    },
-    settings: {
-      responsive: true,
-    },
-  };
-}
-
-/**
- * Process Handlebars variables for visual editor display
- */
-export function processHandlebarsForVisualEditor(html: string): string {
-  return html.replace(/\{\{([^}]+)\}\}/g, function (match, variable) {
-    return `<span class="handlebars-variable" data-variable="${variable.trim()}" style="background-color: #e3f2fd; padding: 2px 4px; border-radius: 3px; font-family: monospace; color: #1976d2;">{{${variable.trim()}}}</span>`;
-  });
-}
-
-/**
- * Restore Handlebars variables from visual editor format
- */
-export function restoreHandlebarsFromVisualEditor(html: string): string {
-  return html.replace(
-    /<span class="handlebars-variable" data-variable="([^"]+)"[^>]*>\{\{([^}]+)\}\}<\/span>/g,
-    '{{$1}}'
-  );
-}
-
-/**
- * Generate sample data for template preview
- */
 export function generateSampleData(
   variables: string[]
 ): Record<string, string> {
   const sampleData: Record<string, string> = {};
 
   variables.forEach(variable => {
-    // Generate appropriate sample data based on variable name
     const lowerVar = variable.toLowerCase();
 
     if (lowerVar.includes('name') || lowerVar.includes('user')) {
@@ -208,39 +81,20 @@ export function generateSampleData(
   return sampleData;
 }
 
-/**
- * Check if template can be edited in visual editor
- */
-export function canUseVisualEditor(template: {
-  jsonTemplate?: string;
-  externalManaged?: boolean;
-}): boolean {
-  return !!template.jsonTemplate && !template.externalManaged;
-}
-
-/**
- * Check if template is externally managed
- */
 export function isExternallyManaged(template: {
   externalManaged?: boolean;
 }): boolean {
   return !!template.externalManaged;
 }
 
-/**
- * Sanitize variable name for safe usage
- */
 export function sanitizeVariableName(name: string): string {
   return name
     .trim()
-    .replace(/[^a-zA-Z0-9_]/g, '_') // Replace invalid chars with underscore
-    .replace(/^[0-9]/, '_$&') // Prefix with underscore if starts with number
+    .replace(/[^a-zA-Z0-9_]/g, '_')
+    .replace(/^[0-9]/, '_$&')
     .toLowerCase();
 }
 
-/**
- * Validate variable name
- */
 export function validateVariableName(name: string): {
   isValid: boolean;
   error?: string;

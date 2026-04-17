@@ -8,17 +8,7 @@ import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { deleteTemplate, uploadTemplate } from '@/lib/api/email';
 import Link from 'next/link';
-import {
-  EyeIcon,
-  UploadCloud,
-  Code,
-  Palette,
-  ExternalLink,
-} from 'lucide-react';
-import {
-  canUseVisualEditor,
-  isExternallyManaged,
-} from '@/lib/utils/template-utils';
+import { EyeIcon, UploadCloud } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
 import {
   AlertDialog,
@@ -66,36 +56,6 @@ export function useColumns() {
       {
         accessorKey: 'name',
         header: 'Name',
-      },
-      {
-        accessorKey: 'externalManaged',
-        header: 'Type',
-        enableSorting: false,
-        cell: props => {
-          const template = props.row.original;
-          if (isExternallyManaged(template)) {
-            return (
-              <div className="flex items-center space-x-2">
-                <ExternalLink className="h-4 w-4 text-orange-500" />
-                <span className="text-sm">External</span>
-              </div>
-            );
-          } else if (canUseVisualEditor(template)) {
-            return (
-              <div className="flex items-center space-x-2">
-                <Palette className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Visual</span>
-              </div>
-            );
-          } else {
-            return (
-              <div className="flex items-center space-x-2">
-                <Code className="h-4 w-4 text-blue-500" />
-                <span className="text-sm">Code</span>
-              </div>
-            );
-          }
-        },
       },
       {
         accessorKey: 'createdAt',

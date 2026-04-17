@@ -7,12 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Code, Edit, ExternalLink } from 'lucide-react';
 import { TemplatePreview } from '@/components/email/templates/templatePreview';
 import { TemplateEditor } from '@/components/email/templates/TemplateEditor';
-import { CodeEditor } from '@/components/email/templates/CodeEditor';
 import { HtmlViewer } from '@/components/email/templates/HtmlViewer';
-import {
-  canUseVisualEditor,
-  isExternallyManaged,
-} from '@/lib/utils/template-utils';
+import { isExternallyManaged } from '@/lib/utils/template-utils';
 import { useToast } from '@/lib/hooks/use-toast';
 import {
   PageHeader,
@@ -29,13 +25,12 @@ type EmailTemplateProps = {
   }>;
 };
 
-export default function EmailTemplates(props: EmailTemplateProps) {
+export default function EmailTemplatePage(props: EmailTemplateProps) {
   const [template, setTemplate] = useState<EmailTemplate | null>(null);
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
   const [showHtmlDialog, setShowHtmlDialog] = useState(false);
   const [params, setParams] = useState<{ _id: string } | null>(null);
-  const [forceVisualEditor, setForceVisualEditor] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -61,15 +56,6 @@ export default function EmailTemplates(props: EmailTemplateProps) {
     initializePage();
   }, [props]);
 
-  const handleConvertToVisual = () => {
-    if (!template) return;
-
-    // Set flag to force visual editor and open editor
-    // The conversion will happen when the user saves the template in the visual editor
-    setForceVisualEditor(true);
-    setShowEditor(true);
-  };
-
   const handleEdit = () => {
     if (isExternallyManaged(template!)) {
       toast({
@@ -79,16 +65,7 @@ export default function EmailTemplates(props: EmailTemplateProps) {
       });
       return;
     }
-
-    // Reset force flag for regular edit
-    setForceVisualEditor(false);
-
-    if (canUseVisualEditor(template!)) {
-      setShowEditor(true);
-    } else {
-      // For templates without jsonTemplate, show code editor
-      setShowEditor(true);
-    }
+    setShowEditor(true);
   };
 
   const refreshTemplate = async () => {
@@ -129,7 +106,6 @@ export default function EmailTemplates(props: EmailTemplateProps) {
     );
   }
 
-  // Show appropriate editor based on template type
   if (showEditor) {
     if (isExternallyManaged(template)) {
       return (
@@ -141,12 +117,7 @@ export default function EmailTemplates(props: EmailTemplateProps) {
               This template is managed by an external system and cannot be
               edited here.
             </p>
-            <Button
-              onClick={() => {
-                setShowEditor(false);
-                setForceVisualEditor(false);
-              }}
-            >
+            <Button onClick={() => setShowEditor(false)}>
               Back to Template
             </Button>
           </div>
@@ -154,27 +125,13 @@ export default function EmailTemplates(props: EmailTemplateProps) {
       );
     }
 
-    if (forceVisualEditor || canUseVisualEditor(template)) {
-      return (
-        <TemplateEditor
-          template={template}
-          onClose={() => {
-            setShowEditor(false);
-            setForceVisualEditor(false);
-          }}
-          onTemplateUpdate={refreshTemplate}
-        />
-      );
-    } else {
-      return (
-        <CodeEditor
-          template={template}
-          onClose={() => setShowEditor(false)}
-          onConvertToVisual={handleConvertToVisual}
-          onTemplateUpdate={refreshTemplate}
-        />
-      );
-    }
+    return (
+      <TemplateEditor
+        template={template}
+        onClose={() => setShowEditor(false)}
+        onTemplateUpdate={refreshTemplate}
+      />
+    );
   }
 
   return (
@@ -202,14 +159,10 @@ export default function EmailTemplates(props: EmailTemplateProps) {
       <TemplatePreview
         template={template}
         onEdit={handleEdit}
-        onConvertToVisual={
-          !canUseVisualEditor(template) ? handleConvertToVisual : undefined
-        }
         onViewHtml={handleViewHtml}
         onTemplateUpdate={refreshTemplate}
       />
 
-      {/* HTML Viewer */}
       <HtmlViewer
         html={template.body || ''}
         templateName={template.name}
