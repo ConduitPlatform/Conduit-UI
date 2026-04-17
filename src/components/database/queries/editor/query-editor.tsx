@@ -689,7 +689,9 @@ export function QueryEditor({
               <div className="flex items-center space-x-2">
                 <Badge variant="outline">
                   {/*@ts-expect-error*/}
-                  {form.watch(`${path}.operation`)}
+                  {comparisonOperations.find(
+                    o => o.value === form.watch(`${path}.operation`)
+                  )?.label ?? form.watch(`${path}.operation`)}
                 </Badge>
                 <Badge variant="secondary">
                   {/*@ts-expect-error*/}
