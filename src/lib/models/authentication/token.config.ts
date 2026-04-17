@@ -12,14 +12,16 @@ export type TokenConfig = {
     multipleUserSessions: boolean;
     multipleClientLogins: boolean;
   };
-  accessTokens: CookieOptions & {
+  accessTokens: {
     jwtSecret: string;
     expiryPeriod: number;
     setCookie: boolean;
+    cookieOptions: CookieOptions;
   };
-  refreshTokens: CookieOptions & {
+  refreshTokens: {
     enabled: boolean;
     expiryPeriod: number;
     setCookie: boolean;
+    cookieOptions: CookieOptions;
   };
 };

@@ -7,6 +7,7 @@ import {
   AuthenticationConfigResponse,
 } from '@/lib/models/authentication';
 import { Team } from '@/lib/models/Team';
+import { TeamInvite } from '@/lib/models/TeamInvite';
 
 export const getUsers = async (
   skip: number,
@@ -278,4 +279,49 @@ export const patchTeamMembersRoles = async (
     role,
   });
   return res.data;
+};
+
+export const getTeamInvites = async (
+  teamId: string,
+  skip: number,
+  limit: number
+): Promise<{ invites: TeamInvite[]; count: number }> => {
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/teams/${teamId}/invites`, {
+    params: { skip, limit },
+  });
+  return res.data;
+};
+
+export const createPersistentInvite = async (
+  teamId: string,
+  role: string,
+  userData?: Record<string, unknown>
+): Promise<string> => {
+  const res = await (
+    await getApiClient()
+  ).post<{ result: string }>(
+    `/authentication/teams/${teamId}/invite/persistent`,
+    {
+      role,
+      userData,
+    }
+  );
+  return res.data.result;
+};
+
+export const deletePersistentInvite = async (
+  teamId: string,
+  invitationToken: string
+): Promise<string> => {
+  const res = await (
+    await getApiClient()
+  ).delete<{ result: string }>(
+    `/authentication/teams/${teamId}/invite/persistent`,
+    {
+      params: { invitationToken },
+    }
+  );
+  return res.data.result;
 };

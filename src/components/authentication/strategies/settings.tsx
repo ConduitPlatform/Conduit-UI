@@ -29,21 +29,19 @@ const tokensSchema = z.object({
   path: z.string().default(''),
   sameSite: z.string().default('Lax'),
 });
-const accessTokenSchema = z
-  .object({
-    jwtSecret: z.string().default('S3CR3T'),
-    expiryPeriod: z.number().default(3600000),
-    setCookie: z.boolean().default(false),
-  })
-  .merge(tokensSchema);
+const accessTokenSchema = z.object({
+  jwtSecret: z.string().default('S3CR3T'),
+  expiryPeriod: z.number().default(3600000),
+  setCookie: z.boolean().default(false),
+  cookieOptions: tokensSchema,
+});
 
-const refreshTokenSchema = z
-  .object({
-    enabled: z.boolean().default(true),
-    expiryPeriod: z.number().default(86400000 * 7),
-    setCookie: z.boolean().default(false),
-  })
-  .merge(tokensSchema);
+const refreshTokenSchema = z.object({
+  enabled: z.boolean().default(true),
+  expiryPeriod: z.number().default(86400000 * 7),
+  setCookie: z.boolean().default(false),
+  cookieOptions: tokensSchema,
+});
 
 const clientsSchema = z.object({
   multipleUserSessions: z.boolean().default(false),
@@ -216,32 +214,32 @@ export const AuthenticationSettings = ({ data }: Props) => {
                     <div className={'grid grid-cols-2 gap-4 items-center'}>
                       <InputField
                         label={'Domain'}
-                        fieldName={'accessTokens.domain'}
+                        fieldName={'accessTokens.cookieOptions.domain'}
                         disabled={!edit}
                       />
                       <InputField
                         label={'Path'}
-                        fieldName={'accessTokens.path'}
+                        fieldName={'accessTokens.cookieOptions.path'}
                         disabled={!edit}
                       />
                       <InputField
                         label={'SameSite'}
-                        fieldName={'accessTokens.sameSite'}
+                        fieldName={'accessTokens.cookieOptions.sameSite'}
                         disabled={!edit}
                       />
                       <SwitchField
                         label={'Secure'}
-                        fieldName={'accessTokens.secure'}
+                        fieldName={'accessTokens.cookieOptions.secure'}
                         disabled={!edit}
                       />
                       <SwitchField
                         label={'HTTP Only'}
-                        fieldName={'accessTokens.httpOnly'}
+                        fieldName={'accessTokens.cookieOptions.httpOnly'}
                         disabled={!edit}
                       />
                       <SwitchField
                         label={'Signed'}
-                        fieldName={'accessTokens.signed'}
+                        fieldName={'accessTokens.cookieOptions.signed'}
                         disabled={!edit}
                       />
                     </div>
@@ -296,32 +294,32 @@ export const AuthenticationSettings = ({ data }: Props) => {
                       <div className={'grid grid-cols-2 gap-4 items-center'}>
                         <InputField
                           label={'Domain'}
-                          fieldName={'refreshTokens.domain'}
+                          fieldName={'refreshTokens.cookieOptions.domain'}
                           disabled={!edit}
                         />
                         <InputField
                           label={'Path'}
-                          fieldName={'refreshTokens.path'}
+                          fieldName={'refreshTokens.cookieOptions.path'}
                           disabled={!edit}
                         />
                         <InputField
                           label={'SameSite'}
-                          fieldName={'refreshTokens.sameSite'}
+                          fieldName={'refreshTokens.cookieOptions.sameSite'}
                           disabled={!edit}
                         />
                         <SwitchField
                           label={'Secure'}
-                          fieldName={'refreshTokens.secure'}
+                          fieldName={'refreshTokens.cookieOptions.secure'}
                           disabled={!edit}
                         />
                         <SwitchField
                           label={'HTTP Only'}
-                          fieldName={'refreshTokens.httpOnly'}
+                          fieldName={'refreshTokens.cookieOptions.httpOnly'}
                           disabled={!edit}
                         />
                         <SwitchField
                           label={'Signed'}
-                          fieldName={'refreshTokens.signed'}
+                          fieldName={'refreshTokens.cookieOptions.signed'}
                           disabled={!edit}
                         />
                       </div>
