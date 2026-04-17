@@ -140,9 +140,8 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   );
 
   return (
-    <div className="h-full flex flex-col w-full overflow-auto">
-      <div className="w-full absolute h-5/6 left-0 top-13 flex gap-x-4">
-        {/* Left sidebar with query list */}
+    <div className="flex h-full min-h-0 w-full flex-col">
+      <div className="flex min-h-0 flex-1 gap-x-4 px-4 pb-4">
         <QueryList
           queries={queries}
           models={models}
@@ -155,12 +154,10 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
           onQuerySelect={handleSelectQuery}
           onCreateQuery={handleCreateQuery}
           onDeleteQuery={handleDeleteQuery}
-          /*@ts-ignore*/
           loadMoreRef={ref}
         />
 
-        {/* Right side - Query editor */}
-        <div className="w-full border rounded-lg shadow-xs bg-background h-full overflow-auto">
+        <div className="min-h-0 flex-1 overflow-auto rounded-lg border bg-background shadow-xs">
           {children}
         </div>
       </div>

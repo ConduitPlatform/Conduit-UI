@@ -46,6 +46,7 @@ const FormSchema = z.object({
     rest: z.boolean(),
     graphql: z.boolean(),
     sockets: z.boolean(),
+    mcp: z.boolean(),
   }),
   auth: z.object({
     tokenSecret: z.string(),
@@ -95,9 +96,12 @@ export const General = ({ data }: Props) => {
         });
       });
     }
-    let adminSettings: any = { ...formData };
-    delete adminSettings.env;
-    patchAdminSettings({ ...adminSettings })
+    const { env, ...formAdmin } = formData;
+    patchAdminSettings({
+      ...formAdmin,
+      // Top-level `mcp` is not edited in this form; backend requires the object on PATCH
+      mcp: data.mcp ?? { pingInterval: 30000, sessionTimeout: 300000 },
+    })
       .then(res => {
         dismiss();
         toast({
@@ -265,6 +269,22 @@ export const General = ({ data }: Props) => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between px-3 py-2 border rounded-md">
                     <FormLabel className="text-base">WebSockets</FormLabel>
+                    <FormControl>
+                      <Switch
+                        disabled={!edit}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="transports.mcp"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between px-3 py-2 border rounded-md">
+                    <FormLabel className="text-base">MCP</FormLabel>
                     <FormControl>
                       <Switch
                         disabled={!edit}

@@ -3,6 +3,13 @@ export type AdminSettings = {
   hostUrl: string;
   transports: TransportSettings;
   cors: CorsSettings;
+  /** MCP transport tuning (admin config); required by API when patching admin config */
+  mcp: McpSettings;
+};
+
+type McpSettings = {
+  pingInterval: number;
+  sessionTimeout: number;
 };
 
 type CorsSettings = {
@@ -25,6 +32,7 @@ type TransportSettings = {
   rest: boolean;
   graphql: boolean;
   sockets: boolean;
+  mcp: boolean;
 };
 
 export type CoreSettings = {

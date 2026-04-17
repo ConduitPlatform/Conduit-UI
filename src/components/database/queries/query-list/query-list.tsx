@@ -28,12 +28,12 @@ interface QueryListProps {
   onQuerySelect: (id: string) => void;
   onCreateQuery: () => void;
   onDeleteQuery?: (id: string) => void;
-  loadMoreRef: React.RefObject<HTMLDivElement>;
+  loadMoreRef: React.Ref<HTMLDivElement>;
 }
 
 export function QueryList({
-  queries: initialQueries,
-  models: initialModels,
+  queries,
+  models,
   selectedQuery,
   isLoading,
   searchTerm,
@@ -45,8 +45,6 @@ export function QueryList({
   onDeleteQuery,
   loadMoreRef,
 }: Readonly<QueryListProps>) {
-  const queries = React.useMemo(() => initialQueries, [initialQueries]);
-  const models = React.useMemo(() => initialModels, [initialModels]);
   const [exportImportDialog, setExportImportDialog] = React.useState(false);
   const { toast } = useToast();
 
@@ -97,7 +95,7 @@ export function QueryList({
       });
   };
   return (
-    <div className="w-2/12 border rounded-lg shadow-xs flex flex-col h-full overflow-hidden">
+    <div className="flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden rounded-lg border shadow-xs">
       <QueryFilters
         searchTerm={searchTerm ?? ''}
         onSearchChange={onSearchChange}
