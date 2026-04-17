@@ -8,8 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { Form } from '@/components/ui/form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as React from 'react';
 import { useEffect } from 'react';
 import {
@@ -58,6 +57,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Assignment,
   AssignmentActionEnum,
@@ -610,7 +624,14 @@ export function QueryEditor({
       valueDisplay = `context:${comparisonField.value || 'not specified'}`;
     }
 
-    return `${schemaField} ${getReadableOperation(operation)} ${valueDisplay}`;
+    let opPhrase = getReadableOperation(operation);
+    if (comparisonField.like && operation === ComparisonOperationEnum.EQUAL) {
+      opPhrase = comparisonField.caseSensitiveLike
+        ? 'matches (case-sensitive LIKE)'
+        : 'matches (LIKE)';
+    }
+
+    return `${schemaField} ${opPhrase} ${valueDisplay}`;
   };
 
   const getSetDescription = (condition: Assignment, index: number): string => {
@@ -713,14 +734,44 @@ export function QueryEditor({
             </div>
 
             <div className="space-y-2">
-              <SelectField
-                label={'Comparison'}
-                placeholder={'Select comparison'}
-                fieldName={`${path}.operation`}
-                options={comparisonOperations.map(op => ({
-                  value: op.value,
-                  label: op.label,
-                }))}
+              <Controller
+                name={`${path}.operation`}
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel>Comparison</FormLabel>
+                    <Select
+                      onValueChange={val => {
+                        const n = Number(val);
+                        field.onChange(n);
+                        if (n !== ComparisonOperationEnum.EQUAL) {
+                          form.setValue(`${path}.comparisonField.like`, false);
+                          form.setValue(
+                            `${path}.comparisonField.caseSensitiveLike`,
+                            false
+                          );
+                        }
+                      }}
+                      value={String(
+                        field.value ?? ComparisonOperationEnum.EQUAL
+                      )}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select comparison" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {comparisonOperations.map(op => (
+                          <SelectItem key={op.value} value={String(op.value)}>
+                            {op.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
@@ -772,6 +823,58 @@ export function QueryEditor({
                   fieldName={`${path}.comparisonField.value`}
                   placeholder={'e.g. user.id, currentDate'}
                 />
+              </div>
+            )}
+
+            {Number(form.watch(`${path}.operation`)) ===
+              ComparisonOperationEnum.EQUAL && (
+              <div className="space-y-4 rounded-md border border-border/60 bg-muted/20 p-3">
+                <Controller
+                  name={`${path}.comparisonField.like`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Input
+                          type="checkbox"
+                          className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                          checked={Boolean(field.value)}
+                          onChange={e => {
+                            const checked = e.target.checked;
+                            field.onChange(checked);
+                            if (!checked) {
+                              form.setValue(
+                                `${path}.comparisonField.caseSensitiveLike`,
+                                false
+                              );
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="font-normal">
+                          Like (pattern match)
+                        </FormLabel>
+                        <FormDescription className="text-xs">
+                          Use % as a wildcard; the value is matched as %input%.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                {Boolean(form.watch(`${path}.comparisonField.like`)) && (
+                  <InputField
+                    type="checkbox"
+                    label="Case sensitive"
+                    fieldName={`${path}.comparisonField.caseSensitiveLike`}
+                    description="When off, matching is case-insensitive (e.g. ILIKE on PostgreSQL)."
+                    classNames={{
+                      formItem: 'flex flex-row items-center space-x-2',
+                      input:
+                        'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
+                    }}
+                  />
+                )}
               </div>
             )}
           </div>
