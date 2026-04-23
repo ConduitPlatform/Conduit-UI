@@ -33,6 +33,8 @@ export type SchemaOptions = {
     authorization?: {
       enabled: boolean;
     };
+    /** MongoDB only: overrides module default read preference for this schema's reads */
+    readPreference?: string;
   };
   indexes?: any[];
 };
@@ -54,6 +56,18 @@ export type DeclaredSchema = {
   collectionName: string;
   createdAt: string;
   updatedAt: string;
+};
+
+/** PATCH /database/schemas/:id — matches Database admin route bodyParams */
+export type PatchSchemaRequest = Partial<Pick<DeclaredSchema, 'fields'>> & {
+  /** Nested shapes are permissive — callers build objects from forms */
+  conduitOptions?: {
+    cms?: Record<string, unknown>;
+    authorization?: Record<string, unknown>;
+    permissions?: Record<string, unknown>;
+    /** MongoDB only; empty string clears schema-level override */
+    readPreference?: string;
+  };
 };
 export type CreateSchema = {
   name: string;

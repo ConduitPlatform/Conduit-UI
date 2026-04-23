@@ -55,6 +55,8 @@ type ModelsNewPageProps = {
   };
   authResource?: ResourceDefinition | null;
   initialTab?: ModelsNewTab;
+  /** From GET /database/database-type; controls Mongo-only schema settings */
+  databaseType?: string;
 };
 
 export function ModelsNewPage({
@@ -65,6 +67,7 @@ export function ModelsNewPage({
   documents,
   authResource,
   initialTab = 'schema',
+  databaseType,
 }: ModelsNewPageProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState(() =>
@@ -244,6 +247,7 @@ export function ModelsNewPage({
               schema={selectedSchema}
               authResource={authResource}
               onSave={handleSchemaUpdated}
+              databaseType={databaseType}
             />
           )}
         </TabsContent>

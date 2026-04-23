@@ -2,7 +2,9 @@
 
 import { getApiClient } from '@/lib/api';
 import {
+  DatabaseConfig,
   DeclaredSchema,
+  PatchSchemaRequest,
   PendingSchemas,
   SchemaOptions,
 } from '@/lib/models/database';
@@ -77,10 +79,7 @@ export const createSchema = async (schema: Partial<DeclaredSchema>) => {
     .post<DeclaredSchema>('/database/schemas', schema)
     .then(res => res.data);
 };
-export const patchSchema = async (
-  id: string,
-  schema: Partial<DeclaredSchema>
-) => {
+export const patchSchema = async (id: string, schema: PatchSchemaRequest) => {
   return await (await getApiClient())
     .patch<DeclaredSchema>(`/database/schemas/${id}`, schema)
     .then(res => res.data);
@@ -356,4 +355,19 @@ export const deleteSchemaIndexes = async (
       params: { indexNames },
     })
     .then(res => res.data);
+};
+
+export const getDatabaseSettings = async () => {
+  const res = await (
+    await getApiClient()
+  ).get<{ config: DatabaseConfig }>('/config/database');
+  return res.data;
+};
+
+export const patchDatabaseSettings = async (data: Partial<DatabaseConfig>) => {
+  await (
+    await getApiClient()
+  ).patch('/config/database', {
+    config: { ...data },
+  });
 };

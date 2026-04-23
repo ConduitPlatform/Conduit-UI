@@ -1,4 +1,5 @@
 import {
+  getDatabaseType,
   getSchema,
   getSchemas,
   getSchemaDocs,
@@ -29,10 +30,11 @@ export default async function ModelDetailPage(props: Readonly<PageProps>) {
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  const [schemasData, modulesData, schema] = await Promise.all([
+  const [schemasData, modulesData, schema, dbTypeRes] = await Promise.all([
     getSchemas({ limit: 1000, enabled: true }),
     getSchemaOwnerModules({ sort: 'name' }),
     getSchema(params.modelId),
+    getDatabaseType(),
   ]);
 
   // Fetch documents for the selected schema
@@ -74,6 +76,7 @@ export default async function ModelDetailPage(props: Readonly<PageProps>) {
       documents={docs}
       authResource={resource}
       initialTab={initialTab}
+      databaseType={dbTypeRes.result}
     />
   );
 }

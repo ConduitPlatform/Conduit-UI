@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, FileText, Plus, Search } from 'lucide-react';
+import { Database, FileText, Plus, Search, Settings } from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getDatabaseMetrics,
@@ -71,6 +71,12 @@ export default async function DatabaseDashboard() {
       description: 'Import pending schemas from the database',
       icon: <Search className="h-4 w-4" />,
       href: '/database/introspection',
+    },
+    {
+      title: 'Settings',
+      description: 'Configure replica set read preferences',
+      icon: <Settings className="h-4 w-4" />,
+      href: '/database/settings',
     },
   ];
 

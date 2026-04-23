@@ -20,6 +20,14 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,16 +42,30 @@ import {
 import { Save, Trash2, AlertTriangle, Info } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 
+/** Radix Select rejects empty string values */
+const MONGO_READ_PREF_DEFAULT = '__default__';
+
+const MONGO_READ_PREFS = [
+  { value: MONGO_READ_PREF_DEFAULT, label: 'Default (module / driver)' },
+  { value: 'primary', label: 'primary' },
+  { value: 'primaryPreferred', label: 'primaryPreferred' },
+  { value: 'secondary', label: 'secondary' },
+  { value: 'secondaryPreferred', label: 'secondaryPreferred' },
+  { value: 'nearest', label: 'nearest' },
+] as const;
+
 type SettingsPanelProps = {
   schema: DeclaredSchema;
   authResource?: ResourceDefinition | null;
   onSave: () => void;
+  databaseType?: string;
 };
 
 export function SettingsPanel({
   schema,
   authResource,
   onSave,
+  databaseType,
 }: SettingsPanelProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
@@ -58,24 +80,33 @@ export function SettingsPanel({
   const [indices, setIndices] = React.useState<any[]>(
     schema.modelOptions?.indexes || []
   );
+  const [mongoReadPreference, setMongoReadPreference] = React.useState(() => {
+    const rp = schema.modelOptions?.conduit?.readPreference;
+    return rp !== undefined && rp !== null && String(rp).length > 0
+      ? String(rp)
+      : MONGO_READ_PREF_DEFAULT;
+  });
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await patchSchema(schema._id, {
-        modelOptions: {
-          ...schema.modelOptions,
-          conduit: {
-            ...schema.modelOptions?.conduit,
-            cms: {
-              enabled: true,
-              crudOperations,
-            },
-            authorization: {
-              enabled: authEnabled,
-            },
+        conduitOptions: {
+          cms: {
+            enabled: true,
+            crudOperations,
           },
-          indexes: indices,
+          authorization: {
+            enabled: authEnabled,
+          },
+          ...(databaseType === 'MongoDB'
+            ? {
+                readPreference:
+                  mongoReadPreference !== MONGO_READ_PREF_DEFAULT
+                    ? mongoReadPreference
+                    : '',
+              }
+            : {}),
         },
       });
       toast({ title: 'Settings saved' });
@@ -142,6 +173,51 @@ export function SettingsPanel({
             )}
           </CardContent>
         </Card>
+
+        {databaseType === 'MongoDB' && (
+          <>
+            <Separator />
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  MongoDB read preference
+                </CardTitle>
+                <CardDescription>
+                  Optional override for this schema&apos;s reads. Per-request
+                  overrides and Database module defaults still apply when this
+                  is left as default.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Label htmlFor="schema-read-preference">Read preference</Label>
+                <Select
+                  value={mongoReadPreference}
+                  onValueChange={setMongoReadPreference}
+                  disabled={!isOwnedByDatabase}
+                >
+                  <SelectTrigger
+                    id="schema-read-preference"
+                    className="max-w-md"
+                  >
+                    <SelectValue placeholder="Default" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MONGO_READ_PREFS.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Use <strong>secondaryPreferred</strong> for analytics-style
+                  collections; keep security-sensitive data on default or{' '}
+                  <strong>primary</strong>.
+                </p>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
         <Separator />
 
