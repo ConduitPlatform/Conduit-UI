@@ -8,7 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  type FieldPath,
+} from 'react-hook-form';
 import * as React from 'react';
 import { useEffect } from 'react';
 import {
@@ -190,6 +195,8 @@ const querySchema = z.object({
 });
 
 type QueryFormValues = z.infer<typeof querySchema>;
+/** Nested condition paths are built at runtime; widen for react-hook-form APIs. */
+type QueryFormPath = FieldPath<QueryFormValues>;
 
 interface QueryEditorProps {
   onBack?: () => void;
@@ -669,6 +676,8 @@ export function QueryEditor({
     index: number,
     parentPath: string
   ) => {
+    const qp = (suffix: string) => `${path}.${suffix}` as QueryFormPath;
+
     // Get a readable description of the condition
     const conditionDescription = getConditionDescription(condition);
     const conditionTitle = conditionDescription || `Condition #${index + 1}`;
@@ -684,18 +693,15 @@ export function QueryEditor({
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
               <span className="font-medium truncate">{conditionTitle}</span>
             </CollapsibleTrigger>
-            {/*@ts-expect-error*/}
-            {form.watch(`${path}.schemaField`) && (
+            {form.watch(qp('schemaField')) && (
               <div className="flex items-center space-x-2">
                 <Badge variant="outline">
-                  {/*@ts-expect-error*/}
                   {comparisonOperations.find(
-                    o => o.value === form.watch(`${path}.operation`)
-                  )?.label ?? form.watch(`${path}.operation`)}
+                    o => o.value === form.watch(qp('operation'))
+                  )?.label ?? form.watch(qp('operation'))}
                 </Badge>
                 <Badge variant="secondary">
-                  {/*@ts-expect-error*/}
-                  {form.watch(`${path}.comparisonField.type`)}
+                  {form.watch(qp('comparisonField.type'))}
                 </Badge>
               </div>
             )}
@@ -717,7 +723,7 @@ export function QueryEditor({
               <SelectField
                 label={'Field'}
                 placeholder={'Select field'}
-                fieldName={`${path}.schemaField`}
+                fieldName={qp('schemaField')}
                 options={modelFields.map(modelField => ({
                   value: modelField.name,
                   label: (
@@ -737,7 +743,7 @@ export function QueryEditor({
 
             <div className="space-y-2">
               <Controller
-                name={`${path}.operation`}
+                name={qp('operation')}
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="space-y-2">
@@ -747,9 +753,9 @@ export function QueryEditor({
                         const n = Number(val);
                         field.onChange(n);
                         if (n !== ComparisonOperationEnum.EQUAL) {
-                          form.setValue(`${path}.comparisonField.like`, false);
+                          form.setValue(qp('comparisonField.like'), false);
                           form.setValue(
-                            `${path}.comparisonField.caseSensitiveLike`,
+                            qp('comparisonField.caseSensitiveLike'),
                             false
                           );
                         }
@@ -781,7 +787,7 @@ export function QueryEditor({
               <SelectField
                 label={'Value Source'}
                 placeholder={'Select value source'}
-                fieldName={`${path}.comparisonField.type`}
+                fieldName={qp('comparisonField.type')}
                 options={valueSourceTypes.map(vs => ({
                   value: vs.value,
                   label: vs.label,
@@ -789,8 +795,7 @@ export function QueryEditor({
               />
             </div>
 
-            {/*@ts-expect-error*/}
-            {form.watch(`${path}.comparisonField.type`) ===
+            {form.watch(qp('comparisonField.type')) ===
               ValueSourceTypeEnum.INPUT && (
               <div className="space-y-2">
                 <SelectField
@@ -800,39 +805,37 @@ export function QueryEditor({
                     value: input.name,
                     label: input.name,
                   }))}
-                  fieldName={`${path}.comparisonField.value`}
+                  fieldName={qp('comparisonField.value')}
                 />
               </div>
             )}
 
-            {/*@ts-expect-error*/}
-            {form.watch(`${path}.comparisonField.type`) ===
+            {form.watch(qp('comparisonField.type')) ===
               ValueSourceTypeEnum.CUSTOM && (
               <div className="space-y-2">
                 <InputField
                   label={'Custom Value'}
-                  fieldName={`${path}.comparisonField.value`}
+                  fieldName={qp('comparisonField.value')}
                   placeholder={'Enter custom value'}
                 />
               </div>
             )}
-            {/*@ts-expect-error*/}
-            {form.watch(`${path}.comparisonField.type`) ===
+            {form.watch(qp('comparisonField.type')) ===
               ValueSourceTypeEnum.CONTEXT && (
               <div className="space-y-2">
                 <InputField
                   label={'Context Value'}
-                  fieldName={`${path}.comparisonField.value`}
+                  fieldName={qp('comparisonField.value')}
                   placeholder={'e.g. user.id, currentDate'}
                 />
               </div>
             )}
 
-            {Number(form.watch(`${path}.operation`)) ===
+            {Number(form.watch(qp('operation'))) ===
               ComparisonOperationEnum.EQUAL && (
               <div className="space-y-4 rounded-md border border-border/60 bg-muted/20 p-3">
                 <Controller
-                  name={`${path}.comparisonField.like`}
+                  name={qp('comparisonField.like')}
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
@@ -846,7 +849,7 @@ export function QueryEditor({
                             field.onChange(checked);
                             if (!checked) {
                               form.setValue(
-                                `${path}.comparisonField.caseSensitiveLike`,
+                                qp('comparisonField.caseSensitiveLike'),
                                 false
                               );
                             }
@@ -864,11 +867,11 @@ export function QueryEditor({
                     </FormItem>
                   )}
                 />
-                {Boolean(form.watch(`${path}.comparisonField.like`)) && (
+                {Boolean(form.watch(qp('comparisonField.like'))) && (
                   <InputField
                     type="checkbox"
                     label="Case sensitive"
-                    fieldName={`${path}.comparisonField.caseSensitiveLike`}
+                    fieldName={qp('comparisonField.caseSensitiveLike')}
                     description="When off, matching is case-insensitive (e.g. ILIKE on PostgreSQL)."
                     classNames={{
                       formItem: 'flex flex-row items-center space-x-2',
@@ -890,12 +893,13 @@ export function QueryEditor({
     path = 'query',
     isNested = false
   ) => {
-    //@ts-expect-error
-    const obj = form.watch(`${path}`);
-    //@ts-expect-error
-    const groupType = obj['AND'] ? 'AND' : 'OR';
-    //@ts-expect-error
-    const conditions = form.watch(`${path}.${groupType}`) || [];
+    const groupRoot = form.watch(path as QueryFormPath) as {
+      AND?: unknown;
+      OR?: unknown;
+    };
+    const groupType = groupRoot?.AND ? 'AND' : 'OR';
+    const conditions =
+      (form.watch(`${path}.${groupType}` as QueryFormPath) as unknown[]) || [];
     return (
       <div
         className={`border rounded-md p-4 mb-4 ${groupType === 'AND' ? 'border-blue-200' : 'border-amber-200'}`}
@@ -909,8 +913,11 @@ export function QueryEditor({
             )}
             <SelectField
               label={''}
-              //@ts-expect-error
-              value={form.watch(path)['AND'] ? 'AND' : 'OR'}
+              value={
+                (form.watch(path as QueryFormPath) as { AND?: unknown })?.AND
+                  ? 'AND'
+                  : 'OR'
+              }
               onValueChange={val => {
                 const current = form.watch(path as keyof QueryFormValues);
                 // @ts-ignore
