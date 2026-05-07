@@ -72,7 +72,7 @@ export const navGroups: NavGroup[] = [
         url: '/database',
         icon: Database,
         items: [
-          { title: 'Models', url: '/database/models-new' },
+          { title: 'Models', url: '/database/models' },
           { title: 'Introspection', url: '/database/introspection' },
           { title: 'Custom Queries', url: '/database/queries' },
           { title: 'Settings', url: '/database/settings' },

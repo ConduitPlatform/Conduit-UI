@@ -83,7 +83,7 @@ export function IntrospectionClient({ initialPending }: Props) {
             {running ? 'Running…' : 'Run introspection'}
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/database/models-new">Back to models</Link>
+            <Link href="/database/models">Back to models</Link>
           </Button>
         </CardContent>
       </Card>

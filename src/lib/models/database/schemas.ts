@@ -69,10 +69,11 @@ export type PatchSchemaRequest = Partial<Pick<DeclaredSchema, 'fields'>> & {
     readPreference?: string;
   };
 };
-export type CreateSchema = {
+export type CreateSchemaRequest = {
   name: string;
   fields: any;
-  conduitOptions: {};
+  conduitOptions?: PatchSchemaRequest['conduitOptions'];
+  timestamps?: boolean;
 };
 
 export type Views = {

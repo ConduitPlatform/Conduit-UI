@@ -2,6 +2,7 @@
 
 import { getApiClient } from '@/lib/api';
 import {
+  CreateSchemaRequest,
   DatabaseConfig,
   DeclaredSchema,
   PatchSchemaRequest,
@@ -74,7 +75,7 @@ export const getSchema = async (id: string) => {
     .then(res => res.data);
 };
 
-export const createSchema = async (schema: Partial<DeclaredSchema>) => {
+export const createSchema = async (schema: CreateSchemaRequest) => {
   return await (await getApiClient())
     .post<DeclaredSchema>('/database/schemas', schema)
     .then(res => res.data);

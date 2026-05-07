@@ -1,79 +1,66 @@
-import { getSchema, getSchemaDocs } from '@/lib/api/database';
-
-import ModelDataTable from '@/components/database/tables';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
-import { ModelEditor } from '@/components/database/modelEditor/model-editor';
-import * as React from 'react';
-import ModuleResourcePage from '@/components/authorization/resources/moduleResourcePage';
-import { getResourceDefinition } from '@/lib/api/authorization';
-import { ResourceDefinition } from '@/lib/models/authorization';
-import { redirect } from 'next/navigation';
-
-type DatabaseModelsProps = {
-  searchParams: Promise<{
-    search?: string;
-    model?: string;
-    modelId?: string;
-    pageIndex?: string;
-    limit?: string;
-  }>;
-};
+import {
+  getDatabaseType,
+  getSchemas,
+  getSchemaOwnerModules,
+} from '@/lib/api/database';
+import { ModelsPage } from '@/components/database/models/models-page';
 
 export const dynamic = 'force-dynamic';
 
-export default async function DatabaseModels(
-  props: Readonly<DatabaseModelsProps>
-) {
+const PAGE_SIZE = 10;
+
+type ModelsProps = {
+  searchParams: Promise<{
+    page?: string;
+    search?: string;
+    owner?: string;
+  }>;
+};
+
+function parsePage(raw: string | undefined): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.floor(n);
+}
+
+function parseOwners(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+export default async function Models(props: Readonly<ModelsProps>) {
   const searchParams = await props.searchParams;
-  if (!searchParams?.model || !searchParams?.modelId) {
-    redirect('/database/models-new');
-  }
 
-  const docs = await getSchemaDocs(
-    searchParams?.model,
-    searchParams?.search
-      ? { query: JSON.parse(searchParams.search) }
-      : undefined,
-    {
-      skip: searchParams?.pageIndex
-        ? Number(searchParams.pageIndex) * Number(searchParams?.limit ?? 20)
-        : 0,
-      limit: Number(searchParams?.limit ?? 20),
-    }
-  );
+  const page = parsePage(searchParams.page);
+  const search = searchParams.search?.trim() || '';
+  const owners = parseOwners(searchParams.owner);
 
-  const schema = await getSchema(searchParams.modelId);
-  const resource: ResourceDefinition[] = [];
-  if (schema.modelOptions?.conduit?.authorization?.enabled) {
-    const schemaAuthzDefinition = await getResourceDefinition(schema.name);
-    resource.push(schemaAuthzDefinition!);
-  }
+  const [schemasData, modulesData, dbTypeRes] = await Promise.all([
+    getSchemas({
+      skip: (page - 1) * PAGE_SIZE,
+      limit: PAGE_SIZE,
+      enabled: true,
+      search: search || undefined,
+      owner: owners.length > 0 ? owners : undefined,
+    }),
+    getSchemaOwnerModules({ sort: 'name' }),
+    getDatabaseType(),
+  ]);
+
   return (
-    <Tabs defaultValue="data" className="h-full">
-      <div className={'flex flex-row gap-x-2'}>
-        <TabsList className="flex flex-row w-fit ml-3">
-          <TabsTrigger value="data">Data</TabsTrigger>
-          {schema.modelOptions?.conduit?.authorization?.enabled && (
-            <TabsTrigger value="policies">Policies</TabsTrigger>
-          )}
-        </TabsList>
-        <ModelEditor schema={schema}>
-          <Button variant={'outline'} className={'gap-x-2'}>
-            {' '}
-            <Pencil className={'w-4 h-4'} /> Edit Model
-          </Button>
-        </ModelEditor>
-      </div>
-      <TabsContent value="data" className="h-full overflow-auto">
-        <ModelDataTable documents={docs} schema={schema} />
-      </TabsContent>
-      {schema.modelOptions?.conduit?.authorization?.enabled && (
-        <TabsContent value="policies" className="h-full overflow-auto">
-          <ModuleResourcePage resources={resource} />
-        </TabsContent>
-      )}
-    </Tabs>
+    <ModelsPage
+      schemas={schemasData.schemas}
+      modules={modulesData.modules}
+      selectedModelId={null}
+      databaseType={dbTypeRes.result}
+      count={schemasData.count}
+      page={page}
+      pageSize={PAGE_SIZE}
+      initialSearch={search}
+      initialOwners={owners}
+    />
   );
 }

@@ -15,6 +15,6 @@ export async function finalizeIntrospectionSchemasAction(
 ) {
   const message = await finalizePendingSchemas(schemas);
   revalidatePath('/database/introspection');
-  revalidatePath('/database/models-new');
+  revalidatePath('/database/models');
   return message;
 }

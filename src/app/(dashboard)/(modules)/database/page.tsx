@@ -52,13 +52,13 @@ export default async function DatabaseDashboard() {
       title: 'Models',
       description: 'Create and manage CMS schemas',
       icon: <Plus className="h-4 w-4" />,
-      href: '/database/models-new',
+      href: '/database/models',
     },
     {
       title: 'Browse models',
       description: 'Open the schema and data explorer',
       icon: <FileText className="h-4 w-4" />,
-      href: '/database/models-new',
+      href: '/database/models',
     },
     {
       title: 'Custom Queries',
