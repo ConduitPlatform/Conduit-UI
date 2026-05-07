@@ -57,6 +57,16 @@ type ModelsNewPageProps = {
   initialTab?: ModelsNewTab;
   /** From GET /database/database-type; controls Mongo-only schema settings */
   databaseType?: string;
+  /** Total number of schemas matching current filters (server-side). List view only. */
+  count?: number;
+  /** Current 1-based page index for the list view. */
+  page?: number;
+  /** Page size used by the server fetch for the list view. */
+  pageSize?: number;
+  /** Initial search query parsed from the URL for the list view. */
+  initialSearch?: string;
+  /** Initial owner filter parsed from the URL for the list view. */
+  initialOwners?: string[];
 };
 
 export function ModelsNewPage({
@@ -68,6 +78,11 @@ export function ModelsNewPage({
   authResource,
   initialTab = 'schema',
   databaseType,
+  count,
+  page,
+  pageSize,
+  initialSearch,
+  initialOwners,
 }: ModelsNewPageProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState(() =>
@@ -119,6 +134,11 @@ export function ModelsNewPage({
         <ModelsListTable
           schemas={schemas}
           modules={modules}
+          count={count ?? schemas.length}
+          page={page ?? 1}
+          pageSize={pageSize ?? (schemas.length || 1)}
+          initialSearch={initialSearch ?? ''}
+          initialOwners={initialOwners ?? []}
           onCreateNew={handleCreateNew}
           onSelect={handleModelSelect}
         />
