@@ -66,10 +66,12 @@ import {
   Form,
   FormControl,
   FormDescription,
+  FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -501,9 +503,9 @@ export function QueryEditor({
         return;
       }
     }
-    if (operation === OperationsEnum.GET) {
-      data.paginated = true;
-      data.sorted = true;
+    if (operation !== OperationsEnum.GET) {
+      data.paginated = false;
+      data.sorted = false;
     }
 
     if (onSave) {
@@ -1265,21 +1267,95 @@ export function QueryEditor({
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <InputField
-                  type={'checkbox'}
-                  label={'Requires Authentication'}
-                  fieldName={'authentication'}
-                  classNames={{
-                    description: 'text-xs text-muted-foreground',
-                    input:
-                      'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
-                  }}
-                  description={
-                    ' When enabled, this query will only be accessible to authenticated users'
-                  }
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="authentication"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel
+                        htmlFor="query-authentication"
+                        className="text-base font-medium"
+                      >
+                        Requires Authentication
+                      </FormLabel>
+                      <FormDescription>
+                        When enabled, this query is only accessible to
+                        authenticated users.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        id="query-authentication"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {operation === OperationsEnum.GET && (
+                <div className="space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="paginated"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel
+                            htmlFor="query-paginated"
+                            className="text-base font-medium"
+                          >
+                            Paginated
+                          </FormLabel>
+                          <FormDescription>
+                            Expose skip and limit query parameters and return a
+                            document count with results.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            id="query-paginated"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="sorted"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel
+                            htmlFor="query-sorted"
+                            className="text-base font-medium"
+                          >
+                            Sorted
+                          </FormLabel>
+                          <FormDescription>
+                            Allow clients to pass sort query parameters on GET
+                            requests.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            id="query-sorted"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <SelectField
