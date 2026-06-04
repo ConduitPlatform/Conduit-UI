@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { patchAuthenticationSettingsMerged } from '@/lib/api/authentication';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/hooks/use-toast';
@@ -18,12 +19,10 @@ import { ErrorPre } from '@/components/ui/error-pre';
 
 export interface StrategySettingsProps {
   strategy: StrategyInterface;
-  children?: React.ReactNode;
 }
 
 export const StrategySettings: React.FC<StrategySettingsProps> = ({
   strategy,
-  children,
 }) => {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
@@ -65,7 +64,9 @@ export const StrategySettings: React.FC<StrategySettingsProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="outline">Settings</Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className={'flex flex-row justify-between mt-5'}>

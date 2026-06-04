@@ -1,5 +1,3 @@
-'use server';
-
 import {
   Card,
   CardContent,
@@ -10,7 +8,6 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { CheckIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import React from 'react';
 import { StrategyInterface } from '@/components/authentication/strategies/interface/Strategy.interface';
 import { StrategySettings } from '@/components/authentication/strategies/StrategySettings';
@@ -19,7 +16,7 @@ export interface StrategyCardProps {
   strategy: StrategyInterface;
 }
 
-export const StrategyCard = async ({ strategy }: StrategyCardProps) => {
+export const StrategyCard = ({ strategy }: StrategyCardProps) => {
   return (
     <Card className={'col-span-2 px-0 '} key={`${strategy.name}`}>
       <CardHeader>
@@ -85,9 +82,7 @@ export const StrategyCard = async ({ strategy }: StrategyCardProps) => {
         )}
       </CardContent>
       <CardFooter className={'flex flex-row justify-end gap-x-2 pb-2'}>
-        <StrategySettings strategy={strategy}>
-          <Button variant="outline">Settings</Button>
-        </StrategySettings>
+        <StrategySettings strategy={strategy} />
       </CardFooter>
     </Card>
   );

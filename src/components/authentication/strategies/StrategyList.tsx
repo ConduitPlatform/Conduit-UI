@@ -25,15 +25,11 @@ import { patchAuthenticationSettingsMerged } from '@/lib/api/authentication';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/hooks/use-toast';
 
-export interface StrategySettingsProps {
+export interface StrategyListProps {
   strategies: StrategyInterface[];
-  children?: React.ReactNode;
 }
 
-export const StrategyList: React.FC<StrategySettingsProps> = ({
-  strategies,
-  children,
-}) => {
+export const StrategyList: React.FC<StrategyListProps> = ({ strategies }) => {
   const [open, setOpen] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<StrategyInterface | null>(null);
@@ -80,35 +76,47 @@ export const StrategyList: React.FC<StrategySettingsProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={open => {
+        setOpen(open);
+        if (!open) setSelectedStrategy(null);
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button variant="outline">Add Strategy</Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Available Strategies</DialogTitle>
-          <DialogDescription
-            className={'flex flex-col gap-y-2 h-96 overflow-y-scroll'}
-          >
-            {strategies.map(strategy => {
-              return (
-                <Card
-                  className={cn(
-                    'px-0 cursor-pointer',
-                    selectedStrategy?.name === strategy.name
-                      ? 'border-primary'
-                      : ''
-                  )}
-                  key={`${strategy.name}`}
-                  onClick={() => setSelectedStrategy(strategy)}
-                >
-                  <CardHeader>
-                    <CardTitle className={'flex flex-row justify-between'}>
-                      <span>{strategy.name}</span>
-                    </CardTitle>
-                    <CardDescription>{strategy.description}</CardDescription>
-                  </CardHeader>
-                </Card>
-              );
-            })}
+          <DialogDescription asChild>
+            <div className="flex flex-col gap-y-2 h-96 overflow-y-scroll">
+              {strategies.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4">
+                  All authentication strategies are already active.
+                </p>
+              ) : (
+                strategies.map(strategy => (
+                  <Card
+                    className={cn(
+                      'px-0 cursor-pointer',
+                      selectedStrategy?.name === strategy.name
+                        ? 'border-primary'
+                        : ''
+                    )}
+                    key={strategy.key}
+                    onClick={() => setSelectedStrategy(strategy)}
+                  >
+                    <CardHeader>
+                      <CardTitle className={'flex flex-row justify-between'}>
+                        <span>{strategy.name}</span>
+                      </CardTitle>
+                      <CardDescription>{strategy.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))
+              )}
+            </div>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
