@@ -28,7 +28,7 @@
     "@types/react-json-editor-ajrm": "^2.5.3",
     "@types/react-lottie": "^1.2.6",
     "apexcharts": "^3.35.5",
-    "axios": "^0.26.0",
+    "axios": "^0.32.0",
     "clsx": "^1.1.0",
     "color-hash": "^2.0.1",
     "cookies": "^0.8.0",
