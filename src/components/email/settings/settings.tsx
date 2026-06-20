@@ -198,8 +198,11 @@ export const Settings = ({ data }: Props) => {
     patchEmailSettings(data)
       .then(res => {
         dismiss();
-        const emailModule = res.find(module => module.moduleName === 'email');
-        if (emailModule && emailModule.serving)
+        const isServing = Boolean(
+          res.find(module => module.moduleName === 'communications')?.serving ||
+          res.find(module => module.moduleName === 'email')?.serving
+        );
+        if (isServing)
           toast({
             title: 'Email',
             description: (

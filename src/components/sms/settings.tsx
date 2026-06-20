@@ -97,8 +97,11 @@ export const Settings = ({ data }: Props) => {
     patchSmsSettings(data)
       .then(res => {
         dismiss();
-        const smsModule = res.find(module => module.moduleName === 'sms');
-        if (smsModule && smsModule.serving)
+        const isServing = Boolean(
+          res.find(module => module.moduleName === 'communications')?.serving ||
+          res.find(module => module.moduleName === 'sms')?.serving
+        );
+        if (isServing)
           toast({
             title: 'SMS',
             description: (

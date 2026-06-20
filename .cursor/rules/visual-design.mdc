@@ -1,0 +1,33 @@
+---
+description: Apply visual design fundamentals when writing CSS for shadows, borders, spacing, and elevation.
+globs: "**/*.{css,scss,tsx,jsx,vue,svelte,html}"
+alwaysApply: true
+---
+
+# Quintessential Design Wiki -- Visual Design
+
+9 rules that separate considered interfaces from default ones. Apply when writing any visual CSS.
+
+## Border Radius
+
+- `visual-concentric-radius` -- Inner radius = outer radius minus padding. Same radius on nested elements creates uneven curves.
+
+## Shadows
+
+- `visual-layered-shadows` -- Layer multiple shadows with increasing blur and decreasing opacity. Single shadows look flat.
+- `visual-shadow-direction` -- All shadows share the same offset direction (single light source). Mixed directions feel broken.
+- `visual-no-pure-black-shadow` -- Use neutral colors for shadows, not pure black. `rgba(17, 24, 39, 0.08)` over `rgba(0, 0, 0, 0.25)`.
+- `visual-shadow-matches-elevation` -- Larger blur and offset = higher elevation. Use a consistent shadow scale (`--shadow-1`, `--shadow-2`, `--shadow-3`).
+- `visual-animate-shadow-pseudo` -- Never transition `box-shadow` directly. Animate opacity on a pseudo-element with the target shadow instead.
+
+## Spacing
+
+- `visual-consistent-spacing-scale` -- Use a defined scale (4, 8, 12, 16, 24, 32, 48), never arbitrary pixel values.
+
+## Borders
+
+- `visual-border-alpha-colors` -- Semi-transparent borders (`var(--gray-a4)`) adapt to any background. Hardcoded hex borders break on theme changes.
+
+## Buttons
+
+- `visual-button-shadow-anatomy` -- Polished buttons use six layers: outer cut shadow, inner ambient highlight, inner top highlight, layered depth shadows, text drop-shadow, subtle gradient background.

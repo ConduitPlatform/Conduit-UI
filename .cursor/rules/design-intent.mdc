@@ -1,0 +1,31 @@
+---
+description: Establish design intent before building any UI component, page, or layout. Ask the right questions before writing code.
+globs: "**/*.{tsx,jsx,vue,svelte}"
+alwaysApply: true
+---
+
+# Quintessential Design Wiki -- Design Intent
+
+Before generating UI code, answer these questions. Skip none.
+
+## The Questions
+
+1. **What one word describes how this should feel?** — Calm, fast, warm, precise, playful, confident, minimal, dense, editorial, premium. Pick one. Every decision flows from it.
+
+2. **What's the user's state of mind?** — Stressed (checkout, error, deadline)? Focused (editor, form, dashboard)? Browsing (discovery, feed, settings)? The UI must respect that state — not fight it.
+
+3. **What's the single most important element on this screen?** — Name it. If you can't, the hierarchy is wrong. If everything is important, nothing is.
+
+4. **What's the reference?** — Name a real product that nails what this should feel like. "This sidebar should feel like Linear's." "This card should feel like Airbnb's listing." A concrete reference beats abstract adjectives.
+
+5. **What can be removed?** — Before adding anything, audit what's already there. Every element must earn its place. If removing it doesn't hurt the user's ability to complete their task — remove it.
+
+6. **What's the unexpected detail?** — After the UI works and looks clean, what's the one small thing that would make someone pause? A considered empty state. A satisfying confirmation moment. A hover effect that rewards curiosity. Build the expected first, then add the memorable.
+
+## Principles
+
+- **Intent before implementation** — Decide what it should feel like before deciding how to build it. The feeling determines the font, the spacing, the animation, the density — not the other way around.
+- **Reduction is taste** — The best interfaces have less than you'd expect. Generous whitespace where users breathe, density where they need efficiency. Default to less.
+- **Emotion is functional** — A calm checkout reduces abandonment. A fast dashboard builds trust. A warm onboarding increases completion. Emotion isn't decoration — it's the product working.
+- **Consistency is invisible, inconsistency is loud** — Users never notice consistent spacing, matching shadows, aligned type. They immediately feel when something is off. Invisible is the goal.
+- **Ship the third version** — First pass: it works. Second pass: it looks right. Third pass: it feels right. Don't stop at the first.

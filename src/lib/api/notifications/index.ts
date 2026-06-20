@@ -5,7 +5,6 @@ import { getModules } from '@/lib/api/modules';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 import { CommunicationsConfigResponse } from '@/lib/models/communications';
 import {
-  isModuleProvidedByCommunications,
   extractModuleConfigFromCommunications,
   buildCommunicationsPatchPayload,
 } from '@/lib/utils/config-utils';
@@ -13,47 +12,26 @@ import {
 type ConfigResponse = { config: NotificationSettings };
 
 export const getNotificationSettings = async (): Promise<ConfigResponse> => {
-  const isCommunications =
-    await isModuleProvidedByCommunications('pushNotifications');
-
-  if (isCommunications) {
-    const res = await (
-      await getApiClient()
-    ).get<CommunicationsConfigResponse>('/config/communications');
-    const pushConfig =
-      extractModuleConfigFromCommunications<NotificationSettings>(
-        res.data.config,
-        'pushNotifications'
-      );
-    return { config: pushConfig };
-  }
-
   const res = await (
     await getApiClient()
-  ).get<ConfigResponse>('/config/pushNotifications', {});
-  return res.data;
+  ).get<CommunicationsConfigResponse>('/config/communications');
+  const pushConfig =
+    extractModuleConfigFromCommunications<NotificationSettings>(
+      res.data.config,
+      'pushNotifications'
+    );
+  return { config: pushConfig };
 };
 
 export const patchNotificationSettings = async (
   data: Partial<NotificationSettings>
 ) => {
-  const isCommunications =
-    await isModuleProvidedByCommunications('pushNotifications');
-
-  if (isCommunications) {
-    await (
-      await getApiClient()
-    ).patch<CommunicationsConfigResponse>(
-      '/config/communications',
-      buildCommunicationsPatchPayload('pushNotifications', data)
-    );
-  } else {
-    await (
-      await getApiClient()
-    ).patch<ConfigResponse>('/config/pushNotifications', {
-      config: { ...data },
-    });
-  }
+  await (
+    await getApiClient()
+  ).patch<CommunicationsConfigResponse>(
+    '/config/communications',
+    buildCommunicationsPatchPayload('pushNotifications', data)
+  );
 
   return new Promise<Awaited<ReturnType<typeof getModules>>>(
     async (resolve, reject) => {

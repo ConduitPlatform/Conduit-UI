@@ -148,10 +148,11 @@ export const Settings = ({ data }: Props) => {
     patchNotificationSettings(notificationData)
       .then(res => {
         dismiss();
-        const notifModule = res.find(
-          module => module.moduleName === 'pushNotifications'
+        const isServing = Boolean(
+          res.find(module => module.moduleName === 'communications')?.serving ||
+          res.find(module => module.moduleName === 'pushNotifications')?.serving
         );
-        if (notifModule && notifModule.serving)
+        if (isServing)
           toast({
             title: 'Notifications',
             description: (
