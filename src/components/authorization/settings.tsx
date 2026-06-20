@@ -1,27 +1,42 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { Switch } from '@/components/ui/switch';
 import { patchAuthorizationSettings } from '@/lib/api/authorization';
 import { AuthorizationSettings } from '@/lib/models/authorization/settings';
+import {
+  activeTogglePatchOptions,
+  useSettingsSave,
+} from '@/lib/hooks/use-settings-save';
+import { ModuleToggle } from '@/components/settings/ModuleToggle';
+import {
+  isModuleServing,
+  PatchSettingsResult,
+} from '@/lib/api/modules/patch-settings-options';
 
 interface Props {
   data: AuthorizationSettings;
+}
+
+function isAuthorizationActivationSuccess(
+  result: PatchSettingsResult | void,
+  expectedActive: boolean
+) {
+  if (!expectedActive || !result) return true;
+  return isModuleServing(result.modules, 'authorization');
 }
 
 export const Settings = ({ data }: Props) => {
   const [authorizationModule, setAuthorizationModule] =
     useState<boolean>(false);
   const { addAlert } = useAlerts();
+  const { save, isSaving } = useSettingsSave('Authorization');
 
   useEffect(() => {
     if (data) {
       setAuthorizationModule(data.active);
     }
   }, [data]);
+
   const handleSwitchChange = () => {
     addAlert({
       title: 'Authorization Module',
@@ -29,56 +44,22 @@ export const Settings = ({ data }: Props) => {
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
-        if (!cancel) {
-          const { id, dismiss } = toast({
-            title: 'Authorization',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <LoaderIcon className={'w-8 h-8 animate-spin'} />
-                <p className="text-sm text-foreground">
-                  Updating Authorization Settings...
-                </p>
-              </div>
+        if (cancel) return;
+
+        const nextActive = !authorizationModule;
+        setAuthorizationModule(nextActive);
+
+        void save({
+          action: () =>
+            patchAuthorizationSettings(
+              { active: nextActive },
+              activeTogglePatchOptions(['authorization'], nextActive)
             ),
-          });
-          const updatedSettings = {
-            active: !authorizationModule,
-          };
-          setAuthorizationModule(!authorizationModule);
-          patchAuthorizationSettings(updatedSettings)
-            .then(() => {
-              dismiss();
-              toast({
-                title: 'Authorization',
-                description: (
-                  <div className={'flex flex-row items-center space-x-2.5'}>
-                    <CheckIcon className={'w-8 h-8'} />
-                    <p className="text-sm text-foreground">
-                      Authorization Settings Updated!
-                    </p>
-                  </div>
-                ),
-              });
-            })
-            .catch(err => {
-              dismiss();
-              setAuthorizationModule(data.active);
-              toast({
-                title: 'Authorization',
-                description: (
-                  <div className={'flex flex-col'}>
-                    <div
-                      className={'flex flex-row text-destructive items-center'}
-                    >
-                      <LucideX className={'w-8 h-8'} />
-                      <p className="text-sm">Failed to update with:</p>
-                    </div>
-                    <ErrorPre>{err.message}</ErrorPre>
-                  </div>
-                ),
-              });
-            });
-        }
+          isActivationSuccess: result =>
+            isAuthorizationActivationSuccess(result, nextActive),
+          onError: () => setAuthorizationModule(data.active),
+          onActivationFailure: () => setAuthorizationModule(data.active),
+        });
       },
     });
   };
@@ -87,15 +68,12 @@ export const Settings = ({ data }: Props) => {
     <div className={'container mx-auto py-10 main-scrollbar'}>
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
-          <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">Authorization Module</p>
-            <Switch
-              checked={authorizationModule}
-              onCheckedChange={() => {
-                handleSwitchChange();
-              }}
-            />
-          </div>
+          <ModuleToggle
+            label="Authorization Module"
+            checked={authorizationModule}
+            isSaving={isSaving}
+            onCheckedChange={handleSwitchChange}
+          />
           <div className={'pr-2'}>
             <p className={'text-xs text-muted-foreground'}>
               To see more information regarding Authorization config, visit our

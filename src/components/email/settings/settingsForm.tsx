@@ -27,14 +27,21 @@ import {
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import * as React from 'react';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 
 interface Props {
   edit: boolean;
+  isSaving?: boolean;
   setEdit: (arg0: boolean) => void;
   data: EmailSettings;
 }
 
-export const SettingsForm = ({ edit, setEdit, data }: Props) => {
+export const SettingsForm = ({
+  edit,
+  isSaving = false,
+  setEdit,
+  data,
+}: Props) => {
   const form = useFormContext();
   return (
     <>
@@ -634,32 +641,15 @@ export const SettingsForm = ({ edit, setEdit, data }: Props) => {
           )}
         </div>
       </div>
-      <div className={'py-4 flex justify-end'}>
-        {edit ? (
-          <div className={'flex gap-2'}>
-            <Button
-              type="button"
-              className={'dark:border-gray-500'}
-              variant={'outline'}
-              onClick={() => {
-                form.reset();
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setEdit(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
+      <SettingsFormActions
+        edit={edit}
+        isSaving={isSaving}
+        onEdit={() => setEdit(true)}
+        onCancel={() => {
+          form.reset();
+          setEdit(false);
+        }}
+      />
     </>
   );
 };

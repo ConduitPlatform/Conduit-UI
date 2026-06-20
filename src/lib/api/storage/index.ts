@@ -1,7 +1,8 @@
 'use server';
 import { getApiClient } from '@/lib/api';
 import { StorageSettings } from '@/lib/models/storage/settings';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import {
   ConduitFile,
   Container,
@@ -17,25 +18,15 @@ export const getStorageSettings = async () => {
 };
 
 export const patchStorageSettings = async (
-  storageData: Partial<StorageSettings>
+  storageData: Partial<StorageSettings>,
+  options?: PatchSettingsOptions
 ) => {
   await (
     await getApiClient()
   ).patch<StorageConfigResponse>(`/config/storage`, {
     config: { ...storageData },
   });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };
 
 export const getContainers = async (args: {

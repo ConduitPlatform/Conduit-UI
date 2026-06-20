@@ -1,7 +1,8 @@
 'use server';
 import { getApiClient } from '@/lib/api';
 import { RouterSettings } from '@/lib/models/Router';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 
 type ConfigResponse = { config: RouterSettings };
 
@@ -12,24 +13,16 @@ export const getRouterSettings = async () => {
   return res.data;
 };
 
-export const patchRouterSettings = async (data: Partial<RouterSettings>) => {
+export const patchRouterSettings = async (
+  data: Partial<RouterSettings>,
+  options?: PatchSettingsOptions
+) => {
   await (
     await getApiClient()
   ).patch<ConfigResponse>(`/config/router`, {
     config: { ...data },
   });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };
 
 export const getMiddlewares = async () => {

@@ -5,19 +5,26 @@ import { useAlerts } from '@/components/providers/AlertProvider';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
-import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
 import { patchEmailSettings } from '@/lib/api/email';
 import { useRouter } from 'next/navigation';
-import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
 import { SettingsForm } from '@/components/email/settings/settingsForm';
 import { isEmpty } from 'lodash';
+import {
+  activeTogglePatchOptions,
+  useSettingsSave,
+} from '@/lib/hooks/use-settings-save';
+import { ModuleToggle } from '@/components/settings/ModuleToggle';
+import {
+  isCommunicationsModuleServing,
+  PatchSettingsResult,
+} from '@/lib/api/modules/patch-settings-options';
 
 interface Props {
   data: EmailSettings;
 }
+
+const EMAIL_MODULE_NAMES = ['communications', 'email'] as const;
 
 const FormSchema = z
   .object({
@@ -106,23 +113,31 @@ const FormSchema = z
       path: ['transport'],
     }
   );
+
+function isEmailActivationSuccess(result: PatchSettingsResult | void) {
+  if (!result) return true;
+  return isCommunicationsModuleServing(result.modules, EMAIL_MODULE_NAMES);
+}
+
 export const Settings = ({ data }: Props) => {
   const [emailModule, setEmailModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
-
+  const { save, isSaving } = useSettingsSave('Email');
   const router = useRouter();
-
-  useEffect(() => {
-    if (data) {
-      setEmailModule(data.active);
-    }
-  }, [data]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
   });
+  const { reset, setValue } = form;
+
+  useEffect(() => {
+    if (data) {
+      setEmailModule(data.active);
+      reset(data);
+    }
+  }, [data, reset]);
 
   const handleSwitchChange = () => {
     addAlert({
@@ -131,135 +146,53 @@ export const Settings = ({ data }: Props) => {
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
-        if (!cancel) {
-          const { id, dismiss } = toast({
-            title: 'Email',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <LoaderIcon className={'w-8 h-8 animate-spin'} />
-                <p className="text-sm text-foreground">
-                  Updating Email Settings...
-                </p>
-              </div>
+        if (cancel) return;
+
+        const nextActive = !emailModule;
+        setEmailModule(nextActive);
+        setValue('active', nextActive);
+
+        void save({
+          action: () =>
+            patchEmailSettings(
+              { active: nextActive },
+              activeTogglePatchOptions([...EMAIL_MODULE_NAMES], nextActive)
             ),
-          });
-          const updatedSettings = {
-            active: !emailModule,
-          };
-          patchEmailSettings(updatedSettings)
-            .then(res => {
-              dismiss();
-              toast({
-                title: 'Email',
-                description: (
-                  <div className={'flex flex-row items-center space-x-2.5'}>
-                    <CheckIcon className={'w-8 h-8'} />
-                    <p className="text-sm text-foreground">
-                      Email Settings Updated!
-                    </p>
-                  </div>
-                ),
-              });
-              router.refresh();
-            })
-            .catch(err => {
-              dismiss();
-              toast({
-                title: 'Email',
-                description: (
-                  <div className={'flex flex-col'}>
-                    <div
-                      className={'flex flex-row text-destructive items-center'}
-                    >
-                      <LucideX className={'w-8 h-8'} />
-                      <p className="text-sm">Failed to update with:</p>
-                    </div>
-                    <ErrorPre>{err.message}</ErrorPre>
-                  </div>
-                ),
-              });
-            });
-        }
+          isActivationSuccess: isEmailActivationSuccess,
+          onSuccess: () => router.refresh(),
+          onError: () => {
+            setEmailModule(data.active);
+            setValue('active', data.active);
+          },
+          onActivationFailure: () => {
+            setEmailModule(data.active);
+            setValue('active', data.active);
+          },
+        });
       },
     });
   };
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setEdit(false);
-    const { id, dismiss } = toast({
-      title: 'Email',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">Updating Email Settings...</p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const result = await save({
+      action: () => patchEmailSettings({ ...formData, active: emailModule }),
+      onSuccess: () => router.refresh(),
     });
-    patchEmailSettings(data)
-      .then(res => {
-        dismiss();
-        const isServing = Boolean(
-          res.find(module => module.moduleName === 'communications')?.serving ||
-          res.find(module => module.moduleName === 'email')?.serving
-        );
-        if (isServing)
-          toast({
-            title: 'Email',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <CheckIcon className={'w-8 h-8'} />
-                <p className="text-sm text-foreground">
-                  Email Settings Updated!
-                </p>
-              </div>
-            ),
-          });
-        else
-          toast({
-            title: 'Email',
-            description: (
-              <div className={'flex flex-col'}>
-                <div className={'flex flex-row text-destructive items-center'}>
-                  <LucideX className={'w-8 h-8'} />
-                  <p className="text-sm">Failed to update with:</p>
-                </div>
-                <ErrorPre>
-                  Activation was not successful. Check the logs for more info
-                </ErrorPre>
-              </div>
-            ),
-          });
-      })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Email',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
 
   return (
     <div className={'container mx-auto py-10 main-scrollbar'}>
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
-          <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">Email Module</p>
-            <Switch
-              checked={emailModule}
-              onCheckedChange={() => {
-                handleSwitchChange();
-              }}
-            />
-          </div>
+          <ModuleToggle
+            label="Email Module"
+            checked={emailModule}
+            isSaving={isSaving}
+            onCheckedChange={handleSwitchChange}
+          />
           <div className={'pr-2 w-7/12'}>
             <p className={'text-xs text-muted-foreground'}>
               Since you have created an account on one of the Supported
@@ -292,7 +225,12 @@ export const Settings = ({ data }: Props) => {
         {emailModule && (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit, () => undefined)}>
-              <SettingsForm edit={edit} setEdit={setEdit} data={data} />
+              <SettingsForm
+                edit={edit}
+                isSaving={isSaving}
+                setEdit={setEdit}
+                data={data}
+              />
             </form>
           </Form>
         )}

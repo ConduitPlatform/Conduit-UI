@@ -1,7 +1,8 @@
 'use server';
 import { getApiClient } from '@/lib/api';
 import { NotificationSettings } from '@/lib/models/Notification';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 import { CommunicationsConfigResponse } from '@/lib/models/communications';
 import {
@@ -24,7 +25,8 @@ export const getNotificationSettings = async (): Promise<ConfigResponse> => {
 };
 
 export const patchNotificationSettings = async (
-  data: Partial<NotificationSettings>
+  data: Partial<NotificationSettings>,
+  options?: PatchSettingsOptions
 ) => {
   await (
     await getApiClient()
@@ -33,18 +35,7 @@ export const patchNotificationSettings = async (
     buildCommunicationsPatchPayload('pushNotifications', data)
   );
 
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };
 export const getTokens = async (
   skip: number,

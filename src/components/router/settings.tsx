@@ -19,14 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
-import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { CaptchaProvider, RouterSettings } from '@/lib/models/Router';
 import { patchRouterSettings } from '@/lib/api/router';
 
@@ -79,6 +77,7 @@ interface Props {
 
 export const Settings = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
+  const { save, isSaving } = useSettingsSave('Router');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
@@ -86,8 +85,7 @@ export const Settings = ({ data }: Props) => {
 
   const { reset, control, handleSubmit, watch } = form;
 
-  const onSubmit = (formData: z.infer<typeof FormSchema>) => {
-    setEdit(false);
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
     const dataToSubmit = {
       ...formData,
       cors: {
@@ -95,45 +93,12 @@ export const Settings = ({ data }: Props) => {
         maxAge: formData.cors.maxAge as number,
       },
     };
-    const { id, dismiss } = toast({
-      title: 'Router',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">Updating Router Settings...</p>
-        </div>
-      ),
+    const result = await save({
+      action: () => patchRouterSettings(dataToSubmit),
     });
-    patchRouterSettings(dataToSubmit)
-      .then(res => {
-        dismiss();
-        toast({
-          title: 'Router',
-          description: (
-            <div className={'flex flex-row items-center space-x-2.5'}>
-              <CheckIcon className={'w-8 h-8'} />
-              <p className="text-sm text-foreground">
-                Router Settings Updated!
-              </p>
-            </div>
-          ),
-        });
-      })
-      .catch(err => {
-        dismiss();
-        toast({
-          title: 'Router',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{err.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
   return (
     <div className={'container mx-auto py-10 main-scrollbar'}>
@@ -552,32 +517,15 @@ export const Settings = ({ data }: Props) => {
               </div>
             )}
           </div>
-          <div className={'w-full py-4 flex justify-end'}>
-            {edit ? (
-              <div className={'flex gap-2'}>
-                <Button
-                  type="button"
-                  className={'dark:border-gray-500'}
-                  variant={'outline'}
-                  onClick={() => {
-                    reset();
-                    setEdit(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Submit</Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => {
-                  setEdit(true);
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </div>
+          <SettingsFormActions
+            edit={edit}
+            isSaving={isSaving}
+            onEdit={() => setEdit(true)}
+            onCancel={() => {
+              reset();
+              setEdit(false);
+            }}
+          />
         </form>
       </Form>
     </div>

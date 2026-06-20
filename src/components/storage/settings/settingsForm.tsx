@@ -18,9 +18,12 @@ import {
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
+
 interface Props {
   control: any;
   edit: boolean;
+  isSaving?: boolean;
   setEdit: (arg0: boolean) => void;
   data: StorageSettings;
   authzAvailable: boolean;
@@ -31,6 +34,7 @@ interface Props {
 export const SettingsForm = ({
   control,
   edit,
+  isSaving = false,
   setEdit,
   watch,
   reset,
@@ -433,32 +437,15 @@ export const SettingsForm = ({
           )}
         </div>
       </div>
-      <div className={'py-4 flex justify-end'}>
-        {edit ? (
-          <div className={'flex gap-2'}>
-            <Button
-              type="button"
-              className={'dark:border-gray-500'}
-              variant={'outline'}
-              onClick={() => {
-                reset();
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setEdit(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
+      <SettingsFormActions
+        edit={edit}
+        isSaving={isSaving}
+        onEdit={() => setEdit(true)}
+        onCancel={() => {
+          reset();
+          setEdit(false);
+        }}
+      />
     </>
   );
 };

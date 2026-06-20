@@ -11,6 +11,7 @@ import { FormattedMetric } from '@/lib/prometheus/metrics';
 import { cn } from '@/lib/utils';
 import { statusDotClassName } from '@/lib/status';
 import type { ObservabilityServiceState } from '@/lib/observability/types';
+import type { SharedRuntimeInfo } from '@/lib/utils/module-utils';
 import { motion } from 'motion/react';
 import { Info } from 'lucide-react';
 
@@ -34,6 +35,7 @@ export interface ModuleDashboardProps {
   children?: React.ReactNode;
   className?: string;
   prometheusState?: ObservabilityServiceState;
+  sharedRuntime?: SharedRuntimeInfo;
 }
 
 export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
@@ -46,6 +48,7 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
   children,
   className,
   prometheusState,
+  sharedRuntime,
 }) => {
   return (
     <motion.div
@@ -113,6 +116,21 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
                   </span>
                 </div>
               )}
+              {sharedRuntime && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      Runtime module:
+                    </span>
+                    <span className="font-medium">
+                      {sharedRuntime.moduleName}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-pretty">
+                    {sharedRuntime.description}
+                  </p>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -129,7 +147,10 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
 
       {systemMetrics && systemMetrics.length > 0 && (
         <motion.div variants={fadeUp}>
-          <SystemMetricsCard metrics={systemMetrics} />
+          <SystemMetricsCard
+            metrics={systemMetrics}
+            subtitle={sharedRuntime?.systemMetricsSubtitle}
+          />
         </motion.div>
       )}
 

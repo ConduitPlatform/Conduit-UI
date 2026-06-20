@@ -15,6 +15,7 @@ import { type HealthStatus, statusDotClassName } from '@/lib/status';
 
 interface SystemMetricsCardProps {
   metrics: FormattedMetric[];
+  subtitle?: string;
 }
 
 const getMetricIcon = (metricName: string) => {
@@ -29,7 +30,10 @@ const getMetricIcon = (metricName: string) => {
   return <HardDrive className="size-4" />;
 };
 
-export function SystemMetricsCard({ metrics }: SystemMetricsCardProps) {
+export function SystemMetricsCard({
+  metrics,
+  subtitle,
+}: SystemMetricsCardProps) {
   return (
     <Card>
       <CardHeader>
@@ -37,6 +41,11 @@ export function SystemMetricsCard({ metrics }: SystemMetricsCardProps) {
           <Activity className="size-5" />
           System Metrics
         </CardTitle>
+        {subtitle && (
+          <p className="text-sm text-muted-foreground text-pretty">
+            {subtitle}
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

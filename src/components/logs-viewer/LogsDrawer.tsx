@@ -21,6 +21,7 @@ import {
 import { getLokiAvailability } from '@/lib/observability/lokiAvailability.actions';
 import type { LokiAvailability } from '@/lib/observability/types';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
+import { getLokiModuleFilterForPath } from '@/lib/utils/module-utils';
 
 const snapPoints = [0.5, 0.75, 1];
 
@@ -37,7 +38,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
   const [logs, setLogs] = useState<LogsData[]>([]);
   const [drawerHeight, setDrawerHeight] = useState(0);
   const pathname = usePathname();
-  const currentModule = useMemo(
+  const drawerModuleLabel = useMemo(
     () =>
       pathname.split('/').length > 1
         ? pathname.split('/')[1] === ''
@@ -46,18 +47,22 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         : 'core',
     [pathname]
   );
+  const lokiModuleFilter = useMemo(
+    () => getLokiModuleFilterForPath(pathname),
+    [pathname]
+  );
   const isLogsViewerPage = useMemo(
     () => pathname.split('/')[1] === 'logs-viewer',
     [pathname]
   );
   const isCoreModulePage = useMemo(
-    () => currentModule === 'core',
-    [currentModule]
+    () => drawerModuleLabel === 'core',
+    [drawerModuleLabel]
   );
 
   useEffect(() => {
     getLokiAvailability().then(setLokiAvailability);
-  }, [currentModule]);
+  }, [drawerModuleLabel]);
 
   const refreshDrawerLogs = useCallback(
     async (data: {
@@ -69,11 +74,11 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     }) => {
       return await getLogsQueryRange({
         ...data,
-        modules: currentModule,
+        modules: lokiModuleFilter,
         limit: data.limit ? data.limit : '100',
       });
     },
-    [currentModule]
+    [lokiModuleFilter]
   );
   const lokiReady = lokiAvailability?.state === 'ready';
   const showLogsUi =
@@ -101,13 +106,13 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         setModules(validModules);
       })
       .catch();
-    refreshDrawerLogs({ modules: currentModule })
+    refreshDrawerLogs({ modules: lokiModuleFilter })
       .then(res => {
         'use client';
         setLogs(res);
       })
       .catch();
-  }, [lokiReady, currentModule, pathname, refreshDrawerLogs]);
+  }, [lokiReady, lokiModuleFilter, pathname, refreshDrawerLogs]);
 
   useEffect(() => {
     const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
@@ -160,7 +165,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
               levels={levels}
               setLogs={setLogs}
               modules={modules}
-              drawerModule={currentModule}
+              drawerModule={drawerModuleLabel}
               refreshLogs={refreshDrawerLogs}
             />
             <div style={{ maxHeight: `${drawerHeight}px` }}>

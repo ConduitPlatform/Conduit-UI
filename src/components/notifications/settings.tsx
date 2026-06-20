@@ -1,21 +1,29 @@
 'use client';
 import { z } from 'zod';
 import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { patchNotificationSettings } from '@/lib/api/notifications';
 import { NotificationSettings } from '@/lib/models/Notification';
 import { SettingsForm } from '@/components/notifications/settingsForm';
+import {
+  activeTogglePatchOptions,
+  useSettingsSave,
+} from '@/lib/hooks/use-settings-save';
+import { ModuleToggle } from '@/components/settings/ModuleToggle';
+import {
+  isCommunicationsModuleServing,
+  PatchSettingsResult,
+} from '@/lib/api/modules/patch-settings-options';
 
 interface Props {
   data: NotificationSettings;
 }
+
+const PUSH_MODULE_NAMES = ['communications', 'pushNotifications'] as const;
 
 const FormSchema = z
   .object({
@@ -62,10 +70,70 @@ const FormSchema = z
     }
   );
 
+function buildNotificationPayload(
+  formData: z.infer<typeof FormSchema>
+): Partial<NotificationSettings> {
+  const notificationData: Partial<NotificationSettings> = {
+    providerName: formData.providerName,
+    firebase: undefined,
+    onesignal: undefined,
+    sns: undefined,
+  };
+
+  if (
+    formData.providerName === 'firebase' &&
+    formData.privateKey &&
+    formData.projectId &&
+    formData.clientEmail
+  ) {
+    notificationData.firebase = {
+      projectId: formData.projectId,
+      privateKey: formData.privateKey,
+      clientEmail: formData.clientEmail,
+    };
+  }
+
+  if (
+    formData.providerName === 'oneSignal' &&
+    formData.appId &&
+    formData.apiKey
+  ) {
+    notificationData.onesignal = {
+      appId: formData.appId,
+      apiKey: formData.apiKey,
+    };
+  }
+
+  if (
+    formData.providerName === 'sns' &&
+    formData.snsAccessKeyId &&
+    formData.snsSecretAccessKey &&
+    formData.snsRegion &&
+    formData.snsGcmApplicationArn &&
+    formData.snsApnsApplicationArn
+  ) {
+    notificationData.sns = {
+      accessKeyId: formData.snsAccessKeyId,
+      secretAccessKey: formData.snsSecretAccessKey,
+      region: formData.snsRegion,
+      gcmApplicationArn: formData.snsGcmApplicationArn,
+      apnsApplicationArn: formData.snsApnsApplicationArn,
+    };
+  }
+
+  return notificationData;
+}
+
+function isPushActivationSuccess(result: PatchSettingsResult | void) {
+  if (!result) return true;
+  return isCommunicationsModuleServing(result.modules, PUSH_MODULE_NAMES);
+}
+
 export const Settings = ({ data }: Props) => {
   const [notificationModule, setNotificationModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
+  const { save, isSaving } = useSettingsSave('Notifications');
 
   useEffect(() => {
     if (data) {
@@ -92,109 +160,14 @@ export const Settings = ({ data }: Props) => {
 
   const { reset, control, handleSubmit, setValue, watch } = form;
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setEdit(false);
-    const { id, dismiss } = toast({
-      title: 'Notifications',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">
-            Updating Notification Settings...
-          </p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const result = await save({
+      action: () =>
+        patchNotificationSettings(buildNotificationPayload(formData)),
     });
-    const notificationData: Partial<NotificationSettings> = {
-      providerName: data.providerName,
-      firebase: undefined,
-      onesignal: undefined,
-      sns: undefined,
-    };
-    if (
-      data.providerName === 'firebase' &&
-      data.privateKey &&
-      data.projectId &&
-      data.clientEmail
-    ) {
-      notificationData.firebase = {
-        projectId: data.projectId,
-        privateKey: data.privateKey,
-        clientEmail: data.clientEmail,
-      };
+    if (result.ok) {
+      setEdit(false);
     }
-    if (data.providerName === 'oneSignal' && data.appId && data.apiKey) {
-      notificationData.onesignal = {
-        appId: data.appId,
-        apiKey: data.apiKey,
-      };
-    }
-    if (
-      data.providerName === 'sns' &&
-      data.snsAccessKeyId &&
-      data.snsSecretAccessKey &&
-      data.snsRegion &&
-      data.snsGcmApplicationArn &&
-      data.snsApnsApplicationArn
-    ) {
-      notificationData.sns = {
-        accessKeyId: data.snsAccessKeyId,
-        secretAccessKey: data.snsSecretAccessKey,
-        region: data.snsRegion,
-        gcmApplicationArn: data.snsGcmApplicationArn,
-        apnsApplicationArn: data.snsApnsApplicationArn,
-      };
-    }
-    patchNotificationSettings(notificationData)
-      .then(res => {
-        dismiss();
-        const isServing = Boolean(
-          res.find(module => module.moduleName === 'communications')?.serving ||
-          res.find(module => module.moduleName === 'pushNotifications')?.serving
-        );
-        if (isServing)
-          toast({
-            title: 'Notifications',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <CheckIcon className={'w-8 h-8'} />
-                <p className="text-sm text-foreground">
-                  Notification Settings Updated!
-                </p>
-              </div>
-            ),
-          });
-        else
-          toast({
-            title: 'Notifications',
-            description: (
-              <div className={'flex flex-col'}>
-                <div className={'flex flex-row text-destructive items-center'}>
-                  <LucideX className={'w-8 h-8'} />
-                  <p className="text-sm">Failed to add with:</p>
-                </div>
-                <ErrorPre>
-                  Activation was not successful. Check the logs for more info
-                </ErrorPre>
-              </div>
-            ),
-          });
-      })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Notifications',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to add with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
   };
 
   const handleSwitchChange = () => {
@@ -204,59 +177,32 @@ export const Settings = ({ data }: Props) => {
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
-        if (!cancel) {
-          const { id, dismiss } = toast({
-            title: 'Notifications',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <LoaderIcon className={'w-8 h-8 animate-spin'} />
-                <p className="text-sm text-foreground">
-                  Updating Notification Settings...
-                </p>
-              </div>
+        if (cancel) return;
+
+        const nextActive = !notificationModule;
+        const updatedSettings = {
+          active: nextActive,
+          ...(!nextActive ? {} : { providerName: 'basic' as const }),
+        };
+        setValue('providerName', nextActive ? 'basic' : data.providerName);
+        setNotificationModule(nextActive);
+
+        void save({
+          action: () =>
+            patchNotificationSettings(
+              updatedSettings,
+              activeTogglePatchOptions([...PUSH_MODULE_NAMES], nextActive)
             ),
-          });
-          const updatedSettings = {
-            active: !notificationModule,
-            ...(!notificationModule && { providerName: 'basic' as 'basic' }),
-          };
-          setValue('providerName', 'basic');
-          setNotificationModule(!notificationModule);
-          patchNotificationSettings(updatedSettings)
-            .then(res => {
-              dismiss();
-              toast({
-                title: 'Notifications',
-                description: (
-                  <div className={'flex flex-row items-center space-x-2.5'}>
-                    <CheckIcon className={'w-8 h-8'} />
-                    <p className="text-sm text-foreground">
-                      Notification Settings Updated!
-                    </p>
-                  </div>
-                ),
-              });
-            })
-            .catch(err => {
-              dismiss();
-              setNotificationModule(data.active);
-              setValue('providerName', data.providerName);
-              toast({
-                title: 'Notifications',
-                description: (
-                  <div className={'flex flex-col'}>
-                    <div
-                      className={'flex flex-row text-destructive items-center'}
-                    >
-                      <LucideX className={'w-8 h-8'} />
-                      <p className="text-sm">Failed to update with:</p>
-                    </div>
-                    <ErrorPre>{err.message}</ErrorPre>
-                  </div>
-                ),
-              });
-            });
-        }
+          isActivationSuccess: isPushActivationSuccess,
+          onError: () => {
+            setNotificationModule(data.active);
+            setValue('providerName', data.providerName);
+          },
+          onActivationFailure: () => {
+            setNotificationModule(data.active);
+            setValue('providerName', data.providerName);
+          },
+        });
       },
     });
   };
@@ -281,7 +227,6 @@ export const Settings = ({ data }: Props) => {
       if (event.target && typeof event.target.result === 'string') {
         const jsonToObject = JSON.parse(event.target.result);
         try {
-          // Validate the JSON data against the schema
           firebaseConfigSchema.parse(jsonToObject);
           if (
             'project_id' in jsonToObject &&
@@ -292,18 +237,10 @@ export const Settings = ({ data }: Props) => {
             setValue('privateKey', jsonToObject.private_key);
             setValue('clientEmail', jsonToObject.client_email);
           }
-        } catch (error) {
+        } catch {
           toast({
-            title: 'Notifications',
-            description: (
-              <div className={'flex flex-col'}>
-                <div className={'flex flex-row text-destructive items-center'}>
-                  <LucideX className={'w-8 h-8'} />
-                  <p className="text-sm">Failed to update with:</p>
-                </div>
-                <ErrorPre>The file is not valid</ErrorPre>
-              </div>
-            ),
+            title: 'Invalid Firebase config file',
+            variant: 'destructive',
           });
         }
       }
@@ -314,15 +251,12 @@ export const Settings = ({ data }: Props) => {
     <div className={'container mx-auto py-10 main-scrollbar'}>
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
-          <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">Push Notifications Module</p>
-            <Switch
-              checked={notificationModule}
-              onCheckedChange={() => {
-                handleSwitchChange();
-              }}
-            />
-          </div>
+          <ModuleToggle
+            label="Push Notifications Module"
+            checked={notificationModule}
+            isSaving={isSaving}
+            onCheckedChange={handleSwitchChange}
+          />
           <div className={'pr-2'}>
             <p className={'text-xs text-muted-foreground'}>
               To see more information regarding the Push Notifications config,
@@ -346,6 +280,7 @@ export const Settings = ({ data }: Props) => {
               <SettingsForm
                 control={control}
                 edit={edit}
+                isSaving={isSaving}
                 setEdit={setEdit}
                 watch={watch}
                 reset={reset}

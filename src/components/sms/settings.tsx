@@ -4,19 +4,26 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
-import { toast } from '@/lib/hooks/use-toast';
-import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
 import { SmsSettings } from '@/lib/models/Sms';
 import { isEmpty } from 'lodash';
 import { patchSmsSettings } from '@/lib/api/sms';
 import { SettingsForm } from '@/components/sms/settingsForm';
+import {
+  activeTogglePatchOptions,
+  useSettingsSave,
+} from '@/lib/hooks/use-settings-save';
+import { ModuleToggle } from '@/components/settings/ModuleToggle';
+import {
+  isCommunicationsModuleServing,
+  PatchSettingsResult,
+} from '@/lib/api/modules/patch-settings-options';
 
 interface Props {
   data: SmsSettings;
 }
+
+const SMS_MODULE_NAMES = ['communications', 'sms'] as const;
 
 const FormSchema = z
   .object({
@@ -66,10 +73,16 @@ const FormSchema = z
     }
   );
 
+function isSmsActivationSuccess(result: PatchSettingsResult | void) {
+  if (!result) return true;
+  return isCommunicationsModuleServing(result.modules, SMS_MODULE_NAMES);
+}
+
 export const Settings = ({ data }: Props) => {
   const [smsModule, setSmsModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
+  const { save, isSaving } = useSettingsSave('SMS');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
@@ -82,66 +95,13 @@ export const Settings = ({ data }: Props) => {
     }
   }, [data]);
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setEdit(false);
-    const { id, dismiss } = toast({
-      title: 'SMS',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">Updating SMS Settings...</p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const result = await save({
+      action: () => patchSmsSettings(formData),
     });
-
-    patchSmsSettings(data)
-      .then(res => {
-        dismiss();
-        const isServing = Boolean(
-          res.find(module => module.moduleName === 'communications')?.serving ||
-          res.find(module => module.moduleName === 'sms')?.serving
-        );
-        if (isServing)
-          toast({
-            title: 'SMS',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <CheckIcon className={'w-8 h-8'} />
-                <p className="text-sm text-foreground">SMS Settings Updated!</p>
-              </div>
-            ),
-          });
-        else
-          toast({
-            title: 'SMS',
-            description: (
-              <div className={'flex flex-col'}>
-                <div className={'flex flex-row text-destructive items-center'}>
-                  <LucideX className={'w-8 h-8'} />
-                  <p className="text-sm">Failed to update with:</p>
-                </div>
-                <ErrorPre>
-                  Activation was not successful. Check the logs for more info
-                </ErrorPre>
-              </div>
-            ),
-          });
-      })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'SMS',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
 
   const handleSwitchChange = () => {
@@ -151,59 +111,32 @@ export const Settings = ({ data }: Props) => {
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
-        if (!cancel) {
-          const { id, dismiss } = toast({
-            title: 'SMS',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <LoaderIcon className={'w-8 h-8 animate-spin'} />
-                <p className="text-sm text-foreground">
-                  Updating SMS Settings...
-                </p>
-              </div>
+        if (cancel) return;
+
+        const nextActive = !smsModule;
+        const updatedSettings = {
+          active: nextActive,
+          ...(!nextActive ? {} : { providerName: 'twilio' }),
+        };
+        setValue('providerName', nextActive ? 'twilio' : data.providerName);
+        setSmsModule(nextActive);
+
+        void save({
+          action: () =>
+            patchSmsSettings(
+              updatedSettings,
+              activeTogglePatchOptions([...SMS_MODULE_NAMES], nextActive)
             ),
-          });
-          const updatedSettings = {
-            active: !smsModule,
-            ...(!smsModule && { providerName: 'twilio' }),
-          };
-          setValue('providerName', 'local');
-          setSmsModule(!smsModule);
-          patchSmsSettings(updatedSettings)
-            .then(res => {
-              dismiss();
-              toast({
-                title: 'SMS',
-                description: (
-                  <div className={'flex flex-row items-center space-x-2.5'}>
-                    <CheckIcon className={'w-8 h-8'} />
-                    <p className="text-sm text-foreground">
-                      SMS Settings Updated!
-                    </p>
-                  </div>
-                ),
-              });
-            })
-            .catch(err => {
-              dismiss();
-              setSmsModule(data.active);
-              setValue('providerName', data.providerName);
-              toast({
-                title: 'SMS',
-                description: (
-                  <div className={'flex flex-col'}>
-                    <div
-                      className={'flex flex-row text-destructive items-center'}
-                    >
-                      <LucideX className={'w-8 h-8'} />
-                      <p className="text-sm">Failed to update with:</p>
-                    </div>
-                    <ErrorPre>{err.message}</ErrorPre>
-                  </div>
-                ),
-              });
-            });
-        }
+          isActivationSuccess: isSmsActivationSuccess,
+          onError: () => {
+            setSmsModule(data.active);
+            setValue('providerName', data.providerName);
+          },
+          onActivationFailure: () => {
+            setSmsModule(data.active);
+            setValue('providerName', data.providerName);
+          },
+        });
       },
     });
   };
@@ -212,15 +145,12 @@ export const Settings = ({ data }: Props) => {
     <div className={'container mx-auto py-10 main-scrollbar'}>
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
-          <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">SMS Module</p>
-            <Switch
-              checked={smsModule}
-              onCheckedChange={() => {
-                handleSwitchChange();
-              }}
-            />
-          </div>
+          <ModuleToggle
+            label="SMS Module"
+            checked={smsModule}
+            isSaving={isSaving}
+            onCheckedChange={handleSwitchChange}
+          />
           <div className={'pr-2'}>
             <p className={'text-xs text-muted-foreground'}>
               To an idea on how to setup your SMS provider take a look at the
@@ -234,6 +164,7 @@ export const Settings = ({ data }: Props) => {
               <SettingsForm
                 control={control}
                 edit={edit}
+                isSaving={isSaving}
                 setEdit={setEdit}
                 watch={watch}
                 reset={reset}

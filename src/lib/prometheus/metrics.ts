@@ -9,7 +9,10 @@ import {
 import { isPrometheusReady } from '@/lib/observability/guards';
 import type { HealthStatus } from '@/lib/status';
 import type { Module } from '@/lib/models/Module';
-import { COMMUNICATIONS_PROVIDED_MODULES } from '@/lib/utils/module-utils';
+import {
+  COMMUNICATIONS_PROVIDED_MODULES,
+  resolvePrometheusModuleName,
+} from '@/lib/utils/module-utils';
 
 export interface FormattedMetric {
   name: string;
@@ -214,15 +217,20 @@ export async function getModuleMetrics(
   return metrics;
 }
 
-export async function getSystemMetrics(): Promise<FormattedMetric[]> {
+export async function getSystemMetrics(
+  moduleName?: string
+): Promise<FormattedMetric[]> {
+  const prometheusModuleName = moduleName
+    ? resolvePrometheusModuleName(moduleName)
+    : undefined;
   const queries = [
-    await MetricQueries.cpuUsage(),
-    await MetricQueries.memoryUsage(),
-    await MetricQueries.heapUsage(),
-    await MetricQueries.eventLoopLag(),
-    await MetricQueries.activeRequests(),
-    await MetricQueries.activeHandles(),
-    await MetricQueries.activeResources(),
+    await MetricQueries.cpuUsage(prometheusModuleName),
+    await MetricQueries.memoryUsage(prometheusModuleName),
+    await MetricQueries.heapUsage(prometheusModuleName),
+    await MetricQueries.eventLoopLag(prometheusModuleName),
+    await MetricQueries.activeRequests(prometheusModuleName),
+    await MetricQueries.activeHandles(prometheusModuleName),
+    await MetricQueries.activeResources(prometheusModuleName),
   ];
 
   const metrics = await Promise.all(
@@ -233,9 +241,11 @@ export async function getSystemMetrics(): Promise<FormattedMetric[]> {
 }
 
 export async function getModuleUptime(moduleName: string): Promise<string> {
+  const prometheusModuleName = resolvePrometheusModuleName(moduleName);
   try {
     // Try module-specific uptime first
-    const moduleUptimeQuery = await MetricQueries.moduleUptime(moduleName);
+    const moduleUptimeQuery =
+      await MetricQueries.moduleUptime(prometheusModuleName);
     const moduleUptime = await getMetricValue(moduleUptimeQuery);
 
     if (moduleUptime.value !== 'No data' && moduleUptime.value !== 'Error') {
@@ -377,8 +387,10 @@ export async function getRouterMetrics(): Promise<FormattedMetric[]> {
 export async function getModuleStatus(
   moduleName: string
 ): Promise<'healthy' | 'warning' | 'critical' | 'unknown'> {
+  const prometheusModuleName = resolvePrometheusModuleName(moduleName);
   try {
-    const moduleHealthQuery = await MetricQueries.moduleHealth(moduleName);
+    const moduleHealthQuery =
+      await MetricQueries.moduleHealth(prometheusModuleName);
     const healthMetric = await getMetricValue(moduleHealthQuery);
 
     if (healthMetric.value !== 'No data' && healthMetric.value !== 'Error') {
@@ -389,7 +401,8 @@ export async function getModuleStatus(
       return 'unknown';
     }
 
-    const errorRateQuery = await MetricQueries.moduleErrors(moduleName);
+    const errorRateQuery =
+      await MetricQueries.moduleErrors(prometheusModuleName);
     const errorMetric = await getMetricValue(errorRateQuery);
 
     if (errorMetric.status === 'critical') {
@@ -1003,9 +1016,10 @@ function expandCommunicationsModules(modules: Module[]): Module[] {
 }
 
 async function isModuleReportingMetrics(moduleName: string): Promise<boolean> {
+  const prometheusModuleName = resolvePrometheusModuleName(moduleName);
   try {
     const config = await createPrometheusClient();
-    const query = await MetricQueries.moduleHealth(moduleName);
+    const query = await MetricQueries.moduleHealth(prometheusModuleName);
     const data = await instantQuery(config, query.expression);
     return !!(data.result && data.result.length > 0);
   } catch {

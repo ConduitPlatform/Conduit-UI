@@ -6,7 +6,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -15,10 +14,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 
 interface Props {
   control: any;
   edit: boolean;
+  isSaving?: boolean;
   setEdit: (arg0: boolean) => void;
   reset: any;
   databaseType: string;
@@ -27,6 +28,7 @@ interface Props {
 export const SettingsForm = ({
   control,
   edit,
+  isSaving = false,
   setEdit,
   reset,
   databaseType,
@@ -156,32 +158,15 @@ export const SettingsForm = ({
           />
         </div>
       </div>
-      <div className={'py-4 flex justify-end'}>
-        {edit ? (
-          <div className={'flex gap-2'}>
-            <Button
-              type="button"
-              className={'dark:border-gray-500'}
-              variant={'outline'}
-              onClick={() => {
-                reset();
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setEdit(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
+      <SettingsFormActions
+        edit={edit}
+        isSaving={isSaving}
+        onEdit={() => setEdit(true)}
+        onCancel={() => {
+          reset();
+          setEdit(false);
+        }}
+      />
     </>
   );
 };

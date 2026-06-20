@@ -1,6 +1,7 @@
 'use server';
 import { getApiClient } from '@/lib/api';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import { SmsSettings } from '@/lib/models/Sms';
 import { CommunicationsConfigResponse } from '@/lib/models/communications';
 import {
@@ -21,7 +22,10 @@ export const getSmsSettings = async (): Promise<ConfigResponse> => {
   return { config: smsConfig };
 };
 
-export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
+export const patchSmsSettings = async (
+  smsData: Partial<SmsSettings>,
+  options?: PatchSettingsOptions
+) => {
   await (
     await getApiClient()
   ).patch<CommunicationsConfigResponse>(
@@ -29,18 +33,7 @@ export const patchSmsSettings = async (smsData: Partial<SmsSettings>) => {
     buildCommunicationsPatchPayload('sms', smsData)
   );
 
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };
 
 export const testSendSMS = async (smsData: { to: string; message: string }) => {

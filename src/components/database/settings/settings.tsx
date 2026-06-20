@@ -4,13 +4,11 @@ import { DatabaseConfig } from '@/lib/models/database';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
-import { toast } from '@/lib/hooks/use-toast';
 import { Form } from '@/components/ui/form';
 import { SettingsForm } from '@/components/database/settings/settingsForm';
 import { patchDatabaseSettings } from '@/lib/api/database';
 import { DatabaseSettingsSchema } from '@/components/database/settings/zod';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 
 interface Props {
   data: DatabaseConfig;
@@ -19,56 +17,20 @@ interface Props {
 
 export const Settings = ({ data, databaseType }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
+  const { save, isSaving } = useSettingsSave('Database');
   const form = useForm<z.infer<typeof DatabaseSettingsSchema>>({
     resolver: rhfZodResolver(DatabaseSettingsSchema),
     defaultValues: data,
   });
   const { reset, control, handleSubmit } = form;
 
-  const onSubmit = (data: z.infer<typeof DatabaseSettingsSchema>) => {
-    setEdit(false);
-    const { dismiss } = toast({
-      title: 'Database',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">
-            Updating Database Settings...
-          </p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof DatabaseSettingsSchema>) => {
+    const result = await save({
+      action: () => patchDatabaseSettings(formData),
     });
-
-    patchDatabaseSettings(data)
-      .then(() => {
-        dismiss();
-        toast({
-          title: 'Database',
-          description: (
-            <div className={'flex flex-row items-center space-x-2.5'}>
-              <CheckIcon className={'w-8 h-8'} />
-              <p className="text-sm text-foreground">
-                Database Settings Updated!
-              </p>
-            </div>
-          ),
-        });
-      })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Database',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
 
   return (
@@ -87,6 +49,7 @@ export const Settings = ({ data, databaseType }: Props) => {
             <SettingsForm
               control={control}
               edit={edit}
+              isSaving={isSaving}
               setEdit={setEdit}
               reset={reset}
               databaseType={databaseType}

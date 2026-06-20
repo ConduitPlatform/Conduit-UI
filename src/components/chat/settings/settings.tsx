@@ -4,14 +4,19 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
-import { toast } from '@/lib/hooks/use-toast';
-import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
-import { SettingsForm } from '@/components/chat/settings/settingsForm';
 import { patchChatSettings } from '@/lib/api/chat';
 import { ChatSettings } from '@/lib/models/chat';
+import { SettingsForm } from '@/components/chat/settings/settingsForm';
+import {
+  activeTogglePatchOptions,
+  useSettingsSave,
+} from '@/lib/hooks/use-settings-save';
+import { ModuleToggle } from '@/components/settings/ModuleToggle';
+import {
+  isModuleServing,
+  PatchSettingsResult,
+} from '@/lib/api/modules/patch-settings-options';
 
 interface Props {
   data: ChatSettings;
@@ -31,6 +36,11 @@ const FormSchema = z.object({
   }),
 });
 
+function isChatActivationSuccess(result: PatchSettingsResult | void) {
+  if (!result) return true;
+  return isModuleServing(result.modules, 'chat');
+}
+
 export const Settings = ({
   data,
   emailAvailable,
@@ -39,6 +49,7 @@ export const Settings = ({
   const [chatModule, setChatModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
+  const { save, isSaving } = useSettingsSave('Chat');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
@@ -50,65 +61,13 @@ export const Settings = ({
     }
   }, [data]);
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setEdit(false);
-    const { dismiss } = toast({
-      title: 'Chat',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">Updating Chat Settings...</p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const result = await save({
+      action: () => patchChatSettings(formData),
     });
-
-    patchChatSettings(data)
-      .then(res => {
-        dismiss();
-        const chatModule = res.find(module => module.moduleName === 'chat');
-        if (chatModule && chatModule.serving)
-          toast({
-            title: 'Chat',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <CheckIcon className={'w-8 h-8'} />
-                <p className="text-sm text-foreground">
-                  Chat Settings Updated!
-                </p>
-              </div>
-            ),
-          });
-        else
-          toast({
-            title: 'Chat',
-            description: (
-              <div className={'flex flex-col'}>
-                <div className={'flex flex-row text-destructive items-center'}>
-                  <LucideX className={'w-8 h-8'} />
-                  <p className="text-sm">Failed to update with:</p>
-                </div>
-                <ErrorPre>
-                  Activation was not successful. Check the logs for more info
-                </ErrorPre>
-              </div>
-            ),
-          });
-      })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Chat',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
 
   const handleSwitchChange = () => {
@@ -118,56 +77,21 @@ export const Settings = ({
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
-        if (!cancel) {
-          const { dismiss } = toast({
-            title: 'Chat',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <LoaderIcon className={'w-8 h-8 animate-spin'} />
-                <p className="text-sm text-foreground">
-                  Updating Chat Settings...
-                </p>
-              </div>
+        if (cancel) return;
+
+        const nextActive = !chatModule;
+        setChatModule(nextActive);
+
+        void save({
+          action: () =>
+            patchChatSettings(
+              { active: nextActive },
+              activeTogglePatchOptions(['chat'], nextActive)
             ),
-          });
-          const updatedSettings = {
-            active: !chatModule,
-          };
-          setChatModule(!chatModule);
-          patchChatSettings(updatedSettings)
-            .then(() => {
-              dismiss();
-              toast({
-                title: 'Chat',
-                description: (
-                  <div className={'flex flex-row items-center space-x-2.5'}>
-                    <CheckIcon className={'w-8 h-8'} />
-                    <p className="text-sm text-foreground">
-                      Chat Settings Updated!
-                    </p>
-                  </div>
-                ),
-              });
-            })
-            .catch(err => {
-              dismiss();
-              setChatModule(data.active);
-              toast({
-                title: 'Chat',
-                description: (
-                  <div className={'flex flex-col'}>
-                    <div
-                      className={'flex flex-row text-destructive items-center'}
-                    >
-                      <LucideX className={'w-8 h-8'} />
-                      <p className="text-sm">Failed to update with:</p>
-                    </div>
-                    <ErrorPre>{err.message}</ErrorPre>
-                  </div>
-                ),
-              });
-            });
-        }
+          isActivationSuccess: isChatActivationSuccess,
+          onError: () => setChatModule(data.active),
+          onActivationFailure: () => setChatModule(data.active),
+        });
       },
     });
   };
@@ -176,15 +100,12 @@ export const Settings = ({
     <div className={'container mx-auto py-10 main-scrollbar'}>
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
-          <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">Chat Module</p>
-            <Switch
-              checked={chatModule}
-              onCheckedChange={() => {
-                handleSwitchChange();
-              }}
-            />
-          </div>
+          <ModuleToggle
+            label="Chat Module"
+            checked={chatModule}
+            isSaving={isSaving}
+            onCheckedChange={handleSwitchChange}
+          />
           <div className={'pr-2'}>
             <p className={'text-xs text-muted-foreground'}>
               To get an idea on how to setup Chat take a look at our
@@ -197,6 +118,7 @@ export const Settings = ({
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SettingsForm
                 edit={edit}
+                isSaving={isSaving}
                 setEdit={setEdit}
                 emailAvailable={emailAvailable}
                 pushNotificationsAvailable={pushNotificationsAvailable}

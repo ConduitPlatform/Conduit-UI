@@ -3,16 +3,12 @@
 import { useState, useEffect } from 'react';
 import { PaymentsConfig } from '@/lib/models/payments';
 import { getPaymentSettings, updatePaymentSettings } from '@/lib/api/payments';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
+import { Loader2 } from 'lucide-react';
 import { PaymentsSettingsForm } from './payments-settings-form';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 
 export function PaymentsSettings() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +22,7 @@ export function PaymentsSettings() {
   });
 
   const { toast } = useToast();
+  const { save, isSaving } = useSettingsSave('Payments');
   const router = useRouter();
 
   useEffect(() => {
@@ -37,7 +34,7 @@ export function PaymentsSettings() {
       setLoading(true);
       const response = await getPaymentSettings();
       setConfig(response.config);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to fetch payment settings',
@@ -49,101 +46,29 @@ export function PaymentsSettings() {
   };
 
   const handleModuleToggle = () => {
-    const { id, dismiss } = toast({
-      title: 'Payments',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">
-            Updating Payments Settings...
-          </p>
-        </div>
-      ),
-    });
-
     const updatedSettings = {
       ...config,
       active: !config.active,
     };
 
-    updatePaymentSettings(updatedSettings)
-      .then(res => {
-        dismiss();
-        toast({
-          title: 'Payments',
-          description: (
-            <div className={'flex flex-row items-center space-x-2.5'}>
-              <CheckIcon className={'w-8 h-8'} />
-              <p className="text-sm text-foreground">
-                Payments Settings Updated!
-              </p>
-            </div>
-          ),
-        });
+    void save({
+      action: () => updatePaymentSettings(updatedSettings),
+      onSuccess: () => {
+        setConfig(updatedSettings);
         router.refresh();
-      })
-      .catch(err => {
-        dismiss();
-        toast({
-          title: 'Payments',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{err.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+      },
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEdit(false);
 
-    const { id, dismiss } = toast({
-      title: 'Payments',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">
-            Updating Payments Settings...
-          </p>
-        </div>
-      ),
+    const result = await save({
+      action: () => updatePaymentSettings(config),
+      onSuccess: () => router.refresh(),
     });
-
-    try {
-      await updatePaymentSettings(config);
-      dismiss();
-      toast({
-        title: 'Payments',
-        description: (
-          <div className={'flex flex-row items-center space-x-2.5'}>
-            <CheckIcon className={'w-8 h-8'} />
-            <p className="text-sm text-foreground">
-              Payments Settings Updated!
-            </p>
-          </div>
-        ),
-      });
-      router.refresh();
-    } catch (error: any) {
-      dismiss();
-      toast({
-        title: 'Payments',
-        description: (
-          <div className={'flex flex-col'}>
-            <div className={'flex flex-row text-destructive items-center'}>
-              <LucideX className={'w-8 h-8'} />
-              <p className="text-sm">Failed to update with:</p>
-            </div>
-            <ErrorPre>{error.message}</ErrorPre>
-          </div>
-        ),
-      });
+    if (result.ok) {
+      setEdit(false);
     }
   };
 
@@ -193,8 +118,12 @@ export function PaymentsSettings() {
         <div className="space-y-0.5">
           <div className={'flex gap-2 items-center'}>
             <p className="text-2xl font-medium">Payments Module</p>
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            ) : null}
             <Switch
               checked={config.active}
+              disabled={isSaving}
               onCheckedChange={handleModuleToggle}
             />
           </div>
@@ -210,6 +139,7 @@ export function PaymentsSettings() {
           <form onSubmit={handleSubmit}>
             <PaymentsSettingsForm
               edit={edit}
+              isSaving={isSaving}
               setEdit={setEdit}
               config={config}
               onConfigChange={handleConfigChange}

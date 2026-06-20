@@ -7,7 +7,10 @@ import {
   getModuleUptime,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
-import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
+import {
+  COMMUNICATIONS_SHARED_RUNTIME,
+  getApiModuleNameFromPath,
+} from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
@@ -26,11 +29,10 @@ export default async function EmailDashboard() {
     status: metric.status,
   }));
 
-  // Get system metrics
-  const systemMetrics = await getSystemMetrics();
-
-  // Get real uptime data - use correct API module name
   const apiModuleName = getApiModuleNameFromPath('/email') || 'email';
+
+  // Get system metrics scoped to the shared Communications runtime
+  const systemMetrics = await getSystemMetrics(apiModuleName);
   const uptime = await getModuleUptime(apiModuleName);
 
   // Get real module status - use correct API module name
@@ -90,6 +92,7 @@ export default async function EmailDashboard() {
         systemMetrics={systemMetrics}
         quickActions={quickActions}
         prometheusState={promAvailability.state}
+        sharedRuntime={COMMUNICATIONS_SHARED_RUNTIME}
       />
     </div>
   );

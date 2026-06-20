@@ -19,14 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
-import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { AdminSettings, CoreEnv, CoreSettings } from '@/lib/models/Settings';
 import { patchAdminSettings, patchCoreSettings } from '@/lib/api/settings';
 
@@ -61,6 +59,7 @@ interface Props {
 
 export const General = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
+  const { save, isSaving } = useSettingsSave('Settings');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
@@ -68,67 +67,26 @@ export const General = ({ data }: Props) => {
 
   const { reset, control, handleSubmit, watch } = form;
 
-  const onSubmit = (formData: z.infer<typeof FormSchema>) => {
-    setEdit(false);
-    const { id, dismiss } = toast({
-      title: 'Settings',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">Updating Settings...</p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const result = await save({
+      action: async () => {
+        const tasks: Promise<void>[] = [];
+        if (formData.env !== data.env) {
+          tasks.push(patchCoreSettings({ env: formData.env }));
+        }
+        const { env, ...formAdmin } = formData;
+        tasks.push(
+          patchAdminSettings({
+            ...formAdmin,
+            mcp: data.mcp ?? { pingInterval: 30000, sessionTimeout: 300000 },
+          })
+        );
+        await Promise.all(tasks);
+      },
     });
-    if (formData.env !== data.env) {
-      patchCoreSettings({ env: formData.env }).catch(err => {
-        dismiss();
-        toast({
-          title: 'Settings formData',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{err.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
     }
-    const { env, ...formAdmin } = formData;
-    patchAdminSettings({
-      ...formAdmin,
-      // Top-level `mcp` is not edited in this form; backend requires the object on PATCH
-      mcp: data.mcp ?? { pingInterval: 30000, sessionTimeout: 300000 },
-    })
-      .then(res => {
-        dismiss();
-        toast({
-          title: 'Settings',
-          description: (
-            <div className={'flex flex-row items-center space-x-2.5'}>
-              <CheckIcon className={'w-8 h-8'} />
-              <p className="text-sm text-foreground">Settings Updated!</p>
-            </div>
-          ),
-        });
-      })
-      .catch(err => {
-        dismiss();
-        toast({
-          title: 'Settings',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to add with:</p>
-              </div>
-              <ErrorPre>{err.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
   };
 
   return (
@@ -511,32 +469,15 @@ export const General = ({ data }: Props) => {
               />
             </div>
           </div>
-          <div className={'w-full py-4 flex justify-end'}>
-            {edit ? (
-              <div className={'flex gap-2'}>
-                <Button
-                  type="button"
-                  className={'dark:border-gray-500'}
-                  variant={'outline'}
-                  onClick={() => {
-                    reset();
-                    setEdit(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Submit</Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => {
-                  setEdit(true);
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </div>
+          <SettingsFormActions
+            edit={edit}
+            isSaving={isSaving}
+            onEdit={() => setEdit(true)}
+            onCancel={() => {
+              reset();
+              setEdit(false);
+            }}
+          />
         </form>
       </Form>
     </div>

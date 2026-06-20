@@ -1,6 +1,7 @@
 'use server';
 import { getApiClient } from '@/lib/api';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import {
   ChatConfigResponse,
   ChatMessage,
@@ -16,24 +17,16 @@ export const getChatSettings = async () => {
   return res.data;
 };
 
-export const patchChatSettings = async (chatData: Partial<ChatSettings>) => {
+export const patchChatSettings = async (
+  chatData: Partial<ChatSettings>,
+  options?: PatchSettingsOptions
+) => {
   await (
     await getApiClient()
   ).patch<ChatConfigResponse>('/config/chat', {
     config: { ...chatData },
   });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };
 
 export const getMessages = async (args: {

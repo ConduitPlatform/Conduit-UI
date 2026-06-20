@@ -5,24 +5,35 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { CheckIcon, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
-import { toast } from '@/lib/hooks/use-toast';
-import { Switch } from '@/components/ui/switch';
 import { Form } from '@/components/ui/form';
 import { SettingsForm } from '@/components/storage/settings/settingsForm';
 import { patchStorageSettings } from '@/lib/api/storage';
 import { FormSchema } from '@/components/storage/settings/zod';
+import {
+  activeTogglePatchOptions,
+  useSettingsSave,
+} from '@/lib/hooks/use-settings-save';
+import { ModuleToggle } from '@/components/settings/ModuleToggle';
+import {
+  isModuleServing,
+  PatchSettingsResult,
+} from '@/lib/api/modules/patch-settings-options';
 
 interface Props {
   data: StorageSettings;
   authzAvailable: boolean;
 }
 
+function isStorageActivationSuccess(result: PatchSettingsResult | void) {
+  if (!result) return true;
+  return isModuleServing(result.modules, 'storage');
+}
+
 export const Settings = ({ data, authzAvailable }: Props) => {
   const [storageModule, setStorageModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
+  const { save, isSaving } = useSettingsSave('Storage');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
@@ -35,69 +46,13 @@ export const Settings = ({ data, authzAvailable }: Props) => {
     }
   }, [data]);
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setEdit(false);
-    const { id, dismiss } = toast({
-      title: 'Storage',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">
-            Updating Storage Settings...
-          </p>
-        </div>
-      ),
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const result = await save({
+      action: () => patchStorageSettings(formData),
     });
-
-    patchStorageSettings(data)
-      .then(res => {
-        dismiss();
-        const storageModule = res.find(
-          module => module.moduleName === 'storage'
-        );
-        if (storageModule && storageModule.serving)
-          toast({
-            title: 'Storage',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <CheckIcon className={'w-8 h-8'} />
-                <p className="text-sm text-foreground">
-                  Storage Settings Updated!
-                </p>
-              </div>
-            ),
-          });
-        else
-          toast({
-            title: 'Storage',
-            description: (
-              <div className={'flex flex-col'}>
-                <div className={'flex flex-row text-destructive items-center'}>
-                  <LucideX className={'w-8 h-8'} />
-                  <p className="text-sm">Failed to update with:</p>
-                </div>
-                <ErrorPre>
-                  Activation was not successful. Check the logs for more info
-                </ErrorPre>
-              </div>
-            ),
-          });
-      })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Storage',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
 
   const handleSwitchChange = () => {
@@ -107,59 +62,34 @@ export const Settings = ({ data, authzAvailable }: Props) => {
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
-        if (!cancel) {
-          const { id, dismiss } = toast({
-            title: 'Storage',
-            description: (
-              <div className={'flex flex-row items-center space-x-2.5'}>
-                <LoaderIcon className={'w-8 h-8 animate-spin'} />
-                <p className="text-sm text-foreground">
-                  Updating Storage Settings...
-                </p>
-              </div>
-            ),
-          });
-          const updatedSettings: Partial<StorageSettings> = {
-            active: !storageModule,
-            ...(!storageModule && { provider: 'local' }),
-          };
+        if (cancel) return;
+
+        const nextActive = !storageModule;
+        const updatedSettings: Partial<StorageSettings> = {
+          active: nextActive,
+          ...(!nextActive ? {} : { provider: 'local' }),
+        };
+        if (nextActive) {
           setValue('provider', 'local');
-          setStorageModule(!storageModule);
-          patchStorageSettings(updatedSettings)
-            .then(res => {
-              dismiss();
-              toast({
-                title: 'Storage',
-                description: (
-                  <div className={'flex flex-row items-center space-x-2.5'}>
-                    <CheckIcon className={'w-8 h-8'} />
-                    <p className="text-sm text-foreground">
-                      Storage Settings Updated!
-                    </p>
-                  </div>
-                ),
-              });
-            })
-            .catch(err => {
-              dismiss();
-              setStorageModule(data.active);
-              setValue('provider', data.provider);
-              toast({
-                title: 'Storage',
-                description: (
-                  <div className={'flex flex-col'}>
-                    <div
-                      className={'flex flex-row text-destructive items-center'}
-                    >
-                      <LucideX className={'w-8 h-8'} />
-                      <p className="text-sm">Failed to update with:</p>
-                    </div>
-                    <ErrorPre>{err.message}</ErrorPre>
-                  </div>
-                ),
-              });
-            });
         }
+        setStorageModule(nextActive);
+
+        void save({
+          action: () =>
+            patchStorageSettings(
+              updatedSettings,
+              activeTogglePatchOptions(['storage'], nextActive)
+            ),
+          isActivationSuccess: isStorageActivationSuccess,
+          onError: () => {
+            setStorageModule(data.active);
+            setValue('provider', data.provider);
+          },
+          onActivationFailure: () => {
+            setStorageModule(data.active);
+            setValue('provider', data.provider);
+          },
+        });
       },
     });
   };
@@ -168,15 +98,12 @@ export const Settings = ({ data, authzAvailable }: Props) => {
     <div className={'container mx-auto py-10 main-scrollbar'}>
       <div className={'flex flex-col gap-6'}>
         <div className="space-y-0.5">
-          <div className={'flex gap-2 items-center'}>
-            <p className="text-2xl font-medium">Storage Module</p>
-            <Switch
-              checked={storageModule}
-              onCheckedChange={() => {
-                handleSwitchChange();
-              }}
-            />
-          </div>
+          <ModuleToggle
+            label="Storage Module"
+            checked={storageModule}
+            isSaving={isSaving}
+            onCheckedChange={handleSwitchChange}
+          />
           <div className={'pr-2'}>
             <p className={'text-xs text-muted-foreground'}>
               To get an idea on how to setup your storage provider take a look
@@ -230,6 +157,7 @@ export const Settings = ({ data, authzAvailable }: Props) => {
               <SettingsForm
                 control={control}
                 edit={edit}
+                isSaving={isSaving}
                 setEdit={setEdit}
                 watch={watch}
                 reset={reset}

@@ -18,9 +18,12 @@ import { Input } from '@/components/ui/input';
 import { SmsSettings } from '@/lib/models/Sms';
 import { Switch } from '@/components/ui/switch';
 
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
+
 interface Props {
   control: any;
   edit: boolean;
+  isSaving?: boolean;
   setEdit: (arg0: boolean) => void;
   data: SmsSettings;
   watch: any;
@@ -30,6 +33,7 @@ interface Props {
 export const SettingsForm = ({
   control,
   edit,
+  isSaving = false,
   setEdit,
   watch,
   reset,
@@ -345,32 +349,15 @@ export const SettingsForm = ({
           )}
         </div>
       </div>
-      <div className={'py-4 flex justify-end'}>
-        {edit ? (
-          <div className={'flex gap-2'}>
-            <Button
-              type="button"
-              className={'dark:border-gray-500'}
-              variant={'outline'}
-              onClick={() => {
-                reset();
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setEdit(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
+      <SettingsFormActions
+        edit={edit}
+        isSaving={isSaving}
+        onEdit={() => setEdit(true)}
+        onCancel={() => {
+          reset();
+          setEdit(false);
+        }}
+      />
     </>
   );
 };

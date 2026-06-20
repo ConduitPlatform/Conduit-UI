@@ -1,6 +1,7 @@
 'use server';
 import { getApiClient } from '@/lib/api';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import {
   CheckPermission,
   CheckPermissionResponse,
@@ -168,23 +169,13 @@ export const getAuthorizationSettings = async () => {
 };
 
 export const patchAuthorizationSettings = async (
-  authorizationData: Partial<AuthorizationSettings>
+  authorizationData: Partial<AuthorizationSettings>,
+  options?: PatchSettingsOptions
 ) => {
   await (
     await getApiClient()
   ).patch<ConfigResponse>(`/config/authorization`, {
     config: { ...authorizationData },
   });
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };

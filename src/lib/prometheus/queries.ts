@@ -189,8 +189,12 @@ export async function grpcLatency(moduleName?: string): Promise<MetricQuery> {
 }
 
 // System metrics
-export async function cpuUsage(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+async function buildSystemMetricLabels(moduleName?: string): Promise<string> {
+  return buildLabels(moduleName ? { module_name: moduleName } : undefined);
+}
+
+export async function cpuUsage(moduleName?: string): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'CPU Usage',
     expression: `rate(cnd_process_cpu_seconds_total${labels}[5m]) * 100`,
@@ -199,8 +203,8 @@ export async function cpuUsage(): Promise<MetricQuery> {
   };
 }
 
-export async function memoryUsage(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+export async function memoryUsage(moduleName?: string): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'Memory Usage',
     expression: `cnd_process_resident_memory_bytes${labels}`,
@@ -209,8 +213,8 @@ export async function memoryUsage(): Promise<MetricQuery> {
   };
 }
 
-export async function heapUsage(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+export async function heapUsage(moduleName?: string): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'Heap Usage',
     expression: `cnd_nodejs_heap_size_used_bytes${labels}`,
@@ -219,8 +223,8 @@ export async function heapUsage(): Promise<MetricQuery> {
   };
 }
 
-export async function eventLoopLag(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+export async function eventLoopLag(moduleName?: string): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'Event Loop Lag',
     expression: `cnd_nodejs_eventloop_lag_seconds${labels}`,
@@ -457,8 +461,10 @@ export async function clientRoutes(): Promise<MetricQuery> {
 }
 
 // Active resources
-export async function activeRequests(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+export async function activeRequests(
+  moduleName?: string
+): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'Active Requests',
     expression: `cnd_nodejs_active_requests${labels}`,
@@ -467,8 +473,8 @@ export async function activeRequests(): Promise<MetricQuery> {
   };
 }
 
-export async function activeHandles(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+export async function activeHandles(moduleName?: string): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'Active Handles',
     expression: `cnd_nodejs_active_handles${labels}`,
@@ -477,8 +483,10 @@ export async function activeHandles(): Promise<MetricQuery> {
   };
 }
 
-export async function activeResources(): Promise<MetricQuery> {
-  const labels = await buildLabels();
+export async function activeResources(
+  moduleName?: string
+): Promise<MetricQuery> {
+  const labels = await buildSystemMetricLabels(moduleName);
   return {
     name: 'Active Resources',
     expression: `cnd_nodejs_active_resources${labels}`,

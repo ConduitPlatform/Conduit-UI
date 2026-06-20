@@ -4,12 +4,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import * as React from 'react';
 import { useState } from 'react';
-import { toast } from '@/lib/hooks/use-toast';
-import { CheckIcon, ChevronDown, LoaderIcon, LucideX } from 'lucide-react';
-import { ErrorPre } from '@/components/ui/error-pre';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { patchAuthenticationSettings } from '@/lib/api/authentication';
 import { InputField } from '@/components/ui/form-inputs/InputField';
@@ -20,6 +18,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { UrlTagInput } from '@/components/ui/form-inputs/TagInputField';
+import { ChevronDown } from 'lucide-react';
 
 const tokensSchema = z.object({
   httpOnly: z.boolean().default(true),
@@ -93,6 +92,7 @@ interface Props {
 
 export const AuthenticationSettings = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
+  const { save, isSaving } = useSettingsSave('Authentication');
   type formSchema = z.infer<typeof FormSchema>;
   const form = useForm<formSchema>({
     resolver: rhfZodResolver(FormSchema),
@@ -102,47 +102,12 @@ export const AuthenticationSettings = ({ data }: Props) => {
   const { reset, control, handleSubmit, watch } = form;
 
   const onSubmit = async (formData: formSchema) => {
-    setEdit(false);
-    const { dismiss } = toast({
-      title: 'Authentication',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <LoaderIcon className={'w-8 h-8 animate-spin'} />
-          <p className="text-sm text-foreground">
-            Updating Authentication Settings...
-          </p>
-        </div>
-      ),
+    const result = await save({
+      action: () => patchAuthenticationSettings(formData),
     });
-    const res = await patchAuthenticationSettings(formData).catch(err => {
-      dismiss();
-      toast({
-        title: 'Authentication',
-        description: (
-          <div className={'flex flex-col'}>
-            <div className={'flex flex-row text-destructive items-center'}>
-              <LucideX className={'w-8 h-8'} />
-              <p className="text-sm">Failed to update with:</p>
-            </div>
-            <ErrorPre>{err.message}</ErrorPre>
-          </div>
-        ),
-      });
-      return null;
-    });
-    if (!res) return;
-    dismiss();
-    toast({
-      title: 'Authentication',
-      description: (
-        <div className={'flex flex-row items-center space-x-2.5'}>
-          <CheckIcon className={'w-8 h-8'} />
-          <p className="text-sm text-foreground">
-            Authentication Settings Updated!
-          </p>
-        </div>
-      ),
-    });
+    if (result.ok) {
+      setEdit(false);
+    }
   };
 
   return (
@@ -506,32 +471,15 @@ export const AuthenticationSettings = ({ data }: Props) => {
               </CollapsibleContent>
             </Collapsible>
           </div>
-          <div className={'w-full py-4 flex justify-end'}>
-            {edit ? (
-              <div className={'flex gap-2'}>
-                <Button
-                  type="button"
-                  className={'dark:border-gray-500'}
-                  variant={'outline'}
-                  onClick={() => {
-                    reset();
-                    setEdit(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Submit</Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => {
-                  setEdit(true);
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </div>
+          <SettingsFormActions
+            edit={edit}
+            isSaving={isSaving}
+            onEdit={() => setEdit(true)}
+            onCancel={() => {
+              reset();
+              setEdit(false);
+            }}
+          />
         </form>
       </Form>
     </div>

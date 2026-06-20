@@ -5,14 +5,16 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 
 const disabledStyling = 'text-muted-foreground';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
+
 interface Props {
   edit: boolean;
+  isSaving?: boolean;
   setEdit: (arg0: boolean) => void;
   emailAvailable: boolean;
   pushNotificationsAvailable: boolean;
@@ -20,6 +22,7 @@ interface Props {
 
 export const SettingsForm = ({
   edit,
+  isSaving = false,
   setEdit,
   emailAvailable,
   pushNotificationsAvailable,
@@ -178,32 +181,15 @@ export const SettingsForm = ({
           </>
         </div>
       </div>
-      <div className={'py-4 flex justify-end'}>
-        {edit ? (
-          <div className={'flex gap-2'}>
-            <Button
-              type="button"
-              className={'dark:border-gray-500'}
-              variant={'outline'}
-              onClick={() => {
-                reset();
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setEdit(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
+      <SettingsFormActions
+        edit={edit}
+        isSaving={isSaving}
+        onEdit={() => setEdit(true)}
+        onCancel={() => {
+          reset();
+          setEdit(false);
+        }}
+      />
     </>
   );
 };

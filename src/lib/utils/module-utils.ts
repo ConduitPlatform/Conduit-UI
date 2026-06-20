@@ -7,6 +7,48 @@ export const COMMUNICATIONS_PROVIDED_MODULES = [
   'sms',
 ];
 
+const COMMUNICATIONS_LOKI_LABELS = [
+  'communications',
+  'email',
+  'sms',
+  'pushNotifications',
+] as const;
+
+export function resolvePrometheusModuleName(moduleName: string): string {
+  if (COMMUNICATIONS_PROVIDED_MODULES.includes(moduleName)) {
+    return 'communications';
+  }
+  return moduleName;
+}
+
+export function getLokiModuleFilterForPath(pathname: string): string[] {
+  const apiName =
+    getApiModuleNameFromPath(pathname) ??
+    pathname.split('/').filter(Boolean)[0] ??
+    'core';
+
+  if (
+    apiName === 'communications' ||
+    COMMUNICATIONS_PROVIDED_MODULES.includes(apiName)
+  ) {
+    return [...COMMUNICATIONS_LOKI_LABELS];
+  }
+
+  return apiName === 'core' ? ['core'] : [apiName];
+}
+
+export type SharedRuntimeInfo = {
+  moduleName: string;
+  description: string;
+  systemMetricsSubtitle: string;
+};
+
+export const COMMUNICATIONS_SHARED_RUNTIME: SharedRuntimeInfo = {
+  moduleName: 'Communications',
+  description: 'Email, SMS, and push notifications share this service.',
+  systemMetricsSubtitle: 'Process metrics for the Communications runtime',
+};
+
 // Map module names to their display names
 export const MODULE_DISPLAY_NAMES: Record<string, string> = {
   authentication: 'Authentication',

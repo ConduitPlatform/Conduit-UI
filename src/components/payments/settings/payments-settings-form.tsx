@@ -17,9 +17,11 @@ import {
 } from '@/components/ui/select';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 
 interface Props {
   edit: boolean;
+  isSaving?: boolean;
   setEdit: (arg0: boolean) => void;
   config: PaymentsConfig;
   onConfigChange: (field: keyof PaymentsConfig, value: any) => void;
@@ -27,6 +29,7 @@ interface Props {
 
 export const PaymentsSettingsForm = ({
   edit,
+  isSaving = false,
   setEdit,
   config,
   onConfigChange,
@@ -588,31 +591,12 @@ export const PaymentsSettingsForm = ({
         </Card>
       </div>
 
-      <div className={'py-4 flex justify-end'}>
-        {edit ? (
-          <div className={'flex gap-2'}>
-            <Button
-              type="button"
-              className={'dark:border-gray-500'}
-              variant={'outline'}
-              onClick={() => {
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => {
-              setEdit(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
+      <SettingsFormActions
+        edit={edit}
+        isSaving={isSaving}
+        onEdit={() => setEdit(true)}
+        onCancel={() => setEdit(false)}
+      />
     </>
   );
 };

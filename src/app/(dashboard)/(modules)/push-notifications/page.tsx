@@ -7,7 +7,10 @@ import {
   getPushNotificationMetrics,
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
-import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
+import {
+  COMMUNICATIONS_SHARED_RUNTIME,
+  getApiModuleNameFromPath,
+} from '@/lib/utils/module-utils';
 import { ModuleStatus } from '@/components/dashboard/ModuleStatusCard';
 import { QuickAction } from '@/components/dashboard/QuickActionsCard';
 import { MetricCardProps } from '@/components/dashboard/MetricCard';
@@ -26,12 +29,10 @@ export default async function PushNotificationsDashboard() {
     status: metric.status,
   }));
 
-  // Get system metrics
-  const systemMetrics = await getSystemMetrics();
-
-  // Get real uptime data - use camelCase module name for API calls
   const apiModuleName =
     getApiModuleNameFromPath('/push-notifications') || 'pushNotifications';
+
+  const systemMetrics = await getSystemMetrics(apiModuleName);
   const uptime = await getModuleUptime(apiModuleName);
 
   // Get real module status - use camelCase module name for API calls
@@ -85,6 +86,7 @@ export default async function PushNotificationsDashboard() {
         systemMetrics={systemMetrics}
         quickActions={quickActions}
         prometheusState={promAvailability.state}
+        sharedRuntime={COMMUNICATIONS_SHARED_RUNTIME}
       />
     </div>
   );

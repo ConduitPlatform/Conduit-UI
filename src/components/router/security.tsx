@@ -52,9 +52,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { toast } from '@/lib/hooks/use-toast';
 import {
-  LoaderIcon,
   Plus,
   Edit,
   Trash2,
@@ -63,6 +61,7 @@ import {
   Smartphone,
   Monitor,
 } from 'lucide-react';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import {
   SecurityClientsResponse,
   SecurityClient,
@@ -101,6 +100,7 @@ export const SecurityClients = ({ data }: Props) => {
   const [editingClient, setEditingClient] = useState<SecurityClient | null>(
     null
   );
+  const { save, isSaving } = useSettingsSave('Security Client');
 
   const createForm = useForm<CreateSecurityClientRequest>({
     resolver: rhfZodResolver(CreateClientSchema),
@@ -163,117 +163,49 @@ export const SecurityClients = ({ data }: Props) => {
   };
 
   const handleCreateClient = async (formData: CreateSecurityClientRequest) => {
-    try {
-      const { id, dismiss } = toast({
-        title: 'Security Client',
-        description: (
-          <div className={'flex flex-row items-center space-x-2.5'}>
-            <LoaderIcon className={'w-8 h-8 animate-spin'} />
-            <p className="text-sm text-foreground">
-              Creating Security Client...
-            </p>
-          </div>
-        ),
-      });
+    const result = await save({
+      action: async () => {
+        await createSecurityClient(formData);
+        const updatedData = await getSecurityClients();
+        setClients(updatedData.clients);
+      },
+      successMessage: 'Security client created',
+    });
 
-      await createSecurityClient(formData);
-
-      // Refresh the clients list
-      const updatedData = await getSecurityClients();
-      setClients(updatedData.clients);
-
-      dismiss();
-      toast({
-        title: 'Security Client',
-        description: 'Security client created successfully',
-      });
-
+    if (result.ok) {
       setIsCreateOpen(false);
       createForm.reset();
-    } catch (error) {
-      console.error('Error creating security client:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create security client',
-        variant: 'destructive',
-      });
     }
   };
 
   const handleUpdateClient = async (formData: UpdateSecurityClientRequest) => {
     if (!editingClient) return;
 
-    try {
-      const { id, dismiss } = toast({
-        title: 'Security Client',
-        description: (
-          <div className={'flex flex-row items-center space-x-2.5'}>
-            <LoaderIcon className={'w-8 h-8 animate-spin'} />
-            <p className="text-sm text-foreground">
-              Updating Security Client...
-            </p>
-          </div>
-        ),
-      });
+    const result = await save({
+      action: async () => {
+        await updateSecurityClient(editingClient._id, formData);
+        const updatedData = await getSecurityClients();
+        setClients(updatedData.clients);
+      },
+      successMessage: 'Security client updated',
+    });
 
-      await updateSecurityClient(editingClient._id, formData);
-
-      // Refresh the clients list
-      const updatedData = await getSecurityClients();
-      setClients(updatedData.clients);
-
-      dismiss();
-      toast({
-        title: 'Security Client',
-        description: 'Security client updated successfully',
-      });
-
+    if (result.ok) {
       setIsEditOpen(false);
       setEditingClient(null);
       updateForm.reset();
-    } catch (error) {
-      console.error('Error updating security client:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update security client',
-        variant: 'destructive',
-      });
     }
   };
 
   const handleDeleteClient = async (clientId: string) => {
-    try {
-      const { id, dismiss } = toast({
-        title: 'Security Client',
-        description: (
-          <div className={'flex flex-row items-center space-x-2.5'}>
-            <LoaderIcon className={'w-8 h-8 animate-spin'} />
-            <p className="text-sm text-foreground">
-              Deleting Security Client...
-            </p>
-          </div>
-        ),
-      });
-
-      await deleteSecurityClient(clientId);
-
-      // Refresh the clients list
-      const updatedData = await getSecurityClients();
-      setClients(updatedData.clients);
-
-      dismiss();
-      toast({
-        title: 'Security Client',
-        description: 'Security client deleted successfully',
-      });
-    } catch (error) {
-      console.error('Error deleting security client:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete security client',
-        variant: 'destructive',
-      });
-    }
+    await save({
+      action: async () => {
+        await deleteSecurityClient(clientId);
+        const updatedData = await getSecurityClients();
+        setClients(updatedData.clients);
+      },
+      successMessage: 'Security client deleted',
+    });
   };
 
   const openEditDialog = (client: SecurityClient) => {

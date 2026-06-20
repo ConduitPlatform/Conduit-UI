@@ -8,7 +8,8 @@ import {
   EmailTemplate,
   ExternalTemplate,
 } from '@/lib/models/email';
-import { getModules } from '@/lib/api/modules';
+import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
+import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import { CommunicationsConfigResponse } from '@/lib/models/communications';
 import {
   extractModuleConfigFromCommunications,
@@ -26,7 +27,10 @@ export const getEmailSettings = async (): Promise<EmailConfigResponse> => {
   return { config: emailConfig };
 };
 
-export const patchEmailSettings = async (data: Partial<EmailSettings>) => {
+export const patchEmailSettings = async (
+  data: Partial<EmailSettings>,
+  options?: PatchSettingsOptions
+) => {
   await (
     await getApiClient()
   ).patch<CommunicationsConfigResponse>(
@@ -34,18 +38,7 @@ export const patchEmailSettings = async (data: Partial<EmailSettings>) => {
     buildCommunicationsPatchPayload('email', data)
   );
 
-  return new Promise<Awaited<ReturnType<typeof getModules>>>(
-    async (resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const modules = await getModules();
-          resolve(modules);
-        } catch (error) {
-          reject(error);
-        }
-      }, 3000);
-    }
-  );
+  return afterPatchServing(options);
 };
 
 export const getTemplates = async (args: {
