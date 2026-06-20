@@ -29,7 +29,6 @@ type TransportSettings = {
   rest: boolean;
   graphql: boolean;
   sockets: boolean;
-  proxy: boolean;
 };
 
 type RateLimitSettings = {
@@ -53,7 +52,6 @@ export type RouterModuleData = {
   routes: Record<string, RouterRoute>;
   middlewares?: Record<string, { path: string; handler: string }>;
   moduleUrl?: string;
-  proxyRoutes?: Record<string, any>;
 };
 
 export type RouterRoutesResponse = {

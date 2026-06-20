@@ -53,7 +53,6 @@ const FormSchema = z
       rest: z.boolean(),
       graphql: z.boolean(),
       sockets: z.boolean(),
-      proxy: z.boolean(),
     }),
     security: z.object({
       clientValidation: z.boolean(),
@@ -141,7 +140,7 @@ export const Settings = ({ data }: Props) => {
                 </FormItem>
               )}
             />
-            <div className={'grid grid-cols-4 gap-4'}>
+            <div className={'grid grid-cols-3 gap-4'}>
               <FormField
                 control={control}
                 name="transports.rest"
@@ -185,27 +184,6 @@ export const Settings = ({ data }: Props) => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
                     <FormLabel className="text-base">WebSockets</FormLabel>
-                    <FormControl>
-                      <Switch
-                        disabled={!edit}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="transports.proxy"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">Proxy</FormLabel>
-                      <FormDescription className={'pr-2'}>
-                        Allows you to create proxy routes to external services.
-                      </FormDescription>
-                    </div>
                     <FormControl>
                       <Switch
                         disabled={!edit}
