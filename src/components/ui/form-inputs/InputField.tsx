@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import TooltipHelper from '../helpers/TooltipHelper';
 import { InfoIcon } from '@/icons';
 import { useFormContext } from 'react-hook-form';
@@ -78,6 +79,13 @@ const InputField = ({
                 {...restInputProps}
                 checked={Boolean(field.value)}
                 onChange={e => field.onChange(e.target.checked)}
+              />
+            ) : type === 'password' ? (
+              <PasswordInput
+                placeholder={placeholder}
+                {...field}
+                {...restInputProps}
+                className={inputClassName}
               />
             ) : (
               <Input

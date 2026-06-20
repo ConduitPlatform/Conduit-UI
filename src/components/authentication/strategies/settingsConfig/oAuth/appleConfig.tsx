@@ -8,8 +8,14 @@ import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
 import { StrategyFormProps } from '@/components/authentication/strategies/interface/StrategyFormProps.interface';
 import React from 'react';
-import { Form } from '@/components/ui/form';
-import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
+import { SecretTextarea } from '@/components/ui/secret-textarea';
 
 type authStrategyFormType = z.infer<typeof authStrategySchema>;
 const authStrategySchema = oauthDefaultConfig.merge(
@@ -46,10 +52,19 @@ export const AppleConfigForm: React.FC<
           </div>
 
           <InputField fieldName={'keyId'} label={'Private key ID'} />
-          <TextAreaField
-            label={'Private Key'}
-            fieldName={'privateKey'}
-            placeholder={''}
+          <FormField
+            control={form.control}
+            name="privateKey"
+            render={({ field }) => (
+              <FormItem className="w-full space-y-1.5">
+                <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
+                  Private Key
+                </FormLabel>
+                <FormControl>
+                  <SecretTextarea placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
           />
           <div className={'flex flex-row gap-x-1 items-center'}>
             <InputField fieldName={'redirect_uri'} label={'Redirect URI'} />

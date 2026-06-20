@@ -1,8 +1,8 @@
 'use client';
 
 import { PaymentsConfig } from '@/lib/models/payments';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 
 interface Props {
@@ -34,14 +32,6 @@ export const PaymentsSettingsForm = ({
   config,
   onConfigChange,
 }: Props) => {
-  const [showSecretKey, setShowSecretKey] = useState(false);
-  const [showStripeKey, setShowStripeKey] = useState(false);
-  const [showVivaApiKey, setShowVivaApiKey] = useState(false);
-  const [showVivaWebhookKey, setShowVivaWebhookKey] = useState(false);
-  const [showVivaClientSecret, setShowVivaClientSecret] = useState(false);
-  const [showPiraeusPassword, setShowPiraeusPassword] = useState(false);
-  const [showRevenueCatSecret, setShowRevenueCatSecret] = useState(false);
-
   return (
     <>
       <div className={'flex flex-col gap-4'}>
@@ -54,31 +44,13 @@ export const PaymentsSettingsForm = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="secretKey">Secret Key</Label>
-                <div className="relative">
-                  <Input
-                    id="secretKey"
-                    type={showSecretKey ? 'text' : 'password'}
-                    value={config.secretKey || ''}
-                    onChange={e => onConfigChange('secretKey', e.target.value)}
-                    placeholder="Enter secret key"
-                    disabled={!edit}
-                    className="pr-10"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowSecretKey(!showSecretKey)}
-                    disabled={!edit}
-                  >
-                    {showSecretKey ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
+                <PasswordInput
+                  id="secretKey"
+                  value={config.secretKey || ''}
+                  onChange={e => onConfigChange('secretKey', e.target.value)}
+                  placeholder="Enter secret key"
+                  disabled={!edit}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="defaultCurrency">Default Currency</Label>
@@ -161,33 +133,15 @@ export const PaymentsSettingsForm = ({
                 <Separator />
                 <div className="space-y-2">
                   <Label htmlFor="stripeSecretKey">Secret Key</Label>
-                  <div className="relative">
-                    <Input
-                      id="stripeSecretKey"
-                      type={showStripeKey ? 'text' : 'password'}
-                      value={config.stripe.secret_key}
-                      onChange={e =>
-                        onConfigChange('stripe', { secret_key: e.target.value })
-                      }
-                      placeholder="sk_test_..."
-                      disabled={!edit}
-                      className="pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowStripeKey(!showStripeKey)}
-                      disabled={!edit}
-                    >
-                      {showStripeKey ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <PasswordInput
+                    id="stripeSecretKey"
+                    value={config.stripe.secret_key}
+                    onChange={e =>
+                      onConfigChange('stripe', { secret_key: e.target.value })
+                    }
+                    placeholder="sk_test_..."
+                    disabled={!edit}
+                  />
                   <p className="text-sm text-muted-foreground">
                     Your Stripe secret key. This should start with
                     &quot;sk_test_&quot; for testing or &quot;sk_live_&quot; for
@@ -260,64 +214,28 @@ export const PaymentsSettingsForm = ({
 
                 <div className="space-y-2">
                   <Label htmlFor="vivaApiKey">API Key</Label>
-                  <div className="relative">
-                    <Input
-                      id="vivaApiKey"
-                      type={showVivaApiKey ? 'text' : 'password'}
-                      value={config.viva?.apiKey || ''}
-                      onChange={e =>
-                        onConfigChange('viva', { apiKey: e.target.value })
-                      }
-                      placeholder="Enter API key"
-                      disabled={!edit}
-                      className="pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowVivaApiKey(!showVivaApiKey)}
-                      disabled={!edit}
-                    >
-                      {showVivaApiKey ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <PasswordInput
+                    id="vivaApiKey"
+                    value={config.viva?.apiKey || ''}
+                    onChange={e =>
+                      onConfigChange('viva', { apiKey: e.target.value })
+                    }
+                    placeholder="Enter API key"
+                    disabled={!edit}
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="vivaWebhookKey">Webhook Key</Label>
-                  <div className="relative">
-                    <Input
-                      id="vivaWebhookKey"
-                      type={showVivaWebhookKey ? 'text' : 'password'}
-                      value={config.viva?.webhookKey || ''}
-                      onChange={e =>
-                        onConfigChange('viva', { webhookKey: e.target.value })
-                      }
-                      placeholder="Enter webhook key"
-                      disabled={!edit}
-                      className="pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowVivaWebhookKey(!showVivaWebhookKey)}
-                      disabled={!edit}
-                    >
-                      {showVivaWebhookKey ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <PasswordInput
+                    id="vivaWebhookKey"
+                    value={config.viva?.webhookKey || ''}
+                    onChange={e =>
+                      onConfigChange('viva', { webhookKey: e.target.value })
+                    }
+                    placeholder="Enter webhook key"
+                    disabled={!edit}
+                  />
                 </div>
 
                 <div className="space-y-4">
@@ -342,40 +260,20 @@ export const PaymentsSettingsForm = ({
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="vivaClientSecret">Client Secret</Label>
-                      <div className="relative">
-                        <Input
-                          id="vivaClientSecret"
-                          type={showVivaClientSecret ? 'text' : 'password'}
-                          value={config.viva?.smartCheckout?.clientSecret || ''}
-                          onChange={e =>
-                            onConfigChange('viva', {
-                              smartCheckout: {
-                                ...config.viva?.smartCheckout,
-                                clientSecret: e.target.value,
-                              },
-                            })
-                          }
-                          placeholder="Enter client secret"
-                          disabled={!edit}
-                          className="pr-10"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() =>
-                            setShowVivaClientSecret(!showVivaClientSecret)
-                          }
-                          disabled={!edit}
-                        >
-                          {showVivaClientSecret ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
+                      <PasswordInput
+                        id="vivaClientSecret"
+                        value={config.viva?.smartCheckout?.clientSecret || ''}
+                        onChange={e =>
+                          onConfigChange('viva', {
+                            smartCheckout: {
+                              ...config.viva?.smartCheckout,
+                              clientSecret: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="Enter client secret"
+                        disabled={!edit}
+                      />
                     </div>
                   </div>
                 </div>
@@ -485,37 +383,17 @@ export const PaymentsSettingsForm = ({
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="piraeusPassword">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="piraeusPassword"
-                        type={showPiraeusPassword ? 'text' : 'password'}
-                        value={config.piraeus?.password || ''}
-                        onChange={e =>
-                          onConfigChange('piraeus', {
-                            password: e.target.value,
-                          })
-                        }
-                        placeholder="Enter password"
-                        disabled={!edit}
-                        className="pr-10"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() =>
-                          setShowPiraeusPassword(!showPiraeusPassword)
-                        }
-                        disabled={!edit}
-                      >
-                        {showPiraeusPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
+                    <PasswordInput
+                      id="piraeusPassword"
+                      value={config.piraeus?.password || ''}
+                      onChange={e =>
+                        onConfigChange('piraeus', {
+                          password: e.target.value,
+                        })
+                      }
+                      placeholder="Enter password"
+                      disabled={!edit}
+                    />
                   </div>
                 </div>
               </div>
@@ -553,37 +431,17 @@ export const PaymentsSettingsForm = ({
                   <Label htmlFor="revenueCatWebhookSecret">
                     Webhook Secret
                   </Label>
-                  <div className="relative">
-                    <Input
-                      id="revenueCatWebhookSecret"
-                      type={showRevenueCatSecret ? 'text' : 'password'}
-                      value={config.revenueCat?.webhookSecret || ''}
-                      onChange={e =>
-                        onConfigChange('revenueCat', {
-                          webhookSecret: e.target.value,
-                        })
-                      }
-                      placeholder="Enter webhook secret"
-                      disabled={!edit}
-                      className="pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() =>
-                        setShowRevenueCatSecret(!showRevenueCatSecret)
-                      }
-                      disabled={!edit}
-                    >
-                      {showRevenueCatSecret ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <PasswordInput
+                    id="revenueCatWebhookSecret"
+                    value={config.revenueCat?.webhookSecret || ''}
+                    onChange={e =>
+                      onConfigChange('revenueCat', {
+                        webhookSecret: e.target.value,
+                      })
+                    }
+                    placeholder="Enter webhook secret"
+                    disabled={!edit}
+                  />
                 </div>
               </div>
             )}

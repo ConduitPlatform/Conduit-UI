@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { ChevronDown, Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useFormContext } from 'react-hook-form';
@@ -319,9 +320,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>STMP Password</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'STMP Password'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -368,9 +368,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>API Key*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'API KEY'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -441,9 +440,8 @@ export const SettingsForm = ({
                 <FormItem>
                   <FormLabel>API Key*</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       disabled={!edit}
-                      type={'password'}
                       title={'API KEY'}
                       placeholder={'Enter a value'}
                       className={'text-accent-foreground'}
@@ -464,9 +462,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>API Key*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'API KEY'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -517,9 +514,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>API Key*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'API KEY'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -624,9 +620,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Secret Access Key*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'Secret Access Key'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}

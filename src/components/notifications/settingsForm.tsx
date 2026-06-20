@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { NotificationSettings } from '@/lib/models/Notification';
@@ -118,7 +119,7 @@ export const SettingsForm = ({
                 <FormItem>
                   <FormLabel>API Key</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       disabled={!edit}
                       title={'api key'}
                       placeholder={'Enter a value'}
@@ -180,7 +181,7 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Private Key</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
                         title={'private key'}
                         placeholder={'Enter a value'}
@@ -251,7 +252,7 @@ export const SettingsForm = ({
                 <FormItem>
                   <FormLabel>Secret Access Key</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       disabled={!edit}
                       title={'Secret Access Key'}
                       placeholder={'Enter a value'}

@@ -42,7 +42,11 @@ export const OauthDefaultConfigForm: React.FC<
           </div>
           <div className={'flex flex-row gap-x-1'}>
             <InputField fieldName={'clientId'} label={'Client ID'} />
-            <InputField fieldName={'clientSecret'} label={'Client Secret'} />
+            <InputField
+              fieldName={'clientSecret'}
+              label={'Client Secret'}
+              type="password"
+            />
           </div>
           <div className={'flex flex-row gap-x-1 items-center'}>
             <InputField fieldName={'redirect_uri'} label={'Redirect URI'} />

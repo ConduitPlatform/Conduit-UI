@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 
@@ -245,7 +246,7 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Access Key Secret</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
                         title={'Access Key Secret'}
                         placeholder={'Enter a value'}
@@ -267,7 +268,7 @@ export const SettingsForm = ({
                 <FormItem>
                   <FormLabel>Connection String</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       disabled={!edit}
                       title={'Connection String'}
                       placeholder={'Enter a value'}
@@ -350,7 +351,7 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Secret Access Key*</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
                         title={'secretAccessKey'}
                         placeholder={'Enter a value'}

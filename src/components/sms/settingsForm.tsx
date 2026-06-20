@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { SmsSettings } from '@/lib/models/Sms';
 import { Switch } from '@/components/ui/switch';
 
@@ -148,9 +149,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Authentication Token</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'Authentication Token'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -247,9 +247,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Access Key Secret</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'Access Key Secret'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
@@ -332,9 +331,8 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>API Key</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         disabled={!edit}
-                        type={'password'}
                         title={'API Key'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}

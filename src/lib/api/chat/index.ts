@@ -87,8 +87,14 @@ export const createRoom = async (data: {
   participants: string[];
   creator: string;
 }) => {
-  return await (await getApiClient())
-    .post<ChatRoom>('/chat/rooms', data)
+  return await (
+    await getApiClient()
+  )
+    .post<ChatRoom>('/chat/rooms', {
+      name: data.name,
+      participants: [...new Set([...data.participants, data.creator])],
+      creator: data.creator,
+    })
     .then(res => res.data);
 };
 
