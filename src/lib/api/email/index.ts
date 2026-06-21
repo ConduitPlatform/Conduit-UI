@@ -71,9 +71,7 @@ export const createTemplate = async (data: {
 };
 
 export const deleteTemplates = async (ids: string[]) => {
-  return (await getApiClient())
-    .delete<string>('/email/templates', { params: { ids } })
-    .then(res => res.data);
+  await Promise.all(ids.map(id => deleteTemplate(id)));
 };
 
 export const deleteTemplate = async (id: string) => {
@@ -107,7 +105,7 @@ export const getExternalTemplates = async (args: {
     count: number;
   };
   return (await getApiClient())
-    .get<Response>('/email/externalTemplates', { params: args })
+    .get<Response>('/email/templates/external', { params: args })
     .then(res => res.data);
 };
 
@@ -117,17 +115,14 @@ export const syncTemplates = async () => {
     count: number;
   };
   return (await getApiClient())
-    .patch<Response>('/email/syncExternalTemplates')
+    .post<Response>('/email/templates/external/sync')
     .then(res => res.data);
 };
 
-export const uploadTemplate = async (id: string) => {
-  return (await getApiClient())
-    .post('/email/templates/upload', { _id: id })
-    .then(res => res.data)
-    .catch(err => {
-      throw new Error(err.response?.data.message ?? err.message);
-    });
+export const uploadTemplate = async (_id: string) => {
+  throw new Error(
+    'Template upload to the email provider is not available on the unified communications module'
+  );
 };
 
 export const sendEmail = async (data: EmailPayload) => {
@@ -136,16 +131,21 @@ export const sendEmail = async (data: EmailPayload) => {
 
 export const reSendEmail = async (emailRecordId: string) => {
   return (await getApiClient())
-    .post(`/email/resend`, { emailRecordId })
+    .post(`/email/resend`, { id: emailRecordId })
     .then(res => res.data);
 };
 
-export const fetchEmailStatus = async (messageId: string) => {
-  return (await getApiClient())
-    .get<{
-      statusInfo: any;
-    }>(`/email/status`, { params: { messageId } })
-    .then(res => res.data);
+const resolveEmailListSearch = (args: {
+  messageId?: string;
+  templateId?: string;
+  receiver?: string;
+  sender?: string;
+}): string | undefined => {
+  if (args.receiver) return args.receiver;
+  if (args.messageId?.match(/^[a-fA-F\d]{24}$/)) return args.messageId;
+  if (args.templateId?.match(/^[a-fA-F\d]{24}$/)) return args.templateId;
+  if (args.sender) return args.sender;
+  return args.messageId;
 };
 
 export const fetchRecords = async (args: {
@@ -162,10 +162,19 @@ export const fetchRecords = async (args: {
   sort?: string;
 }) => {
   type Response = {
-    records: EmailRecord[];
+    emailDocuments: EmailRecord[];
     count: number;
   };
-  return (await getApiClient())
-    .get<Response>('/email/record', { params: args })
-    .then(res => res.data);
+  const search = resolveEmailListSearch(args);
+  const res = await (
+    await getApiClient()
+  ).get<Response>('/email/emails', {
+    params: {
+      skip: args.skip,
+      limit: args.limit,
+      sort: args.sort,
+      ...(search ? { search } : {}),
+    },
+  });
+  return { records: res.data.emailDocuments, count: res.data.count };
 };

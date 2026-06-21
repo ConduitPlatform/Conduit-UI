@@ -12,6 +12,22 @@ import {
 
 type ConfigResponse = { config: NotificationSettings };
 
+type PushSendParams = {
+  userId: string;
+  title: string;
+  body?: string;
+  data?: Record<string, unknown>;
+  platform?: string;
+  doNotStore?: boolean;
+  isSilent?: boolean;
+};
+
+const postPushSend = async (params: PushSendParams) => {
+  const client = await getApiClient();
+  const res = await client.post('/push/send', params);
+  return res.data;
+};
+
 export const getNotificationSettings = async (): Promise<ConfigResponse> => {
   const res = await (
     await getApiClient()
@@ -37,6 +53,7 @@ export const patchNotificationSettings = async (
 
   return afterPatchServing(options);
 };
+
 export const getTokens = async (
   skip: number,
   limit: number,
@@ -48,7 +65,7 @@ export const getTokens = async (
 ): Promise<{ tokens: NotificationToken[]; count: number }> => {
   const res = await (
     await getApiClient()
-  ).get(`/pushNotifications/token`, {
+  ).get(`/push/tokens`, {
     params: {
       skip,
       limit,
@@ -64,50 +81,68 @@ export const getTokenById = async (
 ): Promise<NotificationToken> => {
   const res = await (
     await getApiClient()
-  ).get(`/pushNotifications/token/${id}`, {
+  ).get<{ tokenDocuments: NotificationToken }>(`/push/tokens/${id}`, {
     params: {
       populate,
     },
   });
-  return res.data;
+  return res.data.tokenDocuments;
 };
 
 export const sendNotifications = async (params: {
   userIds: string[];
   title: string;
   body?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   isSilent?: boolean;
   platform?: string;
   doNotStore?: boolean;
-}): Promise<NotificationToken> => {
-  const res = await (
-    await getApiClient()
-  ).post(`/pushNotifications/sendToManyDevices`, {
-    ...params,
-  });
-  return res.data;
+}): Promise<void> => {
+  const { userIds, title, body, data, isSilent, platform, doNotStore } = params;
+  const results = await Promise.allSettled(
+    userIds.map(userId =>
+      postPushSend({
+        userId,
+        title,
+        body,
+        data,
+        isSilent,
+        platform,
+        doNotStore,
+      })
+    )
+  );
+  const failures = results.filter(r => r.status === 'rejected');
+  if (failures.length > 0) {
+    throw new Error(
+      `Failed to send to ${failures.length} of ${userIds.length} recipient(s)`
+    );
+  }
 };
 
 export const sendPushNotification = async (data: Record<string, unknown>) => {
-  const res = await (
-    await getApiClient()
-  ).post('/pushNotifications/send', data);
-  return res.data;
+  return postPushSend(data as PushSendParams);
 };
 
 export const sendManyPushNotifications = async (
-  data: Record<string, unknown>
+  notifications: PushSendParams[]
 ) => {
-  const res = await (
-    await getApiClient()
-  ).post('/pushNotifications/sendMany', data);
-  return res.data;
+  const results = await Promise.allSettled(
+    notifications.map(notification => postPushSend(notification))
+  );
+  const failures = results.filter(r => r.status === 'rejected');
+  if (failures.length > 0) {
+    throw new Error(
+      `Failed to send ${failures.length} of ${notifications.length} notification(s)`
+    );
+  }
 };
 
 export const getPushTokensForUser = async (userId: string) => {
   const res = await (
     await getApiClient()
-  ).get(`/pushNotifications/token/user/${userId}`);
-  return res.data;
+  ).get<{ tokens: NotificationToken[]; count: number }>(`/push/tokens`, {
+    params: { search: userId },
+  });
+  return { tokens: res.data.tokens };
 };
