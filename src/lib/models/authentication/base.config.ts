@@ -1,6 +1,5 @@
 export type BaseAuthenticationSettings = {
   active: boolean;
-  service: boolean;
   twoFa: {
     enabled: boolean;
     methods: {

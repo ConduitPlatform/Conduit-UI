@@ -208,53 +208,6 @@ export const toggleUsersBlock = async (ids: string[], block: boolean) => {
   return res.data;
 };
 
-export type AuthService = {
-  _id: string;
-  name: string;
-  [key: string]: unknown;
-};
-
-export const getServices = async (params?: {
-  skip?: number;
-  limit?: number;
-  sort?: string;
-}) => {
-  const res = await (
-    await getApiClient()
-  ).get<{
-    services: AuthService[];
-    count: number;
-  }>('/authentication/services', { params });
-  return res.data;
-};
-
-export const createService = async (name: string) => {
-  const res = await (
-    await getApiClient()
-  ).post<{
-    name: string;
-    token: string;
-  }>('/authentication/services', { name });
-  return res.data;
-};
-
-export const deleteService = async (id: string) => {
-  const res = await (
-    await getApiClient()
-  ).delete<string>(`/authentication/services/${id}`);
-  return res.data;
-};
-
-export const renewServiceToken = async (serviceId: string) => {
-  const res = await (
-    await getApiClient()
-  ).get<{
-    name: string;
-    token: string;
-  }>(`/authentication/services/${serviceId}/token`);
-  return res.data;
-};
-
 export const removeTeamMembers = async (
   teamId: string,
   memberIds: string[]
