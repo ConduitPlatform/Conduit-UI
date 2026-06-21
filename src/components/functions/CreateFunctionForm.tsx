@@ -144,6 +144,7 @@ export const CreateFunctionForm = ({
         functionType: data.functionType,
         timeout: data.timeout,
         inputs: {
+          cronPattern: options.cronString,
           event: options.cronString,
         },
       })

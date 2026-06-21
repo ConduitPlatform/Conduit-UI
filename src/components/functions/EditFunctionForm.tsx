@@ -69,7 +69,10 @@ export const EditFunctionForm = ({
         ? {
             options: {
               functionType: functionData.functionType,
-              cronString: functionData.inputs?.event!,
+              cronString:
+                functionData.inputs?.cronPattern ??
+                functionData.inputs?.event ??
+                '',
             },
           }
         : {}),
@@ -186,6 +189,7 @@ export const EditFunctionForm = ({
         functionType: data.functionType,
         timeout: data.timeout,
         inputs: {
+          cronPattern: options.cronString,
           event: options.cronString,
         },
       })
