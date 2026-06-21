@@ -33,6 +33,17 @@ export const TemplatesDashboard = ({
 
   return (
     <div className="space-y-6">
+      <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+        Email-only templates are still supported. For new multi-channel work,
+        use{' '}
+        <a
+          href="/communications/templates"
+          className="underline underline-offset-3"
+        >
+          Unified Templates
+        </a>
+        .
+      </div>
       <Tabs defaultValue="local">
         <div className="flex w-full items-center justify-between">
           <TabsList>

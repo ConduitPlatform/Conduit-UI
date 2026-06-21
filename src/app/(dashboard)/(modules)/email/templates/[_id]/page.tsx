@@ -1,6 +1,7 @@
 'use client';
 
 import { getTemplates } from '@/lib/api/email';
+import { migrateFromEmailTemplate } from '@/lib/api/communications/templates';
 import React, { useEffect, useState } from 'react';
 import { EmailTemplate } from '@/lib/models/email';
 import { Button } from '@/components/ui/button';
@@ -153,6 +154,26 @@ export default function EmailTemplatePage(props: EmailTemplateProps) {
             <Edit className="h-4 w-4" />
             Edit Template
           </Button>
+          {!isExternallyManaged(template) && (
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2"
+              onClick={() =>
+                migrateFromEmailTemplate({ emailTemplateId: template._id })
+                  .then(() =>
+                    toast({
+                      title: 'Communications',
+                      description: 'Template migrated to unified templates',
+                    })
+                  )
+                  .catch(err =>
+                    toast({ title: 'Communications', description: err.message })
+                  )
+              }
+            >
+              Migrate to unified
+            </Button>
+          )}
         </PageActions>
       </PageHeader>
 

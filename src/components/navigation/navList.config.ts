@@ -102,6 +102,11 @@ export const navGroups: NavGroup[] = [
     id: 'communications',
     items: [
       {
+        title: 'Unified Templates',
+        url: '/communications/templates',
+        icon: LucideMail,
+      },
+      {
         title: 'Email',
         url: '/email',
         icon: LucideMail,
