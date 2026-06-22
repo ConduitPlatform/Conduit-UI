@@ -1,4 +1,14 @@
 import { z } from 'zod';
+import { parseExpression } from 'cron-parser';
+
+function validateCronString(value: string): boolean {
+  try {
+    parseExpression(value.trim(), { tz: 'UTC' });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export enum ParamsEnum {
   String = 'string',
@@ -126,7 +136,13 @@ export const EventOptions = z.object({
 });
 export const CronOptions = z.object({
   functionType: z.literal('cron'),
-  cronString: z.string(),
+  cronString: z
+    .string()
+    .min(1, 'Cron schedule is required')
+    .refine(validateCronString, {
+      message:
+        'Invalid cron pattern. Use 5 fields: minute hour day month weekday (UTC). Example: */5 * * * *',
+    }),
 });
 export const SocketOptions = z.object({
   functionType: z.literal('socket'),

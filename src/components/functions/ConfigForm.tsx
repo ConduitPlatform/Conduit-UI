@@ -132,7 +132,12 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
         <InputField fieldName={'options.eventName'} label={'Event Name'} />
       )}
       {form.watch('functionType') === 'cron' && (
-        <InputField fieldName={'options.cronString'} label={'Cron String'} />
+        <InputField
+          fieldName={'options.cronString'}
+          label={'Cron schedule'}
+          placeholder={'*/5 * * * *'}
+          description={'minute hour day month weekday (UTC)'}
+        />
       )}
       {(form.watch('functionType') === 'webhook' ||
         form.watch('functionType') === 'request') && (
