@@ -1,14 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CommunicationTemplate } from '@/lib/models/communications/templates';
 import {
-  getCommunicationTemplates,
+  getCommunicationTemplate,
   updateCommunicationTemplate,
 } from '@/lib/api/communications/templates';
+import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/lib/hooks/use-toast';
 import {
   PageHeader,
@@ -19,6 +21,10 @@ import {
   CommunicationTemplateForm,
   CommunicationTemplateFormValues,
 } from '@/components/communications/templates/template-form';
+import { EmailTemplatePreview } from '@/components/communications/templates/email-template-preview';
+import { EmailBodyEditor } from '@/components/communications/templates/email-body-editor';
+import { HtmlViewer } from '@/components/email/templates/HtmlViewer';
+import { Code, Edit } from 'lucide-react';
 
 type CommunicationTemplatePageProps = {
   params: Promise<{ _id: string }>;
@@ -29,42 +35,78 @@ export default function CommunicationTemplateDetailPage(
 ) {
   const [template, setTemplate] = useState<CommunicationTemplate | null>(null);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
+  const [editingMetadata, setEditingMetadata] = useState(false);
+  const [showEmailEditor, setShowEmailEditor] = useState(false);
+  const [showHtmlDialog, setShowHtmlDialog] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
+  const loadTemplate = async (id: string) => {
+    const data = await getCommunicationTemplate(id);
+    setTemplate(data);
+  };
+
   useEffect(() => {
-    const load = async () => {
+    const init = async () => {
       const { _id } = await props.params;
       try {
-        const data = await getCommunicationTemplates({ search: _id, limit: 1 });
-        if (data.templateDocuments[0]) {
-          setTemplate(data.templateDocuments[0]);
-        }
+        await loadTemplate(_id);
       } catch (error) {
         console.error(error);
+        toast({
+          title: 'Communications',
+          description: formatCommunicationsApiError(error),
+        });
       } finally {
         setLoading(false);
       }
     };
-    load();
-  }, [props]);
+    init();
+  }, [props, toast]);
 
-  const handleSave = async (values: CommunicationTemplateFormValues) => {
+  useEffect(() => {
+    if (
+      searchParams.get('editor-open') === 'true' &&
+      template?.channels.includes('email')
+    ) {
+      setShowEmailEditor(true);
+    }
+  }, [searchParams, template]);
+
+  const handleSaveMetadata = async (
+    values: CommunicationTemplateFormValues
+  ) => {
     if (!template) return;
-    await updateCommunicationTemplate(template._id, values)
-      .then(updated => {
-        setTemplate(updated);
-        setEditing(false);
-        toast({
-          title: 'Communications',
-          description: 'Template updated',
-        });
-        router.refresh();
-      })
-      .catch(err =>
-        toast({ title: 'Communications', description: err.message })
-      );
+    try {
+      const updated = await updateCommunicationTemplate(template._id, values);
+      setTemplate(updated);
+      setEditingMetadata(false);
+      toast({
+        title: 'Communications',
+        description: 'Template updated',
+      });
+      router.refresh();
+    } catch (err) {
+      toast({
+        title: 'Communications',
+        description: formatCommunicationsApiError(err),
+      });
+    }
+  };
+
+  const handleSaveEmailBody = async (html: string, variables: string[]) => {
+    if (!template) return;
+    const updated = await updateCommunicationTemplate(template._id, {
+      email: {
+        ...template.email,
+        body: html,
+      },
+      variables,
+    });
+    setTemplate(updated);
+    setShowEmailEditor(false);
+    router.refresh();
   };
 
   if (loading) {
@@ -73,6 +115,18 @@ export default function CommunicationTemplateDetailPage(
 
   if (!template) {
     return <p className="text-muted-foreground">Template not found</p>;
+  }
+
+  if (showEmailEditor && template.channels.includes('email')) {
+    return (
+      <EmailBodyEditor
+        title={`Edit email: ${template.name}`}
+        html={template.email?.body || '<p></p>'}
+        variables={template.variables}
+        onSave={handleSaveEmailBody}
+        onClose={() => setShowEmailEditor(false)}
+      />
+    );
   }
 
   const defaultValues: CommunicationTemplateFormValues = {
@@ -84,25 +138,49 @@ export default function CommunicationTemplateDetailPage(
     sms: template.sms,
   };
 
+  const hasEmail = template.channels.includes('email');
+  const hasPush = template.channels.includes('push');
+  const hasSms = template.channels.includes('sms');
+
   return (
     <div className="space-y-6">
       <PageHeader>
         <PageTitle>{template.name}</PageTitle>
         <PageActions>
+          {hasEmail && (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => setShowHtmlDialog(true)}
+                className="flex items-center gap-2"
+              >
+                <Code className="h-4 w-4" />
+                View HTML
+              </Button>
+              <Button
+                onClick={() => setShowEmailEditor(true)}
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Edit email
+              </Button>
+            </>
+          )}
           <Button
-            variant={editing ? 'secondary' : 'default'}
-            onClick={() => setEditing(current => !current)}
+            variant={editingMetadata ? 'secondary' : 'default'}
+            onClick={() => setEditingMetadata(current => !current)}
           >
-            {editing ? 'Cancel edit' : 'Edit template'}
+            {editingMetadata ? 'Cancel edit' : 'Edit channels & content'}
           </Button>
         </PageActions>
       </PageHeader>
 
-      {!editing && (
-        <div className="space-y-4 rounded-lg border p-4">
+      {!editingMetadata && (
+        <div className="space-y-6">
           {template.summary && (
             <p className="text-sm text-muted-foreground">{template.summary}</p>
           )}
+
           <div className="flex flex-wrap gap-2">
             {template.channels.map(channel => (
               <Badge key={channel} variant="secondary" className="capitalize">
@@ -110,27 +188,68 @@ export default function CommunicationTemplateDetailPage(
               </Badge>
             ))}
           </div>
-          {template.variables && template.variables.length > 0 && (
-            <div>
-              <p className="mb-2 text-sm font-medium">Variables</p>
-              <div className="flex flex-wrap gap-2">
-                {template.variables.map(variable => (
-                  <Badge key={variable} variant="outline">
-                    {`{{${variable}}}`}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+
+          {hasEmail && (
+            <EmailTemplatePreview
+              template={{
+                name: template.name,
+                subject: template.email?.subject,
+                sender: template.email?.sender,
+                body: template.email?.body,
+                variables: template.variables,
+                createdAt: template.createdAt,
+              }}
+              readOnlyDetails
+            />
+          )}
+
+          {hasPush && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Push notification</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <p>
+                  <span className="text-muted-foreground">Title: </span>
+                  {template.push?.title || '—'}
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Body: </span>
+                  {template.push?.body || '—'}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {hasSms && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">SMS</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm">
+                <p>{template.sms?.message || '—'}</p>
+              </CardContent>
+            </Card>
           )}
         </div>
       )}
 
-      {editing && (
+      {editingMetadata && (
         <CommunicationTemplateForm
+          mode="edit"
           defaultValues={defaultValues}
           disableName
           submitLabel="Save changes"
-          onSubmit={handleSave}
+          onSubmit={handleSaveMetadata}
+        />
+      )}
+
+      {hasEmail && (
+        <HtmlViewer
+          html={template.email?.body || ''}
+          templateName={template.name}
+          isOpen={showHtmlDialog}
+          onClose={() => setShowHtmlDialog(false)}
         />
       )}
     </div>

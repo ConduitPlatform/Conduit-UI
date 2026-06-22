@@ -25,31 +25,32 @@ const channelOptions: { id: CommunicationChannel; label: string }[] = [
   { id: 'sms', label: 'SMS' },
 ];
 
-export const communicationTemplateSchema = z
-  .object({
-    name: z.string().min(1, 'Name is required'),
-    templateDescription: z.string().optional(),
-    channels: z.array(z.enum(['email', 'push', 'sms'])).min(1),
-    email: z
-      .object({
-        subject: z.string().optional(),
-        body: z.string().optional(),
-        sender: z.string().optional(),
-      })
-      .optional(),
-    push: z
-      .object({
-        title: z.string().optional(),
-        body: z.string().optional(),
-      })
-      .optional(),
-    sms: z
-      .object({
-        message: z.string().optional(),
-      })
-      .optional(),
-  })
-  .superRefine((data, ctx) => {
+const baseSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  templateDescription: z.string().optional(),
+  channels: z.array(z.enum(['email', 'push', 'sms'])).min(1),
+  email: z
+    .object({
+      subject: z.string().optional(),
+      body: z.string().optional(),
+      sender: z.string().optional(),
+    })
+    .optional(),
+  push: z
+    .object({
+      title: z.string().optional(),
+      body: z.string().optional(),
+    })
+    .optional(),
+  sms: z
+    .object({
+      message: z.string().optional(),
+    })
+    .optional(),
+});
+
+function buildSchema(mode: 'create' | 'edit') {
+  return baseSchema.superRefine((data, ctx) => {
     if (data.channels.includes('email')) {
       if (!data.email?.subject?.trim()) {
         ctx.addIssue({
@@ -58,7 +59,11 @@ export const communicationTemplateSchema = z
           path: ['email', 'subject'],
         });
       }
-      if (!data.email?.body?.trim()) {
+      if (
+        mode === 'edit' &&
+        data.channels.includes('email') &&
+        !data.email?.body?.trim()
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Email body is required',
@@ -90,24 +95,27 @@ export const communicationTemplateSchema = z
       });
     }
   });
+}
 
-export type CommunicationTemplateFormValues = z.infer<
-  typeof communicationTemplateSchema
->;
+export type CommunicationTemplateFormValues = z.infer<typeof baseSchema>;
 
 export function CommunicationTemplateForm({
   defaultValues,
   onSubmit,
   submitLabel,
   disableName,
+  mode = 'edit',
 }: {
   defaultValues?: Partial<CommunicationTemplateFormValues>;
   onSubmit: (values: CommunicationTemplateFormValues) => Promise<void>;
   submitLabel: string;
   disableName?: boolean;
+  mode?: 'create' | 'edit';
 }) {
+  const schema = buildSchema(mode);
+
   const form = useForm<CommunicationTemplateFormValues>({
-    resolver: zodResolver(communicationTemplateSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: '',
       templateDescription: '',
@@ -235,23 +243,30 @@ export function CommunicationTemplateForm({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="email.body"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Body</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        rows={8}
-                        placeholder="<p>Hello {{name}}</p>"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {mode === 'create' ? (
+                <p className="text-sm text-muted-foreground">
+                  After creating the template, you&apos;ll open the rich email
+                  editor to design the body.
+                </p>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="email.body"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Body</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          rows={8}
+                          placeholder="<p>Hello {{name}}</p>"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </TabsContent>
           )}
 

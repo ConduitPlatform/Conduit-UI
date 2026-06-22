@@ -1,7 +1,5 @@
-import { Settings } from '@/components/notifications/settings';
-import { getNotificationSettings } from '@/lib/api/notifications';
+import { redirect } from 'next/navigation';
 
-export default async function NotificationSettings() {
-  const { config: data } = await getNotificationSettings();
-  return <Settings data={data} />;
+export default async function Page() {
+  redirect('/communications/settings?tab=push');
 }

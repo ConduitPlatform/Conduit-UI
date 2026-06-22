@@ -21,6 +21,7 @@ import {
 
 interface Props {
   data: NotificationSettings;
+  embedded?: boolean;
 }
 
 const PUSH_MODULE_NAMES = ['communications', 'pushNotifications'] as const;
@@ -129,7 +130,7 @@ function isPushActivationSuccess(result: PatchSettingsResult | void) {
   return isCommunicationsModuleServing(result.modules, PUSH_MODULE_NAMES);
 }
 
-export const Settings = ({ data }: Props) => {
+export const Settings = ({ data, embedded = false }: Props) => {
   const [notificationModule, setNotificationModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
@@ -248,49 +249,53 @@ export const Settings = ({ data }: Props) => {
   };
 
   return (
-    <div className={'container mx-auto py-10 main-scrollbar'}>
-      <div className={'flex flex-col gap-6'}>
-        <div className="space-y-0.5">
-          <ModuleToggle
-            label="Push Notifications Module"
-            checked={notificationModule}
-            isSaving={isSaving}
-            onCheckedChange={handleSwitchChange}
-          />
-          <div className={'pr-2'}>
-            <p className={'text-xs text-muted-foreground'}>
-              To see more information regarding the Push Notifications config,
-              visit our{' '}
-              <a
-                href={
-                  'https://getconduit.dev/docs/modules/push-notifications/config'
-                }
-                className="hover:underline"
-                target={'_blank'}
-              >
-                docs
-              </a>
-              .
-            </p>
-          </div>
+    <div
+      className={
+        embedded
+          ? 'space-y-6'
+          : 'container mx-auto py-10 main-scrollbar flex flex-col gap-6'
+      }
+    >
+      <div className="space-y-0.5">
+        <ModuleToggle
+          label="Push Notifications Module"
+          checked={notificationModule}
+          isSaving={isSaving}
+          onCheckedChange={handleSwitchChange}
+        />
+        <div className={'pr-2'}>
+          <p className={'text-xs text-muted-foreground'}>
+            To see more information regarding the Push Notifications config,
+            visit our{' '}
+            <a
+              href={
+                'https://getconduit.dev/docs/modules/push-notifications/config'
+              }
+              className="hover:underline"
+              target={'_blank'}
+            >
+              docs
+            </a>
+            .
+          </p>
         </div>
-        {notificationModule && (
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <SettingsForm
-                control={control}
-                edit={edit}
-                isSaving={isSaving}
-                setEdit={setEdit}
-                watch={watch}
-                reset={reset}
-                handleFileChange={handleFileChange}
-                data={data}
-              />
-            </form>
-          </Form>
-        )}
       </div>
+      {notificationModule && (
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <SettingsForm
+              control={control}
+              edit={edit}
+              isSaving={isSaving}
+              setEdit={setEdit}
+              watch={watch}
+              reset={reset}
+              handleFileChange={handleFileChange}
+              data={data}
+            />
+          </form>
+        </Form>
+      )}
     </div>
   );
 };

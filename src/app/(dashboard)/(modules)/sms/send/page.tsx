@@ -1,5 +1,5 @@
-import { TestSendSmsForm } from '@/components/sms/smsTest/testSendSmsForm';
+import { redirect } from 'next/navigation';
 
-export default async function TokensPage() {
-  return <TestSendSmsForm />;
+export default async function Page() {
+  redirect('/communications/test?tab=sms');
 }

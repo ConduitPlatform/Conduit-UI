@@ -43,9 +43,27 @@ const MODULE_NAMES: { [key: string]: string } = {
   sms: 'SMS',
   router: 'Router',
   functions: 'Functions',
+  communications: 'Communications',
   'push-notifications': 'Notifications',
   payments: 'Payments',
 };
+
+const SEGMENT_LABELS: Record<string, string> = {
+  templates: 'Templates',
+  logs: 'Logs & Devices',
+  settings: 'Settings',
+  test: 'Test Send',
+};
+
+function formatBreadcrumbSegment(segment: string): string {
+  return (
+    SEGMENT_LABELS[segment] ??
+    segment
+      .split('-')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')
+  );
+}
 export default function ModuleHeader({
   children,
 }: {
@@ -146,6 +164,8 @@ export default function ModuleHeader({
   ];
 
   const pathSegments = pathname.split('/').filter(Boolean);
+  const isCommunicationsTemplates =
+    pathSegments[0] === 'communications' && pathSegments[1] === 'templates';
 
   return (
     <div className="flex flex-col overflow-x-auto no-scrollbar">
@@ -161,40 +181,75 @@ export default function ModuleHeader({
               {pathSegments.length > 0 && (
                 <>
                   <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    {pathSegments.length === 1 ? (
-                      <BreadcrumbPage className="flex items-center gap-2">
-                        {moduleName}
-                        {moduleName === 'Database' && databaseType && (
-                          <Badge variant="secondary" className="ml-1">
-                            {databaseType}
-                          </Badge>
-                        )}
-                      </BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link href={`/${pathSegments[0]}`}>
-                          {moduleName}
-                          {moduleName === 'Database' && databaseType && (
-                            <Badge variant="secondary" className="ml-1">
-                              {databaseType}
-                            </Badge>
-                          )}
-                        </Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                  {pathSegments.length > 1 && (
+                  {isCommunicationsTemplates ? (
                     <>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                          <Link href="/communications">Communications</Link>
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
                       <BreadcrumbSeparator />
                       <BreadcrumbItem>
-                        <BreadcrumbPage>
-                          {pathSegments[pathSegments.length - 1]
-                            .split('-')
-                            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-                            .join(' ')}
-                        </BreadcrumbPage>
+                        {pathSegments.length === 2 ? (
+                          <BreadcrumbPage>Templates</BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link href="/communications/templates">
+                              Templates
+                            </Link>
+                          </BreadcrumbLink>
+                        )}
                       </BreadcrumbItem>
+                      {pathSegments.length > 2 && (
+                        <>
+                          <BreadcrumbSeparator />
+                          <BreadcrumbItem>
+                            <BreadcrumbPage>
+                              {formatBreadcrumbSegment(
+                                pathSegments[pathSegments.length - 1]
+                              )}
+                            </BreadcrumbPage>
+                          </BreadcrumbItem>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <BreadcrumbItem>
+                        {pathSegments.length === 1 ? (
+                          <BreadcrumbPage className="flex items-center gap-2">
+                            {moduleName}
+                            {moduleName === 'Database' && databaseType && (
+                              <Badge variant="secondary" className="ml-1">
+                                {databaseType}
+                              </Badge>
+                            )}
+                          </BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link href={`/${pathSegments[0]}`}>
+                              {moduleName}
+                              {moduleName === 'Database' && databaseType && (
+                                <Badge variant="secondary" className="ml-1">
+                                  {databaseType}
+                                </Badge>
+                              )}
+                            </Link>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                      {pathSegments.length > 1 && (
+                        <>
+                          <BreadcrumbSeparator />
+                          <BreadcrumbItem>
+                            <BreadcrumbPage>
+                              {formatBreadcrumbSegment(
+                                pathSegments[pathSegments.length - 1]
+                              )}
+                            </BreadcrumbPage>
+                          </BreadcrumbItem>
+                        </>
+                      )}
                     </>
                   )}
                 </>

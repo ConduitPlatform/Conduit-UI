@@ -93,7 +93,9 @@ export function useColumns() {
         header: '',
         enableSorting: false,
         cell: props => (
-          <Link href={`/email/templates/${props.row.original._id}`}>
+          <Link
+            href={`/communications/templates/email/${props.row.original._id}`}
+          >
             <EyeIcon className="w-4 h-4" />
           </Link>
         ),

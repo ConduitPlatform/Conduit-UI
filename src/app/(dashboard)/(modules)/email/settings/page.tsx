@@ -1,7 +1,5 @@
-import { Settings } from '@/components/email/settings/settings';
-import { getEmailSettings } from '@/lib/api/email';
+import { redirect } from 'next/navigation';
 
-export default async function EmailSettings() {
-  const { config: data } = await getEmailSettings();
-  return <Settings data={data} />;
+export default async function Page() {
+  redirect('/communications/settings?tab=email');
 }

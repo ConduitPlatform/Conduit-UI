@@ -21,6 +21,7 @@ import {
 
 interface Props {
   data: SmsSettings;
+  embedded?: boolean;
 }
 
 const SMS_MODULE_NAMES = ['communications', 'sms'] as const;
@@ -78,7 +79,7 @@ function isSmsActivationSuccess(result: PatchSettingsResult | void) {
   return isCommunicationsModuleServing(result.modules, SMS_MODULE_NAMES);
 }
 
-export const Settings = ({ data }: Props) => {
+export const Settings = ({ data, embedded = false }: Props) => {
   const [smsModule, setSmsModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
@@ -142,38 +143,42 @@ export const Settings = ({ data }: Props) => {
   };
 
   return (
-    <div className={'container mx-auto py-10 main-scrollbar'}>
-      <div className={'flex flex-col gap-6'}>
-        <div className="space-y-0.5">
-          <ModuleToggle
-            label="SMS Module"
-            checked={smsModule}
-            isSaving={isSaving}
-            onCheckedChange={handleSwitchChange}
-          />
-          <div className={'pr-2'}>
-            <p className={'text-xs text-muted-foreground'}>
-              To an idea on how to setup your SMS provider take a look at the
-              documentation.
-            </p>
-          </div>
+    <div
+      className={
+        embedded
+          ? 'space-y-6'
+          : 'container mx-auto py-10 main-scrollbar flex flex-col gap-6'
+      }
+    >
+      <div className="space-y-0.5">
+        <ModuleToggle
+          label="SMS Module"
+          checked={smsModule}
+          isSaving={isSaving}
+          onCheckedChange={handleSwitchChange}
+        />
+        <div className={'pr-2'}>
+          <p className={'text-xs text-muted-foreground'}>
+            To an idea on how to setup your SMS provider take a look at the
+            documentation.
+          </p>
         </div>
-        {smsModule && (
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <SettingsForm
-                control={control}
-                edit={edit}
-                isSaving={isSaving}
-                setEdit={setEdit}
-                watch={watch}
-                reset={reset}
-                data={data}
-              />
-            </form>
-          </Form>
-        )}
       </div>
+      {smsModule && (
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <SettingsForm
+              control={control}
+              edit={edit}
+              isSaving={isSaving}
+              setEdit={setEdit}
+              watch={watch}
+              reset={reset}
+              data={data}
+            />
+          </form>
+        </Form>
+      )}
     </div>
   );
 };

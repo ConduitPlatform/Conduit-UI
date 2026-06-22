@@ -1,26 +1,19 @@
 'use client';
 
 import { DataTable } from '@/components/ui/data-table';
-import { CommunicationTemplate } from '@/lib/models/communications/templates';
-import { useCommunicationTemplateColumns } from './columns';
+import { TemplateRow } from '@/lib/models/communications/template-row';
+import { useTemplateRowColumns } from './columns';
 
-export type CommunicationTemplatesResponse = {
-  templateDocuments: CommunicationTemplate[];
-  count: number;
+type CommunicationTemplatesTableProps = {
+  rows: TemplateRow[];
+  onAddChannels: (emailTemplateId: string) => void;
 };
 
 export function CommunicationTemplatesTable({
-  data,
-}: {
-  data: CommunicationTemplatesResponse;
-}) {
-  const columns = useCommunicationTemplateColumns();
+  rows,
+  onAddChannels,
+}: CommunicationTemplatesTableProps) {
+  const columns = useTemplateRowColumns({ onAddChannels });
 
-  return (
-    <DataTable
-      columns={columns}
-      data={data.templateDocuments}
-      count={data.count}
-    />
-  );
+  return <DataTable columns={columns} data={rows} />;
 }

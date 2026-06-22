@@ -14,11 +14,15 @@ const FormSchema = z.object({
   message: z.string(),
 });
 
-export const TestSendSmsForm = () => {
+export const TestSendSmsForm = ({
+  embedded = false,
+}: {
+  embedded?: boolean;
+}) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
   });
-  const { reset, handleSubmit, setValue, watch } = form;
+  const { reset, handleSubmit } = form;
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     await testSendSMS({
@@ -30,7 +34,7 @@ export const TestSendSmsForm = () => {
           description: 'Text sent',
         });
       })
-      .catch(e => {
+      .catch(() => {
         toast({
           title: 'SMS',
           description: 'Failed to send',
@@ -39,22 +43,26 @@ export const TestSendSmsForm = () => {
     reset();
   };
 
+  const formBody = (
+    <Form {...form}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <InputField label="Receiver Phone" fieldName="to" />
+        <TextAreaField label="Text" fieldName="message" />
+        <div className="flex flex-row justify-end gap-2">
+          <Button variant="secondary" onClick={() => reset()}>
+            Reset
+          </Button>
+          <Button type="submit">Send SMS</Button>
+        </div>
+      </form>
+    </Form>
+  );
+
+  if (embedded) return formBody;
+
   return (
-    <div className={'container mx-auto py-10 main-scrollbar'}>
-      <div className={'flex flex-col gap-6'}>
-        <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className={'space-y-4'}>
-            <InputField label={'Receiver Phone'} fieldName={'to'} />
-            <TextAreaField label={'Text'} fieldName={'message'} />
-            <div className={'flex flex-row justify-end gap-2'}>
-              <Button variant={'secondary'} onClick={() => reset()}>
-                Reset
-              </Button>
-              <Button type={'submit'}>Send SMS</Button>
-            </div>
-          </form>
-        </Form>
-      </div>
+    <div className="container mx-auto py-10 main-scrollbar">
+      <div className="flex flex-col gap-6">{formBody}</div>
     </div>
   );
 };

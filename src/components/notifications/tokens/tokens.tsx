@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 // @ts-ignore
 import { useDebounce } from '@uidotdev/usehooks';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 import { DataTable } from '@/components/ui/data-table';
 import { columns } from '@/components/notifications/tokens/columns';
@@ -18,6 +18,8 @@ export default function NotificationTokensTable({
   refreshData: (searchString: string) => Promise<NotificationToken[]>;
 }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [tokens, setTokens] = useState<NotificationToken[]>(data);
   const [search, setSearch] = useState<string>(
@@ -30,7 +32,7 @@ export default function NotificationTokensTable({
     if (debouncedSearchTerm === '') {
       params.delete('search');
     }
-    window.history.pushState(null, '', `?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     if (debouncedSearchTerm === '') {
       setTokens(data);
       return;

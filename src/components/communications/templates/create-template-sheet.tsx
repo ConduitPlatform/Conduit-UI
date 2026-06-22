@@ -13,10 +13,13 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
 import { createCommunicationTemplate } from '@/lib/api/communications/templates';
+import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
 import {
   CommunicationTemplateForm,
   CommunicationTemplateFormValues,
 } from './template-form';
+
+const EMAIL_BODY_PLACEHOLDER = '<p></p>';
 
 export function CreateCommunicationTemplateSheet() {
   const [open, setOpen] = useState(false);
@@ -24,18 +27,36 @@ export function CreateCommunicationTemplateSheet() {
   const { toast } = useToast();
 
   const handleSubmit = async (values: CommunicationTemplateFormValues) => {
-    await createCommunicationTemplate(values)
-      .then(() => {
-        toast({
-          title: 'Communications',
-          description: 'Unified template created',
-        });
-        setOpen(false);
-        router.refresh();
-      })
-      .catch(err =>
-        toast({ title: 'Communications', description: err.message })
+    const payload = { ...values };
+
+    if (payload.channels.includes('email')) {
+      payload.email = {
+        ...payload.email,
+        body: EMAIL_BODY_PLACEHOLDER,
+      };
+    }
+
+    try {
+      const created = await createCommunicationTemplate(payload);
+      toast({
+        title: 'Communications',
+        description: 'Template created',
+      });
+      setOpen(false);
+
+      const openEditor = payload.channels.includes('email');
+      router.push(
+        openEditor
+          ? `/communications/templates/${created._id}?editor-open=true`
+          : '/communications/templates'
       );
+      router.refresh();
+    } catch (err) {
+      toast({
+        title: 'Communications',
+        description: formatCommunicationsApiError(err),
+      });
+    }
   };
 
   return (
@@ -48,10 +69,11 @@ export function CreateCommunicationTemplateSheet() {
       </SheetTrigger>
       <SheetContent className="overflow-y-auto sm:max-w-xl">
         <SheetHeader>
-          <SheetTitle>Create unified template</SheetTitle>
+          <SheetTitle>Create template</SheetTitle>
         </SheetHeader>
         <div className="mt-6">
           <CommunicationTemplateForm
+            mode="create"
             submitLabel="Create template"
             onSubmit={handleSubmit}
           />

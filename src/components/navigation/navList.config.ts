@@ -1,5 +1,4 @@
 import {
-  BellDot,
   CodeIcon,
   Database,
   HardDrive,
@@ -7,7 +6,6 @@ import {
   KeyRound,
   Logs,
   LucideMail,
-  LucideMessageSquare,
   MessagesSquare,
   Router,
   Settings,
@@ -102,38 +100,15 @@ export const navGroups: NavGroup[] = [
     id: 'communications',
     items: [
       {
-        title: 'Unified Templates',
-        url: '/communications/templates',
-        icon: LucideMail,
-      },
-      {
-        title: 'Email',
-        url: '/email',
+        title: 'Communications',
+        url: '/communications',
         icon: LucideMail,
         items: [
-          { title: 'Templates', url: '/email/templates' },
-          { title: 'Send', url: '/email/send' },
-          { title: 'Records', url: '/email/records' },
-          { title: 'Settings', url: '/email/settings' },
-        ],
-      },
-      {
-        title: 'SMS',
-        url: '/sms',
-        icon: LucideMessageSquare,
-        items: [
-          { title: 'Test Send', url: '/sms/send' },
-          { title: 'Settings', url: '/sms/settings' },
-        ],
-      },
-      {
-        title: 'Notifications',
-        url: '/push-notifications',
-        icon: BellDot,
-        items: [
-          { title: 'Tokens', url: '/push-notifications/tokens' },
-          { title: 'Test Send', url: '/push-notifications/test' },
-          { title: 'Settings', url: '/push-notifications/settings' },
+          { title: 'Overview', url: '/communications' },
+          { title: 'Templates', url: '/communications/templates' },
+          { title: 'Logs & Devices', url: '/communications/logs' },
+          { title: 'Settings', url: '/communications/settings' },
+          { title: 'Test Send', url: '/communications/test' },
         ],
       },
     ],

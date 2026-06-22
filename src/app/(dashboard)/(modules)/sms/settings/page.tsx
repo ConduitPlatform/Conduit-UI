@@ -1,7 +1,5 @@
-import { Settings } from '@/components/sms/settings';
-import { getSmsSettings } from '@/lib/api/sms';
+import { redirect } from 'next/navigation';
 
-export default async function SmsSettings() {
-  const { config: data } = await getSmsSettings();
-  return <Settings data={data} />;
+export default async function Page() {
+  redirect('/communications/settings?tab=sms');
 }
