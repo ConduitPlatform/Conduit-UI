@@ -17,6 +17,7 @@ import { isNil } from 'lodash';
 import { syncTemplates } from '@/lib/api/email';
 import { useToast } from '@/lib/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CreateTemplateSheet } from '@/components/email/templates/createTemplateSheet';
 import { RefreshCw } from 'lucide-react';
@@ -33,6 +34,17 @@ export const TemplatesDashboard = ({
 
   return (
     <div className="space-y-6">
+      <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+        Email-only templates are still supported. For new multi-channel work,
+        use{' '}
+        <Link
+          href="/communications/templates"
+          className="underline underline-offset-3"
+        >
+          Templates
+        </Link>
+        .
+      </div>
       <Tabs defaultValue="local">
         <div className="flex w-full items-center justify-between">
           <TabsList>

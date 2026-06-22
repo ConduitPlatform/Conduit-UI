@@ -45,7 +45,9 @@ export const CreateTemplateSheet = () => {
                 const templateId = await createTemplate(data).then(
                   res => res.template._id
                 );
-                router.push(`/email/templates/${templateId}?editor-open=true`);
+                router.push(
+                  `/communications/templates/email/${templateId}?editor-open=true`
+                );
               },
               () => undefined
             )}

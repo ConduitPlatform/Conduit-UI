@@ -60,7 +60,7 @@ export const MODULE_DISPLAY_NAMES: Record<string, string> = {
   sms: 'SMS',
   router: 'Router',
   functions: 'Functions',
-  'push-notifications': 'Notifications',
+  'push-notifications': 'Push',
   payments: 'Payments',
   settings: 'Settings',
   communications: 'Communications',
@@ -78,6 +78,7 @@ export const MODULE_URL_TO_NAME: Record<string, string> = {
   '/router': 'router',
   '/functions': 'functions',
   '/push-notifications': 'pushNotifications', // URL path maps to API module name
+  '/communications': 'communications',
   '/payments': 'payments',
   '/settings': 'settings',
 };
@@ -94,6 +95,7 @@ export const MODULE_NAME_TO_URL: Record<string, string> = {
   router: 'router',
   functions: 'functions',
   pushNotifications: 'push-notifications', // API module name maps to URL path
+  communications: 'communications',
   payments: 'payments',
   settings: 'settings',
 };

@@ -22,6 +22,7 @@ import {
 
 interface Props {
   data: EmailSettings;
+  embedded?: boolean;
 }
 
 const EMAIL_MODULE_NAMES = ['communications', 'email'] as const;
@@ -119,7 +120,7 @@ function isEmailActivationSuccess(result: PatchSettingsResult | void) {
   return isCommunicationsModuleServing(result.modules, EMAIL_MODULE_NAMES);
 }
 
-export const Settings = ({ data }: Props) => {
+export const Settings = ({ data, embedded = false }: Props) => {
   const [emailModule, setEmailModule] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
@@ -184,57 +185,57 @@ export const Settings = ({ data }: Props) => {
   };
 
   return (
-    <div className={'container mx-auto py-10 main-scrollbar'}>
-      <div className={'flex flex-col gap-6'}>
-        <div className="space-y-0.5">
-          <ModuleToggle
-            label="Email Module"
-            checked={emailModule}
-            isSaving={isSaving}
-            onCheckedChange={handleSwitchChange}
-          />
-          <div className={'pr-2 w-7/12'}>
-            <p className={'text-xs text-muted-foreground'}>
-              Since you have created an account on one of the Supported
-              Providers (Mailgun, Sendgrid, Mandrill, Smtp), you need to
-              configure the provider to proceed with the activation of the
-              module. Visit documentation for{' '}
-              <a
-                href={
-                  'https://getconduit.dev/docs/modules/email/config#mandrill'
-                }
-                className="hover:underline"
-                target={'_blank'}
-              >
-                Mandrill
-              </a>
-              ,{' '}
-              <a
-                href={
-                  'https://getconduit.dev/docs/modules/email/config#sendgrid'
-                }
-                className="hover:underline"
-                target={'_blank'}
-              >
-                Sendgrid
-              </a>
-              .
-            </p>
-          </div>
+    <div
+      className={
+        embedded
+          ? 'space-y-6'
+          : 'container mx-auto py-10 main-scrollbar flex flex-col gap-6'
+      }
+    >
+      <div className="space-y-0.5">
+        <ModuleToggle
+          label="Email Module"
+          checked={emailModule}
+          isSaving={isSaving}
+          onCheckedChange={handleSwitchChange}
+        />
+        <div className={'pr-2 w-7/12'}>
+          <p className={'text-xs text-muted-foreground'}>
+            Since you have created an account on one of the Supported Providers
+            (Mailgun, Sendgrid, Mandrill, Smtp), you need to configure the
+            provider to proceed with the activation of the module. Visit
+            documentation for{' '}
+            <a
+              href={'https://getconduit.dev/docs/modules/email/config#mandrill'}
+              className="hover:underline"
+              target={'_blank'}
+            >
+              Mandrill
+            </a>
+            ,{' '}
+            <a
+              href={'https://getconduit.dev/docs/modules/email/config#sendgrid'}
+              className="hover:underline"
+              target={'_blank'}
+            >
+              Sendgrid
+            </a>
+            .
+          </p>
         </div>
-        {emailModule && (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit, () => undefined)}>
-              <SettingsForm
-                edit={edit}
-                isSaving={isSaving}
-                setEdit={setEdit}
-                data={data}
-              />
-            </form>
-          </Form>
-        )}
       </div>
+      {emailModule && (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit, () => undefined)}>
+            <SettingsForm
+              edit={edit}
+              isSaving={isSaving}
+              setEdit={setEdit}
+              data={data}
+            />
+          </form>
+        </Form>
+      )}
     </div>
   );
 };
