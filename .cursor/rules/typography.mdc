@@ -1,0 +1,54 @@
+---
+description: Apply typography best practices when setting fonts, numeric formatting, or text properties in CSS.
+globs: "**/*.{css,scss,tsx,jsx,vue,svelte,html}"
+alwaysApply: true
+---
+
+# Quintessential Design Wiki -- Typography
+
+16 rules for typographically considered interfaces. Apply when setting any font or text property.
+
+## Numeric Formatting
+
+- `type-tabular-nums-for-data` -- Use `font-variant-numeric: tabular-nums` for columns, dashboards, pricing. Fixed-width digits align.
+- `type-oldstyle-nums-for-prose` -- Use `font-variant-numeric: oldstyle-nums` in body text so numbers blend with lowercase.
+- `type-slashed-zero` -- Enable `font-variant-numeric: slashed-zero` in code-adjacent UIs to distinguish 0 from O.
+- `type-proper-fractions` -- Use `font-variant-numeric: diagonal-fractions` for typographic fractions.
+
+## OpenType Features
+
+- `type-opentype-contextual-alternates` -- Keep `font-feature-settings: "calt" 1` enabled for contextual glyph adjustment.
+- `type-disambiguation-stylistic-set` -- Enable `ss02` in code-facing UIs to distinguish I/l/1 and 0/O.
+
+## Rendering
+
+- `type-optical-sizing-auto` -- Leave `font-optical-sizing: auto` for size-adaptive glyph shapes.
+- `type-antialiased-on-retina` -- Set `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale` on body.
+- `type-no-font-synthesis` -- Set `font-synthesis: none` on display/icon fonts to prevent faux bold/italic.
+- `type-font-display-swap` -- Use `font-display: swap` in `@font-face` so text renders immediately with fallback.
+
+## Text Wrapping
+
+- `type-text-wrap-balance-headings` -- Use `text-wrap: balance` on headings for roughly equal line lengths.
+- `type-text-wrap-pretty` -- Use `text-wrap: pretty` on body text to reduce orphans.
+- `type-justify-with-hyphens` -- Pair `text-align: justify` with `hyphens: auto` to prevent rivers of whitespace.
+
+## Spacing & Decoration
+
+- `type-underline-offset` -- Use `text-underline-offset: 3px` with `text-decoration-skip-ink: auto` to push underlines below descenders.
+- `type-letter-spacing-uppercase` -- Add `letter-spacing: 0.05em` to uppercase and small-caps text.
+- `type-variable-weight-continuous` -- Variable fonts accept any integer 100-900, not just standard stops. Use `font-weight: 450` or `550`.
+
+## Quick Reference
+
+| Property | Use Case | Value |
+|----------|----------|-------|
+| `font-variant-numeric: tabular-nums` | Data tables, pricing | Fixed-width digits |
+| `font-variant-numeric: oldstyle-nums` | Body text | Blends with lowercase |
+| `font-variant-numeric: slashed-zero` | Code UIs | Distinguishes 0 from O |
+| `font-feature-settings: "ss02"` | Code UIs | Disambiguates I/l/1 |
+| `font-optical-sizing: auto` | Everywhere | Size-adaptive glyphs |
+| `-webkit-font-smoothing: antialiased` | Retina displays | Thinner, cleaner text |
+| `text-wrap: balance` | Headings | Even line lengths |
+| `text-underline-offset: 3px` | Links | Clear descender space |
+| `font-synthesis: none` | Display/icon fonts | Prevents faux styles |

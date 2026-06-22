@@ -1,0 +1,489 @@
+---
+globs: *.tsx,*.ts
+description: Form validation and data handling patterns
+---
+
+# Form Validation & Data Handling
+
+## Form Architecture
+- Use `react-hook-form` for form state management
+- Use `zod` for schema validation with `@hookform/resolvers/zod`
+- Custom form input components wrap shadcn/ui base components
+- Server actions for form submission
+
+## Zod Schema Patterns
+
+### Basic Schema Definition
+```typescript
+import { z } from 'zod';
+
+const userSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  name: z.string().min(1, 'Name is required'),
+  isActive: z.boolean().default(true),
+  role: z.enum(['admin', 'user', 'viewer']),
+});
+
+type UserFormValues = z.infer<typeof userSchema>;
+```
+
+### Complex Schema Patterns
+```typescript
+// Nested objects
+const addressSchema = z.object({
+  street: z.string().min(1, 'Street is required'),
+  city: z.string().min(1, 'City is required'),
+  zipCode: z.string().regex(/^\d{5}$/, 'Invalid zip code'),
+});
+
+const userWithAddressSchema = z.object({
+  ...userSchema.shape,
+  address: addressSchema,
+});
+
+// Arrays and dynamic fields
+const modelSchema = z.object({
+  name: z.string().min(1, 'Model name is required'),
+  fields: z.array(z.object({
+    name: z.string().min(1, 'Field name is required'),
+    type: z.enum(['String', 'Number', 'Boolean', 'Date']),
+    required: z.boolean().default(false),
+    unique: z.boolean().default(false),
+  })),
+  indices: z.array(z.object({
+    name: z.string().min(1, 'Index name is required'),
+    fields: z.array(z.string()).min(1, 'At least one field is required'),
+    unique: z.boolean().default(false),
+  })),
+});
+
+// Conditional validation
+const conditionalSchema = z.object({
+  type: z.enum(['user', 'admin']),
+  permissions: z.array(z.string()).optional(),
+}).refine((data) => {
+  if (data.type === 'admin' && (!data.permissions || data.permissions.length === 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Admin users must have at least one permission',
+  path: ['permissions'],
+});
+```
+
+### Schema Reuse and Composition
+```typescript
+// Base schemas
+const baseUserSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1),
+});
+
+// Extended schemas
+const createUserSchema = baseUserSchema.extend({
+  password: z.string().min(6),
+});
+
+const updateUserSchema = baseUserSchema.partial().extend({
+  id: z.string(),
+});
+
+// Pick and omit
+const loginSchema = baseUserSchema.pick({ email: true }).extend({
+  password: z.string().min(1, 'Password is required'),
+});
+```
+
+## React Hook Form Integration
+
+### Basic Form Setup
+```typescript
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
+
+export const UserForm = ({ onSubmit, defaultValues }: UserFormProps) => {
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      email: '',
+      name: '',
+      isActive: true,
+      ...defaultValues,
+    },
+  });
+
+  const handleSubmit = async (data: UserFormValues) => {
+    try {
+      await onSubmit(data);
+      form.reset();
+    } catch (error) {
+      // Handle errors
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <InputField fieldName="email" label="Email" type="email" />
+        <InputField fieldName="name" label="Name" />
+        <CheckboxField fieldName="isActive" label="Active User" />
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? 'Saving...' : 'Save User'}
+        </Button>
+      </form>
+    </Form>
+  );
+};
+```
+
+### Advanced Form Patterns
+
+#### Dynamic Field Arrays
+```typescript
+import { useFieldArray } from 'react-hook-form';
+
+export const ModelEditor = () => {
+  const form = useForm<ModelFormValues>({
+    resolver: zodResolver(modelSchema),
+    defaultValues: {
+      name: '',
+      fields: [{ name: '', type: 'String', required: false, unique: false }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'fields',
+  });
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <InputField fieldName="name" label="Model Name" />
+        
+        {fields.map((field, index) => (
+          <div key={field.id} className="grid grid-cols-4 gap-2 items-end">
+            <InputField fieldName={`fields.${index}.name`} label="Field Name" />
+            <SelectField 
+              fieldName={`fields.${index}.type`} 
+              label="Type"
+              options={[
+                { value: 'String', label: 'String' },
+                { value: 'Number', label: 'Number' },
+                { value: 'Boolean', label: 'Boolean' },
+              ]}
+            />
+            <CheckboxField fieldName={`fields.${index}.required`} label="Required" />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => remove(index)}
+            >
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+        
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => append({ name: '', type: 'String', required: false, unique: false })}
+        >
+          Add Field
+        </Button>
+      </form>
+    </Form>
+  );
+};
+```
+
+#### Watched Form Values
+```typescript
+import { useWatch } from 'react-hook-form';
+
+export const ConditionalForm = () => {
+  const form = useForm<FormValues>();
+  const watchedType = useWatch({ control: form.control, name: 'type' });
+  
+  return (
+    <Form {...form}>
+      <form>
+        <SelectField 
+          fieldName="type" 
+          label="User Type"
+          options={[
+            { value: 'user', label: 'Regular User' },
+            { value: 'admin', label: 'Administrator' },
+          ]}
+        />
+        
+        {watchedType === 'admin' && (
+          <MultiSelectField 
+            fieldName="permissions" 
+            label="Permissions"
+            options={permissionOptions}
+          />
+        )}
+      </form>
+    </Form>
+  );
+};
+```
+
+## Custom Form Components
+
+### Input Field Component
+```typescript
+interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  fieldName: string;
+  label: string;
+  info?: string;
+  description?: string;
+  classNames?: {
+    label?: string;
+    input?: string;
+    error?: string;
+    formItem?: string;
+  };
+}
+
+export const InputField = ({
+  fieldName,
+  label,
+  info,
+  description,
+  classNames = {},
+  ...inputProps
+}: InputFieldProps) => {
+  const { control } = useFormContext();
+
+  return (
+    <FormField
+      name={fieldName}
+      control={control}
+      render={({ field }) => (
+        <FormItem className={cn('w-full space-y-0.5', classNames.formItem)}>
+          <FormLabel className={cn('flex gap-2 pl-1 text-base font-medium', classNames.label)}>
+            {label}
+            {info && (
+              <TooltipHelper content={info}>
+                <InfoIcon className="h-4 w-4" />
+              </TooltipHelper>
+            )}
+          </FormLabel>
+          <FormControl>
+            <Input
+              {...field}
+              {...inputProps}
+              className={classNames.input}
+            />
+          </FormControl>
+          {description && (
+            <FormDescription className="text-xs pl-1 text-muted-foreground">
+              {description}
+            </FormDescription>
+          )}
+          <FormMessage className={cn('text-xs pl-1', classNames.error)} />
+        </FormItem>
+      )}
+    />
+  );
+};
+```
+
+### Select Field Component
+```typescript
+interface SelectFieldProps {
+  fieldName: string;
+  label: string;
+  placeholder?: string;
+  options: Array<{ value: string; label: string }>;
+  info?: string;
+}
+
+export const SelectField = ({
+  fieldName,
+  label,
+  placeholder = 'Select an option',
+  options,
+  info,
+}: SelectFieldProps) => {
+  const { control } = useFormContext();
+
+  return (
+    <FormField
+      name={fieldName}
+      control={control}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className="flex gap-2 pl-1 text-base font-medium">
+            {label}
+            {info && (
+              <TooltipHelper content={info}>
+                <InfoIcon className="h-4 w-4" />
+              </TooltipHelper>
+            )}
+          </FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage className="text-xs pl-1" />
+        </FormItem>
+      )}
+    />
+  );
+};
+```
+
+## Error Handling
+
+### Form Error Display
+```typescript
+// Global form errors
+const form = useForm({
+  resolver: zodResolver(schema),
+});
+
+// Set server errors
+const handleSubmit = async (data: FormValues) => {
+  try {
+    await submitData(data);
+  } catch (error) {
+    if (error.response?.data?.errors) {
+      // Set field-specific errors
+      Object.entries(error.response.data.errors).forEach(([field, message]) => {
+        form.setError(field as keyof FormValues, {
+          type: 'server',
+          message: message as string,
+        });
+      });
+    } else {
+      // Set root error
+      form.setError('root', {
+        type: 'server',
+        message: 'Something went wrong. Please try again.',
+      });
+    }
+  }
+};
+
+// Display root errors
+{form.formState.errors.root && (
+  <Alert variant="destructive">
+    <AlertDescription>
+      {form.formState.errors.root.message}
+    </AlertDescription>
+  </Alert>
+)}
+```
+
+### Loading States
+```typescript
+export const FormWithLoading = () => {
+  const form = useForm<FormValues>();
+  const { isSubmitting, isValid } = form.formState;
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        {/* Form fields */}
+        
+        <div className="flex gap-2">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || !isValid}
+            className="min-w-[100px]"
+          >
+            {isSubmitting ? (
+              <>
+                <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save'
+            )}
+          </Button>
+          <Button type="button" variant="outline" disabled={isSubmitting}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+```
+
+## Server Actions Integration
+
+### Form Submission with Server Actions
+```typescript
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+
+export async function createUser(formData: FormData) {
+  // Validate data
+  const validatedFields = userSchema.safeParse({
+    email: formData.get('email'),
+    name: formData.get('name'),
+    password: formData.get('password'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    // Create user
+    await apiCreateUser(validatedFields.data);
+    
+    // Revalidate and redirect
+    revalidatePath('/users');
+    redirect('/users');
+  } catch (error) {
+    return {
+      message: 'Failed to create user',
+    };
+  }
+}
+
+// Client component usage
+export const CreateUserForm = () => {
+  const [state, formAction] = useActionState(createUser, initialState);
+
+  return (
+    <form action={formAction}>
+      <InputField name="email" label="Email" />
+      {state?.errors?.email && (
+        <p className="text-sm text-destructive">{state.errors.email}</p>
+      )}
+      
+      <Button type="submit">Create User</Button>
+      
+      {state?.message && (
+        <Alert variant="destructive">
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
+    </form>
+  );
+};
+```
