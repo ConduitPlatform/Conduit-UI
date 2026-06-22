@@ -10,8 +10,6 @@ import { useAlerts } from '@/components/providers/AlertProvider';
 import Link from 'next/link';
 import { ArrowRightIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useSudoAction } from '@/lib/hooks/useSudoAction';
-import { toast } from '@/lib/hooks/use-toast';
 
 export default function TeamProfile({
   team: initialTeam,
@@ -27,10 +25,8 @@ export default function TeamProfile({
   const [team, setTeam] = useState<Team>(initialTeam);
   const router = useRouter();
   const { addAlert } = useAlerts();
-  const { runWithSudo, sudoDialog } = useSudoAction();
   return (
     <>
-      {sudoDialog}
       <div className={'flex flex-row justify-between'}>
         <div className="text-lg font-medium flex flex-row items-center">
           <Link
@@ -60,10 +56,8 @@ export default function TeamProfile({
                 cancelText: 'Cancel',
                 actionText: 'Delete',
                 onDecision: cancel => {
-                  if (cancel) return;
-                  void runWithSudo(async () => {
-                    try {
-                      await deleteTeam(team._id);
+                  if (!cancel) {
+                    return deleteTeam(team._id).then(() => {
                       if (team.parentTeam) {
                         router.replace(
                           `/authentication/teams/${team.parentTeam}`
@@ -71,16 +65,8 @@ export default function TeamProfile({
                       } else {
                         router.replace('/authentication/teams');
                       }
-                    } catch {
-                      toast({
-                        title: 'Failed to delete team',
-                        description:
-                          'The team could not be deleted. You may need to re-authenticate.',
-                        variant: 'destructive',
-                      });
-                      throw new Error('delete failed');
-                    }
-                  });
+                    });
+                  }
                 },
               });
             }}
