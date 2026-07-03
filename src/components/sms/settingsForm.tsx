@@ -74,7 +74,7 @@ export const SettingsForm = ({
                         AWS SNS
                         {data.awsSns &&
                           data.awsSns.accessKeyId !== '' &&
-                          watch('provider') !== 'awsSns' && <Cog />}
+                          watch('providerName') !== 'awsSns' && <Cog />}
                       </div>
                     </SelectItem>
                     <SelectItem value={'messageBird'}>
@@ -82,7 +82,7 @@ export const SettingsForm = ({
                         MessageBird{' '}
                         {data.messageBird &&
                           data.messageBird.accessKeyId !== '' &&
-                          watch('provider') !== 'messageBird' && <Cog />}
+                          watch('providerName') !== 'messageBird' && <Cog />}
                       </div>
                     </SelectItem>
                     <SelectItem value={'clickSend'}>
@@ -90,7 +90,7 @@ export const SettingsForm = ({
                         ClickSend{' '}
                         {data.clickSend &&
                           data.clickSend.clicksendApiKey !== '' &&
-                          watch('provider') !== 'clickSend' && <Cog />}
+                          watch('providerName') !== 'clickSend' && <Cog />}
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -172,7 +172,8 @@ export const SettingsForm = ({
                         disabled={!edit}
                         title={'Active'}
                         className={'text-accent-foreground'}
-                        {...field}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />

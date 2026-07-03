@@ -6,7 +6,6 @@ import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { Form } from '@/components/ui/form';
 import { SmsSettings } from '@/lib/models/Sms';
-import { isEmpty } from 'lodash';
 import { patchSmsSettings } from '@/lib/api/sms';
 import { SettingsForm } from '@/components/sms/settingsForm';
 import {
@@ -54,23 +53,30 @@ const FormSchema = z
   })
   .refine(
     schema => {
-      if (schema.providerName === 'twilio' && !isEmpty(schema.twilio))
-        return false;
-      if (schema.providerName === 'awsSns' && !isEmpty(schema.awsSns))
-        return false;
-      if (
-        schema.providerName === 'messageBird' &&
-        !isEmpty(schema.messageBird)
-      ) {
-        return false;
+      if (schema.providerName === 'twilio') {
+        const { phoneNumber, accountSID, authToken, verify } = schema.twilio;
+        if (phoneNumber === '' || accountSID === '' || authToken === '')
+          return false;
+        if (verify.active && verify.serviceSid === '') return false;
       }
-      return !(
-        schema.providerName === 'clickSend' && !isEmpty(schema.clickSend)
-      );
+      if (schema.providerName === 'awsSns') {
+        const { region, accessKeyId, secretAccessKey } = schema.awsSns;
+        if (region === '' || accessKeyId === '' || secretAccessKey === '')
+          return false;
+      }
+      if (schema.providerName === 'messageBird') {
+        const { accessKeyId, originatorName } = schema.messageBird;
+        if (accessKeyId === '' || originatorName === '') return false;
+      }
+      if (schema.providerName === 'clickSend') {
+        const { username, clicksendApiKey } = schema.clickSend;
+        if (username === '' || clicksendApiKey === '') return false;
+      }
+      return true;
     },
     {
       message: 'You need to fill in all the fields below for this provider',
-      path: ['provider'],
+      path: ['providerName'],
     }
   );
 
@@ -159,7 +165,7 @@ export const Settings = ({ data, embedded = false }: Props) => {
         />
         <div className={'pr-2'}>
           <p className={'text-xs text-muted-foreground'}>
-            To an idea on how to setup your SMS provider take a look at the
+            To get an idea on how to setup your SMS provider take a look at the
             documentation.
           </p>
         </div>
