@@ -85,14 +85,6 @@ export const SettingsForm = ({
                           watch('providerName') !== 'messageBird' && <Cog />}
                       </div>
                     </SelectItem>
-                    <SelectItem value={'clickSend'}>
-                      <div className={'flex items-center gap-2'}>
-                        ClickSend{' '}
-                        {data.clickSend &&
-                          data.clickSend.clicksendApiKey !== '' &&
-                          watch('providerName') !== 'clickSend' && <Cog />}
-                      </div>
-                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -293,48 +285,6 @@ export const SettingsForm = ({
                       <Input
                         disabled={!edit}
                         title={'Originator Name'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
-          {watch('providerName') === 'clickSend' && (
-            <>
-              <FormField
-                control={control}
-                name="clickSend.username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>API Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!edit}
-                        title={'Username'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name="clickSend.clicksendApiKey"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>API Key</FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        disabled={!edit}
-                        title={'API Key'}
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}

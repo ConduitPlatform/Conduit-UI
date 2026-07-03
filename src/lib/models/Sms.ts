@@ -4,7 +4,6 @@ export type SmsSettings = {
   twilio: TwilioSettings;
   awsSns: SnsSettings;
   messageBird: MessageBirdSettings;
-  clickSend: ClickSendSettings;
 };
 
 type TwilioSettings = {
@@ -24,8 +23,4 @@ type SnsSettings = {
 type MessageBirdSettings = {
   accessKeyId: string;
   originatorName: string;
-};
-type ClickSendSettings = {
-  username: string;
-  clicksendApiKey: string;
 };

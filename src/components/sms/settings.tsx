@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { Form } from '@/components/ui/form';
@@ -46,10 +47,6 @@ const FormSchema = z
       accessKeyId: z.string(),
       originatorName: z.string(),
     }),
-    clickSend: z.object({
-      username: z.string(),
-      clicksendApiKey: z.string(),
-    }),
   })
   .refine(
     schema => {
@@ -68,10 +65,6 @@ const FormSchema = z
         const { accessKeyId, originatorName } = schema.messageBird;
         if (accessKeyId === '' || originatorName === '') return false;
       }
-      if (schema.providerName === 'clickSend') {
-        const { username, clicksendApiKey } = schema.clickSend;
-        if (username === '' || clicksendApiKey === '') return false;
-      }
       return true;
     },
     {
@@ -79,6 +72,15 @@ const FormSchema = z
       path: ['providerName'],
     }
   );
+
+function buildSmsPayload(formData: z.infer<typeof FormSchema>) {
+  return {
+    providerName: formData.providerName,
+    twilio: formData.twilio,
+    awsSns: formData.awsSns,
+    messageBird: formData.messageBird,
+  };
+}
 
 function isSmsActivationSuccess(result: PatchSettingsResult | void) {
   if (!result) return true;
@@ -90,6 +92,7 @@ export const Settings = ({ data, embedded = false }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
   const { addAlert } = useAlerts();
   const { save, isSaving } = useSettingsSave('SMS');
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: data,
@@ -99,12 +102,18 @@ export const Settings = ({ data, embedded = false }: Props) => {
   useEffect(() => {
     if (data) {
       setSmsModule(data.active);
+      reset(data);
     }
-  }, [data]);
+  }, [data, reset]);
 
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
     const result = await save({
-      action: () => patchSmsSettings(formData),
+      action: () =>
+        patchSmsSettings({
+          ...buildSmsPayload(formData),
+          active: smsModule,
+        }),
+      onSuccess: () => router.refresh(),
     });
     if (result.ok) {
       setEdit(false);
@@ -135,6 +144,7 @@ export const Settings = ({ data, embedded = false }: Props) => {
               activeTogglePatchOptions([...SMS_MODULE_NAMES], nextActive)
             ),
           isActivationSuccess: isSmsActivationSuccess,
+          onSuccess: () => router.refresh(),
           onError: () => {
             setSmsModule(data.active);
             setValue('providerName', data.providerName);
@@ -172,7 +182,7 @@ export const Settings = ({ data, embedded = false }: Props) => {
       </div>
       {smsModule && (
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit, () => undefined)}>
             <SettingsForm
               control={control}
               edit={edit}
