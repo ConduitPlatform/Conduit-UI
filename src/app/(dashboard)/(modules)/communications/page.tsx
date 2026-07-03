@@ -1,5 +1,11 @@
 import React from 'react';
-import { FileText, History, MessagesSquare, Settings } from 'lucide-react';
+import {
+  FileText,
+  History,
+  MessagesSquare,
+  Send,
+  Settings,
+} from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getEmailMetrics,
@@ -60,6 +66,12 @@ export default async function CommunicationsDashboard() {
       description: 'Email logs and push device tokens',
       icon: <History className="h-4 w-4" />,
       href: '/communications/logs',
+    },
+    {
+      title: 'Test send',
+      description: 'Send test email, SMS, or push messages',
+      icon: <Send className="h-4 w-4" />,
+      href: '/communications/test',
     },
     {
       title: 'Channel settings',

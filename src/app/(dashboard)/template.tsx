@@ -164,8 +164,10 @@ export default function ModuleHeader({
   ];
 
   const pathSegments = pathname.split('/').filter(Boolean);
+  const isCommunicationsSubRoute =
+    pathSegments[0] === 'communications' && pathSegments.length >= 2;
   const isCommunicationsTemplates =
-    pathSegments[0] === 'communications' && pathSegments[1] === 'templates';
+    isCommunicationsSubRoute && pathSegments[1] === 'templates';
 
   return (
     <div className="flex flex-col overflow-x-auto no-scrollbar">
@@ -212,6 +214,20 @@ export default function ModuleHeader({
                           </BreadcrumbItem>
                         </>
                       )}
+                    </>
+                  ) : isCommunicationsSubRoute ? (
+                    <>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                          <Link href="/communications">Communications</Link>
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>
+                          {formatBreadcrumbSegment(pathSegments[1])}
+                        </BreadcrumbPage>
+                      </BreadcrumbItem>
                     </>
                   ) : (
                     <>

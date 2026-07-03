@@ -54,7 +54,9 @@ export const columns: ColumnDef<NotificationToken>[] = [
     cell: ({ row }) => {
       return (
         <div className={'flex flex-row'}>
-          <Link href={`/push-notifications/test?token=${row.original._id}`}>
+          <Link
+            href={`/communications/test?tab=push&token=${row.original._id}`}
+          >
             <SendIcon className={'w-4 h-4'} />
           </Link>
           <Button

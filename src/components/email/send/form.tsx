@@ -40,8 +40,12 @@ const schema = z.object({
 
 type SendEmailFormProps = {
   templates: Awaited<ReturnType<typeof getTemplates>>;
+  embedded?: boolean;
 };
-export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
+export const SendEmailForm = ({
+  templates,
+  embedded = false,
+}: SendEmailFormProps) => {
   const router = useRouter();
   const { toast } = useToast();
   const [sender, setSender] = useState<string | undefined>(undefined);
@@ -89,7 +93,11 @@ export const SendEmailForm = ({ templates }: SendEmailFormProps) => {
         onSubmit={form.handleSubmit(
           async data => {
             await sendEmail(data)
-              .then(() => router.push('/email/records'))
+              .then(() =>
+                router.push(
+                  embedded ? '/communications/logs?tab=email' : '/email/records'
+                )
+              )
               .catch(err =>
                 toast({
                   title: 'Email',

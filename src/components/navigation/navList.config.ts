@@ -107,6 +107,7 @@ export const navGroups: NavGroup[] = [
           { title: 'Overview', url: '/communications' },
           { title: 'Templates', url: '/communications/templates' },
           { title: 'Logs & Devices', url: '/communications/logs' },
+          { title: 'Test Send', url: '/communications/test' },
           { title: 'Settings', url: '/communications/settings' },
         ],
       },
