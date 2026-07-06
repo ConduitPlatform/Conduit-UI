@@ -7,6 +7,7 @@ import {
   DeclaredSchema,
   PatchSchemaRequest,
   PendingSchemas,
+  PutSchemaRequest,
   SchemaOptions,
 } from '@/lib/models/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
@@ -83,6 +84,12 @@ export const createSchema = async (schema: CreateSchemaRequest) => {
 export const patchSchema = async (id: string, schema: PatchSchemaRequest) => {
   return await (await getApiClient())
     .patch<DeclaredSchema>(`/database/schemas/${id}`, schema)
+    .then(res => res.data);
+};
+
+export const putSchema = async (id: string, schema: PutSchemaRequest) => {
+  return await (await getApiClient())
+    .put<DeclaredSchema>(`/database/schemas/${id}`, schema)
     .then(res => res.data);
 };
 
