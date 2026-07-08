@@ -67,7 +67,11 @@ export const StrategySettings: React.FC<StrategySettingsProps> = ({
       <DialogTrigger asChild>
         <Button variant="outline">Settings</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        className={
+          strategy.oauth ? 'max-h-[90vh] max-w-3xl overflow-y-auto' : undefined
+        }
+      >
         <DialogHeader>
           <DialogTitle className={'flex flex-row justify-between mt-5'}>
             {strategy.name} settings configuration
@@ -79,20 +83,22 @@ export const StrategySettings: React.FC<StrategySettingsProps> = ({
               Documentation
             </a>
           </DialogTitle>
-          <DialogDescription>
-            <hr className={'my-2'} />
-            {strategy.form ? (
-              <strategy.form
-                name={strategy.name}
-                data={strategy.data}
-                onSubmit={onSubmit}
-                onCancel={() => {
-                  setOpen(false);
-                }}
-              />
-            ) : (
-              'No settings available'
-            )}
+          <DialogDescription asChild>
+            <div>
+              <hr className={'my-2'} />
+              {strategy.form ? (
+                <strategy.form
+                  name={strategy.name}
+                  data={strategy.data}
+                  onSubmit={onSubmit}
+                  onCancel={() => {
+                    setOpen(false);
+                  }}
+                />
+              ) : (
+                'No settings available'
+              )}
+            </div>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

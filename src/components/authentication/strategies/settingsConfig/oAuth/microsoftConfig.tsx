@@ -2,21 +2,17 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
-import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig';
+import { oauthProviderSettingsSchema } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
 import { StrategyFormProps } from '@/components/authentication/strategies/interface/StrategyFormProps.interface';
 import React from 'react';
 import { Form } from '@/components/ui/form';
-import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
-
 type authStrategyFormType = z.infer<typeof authStrategySchema>;
-const authStrategySchema = oauthDefaultConfig.merge(
-  z.object({
-    tenantId: z.string().default(''),
-  })
-);
+const authStrategySchema = oauthProviderSettingsSchema.extend({
+  tenantId: z.string().default(''),
+});
 
 export const MicrosoftConfigForm: React.FC<
   StrategyFormProps<authStrategyFormType>
