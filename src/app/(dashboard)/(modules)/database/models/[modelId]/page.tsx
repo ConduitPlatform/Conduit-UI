@@ -24,6 +24,7 @@ type PageProps = {
     limit?: string;
     tab?: string;
     created?: string;
+    list?: string;
   }>;
 };
 
@@ -81,6 +82,7 @@ export default async function ModelDetailPage(props: Readonly<PageProps>) {
       initialTab={initialTab}
       databaseType={dbTypeRes.result}
       created={searchParams?.created === '1'}
+      listQuery={searchParams?.list}
     />
   );
 }
