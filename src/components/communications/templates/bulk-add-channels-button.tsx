@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { migrateFromEmailTemplate } from '@/lib/api/communications/templates';
-import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import {
   AlertDialog,
   AlertDialogAction,

@@ -37,8 +37,17 @@ export const getApiClient = async (env?: string) => {
       return response;
     },
     async error => {
-      const { response } = error;
-      if (response?.status === 401 && error.request.path !== '/admin/login') {
+      const { response, config } = error;
+      const url = config?.url ?? '';
+      const isAuthAttempt = url === '/login' || url === '/verify-twofa';
+      const cookieStore = await cookies();
+      const activeEnv = cookieStore.get('activeEnv')?.value ?? 'Local';
+      const envDetails = await _getEnv(activeEnv);
+      const hasSessionCookie = Boolean(
+        cookieStore.get(`${envDetails.name}AccessToken`)?.value
+      );
+
+      if (response?.status === 401 && !isAuthAttempt && hasSessionCookie) {
         redirect('/login?session-timeout=true', RedirectType.replace);
       }
       if (error.response) {

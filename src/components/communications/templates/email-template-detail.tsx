@@ -2,7 +2,7 @@
 
 import { getTemplates } from '@/lib/api/email';
 import { migrateFromEmailTemplate } from '@/lib/api/communications/templates';
-import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import React, { useEffect, useState } from 'react';
 import { EmailTemplate } from '@/lib/models/email';
 import { Button } from '@/components/ui/button';

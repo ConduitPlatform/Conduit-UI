@@ -7,7 +7,7 @@ import {
   getCommunicationTemplate,
   updateCommunicationTemplate,
 } from '@/lib/api/communications/templates';
-import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

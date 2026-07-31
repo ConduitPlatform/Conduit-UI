@@ -6,7 +6,7 @@ import {
   CommunicationTemplatePayload,
 } from '@/lib/models/communications/templates';
 import { MigrationResponse } from '@/lib/models/communications/template-row';
-import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 
 async function withCommunicationsError<T>(fn: () => Promise<T>): Promise<T> {
   try {
