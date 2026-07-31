@@ -2,6 +2,8 @@
 import { getApiClient } from '@/lib/api';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { buildSessionCookieOptions } from '@/lib/api/auth/cookie-options';
+import { getEnvironment } from '@/lib/logic/EnvManager';
 
 export const adminLogin = async (
   username: string,
@@ -15,17 +17,15 @@ export const adminLogin = async (
   const decodedToken = jwt.decode(token) as { twoFaRequired?: boolean };
   const twoFaRequired = decodedToken?.twoFaRequired || false;
 
-  (await cookies()).set({
-    name: `${environment}AccessToken`,
-    value: res.data.token,
-    httpOnly: true,
-    maxAge: 72000,
+  const envDetails = await getEnvironment(environment);
+  const cookieStore = await cookies();
+  cookieStore.set({
+    name: `${envDetails.name}AccessToken`,
+    ...buildSessionCookieOptions(token, token),
   });
-  (await cookies()).set({
+  cookieStore.set({
     name: `activeEnv`,
-    value: environment,
-    httpOnly: true,
-    maxAge: 72000,
+    ...buildSessionCookieOptions(envDetails.name, token),
   });
   return twoFaRequired;
 };
@@ -35,11 +35,16 @@ export const loginSecondFactor = async (code: string, environment: string) => {
     await getApiClient(environment)
   ).post('/verify-twofa', { code });
 
-  (await cookies()).set({
-    name: `${environment}AccessToken`,
-    value: res.data.result,
-    httpOnly: true,
-    maxAge: 72000,
+  const token = res.data.result;
+  const envDetails = await getEnvironment(environment);
+  const cookieStore = await cookies();
+  cookieStore.set({
+    name: `${envDetails.name}AccessToken`,
+    ...buildSessionCookieOptions(token, token),
+  });
+  cookieStore.set({
+    name: `activeEnv`,
+    ...buildSessionCookieOptions(envDetails.name, token),
   });
   return 'OK';
 };
@@ -52,15 +57,20 @@ export const getAdmin = async () => {
 };
 
 export const adminLogout = async () => {
-  const activeEnv = (await cookies()).get('activeEnv')!;
-  (await cookies()).delete(`${activeEnv.value}AccessToken`);
-  (await cookies()).delete(`activeEnv`);
+  const cookieStore = await cookies();
+  const activeEnv = cookieStore.get('activeEnv');
+  if (!activeEnv?.value) return;
+  const envDetails = await getEnvironment(activeEnv.value);
+  cookieStore.delete(`${envDetails.name}AccessToken`);
+  cookieStore.delete(`activeEnv`);
 };
+
 export const switchEnv = async (env: string) => {
-  (await cookies()).set({
+  const envDetails = await getEnvironment(env);
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(`${envDetails.name}AccessToken`)?.value;
+  cookieStore.set({
     name: `activeEnv`,
-    value: env,
-    httpOnly: true,
-    maxAge: 72000,
+    ...buildSessionCookieOptions(envDetails.name, accessToken),
   });
 };

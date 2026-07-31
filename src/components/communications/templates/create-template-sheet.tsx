@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/lib/hooks/use-toast';
 import { createCommunicationTemplate } from '@/lib/api/communications/templates';
-import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import {
   CommunicationTemplateForm,
   CommunicationTemplateFormValues,

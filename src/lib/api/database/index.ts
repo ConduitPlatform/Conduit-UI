@@ -173,7 +173,8 @@ export const getSchemaDocument = async (schemaName: string, id: string) => {
     .get(`/database/schemas/${schemaName}/docs/${id}`)
     .then(res => res.data)
     .catch(err => {
-      if (err.response.status === 404) throw new Error('not_found');
+      if (err.response?.status === 404) throw new Error('not_found');
+      throw err;
     });
 };
 

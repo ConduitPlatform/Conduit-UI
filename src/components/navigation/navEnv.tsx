@@ -28,11 +28,9 @@ export function NavEnv() {
   const router = useRouter();
   useEffect(() => {
     getEnvNames().then(res => {
-      'use client';
       setAvailableEnvs(res);
     });
     getEnvName().then(env => {
-      'use client';
       setEnv(env);
     });
   }, []);

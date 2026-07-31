@@ -1,6 +1,6 @@
 'use server';
 
-import { isEmpty } from 'lodash';
+import { createHash } from 'crypto';
 import { cookies } from 'next/headers';
 
 export interface Environment {
@@ -27,24 +27,76 @@ export interface EnvironmentConfig {
 
 // Global cache for configuration
 let configCache: EnvironmentConfig | null = null;
+let configCacheFingerprint: string | null = null;
+
+function hashSecret(value: string | undefined): string {
+  if (!value) return '[unset]';
+  return createHash('sha256').update(value).digest('hex').slice(0, 16);
+}
+
+function getConfigFingerprint(): string {
+  const mode = process.env.ENVIRONMENT_MODE || 'single';
+  const envVars = process.env;
+
+  if (mode === 'single') {
+    return JSON.stringify({
+      mode,
+      defaultEnvironment: process.env.DEFAULT_ENVIRONMENT,
+      apiBaseUrl: process.env.API_BASE_URL,
+      masterKeyHash: hashSecret(process.env.MASTER_KEY),
+    });
+  }
+
+  const environments: Record<
+    string,
+    { baseUrl?: string; masterKeyHash: string }
+  > = {};
+  Object.keys(envVars)
+    .filter(key => key.endsWith('_API_BASE_URL'))
+    .sort()
+    .forEach(key => {
+      const prefix = key.replace('_API_BASE_URL', '').toUpperCase();
+      environments[prefix] = {
+        baseUrl: envVars[`${prefix}_API_BASE_URL`],
+        masterKeyHash: hashSecret(envVars[`${prefix}_MASTER_KEY`]),
+      };
+    });
+
+  return JSON.stringify({
+    mode,
+    defaultEnvironment: process.env.DEFAULT_ENVIRONMENT,
+    environments,
+  });
+}
 
 /**
  * Get the environment configuration
  */
 export async function getConfig(): Promise<EnvironmentConfig> {
-  if (configCache) {
+  const fingerprint = getConfigFingerprint();
+  if (configCache && configCacheFingerprint === fingerprint) {
     return configCache;
   }
 
   const mode = process.env.ENVIRONMENT_MODE || 'single';
-  const defaultEnvironment = process.env.DEFAULT_ENVIRONMENT || 'Local';
+  const defaultEnvironment =
+    process.env.DEFAULT_ENVIRONMENT || (mode === 'single' ? 'Local' : '');
 
-  if (mode === 'single') {
-    configCache = await getSingleEnvironmentConfig(defaultEnvironment);
-  } else {
-    configCache = await getMultiEnvironmentConfig();
+  if (mode === 'multi' && !defaultEnvironment) {
+    throw new Error(
+      'DEFAULT_ENVIRONMENT must be set in multi-environment mode'
+    );
   }
 
+  if (mode === 'single') {
+    configCache = await getSingleEnvironmentConfig(
+      defaultEnvironment || 'Local'
+    );
+  } else {
+    configCache = await getMultiEnvironmentConfig(defaultEnvironment);
+  }
+
+  configCacheFingerprint = fingerprint;
   return configCache;
 }
 
@@ -80,9 +132,10 @@ async function getSingleEnvironmentConfig(
 /**
  * Get configuration for multi-environment mode
  */
-async function getMultiEnvironmentConfig(): Promise<EnvironmentConfig> {
+async function getMultiEnvironmentConfig(
+  defaultEnvironment: string
+): Promise<EnvironmentConfig> {
   const environments: Environment[] = [];
-  const defaultEnvironment = process.env.DEFAULT_ENVIRONMENT || 'production';
 
   // Get all environment variables
   const envVars = process.env;
@@ -164,7 +217,7 @@ export async function getCurrentEnvironment(): Promise<Environment> {
   const activeEnvName = cookie?.value || config.defaultEnvironment;
 
   const environment = config.environments.find(
-    env => env.name === activeEnvName
+    env => env.name.toLowerCase() === activeEnvName.toLowerCase()
   );
   if (!environment) {
     throw new Error(`Environment '${activeEnvName}' not found`);

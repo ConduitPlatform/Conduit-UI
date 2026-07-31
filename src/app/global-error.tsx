@@ -5,6 +5,10 @@ import { AlertTriangle } from 'lucide-react';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const handleGoHome = () => {
+  window.location.assign('/');
+};
+
 export default function GlobalError({
   error,
   reset,
@@ -47,12 +51,13 @@ export default function GlobalError({
                 >
                   Try Again
                 </button>
-                <a
-                  href="/"
+                <button
+                  type="button"
+                  onClick={handleGoHome}
                   className="inline-flex h-10 items-center justify-center rounded-md border border-gray-300 bg-white px-6 text-sm font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
                 >
                   Go Home
-                </a>
+                </button>
               </div>
             </div>
           </div>

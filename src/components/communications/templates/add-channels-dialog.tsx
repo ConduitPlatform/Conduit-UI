@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { migrateFromEmailTemplate } from '@/lib/api/communications/templates';
 import { MigrationResponse } from '@/lib/models/communications/template-row';
-import { formatCommunicationsApiError } from '@/lib/logic/communications-api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import {
   Dialog,
   DialogContent,
