@@ -1,11 +1,16 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AlertCircle } from 'lucide-react';
 import { SendEmailForm } from '@/components/email/send/form';
 import { TestSendSmsForm } from '@/components/sms/smsTest/testSendSmsForm';
 import { TestSendForm } from '@/components/notifications/testSend/testSendForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EmailTemplate } from '@/lib/models/email';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getTemplates } from '@/lib/api/email';
+import { formatEmailTemplatesApiError } from '@/lib/logic/api-error';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 
 const TEST_TABS = ['email', 'sms', 'push'] as const;
@@ -16,25 +21,55 @@ function parseTestTab(tab: string | undefined): TestTab {
   return 'email';
 }
 
-type EmailTemplates = {
-  templateDocuments: EmailTemplate[];
-  count: number;
-};
-
 type CommunicationsTestTabsProps = {
   initialTab: TestTab;
-  templates: EmailTemplates;
   token?: NotificationToken;
 };
 
 export function CommunicationsTestTabs({
   initialTab,
-  templates,
   token,
 }: CommunicationsTestTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = initialTab;
+
+  const [templates, setTemplates] = useState<Awaited<
+    ReturnType<typeof getTemplates>
+  > | null>(null);
+  const [templatesError, setTemplatesError] = useState<string | null>(null);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadTemplates = async () => {
+      setIsLoadingTemplates(true);
+      setTemplatesError(null);
+
+      try {
+        const data = await getTemplates({});
+        if (!cancelled) {
+          setTemplates(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setTemplates(null);
+          setTemplatesError(formatEmailTemplatesApiError(err));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingTemplates(false);
+        }
+      }
+    };
+
+    void loadTemplates();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleTabChange = (value: string) => {
     const tab = parseTestTab(value);
@@ -60,7 +95,23 @@ export function CommunicationsTestTabs({
       </TabsList>
 
       <TabsContent value="email" className="mt-6">
-        <SendEmailForm templates={templates} embedded />
+        {isLoadingTemplates && (
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full max-w-md" />
+            <Skeleton className="h-10 w-full max-w-md" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        )}
+        {!isLoadingTemplates && templatesError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Could not load email templates</AlertTitle>
+            <AlertDescription>{templatesError}</AlertDescription>
+          </Alert>
+        )}
+        {!isLoadingTemplates && templates && (
+          <SendEmailForm templates={templates} embedded />
+        )}
       </TabsContent>
 
       <TabsContent value="sms" className="mt-6">

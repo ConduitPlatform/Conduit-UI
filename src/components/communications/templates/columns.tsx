@@ -27,7 +27,7 @@ import { ExternalTemplate } from '@/lib/models/email';
 import { EmailTemplatePreview } from './email-template-preview';
 
 type TemplateRowColumnsOptions = {
-  onAddChannels: (emailTemplateId: string) => void;
+  onAddChannels?: (emailTemplateId: string) => void;
 };
 
 function ExternalTemplateViewDialog({
@@ -109,7 +109,7 @@ function ActionsCell({
   onAddChannels,
 }: {
   row: TemplateRow;
-  onAddChannels: (emailTemplateId: string) => void;
+  onAddChannels?: (emailTemplateId: string) => void;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -141,14 +141,16 @@ function ActionsCell({
     case 'email':
       return (
         <div className="flex items-center justify-end gap-2">
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => onAddChannels(row.template._id)}
-          >
-            Add channels
-          </Button>
+          {onAddChannels && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => onAddChannels(row.template._id)}
+            >
+              Add channels
+            </Button>
+          )}
           <Link
             href={`/communications/templates/email/${row.template._id}`}
             aria-label={`View ${row.template.name}`}

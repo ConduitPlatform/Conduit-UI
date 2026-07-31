@@ -1,4 +1,3 @@
-import { getTemplates } from '@/lib/api/email';
 import { getTokenById } from '@/lib/api/notifications';
 import { CommunicationsTestTabs } from '@/components/communications/test/communications-test-tabs';
 import {
@@ -26,12 +25,9 @@ export default async function CommunicationsTestPage(
   const searchParams = await props.searchParams;
   const tab = parseTab(searchParams.tab);
 
-  const [templates, token] = await Promise.all([
-    getTemplates({}),
-    !isEmpty(searchParams.token)
-      ? getTokenById(searchParams.token ?? '', 'user')
-      : Promise.resolve(undefined),
-  ]);
+  const token = !isEmpty(searchParams.token)
+    ? await getTokenById(searchParams.token ?? '', 'user')
+    : undefined;
 
   return (
     <div className="space-y-6">
@@ -44,11 +40,7 @@ export default async function CommunicationsTestPage(
         </div>
       </PageHeader>
 
-      <CommunicationsTestTabs
-        initialTab={tab}
-        templates={templates}
-        token={token}
-      />
+      <CommunicationsTestTabs initialTab={tab} token={token} />
     </div>
   );
 }

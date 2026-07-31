@@ -50,3 +50,14 @@ export function formatCommunicationsApiError(err: unknown): string {
   }
   return err instanceof Error ? err.message : 'Request failed';
 }
+
+export function formatEmailTemplatesApiError(err: unknown): string {
+  if (isAxiosLikeError(err)) {
+    return (
+      err.response?.data?.message ??
+      err.message ??
+      'Failed to load email templates'
+    );
+  }
+  return err instanceof Error ? err.message : 'Failed to load email templates';
+}
