@@ -1,9 +1,14 @@
-'use server';
-
 import jwt from 'jsonwebtoken';
-import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
 const DEFAULT_COOKIE_MAX_AGE = 72000;
+
+export type SessionCookieOptions = {
+  value: string;
+  httpOnly: true;
+  maxAge: number;
+  secure: boolean;
+  sameSite: 'lax';
+};
 
 export function getCookieMaxAgeFromToken(token: string): number {
   const decoded = jwt.decode(token) as { exp?: number } | null;
@@ -16,7 +21,7 @@ export function getCookieMaxAgeFromToken(token: string): number {
 export function buildSessionCookieOptions(
   value: string,
   tokenForMaxAge?: string
-): Partial<ResponseCookie> {
+): SessionCookieOptions {
   return {
     value,
     httpOnly: true,
