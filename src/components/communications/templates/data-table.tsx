@@ -6,7 +6,7 @@ import { useTemplateRowColumns } from './columns';
 
 type CommunicationTemplatesTableProps = {
   rows: TemplateRow[];
-  onAddChannels: (emailTemplateId: string) => void;
+  onAddChannels?: (emailTemplateId: string) => void;
 };
 
 export function CommunicationTemplatesTable({

@@ -6,12 +6,16 @@ import {
   CommunicationTemplatePayload,
 } from '@/lib/models/communications/templates';
 import { MigrationResponse } from '@/lib/models/communications/template-row';
-import { formatCommunicationsApiError } from '@/lib/logic/api-error';
+import {
+  formatCommunicationsApiError,
+  isNextNavigationError,
+} from '@/lib/logic/api-error';
 
 async function withCommunicationsError<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (err) {
+    if (isNextNavigationError(err)) throw err;
     throw new Error(formatCommunicationsApiError(err));
   }
 }

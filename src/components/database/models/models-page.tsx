@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { DeclaredSchema } from '@/lib/models/database';
 import { ResourceDefinition } from '@/lib/models/authorization';
 import { deleteSchema, exportSchemas, importSchemas } from '@/lib/api/database';
@@ -36,6 +36,11 @@ import {
 import { Button } from '@/components/ui/button';
 import ExportImportDialog from '@/components/ui/export-import-dialog';
 import { toast } from '@/lib/hooks/use-toast';
+import {
+  buildModelDetailHref,
+  buildModelDetailTabHref,
+  buildModelsListHref,
+} from '@/lib/database/models-navigation';
 
 export type ModelsTab =
   | 'schema'
@@ -90,6 +95,8 @@ type ModelsPageProps = {
   initialOwners?: string[];
   /** True immediately after quick-create redirects into the editor. */
   created?: boolean;
+  /** Encoded list filters from the models list (owner, page, search). */
+  listQuery?: string;
 };
 
 export function ModelsPage({
@@ -107,8 +114,10 @@ export function ModelsPage({
   initialSearch,
   initialOwners,
   created = false,
+  listQuery,
 }: ModelsPageProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = React.useState(() =>
     normalizeTab(initialTab)
   );
@@ -175,9 +184,10 @@ export function ModelsPage({
     };
   }, [hasDirtyChanges]);
 
-  const handleModelSelect = (modelId: string) => {
+  const handleModelSelect = (modelId: string, fromListQuery?: string) => {
+    const query = fromListQuery ?? listQuery;
     requestNavigation(() => {
-      router.push(`/database/models/${modelId}`);
+      router.push(buildModelDetailHref(modelId, query));
     });
   };
 
@@ -188,9 +198,10 @@ export function ModelsPage({
     requestNavigation(() => {
       setActiveTab(nextTab);
       if (selectedModelId) {
-        router.push(`/database/models/${selectedModelId}?tab=${nextTab}`, {
-          scroll: false,
-        });
+        router.push(
+          buildModelDetailTabHref(selectedModelId, nextTab, searchParams),
+          { scroll: false }
+        );
       }
     });
   };
@@ -284,7 +295,7 @@ export function ModelsPage({
 
   const handleBackToList = () => {
     requestNavigation(() => {
-      router.push('/database/models');
+      router.push(buildModelsListHref(listQuery));
     });
   };
 

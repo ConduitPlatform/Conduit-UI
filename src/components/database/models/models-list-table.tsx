@@ -49,7 +49,7 @@ type ModelsListTableProps = {
   initialSearch: string;
   initialOwners: string[];
   onCreateNew: () => void;
-  onSelect: (modelId: string) => void;
+  onSelect: (modelId: string, listQuery?: string) => void;
   onOpenSchemaTransfer: () => void;
   onDelete?: (modelId: string) => void;
 };
@@ -267,7 +267,10 @@ export function ModelsListTable({
                 <TableRow
                   key={schema._id}
                   className="cursor-pointer"
-                  onClick={() => onSelect(schema._id)}
+                  onClick={() => {
+                    const listQuery = searchParams.toString();
+                    onSelect(schema._id, listQuery || undefined);
+                  }}
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -315,7 +318,8 @@ export function ModelsListTable({
                         <DropdownMenuItem
                           onClick={e => {
                             e.stopPropagation();
-                            onSelect(schema._id);
+                            const listQuery = searchParams.toString();
+                            onSelect(schema._id, listQuery || undefined);
                           }}
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />

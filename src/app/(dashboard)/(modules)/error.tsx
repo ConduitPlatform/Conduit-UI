@@ -15,10 +15,17 @@ export default function ModuleError({
   const pathname = usePathname();
   const moduleSlug = pathname.split('/')[1];
 
+  const message = [
+    error.message,
+    error.digest ? `Error ID: ${error.digest}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
   return (
     <ErrorCard
       title="Module Error"
-      message={error.message}
+      message={message}
       onRetry={reset}
       actions={
         moduleSlug ? (
