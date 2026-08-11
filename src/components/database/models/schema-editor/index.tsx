@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { FieldType } from './type-picker';
+import { normalizeFieldDefault } from '@/lib/database/format-display-value';
 
 type SchemaEditorProps = {
   schema: DeclaredSchema | null;
@@ -37,6 +38,12 @@ type SchemaEditorProps = {
 
 function generateId() {
   return Math.random().toString(36).substring(2, 9);
+}
+
+function normalizeFieldType(type: unknown): FieldType {
+  return typeof type === 'string' && type.length > 0
+    ? (type as FieldType)
+    : 'String';
 }
 
 function validateFields(
@@ -111,13 +118,13 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
         return {
           id,
           name,
-          type: fieldDef as FieldType,
+          type: normalizeFieldType(fieldDef),
           isArray,
         };
       }
 
       // Handle nested objects (Group)
-      if (typeof fieldDef === 'object' && !fieldDef.type) {
+      if (typeof fieldDef === 'object' && fieldDef && !fieldDef.type) {
         return {
           id,
           name,
@@ -128,7 +135,7 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
       }
 
       // Handle Relation type
-      if (fieldDef.type === 'Relation') {
+      if (fieldDef?.type === 'Relation') {
         return {
           id,
           name,
@@ -136,10 +143,14 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
           required: fieldDef.required,
           unique: fieldDef.unique,
           select: fieldDef.select,
-          default: fieldDef.default,
-          description: fieldDef.description,
+          default: normalizeFieldDefault(fieldDef.default),
+          description:
+            typeof fieldDef.description === 'string'
+              ? fieldDef.description
+              : undefined,
           isArray,
-          relatedModel: fieldDef.model,
+          relatedModel:
+            typeof fieldDef.model === 'string' ? fieldDef.model : undefined,
         };
       }
 
@@ -147,12 +158,15 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
       return {
         id,
         name,
-        type: (fieldDef.type || 'String') as FieldType,
-        required: fieldDef.required,
-        unique: fieldDef.unique,
-        select: fieldDef.select,
-        default: fieldDef.default,
-        description: fieldDef.description,
+        type: normalizeFieldType(fieldDef?.type),
+        required: fieldDef?.required,
+        unique: fieldDef?.unique,
+        select: fieldDef?.select,
+        default: normalizeFieldDefault(fieldDef?.default),
+        description:
+          typeof fieldDef?.description === 'string'
+            ? fieldDef.description
+            : undefined,
         isArray,
       };
     }

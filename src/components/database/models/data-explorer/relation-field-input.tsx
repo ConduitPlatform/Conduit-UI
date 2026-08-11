@@ -21,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChevronDown, Check, X, Loader2, Search, FileJson } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getSchemaDocs } from '@/lib/api/database';
+import { formatDisplayValue } from '@/lib/database/format-display-value';
 
 type RelationFieldInputProps = {
   value: string | string[] | null;
@@ -81,17 +82,23 @@ export function RelationFieldInput({
     });
   }, [documents, search]);
 
-  // Get display value for a document
-  const getDocumentDisplay = (doc: any) => {
-    // Try common display fields
+  // Get display value for a document (always a string — never raw objects)
+  const getDocumentDisplay = (doc: any): string => {
     const displayFields = ['name', 'title', 'email', 'label', 'username'];
     for (const field of displayFields) {
-      if (doc[field]) {
-        return doc[field];
+      const fieldValue = doc[field];
+      if (
+        typeof fieldValue === 'string' ||
+        typeof fieldValue === 'number' ||
+        typeof fieldValue === 'boolean'
+      ) {
+        return String(fieldValue);
       }
     }
-    // Fall back to _id
-    return doc._id?.substring(0, 12) + '...';
+    if (typeof doc._id === 'string') {
+      return `${doc._id.substring(0, 12)}...`;
+    }
+    return formatDisplayValue(doc._id);
   };
 
   // Handle selection
@@ -157,7 +164,9 @@ export function RelationFieldInput({
               {value ? (
                 <>
                   <FileJson className="w-4 h-4 shrink-0 text-primary" />
-                  <span className="truncate font-mono text-xs">{value}</span>
+                  <span className="truncate font-mono text-xs">
+                    {formatDisplayValue(value)}
+                  </span>
                 </>
               ) : (
                 <span>{placeholder}</span>

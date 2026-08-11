@@ -61,7 +61,23 @@ export function transformFieldsForApi(
       if (field.required) fieldDef.required = true;
       if (field.unique) fieldDef.unique = true;
       if (field.select !== undefined) fieldDef.select = field.select;
-      if (field.default) fieldDef.default = field.default;
+      if (field.default) {
+        // JSON defaults are edited as text; restore objects when valid JSON.
+        if (field.type === 'JSON') {
+          try {
+            fieldDef.default = JSON.parse(field.default);
+          } catch {
+            fieldDef.default = field.default;
+          }
+        } else if (field.type === 'Number') {
+          const asNumber = Number(field.default);
+          fieldDef.default = Number.isNaN(asNumber) ? field.default : asNumber;
+        } else if (field.type === 'Boolean') {
+          fieldDef.default = field.default === 'true';
+        } else {
+          fieldDef.default = field.default;
+        }
+      }
       if (field.description) fieldDef.description = field.description;
 
       if (field.type === 'Relation' && field.relatedModel) {
@@ -307,13 +323,25 @@ export function FieldsTable({
                           </>
                         ) : (
                           <Input
-                            value={field.default || ''}
+                            value={
+                              typeof field.default === 'string'
+                                ? field.default
+                                : field.default == null
+                                  ? ''
+                                  : String(field.default)
+                            }
                             onChange={e =>
                               handleUpdateField(field.id, {
                                 default: e.target.value,
                               })
                             }
-                            placeholder={field.type === 'Date' ? 'now()' : ''}
+                            placeholder={
+                              field.type === 'Date'
+                                ? 'now()'
+                                : field.type === 'JSON'
+                                  ? '{"key":"value"}'
+                                  : ''
+                            }
                             className="h-8 text-sm"
                             disabled={disabled}
                           />
