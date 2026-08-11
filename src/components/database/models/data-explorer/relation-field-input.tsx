@@ -82,7 +82,6 @@ export function RelationFieldInput({
     });
   }, [documents, search]);
 
-  // Get display value for a document (always a string — never raw objects)
   const getDocumentDisplay = (doc: any): string => {
     const displayFields = ['name', 'title', 'email', 'label', 'username'];
     for (const field of displayFields) {

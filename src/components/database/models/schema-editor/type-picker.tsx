@@ -147,7 +147,7 @@ export function TypePicker({
         >
           <div className="flex items-center gap-2">
             <span className={cn(typeColors[value])}>{selectedType?.icon}</span>
-            <span>{selectedType?.label || String(value ?? '')}</span>
+            <span>{selectedType?.label || value}</span>
           </div>
           <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-50" />
         </Button>

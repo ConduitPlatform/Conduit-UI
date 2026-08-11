@@ -286,10 +286,7 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
                     variant="secondary"
                     className="gap-1 pr-1"
                   >
-                    {filter.field} {filter.operator}{' '}
-                    {typeof filter.value === 'string'
-                      ? filter.value
-                      : String(filter.value ?? '')}
+                    {filter.field} {filter.operator} {filter.value}
                     <Button
                       variant="ghost"
                       size="icon"

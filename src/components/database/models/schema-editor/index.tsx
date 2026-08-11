@@ -135,7 +135,7 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
       }
 
       // Handle Relation type
-      if (fieldDef?.type === 'Relation') {
+      if (fieldDef.type === 'Relation') {
         return {
           id,
           name,
@@ -144,13 +144,9 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
           unique: fieldDef.unique,
           select: fieldDef.select,
           default: normalizeFieldDefault(fieldDef.default),
-          description:
-            typeof fieldDef.description === 'string'
-              ? fieldDef.description
-              : undefined,
+          description: fieldDef.description,
           isArray,
-          relatedModel:
-            typeof fieldDef.model === 'string' ? fieldDef.model : undefined,
+          relatedModel: fieldDef.model,
         };
       }
 
@@ -158,15 +154,12 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
       return {
         id,
         name,
-        type: normalizeFieldType(fieldDef?.type),
-        required: fieldDef?.required,
-        unique: fieldDef?.unique,
-        select: fieldDef?.select,
-        default: normalizeFieldDefault(fieldDef?.default),
-        description:
-          typeof fieldDef?.description === 'string'
-            ? fieldDef.description
-            : undefined,
+        type: normalizeFieldType(fieldDef.type),
+        required: fieldDef.required,
+        unique: fieldDef.unique,
+        select: fieldDef.select,
+        default: normalizeFieldDefault(fieldDef.default),
+        description: fieldDef.description,
         isArray,
       };
     }

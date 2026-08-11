@@ -62,7 +62,6 @@ export function transformFieldsForApi(
       if (field.unique) fieldDef.unique = true;
       if (field.select !== undefined) fieldDef.select = field.select;
       if (field.default) {
-        // JSON defaults are edited as text; restore objects when valid JSON.
         if (field.type === 'JSON') {
           try {
             fieldDef.default = JSON.parse(field.default);
@@ -323,25 +322,13 @@ export function FieldsTable({
                           </>
                         ) : (
                           <Input
-                            value={
-                              typeof field.default === 'string'
-                                ? field.default
-                                : field.default == null
-                                  ? ''
-                                  : String(field.default)
-                            }
+                            value={field.default ?? ''}
                             onChange={e =>
                               handleUpdateField(field.id, {
                                 default: e.target.value,
                               })
                             }
-                            placeholder={
-                              field.type === 'Date'
-                                ? 'now()'
-                                : field.type === 'JSON'
-                                  ? '{"key":"value"}'
-                                  : ''
-                            }
+                            placeholder={field.type === 'Date' ? 'now()' : ''}
                             className="h-8 text-sm"
                             disabled={disabled}
                           />

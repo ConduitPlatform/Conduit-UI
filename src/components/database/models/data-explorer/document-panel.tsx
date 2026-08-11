@@ -23,7 +23,6 @@ import { X, Save, Copy, Check, Loader2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/hooks/use-toast';
 import moment from 'moment';
-import { formatDisplayValue } from '@/lib/database/format-display-value';
 import { RelationFieldInput } from './relation-field-input';
 import type { ModelDataPermissions } from './permissions';
 
@@ -115,14 +114,10 @@ function formatValue(value: any): string {
     if (value.$oid) {
       return value.$oid;
     }
-    try {
-      return JSON.stringify(value, null, 2);
-    } catch {
-      return formatDisplayValue(value);
-    }
+    return JSON.stringify(value, null, 2);
   }
 
-  return formatDisplayValue(value);
+  return String(value);
 }
 
 function parseValue(value: any, type: string): any {
@@ -376,16 +371,10 @@ export function DocumentPanel({
       );
     }
 
-    // Default string field — coerce non-strings so object values never hit JSX
+    // Default string field
     return (
       <Input
-        value={
-          value == null
-            ? ''
-            : typeof value === 'string' || typeof value === 'number'
-              ? String(value)
-              : formatValue(value)
-        }
+        value={value ?? ''}
         onChange={e => handleChange(field.name, e.target.value)}
         disabled={!canModifyField}
       />

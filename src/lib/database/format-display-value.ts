@@ -1,10 +1,6 @@
 import moment from 'moment';
 
-/**
- * Coerce arbitrary document/schema values into a string safe to render as a
- * React child or controlled input value. Prevents React error #31 when APIs
- * return nested objects (e.g. `{ startDate, endDate, nights }`).
- */
+/** Stringify a value for React children / controlled inputs. */
 export function formatDisplayValue(value: unknown): string {
   if (value === null || value === undefined) {
     return '';
@@ -18,19 +14,15 @@ export function formatDisplayValue(value: unknown): string {
     return value;
   }
 
-  if (
-    typeof value === 'number' ||
-    typeof value === 'boolean' ||
-    typeof value === 'bigint'
-  ) {
+  if (typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
   }
 
   if (typeof value === 'object') {
-    const record = value as Record<string, unknown>;
+    const record = value as { $date?: unknown; $oid?: unknown };
 
     if (record.$date != null) {
-      return moment(record.$date as moment.MomentInput).format(
+      return moment(record.$date as string | number | Date).format(
         'MMM D, YYYY HH:mm'
       );
     }
@@ -43,17 +35,13 @@ export function formatDisplayValue(value: unknown): string {
       return `[${value.length} items]`;
     }
 
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return Object.prototype.toString.call(value);
-    }
+    return JSON.stringify(value);
   }
 
   return String(value);
 }
 
-/** Compact label for table cells (truncates long JSON). */
+/** Compact table-cell label (truncates long JSON). */
 export function formatCellDisplayValue(value: unknown, maxLength = 50): string {
   if (value === null || value === undefined) {
     return 'NULL';
@@ -66,7 +54,7 @@ export function formatCellDisplayValue(value: unknown, maxLength = 50): string {
   return `${formatted.substring(0, maxLength)}...`;
 }
 
-/** Normalize schema field defaults for text inputs. */
+/** Coerce schema field defaults into text-input strings. */
 export function normalizeFieldDefault(value: unknown): string | undefined {
   if (value === null || value === undefined || value === '') {
     return undefined;
@@ -77,9 +65,5 @@ export function normalizeFieldDefault(value: unknown): string | undefined {
   if (typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
   }
-  try {
-    return JSON.stringify(value);
-  } catch {
-    return String(value);
-  }
+  return JSON.stringify(value);
 }
