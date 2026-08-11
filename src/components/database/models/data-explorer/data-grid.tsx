@@ -41,7 +41,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/hooks/use-toast';
-import moment from 'moment';
+import {
+  formatCellDisplayValue,
+  formatDisplayValue,
+} from '@/lib/database/format-display-value';
 import type { ModelDataPermissions } from './permissions';
 
 type DataGridProps = {
@@ -78,11 +81,13 @@ function EditableCell({
   onSave: () => void;
 }) {
   const [isEditing, setIsEditing] = React.useState(false);
-  const [editValue, setEditValue] = React.useState(String(value ?? ''));
+  const [editValue, setEditValue] = React.useState(
+    formatDisplayValue(value ?? '')
+  );
   const [isSaving, setIsSaving] = React.useState(false);
 
   const handleSave = async () => {
-    if (editValue === String(value ?? '')) {
+    if (editValue === formatDisplayValue(value ?? '')) {
       setIsEditing(false);
       return;
     }
@@ -106,7 +111,7 @@ function EditableCell({
     if (e.key === 'Enter') {
       handleSave();
     } else if (e.key === 'Escape') {
-      setEditValue(String(value ?? ''));
+      setEditValue(formatDisplayValue(value ?? ''));
       setIsEditing(false);
     }
   };
@@ -136,7 +141,7 @@ function EditableCell({
           size="icon"
           className="h-6 w-6"
           onClick={() => {
-            setEditValue(String(value ?? ''));
+            setEditValue(formatDisplayValue(value ?? ''));
             setIsEditing(false);
           }}
           disabled={isSaving}
@@ -149,7 +154,7 @@ function EditableCell({
 
   return (
     <div className="group flex items-center gap-1">
-      <span className="truncate">{formatCellValue(value)}</span>
+      <span className="truncate">{formatCellDisplayValue(value)}</span>
       {canEdit && (
         <Button
           variant="ghost"
@@ -165,41 +170,6 @@ function EditableCell({
       )}
     </div>
   );
-}
-
-// Format cell values for display
-function formatCellValue(value: any): string {
-  if (value === null || value === undefined) {
-    return 'NULL';
-  }
-
-  if (typeof value === 'boolean') {
-    return value ? 'true' : 'false';
-  }
-
-  if (typeof value === 'object') {
-    // Handle MongoDB date
-    if (value.$date) {
-      return moment(value.$date).format('MMM D, YYYY HH:mm');
-    }
-    // Handle MongoDB ObjectId
-    if (value.$oid) {
-      return value.$oid.substring(0, 8) + '...';
-    }
-    // Handle arrays
-    if (Array.isArray(value)) {
-      return `[${value.length} items]`;
-    }
-    // Handle objects
-    return JSON.stringify(value).substring(0, 50) + '...';
-  }
-
-  // Handle ISO date strings
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
-    return moment(value).format('MMM D, YYYY HH:mm');
-  }
-
-  return String(value);
 }
 
 // Check if value looks like an ObjectId
@@ -233,7 +203,7 @@ export function DataGrid({
     const searchLower = quickSearch.toLowerCase();
     return documents.filter(doc =>
       Object.values(doc).some(value =>
-        String(value).toLowerCase().includes(searchLower)
+        formatDisplayValue(value).toLowerCase().includes(searchLower)
       )
     );
   }, [documents, quickSearch]);
@@ -396,10 +366,12 @@ export function DataGrid({
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger className="text-xs text-muted-foreground">
-                              {formatCellValue(doc[column])}
+                              {formatCellDisplayValue(doc[column])}
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p className="text-xs">{doc[column]}</p>
+                              <p className="text-xs">
+                                {formatDisplayValue(doc[column])}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -409,7 +381,7 @@ export function DataGrid({
                         </span>
                       ) : typeof doc[column] === 'object' ? (
                         <Badge variant="outline" className="text-xs">
-                          {formatCellValue(doc[column])}
+                          {formatCellDisplayValue(doc[column])}
                         </Badge>
                       ) : (
                         <div

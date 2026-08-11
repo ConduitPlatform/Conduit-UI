@@ -345,7 +345,9 @@ export function DocumentPanel({
       return (
         <Input
           type="number"
-          value={value ?? ''}
+          value={
+            typeof value === 'number' || typeof value === 'string' ? value : ''
+          }
           onChange={e => handleChange(field.name, e.target.value)}
           disabled={!canModifyField}
         />
