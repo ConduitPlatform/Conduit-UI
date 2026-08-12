@@ -46,6 +46,21 @@ export default (req: NextApiRequest, res: NextApiResponse) =>
         target: process.env.PROMETHEUS_URL,
       };
     } else {
+      if (!process.env.CONDUIT_URL?.trim()) {
+        res.status(500).json({
+          error:
+            'CONDUIT_URL is not set. Point it at the Conduit Admin API (e.g. http://localhost:3030).',
+        });
+        return resolve({});
+      }
+
+      if (!process.env.MASTER_KEY?.trim()) {
+        res.status(500).json({
+          error: 'MASTER_KEY is not set. Use the same master key as your Conduit core instance.',
+        });
+        return resolve({});
+      }
+
       // removes the api prefix from url
       req.url = req.url?.replace(/^\/api/, '');
 

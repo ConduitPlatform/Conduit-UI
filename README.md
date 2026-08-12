@@ -34,11 +34,18 @@ Learn more: [Website](https://getconduit.dev)
 - Desire to create something awesome
 
 # Quickstart
-This script uses docker compose to spin up some basic modules for you to test.
+
+You need a running [Conduit](https://github.com/ConduitPlatform/Conduit) instance (Admin API on port **3030** by default).
+Docker Compose or `@conduitplatform/cli` (`conduit deploy setup`) is the usual way to run it locally.
+
+```bash
+yarn install && npx lerna run build
 ```
-yarn install && npx lerna run build 
+
+Copy `apps/Conduit-UI/.env.example` to `apps/Conduit-UI/.env.local` and set `CONDUIT_URL` and `MASTER_KEY`.
+
+```bash
+cd ./apps/Conduit-UI && yarn dev
 ```
-```
-cd ./apps/Conduit-UI && yarn start 
-```
-Open http://localhost:8080 to check the admin panel (username:admin, password: admin)
+
+Open http://localhost:8080 (default login: `admin` / `admin`).
