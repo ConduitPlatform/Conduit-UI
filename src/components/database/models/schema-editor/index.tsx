@@ -62,8 +62,8 @@ function validateFields(
         : 'Every field needs a name.';
     }
 
-    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(field.name.trim())) {
-      return `${fieldPath} must start with a letter and only use letters, numbers, or underscores.`;
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(field.name.trim())) {
+      return `${fieldPath} must start with a letter or underscore and only use letters, numbers, or underscores.`;
     }
 
     if (names.has(field.name)) {
