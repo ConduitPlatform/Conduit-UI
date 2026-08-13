@@ -37,6 +37,14 @@ export const getExpandableFields = (fields: any) => {
   return expandableFields;
 };
 
+export const copyJsonToClipboard = (value: unknown): Promise<void> => {
+  const json = JSON.stringify(value, null, 2);
+  if (json === undefined) {
+    return Promise.reject(new Error('Nothing to copy'));
+  }
+  return navigator.clipboard.writeText(json);
+};
+
 export const getFieldsArray = (schemaFields: any) => {
   const fields: any = [];
 

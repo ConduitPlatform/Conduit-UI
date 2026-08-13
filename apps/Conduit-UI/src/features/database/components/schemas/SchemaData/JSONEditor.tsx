@@ -3,9 +3,14 @@ import { DocumentActions, EditDocumentActions } from './SchemaDataCardActions';
 import { useAppDispatch } from '../../../../../redux/store';
 import { Schema } from '../../../models/CmsModels';
 import { asyncEditSchemaDocument } from '../../../store/databaseSlice';
-import { enqueueErrorNotification } from '../../../../../hooks/useNotifier';
-import { Box, styled } from '@mui/material';
+import {
+  enqueueErrorNotification,
+  enqueueSuccessNotification,
+} from '../../../../../hooks/useNotifier';
+import { Box, Card, CardContent, CardProps, IconButton, styled, Tooltip } from '@mui/material';
+import { CopyAllOutlined } from '@mui/icons-material';
 import JsonEditorComponent from '../../../../../components/common/JsonEditorComponent';
+import { copyJsonToClipboard } from './SchemaDataUtils';
 
 const StyledDocActions = styled(DocumentActions)(() => ({
   display: 'flex',
@@ -13,16 +18,17 @@ const StyledDocActions = styled(DocumentActions)(() => ({
   flexWrap: 'wrap',
 }));
 
-interface Props {
+interface Props extends CardProps {
   documents: any;
   schema: Schema;
   getSchemaDocuments: () => void;
   onDelete: () => void;
 }
 
-const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete }) => {
+const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete, ...rest }) => {
   const [edit, setEdit] = useState<boolean>(false);
   const [documentState, setDocumentState] = useState<any>(documents);
+  const [editorNonce, setEditorNonce] = useState(0);
   const dispatch = useAppDispatch();
 
   const onEdit = () => {
@@ -35,10 +41,8 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
 
   const handleCancel = () => {
     setEdit(false);
-    setDocumentState({});
-    setTimeout(() => {
-      setDocumentState(documents);
-    }, 1);
+    setDocumentState(documents);
+    setEditorNonce((nonce) => nonce + 1);
   };
 
   const handleSave = () => {
@@ -62,36 +66,52 @@ const JSONEditor: FC<Props> = ({ documents, getSchemaDocuments, schema, onDelete
     setDocumentState(changedText.jsObject);
   };
 
+  const handleCopy = () => {
+    copyJsonToClipboard(documentState)
+      .then(() => {
+        dispatch(enqueueSuccessNotification('JSON copied to clipboard'));
+      })
+      .catch(() => {
+        dispatch(enqueueErrorNotification('Failed to copy JSON'));
+      });
+  };
+
   return (
-    <Box
-      sx={{
-        '& $actionContainer': {
-          display: 'none',
-        },
-        '&:hover $actionContainer': {
-          display: 'flex',
-        },
-      }}>
+    <Card variant="outlined" {...rest}>
       <Box
         sx={{
-          mb: 2,
-          height: '20px',
+          mb: 1,
+          mt: 1,
+          mr: 1,
+          height: 'auto',
+          minHeight: 32,
           display: 'flex',
           justifyContent: 'flex-end',
+          alignItems: 'center',
         }}>
-        <StyledDocActions sx={{ mb: 2 }} onEdit={onEdit} onDelete={onDelete} edit={edit} />
+        {!edit && (
+          <Tooltip title="Copy JSON">
+            <IconButton sx={{ mr: 1 }} size="small" onClick={handleCopy} color="primary">
+              <CopyAllOutlined sx={{ height: 22, width: 22 }} />
+            </IconButton>
+          </Tooltip>
+        )}
+        <StyledDocActions onEdit={onEdit} onDelete={onDelete} edit={edit} />
       </Box>
-      <JsonEditorComponent
-        id={documents._id}
-        placeholder={documentState}
-        onChange={handleChange}
-        viewOnly={!edit}
-        confirmGood={!edit}
-        height="fit-content"
-        width="100%"
-      />
+      <CardContent>
+        <JsonEditorComponent
+          key={`${documents._id}-${editorNonce}`}
+          id={documents._id}
+          placeholder={documentState}
+          onChange={handleChange}
+          viewOnly={!edit}
+          confirmGood={!edit}
+          height="fit-content"
+          width="100%"
+        />
+      </CardContent>
       <EditDocumentActions edit={edit} handleCancel={handleCancel} handleSave={handleSave} />
-    </Box>
+    </Card>
   );
 };
 

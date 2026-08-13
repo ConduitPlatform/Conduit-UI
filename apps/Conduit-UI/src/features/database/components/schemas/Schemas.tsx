@@ -9,13 +9,22 @@ import {
   asyncGetSystemSchemas,
 } from '../../store/databaseSlice';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import SchemaDataCard from './SchemaData/SchemaDataCard';
 import { ConfirmationDialog } from '@conduitplatform/ui-components';
 import SchemaDataHeader from './SchemaData/SchemaDataHeader';
 import useParseQuery from '../../hooks/useParseQuery';
 import DocumentCreateDialog from './SchemaData/DocumentCreateDialog';
 import SchemaDataPlaceholder from './SchemaData/SchemaDataPlaceholder';
-import JSONEditor from './SchemaData/JSONEditor';
+import SchemaDataList from './SchemaData/SchemaDataList';
+import {
+  readSchemaDataViewMode,
+  SchemaDataViewMode,
+  writeSchemaDataViewMode,
+} from './SchemaData/schemaDataViewMode';
+import { copyJsonToClipboard } from './SchemaData/SchemaDataUtils';
+import {
+  enqueueErrorNotification,
+  enqueueSuccessNotification,
+} from '../../../../hooks/useNotifier';
 import { Grid, InputAdornment, TextField, Typography, Tooltip, Icon, Button } from '@mui/material';
 import { Archive, Check, InfoOutlined, Search } from '@mui/icons-material';
 import useDebounce from '../../../../hooks/useDebounce';
@@ -66,7 +75,7 @@ const Schemas: FC = () => {
     limit: 25,
   });
   const [search, setSearch] = useState<string>('');
-  const [objectView, setObjectView] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<SchemaDataViewMode>('tree');
   const [schemaSearch, setSchemaSearch] = useState<string>('');
   const [actualSchema, setActualSchema] = useState<Schema | undefined>(undefined);
   const [schemaName, setSchemaName] = useState('');
@@ -75,6 +84,10 @@ const Schemas: FC = () => {
   const [exportImportSchemaDialog, setExportImportSchemaDialog] = useState(false);
   const debouncedSearch: string = useParseQuery(search, 500);
   const debouncedSchemaSearch: string = useDebounce(schemaSearch, 500);
+
+  useEffect(() => {
+    setViewMode(readSchemaDataViewMode());
+  }, []);
 
   useEffect(() => {
     dispatch(asyncGetSchemaOwners());
@@ -177,37 +190,34 @@ const Schemas: FC = () => {
     setCreateDialog(false);
   };
 
+  const handleViewModeChange = (mode: SchemaDataViewMode) => {
+    setViewMode(mode);
+    writeSchemaDataViewMode(mode);
+  };
+
+  const handleCopyPage = () => {
+    copyJsonToClipboard(documentsState.data)
+      .then(() => {
+        dispatch(enqueueSuccessNotification('Documents copied to clipboard'));
+      })
+      .catch(() => {
+        dispatch(enqueueErrorNotification('Failed to copy documents'));
+      });
+  };
+
   const renderMainContent = () => {
     if (!actualSchema) return;
 
     if (selectedTab === 1) {
-      if (objectView) {
-        return documentsState.data.map((docs: any, index: number) => (
-          <JSONEditor
-            documents={docs}
-            getSchemaDocuments={getSchemaDocuments}
-            schema={actualSchema}
-            onDelete={() => onDelete(index)}
-            key={index}
-          />
-        ));
-      }
-      return documentsState.data.map((docs: any, index: number) => (
-        <SchemaDataCard
+      return (
+        <SchemaDataList
+          viewMode={viewMode}
+          documents={documentsState.data}
           schema={actualSchema}
-          documents={docs}
-          sx={{
-            background: 'rgba(0,0,0,0.2)',
-            margin: 1,
-            paddingLeft: 1,
-            position: 'relative',
-          }}
-          onDelete={() => onDelete(index)}
           getSchemaDocuments={getSchemaDocuments}
-          key={`card${index}`}
-          id={docs?._id}
+          onDelete={onDelete}
         />
-      ));
+      );
     }
   };
 
@@ -250,8 +260,9 @@ const Schemas: FC = () => {
           search={search}
           setSearch={setSearch}
           count={documentsCount}
-          objectView={objectView}
-          setObjectView={setObjectView}
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+          onCopyPage={handleCopyPage}
           disabled={!actualSchema}
         />
       );

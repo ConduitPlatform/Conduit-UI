@@ -5,23 +5,10 @@ import Button from '@mui/material/Button';
 import { Paginator } from '@conduitplatform/ui-components';
 import { BoxProps } from '@mui/material/Box/Box';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Search, Refresh, AccountTree } from '@mui/icons-material';
+import { Search, Refresh, CopyAllOutlined } from '@mui/icons-material';
 import useParseQuery from '../../../hooks/useParseQuery';
-import { styled, Typography } from '@mui/material';
-
-const ObjText = '{ }';
-
-const ButtonContainer = styled(Box)(({ theme }) => ({
-  height: theme.spacing(3),
-  width: theme.spacing(3),
-  borderRadius: theme.spacing(0.5),
-  cursor: 'pointer',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: theme.spacing(2),
-  marginLeft: theme.spacing(1),
-}));
+import SchemaDataViewToggle from './SchemaDataViewToggle';
+import { SchemaDataViewMode } from './schemaDataViewMode';
 
 interface Filters {
   page: number;
@@ -32,13 +19,14 @@ interface Filters {
 interface Props extends BoxProps {
   onCreateDocument: () => void;
   onRefresh: () => void;
+  onCopyPage: () => void;
   filters: Filters;
   setFilters: (data: Filters) => void;
   search: string;
   setSearch: (value: string) => void;
   count: number;
-  objectView: boolean;
-  setObjectView: (value: boolean) => void;
+  viewMode: SchemaDataViewMode;
+  onViewModeChange: (mode: SchemaDataViewMode) => void;
   disabled?: boolean;
 }
 
@@ -46,13 +34,14 @@ const SchemaDataHeader: FC<Props> = ({
   disabled = false,
   onCreateDocument,
   onRefresh,
+  onCopyPage,
   filters,
   setFilters,
   search,
   setSearch,
   count,
-  objectView,
-  setObjectView,
+  viewMode,
+  onViewModeChange,
   ...rest
 }) => {
   const isValidSearch = useParseQuery(search, 0);
@@ -133,20 +122,16 @@ const SchemaDataHeader: FC<Props> = ({
           display: 'flex',
           alignItems: 'center',
           pb: 2,
+          gap: 1,
+          flexWrap: 'wrap',
         }}>
-        <ButtonContainer onClick={() => setObjectView(false)}>
-          <AccountTree color={objectView ? 'inherit' : 'primary'} />
-        </ButtonContainer>
-        <ButtonContainer onClick={() => setObjectView(true)}>
-          <Typography
-            sx={
-              objectView
-                ? { whiteSpace: 'nowrap', fontSize: 14, color: 'primary.main' }
-                : { whiteSpace: 'nowrap', fontSize: 14 }
-            }>
-            {ObjText}
-          </Typography>
-        </ButtonContainer>
+        <SchemaDataViewToggle viewMode={viewMode} onChange={onViewModeChange} disabled={disabled} />
+        {viewMode === 'json' && count > 0 && (
+          <Button disabled={disabled} color="primary" size="small" onClick={onCopyPage}>
+            <CopyAllOutlined />
+            Copy page
+          </Button>
+        )}
         {count > 0 && (
           <Paginator
             handlePageChange={(event, value) => handlePageChange(value)}
