@@ -4,10 +4,12 @@ import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DeclaredSchema } from '@/lib/models/database';
 import { DataGrid } from './data-grid';
+import { DataJsonView } from './data-json-view';
 import { QueryBuilder } from './query-builder';
 import { DocumentPanel } from './document-panel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +25,8 @@ import {
   RefreshCw,
   Search,
   X,
+  Table2,
+  Braces,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/lib/hooks/use-toast';
@@ -51,6 +55,8 @@ export type SortConfig = {
   field: string;
   direction: 'asc' | 'desc';
 };
+
+type DataViewMode = 'table' | 'json';
 
 export function DataExplorer({ schema, documents }: DataExplorerProps) {
   const router = useRouter();
@@ -242,6 +248,18 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
   const currentPage = Number(searchParams.get('pageIndex') || '0');
   const pageSize = Number(searchParams.get('limit') || '20');
   const totalPages = Math.ceil(documents.count / pageSize);
+  const viewMode: DataViewMode =
+    searchParams.get('view') === 'json' ? 'json' : 'table';
+
+  const handleViewModeChange = (mode: DataViewMode) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (mode === 'json') {
+      params.set('view', 'json');
+    } else {
+      params.delete('view');
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -313,8 +331,7 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Bulk Actions */}
-            {selectedRows.length > 0 && (
+            {viewMode === 'table' && selectedRows.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="gap-2">
@@ -336,6 +353,24 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+
+            <Tabs
+              value={viewMode}
+              onValueChange={value =>
+                handleViewModeChange(value as DataViewMode)
+              }
+            >
+              <TabsList className="h-8" aria-label="View mode">
+                <TabsTrigger value="table" className="gap-1.5 px-2.5 text-xs">
+                  <Table2 className="h-3.5 w-3.5" />
+                  Table
+                </TabsTrigger>
+                <TabsTrigger value="json" className="gap-1.5 px-2.5 text-xs">
+                  <Braces className="h-3.5 w-3.5" />
+                  JSON
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Refresh */}
             <Button variant="outline" size="sm" onClick={handleRefresh}>
@@ -369,22 +404,35 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
 
         {/* Data Grid */}
         <div className="flex-1 overflow-hidden">
-          <DataGrid
-            documents={documents.documents}
-            schemaFields={schemaFields}
-            schema={schema}
-            permissions={permissions}
-            selectedRows={selectedRows}
-            onSelectRows={setSelectedRows}
-            onRowClick={handleRowClick}
-            quickSearch={quickSearch}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalCount={documents.count}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-          />
+          {viewMode === 'table' ? (
+            <DataGrid
+              documents={documents.documents}
+              schemaFields={schemaFields}
+              schema={schema}
+              permissions={permissions}
+              selectedRows={selectedRows}
+              onSelectRows={setSelectedRows}
+              onRowClick={handleRowClick}
+              quickSearch={quickSearch}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              totalCount={documents.count}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          ) : (
+            <DataJsonView
+              documents={documents.documents}
+              quickSearch={quickSearch}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              totalCount={documents.count}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          )}
         </div>
       </div>
 
