@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { AuthenticationConfig } from '@/lib/models/authentication';
+import { EmailRestrictions } from '@/lib/models/authentication/base.config';
 import { patchAuthenticationSettings } from '@/lib/api/authentication';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
@@ -58,6 +59,38 @@ const teamsSchema = z.object({
     inviteUrl: z.string().default('https://mydomain.conduit/invite'),
   }),
 });
+
+const domainTagSchema = z
+  .string()
+  .min(1)
+  .refine(value => !value.includes('@'), 'Enter a domain, not an email address')
+  .refine(value => !/^https?:\/\//i.test(value), 'Enter a hostname without a scheme')
+  .refine(value => value.includes('.'), 'Enter a domain with at least one dot');
+
+const emailRestrictionsSchema = z.object({
+  enabled: z.boolean().default(false),
+  blockDisposableEmails: z.boolean().default(true),
+  blockPlusAddressing: z.boolean().default(true),
+  blockedAddresses: z
+    .array(z.string().email('Please enter a valid email address'))
+    .default([]),
+  blockedDomains: z.array(domainTagSchema).default([]),
+  allowedAddresses: z
+    .array(z.string().email('Please enter a valid email address'))
+    .default([]),
+  allowedDomains: z.array(domainTagSchema).default([]),
+});
+
+const defaultEmailRestrictions: EmailRestrictions = {
+  enabled: false,
+  blockDisposableEmails: true,
+  blockPlusAddressing: true,
+  blockedAddresses: [],
+  blockedDomains: [],
+  allowedAddresses: [],
+  allowedDomains: [],
+};
+
 const FormSchema = z.object({
   captcha: z.object({
     enabled: z.boolean().default(false),
@@ -80,6 +113,7 @@ const FormSchema = z.object({
   anonymousUsers: z.object({
     enabled: z.boolean().default(false),
   }),
+  emailRestrictions: emailRestrictionsSchema,
   teams: teamsSchema,
   clients: clientsSchema,
   accessTokens: accessTokenSchema,
@@ -96,7 +130,13 @@ export const AuthenticationSettings = ({ data }: Props) => {
   type formSchema = z.infer<typeof FormSchema>;
   const form = useForm<formSchema>({
     resolver: rhfZodResolver(FormSchema),
-    defaultValues: data,
+    defaultValues: {
+      ...data,
+      emailRestrictions: {
+        ...defaultEmailRestrictions,
+        ...(data.emailRestrictions ?? {}),
+      },
+    },
   });
 
   const { reset, control, handleSubmit, watch } = form;
@@ -466,6 +506,79 @@ export const AuthenticationSettings = ({ data }: Props) => {
                         disabled={!edit}
                       />
                     </div>
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+            <Collapsible
+              key="email-restrictions"
+              className="border rounded-md overflow-hidden mb-4"
+            >
+              <div className="flex items-center justify-between p-3 bg-muted/30">
+                <div className="flex items-center space-x-2 grow">
+                  <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                    <span className="font-medium truncate text-xl">
+                      Email restrictions
+                    </span>
+                  </CollapsibleTrigger>
+                </div>
+              </div>
+
+              <CollapsibleContent className={'p-4 space-y-4'}>
+                <SwitchField
+                  label={'Enabled'}
+                  fieldName={'emailRestrictions.enabled'}
+                  disabled={!edit}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Applies when an email is accepted (registration, email
+                  change, invites). Existing users can still log in.{' '}
+                  <code>@anonymous.com</code> is reserved for Conduit anonymous
+                  users and cannot be registered.
+                </p>
+                {form.watch('emailRestrictions.enabled') && (
+                  <div className={'flex flex-col space-y-4'}>
+                    <div className={'grid grid-cols-2 gap-4 items-center'}>
+                      <SwitchField
+                        label={'Block disposable emails'}
+                        fieldName={'emailRestrictions.blockDisposableEmails'}
+                        disabled={!edit}
+                      />
+                      <SwitchField
+                        label={'Block plus-address aliases'}
+                        fieldName={'emailRestrictions.blockPlusAddressing'}
+                        disabled={!edit}
+                      />
+                    </div>
+                    <UrlTagInput
+                      name="emailRestrictions.blockedAddresses"
+                      label="Blocked email addresses"
+                      description="Exact email addresses."
+                      placeholder="Type an email and press Enter..."
+                      disabled={!edit}
+                    />
+                    <UrlTagInput
+                      name="emailRestrictions.blockedDomains"
+                      label="Blocked domains"
+                      description="Matches this domain and its subdomains (suffix match)."
+                      placeholder="Type a domain and press Enter..."
+                      disabled={!edit}
+                    />
+                    <UrlTagInput
+                      name="emailRestrictions.allowedAddresses"
+                      label="Allowed email addresses"
+                      description="Exact addresses that override blocks (not reserved anonymous.com)."
+                      placeholder="Type an email and press Enter..."
+                      disabled={!edit}
+                    />
+                    <UrlTagInput
+                      name="emailRestrictions.allowedDomains"
+                      label="Allowed domains"
+                      description="Matches this domain and its subdomains (suffix match)."
+                      placeholder="Type a domain and press Enter..."
+                      disabled={!edit}
+                    />
                   </div>
                 )}
               </CollapsibleContent>
