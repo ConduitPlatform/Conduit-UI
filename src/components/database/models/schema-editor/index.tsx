@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { DeclaredSchema } from '@/lib/models/database';
-import { createSchema, patchSchema } from '@/lib/api/database';
+import { createSchema, putSchema } from '@/lib/api/database';
 import { FieldsTable, FormField, transformFieldsForApi } from './fields-table';
 import { SchemaPreview } from './schema-preview';
 import { Button } from '@/components/ui/button';
@@ -275,7 +275,7 @@ export function SchemaEditor({
         toast({ title: 'Schema created successfully' });
         onSave?.(result);
       } else {
-        await patchSchema(schema._id, {
+        await putSchema(schema._id, {
           fields: fieldsObject,
         });
         toast({ title: 'Schema updated successfully' });
