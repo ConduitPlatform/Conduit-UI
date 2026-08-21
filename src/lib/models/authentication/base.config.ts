@@ -1,3 +1,13 @@
+export type EmailRestrictions = {
+  enabled: boolean;
+  blockDisposableEmails: boolean;
+  blockPlusAddressing: boolean;
+  blockedAddresses: string[];
+  blockedDomains: string[];
+  allowedAddresses: string[];
+  allowedDomains: string[];
+};
+
 export type BaseAuthenticationSettings = {
   active: boolean;
   twoFa: {
@@ -35,4 +45,5 @@ export type BaseAuthenticationSettings = {
   anonymousUsers: {
     enabled: boolean;
   };
+  emailRestrictions?: EmailRestrictions;
 };
