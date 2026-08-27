@@ -1,7 +1,6 @@
 'use client';
 
-import { Plus, Download } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Plus, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { QueryListItem } from './query-list-item';
 import { QueryListSkeleton } from './query-list-skeleton';
@@ -29,6 +28,7 @@ interface QueryListProps {
   onCreateQuery: () => void;
   onDeleteQuery?: (id: string) => void;
   loadMoreRef: React.Ref<HTMLDivElement>;
+  scrollRootRef: (node: HTMLDivElement | null) => void;
 }
 
 export function QueryList({
@@ -44,9 +44,28 @@ export function QueryList({
   onCreateQuery,
   onDeleteQuery,
   loadMoreRef,
+  scrollRootRef,
 }: Readonly<QueryListProps>) {
   const [exportImportDialog, setExportImportDialog] = React.useState(false);
+  const listRef = React.useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
+
+  const isInitialLoading = isLoading && queries.length === 0;
+  const isLoadingMore = isLoading && queries.length > 0;
+
+  const setListNode = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      listRef.current = node;
+      scrollRootRef(node);
+    },
+    [scrollRootRef]
+  );
+
+  React.useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [searchTerm, selectedModel]);
 
   const handleExport = () => {
     exportCustomEndpoints()
@@ -82,8 +101,6 @@ export function QueryList({
           title: 'Import Successful',
           description: 'Custom endpoints have been imported successfully.',
         });
-        // Note: The parent component should handle refreshing the queries list
-        // This would typically be done by calling a refresh function passed as a prop
       })
       .catch(error => {
         console.error(error);
@@ -94,6 +111,7 @@ export function QueryList({
         });
       });
   };
+
   return (
     <div className="flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden rounded-lg border shadow-xs">
       <QueryFilters
@@ -104,41 +122,56 @@ export function QueryList({
         models={models}
       />
 
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <ScrollArea className="flex-1">
-          <div className="p-4">
-            {isLoading &&
-              Array.from({ length: 3 }).map((_, i) => (
-                <QueryListSkeleton key={`skeleton-${i}`} />
-              ))}
-            {queries.map(query => (
-              <QueryListItem
-                key={query._id}
-                query={query}
-                isSelected={selectedQuery === query._id}
-                onClick={() => onQuerySelect(query._id)}
-                onDelete={onDeleteQuery}
-              />
+      <div
+        ref={setListNode}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain main-scrollbar"
+      >
+        <div className="p-4">
+          {isInitialLoading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <QueryListSkeleton key={`skeleton-${i}`} />
             ))}
-
-            <div ref={loadMoreRef} className="h-4" />
-          </div>
-        </ScrollArea>
-        <div className="p-4 border-t mt-auto space-y-2">
-          <Button className="w-full" onClick={onCreateQuery}>
-            <Plus className="w-4 h-4 mr-2" />
-            New Query
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={() => setExportImportDialog(true)}
+          {queries.map(query => (
+            <QueryListItem
+              key={query._id}
+              query={query}
+              isSelected={selectedQuery === query._id}
+              onClick={() => onQuerySelect(query._id)}
+              onDelete={onDeleteQuery}
+            />
+          ))}
+          {!isInitialLoading && queries.length === 0 && (
+            <p className="px-1 py-6 text-center text-sm text-muted-foreground text-pretty">
+              {searchTerm || selectedModel
+                ? 'No queries match the current filters.'
+                : 'No custom queries yet.'}
+            </p>
+          )}
+          <div
+            ref={loadMoreRef}
+            className="flex h-8 items-center justify-center"
           >
-            <Download className="w-4 h-4 mr-1" />
-            Export/Import
-          </Button>
+            {isLoadingMore && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            )}
+          </div>
         </div>
+      </div>
+
+      <div className="mt-auto shrink-0 space-y-2 border-t p-4">
+        <Button className="w-full" onClick={onCreateQuery}>
+          <Plus className="mr-2 h-4 w-4" />
+          New Query
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={() => setExportImportDialog(true)}
+        >
+          <Download className="mr-1 h-4 w-4" />
+          Export/Import
+        </Button>
       </div>
 
       <ExportImportDialog

@@ -17,6 +17,8 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
+const PAGE_SIZE = 10;
+
 export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   const [searchTerm, setSearchTerm] = React.useState<string>();
   const [selectedModel, setSelectedModel] = React.useState<string>();
@@ -26,10 +28,16 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [hasMore, setHasMore] = React.useState(true);
   const [page, setPage] = React.useState(1);
+  const [scrollRoot, setScrollRoot] = React.useState<HTMLDivElement | null>(
+    null
+  );
   const router = useRouter();
   const { toast } = useToast();
+  const requestIdRef = React.useRef(0);
   const { ref, inView } = useInView({
     threshold: 0,
+    root: scrollRoot,
+    rootMargin: '80px',
   });
 
   const fetchQueries = React.useCallback(
@@ -39,62 +47,81 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
       _model?: string,
       shouldClean?: boolean
     ) => {
+      const requestId = shouldClean
+        ? ++requestIdRef.current
+        : requestIdRef.current;
       setIsLoading(true);
 
-      const { customEndpoints: newQueries, count } = await getCustomEndpoints({
-        skip: (_page - 1) * 10,
-        limit: 10,
-        sort: 'createdAt',
-        search: !_term || isEmpty(_term) ? undefined : _term,
-        schemaName: _model ? [_model] : undefined,
-      });
+      try {
+        const { customEndpoints: newQueries, count } = await getCustomEndpoints(
+          {
+            skip: (_page - 1) * PAGE_SIZE,
+            limit: PAGE_SIZE,
+            sort: 'createdAt',
+            search: !_term || isEmpty(_term) ? undefined : _term,
+            schemaName: _model ? [_model] : undefined,
+          }
+        );
 
-      setQueries(prev => {
-        if (shouldClean) {
-          return newQueries;
+        if (requestId !== requestIdRef.current) {
+          return;
         }
-        // check that newQueries are not already in the queries
-        const existingQueries = prev.map(query => query._id);
-        const filteredQueries =
-          newQueries?.filter(query => !existingQueries.includes(query._id)) ??
-          [];
-        return [...prev, ...(filteredQueries ?? [])];
-      });
-      setHasMore(
-        newQueries?.length > 0 && count > (_page - 1) * 10 + newQueries?.length
-      );
-      setPage(prev => prev + 1);
-      setIsLoading(false);
+
+        const incoming = newQueries ?? [];
+        setQueries(prev => {
+          if (shouldClean) {
+            return incoming;
+          }
+          const existingIds = new Set(prev.map(query => query._id));
+          const filteredQueries = incoming.filter(
+            query => !existingIds.has(query._id)
+          );
+          return [...prev, ...filteredQueries];
+        });
+        setHasMore(
+          incoming.length > 0 &&
+            count > (_page - 1) * PAGE_SIZE + incoming.length
+        );
+        setPage(_page);
+      } finally {
+        if (requestId === requestIdRef.current) {
+          setIsLoading(false);
+        }
+      }
     },
     []
   );
 
-  // Mock function to fetch models
   const fetchModels = React.useCallback(async () => {
     const { schemas } = await getSchemas({});
     setModels(schemas);
-  }, [setModels]);
-
-  // Initial data fetch
-  React.useEffect(() => {
-    fetchModels();
   }, []);
 
-  // Load more when scrolling to the bottom
   React.useEffect(() => {
-    if (inView && hasMore && !isLoading) {
-      fetchQueries(page, searchTerm, selectedModel, false);
-    }
-  }, [inView, hasMore, isLoading, fetchQueries, page]);
+    fetchModels();
+  }, [fetchModels]);
 
-  // Reset pagination and queries when searchTerm or selectedModel changes
   React.useEffect(() => {
-    if (!searchTerm && !selectedModel) {
-      return;
-    }
+    setQueries([]);
     setPage(1);
+    setHasMore(true);
     fetchQueries(1, searchTerm, selectedModel, true);
-  }, [searchTerm, selectedModel]);
+  }, [searchTerm, selectedModel, fetchQueries]);
+
+  React.useEffect(() => {
+    if (inView && hasMore && !isLoading && queries.length > 0) {
+      fetchQueries(page + 1, searchTerm, selectedModel, false);
+    }
+  }, [
+    inView,
+    hasMore,
+    isLoading,
+    fetchQueries,
+    page,
+    searchTerm,
+    selectedModel,
+    queries.length,
+  ]);
 
   const handleCreateQuery = () => {
     router.push(`/database/queries/new`);
@@ -140,8 +167,8 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
   );
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col">
-      <div className="flex min-h-0 flex-1 gap-x-4 px-4 pb-4">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 gap-x-4 overflow-hidden px-4 pb-4">
         <QueryList
           queries={queries}
           models={models}
@@ -155,6 +182,7 @@ export default function QueryLayout({ children }: Readonly<LayoutProps>) {
           onCreateQuery={handleCreateQuery}
           onDeleteQuery={handleDeleteQuery}
           loadMoreRef={ref}
+          scrollRootRef={setScrollRoot}
         />
 
         <div className="min-h-0 flex-1 overflow-auto rounded-lg border bg-background shadow-xs">
