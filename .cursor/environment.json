@@ -4,7 +4,7 @@
   "terminals": [
     {
       "name": "Conduit-UI dev server",
-      "command": "bash .cursor/dev.sh",
+      "command": "yarn dev",
       "description": "Next.js dev server for the Conduit admin panel, served on http://localhost:8080. Set CONDUIT_URL/MASTER_KEY to connect it to a Conduit backend."
     }
   ],
