@@ -2,74 +2,60 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
-import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig';
+import { oauthProviderSettingsSchema } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
-import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
 import { StrategyFormProps } from '@/components/authentication/strategies/interface/StrategyFormProps.interface';
 import React from 'react';
+import { Form } from '@/components/ui/form';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form';
-import { SecretTextarea } from '@/components/ui/secret-textarea';
+  AppleAdditionalClientsSection,
+  AppleDefaultClientSection,
+} from '@/components/authentication/strategies/settingsConfig/oAuth/appleClientsSection';
+
+export const appleClientEntrySchema = z.object({
+  id: z.string().default(''),
+  name: z.string().default(''),
+  clientId: z.string().default(''),
+  teamId: z.string().default(''),
+  keyId: z.string().default(''),
+  privateKey: z.string().default(''),
+  redirect_uri: z.string().default(''),
+});
 
 type authStrategyFormType = z.infer<typeof authStrategySchema>;
-const authStrategySchema = oauthDefaultConfig.merge(
-  z.object({
-    privateKey: z.string().default(''),
-    teamId: z.string().default(''),
-    keyId: z.string().default(''),
-  })
-);
+const authStrategySchema = oauthProviderSettingsSchema.extend({
+  privateKey: z.string().default(''),
+  teamId: z.string().default(''),
+  keyId: z.string().default(''),
+  clients: z.array(appleClientEntrySchema).default([]),
+});
 
 export const AppleConfigForm: React.FC<
   StrategyFormProps<authStrategyFormType>
 > = ({ data, onSubmit, onCancel }) => {
   const form = useForm<authStrategyFormType>({
     resolver: rhfZodResolver(authStrategySchema),
-    defaultValues: data ? { ...data } : {},
+    defaultValues: { ...data, clients: data?.clients ?? [] },
   });
   const { isSubmitting } = form.formState;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className={'flex flex-col gap-1'}>
-          <div className={'flex flex-row gap-x-1'}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <SwitchField fieldName={'enabled'} label={'Enabled'} />
             <SwitchField
               fieldName={'accountLinking'}
               label={'Account Linking'}
             />
           </div>
-          <div className={'flex flex-row gap-x-1'}>
-            <InputField fieldName={'teamId'} label={'Team ID'} />
-            <InputField fieldName={'clientId'} label={'Client ID'} />
-          </div>
 
-          <InputField fieldName={'keyId'} label={'Private key ID'} />
-          <FormField
-            control={form.control}
-            name="privateKey"
-            render={({ field }) => (
-              <FormItem className="w-full space-y-1.5">
-                <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
-                  Private Key
-                </FormLabel>
-                <FormControl>
-                  <SecretTextarea placeholder="" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <div className={'flex flex-row gap-x-1 items-center'}>
-            <InputField fieldName={'redirect_uri'} label={'Redirect URI'} />
-          </div>
-          <div className={'flex flex-row gap-1 mt-4 justify-end'}>
+          <AppleDefaultClientSection />
+          <AppleAdditionalClientsSection />
+
+          <div className="flex flex-row justify-end gap-2 pt-2">
             <Button type={'reset'} disabled={isSubmitting} onClick={onCancel}>
               Cancel
             </Button>

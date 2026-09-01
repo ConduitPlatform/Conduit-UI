@@ -10,7 +10,7 @@ import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
 
-export const oauthDefaultConfig = z.object({
+export const oauthProviderSettingsSchema = z.object({
   enabled: z.boolean().default(false),
   clientId: z.string().default(''),
   clientSecret: z.string().default(''),
@@ -19,7 +19,7 @@ export const oauthDefaultConfig = z.object({
 });
 
 type authStrategyFormType = z.infer<typeof authStrategySchema>;
-const authStrategySchema = oauthDefaultConfig;
+const authStrategySchema = oauthProviderSettingsSchema;
 
 export const OauthDefaultConfigForm: React.FC<
   StrategyFormProps<authStrategyFormType>
@@ -29,18 +29,19 @@ export const OauthDefaultConfigForm: React.FC<
     defaultValues: data ? { ...data } : {},
   });
   const { isSubmitting } = form.formState;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className={'flex flex-col gap-1'}>
-          <div className={'flex flex-row gap-x-1'}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <SwitchField fieldName={'enabled'} label={'Enabled'} />
             <SwitchField
               fieldName={'accountLinking'}
               label={'Account Linking'}
             />
           </div>
-          <div className={'flex flex-row gap-x-1'}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <InputField fieldName={'clientId'} label={'Client ID'} />
             <InputField
               fieldName={'clientSecret'}
@@ -48,10 +49,8 @@ export const OauthDefaultConfigForm: React.FC<
               type="password"
             />
           </div>
-          <div className={'flex flex-row gap-x-1 items-center'}>
-            <InputField fieldName={'redirect_uri'} label={'Redirect URI'} />
-          </div>
-          <div className={'flex flex-row gap-1 mt-4 justify-end'}>
+          <InputField fieldName={'redirect_uri'} label={'Redirect URI'} />
+          <div className="flex flex-row justify-end gap-2 pt-2">
             <Button type={'reset'} disabled={isSubmitting} onClick={onCancel}>
               Cancel
             </Button>
