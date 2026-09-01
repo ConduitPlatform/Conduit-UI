@@ -26,7 +26,7 @@ export function QueryFilters({
   models,
 }: Readonly<QueryFiltersProps>) {
   return (
-    <div className="p-4 space-y-4 border-b">
+    <div className="shrink-0 space-y-4 border-b p-4">
       <div className="flex items-center space-x-2">
         <Search className="w-4 h-4 text-muted-foreground" />
         <Input

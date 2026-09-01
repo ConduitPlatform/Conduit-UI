@@ -104,7 +104,7 @@ export default function ModuleHeader({
     return (
       <>
         <LogsDrawer isSidebarOpen={false} />
-        <div className="page-enter-children">{children}</div>
+        <div className="page-enter-children h-full min-h-0">{children}</div>
       </>
     );
 
@@ -170,8 +170,8 @@ export default function ModuleHeader({
     isCommunicationsSubRoute && pathSegments[1] === 'templates';
 
   return (
-    <div className="flex flex-col overflow-x-auto no-scrollbar">
-      <div className="flex flex-row w-full justify-between px-4 py-2 border-b items-center sticky top-0 z-40 bg-background min-h-10">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex min-h-10 w-full shrink-0 flex-row items-center justify-between border-b bg-background px-4 py-2">
         <div className="flex items-center gap-3 min-w-0">
           <Breadcrumb>
             <BreadcrumbList>
@@ -361,8 +361,8 @@ export default function ModuleHeader({
           </DropdownMenu>
         </div>
       </div>
-      <div className="w-full h-full max-h-[90vh] main-scrollbar top-10">
-        <div className="page-enter-children px-6 py-4 mx-auto max-w-(--breakpoint-2xl) overflow-x-auto">
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="page-enter-children mx-auto h-full min-h-0 max-w-(--breakpoint-2xl) overflow-auto px-6 py-4 main-scrollbar">
           {children}
         </div>
       </div>

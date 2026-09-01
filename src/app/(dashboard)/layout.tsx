@@ -9,9 +9,9 @@ export default function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ModuleAvailabilityProvider>
-      <div className="flex w-full">
+      <div className="flex h-dvh min-h-0 w-full overflow-hidden">
         <AppSidebar />
-        <main className="relative flex flex-col flex-1 min-h-svh bg-background md:ml-[52px]">
+        <main className="relative flex h-dvh min-h-0 flex-1 flex-col overflow-hidden bg-background md:ml-[52px]">
           <ModuleGuard>{children}</ModuleGuard>
         </main>
         <CommandPalette />
