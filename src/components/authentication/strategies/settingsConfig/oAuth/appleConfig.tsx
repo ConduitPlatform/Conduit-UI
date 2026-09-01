@@ -83,17 +83,31 @@ const authStrategySchema = oauthDefaultConfig
       path: ['enabled'],
     }
   )
-  .refine(
-    data => {
-      const ids = data.clients.map(c => c.id.trim().toLowerCase());
-      const uniqueIds = new Set(ids);
-      return ids.length === uniqueIds.size;
-    },
-    {
-      message: 'All nicknames must be unique',
-      path: ['clients'],
+  .superRefine((data, ctx) => {
+    const ids = data.clients.map((c, idx) => ({
+      id: c.id.trim().toLowerCase(),
+      index: idx,
+    }));
+    const seen = new Map<string, number>();
+
+    for (const { id, index } of ids) {
+      if (seen.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'This nickname is already used',
+          path: ['clients', index, 'id'],
+        });
+        const firstIndex = seen.get(id)!;
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'This nickname is already used',
+          path: ['clients', firstIndex, 'id'],
+        });
+      } else {
+        seen.set(id, index);
+      }
     }
-  );
+  });
 
 export const AppleConfigForm: React.FC<
   StrategyFormProps<authStrategyFormType>
@@ -112,12 +126,23 @@ export const AppleConfigForm: React.FC<
   });
 
   const handleFormSubmit = (formData: authStrategyFormType) => {
+    const normalizeWhitespace = (value: string | undefined): string => {
+      if (!value || value.trim().length === 0) {
+        return '';
+      }
+      return value;
+    };
+
     const processedData = {
       ...formData,
       clients: formData.clients.map(client => ({
         ...client,
         id: client.id.trim(),
         clientId: client.clientId.trim(),
+        redirect_uri: normalizeWhitespace(client.redirect_uri),
+        privateKey: normalizeWhitespace(client.privateKey),
+        teamId: normalizeWhitespace(client.teamId),
+        keyId: normalizeWhitespace(client.keyId),
       })),
     };
     onSubmit(processedData);
