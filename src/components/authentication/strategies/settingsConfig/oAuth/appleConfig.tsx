@@ -32,7 +32,7 @@ type CredentialFields = {
   privateKey?: string;
 };
 
-function credentialLabel(fields: CredentialFields): string {
+function defaultCredentialLabel(fields: CredentialFields): string {
   const filled = [
     fields.clientId,
     fields.teamId,
@@ -46,13 +46,33 @@ function credentialLabel(fields: CredentialFields): string {
   return 'Incomplete';
 }
 
-function CredentialBadge({ fields }: { fields: CredentialFields }) {
-  const label = credentialLabel(fields);
+function extraCredentialLabel(fields: CredentialFields): string {
+  const filled = [fields.teamId, fields.keyId, fields.privateKey]
+    .map(value => value?.trim())
+    .filter(Boolean).length;
+  if (filled === 0) return 'Reuses default';
+  if (filled === 3) return 'Second team';
+  return 'Incomplete';
+}
+
+function CredentialBadge({
+  fields,
+  isExtra = false,
+}: {
+  fields: CredentialFields;
+  isExtra?: boolean;
+}) {
+  const label = isExtra
+    ? extraCredentialLabel(fields)
+    : defaultCredentialLabel(fields);
+  const isComplete = isExtra
+    ? label === 'Second team' || label === 'Reuses default'
+    : label === 'Credentials complete';
   return (
     <Badge
-      variant={label === 'Credentials complete' ? 'secondary' : 'outline'}
+      variant={isComplete ? 'secondary' : 'outline'}
       className={
-        label === 'Not configured'
+        label === 'Not configured' || label === 'Reuses default'
           ? 'shrink-0 font-normal text-muted-foreground'
           : 'shrink-0 font-normal'
       }
@@ -161,12 +181,41 @@ export const AppleConfigForm: React.FC<
       ? { ...data, clients: data.clients || [] }
       : { clients: [] },
   });
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, errors } = form.formState;
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'clients',
   });
+
+  const [defaultOpen, setDefaultOpen] = React.useState(false);
+  const [openClients, setOpenClients] = React.useState<Set<number>>(new Set());
+
+  React.useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      const hasDefaultErrors =
+        errors.enabled ||
+        errors.clientId ||
+        errors.teamId ||
+        errors.keyId ||
+        errors.privateKey ||
+        errors.redirect_uri;
+
+      if (hasDefaultErrors) {
+        setDefaultOpen(true);
+      }
+
+      if (errors.clients && Array.isArray(errors.clients)) {
+        const newOpenClients = new Set<number>();
+        errors.clients.forEach((clientError, index) => {
+          if (clientError) {
+            newOpenClients.add(index);
+          }
+        });
+        setOpenClients(newOpenClients);
+      }
+    }
+  }, [errors]);
 
   const handleFormSubmit = (formData: authStrategyFormType) => {
     const normalizeWhitespace = (value: string | undefined): string => {
@@ -215,7 +264,8 @@ export const AppleConfigForm: React.FC<
               </p>
             </div>
             <Collapsible
-              defaultOpen={false}
+              open={defaultOpen}
+              onOpenChange={setDefaultOpen}
               className="mb-0 overflow-hidden rounded-md border"
             >
               <div className="flex items-center gap-2 bg-muted/30 p-3">
@@ -225,7 +275,7 @@ export const AppleConfigForm: React.FC<
                     <p className="truncate text-sm font-medium">Credentials</p>
                   </div>
                 </CollapsibleTrigger>
-                <CredentialBadge fields={defaultFields} />
+                <CredentialBadge fields={defaultFields} isExtra={false} />
               </div>
               <CollapsibleContent>
                 <div className="space-y-4 p-4">
@@ -289,10 +339,22 @@ export const AppleConfigForm: React.FC<
                     ) ?? '') as string,
                   };
 
+                  const isOpen = openClients.has(index);
+                  const toggleOpen = (open: boolean) => {
+                    const newOpenClients = new Set(openClients);
+                    if (open) {
+                      newOpenClients.add(index);
+                    } else {
+                      newOpenClients.delete(index);
+                    }
+                    setOpenClients(newOpenClients);
+                  };
+
                   return (
                     <Collapsible
                       key={field.id}
-                      defaultOpen={false}
+                      open={isOpen}
+                      onOpenChange={toggleOpen}
                       className="mb-0 overflow-hidden rounded-md border"
                     >
                       <div className="flex items-center gap-2 bg-muted/30 p-3">
@@ -309,7 +371,7 @@ export const AppleConfigForm: React.FC<
                             ) : null}
                           </div>
                         </CollapsibleTrigger>
-                        <CredentialBadge fields={extraFields} />
+                        <CredentialBadge fields={extraFields} isExtra={true} />
                         <Button
                           type="button"
                           variant="outline"
