@@ -6,6 +6,7 @@ import { oauthDefaultConfig } from '@/components/authentication/strategies/setti
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { StrategyFormProps } from '@/components/authentication/strategies/interface/StrategyFormProps.interface';
 import React from 'react';
 import {
@@ -16,8 +17,50 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { SecretTextarea } from '@/components/ui/secret-textarea';
-import { Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, Plus, Trash2 } from 'lucide-react';
+
+type CredentialFields = {
+  clientId?: string;
+  teamId?: string;
+  keyId?: string;
+  privateKey?: string;
+};
+
+function credentialLabel(fields: CredentialFields): string {
+  const filled = [
+    fields.clientId,
+    fields.teamId,
+    fields.keyId,
+    fields.privateKey,
+  ]
+    .map(value => value?.trim())
+    .filter(Boolean).length;
+  if (filled === 0) return 'Not configured';
+  if (filled === 4) return 'Credentials complete';
+  return 'Incomplete';
+}
+
+function CredentialBadge({ fields }: { fields: CredentialFields }) {
+  const label = credentialLabel(fields);
+  return (
+    <Badge
+      variant={label === 'Credentials complete' ? 'secondary' : 'outline'}
+      className={
+        label === 'Not configured'
+          ? 'shrink-0 font-normal text-muted-foreground'
+          : 'shrink-0 font-normal'
+      }
+    >
+      {label}
+    </Badge>
+  );
+}
 
 const extraClientSchema = z
   .object({
@@ -148,158 +191,225 @@ export const AppleConfigForm: React.FC<
     onSubmit(processedData);
   };
 
+  const defaultFields: CredentialFields = {
+    clientId: form.watch('clientId'),
+    teamId: form.watch('teamId'),
+    keyId: form.watch('keyId'),
+    privateKey: form.watch('privateKey'),
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-        <div className={'flex flex-col gap-1'}>
-          <div className={'flex flex-row gap-x-1'}>
-            <SwitchField fieldName={'enabled'} label={'Enabled'} />
-            <SwitchField
-              fieldName={'accountLinking'}
-              label={'Account Linking'}
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row gap-x-1">
+            <SwitchField fieldName="enabled" label="Enabled" />
+            <SwitchField fieldName="accountLinking" label="Account Linking" />
           </div>
 
-          <h3 className="text-sm font-semibold mt-4 mb-2">
-            Default Apple Configuration
-          </h3>
+          <section className="space-y-2">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold">Default client</h3>
+              <p className="text-sm text-muted-foreground">
+                Primary Apple credentials for authentication.
+              </p>
+            </div>
+            <Collapsible
+              defaultOpen={false}
+              className="mb-0 overflow-hidden rounded-md border"
+            >
+              <div className="flex items-center gap-2 bg-muted/30 p-3">
+                <CollapsibleTrigger className="flex min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">Credentials</p>
+                  </div>
+                </CollapsibleTrigger>
+                <CredentialBadge fields={defaultFields} />
+              </div>
+              <CollapsibleContent>
+                <div className="space-y-4 p-4">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <InputField fieldName="teamId" label="Team ID" />
+                    <InputField fieldName="clientId" label="Client ID" />
+                  </div>
+                  <InputField fieldName="keyId" label="Private key ID" />
+                  <FormField
+                    control={form.control}
+                    name="privateKey"
+                    render={({ field }) => (
+                      <FormItem className="w-full space-y-1.5">
+                        <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
+                          Private Key
+                        </FormLabel>
+                        <FormControl>
+                          <SecretTextarea placeholder="" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <InputField fieldName="redirect_uri" label="Redirect URI" />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </section>
 
-          <div className={'flex flex-row gap-x-1'}>
-            <InputField fieldName={'teamId'} label={'Team ID'} />
-            <InputField fieldName={'clientId'} label={'Client ID'} />
-          </div>
-
-          <InputField fieldName={'keyId'} label={'Private key ID'} />
-          <FormField
-            control={form.control}
-            name="privateKey"
-            render={({ field }) => (
-              <FormItem className="w-full space-y-1.5">
-                <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
-                  Private Key
-                </FormLabel>
-                <FormControl>
-                  <SecretTextarea placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className={'flex flex-row gap-x-1 items-center'}>
-            <InputField fieldName={'redirect_uri'} label={'Redirect URI'} />
-          </div>
-
-          <div className="mt-6">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold">Extra Apple Clients</h3>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  append({
-                    id: '',
-                    clientId: '',
-                    name: '',
-                    redirect_uri: '',
-                    privateKey: '',
-                    teamId: '',
-                    keyId: '',
-                  })
-                }
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add Client
-              </Button>
+          <section className="space-y-3">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold">Extra clients</h3>
+              <p className="text-sm text-muted-foreground">
+                Additional credential sets for multi-app support.
+              </p>
             </div>
 
-            {fields.length > 0 && (
-              <div className="space-y-4">
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="border rounded-md p-4 space-y-2"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">
-                        Client {index + 1}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => remove(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
+            {fields.length === 0 ? (
+              <div className="rounded-md border border-dashed bg-muted/30 px-4 py-6 text-center text-sm text-muted-foreground">
+                No extra clients configured.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {fields.map((field, index) => {
+                  const nickname = (form.watch(`clients.${index}.id` as any) ??
+                    '') as string;
+                  const appleAppId = (form.watch(
+                    `clients.${index}.clientId` as any
+                  ) ?? '') as string;
+                  const displayName = nickname.trim() || `Client ${index + 1}`;
 
-                    <div className="flex flex-row gap-x-1">
-                      <InputField
-                        fieldName={`clients.${index}.id`}
-                        label="Nickname"
-                        description="Unique identifier for this client"
-                      />
-                      <InputField
-                        fieldName={`clients.${index}.clientId`}
-                        label="Apple app ID"
-                        description="Apple Services ID or bundle ID"
-                      />
-                    </div>
+                  const extraFields: CredentialFields = {
+                    clientId: (form.watch(`clients.${index}.clientId` as any) ??
+                      '') as string,
+                    teamId: (form.watch(`clients.${index}.teamId` as any) ??
+                      '') as string,
+                    keyId: (form.watch(`clients.${index}.keyId` as any) ??
+                      '') as string,
+                    privateKey: (form.watch(
+                      `clients.${index}.privateKey` as any
+                    ) ?? '') as string,
+                  };
 
-                    <InputField
-                      fieldName={`clients.${index}.name`}
-                      label="Name (optional)"
-                    />
-
-                    <InputField
-                      fieldName={`clients.${index}.redirect_uri`}
-                      label="Redirect URI (optional)"
-                      description="Leave empty to reuse the default redirect URI"
-                    />
-
-                    <p className="text-xs text-muted-foreground mt-3 mb-2">
-                      Leave all three fields below empty to reuse the default
-                      key, or provide all three for a second Apple team:
-                    </p>
-
-                    <FormField
-                      control={form.control}
-                      name={`clients.${index}.privateKey`}
-                      render={({ field }) => (
-                        <FormItem className="w-full space-y-1.5">
-                          <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
-                            Private Key (optional)
-                          </FormLabel>
-                          <FormControl>
-                            <SecretTextarea placeholder="" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="flex flex-row gap-x-1">
-                      <InputField
-                        fieldName={`clients.${index}.teamId`}
-                        label="Team ID (optional)"
-                      />
-                      <InputField
-                        fieldName={`clients.${index}.keyId`}
-                        label="Key ID (optional)"
-                      />
-                    </div>
-                  </div>
-                ))}
+                  return (
+                    <Collapsible
+                      key={field.id}
+                      defaultOpen={false}
+                      className="mb-0 overflow-hidden rounded-md border"
+                    >
+                      <div className="flex items-center gap-2 bg-muted/30 p-3">
+                        <CollapsibleTrigger className="flex min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                          <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                          <div className="min-w-0 flex-1 space-y-0.5">
+                            <p className="truncate text-sm font-medium">
+                              {displayName}
+                            </p>
+                            {appleAppId.trim() ? (
+                              <p className="truncate font-mono text-xs text-muted-foreground">
+                                {appleAppId}
+                              </p>
+                            ) : null}
+                          </div>
+                        </CollapsibleTrigger>
+                        <CredentialBadge fields={extraFields} />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="shrink-0"
+                          aria-label={`Remove ${displayName}`}
+                          onClick={() => remove(index)}
+                        >
+                          <Trash2 className="mr-1.5 h-4 w-4" />
+                          Remove
+                        </Button>
+                      </div>
+                      <CollapsibleContent>
+                        <div className="space-y-4 p-4">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <InputField
+                              fieldName={`clients.${index}.id`}
+                              label="Nickname"
+                              description="Unique identifier for this client"
+                            />
+                            <InputField
+                              fieldName={`clients.${index}.clientId`}
+                              label="Apple app ID"
+                              description="Apple Services ID or bundle ID"
+                            />
+                          </div>
+                          <InputField
+                            fieldName={`clients.${index}.name`}
+                            label="Name (optional)"
+                            description="Admin label for this client"
+                          />
+                          <InputField
+                            fieldName={`clients.${index}.redirect_uri`}
+                            label="Redirect URI (optional)"
+                            description="Leave empty to reuse the default redirect URI"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Leave all three fields below empty to reuse the
+                            default key, or provide all three for a second Apple
+                            team:
+                          </p>
+                          <FormField
+                            control={form.control}
+                            name={`clients.${index}.privateKey` as any}
+                            render={({ field }) => (
+                              <FormItem className="w-full space-y-1.5">
+                                <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
+                                  Private Key (optional)
+                                </FormLabel>
+                                <FormControl>
+                                  <SecretTextarea placeholder="" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <InputField
+                              fieldName={`clients.${index}.teamId`}
+                              label="Team ID (optional)"
+                            />
+                            <InputField
+                              fieldName={`clients.${index}.keyId`}
+                              label="Key ID (optional)"
+                            />
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
               </div>
             )}
-          </div>
 
-          <div className={'flex flex-row gap-1 mt-4 justify-end'}>
-            <Button type={'reset'} disabled={isSubmitting} onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() =>
+                append({
+                  id: '',
+                  clientId: '',
+                  name: '',
+                  redirect_uri: '',
+                  privateKey: '',
+                  teamId: '',
+                  keyId: '',
+                })
+              }
+            >
+              <Plus className="mr-1.5 h-4 w-4" />
+              Add client
+            </Button>
+          </section>
+
+          <div className="flex flex-row gap-1 mt-4 justify-end">
+            <Button type="reset" disabled={isSubmitting} onClick={onCancel}>
               Cancel
             </Button>
-            <Button type={'submit'} disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting}>
               Save
             </Button>
           </div>
