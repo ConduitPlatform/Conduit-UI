@@ -17,13 +17,22 @@
 
 @theme {
   --color-border: hsl(var(--border));
+  --color-border-strong: hsl(var(--border-strong));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
+  --color-foreground-muted: hsl(var(--foreground-muted));
+  --color-foreground-subtle: hsl(var(--foreground-subtle));
 
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-hover: hsl(var(--primary-hover));
+  --color-primary-active: hsl(var(--primary-active));
+  --color-primary-muted: hsl(var(--primary-muted));
+  --color-primary-muted-foreground: hsl(var(--primary-muted-foreground));
+  --color-selection: hsl(var(--selection));
+  --color-selection-foreground: hsl(var(--selection-foreground));
 
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -58,16 +67,62 @@
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
   --color-chart-grid: hsl(var(--chart-grid));
+  --color-chart-axis: hsl(var(--chart-axis));
 
   --color-status-healthy: hsl(var(--status-healthy));
   --color-status-warning: hsl(var(--status-warning));
   --color-status-critical: hsl(var(--status-critical));
+  --color-status-info: hsl(var(--status-info));
   --color-status-unknown: hsl(var(--status-unknown));
 
   --color-surface-1: hsl(var(--surface-1));
   --color-surface-2: hsl(var(--surface-2));
-  --color-cyan-dim: hsl(192 91% 43% / 0.15);
-  --color-cyan-text: hsl(192 75% 55%);
+  --color-surface-3: hsl(var(--surface-3));
+
+  /* Preferred interaction roles; cyan names remain migration-safe aliases. */
+  --color-cyan-dim: hsl(var(--cyan-dim));
+  --color-cyan-text: hsl(var(--cyan-text));
+
+  --color-callout-info: hsl(var(--callout-info));
+  --color-callout-info-muted: hsl(var(--callout-info-muted));
+  --color-callout-info-foreground: hsl(var(--callout-info-foreground));
+  --color-callout-success: hsl(var(--callout-success));
+  --color-callout-success-muted: hsl(var(--callout-success-muted));
+  --color-callout-success-foreground: hsl(var(--callout-success-foreground));
+  --color-callout-warning: hsl(var(--callout-warning));
+  --color-callout-warning-muted: hsl(var(--callout-warning-muted));
+  --color-callout-warning-foreground: hsl(var(--callout-warning-foreground));
+  --color-callout-danger: hsl(var(--callout-danger));
+  --color-callout-danger-muted: hsl(var(--callout-danger-muted));
+  --color-callout-danger-foreground: hsl(var(--callout-danger-foreground));
+
+  --color-graph-panel: hsl(var(--graph-panel));
+  --color-graph-router: hsl(var(--graph-router));
+  --color-graph-router-muted: hsl(var(--graph-router-muted));
+  --color-graph-router-foreground: hsl(var(--graph-router-foreground));
+  --color-graph-route: hsl(var(--graph-route));
+  --color-graph-route-muted: hsl(var(--graph-route-muted));
+  --color-graph-route-foreground: hsl(var(--graph-route-foreground));
+  --color-graph-middleware: hsl(var(--graph-middleware));
+  --color-graph-middleware-muted: hsl(var(--graph-middleware-muted));
+  --color-graph-middleware-foreground: hsl(var(--graph-middleware-foreground));
+  --color-graph-edge: hsl(var(--graph-edge));
+  --color-graph-edge-muted: hsl(var(--graph-edge-muted));
+  --color-graph-selected: hsl(var(--graph-selected));
+
+  --color-http-get: hsl(var(--http-get));
+  --color-http-post: hsl(var(--http-post));
+  --color-http-put: hsl(var(--http-put));
+  --color-http-patch: hsl(var(--http-patch));
+  --color-http-delete: hsl(var(--http-delete));
+  --color-http-head: hsl(var(--http-head));
+  --color-http-options: hsl(var(--http-options));
+
+  --color-log-critical: hsl(var(--log-critical));
+  --color-log-warning: hsl(var(--log-warning));
+  --color-log-info: hsl(var(--log-info));
+  --color-log-debug: hsl(var(--log-debug));
+  --color-log-unknown: hsl(var(--log-unknown));
 
   --color-surface-dark-gray: hsl(var(--surface-dark-gray));
   --color-text-light: hsl(var(--text-light));
@@ -78,10 +133,24 @@
   --color-code-bg: hsl(var(--code-bg));
   --color-code-text: hsl(var(--code-text));
 
+  --color-syntax-comment: hsl(var(--syntax-comment));
+  --color-syntax-keyword: hsl(var(--syntax-keyword));
+  --color-syntax-function: hsl(var(--syntax-function));
+  --color-syntax-property: hsl(var(--syntax-property));
+  --color-syntax-string: hsl(var(--syntax-string));
+  --color-syntax-number: hsl(var(--syntax-number));
+  --color-syntax-boolean: hsl(var(--syntax-boolean));
+  --color-syntax-null: hsl(var(--syntax-null));
+  --color-syntax-operator: hsl(var(--syntax-operator));
+
   --color-json-null: hsl(var(--json-null));
   --color-json-string: hsl(var(--json-string));
   --color-json-boolean: hsl(var(--json-boolean));
   --color-json-number: hsl(var(--json-number));
+
+  --color-overlay: hsl(var(--overlay));
+  --color-scrollbar-track: hsl(var(--scrollbar-track));
+  --color-scrollbar-thumb: hsl(var(--scrollbar-thumb));
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -168,94 +237,163 @@
 }
 
 @layer base {
+  /*
+    Theme convention (intentional): `:root` is the complete dark palette.
+    `.light` overrides every theme-sensitive role; no `.dark` selector is
+    required. Keep both blocks in parity whenever a semantic role is added.
+  */
   :root {
-    /* Surfaces — three-tier depth system (dark-first) */
-    --background: 225 16% 7%;
-    --surface-1: 224 14% 10%;
-    --surface-2: 222 12% 14%;
+    /* Deep graphite/navy surfaces with legible elevation boundaries. */
+    --background: 225 26% 6%;
+    --surface-1: 224 23% 9%;
+    --surface-2: 223 20% 12%;
+    --surface-3: 221 18% 16%;
 
-    /* Text — three tiers */
-    --foreground: 210 20% 93%;
-    --muted: 220 14% 18%;
-    --muted-foreground: 215 16% 55%;
+    /* Text hierarchy: muted remains AA on the base and raised surfaces. */
+    --foreground: 210 25% 96%;
+    --foreground-muted: 214 15% 72%;
+    --foreground-subtle: 215 12% 58%;
+    --muted: 222 16% 15%;
+    --muted-foreground: 214 15% 72%;
 
-    /* Borders */
-    --border: 220 12% 16%;
-    --input: 220 12% 18%;
+    /* Boundaries and controls. */
+    --border: 221 17% 19%;
+    --border-strong: 217 15% 31%;
+    --input: 218 13% 46%;
 
-    /* Brand — Conduit Cyan */
-    --primary: 192 91% 43%;
-    --primary-foreground: 225 16% 7%;
+    /* Conduit Cyan: interaction, selection, focus, and key data only. */
+    --primary: 191 82% 48%;
+    --primary-foreground: 225 26% 6%;
+    --primary-hover: 190 88% 56%;
+    --primary-active: 191 78% 42%;
+    --primary-muted: 191 82% 48% / 0.14;
+    --primary-muted-foreground: 190 78% 68%;
+    --cyan-dim: 191 82% 48% / 0.14;
+    --cyan-text: 190 78% 68%;
+    --selection: 191 82% 48% / 0.24;
+    --selection-foreground: 210 25% 96%;
+    --ring: 190 90% 58%;
 
-    /* Secondary / Accent */
-    --secondary: 220 14% 14%;
-    --secondary-foreground: 210 20% 93%;
-    --accent: 220 14% 14%;
-    --accent-foreground: 210 20% 93%;
+    --secondary: 223 20% 12%;
+    --secondary-foreground: 210 25% 96%;
+    --accent: 221 18% 16%;
+    --accent-foreground: 210 25% 96%;
 
-    /* Destructive */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
+    /* Solid destructive controls use an AA white foreground. */
+    --destructive: 2 72% 42%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Focus rings */
-    --ring: 192 91% 43%;
+    /* Component aliases map directly onto the elevation system. */
+    --card: 224 23% 9%;
+    --card-foreground: 210 25% 96%;
+    --popover: 223 20% 12%;
+    --popover-foreground: 210 25% 96%;
 
-    /* Aliases (point to surface tiers) */
-    --card: 224 14% 10%;
-    --card-foreground: 210 20% 93%;
-    --popover: 222 12% 14%;
-    --popover-foreground: 210 20% 93%;
+    /* Operational states; use callout foreground roles for normal text. */
+    --status-healthy: 146 56% 59%;
+    --status-warning: 40 86% 64%;
+    --status-critical: 3 72% 65%;
+    --status-info: 207 72% 65%;
+    --status-unknown: 215 12% 62%;
 
-    /* Charts — dark-optimized, higher saturation */
-    --chart-1: 192 91% 50%;
-    --chart-2: 160 65% 50%;
-    --chart-3: 38 92% 55%;
-    --chart-4: 262 83% 65%;
-    --chart-5: 330 75% 60%;
-    --chart-grid: 220 12% 16%;
+    /* Callouts provide separate border, tint, and AA text roles. */
+    --callout-info: 207 72% 62%;
+    --callout-info-muted: 207 72% 55% / 0.12;
+    --callout-info-foreground: 207 84% 76%;
+    --callout-success: 146 56% 56%;
+    --callout-success-muted: 146 56% 50% / 0.12;
+    --callout-success-foreground: 146 62% 72%;
+    --callout-warning: 40 86% 61%;
+    --callout-warning-muted: 40 86% 55% / 0.12;
+    --callout-warning-foreground: 42 90% 74%;
+    --callout-danger: 3 72% 62%;
+    --callout-danger-muted: 3 72% 55% / 0.12;
+    --callout-danger-foreground: 3 78% 76%;
 
-    /* Status dot colors */
-    --status-healthy: 142 72% 55%;
-    --status-warning: 38 92% 55%;
-    --status-critical: 0 80% 58%;
-    --status-unknown: 220 10% 45%;
+    /* Distinct, color-blind-conscious chart series plus readable axes. */
+    --chart-1: 190 78% 58%;
+    --chart-2: 153 55% 58%;
+    --chart-3: 39 82% 62%;
+    --chart-4: 263 68% 70%;
+    --chart-5: 335 68% 66%;
+    --chart-grid: 220 16% 22%;
+    --chart-axis: 215 14% 68%;
 
-    /* Legacy surface tokens */
-    --surface-dark-gray: 222 47% 11%;
-    --text-light: 210 40% 98%;
-    --text-dark-gray: 215 20% 65%;
-    --text-light-gray: 215 16% 57%;
-    --border-dark-gray: 220 12% 16%;
+    /* Graph nodes use tint + border + foreground triplets. */
+    --graph-panel: 223 20% 12%;
+    --graph-router: 207 72% 62%;
+    --graph-router-muted: 207 72% 55% / 0.12;
+    --graph-router-foreground: 207 84% 78%;
+    --graph-route: 146 56% 56%;
+    --graph-route-muted: 146 56% 50% / 0.12;
+    --graph-route-foreground: 146 62% 74%;
+    --graph-middleware: 263 62% 68%;
+    --graph-middleware-muted: 263 62% 60% / 0.12;
+    --graph-middleware-foreground: 263 76% 82%;
+    --graph-edge: 215 15% 58%;
+    --graph-edge-muted: 215 13% 38%;
+    --graph-selected: 190 90% 58%;
 
-    --code-bg: 225 16% 7%;
-    --code-text: 213 16% 82%;
+    /* HTTP methods are text/border colors; pair with low-opacity tints. */
+    --http-get: 207 80% 72%;
+    --http-post: 148 60% 67%;
+    --http-put: 38 90% 70%;
+    --http-patch: 270 70% 76%;
+    --http-delete: 3 78% 72%;
+    --http-head: 231 68% 75%;
+    --http-options: 215 15% 68%;
 
-    --json-null: 197 100% 50%;
-    --json-string: 180 100% 43%;
-    --json-boolean: 49 96% 46%;
-    --json-number: 279 70% 77%;
+    /* Log levels intentionally avoid cyan reserved for interaction. */
+    --log-critical: 3 78% 72%;
+    --log-warning: 38 90% 70%;
+    --log-info: 207 80% 72%;
+    --log-debug: 270 70% 76%;
+    --log-unknown: 215 15% 68%;
 
-    /* Scrollbar */
-    --scrollbar-track: 0 0% 7%;
-    --scrollbar-thumb: 220 10% 30%;
+    /* Developer surfaces and syntax roles. */
+    --code-bg: 225 26% 6%;
+    --code-text: 213 18% 86%;
+    --syntax-comment: 215 12% 61%;
+    --syntax-keyword: 263 72% 78%;
+    --syntax-function: 207 80% 76%;
+    --syntax-property: 194 70% 72%;
+    --syntax-string: 149 55% 70%;
+    --syntax-number: 38 88% 72%;
+    --syntax-boolean: 270 68% 78%;
+    --syntax-null: 335 72% 76%;
+    --syntax-operator: 213 18% 82%;
+
+    /* Legacy interfaces remain aliases until their consumers migrate. */
+    --surface-dark-gray: 223 20% 12%;
+    --text-light: 210 25% 96%;
+    --text-dark-gray: 214 15% 72%;
+    --text-light-gray: 215 12% 58%;
+    --border-dark-gray: 221 17% 19%;
+    --json-null: var(--syntax-null);
+    --json-string: var(--syntax-string);
+    --json-boolean: var(--syntax-boolean);
+    --json-number: var(--syntax-number);
+
+    --scrollbar-track: 225 26% 6%;
+    --scrollbar-thumb: 216 12% 36%;
 
     --radius: 0.5rem;
 
-    --overlay: 0 0% 0% / 0.7;
+    --overlay: 225 35% 3% / 0.76;
 
     --sidebar-width: 14rem;
     --sidebar-width-icon: 3.25rem;
     --header-height: 2.5rem;
 
-    /* Sidebar — slightly darker than base */
-    --sidebar-background: 225 18% 6%;
-    --sidebar-foreground: 215 16% 60%;
-    --sidebar-primary: 192 91% 43%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 12%;
-    --sidebar-accent-foreground: 210 20% 93%;
-    --sidebar-border: 220 12% 12%;
-    --sidebar-ring: 192 91% 43%;
+    /* Sidebar sits below the base; its active label is cyan-on-tint. */
+    --sidebar-background: 226 28% 5%;
+    --sidebar-foreground: 214 15% 72%;
+    --sidebar-primary: 191 82% 48%;
+    --sidebar-primary-foreground: 225 26% 6%;
+    --sidebar-accent: 223 20% 12%;
+    --sidebar-accent-foreground: 210 25% 96%;
+    --sidebar-border: 222 18% 15%;
+    --sidebar-ring: 190 90% 58%;
 
     /* Shadows — dark mode: minimal, single-layer */
     --shadow-1-value: 0 1px 2px rgb(0 0 0 / 0.3);
@@ -265,70 +403,137 @@
   }
 
   .light {
-    --background: 210 20% 98%;
+    /* Light theme mirrors every semantic role; it is not a fallback palette. */
+    --background: 216 33% 98%;
     --surface-1: 0 0% 100%;
-    --surface-2: 0 0% 100%;
-    --foreground: 225 20% 10%;
-    --muted: 210 20% 95%;
-    --muted-foreground: 215 16% 46%;
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --primary: 192 91% 36%;
+    --surface-2: 216 25% 96%;
+    --surface-3: 216 22% 93%;
+
+    --foreground: 224 28% 12%;
+    --foreground-muted: 217 13% 39%;
+    --foreground-subtle: 217 12% 46%;
+    --muted: 216 24% 94%;
+    --muted-foreground: 217 13% 39%;
+
+    --border: 216 18% 84%;
+    --border-strong: 216 16% 68%;
+    --input: 216 14% 52%;
+
+    --primary: 193 90% 27%;
     --primary-foreground: 0 0% 100%;
-    --ring: 192 91% 36%;
+    --primary-hover: 193 90% 23%;
+    --primary-active: 193 88% 20%;
+    --primary-muted: 193 82% 38% / 0.11;
+    --primary-muted-foreground: 193 90% 27%;
+    --cyan-dim: 193 82% 38% / 0.11;
+    --cyan-text: 193 90% 27%;
+    --selection: 193 82% 38% / 0.18;
+    --selection-foreground: 224 28% 12%;
+    --ring: 193 90% 30%;
 
-    --secondary: 210 20% 95%;
-    --secondary-foreground: 225 20% 10%;
-    --accent: 210 20% 95%;
-    --accent-foreground: 225 20% 10%;
+    --secondary: 216 25% 96%;
+    --secondary-foreground: 224 28% 12%;
+    --accent: 216 22% 93%;
+    --accent-foreground: 224 28% 12%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 2 72% 42%;
+    --destructive-foreground: 0 0% 100%;
 
     --card: 0 0% 100%;
-    --card-foreground: 225 20% 10%;
+    --card-foreground: 224 28% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 225 20% 10%;
+    --popover-foreground: 224 28% 12%;
 
-    --chart-1: 192 91% 40%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 262 83% 58%;
-    --chart-5: 330 75% 55%;
-    --chart-grid: 210 17% 95%;
+    --status-healthy: 148 68% 30%;
+    --status-warning: 34 88% 32%;
+    --status-critical: 2 72% 44%;
+    --status-info: 207 75% 36%;
+    --status-unknown: 215 12% 42%;
 
-    --status-healthy: 142 71% 45%;
-    --status-warning: 38 92% 50%;
-    --status-critical: 0 84% 60%;
-    --status-unknown: 220 9% 46%;
+    --callout-info: 207 75% 39%;
+    --callout-info-muted: 207 75% 45% / 0.1;
+    --callout-info-foreground: 207 80% 32%;
+    --callout-success: 148 68% 33%;
+    --callout-success-muted: 148 68% 40% / 0.1;
+    --callout-success-foreground: 148 72% 27%;
+    --callout-warning: 34 88% 35%;
+    --callout-warning-muted: 34 88% 45% / 0.1;
+    --callout-warning-foreground: 34 94% 28%;
+    --callout-danger: 2 72% 44%;
+    --callout-danger-muted: 2 72% 50% / 0.1;
+    --callout-danger-foreground: 2 72% 38%;
 
-    --surface-dark-gray: 222 47% 11%;
-    --text-light: 210 40% 98%;
-    --text-dark-gray: 215 16% 47%;
-    --text-light-gray: 215 16% 57%;
-    --border-dark-gray: 214 20% 88%;
+    --chart-1: 193 88% 31%;
+    --chart-2: 151 68% 32%;
+    --chart-3: 34 90% 36%;
+    --chart-4: 263 58% 49%;
+    --chart-5: 335 62% 44%;
+    --chart-grid: 216 18% 86%;
+    --chart-axis: 217 14% 38%;
 
-    --code-bg: 215 28% 13%;
-    --code-text: 213 16% 82%;
+    --graph-panel: 0 0% 100%;
+    --graph-router: 207 75% 39%;
+    --graph-router-muted: 207 75% 45% / 0.1;
+    --graph-router-foreground: 207 80% 30%;
+    --graph-route: 148 68% 33%;
+    --graph-route-muted: 148 68% 40% / 0.1;
+    --graph-route-foreground: 148 72% 25%;
+    --graph-middleware: 263 58% 49%;
+    --graph-middleware-muted: 263 58% 55% / 0.1;
+    --graph-middleware-foreground: 263 60% 36%;
+    --graph-edge: 215 15% 42%;
+    --graph-edge-muted: 215 14% 68%;
+    --graph-selected: 193 90% 30%;
 
-    --json-null: 189 100% 30%;
-    --json-string: 180 100% 23%;
-    --json-boolean: 40 77% 46%;
-    --json-number: 280 42% 50%;
+    --http-get: 207 82% 34%;
+    --http-post: 150 68% 28%;
+    --http-put: 32 90% 30%;
+    --http-patch: 270 60% 40%;
+    --http-delete: 2 72% 42%;
+    --http-head: 231 58% 43%;
+    --http-options: 215 16% 38%;
 
-    --scrollbar-track: 210 20% 95%;
-    --scrollbar-thumb: 215 16% 75%;
+    --log-critical: 2 72% 42%;
+    --log-warning: 32 90% 30%;
+    --log-info: 207 82% 34%;
+    --log-debug: 270 60% 40%;
+    --log-unknown: 215 16% 38%;
 
-    --overlay: 0 0% 0% / 0.5;
+    --code-bg: 220 24% 96%;
+    --code-text: 224 24% 16%;
+    --syntax-comment: 217 12% 42%;
+    --syntax-keyword: 263 58% 42%;
+    --syntax-function: 207 80% 34%;
+    --syntax-property: 193 84% 28%;
+    --syntax-string: 149 68% 26%;
+    --syntax-number: 32 88% 30%;
+    --syntax-boolean: 270 58% 40%;
+    --syntax-null: 335 65% 39%;
+    --syntax-operator: 224 20% 30%;
 
-    --sidebar-background: 210 20% 97%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 192 91% 36%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 95%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 214 20% 90%;
-    --sidebar-ring: 192 91% 36%;
+    --surface-dark-gray: 224 25% 14%;
+    --text-light: 210 25% 96%;
+    --text-dark-gray: 217 13% 39%;
+    --text-light-gray: 217 12% 46%;
+    --border-dark-gray: 216 18% 84%;
+    --json-null: var(--syntax-null);
+    --json-string: var(--syntax-string);
+    --json-boolean: var(--syntax-boolean);
+    --json-number: var(--syntax-number);
+
+    --scrollbar-track: 216 24% 94%;
+    --scrollbar-thumb: 216 12% 62%;
+
+    --overlay: 224 30% 8% / 0.56;
+
+    --sidebar-background: 216 33% 97%;
+    --sidebar-foreground: 217 13% 39%;
+    --sidebar-primary: 191 82% 48%;
+    --sidebar-primary-foreground: 224 28% 12%;
+    --sidebar-accent: 216 24% 93%;
+    --sidebar-accent-foreground: 224 28% 12%;
+    --sidebar-border: 216 18% 86%;
+    --sidebar-ring: 193 90% 30%;
 
     /* Shadows — light mode: layered */
     --shadow-1-value:
@@ -365,6 +570,303 @@
     text-wrap: balance;
     letter-spacing: -0.01em;
   }
+}
+
+/* react-json-view-lite ships fixed light/dark colors; keep its override local. */
+.semantic-json-view {
+  background: hsl(var(--code-bg)) !important;
+  color: hsl(var(--code-text)) !important;
+}
+
+.semantic-json-view .semantic-json-view__property {
+  color: hsl(var(--syntax-property)) !important;
+}
+
+.semantic-json-view .semantic-json-view__null {
+  color: hsl(var(--syntax-null)) !important;
+}
+
+.semantic-json-view .semantic-json-view__string {
+  color: hsl(var(--syntax-string)) !important;
+}
+
+.semantic-json-view .semantic-json-view__boolean {
+  color: hsl(var(--syntax-boolean)) !important;
+}
+
+.semantic-json-view .semantic-json-view__number {
+  color: hsl(var(--syntax-number)) !important;
+}
+
+.semantic-json-view .semantic-json-view__value {
+  color: hsl(var(--syntax-function)) !important;
+}
+
+.semantic-json-view .semantic-json-view__punctuation {
+  color: hsl(var(--syntax-operator)) !important;
+}
+
+.semantic-json-view .semantic-json-view__control {
+  color: hsl(var(--code-text)) !important;
+}
+
+.semantic-json-view .semantic-json-view__collapsed {
+  color: hsl(var(--foreground-muted)) !important;
+}
+
+/*
+  React Flow sets control, minimap, edge, and handle colors in library CSS.
+  Keep these overrides opt-in so unrelated canvases retain their own themes.
+*/
+.semantic-react-flow {
+  color: hsl(var(--foreground));
+}
+
+.semantic-react-flow .react-flow__controls,
+.semantic-react-flow .react-flow__minimap {
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--graph-panel));
+  box-shadow: var(--shadow-2-value);
+}
+
+.semantic-react-flow .react-flow__controls-button {
+  border-color: hsl(var(--border));
+  background: hsl(var(--graph-panel));
+  color: hsl(var(--foreground));
+  fill: currentcolor;
+}
+
+.semantic-react-flow .react-flow__controls-button:hover {
+  background: hsl(var(--surface-3));
+  color: hsl(var(--primary-muted-foreground));
+}
+
+.semantic-react-flow .react-flow__controls-button:active {
+  background: hsl(var(--selection));
+  color: hsl(var(--selection-foreground));
+}
+
+.semantic-react-flow .react-flow__controls-button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -2px;
+}
+
+.semantic-react-flow .react-flow__controls-button:disabled {
+  color: hsl(var(--foreground-subtle));
+}
+
+.semantic-react-flow .react-flow__minimap-mask {
+  fill: hsl(var(--overlay));
+}
+
+.semantic-react-flow .react-flow__minimap-node {
+  fill: hsl(var(--graph-edge-muted));
+  stroke: hsl(var(--border-strong));
+}
+
+.semantic-react-flow .react-flow__handle {
+  border-color: hsl(var(--surface-1));
+}
+
+.semantic-react-flow .graph-node {
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.semantic-react-flow .react-flow__node:hover .graph-node {
+  border-color: hsl(var(--graph-selected));
+}
+
+.semantic-react-flow .react-flow__node:focus-visible,
+.semantic-react-flow .react-flow__edge:focus-visible,
+.semantic-react-flow .react-flow__pane:focus-visible {
+  outline: none;
+}
+
+.semantic-react-flow .react-flow__node.selected .graph-node,
+.semantic-react-flow .react-flow__node:focus-visible .graph-node {
+  box-shadow:
+    0 0 0 2px hsl(var(--graph-selected)),
+    var(--shadow-2-value);
+}
+
+.semantic-react-flow .react-flow__edge:hover .react-flow__edge-path {
+  stroke: hsl(var(--graph-selected)) !important;
+}
+
+.semantic-react-flow .react-flow__edge:focus-visible .react-flow__edge-path,
+.semantic-react-flow .react-flow__edge.selected .react-flow__edge-path {
+  stroke: hsl(var(--graph-selected)) !important;
+  stroke-width: 2.5;
+}
+
+.semantic-react-flow .react-flow__selection,
+.semantic-react-flow .react-flow__nodesselection-rect {
+  border: 1px dashed hsl(var(--graph-selected));
+  background: hsl(var(--selection));
+}
+
+.semantic-react-flow .react-flow__pane:focus-visible {
+  box-shadow: inset 0 0 0 2px hsl(var(--ring));
+}
+
+.semantic-react-flow .react-flow__edge-text {
+  fill: hsl(var(--foreground));
+}
+
+.semantic-react-flow .react-flow__edge-textbg {
+  fill: hsl(var(--graph-panel));
+}
+
+.semantic-react-flow .react-flow__attribution {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-sm);
+  background: hsl(var(--graph-panel));
+  color: hsl(var(--foreground-muted));
+}
+
+.semantic-react-flow .react-flow__attribution a {
+  color: hsl(var(--foreground-muted));
+}
+
+.semantic-react-flow .react-flow__attribution a:hover {
+  color: hsl(var(--primary-muted-foreground));
+}
+
+.semantic-react-flow .react-flow__attribution a:focus-visible {
+  border-radius: calc(var(--radius-sm) - 1px);
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
+}
+
+/* @uiw/react-textarea-code-editor exposes these variables on its root. */
+.w-tc-editor.semantic-code-editor {
+  --color-fg-default: hsl(var(--code-text));
+  --color-canvas-subtle: hsl(var(--code-bg));
+  --color-prettylights-syntax-comment: hsl(var(--syntax-comment));
+  --color-prettylights-syntax-entity-tag: hsl(var(--syntax-boolean));
+  --color-prettylights-syntax-entity: hsl(var(--syntax-keyword));
+  --color-prettylights-syntax-sublimelinter-gutter-mark: hsl(
+    var(--syntax-operator)
+  );
+  --color-prettylights-syntax-constant: hsl(var(--syntax-string));
+  --color-prettylights-syntax-string: hsl(var(--syntax-function));
+  --color-prettylights-syntax-keyword: hsl(var(--syntax-keyword));
+  --color-prettylights-syntax-markup-bold: hsl(var(--code-text));
+  --color-prettylights-syntax-string-regexp: hsl(var(--syntax-number));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.comment, .cdata, .doctype, .prolog) {
+  color: hsl(var(--syntax-comment));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.keyword, .atrule) {
+  color: hsl(var(--syntax-keyword));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.function, .method) {
+  color: hsl(var(--syntax-function));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.property, .property-access, .attr-name) {
+  color: hsl(var(--syntax-property));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.string, .char, .attr-value, .regex) {
+  color: hsl(var(--syntax-string));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token.number {
+  color: hsl(var(--syntax-number));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token.boolean {
+  color: hsl(var(--syntax-boolean));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.null, .nil) {
+  color: hsl(var(--syntax-null));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.operator, .punctuation) {
+  color: hsl(var(--syntax-operator));
+}
+
+/*
+  @react-email/editor chrome inherits the application palette. The editable
+  document resets these variables to a neutral email canvas below.
+*/
+.email-editor-shell {
+  background: hsl(var(--surface-2));
+  color: hsl(var(--foreground));
+}
+
+.email-editor-chrome,
+[data-re-slash-command],
+.email-editor-shell
+  :is(
+    [data-re-bubble-menu],
+    [data-re-node-selector-content],
+    [data-re-link-selector-form]
+  ) {
+  --re-bg: hsl(var(--surface-1));
+  --re-bg-active: hsl(var(--surface-3));
+  --re-bg-hover: hsl(var(--surface-2));
+  --re-border: hsl(var(--border));
+  --re-text: hsl(var(--foreground));
+  --re-text-muted: hsl(var(--foreground-muted));
+  --re-hover: hsl(var(--surface-2));
+  --re-active: hsl(var(--surface-3));
+  --re-pressed: hsl(var(--primary-muted));
+  --re-separator: hsl(var(--border));
+  --re-shadow: var(--shadow-2-value);
+  --re-danger: hsl(var(--status-critical));
+  --re-danger-hover: hsl(var(--callout-danger-muted));
+}
+
+.email-editor-chrome {
+  border-color: hsl(var(--border));
+  background: hsl(var(--surface-1));
+  color: hsl(var(--foreground));
+}
+
+.email-editor-document {
+  --re-bg: white;
+  --re-bg-active: whitesmoke;
+  --re-bg-hover: whitesmoke;
+  --re-border: gainsboro;
+  --re-text: black;
+  --re-text-muted: dimgray;
+  --re-hover: whitesmoke;
+  --re-active: gainsboro;
+  --re-pressed: gainsboro;
+  --re-separator: gainsboro;
+  --re-danger: firebrick;
+  --re-danger-hover: mistyrose;
+  color-scheme: light;
+  background: white;
+  color: black;
 }
 
 @keyframes page-enter {

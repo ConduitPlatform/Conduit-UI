@@ -108,7 +108,7 @@ export function EmailTemplateDetail({
       return (
         <div className="flex h-64 items-center justify-center">
           <div className="max-w-md text-center">
-            <ExternalLink className="mx-auto mb-4 h-12 w-12 text-orange-500" />
+            <ExternalLink className="mx-auto mb-4 h-12 w-12 text-status-warning" />
             <h3 className="mb-2 text-lg font-semibold">External Template</h3>
             <p className="mb-4 text-muted-foreground">
               This template is managed by an external system and cannot be

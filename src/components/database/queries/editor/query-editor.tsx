@@ -528,8 +528,10 @@ export function QueryEditor({
       toast({
         title: 'Query saved',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          <pre className="mt-2 w-[340px] rounded-md bg-code-bg p-4">
+            <code className="text-code-text">
+              {JSON.stringify(data, null, 2)}
+            </code>
           </pre>
         ),
       });
@@ -844,7 +846,7 @@ export function QueryEditor({
                       <FormControl>
                         <Input
                           type="checkbox"
-                          className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                          className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary"
                           checked={Boolean(field.value)}
                           onChange={e => {
                             const checked = e.target.checked;
@@ -878,7 +880,7 @@ export function QueryEditor({
                     classNames={{
                       formItem: 'flex flex-row items-center space-x-2',
                       input:
-                        'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
+                        'h-4 w-4 rounded border-input text-primary focus:ring-primary',
                     }}
                   />
                 )}
@@ -904,14 +906,14 @@ export function QueryEditor({
       (form.watch(`${path}.${groupType}` as QueryFormPath) as unknown[]) || [];
     return (
       <div
-        className={`border rounded-md p-4 mb-4 ${groupType === 'AND' ? 'border-blue-200' : 'border-amber-200'}`}
+        className={`mb-4 rounded-md border p-4 ${groupType === 'AND' ? 'border-callout-info' : 'border-callout-warning'}`}
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             {groupType === 'AND' ? (
-              <LogicalAnd className="h-5 w-5 text-blue-500" />
+              <LogicalAnd className="h-5 w-5 text-callout-info-foreground" />
             ) : (
-              <LogicalOr className="h-5 w-5 text-amber-500" />
+              <LogicalOr className="h-5 w-5 text-callout-warning-foreground" />
             )}
             <SelectField
               label={''}
@@ -946,7 +948,7 @@ export function QueryEditor({
                 variant={groupType === 'AND' ? 'default' : 'outline'}
                 className={
                   groupType === 'OR'
-                    ? 'bg-amber-100 text-amber-800 border-amber-300'
+                    ? 'border-callout-warning bg-callout-warning-muted text-callout-warning-foreground'
                     : ''
                 }
               >
@@ -987,7 +989,9 @@ export function QueryEditor({
                 )
               }
               className={
-                groupType === 'AND' ? 'text-amber-600' : 'text-blue-600'
+                groupType === 'AND'
+                  ? 'text-callout-warning-foreground'
+                  : 'text-callout-info-foreground'
               }
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -1014,7 +1018,7 @@ export function QueryEditor({
         </div>
 
         <div
-          className={`pl-4 border-l-2 ${groupType === 'AND' ? 'border-blue-200' : 'border-amber-200'}`}
+          className={`border-l-2 pl-4 ${groupType === 'AND' ? 'border-callout-info' : 'border-callout-warning'}`}
         >
           {conditions.length === 0 ? (
             <div className="flex items-center justify-center p-6 bg-muted/20 rounded-md">
@@ -1531,7 +1535,7 @@ export function QueryEditor({
                               {form.watch(`inputs.${index}.optional`) && (
                                 <Badge
                                   variant="outline"
-                                  className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs"
+                                  className="border-callout-warning bg-callout-warning-muted text-xs text-callout-warning-foreground"
                                 >
                                   Optional
                                 </Badge>
@@ -1626,7 +1630,7 @@ export function QueryEditor({
                                   formItem:
                                     'flex flex-row items-center space-x-2',
                                   input:
-                                    'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
+                                    'h-4 w-4 rounded border-input text-primary focus:ring-primary',
                                   label:
                                     form.watch(`inputs.${index}.location`) ===
                                     LocationEnum.URL
@@ -1648,7 +1652,7 @@ export function QueryEditor({
                                   formItem:
                                     'flex flex-row items-center space-x-2',
                                   input:
-                                    'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
+                                    'h-4 w-4 rounded border-input text-primary focus:ring-primary',
                                   label:
                                     form.watch(`inputs.${index}.location`) ===
                                     LocationEnum.URL

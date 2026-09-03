@@ -109,10 +109,10 @@ export function EmailDetail({ email, isOpen, onClose }: EmailDetailProps) {
           >
             {loading ? (
               <div className="flex items-center justify-center h-96">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : !email.contentFile ? (
-              <div className="flex items-center justify-center h-96 text-gray-500">
+              <div className="flex h-96 items-center justify-center text-foreground-muted">
                 Email content is not available
               </div>
             ) : emailContent ? (
@@ -161,7 +161,7 @@ export function EmailDetail({ email, isOpen, onClose }: EmailDetailProps) {
                 </Card>
               </>
             ) : (
-              <div className="flex items-center justify-center h-96 text-gray-500">
+              <div className="flex h-96 items-center justify-center text-foreground-muted">
                 Failed to load email content
               </div>
             )}
@@ -170,39 +170,45 @@ export function EmailDetail({ email, isOpen, onClose }: EmailDetailProps) {
           <TabsContent value="details" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-500">
+                <h3 className="text-sm font-medium text-foreground-muted">
                   Template ID
                 </h3>
                 <p>{email.template as string}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">
+                <h3 className="text-sm font-medium text-foreground-muted">
                   Message ID
                 </h3>
                 <p>{email.messageId ?? 'N/A'}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Sender</h3>
+                <h3 className="text-sm font-medium text-foreground-muted">
+                  Sender
+                </h3>
                 <p>{email.sender}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Receiver</h3>
+                <h3 className="text-sm font-medium text-foreground-muted">
+                  Receiver
+                </h3>
                 <p>{email.receiver}</p>
               </div>
 
               {email.cc && email.cc.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">CC</h3>
+                  <h3 className="text-sm font-medium text-foreground-muted">
+                    CC
+                  </h3>
                   <p>{email.cc.join(', ')}</p>
                 </div>
               )}
 
               {email.replyTo && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-sm font-medium text-foreground-muted">
                     Reply To
                   </h3>
                   <p>{email.replyTo}</p>
@@ -210,21 +216,23 @@ export function EmailDetail({ email, isOpen, onClose }: EmailDetailProps) {
               )}
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">
+                <h3 className="text-sm font-medium text-foreground-muted">
                   Created At
                 </h3>
                 <p>{format(new Date(email.createdAt), 'PPP p')}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">
+                <h3 className="text-sm font-medium text-foreground-muted">
                   Updated At
                 </h3>
                 <p>{format(new Date(email.updatedAt), 'PPP p')}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Status</h3>
+                <h3 className="text-sm font-medium text-foreground-muted">
+                  Status
+                </h3>
                 <EmailStatus emailId={email._id} />
               </div>
             </div>
@@ -235,7 +243,11 @@ export function EmailDetail({ email, isOpen, onClose }: EmailDetailProps) {
           <div>
             {resendSuccess !== null && (
               <span
-                className={resendSuccess ? 'text-green-600' : 'text-red-600'}
+                className={
+                  resendSuccess
+                    ? 'text-status-healthy'
+                    : 'text-status-critical'
+                }
               >
                 {resendSuccess
                   ? 'Email resent successfully'

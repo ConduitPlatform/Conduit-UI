@@ -19,7 +19,7 @@ export function SettingsFormActions({
         <div className="flex gap-2">
           <Button
             type="button"
-            className="dark:border-gray-500"
+            className="border-border-strong"
             variant="outline"
             onClick={onCancel}
             disabled={isSaving}

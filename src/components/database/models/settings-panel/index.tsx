@@ -354,9 +354,9 @@ export function SettingsPanel({
             </div>
 
             {!isOwnedByDatabase && (
-              <div className="flex items-start gap-2 p-3 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800">
-                <Info className="w-4 h-4 text-amber-600 mt-0.5" />
-                <div className="text-sm text-amber-800 dark:text-amber-200">
+              <div className="flex items-start gap-2 rounded-md border border-callout-warning bg-callout-warning-muted p-3">
+                <Info className="mt-0.5 h-4 w-4 text-callout-warning-foreground" />
+                <div className="text-sm text-callout-warning-foreground">
                   This schema is owned by <strong>{schema.ownerModule}</strong>.
                   Some settings may be limited.
                 </div>
@@ -388,7 +388,7 @@ export function SettingsPanel({
           />
 
           {!initialAuthEnabled && authEnabled && (
-            <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+            <Alert className="border-callout-warning bg-callout-warning-muted text-callout-warning-foreground">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 Enabling authorization will clear existing documents for this

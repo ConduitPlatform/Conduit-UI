@@ -45,7 +45,7 @@ export function SidebarNavItem({
         'relative flex w-9 h-8 items-center justify-center rounded-[6px]',
         'text-sidebar-foreground/50 transition-colors duration-100',
         'hover:bg-sidebar-accent hover:text-sidebar-foreground/80',
-        'data-[active=true]:bg-cyan-dim data-[active=true]:text-primary',
+        'data-[active=true]:bg-primary-muted data-[active=true]:text-primary-muted-foreground',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0'
       )}
     >
@@ -61,12 +61,12 @@ export function SidebarNavItem({
           className={cn(
             'absolute -bottom-0.5 -right-0.5 size-[5px] rounded-full',
             !serving
-              ? 'bg-status-warning shadow-[0_0_4px_hsl(var(--status-warning))]'
+              ? 'bg-status-warning shadow-[0_0_4px_var(--color-status-warning)]'
               : healthStatus === 'critical'
-                ? 'bg-status-critical shadow-[0_0_4px_hsl(var(--status-critical))]'
+                ? 'bg-status-critical shadow-[0_0_4px_var(--color-status-critical)]'
                 : healthStatus === 'warning'
-                  ? 'bg-status-warning shadow-[0_0_4px_hsl(var(--status-warning))]'
-                  : 'bg-status-healthy shadow-[0_0_4px_hsl(var(--status-healthy))]'
+                  ? 'bg-status-warning shadow-[0_0_4px_var(--color-status-warning)]'
+                  : 'bg-status-healthy shadow-[0_0_4px_var(--color-status-healthy)]'
           )}
           aria-hidden="true"
         />
@@ -123,7 +123,7 @@ export function SidebarNavItem({
                 className={cn(
                   'block mx-1 px-2 py-1.5 text-[13px] rounded-md transition-colors duration-100',
                   isSubActive
-                    ? 'text-primary bg-cyan-dim'
+                    ? 'text-primary-muted-foreground bg-primary-muted'
                     : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
                 )}
               >

@@ -124,22 +124,25 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
-              <ExternalLink className="h-5 w-5 text-orange-500" />
+              <ExternalLink className="h-5 w-5 text-callout-warning-foreground" />
               <span>External Template</span>
             </CardTitle>
-            <Badge variant="secondary" className="bg-orange-500">
+            <Badge
+              variant="outline"
+              className="border-callout-warning bg-callout-warning-muted text-callout-warning-foreground"
+            >
               External
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-3 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
+          <div className="flex items-center space-x-3 rounded-lg border border-callout-warning bg-callout-warning-muted p-4">
+            <AlertTriangle className="h-5 w-5 text-callout-warning-foreground" />
             <div>
-              <h4 className="font-medium text-orange-800">
+              <h4 className="font-medium text-callout-warning-foreground">
                 Externally Managed Template
               </h4>
-              <p className="text-sm text-orange-700">
+              <p className="text-sm text-callout-warning-foreground">
                 This template is managed by an external system. To modify this
                 template, please update it in the external email provider&apos;s
                 interface.
@@ -220,12 +223,12 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             <div className="space-y-2">
               <h4 className="font-medium">Email Preview</h4>
               <div className="border rounded-lg overflow-hidden">
-                <div className="bg-gray-50 px-4 py-2 border-b">
-                  <div className="text-sm text-gray-600">
+                <div className="border-b bg-surface-2 px-4 py-2">
+                  <div className="text-sm text-foreground-muted">
                     <strong>Subject:</strong> {template.subject || 'No subject'}
                   </div>
                   {template.sender && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-foreground-muted">
                       <strong>From:</strong> {template.sender}
                     </div>
                   )}

@@ -535,7 +535,9 @@ export function ProductsTable() {
             <Button
               onClick={handleRetire}
               disabled={actionLoading}
-              className={cn('bg-amber-600 hover:bg-amber-600/90 text-white')}
+              className={cn(
+                'bg-status-warning text-background hover:bg-status-warning/90'
+              )}
             >
               Retire product
             </Button>

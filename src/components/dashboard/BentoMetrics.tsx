@@ -43,7 +43,7 @@ export function BentoMetrics({ metrics }: Readonly<BentoMetricsProps>) {
           return (
             <div
               key={metric.name}
-              className="flex items-center justify-between rounded-md px-3 py-2.5 transition-colors duration-100 hover:bg-[hsl(220_14%_12%)]"
+              className="flex items-center justify-between rounded-md px-3 py-2.5 transition-colors duration-100 hover:bg-surface-2"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Icon className="size-3.5 shrink-0 text-muted-foreground/50" />
@@ -54,7 +54,9 @@ export function BentoMetrics({ metrics }: Readonly<BentoMetricsProps>) {
               <span
                 className={cn(
                   'text-[15px] font-semibold tabular-nums tracking-[-0.01em]',
-                  isPrimary ? 'text-cyan-text' : 'text-foreground'
+                  isPrimary
+                    ? 'text-primary-muted-foreground'
+                    : 'text-foreground'
                 )}
               >
                 {metric.value}

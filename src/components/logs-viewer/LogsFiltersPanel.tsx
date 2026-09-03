@@ -163,7 +163,7 @@ export default function LogsFiltersPanel({
   return (
     <div
       className={cn(
-        'bg-background border-b border-b-input',
+        'border-b border-b-border bg-surface-1',
         className,
         isLogsViewerPage && 'sticky z-40 top-[3.8rem]'
       )}

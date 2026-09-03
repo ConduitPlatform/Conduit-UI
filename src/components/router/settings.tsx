@@ -463,7 +463,7 @@ export const Settings = ({ data }: Props) => {
                             <SelectValue placeholder="Select a provider" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className={'bg-white dark:bg-popover'}>
+                        <SelectContent>
                           <SelectItem value={'recaptcha'}>recaptcha</SelectItem>
                           <SelectItem value={'hcaptcha'}>hcaptcha</SelectItem>
                           <SelectItem value={'turnstile'}>turnstile</SelectItem>

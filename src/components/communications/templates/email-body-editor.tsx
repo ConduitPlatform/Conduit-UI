@@ -116,9 +116,9 @@ export function EmailBodyEditor({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 bg-surface-1 backdrop-blur-xs">
       <div className="flex h-full w-full flex-col">
-        <div className="flex items-center justify-between border-b bg-background p-4">
+        <div className="flex items-center justify-between border-b border-border bg-surface-1 p-4">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" onClick={onClose}>
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -157,15 +157,15 @@ export function EmailBodyEditor({
         <div className="flex min-h-0 flex-1">
           {mode === 'visual' ? (
             <>
-              <div className="flex min-h-0 min-w-0 flex-1">
+              <div className="email-editor-shell flex min-h-0 min-w-0 flex-1">
                 <EmailEditor
                   ref={editorRef}
                   content={html || '<p>Start editing your template...</p>'}
                   theme="basic"
-                  className="min-w-0 flex-1 overflow-y-auto"
+                  className="email-editor-document min-w-0 flex-1 overflow-y-auto"
                   onUploadImage={uploadImageAsDataUrl}
                 >
-                  <Inspector.Root className="w-64 shrink-0 overflow-y-auto border-l p-4">
+                  <Inspector.Root className="email-editor-chrome w-64 shrink-0 overflow-y-auto border-l border-border bg-surface-1 p-4 text-foreground">
                     <Inspector.Breadcrumb />
                     <Inspector.Document />
                     <Inspector.Node />
@@ -183,11 +183,11 @@ export function EmailBodyEditor({
             </>
           ) : (
             <>
-              <div className="min-h-0 flex-1 p-4">
+              <div className="min-h-0 flex-1 bg-surface-2 p-4">
                 <Textarea
                   value={sourceHtml}
                   onChange={e => setSourceHtml(e.target.value)}
-                  className="h-full resize-none font-mono text-sm"
+                  className="h-full resize-none border-border bg-code-bg font-mono text-sm text-code-text"
                   placeholder="Enter your HTML template..."
                 />
               </div>
@@ -220,7 +220,7 @@ function VariablesSidebar({
   onRemove: (name: string) => void;
 }) {
   return (
-    <div className="w-72 shrink-0 overflow-y-auto border-l bg-muted/30 p-4">
+    <div className="w-72 shrink-0 overflow-y-auto border-l border-border bg-surface-2 p-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Template Variables</CardTitle>
@@ -245,7 +245,7 @@ function VariablesSidebar({
             {variables.map(variable => (
               <div
                 key={variable.name}
-                className="flex items-center justify-between rounded border bg-background p-2"
+                className="flex items-center justify-between rounded border border-border bg-surface-1 p-2"
               >
                 <Badge variant="secondary" className="font-mono">
                   {`{{${variable.name}}}`}

@@ -6,7 +6,7 @@ export const Stats = ({
   return (
     <div className="bg-background border-primary border rounded">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-px bg-white/5 grid-cols-4">
+        <div className="grid grid-cols-4 gap-px bg-foreground/5">
           {stats.map(stat => (
             <div key={stat.name} className="px-4 py-6 sm:px-6 lg:px-8">
               <p className="text-sm font-medium leading-6 text-foreground">

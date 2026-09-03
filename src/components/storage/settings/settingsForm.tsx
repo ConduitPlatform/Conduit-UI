@@ -62,7 +62,7 @@ export const SettingsForm = ({
                       <SelectValue placeholder="Select a provider" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value={'local'}>Local</SelectItem>
                     <SelectItem value={'aliyun'}>
                       <div className={'flex items-center gap-2'}>

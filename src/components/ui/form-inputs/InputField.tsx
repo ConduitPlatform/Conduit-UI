@@ -55,14 +55,14 @@ const InputField = ({
         <FormItem className={cn('w-full space-y-1.5', formItemClassName)}>
           <FormLabel
             className={cn(
-              'flex gap-2 pl-1 text-base font-medium text-text-body',
+              'flex gap-2 pl-1 text-base font-medium text-foreground',
               labelClassName
             )}
           >
             {label}
             {info && (
               <TooltipHelper content={info}>
-                <InfoIcon />
+                <InfoIcon className="text-foreground-muted" />
               </TooltipHelper>
             )}
           </FormLabel>
@@ -101,7 +101,7 @@ const InputField = ({
           {description && (
             <FormDescription
               className={cn(
-                'text-xs pl-1 text-text-dark-gray font-normal mt-0.5',
+                'text-xs pl-1 text-foreground-muted font-normal mt-0.5',
                 descriptionClassName
               )}
             >

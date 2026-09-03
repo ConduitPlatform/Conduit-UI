@@ -112,14 +112,14 @@ const allTypes = [...commonTypes, ...advancedTypes];
 const groupDepthLimitMessage = 'Groups can only be nested 1 level deep.';
 
 const typeColors: Record<FieldType, string> = {
-  String: 'text-blue-600',
-  Number: 'text-purple-600',
-  Boolean: 'text-green-600',
-  Date: 'text-orange-600',
-  Relation: 'text-pink-600',
-  ObjectId: 'text-gray-600',
-  JSON: 'text-yellow-600',
-  Group: 'text-teal-600',
+  String: 'text-syntax-string',
+  Number: 'text-syntax-number',
+  Boolean: 'text-syntax-boolean',
+  Date: 'text-syntax-keyword',
+  Relation: 'text-syntax-function',
+  ObjectId: 'text-foreground-muted',
+  JSON: 'text-syntax-property',
+  Group: 'text-primary-muted-foreground',
 };
 
 export function TypePicker({

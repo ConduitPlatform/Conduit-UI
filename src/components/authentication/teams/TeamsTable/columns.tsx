@@ -14,7 +14,7 @@ export const columns: ColumnDef<Team>[] = [
         <div className={'flex flex-row'}>
           {cell.getValue() as string}
           {cell.row.original.isDefault && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center rounded-full bg-callout-success-muted px-2.5 py-0.5 text-xs font-medium text-callout-success-foreground">
               Default
             </span>
           )}

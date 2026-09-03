@@ -11,7 +11,8 @@ export const dndVariants = cva(
   {
     variants: {
       variant: {
-        colored: 'bg-royal-blue-50 [&>div]:border-contrast-border',
+        colored:
+          'bg-primary-muted text-primary-muted-foreground [&>div]:border-primary',
       },
     },
   }

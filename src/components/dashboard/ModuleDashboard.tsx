@@ -58,7 +58,7 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
       animate="animate"
     >
       {prometheusState && prometheusState !== 'ready' && (
-        <Alert className="border-status-warning/30 bg-status-warning/5">
+        <Alert variant="warning">
           <Info className="size-4" />
           <AlertDescription>
             {prometheusState === 'not_configured'

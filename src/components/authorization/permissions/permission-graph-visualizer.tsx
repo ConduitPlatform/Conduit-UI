@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, {
   type Node,
   type Edge,
@@ -23,7 +23,6 @@ import {
   User,
   Users,
   FileText,
-  FolderKanban,
   Shield,
   Link,
 } from 'lucide-react';
@@ -34,6 +33,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useChartColors } from '@/lib/hooks/useChartColors';
+import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
+import { mergeSemanticEdgeColors } from '@/lib/reactflow-edge-colors';
 
 // Types from the parent component
 interface PermissionStep {
@@ -74,26 +75,30 @@ const EntityNode = ({
   const getIcon = () => {
     switch (data.type) {
       case 'User':
-        return <User className="h-4 w-4 text-blue-600" />;
+        return <User className="h-4 w-4 text-chart-1" />;
       case 'Team':
-        return <Users className="h-4 w-4 text-indigo-600" />;
+        return <Users className="h-4 w-4 text-chart-4" />;
       default:
-        return <FileText className="h-4 w-4 text-amber-600" />;
+        return <FileText className="h-4 w-4 text-chart-3" />;
     }
   };
 
   return (
-    <div className="px-4 py-2 shadow-md border border-gray-300 rounded-md bg-white min-w-[140px] text-center">
-      <Handle type="target" position={Position.Left} className="bg-gray-400!" />
+    <div className="graph-node rounded-md border border-border-strong bg-surface-1 px-4 py-2 text-center text-foreground shadow-md min-w-[140px]">
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="bg-graph-edge!"
+      />
       <div className="flex items-center justify-center gap-2">
         {getIcon()}
-        <div className="font-medium text-background">{data.label}</div>
+        <div className="font-medium">{data.label}</div>
       </div>
       <div className="text-xs text-muted-foreground mt-1">{data.id}</div>
       <Handle
         type="source"
         position={Position.Right}
-        className="bg-gray-400!"
+        className="bg-graph-edge!"
       />
     </div>
   );
@@ -101,22 +106,20 @@ const EntityNode = ({
 
 const RelationNode = ({ data }: { data: { relation: string } }) => {
   return (
-    <div className="px-3 py-1 shadow-xs border border-purple-200 rounded-md bg-purple-50 min-w-[100px] text-center">
+    <div className="graph-node rounded-md border border-graph-middleware bg-graph-middleware-muted px-3 py-1 text-center text-graph-middleware-foreground shadow-xs min-w-[100px]">
       <Handle
         type="target"
         position={Position.Left}
-        className="bg-purple-400!"
+        className="bg-graph-middleware!"
       />
       <div className="flex items-center justify-center gap-1">
-        <Link className="h-3.5 w-3.5 text-purple-600" />
-        <div className="font-medium text-purple-800 text-sm">
-          {data.relation}
-        </div>
+        <Link className="h-3.5 w-3.5" />
+        <div className="text-sm font-medium">{data.relation}</div>
       </div>
       <Handle
         type="source"
         position={Position.Right}
-        className="bg-purple-400!"
+        className="bg-graph-middleware!"
       />
     </div>
   );
@@ -124,22 +127,20 @@ const RelationNode = ({ data }: { data: { relation: string } }) => {
 
 const PermissionNode = ({ data }: { data: { permission: string } }) => {
   return (
-    <div className="px-3 py-1 shadow-xs border border-green-200 rounded-md bg-green-50 min-w-[100px] text-center">
+    <div className="graph-node rounded-md border border-graph-route bg-graph-route-muted px-3 py-1 text-center text-graph-route-foreground shadow-xs min-w-[100px]">
       <Handle
         type="target"
         position={Position.Left}
-        className="bg-green-400!"
+        className="bg-graph-route!"
       />
       <div className="flex items-center justify-center gap-1">
-        <Shield className="h-3.5 w-3.5 text-green-600" />
-        <div className="font-medium text-green-800 text-sm">
-          {data.permission}
-        </div>
+        <Shield className="h-3.5 w-3.5" />
+        <div className="text-sm font-medium">{data.permission}</div>
       </div>
       <Handle
         type="source"
         position={Position.Right}
-        className="bg-green-400!"
+        className="bg-graph-route!"
       />
     </div>
   );
@@ -164,6 +165,9 @@ export default function PermissionGraphVisualizer({
     const nodes: Node[] = [];
     const edges: Edge[] = [];
     const nodeMap = new Map<string, number>(); // Map to track node indices
+    const chart1MarkerColor = getReactFlowMarkerColor(colors.chart1);
+    const chart2MarkerColor = getReactFlowMarkerColor(colors.chart2);
+    const chart5MarkerColor = getReactFlowMarkerColor(colors.chart5);
 
     // Helper to get a unique node ID
     const getNodeId = (type: string, id: string, nodeType: string) => {
@@ -227,7 +231,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart5,
+            ...(chart5MarkerColor && { color: chart5MarkerColor }),
           },
         });
 
@@ -239,7 +243,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart5,
+            ...(chart5MarkerColor && { color: chart5MarkerColor }),
           },
         });
       }
@@ -264,7 +268,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart2,
+            ...(chart2MarkerColor && { color: chart2MarkerColor }),
           },
         });
 
@@ -276,7 +280,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart2,
+            ...(chart2MarkerColor && { color: chart2MarkerColor }),
           },
         });
       }
@@ -292,7 +296,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart1 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart1,
+            ...(chart1MarkerColor && { color: chart1MarkerColor }),
           },
         });
       }
@@ -303,17 +307,29 @@ export default function PermissionGraphVisualizer({
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const initialGraphRef = useRef({ initialNodes, initialEdges });
 
-  // Force a re-render when the modal opens to ensure the graph is displayed
+  useEffect(() => {
+    initialGraphRef.current = { initialNodes, initialEdges };
+  }, [initialNodes, initialEdges]);
+
+  useEffect(() => {
+    setEdges(currentEdges =>
+      mergeSemanticEdgeColors(currentEdges, initialEdges)
+    );
+  }, [initialEdges, setEdges]);
+
+  // Reset topology only when a path is shown or changes, not when colors change.
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
-        setNodes([...initialNodes]);
-        setEdges([...initialEdges]);
+        const graph = initialGraphRef.current;
+        setNodes([...graph.initialNodes]);
+        setEdges([...graph.initialEdges]);
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [open, initialNodes, initialEdges, setNodes, setEdges]);
+  }, [open, path, setNodes, setEdges]);
 
   // Handle zoom controls
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -336,7 +352,7 @@ export default function PermissionGraphVisualizer({
           <DialogTitle>Permission Graph</DialogTitle>
         </DialogHeader>
 
-        <div className="h-[600px] w-full border rounded-md overflow-hidden">
+        <div className="h-[600px] w-full overflow-hidden rounded-md border bg-surface-2">
           <ReactFlow
             //@ts-ignore
             nodes={nodes}
@@ -353,18 +369,17 @@ export default function PermissionGraphVisualizer({
             panOnScroll={true}
             panOnDrag={true}
             defaultZoom={zoomLevel}
-            style={{ background: colors.background }}
+            className="semantic-react-flow"
+            style={{ background: 'var(--color-surface-2)' }}
           >
             <Controls showInteractive={false} />
-            <Background />
+            <Background color={colors.chartGrid} />
             <Panel
               position="top-left"
-              className="bg-white p-2 rounded shadow-xs border text-sm"
+              className="rounded border bg-graph-panel p-2 text-sm text-foreground shadow-xs"
             >
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={'text-background'}>
-                  Permission Path Visualization
-                </Badge>
+                <Badge variant="outline">Permission Path Visualization</Badge>
                 <Badge>{path.steps.length} steps</Badge>
               </div>
             </Panel>
@@ -396,34 +411,34 @@ export default function PermissionGraphVisualizer({
             </Panel>
             <Panel
               position="bottom-left"
-              className="bg-white p-2 rounded shadow-xs border text-xs"
+              className="rounded border bg-graph-panel p-2 text-xs text-foreground shadow-xs"
             >
               <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                 <div className="flex items-center gap-1">
-                  <User className="h-3 w-3 text-blue-600" />
-                  <span className={'text-background'}>User</span>
+                  <User className="h-3 w-3 text-chart-1" />
+                  <span>User</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Users className="h-3 w-3 text-indigo-600" />
-                  <span className={'text-background'}>Team</span>
+                  <Users className="h-3 w-3 text-chart-4" />
+                  <span>Team</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <FileText className="h-3 w-3 text-amber-600" />
-                  <span className={'text-background'}>Resource</span>
+                  <FileText className="h-3 w-3 text-chart-3" />
+                  <span>Resource</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Link className="h-3 w-3 text-purple-600" />
-                  <span className={'text-background'}>Relation</span>
+                  <Link className="h-3 w-3 text-graph-middleware-foreground" />
+                  <span>Relation</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Shield className="h-3 w-3 text-green-600" />
-                  <span className={'text-background'}>Permission</span>
+                  <Shield className="h-3 w-3 text-graph-route-foreground" />
+                  <span>Permission</span>
                 </div>
               </div>
             </Panel>
             {nodes.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white p-4 rounded-md shadow-md">
+                <div className="rounded-md border bg-graph-panel p-4 text-foreground shadow-md">
                   <p className="text-lg font-medium">
                     No permission path data available
                   </p>

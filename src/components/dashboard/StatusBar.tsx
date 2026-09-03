@@ -17,15 +17,16 @@ function StatusDot({
   status,
   size = 7,
 }: {
-  status: 'healthy' | 'warning' | 'critical' | 'unknown' | 'cyan';
+  status: 'healthy' | 'warning' | 'critical' | 'unknown' | 'primary';
   size?: number;
 }) {
   const colorMap = {
-    healthy: 'bg-status-healthy shadow-[0_0_6px_hsl(var(--status-healthy))]',
-    warning: 'bg-status-warning shadow-[0_0_6px_hsl(var(--status-warning))]',
-    critical: 'bg-status-critical shadow-[0_0_6px_hsl(var(--status-critical))]',
+    healthy: 'bg-status-healthy shadow-[0_0_6px_var(--color-status-healthy)]',
+    warning: 'bg-status-warning shadow-[0_0_6px_var(--color-status-warning)]',
+    critical:
+      'bg-status-critical shadow-[0_0_6px_var(--color-status-critical)]',
     unknown: 'bg-status-unknown',
-    cyan: 'bg-primary shadow-[0_0_4px_hsl(var(--primary))]',
+    primary: 'bg-primary shadow-[0_0_4px_var(--color-primary)]',
   };
 
   return (
@@ -78,7 +79,7 @@ export function StatusBar({
 
         {prometheusReady && (
           <span className="flex items-center gap-1.5 text-xs text-primary font-medium">
-            <StatusDot status="cyan" size={5} />
+            <StatusDot status="primary" size={5} />
             Metrics
           </span>
         )}

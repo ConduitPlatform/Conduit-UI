@@ -148,8 +148,8 @@ export function NestedFieldsEditor({
         <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0">
           <DialogHeader className="px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center">
-                <Boxes className="w-5 h-5 text-teal-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-muted">
+                <Boxes className="h-5 w-5 text-primary-muted-foreground" />
               </div>
               <div>
                 <DialogTitle>Edit Nested Fields</DialogTitle>
