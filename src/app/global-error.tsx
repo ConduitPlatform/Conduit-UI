@@ -9,6 +9,35 @@ const inter = Inter({ subsets: ['latin'] });
 type ThemePreference = 'light' | 'dark' | 'system';
 type ResolvedTheme = Exclude<ThemePreference, 'system'>;
 
+const themeBootstrapScript = `
+  (() => {
+    const root = document.documentElement;
+    let preference = 'system';
+
+    try {
+      const savedPreference = window.localStorage.getItem('theme');
+      if (
+        savedPreference === 'light' ||
+        savedPreference === 'dark' ||
+        savedPreference === 'system'
+      ) {
+        preference = savedPreference;
+      }
+    } catch {}
+
+    const theme =
+      preference === 'system'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+        : preference;
+
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+    root.style.colorScheme = theme;
+  })();
+`;
+
 const readThemePreference = (): ThemePreference => {
   try {
     const preference = window.localStorage.getItem('theme');
@@ -73,6 +102,12 @@ export default function GlobalError({
       className={`${resolvedTheme} bg-background`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: themeBootstrapScript }}
+        />
+      </head>
       <body
         className={`${inter.className} bg-background text-foreground antialiased`}
       >
