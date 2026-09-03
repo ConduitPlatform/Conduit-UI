@@ -13,70 +13,71 @@ type ChartColors = {
   background: string;
 };
 
-const chartColorFallbacks: Record<'dark' | 'light', ChartColors> = {
-  dark: {
-    chart1: '#40cce7',
-    chart2: '#59cf9a',
-    chart3: '#eeb64f',
-    chart4: '#a67ee7',
-    chart5: '#e36d9e',
-    chartGrid: '#2f3541',
-    background: '#0b0d13',
-  },
-  light: {
-    chart1: '#097695',
-    chart2: '#1a8953',
-    chart3: '#ae6709',
-    chart4: '#6c34c5',
-    chart5: '#b62b65',
-    chartGrid: '#d5dae2',
-    background: '#f8fafc',
-  },
+const semanticColorFallbacks: ChartColors = {
+  chart1: 'var(--color-chart-1, currentColor)',
+  chart2: 'var(--color-chart-2, currentColor)',
+  chart3: 'var(--color-chart-3, currentColor)',
+  chart4: 'var(--color-chart-4, currentColor)',
+  chart5: 'var(--color-chart-5, currentColor)',
+  chartGrid: 'var(--color-chart-grid, currentColor)',
+  background: 'var(--color-background, Canvas)',
 };
 
-function hslToHex(h: number, s: number, l: number): string {
-  s /= 100;
-  l /= 100;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-function cssVarToHex(varName: string, fallback: string): string {
+function readCssColor(varName: string, fallback: string): string {
   const raw = getComputedStyle(document.documentElement)
     .getPropertyValue(varName)
     .trim();
-  const match = raw.match(
-    /^(-?\d*\.?\d+)(?:deg)?[\s,]+(\d*\.?\d+)%[\s,]+(\d*\.?\d+)%/
-  );
-  if (!match) return fallback;
+  if (!raw) return fallback;
 
-  return hslToHex(Number(match[1]), Number(match[2]), Number(match[3]));
+  const hslColor = `hsl(${raw})`;
+  if (CSS.supports('color', hslColor)) return hslColor;
+  return CSS.supports('color', raw) ? raw : fallback;
 }
 
 export function useChartColors() {
   const { resolvedTheme } = useTheme();
-  const [colors, setColors] = useState<ChartColors>(chartColorFallbacks.dark);
+  const [colors, setColors] = useState<ChartColors>(semanticColorFallbacks);
 
   useEffect(() => {
-    const fallbacks =
-      chartColorFallbacks[resolvedTheme === 'light' ? 'light' : 'dark'];
+    const root = document.documentElement;
+    let frameId: number | null = null;
 
-    setColors({
-      chart1: cssVarToHex('--chart-1', fallbacks.chart1),
-      chart2: cssVarToHex('--chart-2', fallbacks.chart2),
-      chart3: cssVarToHex('--chart-3', fallbacks.chart3),
-      chart4: cssVarToHex('--chart-4', fallbacks.chart4),
-      chart5: cssVarToHex('--chart-5', fallbacks.chart5),
-      chartGrid: cssVarToHex('--chart-grid', fallbacks.chartGrid),
-      background: cssVarToHex('--background', fallbacks.background),
+    const readColors = () => {
+      frameId = null;
+      setColors({
+        chart1: readCssColor('--chart-1', semanticColorFallbacks.chart1),
+        chart2: readCssColor('--chart-2', semanticColorFallbacks.chart2),
+        chart3: readCssColor('--chart-3', semanticColorFallbacks.chart3),
+        chart4: readCssColor('--chart-4', semanticColorFallbacks.chart4),
+        chart5: readCssColor('--chart-5', semanticColorFallbacks.chart5),
+        chartGrid: readCssColor(
+          '--chart-grid',
+          semanticColorFallbacks.chartGrid
+        ),
+        background: readCssColor(
+          '--background',
+          semanticColorFallbacks.background
+        ),
+      });
+    };
+
+    const scheduleRead = () => {
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(readColors);
+    };
+
+    const observer = new MutationObserver(scheduleRead);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
     });
+
+    scheduleRead();
+
+    return () => {
+      observer.disconnect();
+      if (frameId !== null) cancelAnimationFrame(frameId);
+    };
   }, [resolvedTheme]);
 
   return colors;

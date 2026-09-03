@@ -631,9 +631,63 @@
   --color-prettylights-syntax-string-regexp: hsl(var(--syntax-number));
 }
 
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.comment, .cdata, .doctype, .prolog) {
+  color: hsl(var(--syntax-comment));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.keyword, .atrule) {
+  color: hsl(var(--syntax-keyword));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.function, .method) {
+  color: hsl(var(--syntax-function));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.property, .property-access, .attr-name) {
+  color: hsl(var(--syntax-property));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.string, .char, .attr-value, .regex) {
+  color: hsl(var(--syntax-string));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token.number {
+  color: hsl(var(--syntax-number));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token.boolean {
+  color: hsl(var(--syntax-boolean));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.null, .nil) {
+  color: hsl(var(--syntax-null));
+}
+
+.w-tc-editor.semantic-code-editor
+  :is(code, pre)[class*='language-']
+  .token:is(.operator, .punctuation) {
+  color: hsl(var(--syntax-operator));
+}
+
 /*
   @react-email/editor chrome inherits the application palette. The editable
-  document is intentionally excluded so its authored email styles stay intact.
+  document resets these variables to a neutral email canvas below.
 */
 .email-editor-shell {
   background: hsl(var(--surface-2));
@@ -641,15 +695,16 @@
 }
 
 .email-editor-chrome,
+[data-re-slash-command],
 .email-editor-shell
   :is(
     [data-re-bubble-menu],
     [data-re-node-selector-content],
-    [data-re-link-selector-form],
-    [data-re-slash-command]
+    [data-re-link-selector-form]
   ) {
   --re-bg: hsl(var(--surface-1));
   --re-bg-active: hsl(var(--surface-3));
+  --re-bg-hover: hsl(var(--surface-2));
   --re-border: hsl(var(--border));
   --re-text: hsl(var(--foreground));
   --re-text-muted: hsl(var(--foreground-muted));
@@ -666,6 +721,24 @@
   border-color: hsl(var(--border));
   background: hsl(var(--surface-1));
   color: hsl(var(--foreground));
+}
+
+.email-editor-document {
+  --re-bg: white;
+  --re-bg-active: whitesmoke;
+  --re-bg-hover: whitesmoke;
+  --re-border: gainsboro;
+  --re-text: black;
+  --re-text-muted: dimgray;
+  --re-hover: whitesmoke;
+  --re-active: gainsboro;
+  --re-pressed: gainsboro;
+  --re-separator: gainsboro;
+  --re-danger: firebrick;
+  --re-danger-hover: mistyrose;
+  color-scheme: light;
+  background: white;
+  color: black;
 }
 
 @keyframes page-enter {
