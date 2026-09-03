@@ -12,7 +12,7 @@ export const LoginIllustration = ({
     >
       <style>
         {
-          '.prefix__st0{fill:#e8e8e8}.prefix__st1{fill:#161616}.prefix__st2{fill:#5222d0}.prefix__st3{fill:#07D9C4}.prefix__st4{fill:#fff}.prefix__st5,.prefix__st7,.prefix__st8{opacity:.12;fill:#6d6d6d}.prefix__st7,.prefix__st8{opacity:.16}.prefix__st8{opacity:.14}.prefix__st10,.prefix__st13,.prefix__st9{opacity:.15;fill:#6d6d6d}.prefix__st10,.prefix__st13{opacity:.13}.prefix__st13{opacity:.11}'
+          '.prefix__st0{fill:hsl(var(--foreground-muted))}.prefix__st1{fill:hsl(var(--foreground))}.prefix__st2{fill:hsl(var(--chart-4))}.prefix__st3{fill:hsl(var(--primary))}.prefix__st4{fill:hsl(var(--surface-1))}.prefix__st5,.prefix__st7,.prefix__st8{opacity:.12;fill:hsl(var(--foreground-subtle))}.prefix__st7,.prefix__st8{opacity:.16}.prefix__st8{opacity:.14}.prefix__st10,.prefix__st13,.prefix__st9{opacity:.15;fill:hsl(var(--foreground-subtle))}.prefix__st10,.prefix__st13{opacity:.13}.prefix__st13{opacity:.11}'
         }
       </style>
       <g id="prefix__background">
@@ -397,7 +397,7 @@ export const LoginIllustration = ({
           <path
             d="M382.3 470.2c15.8-17.7 31.6-35.5 47.3-53.2-.5 4.3-5.3 55.1 31.7 84.4 15.6 12.3 32.3 15.9 42 17.1-21.1 20.2-42.3 40.3-63.4 60.5-11.4-14.8-24-33.5-35.6-56.1-9.9-19.1-16.9-37-22-52.7z"
             opacity={0.07}
-            fill="#6d6d6d"
+            fill="hsl(var(--foreground-subtle))"
           />
           <path
             className="prefix__st5"
@@ -709,7 +709,7 @@ export const LoginIllustration = ({
           <path
             d="M804.7 551.2c-2.7 9.5-7.1 22.4-14 37-7.2 15-19.1 39.5-43.8 62.4-15.2 14.2-36.8 34.3-68.8 37-10.6.9-19.5-.4-25.5-1.7 2.5 5.4 4.7 11.9 2.1 14.4-4.6 4.5-20.3-7-24.2-2.5-2.6 2.9 1.8 10.7 3.4 13.6 2.4 4.3 5.3 9.4 10.2 10.2 3.3.5 6.5-1.5 12.7-5.5 3.5-2.2 6.2-4.4 8.1-5.9 2.5-.5 5.6-1.4 8.9-3 5.7-2.7 9.6-6.4 11.9-8.9 6.5-1.7 15.5-4.4 25.9-8.5 12.6-5 28.2-11.1 42.9-22.9 4.3-3.4 12.6-10.7 26.3-30.6 10.4-15 23.9-37.4 35.7-67.5-3.9-6-7.8-11.8-11.8-17.6z"
             opacity={0.1}
-            fill="#6d6d6d"
+            fill="hsl(var(--foreground-subtle))"
           />
           <path
             className="prefix__st13"

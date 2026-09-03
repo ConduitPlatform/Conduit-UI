@@ -18,8 +18,8 @@ export default async function AuthenticationPage({
   const envs = await _getEnvs();
 
   return (
-    <div className="grid h-full grid-cols lg:grid-cols-2">
-      <div className="items-center hidden h-full text-white dark:border-r lg:flex bg-primary dark:bg-primary-foreground">
+    <div className="grid h-full grid-cols bg-background text-foreground lg:grid-cols-2">
+      <div className="hidden h-full items-center border-r border-border bg-surface-2 text-foreground lg:flex">
         <LoginIllustration />
       </div>
       <div className="flex items-center justify-center lg:p-8">
