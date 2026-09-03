@@ -35,7 +35,7 @@ export const DragAndDropField: React.FC<DndProps> = ({
               {...props}
             ></DropzoneInput>
           </FormControl>
-          <FormMessage className="text-error" />
+          <FormMessage className="text-destructive" />
         </FormItem>
       )}
     />
