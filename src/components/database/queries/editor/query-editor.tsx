@@ -523,8 +523,10 @@ export function QueryEditor({
       toast({
         title: 'Query saved',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-muted p-4">
-            <code>{JSON.stringify(data, null, 2)}</code>
+          <pre className="mt-2 w-[340px] rounded-md bg-code-bg p-4">
+            <code className="text-code-text">
+              {JSON.stringify(data, null, 2)}
+            </code>
           </pre>
         ),
       });

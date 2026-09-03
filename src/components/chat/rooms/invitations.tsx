@@ -29,7 +29,7 @@ export const Invitations = ({
       <div className="flex justify-between">
         <div className="text-lg flex items-center gap-x-2">
           <span className="text-lg">Invitations</span>
-          <div className="flex items-center justify-center w-6 h-6 rounded-full p-2 bg-slate-700 text-sm text-white">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-surface-3 p-2 text-sm text-foreground">
             {invites.count}
           </div>
         </div>

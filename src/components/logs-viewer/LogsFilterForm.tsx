@@ -60,14 +60,14 @@ export default function LogsFiltersForm({
     },
   });
 
-  const selectTriggerClass = 'bg-background mt-0';
+  const selectTriggerClass = 'mt-0 bg-surface-1';
   const formItemClass = 'space-y-1';
 
   return (
     <Form {...form}>
       <form
         className={
-          'flex flex-col px-3 pt-3 pb-4 border mx-5 mb-5 rounded-md border-input bg-secondary'
+          'mx-5 mb-5 flex flex-col rounded-md border border-border bg-surface-2 px-3 pt-3 pb-4'
         }
         {...restProps}
       >
@@ -146,7 +146,7 @@ export default function LogsFiltersForm({
         {!showModuleFilter && (
           <Link
             href="/logs-viewer"
-            className="self-end mt-2 text-sm text-muted-foreground dark:hover:text-white hover:underline hover:text-primary"
+            className="mt-2 self-end text-sm text-foreground-muted hover:text-primary hover:underline"
           >
             More filters
           </Link>

@@ -177,9 +177,9 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
                   {exportInfo && (
-                    <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-3">
-                      <FileText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex items-start gap-2 rounded-lg border border-callout-info bg-callout-info-muted p-3">
+                      <FileText className="mt-0.5 h-4 w-4 shrink-0 text-callout-info-foreground" />
+                      <p className="text-sm text-callout-info-foreground">
                         {exportInfo}
                       </p>
                     </div>
@@ -210,9 +210,9 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
                   {importInfo && (
-                    <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
-                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-                      <p className="text-sm font-medium text-destructive">
+                    <div className="flex items-start gap-2 rounded-lg border border-callout-warning bg-callout-warning-muted p-3">
+                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-callout-warning-foreground" />
+                      <p className="text-sm font-medium text-callout-warning-foreground">
                         {importInfo}
                       </p>
                     </div>

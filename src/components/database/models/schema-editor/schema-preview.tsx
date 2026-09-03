@@ -50,7 +50,7 @@ export function SchemaPreview({ schemaName, fields }: SchemaPreviewProps) {
           className="h-8 w-8"
         >
           {copied ? (
-            <Check className="w-4 h-4 text-green-500" />
+            <Check className="h-4 w-4 text-status-healthy" />
           ) : (
             <Copy className="w-4 h-4" />
           )}

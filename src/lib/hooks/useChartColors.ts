@@ -1,55 +1,95 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
+import { toOpaqueHexColor } from '@/lib/semantic-colors';
 
-function hslToHex(h: number, s: number, l: number): string {
-  s /= 100;
-  l /= 100;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
+type ChartColors = {
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
+  chartGrid: string;
+  background: string;
+  graphEdge: string;
+  graphMiddleware: string;
+};
 
-function cssVarToHex(varName: string): string {
+const semanticColorFallbacks: ChartColors = {
+  chart1: 'var(--color-chart-1, currentColor)',
+  chart2: 'var(--color-chart-2, currentColor)',
+  chart3: 'var(--color-chart-3, currentColor)',
+  chart4: 'var(--color-chart-4, currentColor)',
+  chart5: 'var(--color-chart-5, currentColor)',
+  chartGrid: 'var(--color-chart-grid, currentColor)',
+  background: 'var(--color-background, Canvas)',
+  graphEdge: 'var(--color-graph-edge, currentColor)',
+  graphMiddleware: 'var(--color-graph-middleware, currentColor)',
+};
+
+function readCssColor(varName: string, fallback: string): string {
   const raw = getComputedStyle(document.documentElement)
     .getPropertyValue(varName)
     .trim();
-  if (!raw) return '#888888';
-  const parts = raw.split(/\s+/).map(Number);
-  if (parts.length >= 3) {
-    return hslToHex(parts[0], parts[1], parts[2]);
-  }
-  return '#888888';
+  if (!raw) return fallback;
+
+  return toOpaqueHexColor(raw) ?? fallback;
 }
 
 export function useChartColors() {
-  const [colors, setColors] = useState({
-    chart1: '#3b82f6',
-    chart2: '#10b981',
-    chart3: '#ef4444',
-    chart4: '#f59e0b',
-    chart5: '#8b5cf6',
-    chartGrid: '#f0f0f0',
-    background: '#f8fafc',
-  });
+  const { resolvedTheme } = useTheme();
+  const [colors, setColors] = useState<ChartColors>(semanticColorFallbacks);
 
   useEffect(() => {
-    setColors({
-      chart1: cssVarToHex('--chart-1'),
-      chart2: cssVarToHex('--chart-2'),
-      chart3: cssVarToHex('--chart-3'),
-      chart4: cssVarToHex('--chart-4'),
-      chart5: cssVarToHex('--chart-5'),
-      chartGrid: cssVarToHex('--chart-grid'),
-      background: cssVarToHex('--background'),
+    const root = document.documentElement;
+    let frameId: number | null = null;
+
+    const readColors = () => {
+      frameId = null;
+      setColors({
+        chart1: readCssColor('--chart-1', semanticColorFallbacks.chart1),
+        chart2: readCssColor('--chart-2', semanticColorFallbacks.chart2),
+        chart3: readCssColor('--chart-3', semanticColorFallbacks.chart3),
+        chart4: readCssColor('--chart-4', semanticColorFallbacks.chart4),
+        chart5: readCssColor('--chart-5', semanticColorFallbacks.chart5),
+        chartGrid: readCssColor(
+          '--chart-grid',
+          semanticColorFallbacks.chartGrid
+        ),
+        background: readCssColor(
+          '--background',
+          semanticColorFallbacks.background
+        ),
+        graphEdge: readCssColor(
+          '--graph-edge',
+          semanticColorFallbacks.graphEdge
+        ),
+        graphMiddleware: readCssColor(
+          '--graph-middleware',
+          semanticColorFallbacks.graphMiddleware
+        ),
+      });
+    };
+
+    const scheduleRead = () => {
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(readColors);
+    };
+
+    const observer = new MutationObserver(scheduleRead);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
     });
-  }, []);
+
+    scheduleRead();
+
+    return () => {
+      observer.disconnect();
+      if (frameId !== null) cancelAnimationFrame(frameId);
+    };
+  }, [resolvedTheme]);
 
   return colors;
 }

@@ -43,7 +43,7 @@ const SwitchField = ({
           <div className="flex flex-row gap-2 items-center">
             {label && (
               <FormLabel>
-                <p className={cn('text-text-dark-gray', labelClassName)}>
+                <p className={cn('text-foreground-muted', labelClassName)}>
                   {label}
                 </p>
               </FormLabel>

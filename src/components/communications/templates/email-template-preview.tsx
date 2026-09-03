@@ -63,20 +63,20 @@ export function EmailTemplatePreview({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
-              <ExternalLink className="h-5 w-5 text-orange-500" />
+              <ExternalLink className="h-5 w-5 text-status-warning" />
               <span>External Template</span>
             </CardTitle>
             <Badge variant="secondary">External</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center space-x-3 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/30">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
+          <div className="flex items-center space-x-3 rounded-lg border border-callout-warning bg-callout-warning-muted p-4">
+            <AlertTriangle className="h-5 w-5 text-callout-warning-foreground" />
             <div>
-              <h4 className="font-medium text-orange-800 dark:text-orange-300">
+              <h4 className="font-medium text-callout-warning-foreground">
                 Externally managed template
               </h4>
-              <p className="text-sm text-orange-700 dark:text-orange-400">
+              <p className="text-sm text-callout-warning-foreground">
                 This template is managed by your email provider. Update it in
                 the provider&apos;s interface.
               </p>

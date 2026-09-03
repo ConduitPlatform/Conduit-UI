@@ -81,7 +81,7 @@ export function ActiveModuleGrid({
                 className={cn(
                   'flex items-center justify-between rounded-lg border border-border bg-surface-1 px-3 py-2.5 transition-colors duration-100',
                   interactive
-                    ? 'hover:border-primary/30 hover:bg-[hsl(224_14%_11%)]'
+                    ? 'hover:border-primary/30 hover:bg-surface-2'
                     : 'opacity-45 cursor-default'
                 )}
               >

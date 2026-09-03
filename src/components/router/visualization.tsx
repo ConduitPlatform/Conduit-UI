@@ -25,14 +25,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import {
-  Edit,
-  ExternalLink,
-  Eye,
   Info,
-  ShieldCheck,
-  Trash2,
   Route,
   Server,
   Layers,
@@ -42,22 +36,53 @@ import {
 } from 'lucide-react';
 import { RouterRoutesResponse } from '@/lib/models/Router';
 import { useChartColors } from '@/lib/hooks/useChartColors';
+import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
+import { mergeSemanticEdgeColors } from '@/lib/reactflow-edge-colors';
+
+const getHttpMethodColor = (method: string) => {
+  switch (method.toUpperCase()) {
+    case 'GET':
+      return 'bg-http-get/10 text-http-get border-http-get/40 hover:bg-http-get/15';
+    case 'POST':
+      return 'bg-http-post/10 text-http-post border-http-post/40 hover:bg-http-post/15';
+    case 'PUT':
+      return 'bg-http-put/10 text-http-put border-http-put/40 hover:bg-http-put/15';
+    case 'PATCH':
+      return 'bg-http-patch/10 text-http-patch border-http-patch/40 hover:bg-http-patch/15';
+    case 'DELETE':
+      return 'bg-http-delete/10 text-http-delete border-http-delete/40 hover:bg-http-delete/15';
+    case 'HEAD':
+      return 'bg-http-head/10 text-http-head border-http-head/40 hover:bg-http-head/15';
+    case 'OPTIONS':
+      return 'bg-http-options/10 text-http-options border-http-options/40 hover:bg-http-options/15';
+    default:
+      return 'bg-surface-3 text-foreground-muted border-border-strong hover:bg-surface-3';
+  }
+};
 
 // Memoized custom node components for better performance
 const ModuleNode = memo(
   ({ data }: { data: { label: string; routes: any[] } }) => (
-    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 min-w-[200px] shadow-md">
-      <Handle type="target" position={Position.Left} className="w-3 h-3" />
+    <div className="graph-node rounded-lg border-2 border-graph-router bg-graph-router-muted p-4 text-graph-router-foreground shadow-md min-w-[200px]">
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="h-3 w-3 bg-graph-edge!"
+      />
       <div className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <Server className="h-5 w-5 text-blue-600" />
-          <h3 className="font-bold text-blue-900 text-lg">{data.label}</h3>
+          <Server className="h-5 w-5" />
+          <h3 className="text-lg font-bold">{data.label}</h3>
         </div>
-        <p className="text-blue-700 text-sm font-medium">
+        <p className="text-sm font-medium">
           {data.routes.length} route{data.routes.length !== 1 ? 's' : ''}
         </p>
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="h-3 w-3 bg-graph-edge!"
+      />
     </div>
   )
 );
@@ -76,45 +101,39 @@ const RouteNode = memo(
       middlewares: string[];
     };
   }) => {
-    const getMethodColor = useCallback((method: string) => {
-      switch (method.toUpperCase()) {
-        case 'GET':
-          return 'bg-green-100 text-green-800 border-green-300 font-semibold';
-        case 'POST':
-          return 'bg-blue-100 text-blue-800 border-blue-300 font-semibold';
-        case 'PUT':
-          return 'bg-yellow-100 text-yellow-800 border-yellow-300 font-semibold';
-        case 'DELETE':
-          return 'bg-red-100 text-red-800 border-red-300 font-semibold';
-        default:
-          return 'bg-gray-100 text-gray-800 border-gray-300 font-semibold';
-      }
-    }, []);
-
     return (
-      <div className="bg-green-50 border-2 border-green-200 rounded-lg p-3 min-w-[180px] shadow-md">
-        <Handle type="target" position={Position.Left} className="w-3 h-3" />
+      <div className="graph-node rounded-lg border-2 border-graph-route bg-graph-route-muted p-3 text-graph-route-foreground shadow-md min-w-[180px]">
+        <Handle
+          type="target"
+          position={Position.Left}
+          className="h-3 w-3 bg-graph-edge!"
+        />
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Route className="h-4 w-4 text-green-600" />
-            <Badge className={getMethodColor(data.method)}>
+            <Route className="h-4 w-4" />
+            <Badge
+              variant="outline"
+              className={`font-semibold ${getHttpMethodColor(data.method)}`}
+            >
               {data.method.toUpperCase()}
             </Badge>
           </div>
-          <p className="font-mono text-sm font-semibold text-green-900 break-all">
+          <p className="break-all font-mono text-sm font-semibold">
             {data.path}
           </p>
-          <p className="text-xs text-green-700 font-medium">
-            Handler: {data.handler}
-          </p>
+          <p className="text-xs font-medium">Handler: {data.handler}</p>
           {data.middlewares && data.middlewares.length > 0 && (
-            <p className="text-xs text-green-600">
+            <p className="text-xs">
               {data.middlewares.length} middleware
               {data.middlewares.length !== 1 ? 's' : ''}
             </p>
           )}
         </div>
-        <Handle type="source" position={Position.Right} className="w-3 h-3" />
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="h-3 w-3 bg-graph-edge!"
+        />
       </div>
     );
   }
@@ -125,25 +144,29 @@ RouteNode.displayName = 'RouteNode';
 const MiddlewareNode = memo(
   ({ data }: { data: { label: string; optional?: boolean } }) => (
     <div
-      className={`border-2 rounded-lg p-3 min-w-[150px] shadow-md ${
-        data.optional
-          ? 'bg-purple-25 border-purple-300 border-dashed'
-          : 'bg-purple-50 border-purple-200'
+      className={`graph-node rounded-lg border-2 border-graph-middleware bg-graph-middleware-muted p-3 text-graph-middleware-foreground shadow-md min-w-[150px] ${
+        data.optional ? 'border-dashed' : ''
       }`}
     >
-      <Handle type="target" position={Position.Left} className="w-3 h-3" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="h-3 w-3 bg-graph-edge!"
+      />
       <div className="flex items-center gap-2">
-        <Layers className="h-4 w-4 text-purple-600" />
+        <Layers className="h-4 w-4" />
         <div className="flex items-center gap-1">
-          <p className="font-semibold text-purple-900 text-sm">{data.label}</p>
+          <p className="text-sm font-semibold">{data.label}</p>
           {data.optional && (
-            <span className="text-xs text-purple-600 font-medium">
-              (optional)
-            </span>
+            <span className="text-xs font-medium">(optional)</span>
           )}
         </div>
       </div>
-      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="h-3 w-3 bg-graph-edge!"
+      />
     </div>
   )
 );
@@ -162,44 +185,45 @@ interface Props {
 
 // Memoized legend component
 const Legend = memo(() => (
-  <div className="bg-white p-3 rounded shadow-xs border text-sm space-y-2">
-    <div className="font-semibold text-gray-900 mb-2">Legend</div>
+  <div className="space-y-2 rounded border bg-graph-panel p-3 text-sm text-foreground shadow-xs">
+    <div className="mb-2 font-semibold">Legend</div>
     <div className="flex items-center gap-2">
-      <div className="w-4 h-4 bg-blue-50 border-2 border-blue-200 rounded"></div>
-      <span className="text-gray-700 font-medium">Router/Module</span>
+      <div className="h-4 w-4 rounded border-2 border-graph-router bg-graph-router-muted"></div>
+      <span className="font-medium">Router/Module</span>
     </div>
     <div className="flex items-center gap-2">
-      <div className="w-4 h-4 bg-green-50 border-2 border-green-200 rounded"></div>
-      <span className="text-gray-700 font-medium">Route</span>
+      <div className="h-4 w-4 rounded border-2 border-graph-route bg-graph-route-muted"></div>
+      <span className="font-medium">Route</span>
     </div>
     <div className="flex items-center gap-2">
-      <div className="w-4 h-4 bg-purple-50 border-2 border-purple-200 rounded"></div>
-      <span className="text-gray-700 font-medium">Middleware</span>
+      <div className="h-4 w-4 rounded border-2 border-graph-middleware bg-graph-middleware-muted"></div>
+      <span className="font-medium">Middleware</span>
     </div>
     <div className="border-t pt-2 mt-2">
-      <div className="text-xs font-semibold text-gray-700 mb-1">
+      <div className="mb-1 text-xs font-semibold text-foreground-muted">
         Connections:
       </div>
       <div className="flex items-center gap-2">
-        <div className="w-3 h-0.5 bg-blue-500"></div>
-        <span className="text-xs text-gray-600">Router → Middleware</span>
+        <div className="h-0.5 w-3 bg-graph-edge"></div>
+        <span className="text-xs text-foreground-muted">
+          Router → Middleware
+        </span>
       </div>
       <div className="flex items-center gap-2">
-        <div
-          className="w-3 h-0.5 bg-blue-500 border-dashed"
-          style={{ borderStyle: 'dashed' }}
-        ></div>
-        <span className="text-xs text-gray-600">
+        <div className="w-3 border-t-2 border-dashed border-graph-edge"></div>
+        <span className="text-xs text-foreground-muted">
           Router → Route (no middleware)
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <div className="w-3 h-0.5 bg-green-500"></div>
-        <span className="text-xs text-gray-600">Route → Module</span>
+        <div className="h-0.5 w-3 bg-chart-2"></div>
+        <span className="text-xs text-foreground-muted">Route → Module</span>
       </div>
       <div className="flex items-center gap-2">
-        <div className="w-3 h-0.5 bg-purple-500 border-dashed"></div>
-        <span className="text-xs text-gray-600">Middleware → Route</span>
+        <div className="w-3 border-t-2 border-dashed border-graph-middleware"></div>
+        <span className="text-xs text-foreground-muted">
+          Middleware → Route
+        </span>
       </div>
     </div>
   </div>
@@ -209,10 +233,10 @@ Legend.displayName = 'Legend';
 
 // Memoized info panel component
 const InfoPanel = memo(() => (
-  <div className="bg-white p-3 rounded shadow-xs border text-sm">
+  <div className="rounded border bg-graph-panel p-3 text-sm text-foreground shadow-xs">
     <div className="flex items-center gap-2">
-      <Info className="h-4 w-4 text-blue-600" />
-      <span className="text-gray-700 font-medium">
+      <Info className="h-4 w-4 text-status-info" />
+      <span className="font-medium">
         Router flow: Router → Middleware → Route → Module
       </span>
     </div>
@@ -236,7 +260,7 @@ const RouterGraph = memo(
     onEdgesChange: any;
     gridColor: string;
   }) => (
-    <div className="w-full h-[800px] border rounded-md overflow-hidden bg-gray-50">
+    <div className="h-[800px] w-full overflow-hidden rounded-md border bg-surface-2">
       <ReactFlow
         /*@ts-expect-error*/
         nodes={nodes}
@@ -267,6 +291,7 @@ const RouterGraph = memo(
         maxZoom={2}
         nodesFocusable={false}
         edgesFocusable={false}
+        className="semantic-react-flow"
       >
         <Controls showInteractive={false} />
         <Background color={gridColor} gap={20} />
@@ -302,6 +327,11 @@ export const RouterVisualization = ({ data }: Props) => {
   const { initialNodes, initialEdges } = useMemo(() => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
+    const graphEdgeMarkerColor = getReactFlowMarkerColor(colors.graphEdge);
+    const graphMiddlewareMarkerColor = getReactFlowMarkerColor(
+      colors.graphMiddleware
+    );
+    const chart2MarkerColor = getReactFlowMarkerColor(colors.chart2);
 
     // Check if data exists
     if (!data) {
@@ -407,11 +437,15 @@ export const RouterVisualization = ({ data }: Props) => {
         id: `e-${routerNodeId}-${middlewareNodeId}`,
         source: routerNodeId,
         target: middlewareNodeId,
-        style: { stroke: colors.chart1, strokeWidth: 2 },
+        style: {
+          stroke: colors.graphEdge,
+          strokeWidth: 2,
+        },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 20,
           height: 20,
+          ...(graphEdgeMarkerColor && { color: graphEdgeMarkerColor }),
         },
         animated: false,
       });
@@ -485,7 +519,7 @@ export const RouterVisualization = ({ data }: Props) => {
                 source: middlewareNodeId,
                 target: routeNodeId,
                 style: {
-                  stroke: colors.chart5,
+                  stroke: colors.graphMiddleware,
                   strokeWidth: 1.5,
                   strokeDasharray: isOptional ? '8,4' : '5,5',
                 },
@@ -493,6 +527,9 @@ export const RouterVisualization = ({ data }: Props) => {
                   type: MarkerType.ArrowClosed,
                   width: 16,
                   height: 16,
+                  ...(graphMiddlewareMarkerColor && {
+                    color: graphMiddlewareMarkerColor,
+                  }),
                 },
                 animated: false,
               });
@@ -505,7 +542,7 @@ export const RouterVisualization = ({ data }: Props) => {
             source: routerNodeId,
             target: routeNodeId,
             style: {
-              stroke: colors.chart1,
+              stroke: colors.graphEdge,
               strokeWidth: 1.5,
               strokeDasharray: '3,3',
             },
@@ -513,6 +550,7 @@ export const RouterVisualization = ({ data }: Props) => {
               type: MarkerType.ArrowClosed,
               width: 16,
               height: 16,
+              ...(graphEdgeMarkerColor && { color: graphEdgeMarkerColor }),
             },
             animated: false,
           });
@@ -564,6 +602,7 @@ export const RouterVisualization = ({ data }: Props) => {
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
+              ...(chart2MarkerColor && { color: chart2MarkerColor }),
             },
             animated: false,
           });
@@ -577,6 +616,12 @@ export const RouterVisualization = ({ data }: Props) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+  useEffect(() => {
+    setEdges(currentEdges =>
+      mergeSemanticEdgeColors(currentEdges, initialEdges)
+    );
+  }, [initialEdges, setEdges]);
+
   // Memoized render functions
   const renderListView = useCallback(() => {
     // Check if data exists
@@ -584,10 +629,10 @@ export const RouterVisualization = ({ data }: Props) => {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2 text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-foreground">
               No Route Data
             </h3>
-            <p className="text-gray-600">
+            <p className="text-foreground-muted">
               Unable to load route information. Please check your connection and
               try again.
             </p>
@@ -603,10 +648,10 @@ export const RouterVisualization = ({ data }: Props) => {
       return (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2 text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-foreground">
               No Modules Found
             </h3>
-            <p className="text-gray-600">
+            <p className="text-foreground-muted">
               No modules with routes were found in the response.
             </p>
           </div>
@@ -641,22 +686,22 @@ export const RouterVisualization = ({ data }: Props) => {
             return (
               <Card key={moduleName} className="border-2">
                 <CardHeader
-                  className="bg-blue-50 border-b-2 border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
+                  className="cursor-pointer border-b-2 border-graph-router bg-graph-router-muted transition-colors hover:bg-selection"
                   onClick={() => toggleModule(moduleName)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {isCollapsed ? (
-                        <ChevronRight className="h-5 w-5 text-blue-600" />
+                        <ChevronRight className="h-5 w-5 text-graph-router-foreground" />
                       ) : (
-                        <ChevronDown className="h-5 w-5 text-blue-600" />
+                        <ChevronDown className="h-5 w-5 text-graph-router-foreground" />
                       )}
-                      <CardTitle className="flex items-center gap-2 text-blue-900">
+                      <CardTitle className="flex items-center gap-2 text-graph-router-foreground">
                         <Server className="h-5 w-5" />
                         {moduleName}
                       </CardTitle>
                     </div>
-                    <CardDescription className="text-blue-700 font-medium">
+                    <CardDescription className="font-medium text-graph-router-foreground">
                       {routes.length} route{routes.length !== 1 ? 's' : ''}{' '}
                       available
                     </CardDescription>
@@ -669,33 +714,23 @@ export const RouterVisualization = ({ data }: Props) => {
                         {routes.map((route, index) => (
                           <div
                             key={index}
-                            className="border rounded-lg p-4 bg-gray-50"
+                            className="rounded-lg border bg-surface-2 p-4"
                           >
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-3">
                                 <Badge
-                                  className={
-                                    route.action.toUpperCase() === 'GET'
-                                      ? 'bg-green-100 text-green-800 border-green-300 font-semibold'
-                                      : route.action.toUpperCase() === 'POST'
-                                        ? 'bg-blue-100 text-blue-800 border-blue-300 font-semibold'
-                                        : route.action.toUpperCase() === 'PUT'
-                                          ? 'bg-yellow-100 text-yellow-800 border-yellow-300 font-semibold'
-                                          : route.action.toUpperCase() ===
-                                              'DELETE'
-                                            ? 'bg-red-100 text-red-800 border-red-300 font-semibold'
-                                            : 'bg-gray-100 text-gray-800 border-gray-300 font-semibold'
-                                  }
+                                  variant="outline"
+                                  className={`font-semibold ${getHttpMethodColor(route.action)}`}
                                 >
                                   {route.action.toUpperCase()}
                                 </Badge>
-                                <span className="font-mono text-sm font-semibold text-gray-900">
+                                <span className="font-mono text-sm font-semibold text-foreground">
                                   {route.path}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Route className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm text-gray-600 font-medium">
+                                <Route className="h-4 w-4 text-foreground-subtle" />
+                                <span className="text-sm font-medium text-foreground-muted">
                                   Route
                                 </span>
                               </div>
@@ -703,20 +738,20 @@ export const RouterVisualization = ({ data }: Props) => {
 
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-gray-700">
+                                <span className="text-sm font-semibold text-foreground-muted">
                                   Handler:
                                 </span>
-                                <span className="font-mono text-sm text-gray-900">
+                                <span className="font-mono text-sm text-foreground">
                                   {route.handler}
                                 </span>
                               </div>
 
                               {route.description && (
                                 <div className="flex items-start gap-2">
-                                  <span className="text-sm font-semibold text-gray-700">
+                                  <span className="text-sm font-semibold text-foreground-muted">
                                     Description:
                                   </span>
-                                  <span className="text-sm text-gray-800">
+                                  <span className="text-sm text-foreground">
                                     {route.description}
                                   </span>
                                 </div>
@@ -726,8 +761,8 @@ export const RouterVisualization = ({ data }: Props) => {
                                 route.middlewares.length > 0 && (
                                   <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                      <Layers className="h-4 w-4 text-purple-600" />
-                                      <span className="text-sm font-semibold text-gray-700">
+                                      <Layers className="h-4 w-4 text-graph-middleware-foreground" />
+                                      <span className="text-sm font-semibold text-foreground-muted">
                                         Middlewares:
                                       </span>
                                     </div>
@@ -748,11 +783,11 @@ export const RouterVisualization = ({ data }: Props) => {
                                               key={mwIndex}
                                               className="flex items-center gap-2"
                                             >
-                                              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                                              <span className="text-sm text-gray-800 font-medium">
+                                              <div className="h-2 w-2 rounded-full bg-graph-middleware"></div>
+                                              <span className="text-sm font-medium text-foreground">
                                                 {displayName}
                                                 {isOptional && (
-                                                  <span className="text-xs text-gray-500 ml-1">
+                                                  <span className="ml-1 text-xs text-foreground-subtle">
                                                     {' '}
                                                     (optional)
                                                   </span>
@@ -793,11 +828,11 @@ export const RouterVisualization = ({ data }: Props) => {
         <CardContent>
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2 text-gray-900">
+              <BarChart3 className="mx-auto mb-4 h-12 w-12 text-foreground-subtle" />
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 No Routes Available
               </h3>
-              <p className="text-gray-600">
+              <p className="text-foreground-muted">
                 {!data
                   ? 'Unable to load route information. Please check your connection and try again.'
                   : 'No routes have been configured yet.'}

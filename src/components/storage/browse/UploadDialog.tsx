@@ -178,7 +178,7 @@ export function UploadDialog({
                 </div>
                 <div className="shrink-0">
                   {item.status === 'done' && (
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 text-status-healthy" />
                   )}
                   {item.status === 'error' && (
                     <AlertCircle className="h-4 w-4 text-destructive" />

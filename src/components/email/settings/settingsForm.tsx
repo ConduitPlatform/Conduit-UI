@@ -85,7 +85,7 @@ export const SettingsForm = ({
                       <SelectValue placeholder="Select a provider" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value={'smtp'}>SMTP</SelectItem>
                     <SelectItem value={'mailgun'}>
                       <div className={'flex items-center gap-2'}>
@@ -348,7 +348,7 @@ export const SettingsForm = ({
                           <SelectValue placeholder="Select a login method" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className={'bg-white dark:bg-popover'}>
+                      <SelectContent>
                         <SelectItem value={'PLAIN'}>PLAIN</SelectItem>
                         <SelectItem value={'LOGIN'}>LOGIN</SelectItem>
                       </SelectContent>
@@ -396,7 +396,7 @@ export const SettingsForm = ({
                           <SelectValue placeholder="Select a mailgun host" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className={'bg-white dark:bg-popover'}>
+                      <SelectContent>
                         <SelectItem value={'api.mailgun.net'}>
                           api.mailgun.net (Global)
                         </SelectItem>
@@ -490,7 +490,7 @@ export const SettingsForm = ({
                           <SelectValue placeholder="Select a sendgrid host" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className={'bg-white dark:bg-popover'}>
+                      <SelectContent>
                         <SelectItem value={'global'}>
                           https://api.sendgrid.com (Global)
                         </SelectItem>

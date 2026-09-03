@@ -173,7 +173,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
             </div>
           </>
         ) : (
-          <div className="p-6 text-center text-sm text-muted-foreground">
+          <div className="p-6 text-center text-sm text-foreground-muted">
             Cannot reach Loki at the configured URL. Check that Loki is running
             and that LOKI_URL is correct.
           </div>

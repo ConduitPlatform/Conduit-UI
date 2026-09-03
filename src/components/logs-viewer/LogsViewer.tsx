@@ -27,7 +27,7 @@ export default function LogsViewer({
 
   return (
     <div className="flex flex-col">
-      <div className="sticky top-0 z-40 flex items-center w-full gap-3 p-4 border-b bg-background">
+      <div className="sticky top-0 z-40 flex w-full items-center gap-3 border-b border-border bg-surface-1 p-4">
         <h1 className="text-xl font-light">Logs Viewer</h1>
       </div>
       <LogsFiltersPanel

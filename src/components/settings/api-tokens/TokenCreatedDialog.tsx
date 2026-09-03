@@ -62,9 +62,9 @@ export function TokenCreatedDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 p-3">
-            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
-            <p className="text-sm text-amber-500">
+          <div className="flex items-center gap-2 rounded-lg border border-callout-warning bg-callout-warning-muted p-3">
+            <AlertTriangle className="h-5 w-5 shrink-0 text-callout-warning-foreground" />
+            <p className="text-sm text-callout-warning-foreground">
               Copy your token now. It won&apos;t be shown again!
             </p>
           </div>
@@ -81,7 +81,7 @@ export function TokenCreatedDialog({
                 className="shrink-0"
               >
                 {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-status-healthy" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
