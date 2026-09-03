@@ -78,8 +78,8 @@ export function ModuleNotFound({
     <div className="flex items-center justify-center min-h-[60vh] p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-            <AlertTriangle className="h-6 w-6 text-yellow-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-callout-warning-muted">
+            <AlertTriangle className="h-6 w-6 text-callout-warning-foreground" />
           </div>
           <CardTitle className="text-xl">{getTitle()}</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">

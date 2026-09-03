@@ -86,7 +86,7 @@ export function EmailList({
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Email Records</h3>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-foreground-muted">
             Showing {emails.length} of {totalCount} records
           </div>
         </div>
@@ -166,7 +166,7 @@ export function EmailList({
       </div>
 
       <div className="p-4 border-t flex items-center justify-between">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-foreground-muted">
           Page {currentPage} of {totalPages || 1}
         </div>
         <div className="flex space-x-1">

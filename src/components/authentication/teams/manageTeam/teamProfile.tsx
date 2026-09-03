@@ -84,19 +84,19 @@ export default function TeamProfile({
           </div>
           <div className="grid gap-1">
             <Label>Parent Team</Label>
-            <div className="text-gray-500 dark:text-gray-400">
+            <div className="text-foreground-muted">
               {parentTeam ? parentTeam.name : '-'}
             </div>
           </div>
           <div className="grid gap-1">
             <Label>Members</Label>
-            <div className="text-gray-500 dark:text-gray-400">
+            <div className="text-foreground-muted">
               {memberCount}
             </div>
           </div>
           <div className="grid gap-1">
             <Label>SubTeams</Label>
-            <div className="text-gray-500 dark:text-gray-400">
+            <div className="text-foreground-muted">
               {subTeamCount}
             </div>
           </div>

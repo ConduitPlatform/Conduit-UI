@@ -14,7 +14,7 @@ export const columns: ColumnDef<User>[] = [
         aria-label="Select row"
         checked={props.row.getIsSelected()}
         onCheckedChange={value => props.row.toggleSelected(!!value)}
-        className={'mx-2.5 border-border-dark-gray shadow-inherit'}
+        className={'mx-2.5 border-border-strong shadow-inherit'}
       />
     ),
   },

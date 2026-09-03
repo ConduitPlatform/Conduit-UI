@@ -40,7 +40,7 @@ export default function DatabaseQueriesError({
               'The editor failed to load. You can try again or return to the list.'}
           </CardDescription>
         </CardHeader>
-        <CardFooter className="flex flex-wrap gap-2 border-t bg-muted/30 px-4 py-4 dark:bg-muted/20">
+        <CardFooter className="flex flex-wrap gap-2 border-t bg-surface-2 px-4 py-4">
           <Button type="button" variant="default" onClick={() => reset()}>
             Try again
           </Button>
