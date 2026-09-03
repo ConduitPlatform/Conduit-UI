@@ -156,11 +156,11 @@ export const getCustomEndpoint = async (id: string) => {
 
 export const createCustomEndpoint = async (
   endpoint: Partial<CustomEndpoint>
-) => {
+): Promise<CustomEndpoint> => {
   return await (
     await getApiClient()
   )
-    .post(`/database/customEndpoints`, {
+    .post<CustomEndpoint>(`/database/customEndpoints`, {
       ...endpoint,
     })
     .then(res => res.data);
@@ -232,7 +232,7 @@ export const exportCustomEndpoints = async () => {
     .then(res => res.data);
 };
 
-export const importCustomEndpoints = async (data: any) => {
+export const importCustomEndpoints = async (data: unknown) => {
   return await (await getApiClient())
     .post('/database/customEndpoints/import', data)
     .then(res => res.data);

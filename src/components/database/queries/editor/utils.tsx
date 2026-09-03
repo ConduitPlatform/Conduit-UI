@@ -1,6 +1,8 @@
 import {
+  AssignmentActionEnum,
   ComparisonOperationEnum,
   LocationEnum,
+  ValueSourceTypeEnum,
   ValueTypeEnum,
 } from '@/lib/models/database/custom-endpoints';
 import {
@@ -15,18 +17,24 @@ import {
   ToggleLeft,
 } from 'lucide-react';
 
-export const getPlacementIcon = (location: LocationEnum) => {
+export const getPlacementIcon = (
+  location: LocationEnum,
+  className = 'size-4'
+) => {
   switch (location) {
     case LocationEnum.URL:
-      return <Route className="h-4 w-4" />;
+      return <Route className={className} />;
     case LocationEnum.QUERY:
-      return <Search className="h-4 w-4" />;
+      return <Search className={className} />;
     case LocationEnum.BODY:
-      return <FileJson className="h-4 w-4" />;
-    default:
-      return <Search className="h-4 w-4" />;
+      return <FileJson className={className} />;
+    default: {
+      const _exhaustive: never = location;
+      return _exhaustive;
+    }
   }
 };
+
 export const getPlacementName = (location: LocationEnum) => {
   switch (location) {
     case LocationEnum.URL:
@@ -35,27 +43,63 @@ export const getPlacementName = (location: LocationEnum) => {
       return 'Search';
     case LocationEnum.BODY:
       return 'Body';
-    default:
-      return 'Search';
+    default: {
+      const _exhaustive: never = location;
+      return _exhaustive;
+    }
   }
 };
+
+export const getPlacementExample = (location: LocationEnum, name: string) => {
+  const key = name.trim() || 'key';
+  switch (location) {
+    case LocationEnum.URL:
+      return `Path segment /:${key}`;
+    case LocationEnum.QUERY:
+      return `URL query ?${key}=value`;
+    case LocationEnum.BODY:
+      return `JSON body { "${key}": … }`;
+    default: {
+      const _exhaustive: never = location;
+      return _exhaustive;
+    }
+  }
+};
+
+export const toLocation = (value: unknown): LocationEnum => {
+  if (value === '' || value === undefined || value === null) {
+    return LocationEnum.QUERY;
+  }
+  const location = Number(value);
+  if (
+    location === LocationEnum.URL ||
+    location === LocationEnum.QUERY ||
+    location === LocationEnum.BODY
+  ) {
+    return location;
+  }
+  return LocationEnum.QUERY;
+};
 // Add icons for input types and placements
-export const getTypeIcon = (type: ValueTypeEnum) => {
+export const getTypeIcon = (
+  type: ValueTypeEnum,
+  className = 'size-3.5 shrink-0'
+) => {
   switch (type) {
     case ValueTypeEnum.STRING:
-      return <FormInput className="h-4 w-4" />;
+      return <FormInput className={className} />;
     case ValueTypeEnum.NUMBER:
-      return <Hash className="h-4 w-4" />;
+      return <Hash className={className} />;
     case ValueTypeEnum.BOOLEAN:
-      return <ToggleLeft className="h-4 w-4" />;
+      return <ToggleLeft className={className} />;
     case ValueTypeEnum.DATE:
-      return <Calendar className="h-4 w-4" />;
+      return <Calendar className={className} />;
     case ValueTypeEnum.JSON:
-      return <Braces className="h-4 w-4" />;
+      return <Braces className={className} />;
     case ValueTypeEnum.OBJECT_ID:
-      return <Key className="h-4 w-4" />;
+      return <Key className={className} />;
     default:
-      return <FormInput className="h-4 w-4" />;
+      return <FormInput className={className} />;
   }
 };
 
@@ -74,3 +118,83 @@ export const getReadableOperation = (op: ComparisonOperationEnum): string => {
   };
   return operationMap[op];
 };
+
+export function formatValueSource(
+  type: ValueSourceTypeEnum | undefined,
+  value: string | undefined
+): string {
+  const display = value?.trim();
+  switch (type) {
+    case ValueSourceTypeEnum.INPUT:
+      return display ? `input:${display}` : 'input:not selected';
+    case ValueSourceTypeEnum.CONTEXT:
+      return display ? `context:${display}` : 'context:not specified';
+    case ValueSourceTypeEnum.CUSTOM:
+      return display || 'empty';
+    default:
+      return display || '';
+  }
+}
+
+export function getConditionSummary({
+  schemaField,
+  operation,
+  sourceType,
+  value,
+  like,
+  caseSensitiveLike,
+  index,
+}: {
+  schemaField?: string;
+  operation: ComparisonOperationEnum;
+  sourceType?: ValueSourceTypeEnum;
+  value?: string;
+  like?: boolean;
+  caseSensitiveLike?: boolean;
+  index: number;
+}): string {
+  if (!schemaField) return `Condition #${index + 1}`;
+
+  let opPhrase = getReadableOperation(operation) || 'equals';
+  if (like && operation === ComparisonOperationEnum.EQUAL) {
+    opPhrase = caseSensitiveLike
+      ? 'matches (case-sensitive LIKE)'
+      : 'matches (LIKE)';
+  }
+
+  return `${schemaField} ${opPhrase} ${formatValueSource(sourceType, value)}`;
+}
+
+export function getAssignmentSummary({
+  schemaField,
+  action,
+  sourceType,
+  value,
+  index,
+}: {
+  schemaField?: string;
+  action: AssignmentActionEnum;
+  sourceType?: ValueSourceTypeEnum;
+  value?: string;
+  index: number;
+}): string {
+  if (!schemaField) return `Set #${index + 1}`;
+  const valueDisplay = formatValueSource(sourceType, value);
+
+  switch (action) {
+    case AssignmentActionEnum.ASSIGN:
+      return `${schemaField} = ${valueDisplay}`;
+    case AssignmentActionEnum.INC:
+      return `${schemaField} += ${valueDisplay}`;
+    case AssignmentActionEnum.DEC:
+      return `${schemaField} -= ${valueDisplay}`;
+    case AssignmentActionEnum.PUSH:
+      return `${schemaField} = ${schemaField}.concat(${valueDisplay})`;
+    case AssignmentActionEnum.PULL:
+      return `${schemaField} = ${schemaField}.remove(${valueDisplay})`;
+    default: {
+      const _exhaustive: never = action;
+      return _exhaustive;
+    }
+  }
+}

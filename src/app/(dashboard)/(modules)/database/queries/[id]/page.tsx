@@ -1,7 +1,6 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import {
   createCustomEndpoint,
-  deleteCustomEndpoint,
   getCustomEndpoint,
   patchCustomEndpoint,
 } from '@/lib/api/database';
@@ -18,7 +17,7 @@ function stripFormOnlyFields(data: SavePayload) {
 async function saveCustomQuery(
   endpointId: string | undefined,
   data: SavePayload
-) {
+): Promise<{ id: string }> {
   'use server';
   const payload = stripFormOnlyFields(data);
   try {
@@ -28,28 +27,21 @@ async function saveCustomQuery(
         endpointId,
         patchPayload as Partial<CustomEndpoint>
       );
-    } else {
-      await createCustomEndpoint(payload as Partial<CustomEndpoint>);
+      return { id: endpointId };
     }
+    const created = await createCustomEndpoint(
+      payload as Partial<CustomEndpoint>
+    );
+    if (!created?._id) {
+      throw new Error('Query was created but the server did not return an id.');
+    }
+    return { id: created._id };
   } catch (e: unknown) {
     console.error(e);
     throw new Error(
       (e as Error).message ?? 'Failed to save custom endpoint, check the logs'
     );
   }
-}
-
-async function deleteCustomQuery(id: string) {
-  'use server';
-  try {
-    await deleteCustomEndpoint(id);
-  } catch (e: unknown) {
-    console.error(e);
-    throw new Error(
-      (e as Error).message ?? 'Failed to delete custom endpoint, check the logs'
-    );
-  }
-  redirect('/database/queries/new');
 }
 
 export default async function CustomQueries(
@@ -66,23 +58,16 @@ export default async function CustomQueries(
     }
   } else {
     initialData = {
-      name: 'My new Query',
+      name: 'MyNewQuery',
       operation: 0,
     };
   }
 
   const handleSaveQuery = saveCustomQuery.bind(null, initialData._id);
-  const handleDeleteQuery = initialData._id
-    ? deleteCustomQuery.bind(null, initialData._id)
-    : undefined;
 
   return (
-    <div className="p-6">
-      <QueryEditor
-        initialData={initialData}
-        onSave={handleSaveQuery}
-        onDelete={handleDeleteQuery}
-      />
+    <div className="flex h-full min-h-0 flex-col">
+      <QueryEditor initialData={initialData} onSave={handleSaveQuery} />
     </div>
   );
 }

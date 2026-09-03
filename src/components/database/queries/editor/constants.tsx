@@ -54,7 +54,7 @@ export const placementTypes = [
   },
   {
     value: LocationEnum.QUERY,
-    label: 'Search Parameter',
+    label: 'Search',
     description: 'URL query parameter (?key=value)',
   },
   {
@@ -90,7 +90,20 @@ export const assignmentOperations = [
 
 // Value source types
 export const valueSourceTypes = [
-  { value: ValueSourceTypeEnum.INPUT, label: 'Input' },
-  { value: ValueSourceTypeEnum.CUSTOM, label: 'Custom Value' },
-  { value: ValueSourceTypeEnum.CONTEXT, label: 'Context Value' },
+  {
+    value: ValueSourceTypeEnum.INPUT,
+    label: 'Input',
+    description: 'Use a request input defined above.',
+  },
+  {
+    value: ValueSourceTypeEnum.CUSTOM,
+    label: 'Custom',
+    description: 'Use a literal value baked into this endpoint.',
+  },
+  {
+    value: ValueSourceTypeEnum.CONTEXT,
+    label: 'Context',
+    description:
+      'Use a runtime value such as user._id from the request context.',
+  },
 ] as const;

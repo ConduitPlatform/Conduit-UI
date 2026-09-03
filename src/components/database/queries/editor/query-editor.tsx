@@ -8,81 +8,37 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Controller,
-  useFieldArray,
-  useForm,
-  type FieldPath,
-} from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import * as React from 'react';
 import { useEffect } from 'react';
 import {
-  ArrowLeft,
-  BinaryIcon as LogicalOr,
-  ChevronDown,
+  Check,
   Code,
+  Copy,
   FileJson,
   Filter,
   FormInput,
+  Loader2,
   Plus,
-  PlusIcon as LogicalAnd,
   Save,
-  Search,
-  Settings,
   Trash2,
 } from 'lucide-react';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { Separator } from '@/components/ui/separator';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/lib/hooks/use-toast';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Form } from '@/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Assignment,
   AssignmentActionEnum,
-  Comparison,
   ComparisonOperationEnum,
   CustomEndpoint,
   LocationEnum,
@@ -91,31 +47,24 @@ import {
   ValueTypeEnum,
 } from '@/lib/models/database/custom-endpoints';
 import { z } from 'zod';
-import { InputField } from '@/components/ui/form-inputs/InputField';
 import { getSchemas } from '@/lib/api/database';
 import { DeclaredSchema } from '@/lib/models/database';
-import SelectField from '@/components/ui/form-inputs/SelectField';
 import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
+import { QueryInputItem } from '@/components/database/queries/editor/query-input-item';
+import { QueryInformation } from '@/components/database/queries/editor/query-information';
 import {
-  assignmentOperations,
-  comparisonOperations,
-  inputTypes,
-  operationTypes,
-  placementTypes,
-  valueSourceTypes,
-} from './constants';
+  countConditions,
+  QueryAssignments,
+  QueryConditionGroup,
+} from '@/components/database/queries/editor/query-condition-group';
+import { QueryModelField } from '@/components/database/queries/editor/query-compact-fields';
+import { useQueryWorkspaceOptional } from '@/components/database/queries/query-workspace-context';
+import { QueryFieldHint } from '@/components/database/queries/query-field-hint';
 import {
-  getPlacementIcon,
-  getPlacementName,
-  getReadableOperation,
-  getTypeIcon,
-} from '@/components/database/queries/editor/utils';
-
-interface ModelField {
-  name: string;
-  type: string;
-  isArray: boolean;
-}
+  getEndpointPath,
+  getOperationMeta,
+} from '@/components/database/queries/query-operations';
+import { useRouter } from 'next/navigation';
 
 /** Radix Select passes string values; API may return numbers for these enums. */
 const numericEnum = (e: Parameters<typeof z.nativeEnum>[0]) =>
@@ -197,28 +146,60 @@ const querySchema = z.object({
 });
 
 type QueryFormValues = z.infer<typeof querySchema>;
-/** Nested condition paths are built at runtime; widen for react-hook-form APIs. */
-type QueryFormPath = FieldPath<QueryFormValues>;
+
+const INPUTS_JSON_PLACEHOLDER = `[
+  {
+    "name": "id",
+    "type": "String",
+    "location": 1,
+    "optional": false,
+    "array": false
+  }
+]`;
+
+const QUERY_JSON_PLACEHOLDER = `{
+  "query": {
+    "AND": [
+      {
+        "schemaField": "name",
+        "operation": 0,
+        "comparisonField": {
+          "type": "Input",
+          "value": "name"
+        }
+      }
+    ]
+  },
+  "assignments": [
+    {
+      "schemaField": "status",
+      "action": 0,
+      "assignmentField": {
+        "type": "Custom",
+        "value": "active"
+      }
+    }
+  ]
+}`;
 
 interface QueryEditorProps {
-  onBack?: () => void;
-  onSave?: (data: QueryFormValues) => Promise<void>;
-  onDelete?: () => Promise<void>;
+  onSave?: (data: QueryFormValues) => Promise<{ id: string } | void>;
   initialData?: Partial<CustomEndpoint>;
 }
 
 export function QueryEditor({
-  onBack,
   onSave,
-  onDelete,
   initialData,
 }: Readonly<QueryEditorProps>) {
+  const workspace = useQueryWorkspaceOptional();
+  const router = useRouter();
   const [models, setModels] = React.useState<DeclaredSchema[]>([]);
-  const [isModelDialogOpen, setIsModelDialogOpen] = React.useState(false);
+  const [modelsLoading, setModelsLoading] = React.useState(true);
   const [modelSearchTerm, setModelSearchTerm] = React.useState('');
   const [inputMode, setInputMode] = React.useState<'form' | 'json'>('form');
   const [queryMode, setQueryMode] = React.useState<'form' | 'json'>('form');
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [saveShortcutLabel, setSaveShortcutLabel] = React.useState('Ctrl+S');
+  const [copiedPath, setCopiedPath] = React.useState(false);
 
   const form = useForm<QueryFormValues>({
     resolver: rhfZodResolver(querySchema),
@@ -256,10 +237,25 @@ export function QueryEditor({
     getValues,
   } = form;
   const selectedSchema = form.watch('selectedSchema');
-  const [modelFields, setModelFields] = React.useState<ModelField[]>([]);
-  const [modifiableFields, setModifiableFields] = React.useState<ModelField[]>(
-    []
-  );
+  const queryName = form.watch('name');
+
+  const setWorkspaceDirty = workspace?.setDirty;
+  React.useEffect(() => {
+    setWorkspaceDirty?.(isDirty);
+    return () => setWorkspaceDirty?.(false);
+  }, [isDirty, setWorkspaceDirty]);
+
+  React.useEffect(() => {
+    const platform = navigator.platform || navigator.userAgent;
+    setSaveShortcutLabel(
+      /Mac|iPhone|iPad|iPod/i.test(platform) ? '⌘S' : 'Ctrl+S'
+    );
+  }, []);
+
+  const [modelFields, setModelFields] = React.useState<QueryModelField[]>([]);
+  const [modifiableFields, setModifiableFields] = React.useState<
+    QueryModelField[]
+  >([]);
   useEffect(() => {
     if (!selectedSchema) return;
     const parsedSchema = models.find(model => model._id === selectedSchema);
@@ -327,28 +323,6 @@ export function QueryEditor({
     name: 'inputs',
   });
 
-  const addConditionToGroup = (path: string, condition: any) => {
-    const currentGroup = form.getValues(path as any) as unknown[];
-    const updatedConditions = [...currentGroup, condition];
-    form.setValue(path as any, updatedConditions);
-  };
-
-  const addNestedGroup = (path: string, groupType: 'AND' | 'OR') => {
-    const currentGroup = form.getValues(path as any) as unknown[];
-    const newGroup = {
-      [groupType]: [],
-    };
-    const updatedConditions = [...currentGroup, newGroup];
-    form.setValue(path as any, updatedConditions);
-  };
-
-  const removeFromGroup = (path: string, index: number) => {
-    const currentGroup = form.getValues(path as any) as unknown[];
-    const updatedConditions = [...currentGroup];
-    updatedConditions.splice(index, 1);
-    form.setValue(path as any, updatedConditions);
-  };
-
   const {
     fields: setConditions,
     append: appendSetCondition,
@@ -373,7 +347,7 @@ export function QueryEditor({
             'This model does not support creating new entries through custom queries',
           variant: 'destructive',
         });
-        form.setValue('operation', OperationsEnum.GET);
+        form.setValue('operation', OperationsEnum.GET, { shouldDirty: true });
       }
     } else if (
       operation === OperationsEnum.PUT ||
@@ -389,7 +363,7 @@ export function QueryEditor({
             'This model does not support modifying entries through custom queries',
           variant: 'destructive',
         });
-        form.setValue('operation', OperationsEnum.GET);
+        form.setValue('operation', OperationsEnum.GET, { shouldDirty: true });
       }
     } else if (operation === OperationsEnum.DELETE) {
       if (!selectedModel.modelOptions?.conduit?.permissions?.canDelete) {
@@ -399,7 +373,7 @@ export function QueryEditor({
             'This model does not support deleting entries through custom queries',
           variant: 'destructive',
         });
-        form.setValue('operation', OperationsEnum.GET);
+        form.setValue('operation', OperationsEnum.GET, { shouldDirty: true });
       }
     }
   }, [operation]);
@@ -411,17 +385,29 @@ export function QueryEditor({
   ].includes(operation);
 
   const fetchModels = React.useCallback(async () => {
-    const { schemas } = await getSchemas({
-      skip: 0,
-      limit: 1000,
-    });
-    setModels(
-      schemas.filter(model => {
-        return (
-          model?.modelOptions?.conduit?.permissions?.canModify !== 'Nothing'
-        );
-      })
-    );
+    setModelsLoading(true);
+    try {
+      const { schemas } = await getSchemas({
+        skip: 0,
+        limit: 1000,
+      });
+      setModels(
+        schemas.filter(model => {
+          return (
+            model?.modelOptions?.conduit?.permissions?.canModify !== 'Nothing'
+          );
+        })
+      );
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Could not load models',
+        description: 'Select a model after retrying from the list filters.',
+        variant: 'destructive',
+      });
+    } finally {
+      setModelsLoading(false);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -492,7 +478,7 @@ export function QueryEditor({
         const parsedQuery = JSON.parse(data.queryJson ?? '{}');
         data.query = parsedQuery.query ?? { AND: [] };
         data.assignments = parsedQuery.assignments ?? [];
-        querySchema.parse(data.query);
+        conditionGroupSchema.parse(data.query);
         z.array(setConditionSchema).parse(data.assignments);
       } catch (error) {
         toast({
@@ -510,11 +496,20 @@ export function QueryEditor({
 
     if (onSave) {
       onSave(data)
-        .then(() => {
+        .then(async result => {
+          const createdId = result?.id;
           toast({
-            title: 'Query saved',
-            description: 'It will be available in a couple os seconds',
+            title: initialData?._id ? 'Query updated' : 'Query created',
+            description: createdId
+              ? `${data.name} is available at ${getEndpointPath(data.name)}.`
+              : `${data.name} has been saved.`,
           });
+          await workspace?.refreshQueries();
+          if (createdId && !initialData?._id) {
+            workspace?.setDirty(false);
+            router.push(`/database/queries/${createdId}`);
+            return;
+          }
           reset(getValues());
         })
         .catch(error => {
@@ -538,6 +533,24 @@ export function QueryEditor({
     }
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isSaveShortcut =
+        (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's';
+      if (!isSaveShortcut) return;
+      event.preventDefault();
+      if (!isSubmitting && isDirty) {
+        const formEl = document.getElementById(
+          'query-editor-form'
+        ) as HTMLFormElement | null;
+        formEl?.requestSubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDirty, isSubmitting]);
+
   const handleInputModeChange = (mode: 'form' | 'json') => {
     if (mode === 'json' && inputMode === 'form') {
       // Convert form inputs to JSON
@@ -548,7 +561,10 @@ export function QueryEditor({
       try {
         const inputsJson = form.getValues('inputsJson');
         const parsedInputs = JSON.parse(inputsJson ?? '[]');
-        form.setValue('inputs', parsedInputs);
+        form.setValue('inputs', parsedInputs, {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
       } catch (error) {
         toast({
           title: 'Invalid JSON',
@@ -589,8 +605,14 @@ export function QueryEditor({
         if (!Array.isArray(findConditions[firstKey])) {
           findConditions[firstKey] = [];
         }
-        form.setValue('query', findConditions);
-        form.setValue('assignments', parsedQuery.assignments || []);
+        form.setValue('query', findConditions, {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+        form.setValue('assignments', parsedQuery.assignments || [], {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
       } catch (error) {
         toast({
           title: 'Invalid JSON',
@@ -603,1333 +625,384 @@ export function QueryEditor({
     setQueryMode(mode);
   };
 
-  const countConditions = (group: any) => {
-    if (!group || !group[Object.keys(group)[0]]) return 0;
-    return group[Object.keys(group)[0]].reduce(
-      (count: number, condition: any) => {
-        // If it's a group, recursively count its conditions
-        if (
-          condition[Object.keys(condition)[0]] === 'AND' ||
-          condition[Object.keys(condition)[0]] === 'OR'
-        ) {
-          return count + countConditions(condition);
-        }
-        // Otherwise it's a single condition
-        return count + 1;
-      },
-      0
-    );
-  };
+  const operationMeta = getOperationMeta(operation);
+  const endpointPath = getEndpointPath(queryName);
+  const findConditionCount = countConditions(form.watch('query'));
 
-  const getConditionDescription = (condition: Comparison): string => {
-    const { schemaField, operation, comparisonField } = condition;
-
-    if (!schemaField) return '';
-
-    let valueDisplay = '';
-    if (comparisonField.type === ValueSourceTypeEnum.INPUT) {
-      valueDisplay = `input:${comparisonField.value || 'not selected'}`;
-    } else if (comparisonField.type === ValueSourceTypeEnum.CUSTOM) {
-      valueDisplay = comparisonField.value || 'empty';
-    } else if (comparisonField.type === ValueSourceTypeEnum.CONTEXT) {
-      valueDisplay = `context:${comparisonField.value || 'not specified'}`;
+  const handleCopyPath = async () => {
+    try {
+      await navigator.clipboard.writeText(endpointPath);
+      setCopiedPath(true);
+      window.setTimeout(() => setCopiedPath(false), 1500);
+    } catch {
+      toast({
+        title: 'Copy failed',
+        description: 'Could not copy the endpoint path.',
+        variant: 'destructive',
+      });
     }
-
-    let opPhrase = getReadableOperation(operation);
-    if (comparisonField.like && operation === ComparisonOperationEnum.EQUAL) {
-      opPhrase = comparisonField.caseSensitiveLike
-        ? 'matches (case-sensitive LIKE)'
-        : 'matches (LIKE)';
-    }
-
-    return `${schemaField} ${opPhrase} ${valueDisplay}`;
-  };
-
-  const getSetDescription = (condition: Assignment, index: number): string => {
-    const { schemaField, action, assignmentField } = condition;
-    if (!schemaField) return `Set #${index + 1}`;
-    if (!assignmentField.value) return `Set #${index + 1}`;
-    let valueDisplay = '';
-    if (assignmentField.type === ValueSourceTypeEnum.INPUT) {
-      valueDisplay = `input:${assignmentField.value || 'not selected'}`;
-    } else if (assignmentField.type === ValueSourceTypeEnum.CUSTOM) {
-      valueDisplay = assignmentField.value || 'empty';
-    } else if (assignmentField.type === ValueSourceTypeEnum.CONTEXT) {
-      valueDisplay = `context:${assignmentField.value || 'not specified'}`;
-    }
-
-    switch (action) {
-      case AssignmentActionEnum.ASSIGN:
-        return `${schemaField} = ${valueDisplay}`;
-      case AssignmentActionEnum.INC:
-        return `${schemaField}+=${valueDisplay}`;
-      case AssignmentActionEnum.DEC:
-        return `${schemaField}-=${valueDisplay}`;
-      case AssignmentActionEnum.PUSH:
-        return `${schemaField}=${schemaField}.concat(${valueDisplay})`;
-      case AssignmentActionEnum.PULL:
-        return `${schemaField}=${schemaField}.remove(${valueDisplay})`;
-      default:
-        return `${schemaField} = ${valueDisplay}`;
-    }
-  };
-
-  const renderCondition = (
-    condition: Comparison,
-    path: string,
-    index: number,
-    parentPath: string
-  ) => {
-    const qp = (suffix: string) => `${path}.${suffix}` as QueryFormPath;
-
-    // Get a readable description of the condition
-    const conditionDescription = getConditionDescription(condition);
-    const conditionTitle = conditionDescription || `Condition #${index + 1}`;
-
-    return (
-      <Collapsible
-        key={`${path}-${index}`}
-        className="border rounded-md overflow-hidden mb-4"
-      >
-        <div className="flex items-center justify-between p-3 bg-muted/30">
-          <div className="flex items-center space-x-2 grow">
-            <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
-              <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
-              <span className="font-medium truncate">{conditionTitle}</span>
-            </CollapsibleTrigger>
-            {form.watch(qp('schemaField')) && (
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline">
-                  {comparisonOperations.find(
-                    o => o.value === form.watch(qp('operation'))
-                  )?.label ?? form.watch(qp('operation'))}
-                </Badge>
-                <Badge variant="secondary">
-                  {form.watch(qp('comparisonField.type'))}
-                </Badge>
-              </div>
-            )}
-          </div>
-
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            onClick={() => removeFromGroup(parentPath, index)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <CollapsibleContent>
-          <div className="p-4 space-y-4">
-            <div className="space-y-2">
-              <SelectField
-                label={'Field'}
-                placeholder={'Select field'}
-                fieldName={qp('schemaField')}
-                options={modelFields.map(modelField => ({
-                  value: modelField.name,
-                  label: (
-                    <div className="flex items-center space-x-2">
-                      {getTypeIcon(modelField.type as ValueTypeEnum)}
-                      <span>{modelField.name}</span>
-                      {modelField.isArray && (
-                        <Badge variant="outline" className="ml-1 text-xs">
-                          Array
-                        </Badge>
-                      )}
-                    </div>
-                  ),
-                }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Controller
-                name={qp('operation')}
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Comparison</FormLabel>
-                    <Select
-                      onValueChange={val => {
-                        const n = Number(val);
-                        field.onChange(n);
-                        if (n !== ComparisonOperationEnum.EQUAL) {
-                          form.setValue(qp('comparisonField.like'), false);
-                          form.setValue(
-                            qp('comparisonField.caseSensitiveLike'),
-                            false
-                          );
-                        }
-                      }}
-                      value={String(
-                        field.value ?? ComparisonOperationEnum.EQUAL
-                      )}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select comparison" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {comparisonOperations.map(op => (
-                          <SelectItem key={op.value} value={String(op.value)}>
-                            {op.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <SelectField
-                label={'Value Source'}
-                placeholder={'Select value source'}
-                fieldName={qp('comparisonField.type')}
-                options={valueSourceTypes.map(vs => ({
-                  value: vs.value,
-                  label: vs.label,
-                }))}
-              />
-            </div>
-
-            {form.watch(qp('comparisonField.type')) ===
-              ValueSourceTypeEnum.INPUT && (
-              <div className="space-y-2">
-                <SelectField
-                  label={'Input'}
-                  placeholder={'Select input'}
-                  options={inputs.map(input => ({
-                    value: input.name,
-                    label: input.name,
-                  }))}
-                  fieldName={qp('comparisonField.value')}
-                />
-              </div>
-            )}
-
-            {form.watch(qp('comparisonField.type')) ===
-              ValueSourceTypeEnum.CUSTOM && (
-              <div className="space-y-2">
-                <InputField
-                  label={'Custom Value'}
-                  fieldName={qp('comparisonField.value')}
-                  placeholder={'Enter custom value'}
-                />
-              </div>
-            )}
-            {form.watch(qp('comparisonField.type')) ===
-              ValueSourceTypeEnum.CONTEXT && (
-              <div className="space-y-2">
-                <InputField
-                  label={'Context Value'}
-                  fieldName={qp('comparisonField.value')}
-                  placeholder={'e.g. user.id, currentDate'}
-                />
-              </div>
-            )}
-
-            {Number(form.watch(qp('operation'))) ===
-              ComparisonOperationEnum.EQUAL && (
-              <div className="space-y-4 rounded-md border border-border/60 bg-muted/20 p-3">
-                <Controller
-                  name={qp('comparisonField.like')}
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Input
-                          type="checkbox"
-                          className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary"
-                          checked={Boolean(field.value)}
-                          onChange={e => {
-                            const checked = e.target.checked;
-                            field.onChange(checked);
-                            if (!checked) {
-                              form.setValue(
-                                qp('comparisonField.caseSensitiveLike'),
-                                false
-                              );
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="font-normal">
-                          Like (pattern match)
-                        </FormLabel>
-                        <FormDescription className="text-xs">
-                          Use % as a wildcard; the value is matched as %input%.
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-                {Boolean(form.watch(qp('comparisonField.like'))) && (
-                  <InputField
-                    type="checkbox"
-                    label="Case sensitive"
-                    fieldName={qp('comparisonField.caseSensitiveLike')}
-                    description="When off, matching is case-insensitive (e.g. ILIKE on PostgreSQL)."
-                    classNames={{
-                      formItem: 'flex flex-row items-center space-x-2',
-                      input:
-                        'h-4 w-4 rounded border-input text-primary focus:ring-primary',
-                    }}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-    );
-  };
-
-  const renderConditionGroup = (
-    group: any,
-    path = 'query',
-    isNested = false
-  ) => {
-    const groupRoot = form.watch(path as QueryFormPath) as {
-      AND?: unknown;
-      OR?: unknown;
-    };
-    const groupType = groupRoot?.AND ? 'AND' : 'OR';
-    const conditions =
-      (form.watch(`${path}.${groupType}` as QueryFormPath) as unknown[]) || [];
-    return (
-      <div
-        className={`mb-4 rounded-md border p-4 ${groupType === 'AND' ? 'border-callout-info' : 'border-callout-warning'}`}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            {groupType === 'AND' ? (
-              <LogicalAnd className="h-5 w-5 text-callout-info-foreground" />
-            ) : (
-              <LogicalOr className="h-5 w-5 text-callout-warning-foreground" />
-            )}
-            <SelectField
-              label={''}
-              value={
-                (form.watch(path as QueryFormPath) as { AND?: unknown })?.AND
-                  ? 'AND'
-                  : 'OR'
-              }
-              onValueChange={val => {
-                const current = form.watch(path as keyof QueryFormValues);
-                // @ts-ignore
-                if (current['AND']) {
-                  form.setValue(path as keyof QueryFormValues, {
-                    // @ts-ignore
-                    [val]: current['AND'],
-                  });
-                } else {
-                  form.setValue(path as keyof QueryFormValues, {
-                    // @ts-ignore
-                    [val]: current['OR'],
-                  });
-                }
-              }}
-              options={[
-                { value: 'AND', label: 'AND' },
-                { value: 'OR', label: 'OR' },
-              ]}
-            />
-
-            {isNested && (
-              <Badge
-                variant={groupType === 'AND' ? 'default' : 'outline'}
-                className={
-                  groupType === 'OR'
-                    ? 'border-callout-warning bg-callout-warning-muted text-callout-warning-foreground'
-                    : ''
-                }
-              >
-                {countConditions(group)} condition
-                {countConditions(group) !== 1 ? 's' : ''}
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                addConditionToGroup(`${path}.${groupType}`, {
-                  schemaField: '',
-                  operation: ComparisonOperationEnum.EQUAL,
-                  comparisonField: {
-                    type: ValueSourceTypeEnum.INPUT,
-                    value: '',
-                  },
-                } as Comparison)
-              }
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Condition
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                addNestedGroup(
-                  path === 'query' ? `${path}.${groupType}` : path,
-                  groupType === 'AND' ? 'OR' : 'AND'
-                )
-              }
-              className={
-                groupType === 'AND'
-                  ? 'text-callout-warning-foreground'
-                  : 'text-callout-info-foreground'
-              }
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add {groupType === 'AND' ? 'OR' : 'AND'} Group
-            </Button>
-
-            {isNested && (
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                onClick={() => {
-                  // Extract parent path and index from the current path
-                  const pathParts = path.split('.');
-                  const index = Number.parseInt(pathParts.pop() ?? '0');
-                  const parentPath = pathParts.join('.');
-                  removeFromGroup(parentPath, index);
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <div
-          className={`border-l-2 pl-4 ${groupType === 'AND' ? 'border-callout-info' : 'border-callout-warning'}`}
-        >
-          {conditions.length === 0 ? (
-            <div className="flex items-center justify-center p-6 bg-muted/20 rounded-md">
-              <div className="text-center text-muted-foreground">
-                <p>No conditions in this {groupType} group</p>
-                <p className="text-sm">Add conditions or nested groups</p>
-              </div>
-            </div>
-          ) : (
-            conditions.map((condition: any, index: number) => {
-              // Check if this is a condition or a group
-              if (condition['AND'] || condition['OR']) {
-                // It's a group, render recursively
-                return renderConditionGroup(
-                  condition,
-                  `${path}.${groupType}.${index}`,
-                  true
-                );
-              } else {
-                // It's a condition
-                return renderCondition(
-                  condition,
-                  `${path}.${groupType}.${index}`,
-                  index,
-                  `${path}.${groupType}`
-                );
-              }
-            })
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSetCondition = (condition: any, index: number) => {
-    return (
-      <Collapsible
-        key={condition.id}
-        className="border rounded-md overflow-hidden mb-4"
-      >
-        <div className="flex items-center justify-between p-3 bg-muted/30">
-          <div className="flex items-center space-x-2 grow">
-            <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
-              <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
-              <span className="font-medium truncate">
-                {getSetDescription(condition, index)}
-              </span>
-            </CollapsibleTrigger>
-
-            {form.watch(`assignments.${index}.schemaField`) && (
-              <Badge variant="secondary">
-                {form.watch(`assignments.${index}.assignmentField.type`)}
-              </Badge>
-            )}
-          </div>
-
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            onClick={() => removeSetCondition(index)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <CollapsibleContent>
-          <div className="p-4 space-y-4">
-            <div className="space-y-2">
-              <SelectField
-                label={'Field'}
-                fieldName={`assignments.${index}.schemaField`}
-                options={modifiableFields.map(modelField => ({
-                  value: modelField.name,
-                  label: (
-                    <div className="flex items-center space-x-2">
-                      {getTypeIcon(modelField.type as ValueTypeEnum)}
-                      <span>{modelField.name}</span>
-                      {modelField.isArray && (
-                        <Badge variant="outline" className="ml-1 text-xs">
-                          Array
-                        </Badge>
-                      )}
-                    </div>
-                  ),
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <SelectField
-                label={'Assignment Action'}
-                fieldName={`assignments.${index}.action`}
-                options={assignmentOperations.map(vs => ({
-                  label: vs.label,
-                  value: vs.value,
-                }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <SelectField
-                label={'Value Source'}
-                fieldName={`assignments.${index}.assignmentField.type`}
-                options={valueSourceTypes.map(vs => ({
-                  label: vs.label,
-                  value: vs.value,
-                }))}
-              />
-            </div>
-
-            {form.watch(`assignments.${index}.assignmentField.type`) ===
-              ValueSourceTypeEnum.INPUT && (
-              <div className="space-y-2">
-                <SelectField
-                  label={'Value from Input'}
-                  fieldName={`assignments.${index}.assignmentField.value`}
-                  options={form.watch(`inputs`).map(input => ({
-                    value: input.name,
-                    label: input.name,
-                  }))}
-                />
-              </div>
-            )}
-
-            {form.watch(`assignments.${index}.assignmentField.type`) ===
-              ValueSourceTypeEnum.CUSTOM && (
-              <div className="space-y-2">
-                <InputField
-                  label={'Custom Value'}
-                  fieldName={`assignments.${index}.assignmentField.value`}
-                  placeholder={'Enter custom value'}
-                />
-              </div>
-            )}
-
-            {form.watch(`assignments.${index}.assignmentField.type`) ===
-              ValueSourceTypeEnum.CONTEXT && (
-              <div className="space-y-2">
-                <InputField
-                  label={'Context Value'}
-                  fieldName={`assignments.${index}.assignmentField.value`}
-                  placeholder={'e.g. user.id, currentDate'}
-                />
-              </div>
-            )}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-    );
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {onBack && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={onBack}
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            )}
-            <h2 className="text-2xl font-bold">
-              {initialData?._id ? 'Edit Query' : 'Create New Query'}
-            </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            {onDelete && (
-              <>
+      <form
+        id="query-editor-form"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex min-h-full flex-col"
+      >
+        <div className="sticky top-0 z-10 flex flex-col gap-3 border-b bg-background/95 px-6 py-3 backdrop-blur-sm">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg font-semibold text-balance">
+                  {initialData?._id
+                    ? queryName || 'Edit query'
+                    : 'Create query'}
+                </h2>
+                {isDirty && (
+                  <Badge variant="secondary" className="font-normal">
+                    Unsaved changes
+                  </Badge>
+                )}
+                <Badge variant="outline" className="font-mono font-normal">
+                  {operationMeta.method}
+                </Badge>
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <code className="truncate font-mono text-xs text-muted-foreground slashed-zero">
+                  {endpointPath}
+                </code>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        aria-label="Copy endpoint path"
+                        onClick={() => void handleCopyPath()}
+                      >
+                        {copiedPath ? (
+                          <Check className="size-3.5" />
+                        ) : (
+                          <Copy className="size-3.5" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Client API path for this custom endpoint
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {initialData?._id && workspace && (
                 <Button
                   type="button"
-                  variant="destructive"
-                  onClick={() => setDeleteDialogOpen(true)}
+                  variant="outline"
+                  onClick={() =>
+                    workspace.requestDelete(
+                      initialData._id as string,
+                      queryName || initialData.name || 'this query'
+                    )
+                  }
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete
                 </Button>
-                <AlertDialog
-                  open={deleteDialogOpen}
-                  onOpenChange={setDeleteDialogOpen}
-                >
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete custom query?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This removes the custom endpoint from the platform. This
-                        action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={e => {
-                          e.preventDefault();
-                          void onDelete().catch((error: Error) => {
-                            toast({
-                              title: 'Error deleting query',
-                              description: error.message,
-                              variant: 'destructive',
-                            });
-                          });
-                        }}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            )}
-            <Button
-              type="submit"
-              variant={isDirty ? 'default' : 'outline'}
-              disabled={!isDirty || isSubmitting}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save Query
-            </Button>
+              )}
+              <Button
+                type="submit"
+                disabled={!isDirty || isSubmitting}
+                className="gap-2"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                {isSubmitting
+                  ? 'Saving…'
+                  : initialData?._id
+                    ? 'Save changes'
+                    : 'Create query'}
+                {!isSubmitting && isDirty && (
+                  <kbd className="ml-1 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
+                    {saveShortcutLabel}
+                  </kbd>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Query Information</CardTitle>
-              <CardDescription>
-                Define the basic properties of your query
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <InputField
-                  label={'Query Name'}
-                  fieldName={'name'}
-                  placeholder="Enter query name"
-                />
-              </div>
+        <div className="flex flex-col gap-6 p-6">
+          {operation === OperationsEnum.DELETE && (
+            <Alert variant="destructive">
+              <AlertTitle>This endpoint deletes documents</AlertTitle>
+              <AlertDescription>
+                Runtime calls matching the find conditions will permanently
+                remove documents from{' '}
+                {form.watch('selectedSchemaName') || 'the selected model'}.
+              </AlertDescription>
+            </Alert>
+          )}
 
-              <div className="space-y-2">
-                <TextAreaField
-                  label={'Description'}
-                  fieldName={'endpointDescription'}
-                  placeholder="Describe what this query does"
-                  rows={3}
-                />
-              </div>
+          <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
+            <QueryInformation
+              contractLocked={!!initialData?._id}
+              modelsLoading={modelsLoading}
+              filteredModels={filteredModels}
+              modelSearchTerm={modelSearchTerm}
+              onModelSearchChange={setModelSearchTerm}
+            />
 
-              <FormField
-                control={form.control}
-                name="authentication"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel
-                        htmlFor="query-authentication"
-                        className="text-base font-medium"
-                      >
-                        Requires Authentication
-                      </FormLabel>
-                      <FormDescription>
-                        When enabled, this query is only accessible to
-                        authenticated users.
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        id="query-authentication"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {operation === OperationsEnum.GET && (
-                <div className="space-y-3">
-                  <FormField
-                    control={form.control}
-                    name="paginated"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel
-                            htmlFor="query-paginated"
-                            className="text-base font-medium"
-                          >
-                            Paginated
-                          </FormLabel>
-                          <FormDescription>
-                            Expose skip and limit query parameters and return a
-                            document count with results.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            id="query-paginated"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="sorted"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel
-                            htmlFor="query-sorted"
-                            className="text-base font-medium"
-                          >
-                            Sorted
-                          </FormLabel>
-                          <FormDescription>
-                            Allow clients to pass sort query parameters on GET
-                            requests.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            id="query-sorted"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <SelectField
-                  label={'Operation'}
-                  placeholder="Select operation"
-                  disabled={!!initialData?._id}
-                  classNames={{
-                    selectTrigger:
-                      '[&>span>div]:flex-row [&>span>div]:items-center [&>span>div]:justify-start [&>span>div]:gap-2',
-                  }}
-                  options={operationTypes.map(op => ({
-                    value: op.value,
-                    label: (
-                      <div className="flex flex-col">
-                        <span>{op.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {op.description}
-                        </span>
-                      </div>
-                    ),
-                  }))}
-                  fieldName={'operation'}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="model">Model</Label>
-                <Dialog
-                  open={isModelDialogOpen}
-                  onOpenChange={setIsModelDialogOpen}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-1.5">
+                  Query Inputs
+                  <QueryFieldHint content="Inputs become request parameters. Path values are required URL segments; query and body values are optional unless marked required." />
+                </CardTitle>
+                <CardDescription>
+                  Parameters callers pass when invoking this endpoint
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs
+                  value={inputMode}
+                  onValueChange={value =>
+                    handleInputModeChange(value as 'form' | 'json')
+                  }
                 >
-                  <DialogTrigger asChild>
+                  <div className="mb-4 flex items-center gap-2">
+                    <TabsList>
+                      <TabsTrigger value="form">
+                        <FormInput className="mr-2 h-4 w-4" />
+                        Form
+                      </TabsTrigger>
+                      <TabsTrigger value="json">
+                        <FileJson className="mr-2 h-4 w-4" />
+                        JSON
+                      </TabsTrigger>
+                    </TabsList>
+                    <QueryFieldHint content="JSON mode edits the raw input contract. Validate before saving." />
+                  </div>
+
+                  <TabsContent value="form" className="space-y-4">
+                    {fields.length === 0 && (
+                      <p className="rounded-lg border border-dashed border-border/80 px-3 py-6 text-center text-sm text-muted-foreground">
+                        No inputs yet. Add the parameters callers will send.
+                      </p>
+                    )}
+                    {fields.map((field, index) => (
+                      <QueryInputItem
+                        key={field.id}
+                        index={index}
+                        operation={operation}
+                        onRemove={() => remove(index)}
+                      />
+                    ))}
+
                     <Button
+                      type="button"
                       variant="outline"
-                      className="w-full justify-start"
-                      disabled={!!initialData?._id}
+                      onClick={() =>
+                        append({
+                          name: '',
+                          type: ValueTypeEnum.STRING,
+                          location: LocationEnum.QUERY,
+                          optional: false,
+                          array: false,
+                        })
+                      }
+                      className="w-full"
                     >
-                      {form.watch('selectedSchemaName') || 'Select a model'}
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Input
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Select Model</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-2">
-                        <Search className="w-4 h-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Search models..."
-                          value={modelSearchTerm}
-                          onChange={e => setModelSearchTerm(e.target.value)}
-                        />
-                      </div>
-                      <ScrollArea className="h-[300px]">
-                        <div className="space-y-2">
-                          {filteredModels.map(model => (
-                            <Button
-                              key={model._id}
-                              variant="ghost"
-                              className="w-full justify-start text-left"
-                              onClick={() => {
-                                form.setValue('selectedSchema', model._id, {
-                                  shouldValidate: true,
-                                  shouldDirty: true,
-                                  shouldTouch: true,
-                                });
-                                form.setValue(
-                                  'selectedSchemaName',
-                                  model.name,
-                                  {
-                                    shouldValidate: true,
-                                    shouldDirty: true,
-                                    shouldTouch: true,
-                                  }
-                                );
-                                setIsModelDialogOpen(false);
-                              }}
-                            >
-                              <div className="flex flex-col">
-                                <span>{model.name}</span>
-                              </div>
-                            </Button>
-                          ))}
-                        </div>
-                      </ScrollArea>
+                  </TabsContent>
+
+                  <TabsContent value="json">
+                    <div className="space-y-2">
+                      <TextAreaField
+                        label={'Inputs JSON'}
+                        fieldName={'inputsJson'}
+                        rows={15}
+                        placeholder={INPUTS_JSON_PLACEHOLDER}
+                        className="font-mono slashed-zero"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Array of inputs. `location` is 0 body, 1 query, 2 path.
+                        `type` uses String, Number, Boolean, Date, ObjectId, or
+                        JSON.
+                      </p>
                     </div>
-                  </DialogContent>
-                </Dialog>
-                {form.formState.errors.selectedSchema && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.selectedSchema.message}
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Query Inputs</CardTitle>
-              <CardDescription>
-                Define the inputs for your query
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                value={inputMode}
-                onValueChange={value =>
-                  handleInputModeChange(value as 'form' | 'json')
-                }
-              >
-                <TabsList className="mb-4">
-                  <TabsTrigger value="form">
-                    <FormInput className="w-4 h-4 mr-2" />
-                    Form
-                  </TabsTrigger>
-                  <TabsTrigger value="json">
-                    <FileJson className="w-4 h-4 mr-2" />
-                    JSON
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="form" className="space-y-4">
-                  {fields.map((field, index) => (
-                    <Collapsible
-                      key={field.id}
-                      className="border rounded-md overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between p-3 bg-muted/30 cursor-pointer">
-                        <CollapsibleTrigger className="flex items-center space-x-2 grow justify-between text-left cursor-pointer mr-2">
-                          <div
-                            className={
-                              'flex flex-row space-x-2 text-left items-center'
-                            }
-                          >
-                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
-                            <span className="font-medium truncate">
-                              {form.watch(`inputs.${index}.name`) ||
-                                `Input #${index + 1}`}
-                            </span>
-                          </div>
-                          {form.watch(`inputs.${index}.name`) && (
-                            <div className="flex items-center space-x-2">
-                              <div className="flex items-center space-x-1">
-                                {getTypeIcon(
-                                  ValueTypeEnum[
-                                    form.watch(
-                                      `inputs.${index}.type`
-                                    ) as keyof typeof ValueTypeEnum
-                                  ]
-                                )}
-                                <Badge variant="outline" className="text-xs">
-                                  {form.watch(`inputs.${index}.type`)}
-                                  {form.watch(`inputs.${index}.array`) && '[]'}
-                                </Badge>
-                              </div>
-
-                              <div className="flex items-center space-x-1">
-                                {getPlacementIcon(
-                                  form.watch(
-                                    `inputs.${index}.location`
-                                  ) as LocationEnum
-                                )}
-                                <Badge variant="secondary" className="text-xs">
-                                  {getPlacementName(
-                                    form.watch(
-                                      `inputs.${index}.location`
-                                    ) as LocationEnum
-                                  )}
-                                </Badge>
-                              </div>
-
-                              {form.watch(`inputs.${index}.optional`) && (
-                                <Badge
-                                  variant="outline"
-                                  className="border-callout-warning bg-callout-warning-muted text-xs text-callout-warning-foreground"
-                                >
-                                  Optional
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                        </CollapsibleTrigger>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => remove(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-
-                      <CollapsibleContent>
-                        <div className="p-4 space-y-4">
-                          <div className="space-y-2">
-                            <InputField
-                              label={'Name'}
-                              fieldName={`inputs.${index}.name`}
-                              placeholder={'e.g. id, name, filter'}
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <SelectField
-                                label={'Type'}
-                                fieldName={`inputs.${index}.type`}
-                                placeholder="Select type"
-                                options={inputTypes.map(type => ({
-                                  value: type.value,
-                                  label: (
-                                    <div className="flex items-center space-x-2">
-                                      {getTypeIcon(type.value)}
-                                      <span>{type.label}</span>
-                                    </div>
-                                  ),
-                                }))}
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <SelectField
-                                label={'Placement'}
-                                fieldName={`inputs.${index}.location`}
-                                placeholder="Select placement"
-                                options={placementTypes.map(place => ({
-                                  value: place.value,
-                                  label: (
-                                    <div className="flex items-center space-x-2">
-                                      {getPlacementIcon(place.value)}
-                                      <div className="flex flex-col">
-                                        <span>{place.label}</span>
-                                        <span className="text-xs text-muted-foreground">
-                                          {place.description}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  ),
-                                }))}
-                              />
-                              {form.watch(`inputs.${index}.location`) ===
-                                LocationEnum.BODY &&
-                                [
-                                  OperationsEnum.GET,
-                                  OperationsEnum.DELETE,
-                                ].includes(operation) && (
-                                  <p className="text-xs text-destructive">
-                                    Body parameters are not allowed for{' '}
-                                    Find/Delete operations
-                                  </p>
-                                )}
-                            </div>
-                          </div>
-
-                          <div className="flex flex-wrap gap-4">
-                            <div className="flex items-center space-x-2">
-                              <InputField
-                                type="checkbox"
-                                id={`inputs.${index}.optional`}
-                                label={'Optional'}
-                                fieldName={`inputs.${index}.optional`}
-                                disabled={
-                                  form.watch(`inputs.${index}.location`) ===
-                                  LocationEnum.URL
-                                }
-                                classNames={{
-                                  formItem:
-                                    'flex flex-row items-center space-x-2',
-                                  input:
-                                    'h-4 w-4 rounded border-input text-primary focus:ring-primary',
-                                  label:
-                                    form.watch(`inputs.${index}.location`) ===
-                                    LocationEnum.URL
-                                      ? 'text-muted-foreground'
-                                      : '',
-                                }}
-                              />
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              <InputField
-                                type="checkbox"
-                                id={`inputs.${index}.array`}
-                                disabled={
-                                  form.watch(`inputs.${index}.location`) ===
-                                  LocationEnum.URL
-                                }
-                                classNames={{
-                                  formItem:
-                                    'flex flex-row items-center space-x-2',
-                                  input:
-                                    'h-4 w-4 rounded border-input text-primary focus:ring-primary',
-                                  label:
-                                    form.watch(`inputs.${index}.location`) ===
-                                    LocationEnum.URL
-                                      ? 'text-muted-foreground'
-                                      : '',
-                                }}
-                                fieldName={`inputs.${index}.array`}
-                                label={'Is Array'}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ))}
-
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <div className="text-sm text-muted-foreground">
+                  {fields.length} input{fields.length !== 1 ? 's' : ''} defined
+                </div>
+                {inputMode === 'json' && (
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() =>
-                      append({
-                        name: '',
-                        type: ValueTypeEnum.STRING,
-                        location: LocationEnum.QUERY,
-                        optional: false,
-                        array: false,
-                      })
-                    }
-                    className="w-full"
+                    onClick={() => {
+                      try {
+                        const inputsJson = form.getValues('inputsJson');
+                        const parsed = JSON.parse(inputsJson ?? '[]');
+                        inputsSchema.parse(parsed);
+                        toast({
+                          title: 'Valid JSON',
+                          description: 'Your JSON syntax is valid',
+                        });
+                      } catch (error) {
+                        toast({
+                          title: 'Invalid JSON',
+                          description: 'Please check your JSON syntax',
+                          variant: 'destructive',
+                        });
+                      }
+                    }}
                   >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Input
+                    <Code className="mr-2 h-4 w-4" />
+                    Validate JSON
                   </Button>
-                </TabsContent>
+                )}
+              </CardFooter>
+            </Card>
+          </div>
 
-                <TabsContent value="json">
-                  <div className="space-y-2">
-                    <TextAreaField
-                      label={'Inputs JSON'}
-                      fieldName={'inputsJson'}
-                      rows={15}
-                      placeholder={`[
-                      {
-                        "name": "id",
-                        "type": "string",
-                        "location": 0,
-                        "optional": false,
-                        "array": false
-                      }
-                    ]`}
-                      className="font-mono"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Define complex input types using JSON format
-                    </p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                {fields.length} input{fields.length !== 1 ? 's' : ''} defined
-              </div>
-              {inputMode === 'json' && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    try {
-                      const inputsJson = form.getValues('inputsJson');
-                      const parsed = JSON.parse(inputsJson ?? '[]');
-                      inputsSchema.parse(parsed);
-                      toast({
-                        title: 'Valid JSON',
-                        description: 'Your JSON syntax is valid',
-                      });
-                    } catch (error) {
-                      toast({
-                        title: 'Invalid JSON',
-                        description: 'Please check your JSON syntax',
-                        variant: 'destructive',
-                      });
-                    }
-                  }}
+          {form.watch('selectedSchema') && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-1.5">
+                  Query Definition
+                  <QueryFieldHint content="Find conditions filter documents. Set values write fields on Create, Update, and Patch." />
+                </CardTitle>
+                <CardDescription>
+                  Conditions and assignments executed by this endpoint
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs
+                  value={queryMode}
+                  onValueChange={value =>
+                    handleQueryModeChange(value as 'form' | 'json')
+                  }
                 >
-                  <Code className="mr-2 h-4 w-4" />
-                  Validate JSON
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        </div>
+                  <div className="mb-4 flex items-center gap-2">
+                    <TabsList>
+                      <TabsTrigger value="form">
+                        <Filter className="mr-2 h-4 w-4" />
+                        Form
+                      </TabsTrigger>
+                      <TabsTrigger value="json">
+                        <FileJson className="mr-2 h-4 w-4" />
+                        JSON
+                      </TabsTrigger>
+                    </TabsList>
+                    <QueryFieldHint content="JSON mode edits find conditions and assignments as a single document. Validate before saving." />
+                  </div>
 
-        {form.watch('selectedSchema') && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Query Definition</CardTitle>
-              <CardDescription>Define how your query will work</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                value={queryMode}
-                onValueChange={value =>
-                  handleQueryModeChange(value as 'form' | 'json')
-                }
-              >
-                <TabsList className="mb-4">
-                  <TabsTrigger value="form">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Form
-                  </TabsTrigger>
-                  <TabsTrigger value="json">
-                    <FileJson className="w-4 h-4 mr-2" />
-                    JSON
-                  </TabsTrigger>
-                </TabsList>
+                  <TabsContent value="form" className="space-y-6">
+                    <QueryConditionGroup
+                      modelFields={modelFields}
+                      operation={operation}
+                    />
 
-                <TabsContent value="form" className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-medium flex items-center">
-                        <Filter className="w-5 h-5 mr-2" />
-                        Find Conditions
-                      </h3>
+                    {supportsSetConditions && (
+                      <>
+                        <Separator />
+                        <QueryAssignments
+                          fields={setConditions}
+                          modifiableFields={modifiableFields}
+                          operationLabel={operationMeta.label}
+                          onAdd={() =>
+                            appendSetCondition({
+                              schemaField: '',
+                              action: AssignmentActionEnum.ASSIGN,
+                              assignmentField: {
+                                type:
+                                  (form.getValues('inputs') ?? []).length > 0
+                                    ? ValueSourceTypeEnum.INPUT
+                                    : ValueSourceTypeEnum.CUSTOM,
+                                value: '',
+                              },
+                            })
+                          }
+                          onRemove={removeSetCondition}
+                        />
+                      </>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="json">
+                    <div className="space-y-2">
+                      <TextAreaField
+                        label={'Query JSON'}
+                        fieldName={'queryJson'}
+                        rows={15}
+                        className="font-mono slashed-zero"
+                        placeholder={QUERY_JSON_PLACEHOLDER}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Object with `query` (AND/OR groups) and `assignments`.
+                        Comparison `operation` and assignment `action` are
+                        numeric enums.
+                      </p>
                     </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <div className="text-sm text-muted-foreground tabular-nums">
+                  {findConditionCount} find condition
+                  {findConditionCount !== 1 ? 's' : ''} and
+                  {supportsSetConditions
+                    ? ` ${setConditions.length} set value${setConditions.length !== 1 ? 's' : ''}`
+                    : ' no set values'}{' '}
+                  defined
+                </div>
+                {queryMode === 'json' && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      try {
+                        const queryJson = form.getValues('queryJson');
+                        const parsed = JSON.parse(queryJson ?? '{}');
+                        if (parsed.query) {
+                          conditionGroupSchema.parse(parsed.query);
+                        }
+                        if (parsed.assignments) {
+                          z.array(setConditionSchema).parse(parsed.assignments);
+                        }
 
-                    {renderConditionGroup('query')}
-                  </div>
-
-                  {supportsSetConditions && (
-                    <>
-                      <Separator />
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-medium flex items-center">
-                            <Settings className="w-5 h-5 mr-2" />
-                            Set Values
-                          </h3>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              appendSetCondition({
-                                schemaField: '',
-                                action: AssignmentActionEnum.ASSIGN,
-                                assignmentField: {
-                                  type: ValueSourceTypeEnum.INPUT,
-                                  value: '',
-                                },
-                              })
-                            }
-                          >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Set Value
-                          </Button>
-                        </div>
-
-                        {setConditions.length === 0 ? (
-                          <div className="flex items-center justify-center p-6 border rounded-md bg-muted/20">
-                            <div className="text-center text-muted-foreground">
-                              <Settings className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                              <p>No set values defined</p>
-                              <p className="text-sm">
-                                Add values to set in your {operation} operation
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-2">
-                            {setConditions.map((condition, index) =>
-                              renderSetCondition(condition, index)
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="json">
-                  <div className="space-y-2">
-                    <TextAreaField
-                      label={'Query JSON'}
-                      fieldName={'queryJson'}
-                      rows={15}
-                      className="font-mono"
-                      placeholder={`{
-  "query": {
-    "AND": [
-      {
-        "field": "name",
-        "operation": "eq",
-        "valueSource": "input",
-        "inputName": "name"
-      },
-      {
-        ""OR": [
-          {
-            "field": "age",
-            "operation": "gt",
-            "valueSource": "custom",
-            "customValue": "18"
-          },
-          {
-            "field": "isVerified",
-            "operation": "eq",
-            "valueSource": "custom",
-            "customValue": "true"
-          }
-        ]
-      }
-    ]
-  },
-  "assignment": [
-    {
-      "schemaField": "status",
-       "action": 0,
-      "assignmentField": {
-        "type":0,
-        "value": ""
-       },
-    }
-  ]
-}`}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Define your query conditions using JSON format
-                    </p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                {countConditions(form.watch('query'))} find condition
-                {countConditions(form.watch('query')) !== 1 ? 's' : ''} and
-                {supportsSetConditions
-                  ? ` ${setConditions.length} set value${setConditions.length !== 1 ? 's' : ''}`
-                  : ' no set values'}{' '}
-                defined
-              </div>
-              {queryMode === 'json' && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    try {
-                      const queryJson = form.getValues('queryJson');
-                      const parsed = JSON.parse(queryJson ?? '{}');
-                      if (parsed.query) {
-                        conditionGroupSchema.parse(parsed);
+                        toast({
+                          title: 'Valid JSON',
+                          description: 'Your JSON syntax is valid',
+                        });
+                      } catch (error) {
+                        toast({
+                          title: 'Invalid JSON',
+                          description: 'Please check your JSON syntax',
+                          variant: 'destructive',
+                        });
                       }
-                      if (parsed.assignments) {
-                        z.array(setConditionSchema).parse(parsed.assignments);
-                      }
-
-                      toast({
-                        title: 'Valid JSON',
-                        description: 'Your JSON syntax is valid',
-                      });
-                    } catch (error) {
-                      toast({
-                        title: 'Invalid JSON',
-                        description: 'Please check your JSON syntax',
-                        variant: 'destructive',
-                      });
-                    }
-                  }}
-                >
-                  <Code className="mr-2 h-4 w-4" />
-                  Validate JSON
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        )}
+                    }}
+                  >
+                    <Code className="mr-2 h-4 w-4" />
+                    Validate JSON
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          )}
+        </div>
       </form>
     </Form>
   );
