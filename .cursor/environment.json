@@ -1,6 +1,7 @@
 {
   "name": "Conduit Admin UI",
   "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
   "terminals": [
     {
       "name": "Conduit-UI dev server",

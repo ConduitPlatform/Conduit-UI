@@ -29,4 +29,40 @@ yarn install --frozen-lockfile
 # CI=false mirrors the repo's CI so Next build warnings are not treated as errors.
 CI=false yarn build
 
+# ---------------------------------------------------------------------------
+# Docker Engine (for the local Conduit backend the admin panel connects to).
+#
+# The admin panel is only useful against a running Conduit instance, so the
+# `start` script brings up a Conduit 0.17 backend via Docker Compose. Here we
+# just make sure the Docker Engine is installed and configured. This is
+# best-effort: if it fails, the frontend still builds and runs (it simply
+# has no backend to talk to until Docker is available).
+# ---------------------------------------------------------------------------
+setup_docker() {
+  if ! command -v sudo >/dev/null 2>&1; then
+    echo "WARNING: sudo not available; skipping Docker setup (backend will be unavailable)." >&2
+    return 0
+  fi
+
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "Installing Docker Engine..."
+    curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+    sudo sh /tmp/get-docker.sh
+  fi
+
+  # Bridge networking and the overlayfs snapshotter are unreliable inside the
+  # nested Cloud Agent VM (restricted nftables/iptables; overlayfs whiteouts
+  # need privileges we don't have). The vfs storage driver sidesteps the
+  # overlayfs limitation; the compose file uses host networking to sidestep
+  # the bridge limitation.
+  sudo mkdir -p /etc/docker
+  if ! grep -qs '"vfs"' /etc/docker/daemon.json; then
+    echo '{ "features": { "containerd-snapshotter": false }, "storage-driver": "vfs" }' \
+      | sudo tee /etc/docker/daemon.json >/dev/null
+  fi
+  echo "Docker $(docker --version 2>/dev/null) is configured (storage-driver: vfs)."
+}
+
+setup_docker || echo "WARNING: Docker setup failed; the Conduit backend will be unavailable." >&2
+
 echo "Conduit Admin UI environment is ready."
