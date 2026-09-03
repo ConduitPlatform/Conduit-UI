@@ -53,7 +53,7 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
                     <SelectValue placeholder="Select a type" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className={'bg-white dark:bg-popover'}>
+                <SelectContent>
                   <SelectItem value={'request'}>
                     <div className={'flex items-center gap-2'}>Request</div>
                   </SelectItem>
@@ -99,7 +99,7 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
                       <SelectValue placeholder="Select a verb" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value={'GET'}>
                       <div className={'flex items-center gap-2'}>GET</div>
                     </SelectItem>

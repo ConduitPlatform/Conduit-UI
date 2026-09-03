@@ -45,7 +45,7 @@ export const CodeField = ({
         <FormItem className={cn('w-full space-y-1.5', formItemClassName)}>
           <FormLabel
             className={cn(
-              'flex gap-2 pl-1 text-base font-medium text-text-body',
+              'flex gap-2 pl-1 text-base font-medium text-foreground',
               labelClassName
             )}
           >

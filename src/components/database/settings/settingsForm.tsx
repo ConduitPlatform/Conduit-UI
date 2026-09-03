@@ -65,7 +65,7 @@ export const SettingsForm = ({
                       <SelectValue placeholder="Select read preference" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value="primary">primary</SelectItem>
                     <SelectItem value="primaryPreferred">
                       primaryPreferred
@@ -104,7 +104,7 @@ export const SettingsForm = ({
                       <SelectValue placeholder="Select write concern" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value="1">1</SelectItem>
                     <SelectItem value="majority">majority</SelectItem>
                   </SelectContent>
@@ -137,7 +137,7 @@ export const SettingsForm = ({
                       <SelectValue placeholder="Select read concern" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value="local">local</SelectItem>
                     <SelectItem value="available">available</SelectItem>
                     <SelectItem value="majority">majority</SelectItem>

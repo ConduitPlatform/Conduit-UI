@@ -106,9 +106,9 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 {exportInfo && (
-                  <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <div className="flex items-start gap-2 p-3 bg-callout-info-muted border border-callout-info rounded-lg">
+                    <FileText className="h-4 w-4 text-callout-info-foreground mt-0.5 shrink-0" />
+                    <p className="text-sm text-callout-info-foreground">
                       {exportInfo}
                     </p>
                   </div>
@@ -139,9 +139,9 @@ const ExportImportDialog: React.FC<ExportImportDialogProps> = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 {importInfo && (
-                  <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
-                    <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+                  <div className="flex items-start gap-2 p-3 bg-callout-warning-muted border border-callout-warning rounded-lg">
+                    <AlertTriangle className="h-4 w-4 text-callout-warning-foreground mt-0.5 shrink-0" />
+                    <p className="text-sm text-callout-warning-foreground font-medium">
                       {importInfo}
                     </p>
                   </div>
