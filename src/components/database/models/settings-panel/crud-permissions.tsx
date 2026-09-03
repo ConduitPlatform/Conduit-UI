@@ -38,28 +38,28 @@ const operationConfig = [
     label: 'Create',
     description: 'Allow creating new documents',
     icon: Plus,
-    color: 'text-green-600',
+    color: 'text-status-healthy',
   },
   {
     key: 'read' as const,
     label: 'Read',
     description: 'Allow reading documents',
     icon: Eye,
-    color: 'text-blue-600',
+    color: 'text-status-info',
   },
   {
     key: 'update' as const,
     label: 'Update',
     description: 'Allow updating existing documents',
     icon: Pencil,
-    color: 'text-orange-600',
+    color: 'text-status-warning',
   },
   {
     key: 'delete' as const,
     label: 'Delete',
     description: 'Allow deleting documents',
     icon: Trash2,
-    color: 'text-red-600',
+    color: 'text-status-critical',
   },
 ];
 
@@ -143,9 +143,9 @@ export function CrudPermissions({
                   <div className="mt-4 pt-4 border-t flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {operation.authenticated ? (
-                        <Lock className="w-4 h-4 text-amber-600" />
+                        <Lock className="h-4 w-4 text-status-warning" />
                       ) : (
-                        <Unlock className="w-4 h-4 text-green-600" />
+                        <Unlock className="h-4 w-4 text-status-healthy" />
                       )}
                       <Label
                         htmlFor={`${op.key}-auth`}

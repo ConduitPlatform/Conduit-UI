@@ -39,9 +39,9 @@ export function QueryListItem({
       onClick={onClick}
     >
       {query.operation === 0 ? (
-        <Search className="w-4 h-4 shrink-0 text-blue-500" />
+        <Search className="h-4 w-4 shrink-0 text-status-info" />
       ) : (
-        <Code className="w-4 h-4 shrink-0 text-green-500" />
+        <Code className="h-4 w-4 shrink-0 text-status-healthy" />
       )}
       <div className="flex-1 min-w-0">
         <div className="font-medium truncate">{query.name}</div>

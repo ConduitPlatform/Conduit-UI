@@ -614,6 +614,60 @@
   color: hsl(var(--foreground-muted)) !important;
 }
 
+/* @uiw/react-textarea-code-editor exposes these variables on its root. */
+.w-tc-editor.semantic-code-editor {
+  --color-fg-default: hsl(var(--code-text));
+  --color-canvas-subtle: hsl(var(--code-bg));
+  --color-prettylights-syntax-comment: hsl(var(--syntax-comment));
+  --color-prettylights-syntax-entity-tag: hsl(var(--syntax-boolean));
+  --color-prettylights-syntax-entity: hsl(var(--syntax-keyword));
+  --color-prettylights-syntax-sublimelinter-gutter-mark: hsl(
+    var(--syntax-operator)
+  );
+  --color-prettylights-syntax-constant: hsl(var(--syntax-string));
+  --color-prettylights-syntax-string: hsl(var(--syntax-function));
+  --color-prettylights-syntax-keyword: hsl(var(--syntax-keyword));
+  --color-prettylights-syntax-markup-bold: hsl(var(--code-text));
+  --color-prettylights-syntax-string-regexp: hsl(var(--syntax-number));
+}
+
+/*
+  @react-email/editor chrome inherits the application palette. The editable
+  document is intentionally excluded so its authored email styles stay intact.
+*/
+.email-editor-shell {
+  background: hsl(var(--surface-2));
+  color: hsl(var(--foreground));
+}
+
+.email-editor-chrome,
+.email-editor-shell
+  :is(
+    [data-re-bubble-menu],
+    [data-re-node-selector-content],
+    [data-re-link-selector-form],
+    [data-re-slash-command]
+  ) {
+  --re-bg: hsl(var(--surface-1));
+  --re-bg-active: hsl(var(--surface-3));
+  --re-border: hsl(var(--border));
+  --re-text: hsl(var(--foreground));
+  --re-text-muted: hsl(var(--foreground-muted));
+  --re-hover: hsl(var(--surface-2));
+  --re-active: hsl(var(--surface-3));
+  --re-pressed: hsl(var(--primary-muted));
+  --re-separator: hsl(var(--border));
+  --re-shadow: var(--shadow-2-value);
+  --re-danger: hsl(var(--status-critical));
+  --re-danger-hover: hsl(var(--callout-danger-muted));
+}
+
+.email-editor-chrome {
+  border-color: hsl(var(--border));
+  background: hsl(var(--surface-1));
+  color: hsl(var(--foreground));
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;

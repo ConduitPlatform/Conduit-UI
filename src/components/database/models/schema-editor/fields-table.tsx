@@ -283,7 +283,7 @@ export function FieldsTable({
                               disabled={disabled}
                             >
                               <div className="flex items-center gap-1.5 truncate">
-                                <Boxes className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                                <Boxes className="w-3.5 h-3.5 shrink-0 text-primary-muted-foreground" />
                                 <span className="truncate">Edit Fields</span>
                               </div>
                               <Badge
