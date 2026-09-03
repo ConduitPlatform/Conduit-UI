@@ -44,7 +44,7 @@ export const Messages = ({
       <div className="relative h-full w-full overflow-auto flex flex-col justify-between">
         <div className="sticky top-0 left-0 right-0 z-10 py-3 bg-background flex items-center justify-between">
           <div className="flex items-center gap-x-5">
-            <div className="p-2.5 bg-slate-700 rounded-md">
+            <div className="rounded-md bg-surface-3 p-2.5 text-foreground">
               <HashIcon className="w-4 h-4" />
             </div>
             <span className="font-semibold text-xl">{room.name}</span>

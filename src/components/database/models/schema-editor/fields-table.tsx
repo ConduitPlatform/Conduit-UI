@@ -445,7 +445,7 @@ export function FieldsTable({
                                       disabled={disabled}
                                     >
                                       <div className="flex min-w-0 items-center gap-1.5 truncate">
-                                        <Boxes className="h-3.5 w-3.5 shrink-0 text-teal-600" />
+                                        <Boxes className="h-3.5 w-3.5 shrink-0 text-primary-muted-foreground" />
                                         <span className="truncate">
                                           Edit fields
                                         </span>

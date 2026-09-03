@@ -53,7 +53,7 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
                     <SelectValue placeholder="Select a type" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className={'bg-white dark:bg-popover'}>
+                <SelectContent>
                   <SelectItem value={'request'}>
                     <div className={'flex items-center gap-2'}>Request</div>
                   </SelectItem>
@@ -99,7 +99,7 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
                       <SelectValue placeholder="Select a verb" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className={'bg-white dark:bg-popover'}>
+                  <SelectContent>
                     <SelectItem value={'GET'}>
                       <div className={'flex items-center gap-2'}>GET</div>
                     </SelectItem>
@@ -145,7 +145,7 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
           <TabsList className="bg-transparent">
             <TabsTrigger
               value="query"
-              className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-amber-200"
+              className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
             >
               <span>Query</span>
             </TabsTrigger>
@@ -154,20 +154,20 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
               form.watch('options.verb') === 'PATCH') && (
               <TabsTrigger
                 value="body"
-                className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-amber-200 flex items-center space-x-2"
+                className="flex items-center space-x-2 rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
               >
                 <span>Body</span>
               </TabsTrigger>
             )}
             <TabsTrigger
               value="url"
-              className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-amber-200"
+              className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
             >
               <span>Url</span>
             </TabsTrigger>
             <TabsTrigger
               value="return"
-              className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-amber-200"
+              className="rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
             >
               <span>Return</span>
             </TabsTrigger>

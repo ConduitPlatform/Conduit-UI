@@ -40,6 +40,8 @@ interface PermissionPathVisualizerProps {
   path: PermissionPath;
 }
 
+type PermissionStepType = PermissionStep['type'];
+
 export default function PermissionPathVisualizer({
   path,
 }: Readonly<PermissionPathVisualizerProps>) {
@@ -60,30 +62,34 @@ export default function PermissionPathVisualizer({
   };
 
   // Get color for step type
-  const getStepColor = (type: string) => {
+  const getStepColor = (type: PermissionStepType) => {
     switch (type) {
       case 'relation':
-        return 'bg-purple-50 border-purple-200 text-purple-800';
+        return 'bg-graph-middleware-muted border-graph-middleware text-graph-middleware-foreground';
       case 'permission':
-        return 'bg-green-50 border-green-200 text-green-800';
+        return 'bg-graph-route-muted border-graph-route text-graph-route-foreground';
       case 'inheritance':
-        return 'bg-blue-50 border-blue-200 text-blue-800';
-      default:
-        return 'bg-gray-50 border-gray-200 text-gray-800';
+        return 'bg-graph-router-muted border-graph-router text-graph-router-foreground';
+      default: {
+        const exhaustive: never = type;
+        return exhaustive;
+      }
     }
   };
 
   // Get icon for step type
-  const getStepIcon = (type: string) => {
+  const getStepIcon = (type: PermissionStepType) => {
     switch (type) {
       case 'relation':
-        return <Link className="h-4 w-4 text-purple-600" />;
+        return <Link className="h-4 w-4 text-graph-middleware-foreground" />;
       case 'permission':
-        return <Shield className="h-4 w-4 text-green-600" />;
+        return <Shield className="h-4 w-4 text-graph-route-foreground" />;
       case 'inheritance':
-        return <ArrowRight className="h-4 w-4 text-blue-600" />;
-      default:
-        return null;
+        return <ArrowRight className="h-4 w-4 text-graph-router-foreground" />;
+      default: {
+        const exhaustive: never = type;
+        return exhaustive;
+      }
     }
   };
 
@@ -96,7 +102,7 @@ export default function PermissionPathVisualizer({
 
       <div className="relative">
         {/* Vertical line connecting steps */}
-        <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-muted z-0"></div>
+        <div className="absolute bottom-8 left-6 top-8 z-0 w-0.5 bg-graph-edge-muted"></div>
 
         {/* Steps */}
         <div className="space-y-4 relative z-10">
@@ -106,7 +112,7 @@ export default function PermissionPathVisualizer({
               className={`p-4 border ${getStepColor(step.type)}`}
             >
               <div className="flex items-start gap-3">
-                <div className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center border">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border bg-surface-1">
                   {getStepIcon(step.type)}
                 </div>
                 <div className="flex-1">
@@ -120,7 +126,7 @@ export default function PermissionPathVisualizer({
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge
                       variant="outline"
-                      className="flex items-center gap-1 bg-white text-background"
+                      className="flex items-center gap-1 bg-surface-1 text-foreground"
                     >
                       {getResourceIcon(step.from.type)}
                       <span>
@@ -129,19 +135,19 @@ export default function PermissionPathVisualizer({
                     </Badge>
                     <ArrowRight className="h-4 w-4 text-muted-foreground" />
                     {step.relation && (
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-100">
+                      <Badge className="border-graph-middleware bg-graph-middleware-muted text-graph-middleware-foreground hover:bg-graph-middleware-muted">
                         {step.relation}
                       </Badge>
                     )}
                     {step.permission && (
-                      <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
+                      <Badge className="border-graph-route bg-graph-route-muted text-graph-route-foreground hover:bg-graph-route-muted">
                         {step.permission}
                       </Badge>
                     )}
                     <ArrowRight className="h-4 w-4 text-muted-foreground" />
                     <Badge
                       variant="outline"
-                      className="flex items-center gap-1 bg-white text-background"
+                      className="flex items-center gap-1 bg-surface-1 text-foreground"
                     >
                       {getResourceIcon(step.to.type)}
                       <span>

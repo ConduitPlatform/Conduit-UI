@@ -57,8 +57,8 @@ export default function LogsFiltersOptions({
   } = logsFilters;
 
   const wrapperClass =
-    'flex flex-col px-3 pt-3 pb-4 mx-5 mb-5 border rounded-md border-input bg-secondary';
-  const selectTriggerClass = 'bg-background mt-0';
+    'mx-5 mb-5 flex flex-col rounded-md border border-border bg-surface-2 px-3 pt-3 pb-4';
+  const selectTriggerClass = 'mt-0 bg-surface-1';
   const formItemClass = 'space-y-1';
 
   const levelOptions = generateMultiSelectOptions(levels);
@@ -136,7 +136,7 @@ export default function LogsFiltersOptions({
       </div>
       <Link
         href={`logs-viewer/?${searchParams}`}
-        className="self-end mt-2 text-sm text-muted-foreground dark:hover:text-white hover:underline hover:text-primary"
+        className="mt-2 self-end text-sm text-foreground-muted hover:text-primary hover:underline"
       >
         More filters
       </Link>

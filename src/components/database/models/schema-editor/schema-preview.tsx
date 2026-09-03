@@ -59,7 +59,7 @@ export function SchemaPreview({ schemaName, fields }: SchemaPreviewProps) {
                 aria-label={copied ? 'JSON copied' : 'Copy JSON'}
               >
                 {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-status-healthy" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}

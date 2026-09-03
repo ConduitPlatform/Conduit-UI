@@ -57,7 +57,7 @@ export const AppleConfigForm: React.FC<
             name="privateKey"
             render={({ field }) => (
               <FormItem className="w-full space-y-1.5">
-                <FormLabel className="flex gap-2 pl-1 text-base font-medium text-text-body">
+                <FormLabel className="flex gap-2 pl-1 text-base font-medium text-foreground">
                   Private Key
                 </FormLabel>
                 <FormControl>

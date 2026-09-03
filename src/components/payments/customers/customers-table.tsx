@@ -220,7 +220,7 @@ export function CustomersTable() {
                             {/* Delete functionality not available in API */}
                             {/* <DropdownMenuItem
                               onClick={() => handleDeleteClick(customer)}
-                              className="text-red-600"
+                              className="text-destructive"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete

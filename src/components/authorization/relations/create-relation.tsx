@@ -337,7 +337,11 @@ export default function CreateRelationForm({
         </CardContent>
 
         <CardFooter className="flex justify-between gap-2">
-          <div className={'flex flex-row text-amber-600 items-center text-sm'}>
+          <div
+            className={
+              'flex flex-row items-center text-sm text-callout-warning-foreground'
+            }
+          >
             <TriangleAlert className={'w-4 h-4'} />
             <span className={''}>
               Warning: Creating relations manually may bypass module operations

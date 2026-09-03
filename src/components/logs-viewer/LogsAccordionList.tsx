@@ -20,11 +20,15 @@ import {
 } from '@/lib/models/logs-viewer/utils';
 
 const badgeBackgroundColorVariants = {
-  critical: 'bg-purple-500 hover:bg-purple/80',
-  warning: 'bg-amber-400 hover:bg-amber/80',
-  info: 'bg-teal-500 hover:bg-teal/80',
-  debug: 'bg-cyan-500 hover:bg-cyan/80',
-  unknown: 'bg-slate-500 hover:bg-slate/80',
+  critical:
+    'border-log-critical/40 bg-log-critical/10 text-log-critical hover:bg-log-critical/15',
+  warning:
+    'border-log-warning/40 bg-log-warning/10 text-log-warning hover:bg-log-warning/15',
+  info: 'border-log-info/40 bg-log-info/10 text-log-info hover:bg-log-info/15',
+  debug:
+    'border-log-debug/40 bg-log-debug/10 text-log-debug hover:bg-log-debug/15',
+  unknown:
+    'border-log-unknown/40 bg-log-unknown/10 text-log-unknown hover:bg-log-unknown/15',
 };
 
 type LogsAccordionListProps = {
@@ -60,7 +64,7 @@ export function LogsAccordionList({
 
   if (logs.length === 0) {
     return (
-      <p className="mt-5 text-center text-muted-foreground">
+      <p className="mt-5 text-center text-foreground-muted">
         {' '}
         There no available logs
       </p>
@@ -84,14 +88,14 @@ export function LogsAccordionList({
           <AccordionItem
             key={index}
             value={`item-${index}`}
-            className="my-2 transition-opacity duration-200 border rounded-md bg-background border-input"
+            className="my-2 rounded-md border border-border bg-surface-1 transition-opacity duration-200"
           >
             <AccordionTrigger
               className={cn(
                 'px-3 py-2 hover:no-underline text-medium justify-start',
                 value === `item-${index}`
-                  ? 'border-b border-b-input rounded-t-md bg-secondary'
-                  : 'rounded-md hover:bg-secondary'
+                  ? 'rounded-t-md border-b border-b-border bg-surface-2'
+                  : 'rounded-md hover:bg-surface-2'
               )}
             >
               <div className="flex items-start w-full gap-3">
@@ -105,7 +109,9 @@ export function LogsAccordionList({
                 >
                   {level}
                 </Badge>
-                <Badge className="bg-muted-foreground">{module}</Badge>{' '}
+                <Badge className="bg-surface-3 text-foreground-muted hover:bg-surface-3">
+                  {module}
+                </Badge>{' '}
                 {getFormattedMessage(message)}
               </div>
             </AccordionTrigger>
@@ -123,7 +129,7 @@ export function LogsAccordionList({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute top-1 right-3 text-muted-foreground hover:text-primary"
+                  className="absolute top-1 right-3 text-foreground-muted hover:text-primary"
                 >
                   <Files className={iconClass} />
                   <span className="sr-only">Copy log&apos;s metadata</span>

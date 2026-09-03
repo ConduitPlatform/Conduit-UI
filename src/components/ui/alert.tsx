@@ -8,11 +8,11 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-background text-foreground',
+        default: 'bg-card text-card-foreground',
         destructive:
-          'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
+          'border-callout-danger bg-callout-danger-muted text-callout-danger-foreground [&>svg]:text-callout-danger-foreground',
         warning:
-          'border-amber-500/50 bg-amber-500/10 text-foreground dark:border-amber-500/40 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-500',
+          'border-callout-warning bg-callout-warning-muted text-callout-warning-foreground [&>svg]:text-callout-warning-foreground',
       },
     },
     defaultVariants: {

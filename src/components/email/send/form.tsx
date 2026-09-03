@@ -120,7 +120,7 @@ export const SendEmailForm = ({
                     <SelectValue placeholder="Select a template" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className={'bg-white dark:bg-popover'}>
+                <SelectContent>
                   {templates.templateDocuments.map(template => (
                     <SelectItem key={template._id} value={template.name}>
                       {template.name}

@@ -112,7 +112,7 @@ export const General = ({ data }: Props) => {
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className={'bg-white dark:bg-popover'}>
+                    <SelectContent>
                       <SelectItem value={'development'}>Development</SelectItem>
                       <SelectItem value={'production'}>Production</SelectItem>
                       <SelectItem value={'test'}>Test</SelectItem>

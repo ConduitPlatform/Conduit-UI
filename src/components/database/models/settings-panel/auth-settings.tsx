@@ -47,7 +47,7 @@ export function AuthSettings({
         <div className="flex items-center justify-between p-4 rounded-lg border">
           <div className="flex items-center gap-3">
             {enabled ? (
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="h-5 w-5 text-status-healthy" />
             ) : (
               <XCircle className="w-5 h-5 text-muted-foreground" />
             )}

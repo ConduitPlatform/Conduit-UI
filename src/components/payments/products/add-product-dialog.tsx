@@ -407,7 +407,7 @@ export function AddProductDialog({
             </div>
 
             {formData.creditType && (
-              <div className="space-y-4 pl-4 border-l-2 border-gray-200">
+              <div className="space-y-4 border-l-2 border-border-strong pl-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="creditType">Credit Type</Label>
