@@ -614,6 +614,87 @@
   color: hsl(var(--foreground-muted)) !important;
 }
 
+/*
+  React Flow sets control, minimap, edge, and handle colors in library CSS.
+  Keep these overrides opt-in so unrelated canvases retain their own themes.
+*/
+.semantic-react-flow {
+  color: hsl(var(--foreground));
+}
+
+.semantic-react-flow .react-flow__controls,
+.semantic-react-flow .react-flow__minimap {
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--graph-panel));
+  box-shadow: var(--shadow-2-value);
+}
+
+.semantic-react-flow .react-flow__controls-button {
+  border-color: hsl(var(--border));
+  background: hsl(var(--graph-panel));
+  color: hsl(var(--foreground));
+  fill: currentcolor;
+}
+
+.semantic-react-flow .react-flow__controls-button:hover {
+  background: hsl(var(--surface-3));
+  color: hsl(var(--primary-muted-foreground));
+}
+
+.semantic-react-flow .react-flow__controls-button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -2px;
+}
+
+.semantic-react-flow .react-flow__controls-button:disabled {
+  color: hsl(var(--foreground-subtle));
+}
+
+.semantic-react-flow .react-flow__minimap-mask {
+  fill: hsl(var(--overlay));
+}
+
+.semantic-react-flow .react-flow__minimap-node {
+  fill: hsl(var(--graph-edge-muted));
+  stroke: hsl(var(--border-strong));
+}
+
+.semantic-react-flow .react-flow__handle {
+  border-color: hsl(var(--surface-1));
+}
+
+.semantic-react-flow .graph-node {
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.semantic-react-flow .react-flow__node:hover .graph-node {
+  border-color: hsl(var(--graph-selected));
+}
+
+.semantic-react-flow .react-flow__node.selected .graph-node,
+.semantic-react-flow .react-flow__node:focus-visible .graph-node {
+  box-shadow:
+    0 0 0 2px hsl(var(--graph-selected)),
+    var(--shadow-2-value);
+}
+
+.semantic-react-flow .react-flow__edge:hover .react-flow__edge-path,
+.semantic-react-flow .react-flow__edge.selected .react-flow__edge-path {
+  stroke: hsl(var(--graph-selected)) !important;
+}
+
+.semantic-react-flow .react-flow__edge-text {
+  fill: hsl(var(--foreground));
+}
+
+.semantic-react-flow .react-flow__edge-textbg {
+  fill: hsl(var(--graph-panel));
+}
+
 /* @uiw/react-textarea-code-editor exposes these variables on its root. */
 .w-tc-editor.semantic-code-editor {
   --color-fg-default: hsl(var(--code-text));

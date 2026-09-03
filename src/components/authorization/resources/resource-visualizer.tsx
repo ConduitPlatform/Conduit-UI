@@ -37,6 +37,8 @@ import {
 import { ResourceDefinition } from '@/lib/models/authorization';
 import { useChartColors } from '@/lib/hooks/useChartColors';
 
+type PermissionCategory = 'read' | 'write' | 'delete' | 'other';
+
 // Custom node types
 const ResourceNode = ({
   data,
@@ -57,13 +59,13 @@ const ResourceNode = ({
 
   return (
     <div
-      className={`px-4 py-2 shadow-md border flex items-center justify-center ${
+      className={`graph-node flex items-center justify-center border px-4 py-2 text-foreground shadow-md ${
         isMain
-          ? 'bg-white border-indigo-500 text-indigo-900 font-bold text-lg rounded-lg min-w-[180px] min-h-[60px]'
-          : 'bg-gray-50 border-gray-300 rounded-md min-w-[140px] min-h-[50px]'
+          ? 'rounded-lg border-2 border-graph-router bg-graph-router-muted text-lg font-bold text-graph-router-foreground min-w-[180px] min-h-[60px]'
+          : 'rounded-md border-border-strong bg-surface-1 min-w-[140px] min-h-[50px]'
       }`}
     >
-      <div className="text-center text-primary-foreground flex items-center gap-1">
+      <div className="flex items-center gap-1 text-center">
         {label}
         {resourceId && !isMain && (
           <Link
@@ -80,19 +82,19 @@ const ResourceNode = ({
           <Handle
             type="target"
             position={Position.Left}
-            className="bg-indigo-500!"
+            className="bg-graph-router!"
           />
           <Handle
             type="source"
             position={Position.Right}
-            className="bg-indigo-500!"
+            className="bg-graph-router!"
           />
         </>
       ) : (
         <Handle
           type="source"
           position={Position.Right}
-          className="bg-gray-400!"
+          className="bg-graph-edge!"
         />
       )}
     </div>
@@ -101,27 +103,25 @@ const ResourceNode = ({
 
 const RelationNode = ({ data }: { data: { relations: string[] } }) => {
   return (
-    <div className="bg-purple-50 border border-purple-200 rounded-md p-3 shadow-xs min-w-[150px]">
+    <div className="graph-node rounded-md border border-graph-middleware bg-graph-middleware-muted p-3 text-graph-middleware-foreground shadow-xs min-w-[150px]">
       <Handle
         type="target"
         position={Position.Left}
-        className="bg-purple-400!"
+        className="bg-graph-middleware!"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="bg-purple-400!"
+        className="bg-graph-middleware!"
       />
-      <div className="font-medium text-purple-900 mb-2 text-center">
-        Relations
-      </div>
+      <div className="mb-2 text-center font-medium">Relations</div>
       <Separator className="my-2" />
       <div className="flex flex-wrap gap-1 justify-center">
         {data.relations.map(relation => (
           <Badge
             key={relation}
             variant="outline"
-            className="bg-white text-purple-800 border-purple-300"
+            className="border-graph-middleware bg-surface-1 text-graph-middleware-foreground"
           >
             {relation}
           </Badge>
@@ -132,7 +132,7 @@ const RelationNode = ({ data }: { data: { relations: string[] } }) => {
 };
 
 // Helper function to categorize permissions
-const categorizePermission = (permName: string) => {
+const categorizePermission = (permName: string): PermissionCategory => {
   permName = permName.toLowerCase();
   if (
     permName.includes('read') ||
@@ -157,30 +157,57 @@ const categorizePermission = (permName: string) => {
 };
 
 // Helper function to get icon for permission category
-const getPermissionIcon = (category: string) => {
+const getPermissionIcon = (category: PermissionCategory) => {
   switch (category) {
     case 'read':
-      return <Eye className="h-4 w-4 text-blue-600" />;
+      return <Eye className="h-4 w-4 text-callout-info-foreground" />;
     case 'write':
-      return <Edit className="h-4 w-4 text-green-600" />;
+      return <Edit className="h-4 w-4 text-callout-success-foreground" />;
     case 'delete':
-      return <Trash2 className="h-4 w-4 text-red-600" />;
-    default:
-      return <ShieldCheck className="h-4 w-4 text-purple-600" />;
+      return <Trash2 className="h-4 w-4 text-callout-danger-foreground" />;
+    case 'other':
+      return (
+        <ShieldCheck className="h-4 w-4 text-graph-middleware-foreground" />
+      );
+    default: {
+      const exhaustive: never = category;
+      return exhaustive;
+    }
   }
 };
 
 // Helper function to get color for permission category
-const getPermissionColor = (category: string) => {
+const getPermissionColor = (category: PermissionCategory) => {
   switch (category) {
     case 'read':
-      return 'bg-blue-50 border-blue-200 text-blue-800';
+      return 'bg-callout-info-muted border-callout-info text-callout-info-foreground';
     case 'write':
-      return 'bg-green-50 border-green-200 text-green-800';
+      return 'bg-callout-success-muted border-callout-success text-callout-success-foreground';
     case 'delete':
-      return 'bg-red-50 border-red-200 text-red-800';
-    default:
-      return 'bg-purple-50 border-purple-200 text-purple-800';
+      return 'bg-callout-danger-muted border-callout-danger text-callout-danger-foreground';
+    case 'other':
+      return 'bg-graph-middleware-muted border-graph-middleware text-graph-middleware-foreground';
+    default: {
+      const exhaustive: never = category;
+      return exhaustive;
+    }
+  }
+};
+
+const getPermissionHandleColor = (category: PermissionCategory) => {
+  switch (category) {
+    case 'read':
+      return 'bg-callout-info!';
+    case 'write':
+      return 'bg-callout-success!';
+    case 'delete':
+      return 'bg-callout-danger!';
+    case 'other':
+      return 'bg-graph-middleware!';
+    default: {
+      const exhaustive: never = category;
+      return exhaustive;
+    }
   }
 };
 
@@ -188,18 +215,18 @@ const getPermissionColor = (category: string) => {
 const SinglePermissionNode = ({
   data,
 }: {
-  data: { name: string; relations: string[]; category: string };
+  data: { name: string; relations: string[]; category: PermissionCategory };
 }) => {
   const { name, relations, category } = data;
   const colorClass = getPermissionColor(category);
   const icon = getPermissionIcon(category);
 
   return (
-    <div className={`border rounded-md p-2 shadow-xs ${colorClass}`}>
+    <div className={`graph-node rounded-md border p-2 shadow-xs ${colorClass}`}>
       <Handle
         type="target"
         position={Position.Left}
-        className={`!bg-${category === 'read' ? 'blue' : category === 'write' ? 'green' : category === 'delete' ? 'red' : 'purple'}-400`}
+        className={getPermissionHandleColor(category)}
       />
       <div className="flex items-center gap-1 font-medium text-sm mb-1">
         {icon}
@@ -210,7 +237,7 @@ const SinglePermissionNode = ({
           <Badge
             key={relation}
             variant="outline"
-            className="text-xs bg-white text-primary-foreground"
+            className="bg-surface-1 text-xs text-foreground"
           >
             {relation}
           </Badge>
@@ -384,7 +411,12 @@ export default function ResourceVisualizer({
           (Object.values(relevantPermissions).length * permissionSpacing) / 2;
 
         // Process permissions by category order
-        const categoryOrder = ['read', 'write', 'delete', 'other'];
+        const categoryOrder: PermissionCategory[] = [
+          'read',
+          'write',
+          'delete',
+          'other',
+        ];
         categoryOrder.forEach(category => {
           permissionsByCategory[category].forEach(permission => {
             const permissionNodeId = `permission-${targetResource}-${permission.name}`;
@@ -532,7 +564,7 @@ export default function ResourceVisualizer({
                               <Badge
                                 key={relation}
                                 variant="outline"
-                                className="bg-white text-background"
+                                className="bg-surface-1 text-foreground"
                               >
                                 {relation}
                               </Badge>
@@ -553,26 +585,24 @@ export default function ResourceVisualizer({
 
   // Legend for permission categories
   const renderLegend = () => (
-    <div className="bg-white p-2 rounded shadow-xs border text-sm">
-      <div className="font-medium mb-1 text-primary-foreground">
-        Permission Types:
-      </div>
+    <div className="rounded border bg-graph-panel p-2 text-sm text-foreground shadow-xs">
+      <div className="mb-1 font-medium">Permission Types:</div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
         <div className="flex items-center gap-1">
-          <Eye className="h-4 w-4 text-blue-600" />
-          <span className="text-blue-800">Read/View</span>
+          <Eye className="h-4 w-4 text-callout-info-foreground" />
+          <span>Read/View</span>
         </div>
         <div className="flex items-center gap-1">
-          <Edit className="h-4 w-4 text-green-600" />
-          <span className="text-green-800">Write/Edit</span>
+          <Edit className="h-4 w-4 text-callout-success-foreground" />
+          <span>Write/Edit</span>
         </div>
         <div className="flex items-center gap-1">
-          <Trash2 className="h-4 w-4 text-red-600" />
-          <span className="text-red-800">Delete</span>
+          <Trash2 className="h-4 w-4 text-callout-danger-foreground" />
+          <span>Delete</span>
         </div>
         <div className="flex items-center gap-1">
-          <ShieldCheck className="h-4 w-4 text-purple-600" />
-          <span className="text-purple-800">Other</span>
+          <ShieldCheck className="h-4 w-4 text-graph-middleware-foreground" />
+          <span>Other</span>
         </div>
       </div>
     </div>
@@ -597,7 +627,7 @@ export default function ResourceVisualizer({
           </TabsList>
 
           <TabsContent value="graph">
-            <div className="w-full h-[600px] border rounded-md overflow-hidden">
+            <div className="h-[600px] w-full overflow-hidden rounded-md border bg-surface-2">
               <ReactFlow
                 /*@ts-expect-error*/
                 nodes={nodes}
@@ -607,12 +637,14 @@ export default function ResourceVisualizer({
                 nodeTypes={nodeTypes}
                 fitView
                 attributionPosition="bottom-right"
+                className="semantic-react-flow"
+                style={{ background: 'var(--color-surface-2)' }}
               >
                 <Controls />
-                <Background />
+                <Background color={colors.chartGrid} />
                 <Panel
                   position="top-left"
-                  className="bg-white p-2 rounded shadow-xs border text-sm text-muted-foreground"
+                  className="rounded border bg-graph-panel p-2 text-sm text-foreground-muted shadow-xs"
                 >
                   <div className="flex items-center gap-2">
                     <Info className="h-4 w-4" />

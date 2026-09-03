@@ -146,19 +146,19 @@ export const SecurityClients = ({ data }: Props) => {
   const getPlatformColor = (platform: string) => {
     switch (platform.toUpperCase()) {
       case 'WEB':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-callout-info-muted text-callout-info-foreground border-callout-info';
       case 'IOS':
       case 'ANDROID':
       case 'IPADOS':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-callout-success-muted text-callout-success-foreground border-callout-success';
       case 'WINDOWS':
       case 'MACOS':
       case 'LINUX':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-graph-middleware-muted text-graph-middleware-foreground border-graph-middleware';
       case 'CLI':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-surface-3 text-foreground-muted border-border-strong';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-surface-3 text-foreground-muted border-border-strong';
     }
   };
 
