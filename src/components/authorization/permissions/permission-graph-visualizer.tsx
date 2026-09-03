@@ -308,7 +308,10 @@ export default function PermissionGraphVisualizer({
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const initialGraphRef = useRef({ initialNodes, initialEdges });
-  initialGraphRef.current = { initialNodes, initialEdges };
+
+  useEffect(() => {
+    initialGraphRef.current = { initialNodes, initialEdges };
+  }, [initialNodes, initialEdges]);
 
   useEffect(() => {
     setEdges(currentEdges =>
