@@ -643,6 +643,11 @@
   color: hsl(var(--primary-muted-foreground));
 }
 
+.semantic-react-flow .react-flow__controls-button:active {
+  background: hsl(var(--selection));
+  color: hsl(var(--selection-foreground));
+}
+
 .semantic-react-flow .react-flow__controls-button:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: -2px;
@@ -675,6 +680,12 @@
   border-color: hsl(var(--graph-selected));
 }
 
+.semantic-react-flow .react-flow__node:focus-visible,
+.semantic-react-flow .react-flow__edge:focus-visible,
+.semantic-react-flow .react-flow__selectionpane:focus-visible {
+  outline: none;
+}
+
 .semantic-react-flow .react-flow__node.selected .graph-node,
 .semantic-react-flow .react-flow__node:focus-visible .graph-node {
   box-shadow:
@@ -682,9 +693,24 @@
     var(--shadow-2-value);
 }
 
-.semantic-react-flow .react-flow__edge:hover .react-flow__edge-path,
+.semantic-react-flow .react-flow__edge:hover .react-flow__edge-path {
+  stroke: hsl(var(--graph-selected)) !important;
+}
+
+.semantic-react-flow .react-flow__edge:focus-visible .react-flow__edge-path,
 .semantic-react-flow .react-flow__edge.selected .react-flow__edge-path {
   stroke: hsl(var(--graph-selected)) !important;
+  stroke-width: 2.5;
+}
+
+.semantic-react-flow .react-flow__selection,
+.semantic-react-flow .react-flow__nodesselection-rect {
+  border: 1px dashed hsl(var(--graph-selected));
+  background: hsl(var(--selection));
+}
+
+.semantic-react-flow .react-flow__selectionpane:focus-visible {
+  box-shadow: inset 0 0 0 2px hsl(var(--ring));
 }
 
 .semantic-react-flow .react-flow__edge-text {
@@ -693,6 +719,27 @@
 
 .semantic-react-flow .react-flow__edge-textbg {
   fill: hsl(var(--graph-panel));
+}
+
+.semantic-react-flow .react-flow__attribution {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-sm);
+  background: hsl(var(--graph-panel));
+  color: hsl(var(--foreground-muted));
+}
+
+.semantic-react-flow .react-flow__attribution a {
+  color: hsl(var(--foreground-muted));
+}
+
+.semantic-react-flow .react-flow__attribution a:hover {
+  color: hsl(var(--primary-muted-foreground));
+}
+
+.semantic-react-flow .react-flow__attribution a:focus-visible {
+  border-radius: calc(var(--radius-sm) - 1px);
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
 }
 
 /* @uiw/react-textarea-code-editor exposes these variables on its root. */

@@ -62,7 +62,7 @@ const InputField = ({
             {label}
             {info && (
               <TooltipHelper content={info}>
-                <InfoIcon />
+                <InfoIcon className="text-foreground-muted" />
               </TooltipHelper>
             )}
           </FormLabel>

@@ -2,8 +2,23 @@
 
 import { Inter } from 'next/font/google';
 import { AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
+
+type ThemePreference = 'light' | 'dark' | 'system';
+type ResolvedTheme = Exclude<ThemePreference, 'system'>;
+
+const readThemePreference = (): ThemePreference => {
+  try {
+    const preference = window.localStorage.getItem('theme');
+    return preference === 'light' || preference === 'dark'
+      ? preference
+      : 'system';
+  } catch {
+    return 'system';
+  }
+};
 
 const handleGoHome = () => {
   window.location.assign('/');
@@ -16,9 +31,51 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('dark');
+
+  useEffect(() => {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: light)');
+    let preference = readThemePreference();
+
+    const applyTheme = () => {
+      setResolvedTheme(
+        preference === 'system'
+          ? systemTheme.matches
+            ? 'light'
+            : 'dark'
+          : preference
+      );
+    };
+
+    const handleSystemThemeChange = () => {
+      if (preference === 'system') applyTheme();
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== 'theme') return;
+      preference = readThemePreference();
+      applyTheme();
+    };
+
+    applyTheme();
+    systemTheme.addEventListener('change', handleSystemThemeChange);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      systemTheme.removeEventListener('change', handleSystemThemeChange);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
   return (
-    <html lang="en" className="bg-background">
-      <body className={`${inter.className} bg-background text-foreground antialiased`}>
+    <html
+      lang="en"
+      className={`${resolvedTheme} bg-background`}
+      suppressHydrationWarning
+    >
+      <body
+        className={`${inter.className} bg-background text-foreground antialiased`}
+      >
         <div className="grid h-dvh grid-cols lg:grid-cols-2">
           <div className="hidden h-full items-center justify-center border-r border-border bg-surface-1 lg:flex">
             <div className="flex flex-col items-center gap-4 text-foreground">

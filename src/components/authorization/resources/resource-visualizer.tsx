@@ -352,6 +352,7 @@ export default function ResourceVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
+            color: colors.chart5,
           },
         });
 
@@ -363,6 +364,7 @@ export default function ResourceVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
+            color: colors.chart5,
           },
         });
 
@@ -419,6 +421,14 @@ export default function ResourceVisualizer({
         ];
         categoryOrder.forEach(category => {
           permissionsByCategory[category].forEach(permission => {
+            const edgeColor =
+              category === 'read'
+                ? colors.chart1
+                : category === 'write'
+                  ? colors.chart2
+                  : category === 'delete'
+                    ? colors.chart3
+                    : colors.chart5;
             const permissionNodeId = `permission-${targetResource}-${permission.name}`;
             nodes.push({
               id: permissionNodeId,
@@ -436,18 +446,10 @@ export default function ResourceVisualizer({
               id: `e-main-${permissionNodeId}`,
               source: 'main',
               target: permissionNodeId,
-              style: {
-                stroke:
-                  category === 'read'
-                    ? colors.chart1
-                    : category === 'write'
-                      ? colors.chart2
-                      : category === 'delete'
-                        ? colors.chart3
-                        : colors.chart5,
-              },
+              style: { stroke: edgeColor },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
+                color: edgeColor,
               },
             });
 

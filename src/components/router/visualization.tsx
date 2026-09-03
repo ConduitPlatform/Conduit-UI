@@ -269,7 +269,6 @@ const RouterGraph = memo(
         fitView
         fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
         attributionPosition="bottom-right"
-        proOptions={{ hideAttribution: true }}
         nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
@@ -438,6 +437,7 @@ export const RouterVisualization = ({ data }: Props) => {
           type: MarkerType.ArrowClosed,
           width: 20,
           height: 20,
+          color: 'var(--color-graph-edge)',
         },
         animated: false,
       });
@@ -519,6 +519,7 @@ export const RouterVisualization = ({ data }: Props) => {
                   type: MarkerType.ArrowClosed,
                   width: 16,
                   height: 16,
+                  color: 'var(--color-graph-middleware)',
                 },
                 animated: false,
               });
@@ -539,6 +540,7 @@ export const RouterVisualization = ({ data }: Props) => {
               type: MarkerType.ArrowClosed,
               width: 16,
               height: 16,
+              color: 'var(--color-graph-edge)',
             },
             animated: false,
           });
@@ -590,6 +592,7 @@ export const RouterVisualization = ({ data }: Props) => {
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
+              color: colors.chart2,
             },
             animated: false,
           });
