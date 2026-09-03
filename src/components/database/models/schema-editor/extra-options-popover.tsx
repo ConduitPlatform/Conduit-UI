@@ -9,6 +9,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FormField } from './fields-table';
@@ -27,34 +32,48 @@ export function ExtraOptionsPopover({
   const [open, setOpen] = React.useState(false);
 
   const hasOptions = !!field.description;
+  const fieldLabel = field.name.trim() || 'field';
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            'h-8 w-8',
-            hasOptions && 'text-primary',
-            disabled && 'opacity-50 cursor-not-allowed'
-          )}
-          disabled={disabled}
-        >
-          <Settings2 className="w-4 h-4" />
-        </Button>
-      </PopoverTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="inline-flex">
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  'h-8 w-8',
+                  hasOptions && 'text-primary',
+                  disabled && 'opacity-50 cursor-not-allowed'
+                )}
+                disabled={disabled}
+                aria-label={`Extra options for ${fieldLabel}`}
+              >
+                <Settings2 className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs text-pretty">
+          <p>
+            {disabled
+              ? 'Extra options are unavailable for group fields.'
+              : 'Add a description for this field.'}
+          </p>
+        </TooltipContent>
+      </Tooltip>
       <PopoverContent className="w-80" align="end">
         <div className="space-y-4">
-          <h4 className="font-medium text-sm">Extra options</h4>
+          <h4 className="text-sm font-medium">Extra options</h4>
 
-          {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm">
+            <Label htmlFor={`description-${field.id}`} className="text-sm">
               Description
             </Label>
             <Textarea
-              id="description"
+              id={`description-${field.id}`}
               placeholder="Describe this field..."
               value={field.description || ''}
               onChange={e => onUpdate({ description: e.target.value })}

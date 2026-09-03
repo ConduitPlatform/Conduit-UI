@@ -139,6 +139,7 @@ export function TypePicker({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-label={`Field type ${selectedType?.label || value}`}
           className={cn(
             'h-8 w-full justify-between font-normal',
             disabled && 'opacity-50 cursor-not-allowed'
@@ -193,7 +194,6 @@ export function TypePicker({
                     key={type.value}
                     value={type.value}
                     disabled={isDisabled}
-                    title={isDisabled ? groupDepthLimitMessage : undefined}
                     aria-label={
                       isDisabled
                         ? `${type.label} disabled. ${groupDepthLimitMessage}`

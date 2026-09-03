@@ -183,6 +183,7 @@ export function NestedFieldsEditor({
                 availableModels={availableModels}
                 depth={depth}
                 maxDepth={maxDepth}
+                committedFieldNames={initialFields.map(field => field.name)}
               />
             </div>
           </ScrollArea>
