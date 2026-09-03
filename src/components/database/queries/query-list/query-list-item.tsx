@@ -16,11 +16,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 import {
-  CustomEndpoint,
-  OperationsEnum,
-} from '@/lib/models/database/custom-endpoints';
-import { getOperationMeta } from '@/components/database/queries/query-operations';
+  getOperationBadgeVariant,
+  getOperationMeta,
+} from '@/components/database/queries/query-operations';
 import { cn } from '@/lib/utils';
 
 interface QueryListItemProps {
@@ -37,12 +37,7 @@ export function QueryListItem({
   onDelete,
 }: Readonly<QueryListItemProps>) {
   const meta = getOperationMeta(query.operation);
-  const badgeVariant =
-    query.operation === OperationsEnum.DELETE
-      ? 'destructive'
-      : query.operation === OperationsEnum.GET
-        ? 'secondary'
-        : 'outline';
+  const badgeVariant = getOperationBadgeVariant(query.operation);
 
   return (
     <div

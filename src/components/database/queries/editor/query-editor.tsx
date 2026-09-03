@@ -29,20 +29,11 @@ import {
   Plus,
   PlusIcon as LogicalAnd,
   Save,
-  Search,
   Settings,
   Trash2,
 } from 'lucide-react';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { Separator } from '@/components/ui/separator';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/lib/hooks/use-toast';
 import {
@@ -52,8 +43,6 @@ import {
 } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
@@ -71,7 +60,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -99,7 +87,6 @@ import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
 import {
   assignmentOperations,
   comparisonOperations,
-  operationTypes,
   valueSourceTypes,
 } from './constants';
 import {
@@ -107,6 +94,7 @@ import {
   getTypeIcon,
 } from '@/components/database/queries/editor/utils';
 import { QueryInputItem } from '@/components/database/queries/editor/query-input-item';
+import { QueryInformation } from '@/components/database/queries/editor/query-information';
 import { useQueryWorkspaceOptional } from '@/components/database/queries/query-workspace-context';
 import { QueryFieldHint } from '@/components/database/queries/query-field-hint';
 import {
@@ -253,7 +241,6 @@ export function QueryEditor({
   const router = useRouter();
   const [models, setModels] = React.useState<DeclaredSchema[]>([]);
   const [modelsLoading, setModelsLoading] = React.useState(true);
-  const [isModelDialogOpen, setIsModelDialogOpen] = React.useState(false);
   const [modelSearchTerm, setModelSearchTerm] = React.useState('');
   const [inputMode, setInputMode] = React.useState<'form' | 'json'>('form');
   const [queryMode, setQueryMode] = React.useState<'form' | 'json'>('form');
@@ -1459,259 +1446,14 @@ export function QueryEditor({
             </Alert>
           )}
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Query Information</CardTitle>
-                <CardDescription>
-                  Name, model, and runtime options for this endpoint
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <InputField
-                    label={'Query Name'}
-                    fieldName={'name'}
-                    placeholder="GetUsersByTeam"
-                    info="Becomes the Client API path: /database/function/{name}. Spaces are not allowed."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <TextAreaField
-                    label={'Description'}
-                    fieldName={'endpointDescription'}
-                    placeholder="Describe what this query does"
-                    rows={3}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="authentication"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <FormLabel
-                            htmlFor="query-authentication"
-                            className="text-base font-medium"
-                          >
-                            Requires Authentication
-                          </FormLabel>
-                          <QueryFieldHint content="When enabled, callers must send a user bearer token. Anonymous Client API requests are rejected." />
-                        </div>
-                        <FormDescription>
-                          When enabled, this query is only accessible to
-                          authenticated users.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          id="query-authentication"
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {operation === OperationsEnum.GET && (
-                  <div className="space-y-3">
-                    <FormField
-                      control={form.control}
-                      name="paginated"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-1.5">
-                              <FormLabel
-                                htmlFor="query-paginated"
-                                className="text-base font-medium"
-                              >
-                                Paginated
-                              </FormLabel>
-                              <QueryFieldHint content="Adds skip and limit query parameters and returns a document count with results." />
-                            </div>
-                            <FormDescription>
-                              Expose skip and limit query parameters and return
-                              a document count with results.
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              id="query-paginated"
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="sorted"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border border-border/60 p-4">
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-1.5">
-                              <FormLabel
-                                htmlFor="query-sorted"
-                                className="text-base font-medium"
-                              >
-                                Sorted
-                              </FormLabel>
-                              <QueryFieldHint content="Allows clients to pass sort query parameters on GET requests." />
-                            </div>
-                            <FormDescription>
-                              Allow clients to pass sort query parameters on GET
-                              requests.
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              id="query-sorted"
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-medium">Operation</span>
-                    <QueryFieldHint
-                      content={
-                        initialData?._id
-                          ? 'The HTTP method is part of the endpoint contract and cannot change after create.'
-                          : 'Maps to the HTTP method clients will call on /database/function/{name}.'
-                      }
-                    />
-                  </div>
-                  <SelectField
-                    label={'Operation'}
-                    placeholder="Select operation"
-                    disabled={!!initialData?._id}
-                    classNames={{
-                      label: 'sr-only',
-                      selectTrigger:
-                        '[&>span>div]:flex-row [&>span>div]:items-center [&>span>div]:justify-start [&>span>div]:gap-2',
-                    }}
-                    options={operationTypes.map(op => ({
-                      value: op.value,
-                      label: (
-                        <div className="flex flex-col">
-                          <span>
-                            {op.label} · {getOperationMeta(op.value).method}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {op.description}
-                          </span>
-                        </div>
-                      ),
-                    }))}
-                    fieldName={'operation'}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1">
-                    <Label htmlFor="model">Model</Label>
-                    <QueryFieldHint
-                      content={
-                        initialData?._id
-                          ? 'The target schema is locked after create.'
-                          : 'The schema this endpoint reads or writes.'
-                      }
-                    />
-                  </div>
-                  <Dialog
-                    open={isModelDialogOpen}
-                    onOpenChange={setIsModelDialogOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start"
-                        disabled={!!initialData?._id}
-                      >
-                        {form.watch('selectedSchemaName') || 'Select a model'}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Select Model</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-2">
-                          <Search className="w-4 h-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Search models..."
-                            value={modelSearchTerm}
-                            onChange={e => setModelSearchTerm(e.target.value)}
-                          />
-                        </div>
-                        <ScrollArea className="h-[300px]">
-                          <div className="flex flex-col gap-2">
-                            {modelsLoading && (
-                              <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-                                Loading models…
-                              </p>
-                            )}
-                            {!modelsLoading && filteredModels.length === 0 && (
-                              <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-                                No models match this operation and search.
-                              </p>
-                            )}
-                            {filteredModels.map(model => (
-                              <Button
-                                key={model._id}
-                                variant="ghost"
-                                className="w-full justify-start text-left"
-                                onClick={() => {
-                                  form.setValue('selectedSchema', model._id, {
-                                    shouldValidate: true,
-                                    shouldDirty: true,
-                                    shouldTouch: true,
-                                  });
-                                  form.setValue(
-                                    'selectedSchemaName',
-                                    model.name,
-                                    {
-                                      shouldValidate: true,
-                                      shouldDirty: true,
-                                      shouldTouch: true,
-                                    }
-                                  );
-                                  setIsModelDialogOpen(false);
-                                }}
-                              >
-                                <div className="flex flex-col">
-                                  <span>{model.name}</span>
-                                </div>
-                              </Button>
-                            ))}
-                          </div>
-                        </ScrollArea>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  {form.formState.errors.selectedSchema && (
-                    <p className="text-sm text-destructive">
-                      {form.formState.errors.selectedSchema.message}
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
+            <QueryInformation
+              contractLocked={!!initialData?._id}
+              modelsLoading={modelsLoading}
+              filteredModels={filteredModels}
+              modelSearchTerm={modelSearchTerm}
+              onModelSearchChange={setModelSearchTerm}
+            />
 
             <Card>
               <CardHeader>

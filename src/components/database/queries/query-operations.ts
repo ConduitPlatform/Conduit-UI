@@ -41,6 +41,23 @@ export function getOperationMeta(operation: number) {
   );
 }
 
+export function getOperationBadgeVariant(
+  operation: number
+): 'secondary' | 'destructive' | 'outline' {
+  switch (operation) {
+    case OperationsEnum.GET:
+      return 'secondary';
+    case OperationsEnum.DELETE:
+      return 'destructive';
+    case OperationsEnum.POST:
+    case OperationsEnum.PUT:
+    case OperationsEnum.PATCH:
+      return 'outline';
+    default:
+      return 'outline';
+  }
+}
+
 export function getEndpointPath(name?: string) {
   const slug = name?.trim() || '{name}';
   return `/database/function/${slug}`;
