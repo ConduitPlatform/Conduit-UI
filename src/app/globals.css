@@ -259,7 +259,7 @@
     /* Boundaries and controls. */
     --border: 221 17% 19%;
     --border-strong: 217 15% 31%;
-    --input: 219 16% 24%;
+    --input: 218 13% 46%;
 
     /* Conduit Cyan: interaction, selection, focus, and key data only. */
     --primary: 191 82% 48%;
@@ -389,7 +389,7 @@
     --sidebar-background: 226 28% 5%;
     --sidebar-foreground: 214 15% 72%;
     --sidebar-primary: 191 82% 48%;
-    --sidebar-primary-foreground: 190 78% 72%;
+    --sidebar-primary-foreground: 225 26% 6%;
     --sidebar-accent: 223 20% 12%;
     --sidebar-accent-foreground: 210 25% 96%;
     --sidebar-border: 222 18% 15%;
@@ -417,7 +417,7 @@
 
     --border: 216 18% 84%;
     --border-strong: 216 16% 68%;
-    --input: 216 18% 78%;
+    --input: 216 14% 52%;
 
     --primary: 193 90% 27%;
     --primary-foreground: 0 0% 100%;
@@ -528,8 +528,8 @@
 
     --sidebar-background: 216 33% 97%;
     --sidebar-foreground: 217 13% 39%;
-    --sidebar-primary: 193 90% 27%;
-    --sidebar-primary-foreground: 193 90% 25%;
+    --sidebar-primary: 191 82% 48%;
+    --sidebar-primary-foreground: 224 28% 12%;
     --sidebar-accent: 216 24% 93%;
     --sidebar-accent-foreground: 224 28% 12%;
     --sidebar-border: 216 18% 86%;
@@ -550,10 +550,6 @@
 @layer base {
   * {
     @apply border-border;
-  }
-  ::selection {
-    color: hsl(var(--selection-foreground));
-    background: hsl(var(--selection));
   }
   body {
     @apply bg-background text-foreground;
