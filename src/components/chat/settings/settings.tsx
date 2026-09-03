@@ -39,7 +39,12 @@ const FormSchema = z.object({
         accept_uri: z.string().optional().default(''),
         decline_uri: z.string().optional().default(''),
       })
-      .optional(),
+      .optional()
+      .default({
+        login_uri: '',
+        accept_uri: '',
+        decline_uri: '',
+      }),
   }),
 });
 
@@ -64,10 +69,9 @@ export const Settings = ({
       explicit_room_joins: {
         ...data.explicit_room_joins,
         redirect: {
-          login_uri: '',
-          accept_uri: '',
-          decline_uri: '',
-          ...(data.explicit_room_joins?.redirect ?? {}),
+          login_uri: data.explicit_room_joins?.redirect?.login_uri ?? '',
+          accept_uri: data.explicit_room_joins?.redirect?.accept_uri ?? '',
+          decline_uri: data.explicit_room_joins?.redirect?.decline_uri ?? '',
         },
       },
     },
