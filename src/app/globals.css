@@ -572,6 +572,48 @@
   }
 }
 
+/* react-json-view-lite ships fixed light/dark colors; keep its override local. */
+.semantic-json-view {
+  background: hsl(var(--code-bg)) !important;
+  color: hsl(var(--code-text)) !important;
+}
+
+.semantic-json-view .semantic-json-view__property {
+  color: hsl(var(--syntax-property)) !important;
+}
+
+.semantic-json-view .semantic-json-view__null {
+  color: hsl(var(--syntax-null)) !important;
+}
+
+.semantic-json-view .semantic-json-view__string {
+  color: hsl(var(--syntax-string)) !important;
+}
+
+.semantic-json-view .semantic-json-view__boolean {
+  color: hsl(var(--syntax-boolean)) !important;
+}
+
+.semantic-json-view .semantic-json-view__number {
+  color: hsl(var(--syntax-number)) !important;
+}
+
+.semantic-json-view .semantic-json-view__value {
+  color: hsl(var(--syntax-function)) !important;
+}
+
+.semantic-json-view .semantic-json-view__punctuation {
+  color: hsl(var(--syntax-operator)) !important;
+}
+
+.semantic-json-view .semantic-json-view__control {
+  color: hsl(var(--code-text)) !important;
+}
+
+.semantic-json-view .semantic-json-view__collapsed {
+  color: hsl(var(--foreground-muted)) !important;
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;
