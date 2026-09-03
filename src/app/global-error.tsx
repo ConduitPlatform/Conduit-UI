@@ -67,13 +67,15 @@ export default function GlobalError({
     let preference = readThemePreference();
 
     const applyTheme = () => {
-      setResolvedTheme(
+      const theme =
         preference === 'system'
           ? systemTheme.matches
             ? 'light'
             : 'dark'
-          : preference
-      );
+          : preference;
+
+      document.documentElement.style.colorScheme = theme;
+      setResolvedTheme(theme);
     };
 
     const handleSystemThemeChange = () => {
