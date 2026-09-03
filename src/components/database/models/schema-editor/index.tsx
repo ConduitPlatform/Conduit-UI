@@ -8,7 +8,6 @@ import { SchemaPreview } from './schema-preview';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Save, Code, AlertCircle, Info, Loader2 } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -22,6 +21,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { FieldType } from './type-picker';
 import { normalizeFieldDefault } from '@/lib/database/format-display-value';
@@ -214,6 +219,10 @@ export function SchemaEditor({
   const isExtensionOnly = Boolean(
     schema && schema.ownerModule !== 'database' && schema.ownerModule !== ''
   );
+  const committedFieldNames = React.useMemo(
+    () => (schema?.fields ? Object.keys(schema.fields) : []),
+    [schema]
+  );
 
   const handleFieldsChange = (newFields: FormField[]) => {
     setFields(newFields);
@@ -326,115 +335,140 @@ export function SchemaEditor({
   }, []);
 
   return (
-    <div className="flex h-full">
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-6 py-3 border-b bg-muted/30">
-          <div className="flex items-center gap-4">
-            {isNewSchema && (
-              <div className="flex items-center gap-2">
-                <Label htmlFor="schemaName" className="sr-only">
-                  Schema Name
-                </Label>
-                <Input
-                  id="schemaName"
-                  placeholder="Enter schema name..."
-                  value={schemaName}
-                  onChange={e => setSchemaName(e.target.value)}
-                  className="w-64 font-medium"
-                />
-              </div>
-            )}
-            {!isNewSchema && (
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold">{schema.name}</h2>
-                {hasChanges && (
-                  <Badge variant="secondary" className="font-normal">
-                    Unsaved changes
-                  </Badge>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPreview(!showPreview)}
-              className="gap-2"
-            >
-              <Code className="w-4 h-4" />
-              {showPreview ? 'Hide' : 'Show'} JSON
-            </Button>
-            {onCancel && (
-              <Button variant="ghost" size="sm" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            <Button
-              size="sm"
-              onClick={handleSave}
-              disabled={isSaving || (!hasChanges && !isNewSchema)}
-              className="gap-2"
-            >
-              {isSaving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+    <TooltipProvider delayDuration={250}>
+      <div className="flex h-full min-w-0">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="flex shrink-0 items-center justify-between gap-4 border-b bg-muted/30 px-6 py-3">
+            <div className="min-w-0">
+              {isNewSchema ? (
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="schemaName" className="sr-only">
+                    Schema Name
+                  </Label>
+                  <Input
+                    id="schemaName"
+                    placeholder="Enter schema name..."
+                    value={schemaName}
+                    onChange={e => setSchemaName(e.target.value)}
+                    className="w-64 font-medium"
+                  />
+                </div>
               ) : (
-                <Save className="w-4 h-4" />
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-semibold tracking-wide text-balance">
+                      Schema fields
+                    </h2>
+                    {hasChanges && (
+                      <Badge variant="secondary" className="font-normal">
+                        Unsaved changes
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Define field names, types, and constraints. Save to apply
+                    them to this model.
+                  </p>
+                </div>
               )}
-              {isSaving
-                ? 'Saving...'
-                : isNewSchema
-                  ? 'Create Schema'
-                  : 'Save Changes'}
-              {!isSaving && hasChanges && (
-                <kbd className="ml-1 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
-                  {saveShortcutLabel}
-                </kbd>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {created && (
-          <Alert className="mx-6 mt-4 border-primary/30 bg-primary/5">
-            <Info className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between gap-3">
-              <span>
-                Model created. Define the fields your data needs, then configure
-                CRUD and authorization before opening it up.
-              </span>
-              {onOpenSettings && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={onOpenSettings}
-                  className="shrink-0"
-                >
-                  Open Settings
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPreview(!showPreview)}
+                    className="gap-2"
+                    aria-pressed={showPreview}
+                    aria-label={
+                      showPreview ? 'Hide JSON preview' : 'Show JSON preview'
+                    }
+                  >
+                    <Code className="h-4 w-4" />
+                    {showPreview ? 'Hide' : 'Show'} JSON
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Preview the schema as JSON</p>
+                </TooltipContent>
+              </Tooltip>
+              {onCancel && (
+                <Button variant="ghost" size="sm" onClick={onCancel}>
+                  Cancel
                 </Button>
               )}
-            </AlertDescription>
-          </Alert>
-        )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={isSaving || (!hasChanges && !isNewSchema)}
+                    className="gap-2"
+                  >
+                    {isSaving ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    {isSaving
+                      ? 'Saving...'
+                      : isNewSchema
+                        ? 'Create Schema'
+                        : 'Save Changes'}
+                    {!isSaving && hasChanges && (
+                      <kbd className="ml-1 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
+                        {saveShortcutLabel}
+                      </kbd>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {hasChanges
+                      ? `Save schema changes ${saveShortcutLabel}`
+                      : 'No unsaved changes'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
 
-        {/* Extension-only warning */}
-        {isExtensionOnly && schema && (
-          <Alert className="mx-6 mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              This schema is owned by {schema.ownerModule}. You can only modify
-              extension fields.
-            </AlertDescription>
-          </Alert>
-        )}
+          {created && (
+            <Alert className="mx-6 mt-4 border-primary/30 bg-primary/5">
+              <Info className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between gap-3">
+                <span>
+                  Model created. Define the fields your data needs, then
+                  configure CRUD and authorization before opening it up.
+                </span>
+                {onOpenSettings && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onOpenSettings}
+                    className="shrink-0"
+                  >
+                    Open Settings
+                  </Button>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {/* Fields Table */}
-        <div className="flex-1 overflow-hidden flex">
-          <ScrollArea className="flex-1">
-            <div className="p-6">
+          {isExtensionOnly && schema && (
+            <Alert className="mx-6 mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                This schema is owned by {schema.ownerModule}. Field edits belong
+                on the Extensions tab.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="flex min-h-0 min-w-0 flex-1">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-6">
               <FieldsTable
                 fields={fields}
                 onFieldsChange={handleFieldsChange}
@@ -442,51 +476,56 @@ export function SchemaEditor({
                 disabled={isExtensionOnly}
                 depth={0}
                 maxDepth={1}
+                className="min-h-0 flex-1"
+                committedFieldNames={committedFieldNames}
+                fillHeight
               />
             </div>
-          </ScrollArea>
 
-          {/* JSON Preview Panel */}
-          {showPreview && (
-            <div className="w-96 border-l bg-muted/30">
-              <SchemaPreview
-                schemaName={schemaName}
-                fields={transformFieldsForApi(fields)}
-              />
-            </div>
-          )}
+            {showPreview && (
+              <div className="flex w-80 min-h-0 shrink-0 flex-col overflow-hidden border-l bg-muted/30 lg:w-96">
+                <SchemaPreview
+                  schemaName={schemaName}
+                  fields={transformFieldsForApi(fields)}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <AlertDialog
-        open={removedFieldsToConfirm.length > 0}
-        onOpenChange={open => {
-          if (!open) setRemovedFieldsToConfirm([]);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove fields from this model?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Saving will remove{' '}
-              <strong>{removedFieldsToConfirm.join(', ')}</strong> from the
-              schema. Existing documents may no longer expose values stored in
-              those fields.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setRemovedFieldsToConfirm([]);
-                void performSave();
-              }}
-            >
-              Save and remove fields
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        <AlertDialog
+          open={removedFieldsToConfirm.length > 0}
+          onOpenChange={open => {
+            if (!open) setRemovedFieldsToConfirm([]);
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Remove fields from this model?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Saving will remove{' '}
+                <strong>{removedFieldsToConfirm.join(', ')}</strong> from the
+                schema. Existing documents may no longer expose values stored in
+                those fields.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  setRemovedFieldsToConfirm([]);
+                  void performSave();
+                }}
+              >
+                Save and remove fields
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </TooltipProvider>
   );
 }

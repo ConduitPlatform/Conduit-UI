@@ -3,6 +3,12 @@
 import * as React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Copy, Check } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 
@@ -37,31 +43,40 @@ export function SchemaPreview({ schemaName, fields }: SchemaPreviewProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          JSON Preview
-        </h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleCopy}
-          className="h-8 w-8"
-        >
-          {copied ? (
-            <Check className="h-4 w-4 text-status-healthy" />
-          ) : (
-            <Copy className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
+    <TooltipProvider delayDuration={250}>
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex shrink-0 items-center justify-between border-b px-4 py-3">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            JSON Preview
+          </h3>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCopy}
+                className="h-8 w-8"
+                aria-label={copied ? 'JSON copied' : 'Copy JSON'}
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-status-healthy" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{copied ? 'Copied' : 'Copy JSON'}</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
 
-      <ScrollArea className="flex-1">
-        <pre className="p-4 text-xs font-mono overflow-x-auto">
-          <code className="text-muted-foreground">{jsonString}</code>
-        </pre>
-      </ScrollArea>
-    </div>
+        <ScrollArea className="min-h-0 flex-1">
+          <pre className="overflow-x-auto p-4 font-mono text-xs slashed-zero">
+            <code className="text-muted-foreground">{jsonString}</code>
+          </pre>
+        </ScrollArea>
+      </div>
+    </TooltipProvider>
   );
 }
