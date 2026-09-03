@@ -97,12 +97,12 @@ export const valueSourceTypes = [
   },
   {
     value: ValueSourceTypeEnum.CUSTOM,
-    label: 'Custom Value',
+    label: 'Custom',
     description: 'Use a literal value baked into this endpoint.',
   },
   {
     value: ValueSourceTypeEnum.CONTEXT,
-    label: 'Context Value',
+    label: 'Context',
     description:
       'Use a runtime value such as user._id from the request context.',
   },
