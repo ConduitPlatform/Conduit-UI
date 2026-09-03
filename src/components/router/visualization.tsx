@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useCallback, memo } from 'react';
+import { useMemo, useState, useCallback, memo, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { RouterRoutesResponse } from '@/lib/models/Router';
 import { useChartColors } from '@/lib/hooks/useChartColors';
+import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
 
 const getHttpMethodColor = (method: string) => {
   switch (method.toUpperCase()) {
@@ -269,6 +270,7 @@ const RouterGraph = memo(
         fitView
         fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
         attributionPosition="bottom-right"
+        proOptions={{ hideAttribution: true }}
         nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
@@ -324,6 +326,11 @@ export const RouterVisualization = ({ data }: Props) => {
   const { initialNodes, initialEdges } = useMemo(() => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
+    const graphEdgeMarkerColor = getReactFlowMarkerColor(colors.graphEdge);
+    const graphMiddlewareMarkerColor = getReactFlowMarkerColor(
+      colors.graphMiddleware
+    );
+    const chart2MarkerColor = getReactFlowMarkerColor(colors.chart2);
 
     // Check if data exists
     if (!data) {
@@ -430,14 +437,14 @@ export const RouterVisualization = ({ data }: Props) => {
         source: routerNodeId,
         target: middlewareNodeId,
         style: {
-          stroke: 'var(--color-graph-edge)',
+          stroke: colors.graphEdge,
           strokeWidth: 2,
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 20,
           height: 20,
-          color: 'var(--color-graph-edge)',
+          ...(graphEdgeMarkerColor && { color: graphEdgeMarkerColor }),
         },
         animated: false,
       });
@@ -511,7 +518,7 @@ export const RouterVisualization = ({ data }: Props) => {
                 source: middlewareNodeId,
                 target: routeNodeId,
                 style: {
-                  stroke: 'var(--color-graph-middleware)',
+                  stroke: colors.graphMiddleware,
                   strokeWidth: 1.5,
                   strokeDasharray: isOptional ? '8,4' : '5,5',
                 },
@@ -519,7 +526,9 @@ export const RouterVisualization = ({ data }: Props) => {
                   type: MarkerType.ArrowClosed,
                   width: 16,
                   height: 16,
-                  color: 'var(--color-graph-middleware)',
+                  ...(graphMiddlewareMarkerColor && {
+                    color: graphMiddlewareMarkerColor,
+                  }),
                 },
                 animated: false,
               });
@@ -532,7 +541,7 @@ export const RouterVisualization = ({ data }: Props) => {
             source: routerNodeId,
             target: routeNodeId,
             style: {
-              stroke: 'var(--color-graph-edge)',
+              stroke: colors.graphEdge,
               strokeWidth: 1.5,
               strokeDasharray: '3,3',
             },
@@ -540,7 +549,7 @@ export const RouterVisualization = ({ data }: Props) => {
               type: MarkerType.ArrowClosed,
               width: 16,
               height: 16,
-              color: 'var(--color-graph-edge)',
+              ...(graphEdgeMarkerColor && { color: graphEdgeMarkerColor }),
             },
             animated: false,
           });
@@ -592,7 +601,7 @@ export const RouterVisualization = ({ data }: Props) => {
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
-              color: colors.chart2,
+              ...(chart2MarkerColor && { color: chart2MarkerColor }),
             },
             animated: false,
           });
@@ -605,6 +614,10 @@ export const RouterVisualization = ({ data }: Props) => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
 
   // Memoized render functions
   const renderListView = useCallback(() => {

@@ -33,6 +33,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useChartColors } from '@/lib/hooks/useChartColors';
+import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
 
 // Types from the parent component
 interface PermissionStep {
@@ -163,6 +164,9 @@ export default function PermissionGraphVisualizer({
     const nodes: Node[] = [];
     const edges: Edge[] = [];
     const nodeMap = new Map<string, number>(); // Map to track node indices
+    const chart1MarkerColor = getReactFlowMarkerColor(colors.chart1);
+    const chart2MarkerColor = getReactFlowMarkerColor(colors.chart2);
+    const chart5MarkerColor = getReactFlowMarkerColor(colors.chart5);
 
     // Helper to get a unique node ID
     const getNodeId = (type: string, id: string, nodeType: string) => {
@@ -226,7 +230,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart5,
+            ...(chart5MarkerColor && { color: chart5MarkerColor }),
           },
         });
 
@@ -238,7 +242,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart5,
+            ...(chart5MarkerColor && { color: chart5MarkerColor }),
           },
         });
       }
@@ -263,7 +267,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart2,
+            ...(chart2MarkerColor && { color: chart2MarkerColor }),
           },
         });
 
@@ -275,7 +279,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart2 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart2,
+            ...(chart2MarkerColor && { color: chart2MarkerColor }),
           },
         });
       }
@@ -291,7 +295,7 @@ export default function PermissionGraphVisualizer({
           style: { stroke: colors.chart1 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart1,
+            ...(chart1MarkerColor && { color: chart1MarkerColor }),
           },
         });
       }

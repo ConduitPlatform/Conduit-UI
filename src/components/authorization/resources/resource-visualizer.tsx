@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import ReactFlow, {
   Background,
@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { ResourceDefinition } from '@/lib/models/authorization';
 import { useChartColors } from '@/lib/hooks/useChartColors';
+import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
 
 type PermissionCategory = 'read' | 'write' | 'delete' | 'other';
 
@@ -272,6 +273,7 @@ export default function ResourceVisualizer({
   const { initialNodes, initialEdges } = useMemo(() => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
+    const chart5MarkerColor = getReactFlowMarkerColor(colors.chart5);
 
     // Group relations by target resource
     const relationsByResource: Record<string, string[]> = {};
@@ -352,7 +354,7 @@ export default function ResourceVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart5,
+            ...(chart5MarkerColor && { color: chart5MarkerColor }),
           },
         });
 
@@ -364,7 +366,7 @@ export default function ResourceVisualizer({
           style: { stroke: colors.chart5 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: colors.chart5,
+            ...(chart5MarkerColor && { color: chart5MarkerColor }),
           },
         });
 
@@ -429,6 +431,7 @@ export default function ResourceVisualizer({
                   : category === 'delete'
                     ? colors.chart3
                     : colors.chart5;
+            const markerColor = getReactFlowMarkerColor(edgeColor);
             const permissionNodeId = `permission-${targetResource}-${permission.name}`;
             nodes.push({
               id: permissionNodeId,
@@ -449,7 +452,7 @@ export default function ResourceVisualizer({
               style: { stroke: edgeColor },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                color: edgeColor,
+                ...(markerColor && { color: markerColor }),
               },
             });
 
@@ -464,6 +467,10 @@ export default function ResourceVisualizer({
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
 
   // Render a detailed view of relations and permissions
   const renderDetailsView = () => {

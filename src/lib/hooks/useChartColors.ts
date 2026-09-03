@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { toOpaqueHexColor } from '@/lib/semantic-colors';
 
 type ChartColors = {
   chart1: string;
@@ -11,6 +12,8 @@ type ChartColors = {
   chart5: string;
   chartGrid: string;
   background: string;
+  graphEdge: string;
+  graphMiddleware: string;
 };
 
 const semanticColorFallbacks: ChartColors = {
@@ -21,6 +24,8 @@ const semanticColorFallbacks: ChartColors = {
   chart5: 'var(--color-chart-5, currentColor)',
   chartGrid: 'var(--color-chart-grid, currentColor)',
   background: 'var(--color-background, Canvas)',
+  graphEdge: 'var(--color-graph-edge, currentColor)',
+  graphMiddleware: 'var(--color-graph-middleware, currentColor)',
 };
 
 function readCssColor(varName: string, fallback: string): string {
@@ -29,9 +34,7 @@ function readCssColor(varName: string, fallback: string): string {
     .trim();
   if (!raw) return fallback;
 
-  const hslColor = `hsl(${raw})`;
-  if (CSS.supports('color', hslColor)) return hslColor;
-  return CSS.supports('color', raw) ? raw : fallback;
+  return toOpaqueHexColor(raw) ?? fallback;
 }
 
 export function useChartColors() {
@@ -57,6 +60,14 @@ export function useChartColors() {
         background: readCssColor(
           '--background',
           semanticColorFallbacks.background
+        ),
+        graphEdge: readCssColor(
+          '--graph-edge',
+          semanticColorFallbacks.graphEdge
+        ),
+        graphMiddleware: readCssColor(
+          '--graph-middleware',
+          semanticColorFallbacks.graphMiddleware
         ),
       });
     };
