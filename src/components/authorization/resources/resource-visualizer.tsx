@@ -37,47 +37,9 @@ import {
 import { ResourceDefinition } from '@/lib/models/authorization';
 import { useChartColors } from '@/lib/hooks/useChartColors';
 import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
+import { mergeSemanticEdgeColors } from '@/lib/reactflow-edge-colors';
 
 type PermissionCategory = 'read' | 'write' | 'delete' | 'other';
-
-const mergeSemanticEdgeColors = (
-  currentEdge: Edge,
-  semanticEdge: Edge
-): Edge => {
-  let updatedEdge = currentEdge;
-
-  if (semanticEdge.style?.stroke !== undefined) {
-    updatedEdge = {
-      ...updatedEdge,
-      style: {
-        ...currentEdge.style,
-        stroke: semanticEdge.style.stroke,
-      },
-    };
-  }
-
-  if (semanticEdge.labelStyle?.fill !== undefined) {
-    updatedEdge = {
-      ...updatedEdge,
-      labelStyle: {
-        ...currentEdge.labelStyle,
-        fill: semanticEdge.labelStyle.fill,
-      },
-    };
-  }
-
-  if (currentEdge.markerEnd && semanticEdge.markerEnd?.color !== undefined) {
-    updatedEdge = {
-      ...updatedEdge,
-      markerEnd: {
-        ...currentEdge.markerEnd,
-        color: semanticEdge.markerEnd.color,
-      },
-    };
-  }
-
-  return updatedEdge;
-};
 
 // Custom node types
 const ResourceNode = ({
@@ -508,17 +470,8 @@ export default function ResourceVisualizer({
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
-    const semanticEdgesById = new Map(
-      initialEdges.map(edge => [edge.id, edge] as const)
-    );
-
     setEdges(currentEdges =>
-      currentEdges.map(currentEdge => {
-        const semanticEdge = semanticEdgesById.get(currentEdge.id);
-        return semanticEdge
-          ? mergeSemanticEdgeColors(currentEdge, semanticEdge)
-          : currentEdge;
-      })
+      mergeSemanticEdgeColors(currentEdges, initialEdges)
     );
   }, [initialEdges, setEdges]);
 

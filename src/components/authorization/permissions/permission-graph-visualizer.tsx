@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, {
   type Node,
   type Edge,
@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { useChartColors } from '@/lib/hooks/useChartColors';
 import { getReactFlowMarkerColor } from '@/lib/semantic-colors';
+import { mergeSemanticEdgeColors } from '@/lib/reactflow-edge-colors';
 
 // Types from the parent component
 interface PermissionStep {
@@ -306,17 +307,26 @@ export default function PermissionGraphVisualizer({
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const initialGraphRef = useRef({ initialNodes, initialEdges });
+  initialGraphRef.current = { initialNodes, initialEdges };
 
-  // Force a re-render when the modal opens to ensure the graph is displayed
+  useEffect(() => {
+    setEdges(currentEdges =>
+      mergeSemanticEdgeColors(currentEdges, initialEdges)
+    );
+  }, [initialEdges, setEdges]);
+
+  // Reset topology only when a path is shown or changes, not when colors change.
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
-        setNodes([...initialNodes]);
-        setEdges([...initialEdges]);
+        const graph = initialGraphRef.current;
+        setNodes([...graph.initialNodes]);
+        setEdges([...graph.initialEdges]);
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [open, initialNodes, initialEdges, setNodes, setEdges]);
+  }, [open, path, setNodes, setEdges]);
 
   // Handle zoom controls
   const [zoomLevel, setZoomLevel] = useState(1);
