@@ -15,18 +15,24 @@ import {
   ToggleLeft,
 } from 'lucide-react';
 
-export const getPlacementIcon = (location: LocationEnum) => {
+export const getPlacementIcon = (
+  location: LocationEnum,
+  className = 'size-4'
+) => {
   switch (location) {
     case LocationEnum.URL:
-      return <Route className="h-4 w-4" />;
+      return <Route className={className} />;
     case LocationEnum.QUERY:
-      return <Search className="h-4 w-4" />;
+      return <Search className={className} />;
     case LocationEnum.BODY:
-      return <FileJson className="h-4 w-4" />;
-    default:
-      return <Search className="h-4 w-4" />;
+      return <FileJson className={className} />;
+    default: {
+      const _exhaustive: never = location;
+      return _exhaustive;
+    }
   }
 };
+
 export const getPlacementName = (location: LocationEnum) => {
   switch (location) {
     case LocationEnum.URL:
@@ -35,9 +41,42 @@ export const getPlacementName = (location: LocationEnum) => {
       return 'Search';
     case LocationEnum.BODY:
       return 'Body';
-    default:
-      return 'Search';
+    default: {
+      const _exhaustive: never = location;
+      return _exhaustive;
+    }
   }
+};
+
+export const getPlacementExample = (location: LocationEnum, name: string) => {
+  const key = name.trim() || 'key';
+  switch (location) {
+    case LocationEnum.URL:
+      return `Path segment /:${key}`;
+    case LocationEnum.QUERY:
+      return `URL query ?${key}=value`;
+    case LocationEnum.BODY:
+      return `JSON body { "${key}": … }`;
+    default: {
+      const _exhaustive: never = location;
+      return _exhaustive;
+    }
+  }
+};
+
+export const toLocation = (value: unknown): LocationEnum => {
+  if (value === '' || value === undefined || value === null) {
+    return LocationEnum.QUERY;
+  }
+  const location = Number(value);
+  if (
+    location === LocationEnum.URL ||
+    location === LocationEnum.QUERY ||
+    location === LocationEnum.BODY
+  ) {
+    return location;
+  }
+  return LocationEnum.QUERY;
 };
 // Add icons for input types and placements
 export const getTypeIcon = (type: ValueTypeEnum) => {

@@ -99,17 +99,14 @@ import { TextAreaField } from '@/components/ui/form-inputs/TextAreaField';
 import {
   assignmentOperations,
   comparisonOperations,
-  inputTypes,
   operationTypes,
-  placementTypes,
   valueSourceTypes,
 } from './constants';
 import {
-  getPlacementIcon,
-  getPlacementName,
   getReadableOperation,
   getTypeIcon,
 } from '@/components/database/queries/editor/utils';
+import { QueryInputItem } from '@/components/database/queries/editor/query-input-item';
 import { useQueryWorkspaceOptional } from '@/components/database/queries/query-workspace-context';
 import { QueryFieldHint } from '@/components/database/queries/query-field-hint';
 import {
@@ -1748,217 +1745,18 @@ export function QueryEditor({
                   </div>
 
                   <TabsContent value="form" className="space-y-4">
+                    {fields.length === 0 && (
+                      <p className="rounded-lg border border-dashed border-border/80 px-3 py-6 text-center text-sm text-muted-foreground">
+                        No inputs yet. Add the parameters callers will send.
+                      </p>
+                    )}
                     {fields.map((field, index) => (
-                      <Collapsible
+                      <QueryInputItem
                         key={field.id}
-                        className="border rounded-md overflow-hidden"
-                      >
-                        <div className="flex items-center justify-between p-3 bg-muted/30 cursor-pointer">
-                          <CollapsibleTrigger className="flex items-center space-x-2 grow justify-between text-left cursor-pointer mr-2">
-                            <div
-                              className={
-                                'flex flex-row space-x-2 text-left items-center'
-                              }
-                            >
-                              <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
-                              <span className="font-medium truncate">
-                                {form.watch(`inputs.${index}.name`) ||
-                                  `Input #${index + 1}`}
-                              </span>
-                            </div>
-                            {form.watch(`inputs.${index}.name`) && (
-                              <div className="flex items-center space-x-2">
-                                <div className="flex items-center space-x-1">
-                                  {getTypeIcon(
-                                    ValueTypeEnum[
-                                      form.watch(
-                                        `inputs.${index}.type`
-                                      ) as keyof typeof ValueTypeEnum
-                                    ]
-                                  )}
-                                  <Badge variant="outline" className="text-xs">
-                                    {form.watch(`inputs.${index}.type`)}
-                                    {form.watch(`inputs.${index}.array`) &&
-                                      '[]'}
-                                  </Badge>
-                                </div>
-
-                                <div className="flex items-center space-x-1">
-                                  {getPlacementIcon(
-                                    form.watch(
-                                      `inputs.${index}.location`
-                                    ) as LocationEnum
-                                  )}
-                                  <Badge
-                                    variant="secondary"
-                                    className="text-xs"
-                                  >
-                                    {getPlacementName(
-                                      form.watch(
-                                        `inputs.${index}.location`
-                                      ) as LocationEnum
-                                    )}
-                                  </Badge>
-                                </div>
-
-                                {form.watch(`inputs.${index}.optional`) && (
-                                  <Badge variant="outline" className="text-xs">
-                                    Optional
-                                  </Badge>
-                                )}
-                              </div>
-                            )}
-                          </CollapsibleTrigger>
-                          <TooltipProvider delayDuration={300}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  aria-label={`Remove input ${form.watch(`inputs.${index}.name`) || index + 1}`}
-                                  onClick={() => remove(index)}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                Remove this input from the draft. Save to
-                                persist.
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-
-                        <CollapsibleContent>
-                          <div className="p-4 space-y-4">
-                            <div className="space-y-2">
-                              <InputField
-                                label={'Name'}
-                                fieldName={`inputs.${index}.name`}
-                                placeholder={'e.g. id, name, filter'}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <SelectField
-                                  label={'Type'}
-                                  fieldName={`inputs.${index}.type`}
-                                  placeholder="Select type"
-                                  options={inputTypes.map(type => ({
-                                    value: type.value,
-                                    label: (
-                                      <div className="flex items-center space-x-2">
-                                        {getTypeIcon(type.value)}
-                                        <span>{type.label}</span>
-                                      </div>
-                                    ),
-                                  }))}
-                                />
-                              </div>
-
-                              <div className="space-y-2">
-                                <SelectField
-                                  label={'Placement'}
-                                  fieldName={`inputs.${index}.location`}
-                                  placeholder="Select placement"
-                                  options={placementTypes.map(place => ({
-                                    value: place.value,
-                                    label: (
-                                      <div className="flex items-center gap-2">
-                                        {getPlacementIcon(place.value)}
-                                        <div className="flex flex-col">
-                                          <span>{place.label}</span>
-                                          <span className="text-xs text-muted-foreground">
-                                            {place.description}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    ),
-                                  }))}
-                                />
-                                {form.watch(`inputs.${index}.location`) ===
-                                  LocationEnum.BODY &&
-                                  [
-                                    OperationsEnum.GET,
-                                    OperationsEnum.DELETE,
-                                  ].includes(operation) && (
-                                    <p className="text-xs text-destructive">
-                                      Body parameters are not allowed for{' '}
-                                      Find/Delete operations
-                                    </p>
-                                  )}
-                              </div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-6">
-                              <FormField
-                                control={form.control}
-                                name={`inputs.${index}.optional`}
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center gap-2">
-                                    <FormControl>
-                                      <Checkbox
-                                        id={`inputs.${index}.optional`}
-                                        checked={Boolean(field.value)}
-                                        disabled={
-                                          form.watch(
-                                            `inputs.${index}.location`
-                                          ) === LocationEnum.URL
-                                        }
-                                        onCheckedChange={checked =>
-                                          field.onChange(Boolean(checked))
-                                        }
-                                      />
-                                    </FormControl>
-                                    <div className="flex items-center gap-1">
-                                      <FormLabel
-                                        htmlFor={`inputs.${index}.optional`}
-                                        className="font-normal"
-                                      >
-                                        Optional
-                                      </FormLabel>
-                                      <QueryFieldHint content="Path parameters cannot be optional. Query and body inputs can be omitted by the client." />
-                                    </div>
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name={`inputs.${index}.array`}
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center gap-2">
-                                    <FormControl>
-                                      <Checkbox
-                                        id={`inputs.${index}.array`}
-                                        checked={Boolean(field.value)}
-                                        disabled={
-                                          form.watch(
-                                            `inputs.${index}.location`
-                                          ) === LocationEnum.URL
-                                        }
-                                        onCheckedChange={checked =>
-                                          field.onChange(Boolean(checked))
-                                        }
-                                      />
-                                    </FormControl>
-                                    <div className="flex items-center gap-1">
-                                      <FormLabel
-                                        htmlFor={`inputs.${index}.array`}
-                                        className="font-normal"
-                                      >
-                                        Is array
-                                      </FormLabel>
-                                      <QueryFieldHint content="Accept multiple values. Path parameters cannot be arrays." />
-                                    </div>
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
+                        index={index}
+                        operation={operation}
+                        onRemove={() => remove(index)}
+                      />
                     ))}
 
                     <Button

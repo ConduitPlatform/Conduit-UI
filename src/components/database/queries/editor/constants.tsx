@@ -54,7 +54,7 @@ export const placementTypes = [
   },
   {
     value: LocationEnum.QUERY,
-    label: 'Search Parameter',
+    label: 'Search',
     description: 'URL query parameter (?key=value)',
   },
   {
