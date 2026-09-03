@@ -244,9 +244,7 @@ export function EmailDetail({ email, isOpen, onClose }: EmailDetailProps) {
             {resendSuccess !== null && (
               <span
                 className={
-                  resendSuccess
-                    ? 'text-status-healthy'
-                    : 'text-status-critical'
+                  resendSuccess ? 'text-status-healthy' : 'text-status-critical'
                 }
               >
                 {resendSuccess

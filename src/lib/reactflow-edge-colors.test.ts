@@ -109,23 +109,20 @@ describe('mergeSemanticEdgeColors', () => {
       markerEnd: { type: 'arrowclosed', color: '#222222' },
     } as Edge;
 
-    const result = mergeSemanticEdgeColors(
-      [withoutMarker, withMarker],
-      [
-        {
-          id: 'without-marker',
-          source: 'a',
-          target: 'b',
-          markerEnd: { type: 'arrowclosed', color: '#aaaaaa' },
-        },
-        {
-          id: 'with-marker',
-          source: 'b',
-          target: 'c',
-          markerEnd: { type: 'arrowclosed' },
-        },
-      ] as Edge[]
-    );
+    const result = mergeSemanticEdgeColors([withoutMarker, withMarker], [
+      {
+        id: 'without-marker',
+        source: 'a',
+        target: 'b',
+        markerEnd: { type: 'arrowclosed', color: '#aaaaaa' },
+      },
+      {
+        id: 'with-marker',
+        source: 'b',
+        target: 'c',
+        markerEnd: { type: 'arrowclosed' },
+      },
+    ] as Edge[]);
 
     assert.equal(result[0].markerEnd, undefined);
     assert.deepEqual(result[1].markerEnd, {

@@ -267,6 +267,9 @@ export function ExtensionsPanel({
               disabled={false}
               depth={0}
               maxDepth={1}
+              committedFieldNames={Object.keys(
+                mergeDatabaseExtensionFields(schema)
+              )}
             />
             <p
               className={cn(

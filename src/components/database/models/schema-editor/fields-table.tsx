@@ -6,12 +6,29 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { EmptyState } from '@/components/ui/empty-state';
+import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
 } from '@hello-pangea/dnd';
-import { GripVertical, Plus, X, Boxes } from 'lucide-react';
+import { GripVertical, Plus, X, Boxes, Table2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TypePicker, FieldType } from './type-picker';
 import { ExtraOptionsPopover } from './extra-options-popover';
@@ -39,7 +56,18 @@ type FieldsTableProps = {
   disabled?: boolean;
   depth?: number;
   maxDepth?: number;
+  className?: string;
+  committedFieldNames?: string[];
+  fillHeight?: boolean;
 };
+
+type PendingTypeChange = {
+  field: FormField;
+  nextType: FieldType;
+};
+
+const FIELD_GRID =
+  'grid grid-cols-[32px_minmax(10rem,14rem)_10rem_minmax(11rem,1fr)_3.25rem_3.25rem_3.25rem_3.25rem_2rem_2rem] gap-2';
 
 function generateId() {
   return Math.random().toString(36).substring(2, 9);
@@ -90,6 +118,81 @@ export function transformFieldsForApi(
   return result;
 }
 
+function typeChangeDiscardsConfig(field: FormField, nextType: FieldType) {
+  if (field.type === nextType) return false;
+  if (
+    field.type === 'Relation' &&
+    Boolean(field.relatedModel) &&
+    nextType !== 'Relation'
+  ) {
+    return true;
+  }
+  if (
+    field.type === 'Group' &&
+    (field.fields?.length ?? 0) > 0 &&
+    nextType !== 'Group'
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function getTypeChangeUpdates(type: FieldType): Partial<FormField> {
+  return {
+    type,
+    ...(type !== 'Relation' ? { relatedModel: undefined } : {}),
+    ...(type !== 'Group' ? { fields: undefined } : { isArray: false }),
+  };
+}
+
+function ColumnHint({
+  label,
+  hint,
+  className,
+}: {
+  label: string;
+  hint: string;
+  className?: string;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            'cursor-help text-xs font-medium tracking-wide text-muted-foreground underline decoration-dotted decoration-muted-foreground/70 underline-offset-4 hover:text-foreground',
+            className
+          )}
+        >
+          {label}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs text-pretty">
+        <p>{hint}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+function ControlHint({
+  content,
+  children,
+}: {
+  content: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex">{children}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs text-pretty">
+        <p>{content}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function FieldsTable({
   fields,
   onFieldsChange,
@@ -97,6 +200,9 @@ export function FieldsTable({
   disabled = false,
   depth,
   maxDepth,
+  className,
+  committedFieldNames,
+  fillHeight = false,
 }: FieldsTableProps) {
   const [openRelationFieldId, setOpenRelationFieldId] = React.useState<
     string | null
@@ -104,6 +210,16 @@ export function FieldsTable({
   const [autoOpenGroup, setAutoOpenGroup] = React.useState<string | null>(null);
   const [editingGroupId, setEditingGroupId] = React.useState<string | null>(
     null
+  );
+  const [fieldToRemove, setFieldToRemove] = React.useState<FormField | null>(
+    null
+  );
+  const [pendingTypeChange, setPendingTypeChange] =
+    React.useState<PendingTypeChange | null>(null);
+
+  const committedNames = React.useMemo(
+    () => new Set(committedFieldNames ?? []),
+    [committedFieldNames]
   );
 
   const handleDragEnd = (result: DropResult) => {
@@ -131,367 +247,534 @@ export function FieldsTable({
     );
   };
 
+  const applyTypeChange = (field: FormField, type: FieldType) => {
+    if (type === 'Group' && field.type !== 'Group') {
+      setAutoOpenGroup(field.id);
+    }
+    if (type === 'Relation' && field.type !== 'Relation') {
+      setOpenRelationFieldId(field.id);
+    }
+    handleUpdateField(field.id, getTypeChangeUpdates(type));
+  };
+
+  const handleTypeChange = (field: FormField, type: FieldType) => {
+    if (typeChangeDiscardsConfig(field, type)) {
+      setPendingTypeChange({ field, nextType: type });
+      return;
+    }
+    applyTypeChange(field, type);
+  };
+
   const handleDeleteField = (fieldId: string) => {
     onFieldsChange(fields.filter(f => f.id !== fieldId));
   };
 
+  const fieldLabel = fieldToRemove?.name.trim() || 'this field';
+  const removingCommittedField = Boolean(
+    fieldToRemove &&
+    committedFieldNames &&
+    committedNames.has(fieldToRemove.name)
+  );
+
   return (
-    <div className="border rounded-lg overflow-hidden">
-      {/* Header */}
-      <div className="grid grid-cols-[40px_minmax(180px,1fr)_150px_120px_80px_80px_80px_80px_40px_40px] gap-2 px-3 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground">
-        <div></div>
-        <div>Name</div>
-        <div>Type</div>
-        <div>Default Value</div>
-        <div className="text-center">Required</div>
-        <div className="text-center">Unique</div>
-        <div className="text-center">Array</div>
+    <TooltipProvider delayDuration={250}>
+      <div
+        className={cn(
+          'flex flex-col overflow-hidden rounded-lg border',
+          fillHeight && 'h-full min-h-0',
+          className
+        )}
+      >
         <div
-          className="text-center"
-          title="Sets the field to ObjectId, required, and unique."
+          className={cn('overflow-auto', fillHeight && 'h-0 min-h-0 flex-1')}
         >
-          Primary
+          <div className="min-w-[56rem]">
+            <div
+              className={cn(
+                FIELD_GRID,
+                'sticky top-0 z-10 border-b bg-muted px-3 py-2 text-xs font-medium text-muted-foreground'
+              )}
+            >
+              <div />
+              <div>Name</div>
+              <div>Type</div>
+              <div>Default</div>
+              <div className="border-l border-border/70 text-center">
+                <ColumnHint
+                  label="Req"
+                  hint="Documents must include a value for this field."
+                />
+              </div>
+              <div className="text-center">
+                <ColumnHint
+                  label="Uniq"
+                  hint="Values must be unique. Unique fields are also marked required."
+                />
+              </div>
+              <div className="text-center">
+                <ColumnHint
+                  label="Arr"
+                  hint="Store multiple values of this type."
+                />
+              </div>
+              <div className="text-center">
+                <ColumnHint
+                  label="PK"
+                  hint="Sets the field to ObjectId, required, and unique. Unchecking clears required and unique, but leaves the type unchanged."
+                />
+              </div>
+              <div />
+              <div />
+            </div>
+
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId={`fields-table-${depth ?? 0}`}>
+                {provided => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="divide-y"
+                  >
+                    {fields.map((field, index) => {
+                      const isGroup = field.type === 'Group';
+                      const displayName = field.name.trim() || 'field';
+
+                      return (
+                        <Draggable
+                          key={field.id}
+                          draggableId={field.id}
+                          index={index}
+                          isDragDisabled={disabled}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={cn(
+                                FIELD_GRID,
+                                'items-center bg-background px-3 py-2 transition-colors hover:bg-muted/30',
+                                snapshot.isDragging && 'bg-muted shadow-2',
+                                disabled && 'opacity-75'
+                              )}
+                            >
+                              <ControlHint content="Drag to reorder">
+                                <div
+                                  {...provided.dragHandleProps}
+                                  aria-label={`Reorder ${displayName}`}
+                                  className={cn(
+                                    'flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground',
+                                    disabled
+                                      ? 'cursor-not-allowed opacity-50'
+                                      : 'cursor-grab'
+                                  )}
+                                >
+                                  <GripVertical className="h-4 w-4" />
+                                </div>
+                              </ControlHint>
+
+                              <div className="flex min-w-0 items-center gap-2">
+                                <Input
+                                  value={field.name}
+                                  onChange={e =>
+                                    handleUpdateField(field.id, {
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  placeholder="field_name"
+                                  aria-label={`Field name for ${displayName}`}
+                                  className="h-8 font-mono text-sm slashed-zero"
+                                  disabled={disabled}
+                                />
+                                {field.type === 'Relation' &&
+                                  field.relatedModel && (
+                                    <Badge
+                                      variant="outline"
+                                      className="shrink-0 font-mono text-xs font-normal"
+                                    >
+                                      → {field.relatedModel}
+                                    </Badge>
+                                  )}
+                              </div>
+
+                              <div className="min-w-0">
+                                <TypePicker
+                                  value={field.type}
+                                  onChange={type =>
+                                    handleTypeChange(field, type)
+                                  }
+                                  disabled={disabled}
+                                  disableGroup={
+                                    depth !== undefined &&
+                                    maxDepth !== undefined &&
+                                    depth >= maxDepth
+                                  }
+                                />
+                              </div>
+
+                              <div className="min-w-0">
+                                {field.type === 'Relation' ? (
+                                  <RelationPicker
+                                    value={field.relatedModel}
+                                    onChange={model =>
+                                      handleUpdateField(field.id, {
+                                        relatedModel: model,
+                                      })
+                                    }
+                                    availableModels={availableModels}
+                                    disabled={disabled}
+                                    open={openRelationFieldId === field.id}
+                                    onOpenChange={open => {
+                                      if (open) {
+                                        setOpenRelationFieldId(field.id);
+                                        return;
+                                      }
+                                      if (openRelationFieldId === field.id) {
+                                        setOpenRelationFieldId(null);
+                                      }
+                                    }}
+                                  />
+                                ) : field.type === 'Group' ? (
+                                  <>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-8 w-full justify-between px-2 text-xs font-normal"
+                                      onClick={() =>
+                                        setEditingGroupId(field.id)
+                                      }
+                                      disabled={disabled}
+                                    >
+                                      <div className="flex min-w-0 items-center gap-1.5 truncate">
+                                        <Boxes className="h-3.5 w-3.5 shrink-0 text-primary-muted-foreground" />
+                                        <span className="truncate">
+                                          Edit fields
+                                        </span>
+                                      </div>
+                                      <Badge
+                                        variant="secondary"
+                                        className="h-5 px-1.5 font-medium tabular-nums text-[10px]"
+                                      >
+                                        {field.fields?.length || 0}
+                                      </Badge>
+                                    </Button>
+                                    <NestedFieldsEditor
+                                      open={
+                                        autoOpenGroup === field.id ||
+                                        editingGroupId === field.id
+                                      }
+                                      onOpenChange={open => {
+                                        if (!open) {
+                                          if (autoOpenGroup === field.id) {
+                                            setAutoOpenGroup(null);
+                                          }
+                                          if (editingGroupId === field.id) {
+                                            setEditingGroupId(null);
+                                          }
+                                        }
+                                      }}
+                                      fieldName={field.name}
+                                      fields={field.fields || []}
+                                      onSave={nestedFields =>
+                                        handleUpdateField(field.id, {
+                                          fields: nestedFields,
+                                        })
+                                      }
+                                      availableModels={availableModels}
+                                      depth={(depth || 0) + 1}
+                                      maxDepth={maxDepth}
+                                    />
+                                  </>
+                                ) : (
+                                  <Input
+                                    value={field.default ?? ''}
+                                    onChange={e =>
+                                      handleUpdateField(field.id, {
+                                        default: e.target.value,
+                                      })
+                                    }
+                                    placeholder={
+                                      field.type === 'Date' ? 'now()' : '—'
+                                    }
+                                    aria-label={`Default value for ${displayName}`}
+                                    className="h-8 font-mono text-sm slashed-zero"
+                                    disabled={disabled}
+                                  />
+                                )}
+                              </div>
+
+                              <div className="flex justify-center border-l border-border/70">
+                                <ControlHint
+                                  content={
+                                    isGroup
+                                      ? 'Group fields use nested field rules, so Required is disabled.'
+                                      : 'Documents must include a value for this field.'
+                                  }
+                                >
+                                  <Checkbox
+                                    aria-label={
+                                      isGroup
+                                        ? `Required is disabled for ${displayName} because group fields use nested field rules`
+                                        : `Mark ${displayName} as required`
+                                    }
+                                    checked={field.required ?? false}
+                                    onCheckedChange={checked =>
+                                      handleUpdateField(field.id, {
+                                        required: Boolean(checked),
+                                        ...(checked ? {} : { unique: false }),
+                                      })
+                                    }
+                                    disabled={disabled || isGroup}
+                                  />
+                                </ControlHint>
+                              </div>
+
+                              <div className="flex justify-center">
+                                <ControlHint
+                                  content={
+                                    isGroup
+                                      ? 'Group fields cannot be unique. Add unique constraints to nested fields instead.'
+                                      : 'Values must be unique. Enabling Unique also marks the field required.'
+                                  }
+                                >
+                                  <Checkbox
+                                    aria-label={
+                                      isGroup
+                                        ? `Unique is disabled for ${displayName} because group fields cannot be unique`
+                                        : `Mark ${displayName} as unique`
+                                    }
+                                    checked={field.unique ?? false}
+                                    onCheckedChange={checked =>
+                                      handleUpdateField(field.id, {
+                                        unique: Boolean(checked),
+                                        ...(checked ? { required: true } : {}),
+                                      })
+                                    }
+                                    disabled={disabled || isGroup}
+                                  />
+                                </ControlHint>
+                              </div>
+
+                              <div className="flex justify-center">
+                                <ControlHint
+                                  content={
+                                    isGroup
+                                      ? 'Nested groups cannot be arrays in this editor.'
+                                      : 'Store multiple values of this type.'
+                                  }
+                                >
+                                  <Checkbox
+                                    aria-label={
+                                      isGroup
+                                        ? `Array is disabled for ${displayName} because nested groups cannot be arrays`
+                                        : `Make ${displayName} an array`
+                                    }
+                                    checked={field.isArray ?? false}
+                                    onCheckedChange={checked =>
+                                      handleUpdateField(field.id, {
+                                        isArray: Boolean(checked),
+                                      })
+                                    }
+                                    disabled={disabled || isGroup}
+                                  />
+                                </ControlHint>
+                              </div>
+
+                              <div className="flex justify-center">
+                                <ControlHint content="Sets type to ObjectId, required, and unique. Unchecking clears required and unique, but leaves the type unchanged.">
+                                  <Checkbox
+                                    aria-label={`Use ${displayName} as primary identifier`}
+                                    checked={
+                                      field.type === 'ObjectId' &&
+                                      Boolean(field.unique) &&
+                                      Boolean(field.required)
+                                    }
+                                    onCheckedChange={checked => {
+                                      if (checked) {
+                                        handleUpdateField(field.id, {
+                                          type: 'ObjectId',
+                                          unique: true,
+                                          required: true,
+                                        });
+                                      } else {
+                                        handleUpdateField(field.id, {
+                                          unique: false,
+                                          required: false,
+                                        });
+                                      }
+                                    }}
+                                    disabled={disabled}
+                                  />
+                                </ControlHint>
+                              </div>
+
+                              <div className="flex justify-center">
+                                <ExtraOptionsPopover
+                                  field={field}
+                                  onUpdate={updates =>
+                                    handleUpdateField(field.id, updates)
+                                  }
+                                  disabled={disabled || isGroup}
+                                />
+                              </div>
+
+                              <div className="flex justify-center">
+                                <ControlHint content={`Remove ${displayName}`}>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    onClick={() => setFieldToRemove(field)}
+                                    disabled={disabled}
+                                    aria-label={`Remove ${displayName}`}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </ControlHint>
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                    {fields.length === 0 && (
+                      <EmptyState
+                        icon={Table2}
+                        title="No fields yet"
+                        description="Add a field to define this schema. Names must start with a letter or underscore."
+                        className="py-12"
+                      />
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+
+            {!disabled && (
+              <div className="sticky bottom-0 z-20 border-t bg-muted px-3 py-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddField}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add field
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-        <div></div>
-        <div></div>
       </div>
 
-      {/* Fields */}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="fields-table">
-          {provided => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="divide-y"
-            >
-              {fields.map((field, index) => (
-                <Draggable
-                  key={field.id}
-                  draggableId={field.id}
-                  index={index}
-                  isDragDisabled={disabled}
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      className={cn(
-                        'grid grid-cols-[40px_minmax(180px,1fr)_150px_120px_80px_80px_80px_80px_40px_40px] gap-2 px-3 py-2 items-center bg-background transition-colors hover:bg-muted/30',
-                        snapshot.isDragging && 'bg-muted shadow-lg',
-                        disabled && 'opacity-75'
-                      )}
-                    >
-                      {/* Drag handle */}
-                      <div
-                        {...provided.dragHandleProps}
-                        className={cn(
-                          'flex items-center justify-center cursor-grab text-muted-foreground hover:text-foreground',
-                          disabled && 'cursor-not-allowed opacity-50'
-                        )}
-                      >
-                        <GripVertical className="w-4 h-4" />
-                      </div>
-
-                      {/* Name */}
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={field.name}
-                          onChange={e =>
-                            handleUpdateField(field.id, {
-                              name: e.target.value,
-                            })
-                          }
-                          placeholder="field_name"
-                          className="h-8 font-mono text-sm"
-                          disabled={disabled}
-                        />
-                        {field.type === 'Relation' && field.relatedModel && (
-                          <Badge
-                            variant="outline"
-                            className="shrink-0 text-xs font-normal"
-                          >
-                            → {field.relatedModel}
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Type */}
-                      <div>
-                        <TypePicker
-                          value={field.type}
-                          onChange={type => {
-                            const isChangingToGroup =
-                              type === 'Group' && field.type !== 'Group';
-                            const isChangingToRelation =
-                              type === 'Relation' && field.type !== 'Relation';
-
-                            if (isChangingToGroup) setAutoOpenGroup(field.id);
-                            if (isChangingToRelation) {
-                              setOpenRelationFieldId(field.id);
-                            }
-
-                            handleUpdateField(field.id, {
-                              type,
-                              ...(type !== 'Relation'
-                                ? { relatedModel: undefined }
-                                : {}),
-                              ...(type !== 'Group'
-                                ? { fields: undefined }
-                                : { isArray: false }),
-                            });
-                          }}
-                          disabled={disabled}
-                          disableGroup={
-                            depth !== undefined &&
-                            maxDepth !== undefined &&
-                            depth >= maxDepth
-                          }
-                        />
-                      </div>
-
-                      {/* Default Value / Inline Configuration */}
-                      <div>
-                        {field.type === 'Relation' ? (
-                          <RelationPicker
-                            value={field.relatedModel}
-                            onChange={model =>
-                              handleUpdateField(field.id, {
-                                relatedModel: model,
-                              })
-                            }
-                            availableModels={availableModels}
-                            disabled={disabled}
-                            open={openRelationFieldId === field.id}
-                            onOpenChange={open => {
-                              if (open) {
-                                setOpenRelationFieldId(field.id);
-                                return;
-                              }
-                              if (openRelationFieldId === field.id) {
-                                setOpenRelationFieldId(null);
-                              }
-                            }}
-                          />
-                        ) : field.type === 'Group' ? (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full h-8 px-2 text-xs font-normal justify-between"
-                              onClick={() => setEditingGroupId(field.id)}
-                              disabled={disabled}
-                            >
-                              <div className="flex items-center gap-1.5 truncate">
-                                <Boxes className="w-3.5 h-3.5 shrink-0 text-primary-muted-foreground" />
-                                <span className="truncate">Edit Fields</span>
-                              </div>
-                              <Badge
-                                variant="secondary"
-                                className="h-5 px-1.5 text-[10px] tabular-nums font-medium"
-                              >
-                                {field.fields?.length || 0}
-                              </Badge>
-                            </Button>
-                            <NestedFieldsEditor
-                              open={
-                                autoOpenGroup === field.id ||
-                                editingGroupId === field.id
-                              }
-                              onOpenChange={open => {
-                                if (!open) {
-                                  if (autoOpenGroup === field.id) {
-                                    setAutoOpenGroup(null);
-                                  }
-                                  if (editingGroupId === field.id) {
-                                    setEditingGroupId(null);
-                                  }
-                                }
-                              }}
-                              fieldName={field.name}
-                              fields={field.fields || []}
-                              onSave={nestedFields =>
-                                handleUpdateField(field.id, {
-                                  fields: nestedFields,
-                                })
-                              }
-                              availableModels={availableModels}
-                              depth={(depth || 0) + 1}
-                              maxDepth={maxDepth}
-                            />
-                          </>
-                        ) : (
-                          <Input
-                            value={field.default ?? ''}
-                            onChange={e =>
-                              handleUpdateField(field.id, {
-                                default: e.target.value,
-                              })
-                            }
-                            placeholder={field.type === 'Date' ? 'now()' : ''}
-                            className="h-8 text-sm"
-                            disabled={disabled}
-                          />
-                        )}
-                      </div>
-
-                      {/* Required */}
-                      <div
-                        className="flex justify-center"
-                        title={
-                          field.type === 'Group'
-                            ? 'Group fields use their nested field rules, so Required is disabled.'
-                            : undefined
-                        }
-                      >
-                        <Checkbox
-                          aria-label={
-                            field.type === 'Group'
-                              ? `Required is disabled for ${field.name || 'group'} because group fields use nested field rules`
-                              : `Mark ${field.name || 'field'} as required`
-                          }
-                          checked={field.required ?? false}
-                          onCheckedChange={checked =>
-                            handleUpdateField(field.id, {
-                              required: Boolean(checked),
-                              ...(checked ? {} : { unique: false }),
-                            })
-                          }
-                          disabled={disabled || field.type === 'Group'}
-                        />
-                      </div>
-
-                      {/* Unique */}
-                      <div
-                        className="flex justify-center"
-                        title={
-                          field.type === 'Group'
-                            ? 'Group fields cannot be marked unique. Add unique constraints to nested fields instead.'
-                            : undefined
-                        }
-                      >
-                        <Checkbox
-                          aria-label={
-                            field.type === 'Group'
-                              ? `Unique is disabled for ${field.name || 'group'} because group fields cannot be unique`
-                              : `Mark ${field.name || 'field'} as unique`
-                          }
-                          checked={field.unique ?? false}
-                          onCheckedChange={checked =>
-                            handleUpdateField(field.id, {
-                              unique: Boolean(checked),
-                              ...(checked ? { required: true } : {}),
-                            })
-                          }
-                          disabled={disabled || field.type === 'Group'}
-                        />
-                      </div>
-
-                      {/* Array */}
-                      <div
-                        className="flex justify-center"
-                        title={
-                          field.type === 'Group'
-                            ? 'Nested groups cannot be arrays in this editor.'
-                            : undefined
-                        }
-                      >
-                        <Checkbox
-                          aria-label={
-                            field.type === 'Group'
-                              ? `Array is disabled for ${field.name || 'group'} because nested groups cannot be arrays`
-                              : `Make ${field.name || 'field'} an array`
-                          }
-                          checked={field.isArray ?? false}
-                          onCheckedChange={checked =>
-                            handleUpdateField(field.id, {
-                              isArray: Boolean(checked),
-                            })
-                          }
-                          disabled={disabled || field.type === 'Group'}
-                        />
-                      </div>
-
-                      {/* Primary (for ObjectId) */}
-                      <div className="flex justify-center">
-                        <Checkbox
-                          aria-label={`Use ${field.name || 'field'} as primary identifier`}
-                          title="Sets type to ObjectId, required, and unique."
-                          checked={
-                            field.type === 'ObjectId' &&
-                            field.unique &&
-                            field.required
-                          }
-                          onCheckedChange={checked => {
-                            if (checked) {
-                              handleUpdateField(field.id, {
-                                type: 'ObjectId',
-                                unique: true,
-                                required: true,
-                              });
-                            } else {
-                              handleUpdateField(field.id, {
-                                unique: false,
-                                required: false,
-                              });
-                            }
-                          }}
-                          disabled={disabled}
-                        />
-                      </div>
-
-                      {/* Extra Options */}
-                      <div className="flex justify-center">
-                        <ExtraOptionsPopover
-                          field={field}
-                          onUpdate={updates =>
-                            handleUpdateField(field.id, updates)
-                          }
-                          disabled={disabled || field.type === 'Group'}
-                        />
-                      </div>
-
-                      {/* Delete */}
-                      <div className="flex justify-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                          onClick={() => handleDeleteField(field.id)}
-                          disabled={disabled}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {fields.length === 0 && (
-                <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                  Add your first field to define this schema.
-                </div>
+      <AlertDialog
+        open={fieldToRemove !== null}
+        onOpenChange={open => {
+          if (!open) setFieldToRemove(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {fieldLabel}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {removingCommittedField ? (
+                <>
+                  This stages{' '}
+                  <strong className="font-mono">{fieldLabel}</strong> for
+                  removal. Save the schema to persist the change. Existing
+                  documents may still store this value until you save.
+                </>
+              ) : committedFieldNames ? (
+                <>
+                  <strong className="font-mono">{fieldLabel}</strong> has not
+                  been saved yet and will be discarded from the editor.
+                </>
+              ) : (
+                <>
+                  This stages{' '}
+                  <strong className="font-mono">{fieldLabel}</strong> for
+                  removal. Save to persist the change.
+                </>
               )}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (fieldToRemove) {
+                  handleDeleteField(fieldToRemove.id);
+                }
+                setFieldToRemove(null);
+              }}
+            >
+              Remove field
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      {/* Add Column Button */}
-      {!disabled && (
-        <div className="px-3 py-3 border-t bg-muted/30">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleAddField}
-            className="gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add column
-          </Button>
-        </div>
-      )}
-    </div>
+      <AlertDialog
+        open={pendingTypeChange !== null}
+        onOpenChange={open => {
+          if (!open) setPendingTypeChange(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Change {pendingTypeChange?.field.name.trim() || 'this field'}{' '}
+              type?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingTypeChange?.field.type === 'Relation' ? (
+                <>
+                  Changing from Relation to {pendingTypeChange.nextType}{' '}
+                  discards the related model
+                  {pendingTypeChange.field.relatedModel ? (
+                    <>
+                      {' '}
+                      (
+                      <strong className="font-mono">
+                        {pendingTypeChange.field.relatedModel}
+                      </strong>
+                      )
+                    </>
+                  ) : null}
+                  .
+                </>
+              ) : (
+                <>
+                  Changing from Group to {pendingTypeChange?.nextType} discards{' '}
+                  {pendingTypeChange?.field.fields?.length ?? 0} nested{' '}
+                  {(pendingTypeChange?.field.fields?.length ?? 0) === 1
+                    ? 'field'
+                    : 'fields'}
+                  .
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (pendingTypeChange) {
+                  applyTypeChange(
+                    pendingTypeChange.field,
+                    pendingTypeChange.nextType
+                  );
+                }
+                setPendingTypeChange(null);
+              }}
+            >
+              Change type
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </TooltipProvider>
   );
 }

@@ -25,14 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Database,
-  Table2,
-  Settings,
-  Plus,
-  ArrowLeft,
-  Puzzle,
-} from 'lucide-react';
+import { Database, Table2, Settings, ArrowLeft, Puzzle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExportImportDialog from '@/components/ui/export-import-dialog';
 import { toast } from '@/lib/hooks/use-toast';
@@ -314,6 +307,10 @@ export function ModelsPage({
     selectedSchema?.modelOptions?.conduit?.authorization?.enabled === true &&
     authResource !== null &&
     authResource !== undefined;
+  const selectedFieldCount = selectedSchema
+    ? Object.keys(selectedSchema.compiledFields || selectedSchema.fields || {})
+        .length
+    : 0;
 
   // Models list view - no model selected
   if (!selectedModelId) {
@@ -373,21 +370,21 @@ export function ModelsPage({
             onCreateNew={handleCreateNew}
           />
           {selectedSchema && (
-            <>
-              <span className="text-sm text-muted-foreground">
-                {
-                  Object.keys(
-                    selectedSchema.compiledFields || selectedSchema.fields || {}
-                  ).length
-                }{' '}
-                fields
+            <div className="flex items-center gap-3 text-sm text-muted-foreground tabular-nums">
+              <span>
+                {selectedFieldCount}{' '}
+                {selectedFieldCount === 1 ? 'field' : 'fields'}
               </span>
               {documents && (
-                <span className="text-sm text-muted-foreground">
-                  {documents.count.toLocaleString()} documents
-                </span>
+                <>
+                  <span aria-hidden className="h-3 w-px bg-border" />
+                  <span>
+                    {documents.count.toLocaleString()}{' '}
+                    {documents.count === 1 ? 'document' : 'documents'}
+                  </span>
+                </>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
