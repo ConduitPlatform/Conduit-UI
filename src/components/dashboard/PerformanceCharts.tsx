@@ -197,7 +197,7 @@ export function PerformanceCharts({
               className={cn(
                 'px-2.5 py-1 text-xs rounded-md transition-colors duration-100',
                 tab === t.key
-                  ? 'bg-cyan-dim text-cyan-text font-medium'
+                  ? 'bg-primary-muted text-primary-muted-foreground font-medium'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
@@ -229,21 +229,21 @@ export function PerformanceCharts({
           <ChartPanel
             data={requestsData}
             type="area"
-            color="hsl(var(--chart-1))"
+            color="var(--color-chart-1)"
           />
         )}
         {tab === 'response' && (
           <ChartPanel
             data={responseData}
             type="area"
-            color="hsl(var(--chart-2))"
+            color="var(--color-chart-2)"
           />
         )}
         {tab === 'errors' && (
           <ChartPanel
             data={errorsData}
             type="bar"
-            color="hsl(var(--chart-3))"
+            color="var(--color-chart-3)"
           />
         )}
         {tab === 'resources' && <ResourceChart data={resourcesData} />}
@@ -271,18 +271,18 @@ function ChartPanel({
 
   const gridProps = {
     strokeDasharray: '3 3',
-    stroke: 'hsl(var(--chart-grid))',
+    stroke: 'var(--color-chart-grid)',
     strokeWidth: 1,
   };
   const xProps = {
     dataKey: 'time' as const,
-    tick: { fontSize: 10, fill: 'hsl(215 14% 40%)' },
+    tick: { fontSize: 10, fill: 'var(--color-chart-axis)' },
     interval: 'preserveStartEnd' as const,
     tickLine: false,
     axisLine: false,
   };
   const yProps = {
-    tick: { fontSize: 10, fill: 'hsl(215 14% 40%)' },
+    tick: { fontSize: 10, fill: 'var(--color-chart-axis)' },
     tickLine: false,
     axisLine: false,
     width: 40,
@@ -313,7 +313,7 @@ function ChartPanel({
             activeDot={{
               r: 3.5,
               fill: color,
-              stroke: 'hsl(var(--surface-1))',
+              stroke: 'var(--color-surface-1)',
               strokeWidth: 2,
             }}
           />
@@ -335,7 +335,7 @@ function ChartPanel({
             activeDot={{
               r: 3.5,
               fill: color,
-              stroke: 'hsl(var(--surface-1))',
+              stroke: 'var(--color-surface-1)',
               strokeWidth: 2,
             }}
           />
@@ -377,18 +377,18 @@ function ResourceChart({
         <LineChart data={data}>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="hsl(var(--chart-grid))"
+            stroke="var(--color-chart-grid)"
             strokeWidth={1}
           />
           <XAxis
             dataKey="time"
-            tick={{ fontSize: 10, fill: 'hsl(215 14% 40%)' }}
+            tick={{ fontSize: 10, fill: 'var(--color-chart-axis)' }}
             interval="preserveStartEnd"
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: 'hsl(215 14% 40%)' }}
+            tick={{ fontSize: 10, fill: 'var(--color-chart-axis)' }}
             tickLine={false}
             axisLine={false}
             width={40}
