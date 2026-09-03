@@ -1,0 +1,54 @@
+# Conduit backend (standalone) for local development of the Conduit Admin UI.
+#
+# Runs a self-contained Conduit instance (all modules in one image) backed by
+# Redis and MongoDB. The admin panel (run from source via `yarn dev`) connects
+# to the admin HTTP API exposed on http://localhost:3030 using MASTER_KEY.
+#
+# Derived from ConduitPlatform/Conduit docker/docker-compose.standalone.yml,
+# trimmed to the backend services (the UI is run from this repo's source).
+#
+# NOTE: host networking is used because Docker bridge networking is not
+# reliable inside the nested Cloud Agent VM (nftables/iptables are restricted).
+# With host networking every service shares the host network namespace, so
+# services reach each other over localhost and published ports map 1:1.
+services:
+  mongodb:
+    container_name: 'conduit-mongo'
+    image: 'docker.io/library/mongo:4.4.15'
+    restart: unless-stopped
+    network_mode: 'host'
+    environment:
+      MONGO_INITDB_DATABASE: 'conduit'
+      MONGO_INITDB_ROOT_USERNAME: 'conduit'
+      MONGO_INITDB_ROOT_PASSWORD: 'pass'
+    volumes:
+      - mongo:/data/db
+
+  redis:
+    container_name: 'conduit-redis'
+    image: 'docker.io/library/redis:7.0.2'
+    restart: unless-stopped
+    network_mode: 'host'
+
+  conduit:
+    container_name: 'conduit'
+    image: 'docker.io/conduitplatform/conduit-standalone:${CONDUIT_IMAGE_TAG:-0.17.0-alpha.6}'
+    restart: unless-stopped
+    network_mode: 'host'
+    depends_on:
+      - redis
+      - mongodb
+    environment:
+      REDIS_HOST: '127.0.0.1'
+      REDIS_PORT: '6379'
+      MASTER_KEY: '${CORE_MASTER_KEY:-M4ST3RK3Y}'
+      ADMIN_HTTP_PORT: '3030'
+      ADMIN_SOCKET_PORT: '3031'
+      CLIENT_HTTP_PORT: '3000'
+      CLIENT_SOCKET_PORT: '3001'
+      __DEFAULT_HOST_URL: '${ADMIN_DEFAULT_HOST_URL:-http://localhost:3030}'
+      DB_CONN_URI: 'mongodb://conduit:pass@127.0.0.1:27017/conduit?authSource=admin'
+
+volumes:
+  mongo:
+    external: false
