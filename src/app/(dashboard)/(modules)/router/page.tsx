@@ -1,5 +1,12 @@
 import React from 'react';
-import { BarChart3, Network, Route, Settings, Shield } from 'lucide-react';
+import {
+  BarChart3,
+  Network,
+  Radio,
+  Route,
+  Settings,
+  Shield,
+} from 'lucide-react';
 import { ModuleDashboard } from '@/components/dashboard/ModuleDashboard';
 import {
   getModuleStatus,
@@ -65,6 +72,12 @@ export default async function RouterDashboard() {
       description: 'Visualize registered routes',
       icon: <Network className="h-4 w-4" />,
       href: '/router/vizualize',
+    },
+    {
+      title: 'Event Relays',
+      description: 'Forward bus events to socket subscribers',
+      icon: <Radio className="h-4 w-4" />,
+      href: '/router/event-relays',
     },
     {
       title: 'Settings',

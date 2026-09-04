@@ -9,6 +9,7 @@
     "start": "next start -p 8080",
     "lint": "eslint .",
     "test:semantic-colors": "node --experimental-strip-types --test src/lib/semantic-colors.test.ts src/lib/reactflow-edge-colors.test.ts",
+    "test:event-relays": "node --experimental-strip-types --test src/lib/event-relays/preview.test.ts",
     "build:docker": "docker build --platform linux/amd64 -t ghcr.io/conduitplatform/conduit-ui:latest .",
     "prepare": "husky",
     "release": "standard-version"
