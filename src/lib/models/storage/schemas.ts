@@ -14,7 +14,9 @@ export type ConduitFile = {
   container: string;
   size: number;
   isPublic?: boolean;
-  url: string;
+  url?: string;
+  uri?: string;
+  sourceUrl?: string;
   mimeType: string;
   createdAt: string | Date;
   updatedAt: string | Date;

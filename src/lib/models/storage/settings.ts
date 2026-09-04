@@ -20,6 +20,7 @@ type AuthorizationProps = {
 
 type GoogleSettings = {
   serviceAccountKeyPath: string;
+  serviceAccountKeyJson: string;
 };
 
 type AzureSettings = {

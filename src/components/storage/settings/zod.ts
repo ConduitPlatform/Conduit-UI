@@ -19,7 +19,8 @@ export const BaseSchema = z.object({
 });
 
 const GoogleSchema = z.object({
-  serviceAccountKeyPath: z.string().min(5),
+  serviceAccountKeyPath: z.string().optional().or(z.literal('')),
+  serviceAccountKeyJson: z.string().optional().or(z.literal('')),
 });
 
 const AzureSchema = z.object({
