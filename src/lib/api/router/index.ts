@@ -1,6 +1,11 @@
 'use server';
 import { getApiClient } from '@/lib/api';
 import { RouterSettings } from '@/lib/models/Router';
+import type {
+  EventRelay,
+  EventRelaysResponse,
+  EventRelayWriteRequest,
+} from '@/lib/models/Router';
 import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
 import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 
@@ -93,4 +98,43 @@ export const patchAppRouteMiddlewares = async (
     { params: { path, action } }
   );
   return res.data;
+};
+
+export const getEventRelays = async (params?: {
+  skip?: number;
+  limit?: number;
+  search?: string;
+}) => {
+  const res = await (
+    await getApiClient()
+  ).get<EventRelaysResponse>('/router/event-relays', { params });
+  return res.data;
+};
+
+export const getEventRelay = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<EventRelay>(`/router/event-relays/${id}`);
+  return res.data;
+};
+
+export const createEventRelay = async (data: EventRelayWriteRequest) => {
+  const res = await (
+    await getApiClient()
+  ).post<EventRelay>('/router/event-relays', data);
+  return res.data;
+};
+
+export const patchEventRelay = async (
+  id: string,
+  data: Partial<EventRelayWriteRequest>
+) => {
+  const res = await (
+    await getApiClient()
+  ).patch<EventRelay>(`/router/event-relays/${id}`, data);
+  return res.data;
+};
+
+export const deleteEventRelay = async (id: string) => {
+  await (await getApiClient()).delete(`/router/event-relays/${id}`);
 };
