@@ -67,6 +67,12 @@ export function FileDetailsSheet({
     toast({ title: 'Storage', description: 'URL copied to clipboard' });
   };
 
+  const copyUri = async () => {
+    if (!file?.uri) return;
+    await navigator.clipboard.writeText(file.uri);
+    toast({ title: 'Storage', description: 'URI copied to clipboard' });
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-lg overflow-y-auto">
@@ -140,6 +146,27 @@ export function FileDetailsSheet({
                 {file.container}/{file.folder.replace(/^\/|\/$/g, '') || '/'}
               </p>
             </div>
+
+            {file.uri && (
+              <div>
+                <span className="text-sm text-muted-foreground">
+                  Conduit URI
+                </span>
+                <div className="flex items-start gap-2 mt-0.5">
+                  <p className="text-sm font-mono break-all flex-1">
+                    {file.uri}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 h-7 w-7"
+                    onClick={copyUri}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {url && (
               <div>
