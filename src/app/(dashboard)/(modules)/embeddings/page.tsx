@@ -19,14 +19,12 @@ import {
   getEmbeddingsSettings,
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
-import { getSchemas, getSchemaVectorIndexes } from '@/lib/api/database';
+import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
   deriveEmbeddingsReadiness,
-  EmbeddingConfig,
   EmbeddingsQueueCounts,
   EmbeddingsStatus,
   formatEmbeddingsApiError,
-  SchemaIndexLookup,
 } from '@/lib/models/embeddings';
 import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 import {
@@ -70,38 +68,6 @@ function addQueues(
     delayed: left.delayed + right.delayed,
     paused: left.paused + right.paused,
   };
-}
-
-async function resolveIndexesBySchema(
-  configs: EmbeddingConfig[]
-): Promise<Record<string, SchemaIndexLookup>> {
-  const schemaNames = [...new Set(configs.map(config => config.schemaName))];
-  if (schemaNames.length === 0) return {};
-
-  let schemas: { name: string; _id: string }[] | undefined;
-  try {
-    const response = await getSchemas({ limit: 1000 });
-    schemas = response.schemas;
-  } catch {
-    return Object.fromEntries(schemaNames.map(name => [name, 'unknown']));
-  }
-
-  const idByName = new Map(schemas.map(schema => [schema.name, schema._id]));
-  const lookups = await Promise.allSettled(
-    schemaNames.map(async (name): Promise<[string, SchemaIndexLookup]> => {
-      const schemaId = idByName.get(name);
-      if (!schemaId) return [name, []];
-      const { indexes } = await getSchemaVectorIndexes(schemaId);
-      return [name, indexes];
-    })
-  );
-
-  const map: Record<string, SchemaIndexLookup> = {};
-  for (const [index, name] of schemaNames.entries()) {
-    const result = lookups[index];
-    map[name] = result.status === 'fulfilled' ? result.value[1] : 'unknown';
-  }
-  return map;
 }
 
 function metricValue(
@@ -151,7 +117,7 @@ export default async function EmbeddingsDashboard() {
   const promAvailability = settledValue(promAvailabilityResult);
 
   const indexesBySchema = configs
-    ? await resolveIndexesBySchema(configs)
+    ? await resolveIndexesBySchema(configs.map(config => config.schemaName))
     : undefined;
 
   const workersEnabled = status?.enabled ?? settings?.enabled;
