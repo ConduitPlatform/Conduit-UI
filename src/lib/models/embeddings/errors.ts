@@ -30,6 +30,11 @@ function readBackendMessage(data: unknown): string | undefined {
   return undefined;
 }
 
+export function isEmbeddingsNotFound(err: unknown): boolean {
+  if (!isAxiosLikeError(err)) return false;
+  return err.response?.status === 404;
+}
+
 export function formatEmbeddingsApiError(err: unknown): string {
   if (isAxiosLikeError(err)) {
     return (

@@ -1,0 +1,157 @@
+export const AUTH_SECRET_SCHEMA_NAMES = new Set([
+  'AccessToken',
+  'RefreshToken',
+  'Token',
+  'TwoFactorSecret',
+  'TwoFactorBackUpCodes',
+  'BiometricToken',
+  'AdminTwoFactorSecret',
+  'AdminApiToken',
+]);
+
+export const SYSTEM_SCHEMA_NAMES = new Set([
+  'Views',
+  'Config',
+  'MigratedSchemas',
+  'PendingSchemas',
+  'CustomEndpoints',
+]);
+
+export const EMBEDDINGS_OWNER_MODULE = 'embeddings';
+
+export const EMBEDDING_OWNED_SCHEMA_NAMES = new Set([
+  'EmbeddingConfig',
+  'BackfillRun',
+]);
+
+const SENSITIVE_FIELD_NAME =
+  /(password|secret|token|credential|apikey|api_key|private[_-]?key|authorization|refresh[_-]?token|access[_-]?token)/i;
+
+const SOURCE_FIELD_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const SCHEMA_OR_TARGET_NAME = /^[A-Za-z_][A-Za-z0-9_]{0,127}$/;
+
+export type EmbeddingSchemaChoice = {
+  name: string;
+  ownerModule: string;
+  fields: Record<string, unknown>;
+};
+
+export type SourceFieldChoice = {
+  name: string;
+  eligible: boolean;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function isSensitiveFieldName(field: string): boolean {
+  return SENSITIVE_FIELD_NAME.test(field);
+}
+
+export function isStringLikeField(field: unknown): boolean {
+  if (field === 'String') return true;
+  if (Array.isArray(field) && field.length === 1) {
+    return isStringLikeField(field[0]);
+  }
+  if (!isRecord(field)) return false;
+  if (field.type === 'String') return true;
+  return Array.isArray(field.type) && isStringLikeField(field.type);
+}
+
+export function isHiddenField(field: unknown): boolean {
+  return isRecord(field) && field.select === false;
+}
+
+export function isValidSourceFieldName(field: string): boolean {
+  return SOURCE_FIELD_NAME.test(field);
+}
+
+export function isValidSchemaOrTargetName(value: string): boolean {
+  return SCHEMA_OR_TARGET_NAME.test(value);
+}
+
+export function isDeniedEmbeddingSchema(schema: {
+  name: string;
+  ownerModule?: string;
+}): boolean {
+  if (!schema.name) return true;
+  if (schema.ownerModule === EMBEDDINGS_OWNER_MODULE) return true;
+  if (EMBEDDING_OWNED_SCHEMA_NAMES.has(schema.name)) return true;
+  if (schema.name.startsWith('_')) return true;
+  if (SYSTEM_SCHEMA_NAMES.has(schema.name)) return true;
+  return AUTH_SECRET_SCHEMA_NAMES.has(schema.name);
+}
+
+export function toSchemaFieldMap(schema: {
+  fields?: unknown;
+  compiledFields?: unknown;
+}): Record<string, unknown> {
+  if (
+    isRecord(schema.compiledFields) &&
+    Object.keys(schema.compiledFields).length > 0
+  ) {
+    return schema.compiledFields;
+  }
+  if (isRecord(schema.fields)) return schema.fields;
+  return {};
+}
+
+export function isEligibleSourceField(
+  name: string,
+  definition: unknown
+): boolean {
+  if (!isValidSourceFieldName(name)) return false;
+  if (!isStringLikeField(definition)) return false;
+  if (isHiddenField(definition)) return false;
+  return !isSensitiveFieldName(name);
+}
+
+export function listEligibleSourceFields(
+  fields: Record<string, unknown>
+): string[] {
+  return Object.keys(fields)
+    .filter(name => isEligibleSourceField(name, fields[name]))
+    .sort();
+}
+
+export function listSourceFieldChoices(
+  fields: Record<string, unknown>,
+  current: readonly string[]
+): SourceFieldChoice[] {
+  const names = new Set([
+    ...listEligibleSourceFields(fields),
+    ...current.filter(name => name.length > 0),
+  ]);
+  return [...names].sort().map(name => ({
+    name,
+    eligible: isEligibleSourceField(name, fields[name]),
+  }));
+}
+
+export function toEmbeddingSchemaChoice(schema: {
+  name: string;
+  ownerModule: string;
+  fields?: unknown;
+  compiledFields?: unknown;
+}): EmbeddingSchemaChoice {
+  return {
+    name: schema.name,
+    ownerModule: schema.ownerModule,
+    fields: toSchemaFieldMap(schema),
+  };
+}
+
+export function listEligibleSchemas(
+  schemas: Array<{
+    name: string;
+    ownerModule: string;
+    fields?: unknown;
+    compiledFields?: unknown;
+  }>
+): EmbeddingSchemaChoice[] {
+  return schemas
+    .filter(schema => !isDeniedEmbeddingSchema(schema))
+    .map(toEmbeddingSchemaChoice)
+    .sort((left, right) => left.name.localeCompare(right.name));
+}
