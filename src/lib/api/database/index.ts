@@ -11,6 +11,7 @@ import {
   SchemaOptions,
 } from '@/lib/models/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
+import { unwrapVectorIndexes } from '@/lib/models/embeddings';
 
 export const getPendingSchemas = async (args: {
   skip?: number;
@@ -351,6 +352,13 @@ export const getSchemaIndexes = async (schemaId: string) => {
   return await (await getApiClient())
     .get<{ indexes: unknown[] }>(`/database/schemas/${schemaId}/indexes`)
     .then(res => res.data);
+};
+
+export const getSchemaVectorIndexes = async (schemaId: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<unknown>(`/database/schemas/${schemaId}/vector-indexes`);
+  return unwrapVectorIndexes(res.data);
 };
 
 export const deleteSchemaIndexes = async (
