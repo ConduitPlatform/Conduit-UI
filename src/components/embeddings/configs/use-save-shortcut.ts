@@ -2,13 +2,27 @@
 
 import { useEffect, useState } from 'react';
 
+export function isShortcutOverlayOpen(): boolean {
+  return Boolean(
+    document.querySelector('[role="alertdialog"][data-state="open"]') ||
+    document.querySelector('[role="dialog"][data-state="open"]')
+  );
+}
+
 export function isSaveShortcut(event: KeyboardEvent): boolean {
-  if (event.isComposing || event.repeat) return false;
+  if (event.isComposing || event.repeat || event.defaultPrevented) return false;
   if (!(event.metaKey || event.ctrlKey)) return false;
+  if (event.altKey) return false;
   if (event.key.toLowerCase() !== 's') return false;
-  if (document.querySelector('[role="alertdialog"][data-state="open"]')) {
-    return false;
-  }
+  if (isShortcutOverlayOpen()) return false;
+  return true;
+}
+
+export function isCancelShortcut(event: KeyboardEvent): boolean {
+  if (event.isComposing || event.repeat || event.defaultPrevented) return false;
+  if (event.key !== 'Escape') return false;
+  if (event.metaKey || event.ctrlKey || event.altKey) return false;
+  if (isShortcutOverlayOpen()) return false;
   return true;
 }
 
