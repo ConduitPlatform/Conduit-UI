@@ -1,7 +1,7 @@
-import {
+import type {
   EmbeddingsProviderSettings,
   EmbeddingsSettings,
-} from '@/lib/models/embeddings/settings';
+} from './settings.ts';
 
 export const REDACTED_SECRET = '[REDACTED]';
 
@@ -11,6 +11,11 @@ export function isSecretConfigured(value: string | undefined): boolean {
 
 export function isRedactedSecret(value: string | undefined): boolean {
   return value === REDACTED_SECRET;
+}
+
+export function formApiKeyValue(value: string | undefined): string {
+  if (!value || isRedactedSecret(value)) return '';
+  return value;
 }
 
 export function shouldSubmitApiKey(value: string | undefined): value is string {
