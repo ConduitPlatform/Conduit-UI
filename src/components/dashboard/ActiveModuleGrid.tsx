@@ -5,6 +5,7 @@ import type { ResolvedModuleState } from '@/lib/prometheus/metrics';
 import {
   Users,
   Database,
+  ScanSearch,
   HardDrive,
   MessageSquare,
   CreditCard,
@@ -21,6 +22,7 @@ const MODULE_ICONS: Record<string, typeof Users> = {
   authentication: Users,
   authorization: KeyRound,
   database: Database,
+  embeddings: ScanSearch,
   email: Mail,
   storage: HardDrive,
   functions: FunctionSquare,

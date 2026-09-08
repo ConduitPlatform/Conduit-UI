@@ -40,6 +40,7 @@ export const moduleNameByPath = {
   chat: 'chat',
   payments: 'payments',
   database: 'database',
+  embeddings: 'embeddings',
   router: 'router',
   settings: 'settings',
   communications: 'communications',

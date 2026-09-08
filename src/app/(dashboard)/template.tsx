@@ -36,6 +36,7 @@ const MODULE_NAMES: { [key: string]: string } = {
   authentication: 'Authentication',
   authorization: 'Authorization',
   database: 'Database',
+  embeddings: 'Embeddings',
   storage: 'Storage',
   chat: 'Chat',
   forms: 'Forms',
@@ -52,11 +53,26 @@ const SEGMENT_LABELS: Record<string, string> = {
   templates: 'Templates',
   logs: 'Logs & Devices',
   settings: 'Settings',
-  test: 'Test Send',
 };
 
-function formatBreadcrumbSegment(segment: string): string {
+const MODULE_SEGMENT_LABELS: Record<string, Record<string, string>> = {
+  communications: {
+    test: 'Test Send',
+  },
+  embeddings: {
+    configs: 'Configs',
+    backfills: 'Backfills',
+    test: 'Test Search',
+    new: 'New config',
+  },
+};
+
+function formatBreadcrumbSegment(segment: string, moduleSlug?: string): string {
+  const moduleLabels = moduleSlug
+    ? MODULE_SEGMENT_LABELS[moduleSlug]
+    : undefined;
   return (
+    moduleLabels?.[segment] ??
     SEGMENT_LABELS[segment] ??
     segment
       .split('-')
@@ -208,7 +224,8 @@ export default function ModuleHeader({
                           <BreadcrumbItem>
                             <BreadcrumbPage>
                               {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1]
+                                pathSegments[pathSegments.length - 1],
+                                whichModule
                               )}
                             </BreadcrumbPage>
                           </BreadcrumbItem>
@@ -225,7 +242,10 @@ export default function ModuleHeader({
                       <BreadcrumbSeparator />
                       <BreadcrumbItem>
                         <BreadcrumbPage>
-                          {formatBreadcrumbSegment(pathSegments[1])}
+                          {formatBreadcrumbSegment(
+                            pathSegments[1],
+                            whichModule
+                          )}
                         </BreadcrumbPage>
                       </BreadcrumbItem>
                     </>
@@ -260,7 +280,8 @@ export default function ModuleHeader({
                           <BreadcrumbItem>
                             <BreadcrumbPage>
                               {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1]
+                                pathSegments[pathSegments.length - 1],
+                                whichModule
                               )}
                             </BreadcrumbPage>
                           </BreadcrumbItem>
