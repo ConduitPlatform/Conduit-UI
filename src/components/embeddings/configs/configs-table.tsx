@@ -13,6 +13,10 @@ import {
   EmbeddingConfigListRow,
 } from '@/lib/models/embeddings/index-state';
 import { cn } from '@/lib/utils';
+import {
+  SETTINGS_CTA_LABEL,
+  SETTINGS_HREF,
+} from '@/lib/models/embeddings/config-catalogue';
 
 const INDEX_STATE_CLASS: Record<EmbeddingConfigListRow['indexState'], string> =
   {
@@ -73,6 +77,14 @@ function ConfigListCard({ row }: { row: EmbeddingConfigListRow }) {
             <dt className="text-xs text-muted-foreground">Provider</dt>
             <dd className="break-all">
               {row.config.provider}/{row.config.model}
+              {row.modelBlocked ? (
+                <Link
+                  href={SETTINGS_HREF}
+                  className="mt-1 block min-h-8 font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {SETTINGS_CTA_LABEL}
+                </Link>
+              ) : null}
             </dd>
           </div>
           <div className="min-w-0">

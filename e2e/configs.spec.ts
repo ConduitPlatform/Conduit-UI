@@ -10,7 +10,7 @@ test.describe('embedding configs', () => {
     await expect(
       page.getByRole('heading', { name: 'New config' })
     ).toBeVisible();
-    await page.getByRole('combobox').first().click();
+    await page.getByRole('combobox', { name: 'Schema' }).click();
     await page.getByRole('option', { name: 'Product' }).click();
     await page.getByRole('checkbox', { name: 'title' }).click();
     await page.getByLabel('Target field').fill('embedding');
@@ -28,14 +28,21 @@ test.describe('embedding configs', () => {
     ).toBeVisible();
   });
 
-  test('omits disabled schemas from create choices', async ({ page }) => {
+  test('omits disabled and non-extendable schemas from create choices', async ({
+    page,
+  }) => {
     await resetMock('blank');
     await page.goto('/embeddings/configs/new');
-    await page.getByRole('combobox').first().click();
+    await page.getByRole('combobox', { name: 'Schema' }).click();
     await expect(page.getByRole('option', { name: 'Product' })).toBeVisible();
     await expect(
       page.getByRole('option', { name: 'ArchivedProduct' })
     ).toHaveCount(0);
+    await expect(page.getByRole('option', { name: 'CmsOnly' })).toHaveCount(0);
+    await page.getByPlaceholder('Search schemas').fill('cms');
+    await expect(page.getByText('No matching schemas')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByPlaceholder('Search schemas')).toHaveCount(0);
   });
 
   test('asks for a schema before listing source fields', async ({ page }) => {
@@ -63,15 +70,16 @@ test.describe('embedding configs', () => {
     await page.goto('/embeddings/configs');
     await expect(page.getByRole('heading', { name: 'Configs' })).toBeVisible();
     await expect(
-      page.getByRole('term').filter({ hasText: 'Index' })
+      page.getByRole('term').filter({ hasText: 'Index' }).first()
     ).toBeVisible();
     await expect(
       page
         .getByRole('definition')
         .filter({ hasText: 'openai-compatible/text-embedding-3-small' })
+        .first()
     ).toBeVisible();
     await expect(
-      page.getByRole('definition').filter({ hasText: 'Ready' })
+      page.getByRole('definition').filter({ hasText: 'Ready' }).first()
     ).toBeVisible();
   });
 
@@ -87,5 +95,64 @@ test.describe('embedding configs', () => {
     await expect(
       generation.locator('xpath=following-sibling::dd[1]')
     ).toHaveText('2');
+  });
+
+  test('searches schemas with arrows and enter', async ({ page }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs/new');
+    const schema = page.getByRole('combobox', { name: 'Schema' });
+    await schema.click();
+    await page.getByPlaceholder('Search schemas').fill('pro');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(schema).toContainText('Product');
+  });
+
+  test('derives dimensions from the selected model and clears on provider change', async ({
+    page,
+  }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs/new');
+    await expect(page.getByLabel('Dimensions')).toHaveValue('1536');
+    await expect(page.getByLabel('Dimensions')).toHaveAttribute('readonly', '');
+    await expect(page.getByText(/Recommended for text/)).toBeVisible();
+    await page.getByRole('combobox', { name: 'Provider' }).click();
+    await page.getByRole('option', { name: 'voyage' }).click();
+    await expect(page.getByRole('combobox', { name: 'Model' })).toContainText(
+      'Select a model'
+    );
+    await page.getByRole('combobox', { name: 'Model' }).click();
+    await page.getByRole('option', { name: 'voyage-3' }).click();
+    await expect(page.getByLabel('Dimensions')).toHaveValue('1024');
+  });
+
+  test('keeps the only provider visible and disabled on an existing config', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/configs/cfg_product');
+    const provider = page.getByRole('combobox', { name: 'Provider' });
+    await expect(provider).toBeVisible();
+    await expect(provider).toBeDisabled();
+    await expect(provider).toContainText('openai-compatible');
+  });
+
+  test('blocks a config whose model is absent from the catalogue', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/configs/cfg_legacy');
+    await expect(
+      page.getByText(
+        'This model is not in the provider catalogue. Add it in Settings before changing this config.'
+      )
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Open settings' }).first()
+    ).toHaveAttribute('href', '/embeddings/settings');
+    await expect(page.getByRole('combobox', { name: 'Model' })).toContainText(
+      'text-embedding-ada-002'
+    );
+    await expect(page.getByRole('combobox', { name: 'Model' })).toBeDisabled();
   });
 });

@@ -31,11 +31,14 @@ import {
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
 import { EmbeddingSchemaFormChoice } from '@/lib/models/embeddings/source-fields';
+import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
 import { rhfZodResolver } from '@/lib/zod-form';
 
 type ConfigEditFormProps = {
   config: EmbeddingConfig;
   schemas: EmbeddingSchemaFormChoice[];
+  providers: ConfigProviderChoice[];
+  modelBlocked: boolean;
   enableAllowed: boolean;
   enableBlockedReason?: string;
   enableBlockedHref?: string;
@@ -45,6 +48,8 @@ type ConfigEditFormProps = {
 export function ConfigEditForm({
   config,
   schemas,
+  providers,
+  modelBlocked,
   enableAllowed,
   enableBlockedReason,
   enableBlockedHref,
@@ -103,6 +108,7 @@ export function ConfigEditForm({
 
   const submit = useCallback(
     (values: EmbeddingConfigFormValues) => {
+      if (modelBlocked) return;
       const next = toMaterialEmbeddingConfig(values);
       if (isInPlaceDimensionChange(existing, next)) {
         form.setError('dimensions', {
@@ -120,13 +126,13 @@ export function ConfigEditForm({
       }
       void persist(values);
     },
-    [existing, form, persist]
+    [existing, form, modelBlocked, persist]
   );
 
   const dirty = form.formState.isDirty;
   const submitting = form.formState.isSubmitting;
   useSaveShortcut(
-    dirty && !submitting && !materialOpen && !deleteOpen,
+    dirty && !submitting && !materialOpen && !deleteOpen && !modelBlocked,
     useCallback(() => {
       void form.handleSubmit(submit)();
     }, [form, submit])
@@ -143,7 +149,9 @@ export function ConfigEditForm({
         <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
           <ConfigFormFields
             schemas={schemas}
+            providers={providers}
             schemaLocked
+            modelBlocked={modelBlocked}
             enableAllowed={enableAllowed}
             enableBlockedReason={enableBlockedReason}
             enableBlockedHref={enableBlockedHref}
@@ -153,6 +161,7 @@ export function ConfigEditForm({
             <SaveConfigButton
               dirty={dirty}
               submitting={submitting}
+              blocked={modelBlocked}
               label="Save changes"
               shortcutLabel={shortcut.label}
               shortcutAria={shortcut.aria}

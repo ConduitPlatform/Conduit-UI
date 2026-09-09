@@ -44,9 +44,10 @@ test.describe('viewport and theme smoke', () => {
       page
         .getByRole('definition')
         .filter({ hasText: 'openai-compatible/text-embedding-3-small' })
+        .first()
     ).toBeVisible();
     await expect(
-      page.getByRole('term').filter({ hasText: 'Index' })
+      page.getByRole('term').filter({ hasText: 'Index' }).first()
     ).toBeVisible();
   });
 });

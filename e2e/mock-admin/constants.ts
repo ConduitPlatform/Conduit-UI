@@ -16,12 +16,19 @@ export const OPENAI_COMPATIBLE_PROVIDER = 'openai-compatible';
 export const PROVIDER_ENDPOINT = 'https://api.openai.com/v1/embeddings';
 export const PROVIDER_MODEL = 'text-embedding-3-small';
 export const PROVIDER_DIMENSIONS = 1536;
+export const SECOND_PROVIDER = 'voyage';
+export const SECOND_PROVIDER_MODEL = 'voyage-3';
+export const SECOND_PROVIDER_DIMENSIONS = 1024;
 
 export const PRODUCT_SCHEMA_ID = 'schema_product';
 export const PRODUCT_SCHEMA_NAME = 'Product';
 export const ARCHIVED_SCHEMA_ID = 'schema_archived';
 export const ARCHIVED_SCHEMA_NAME = 'ArchivedProduct';
+export const CMS_ONLY_SCHEMA_ID = 'schema_cms_only';
+export const CMS_ONLY_SCHEMA_NAME = 'CmsOnly';
 export const READY_CONFIG_ID = 'cfg_product';
+export const LEGACY_CONFIG_ID = 'cfg_legacy';
+export const LEGACY_MODEL = 'text-embedding-ada-002';
 export const READY_INDEX_NAME = 'Product_embedding_v2';
 export const PENDING_INDEX_NAME = 'Product_embedding_v1';
 

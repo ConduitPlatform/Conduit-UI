@@ -1,4 +1,8 @@
 import type { EmbeddingConfigInput, EmbeddingConfigRequest } from './config.ts';
+import {
+  catalogueDimensionsForInput,
+  type ConfigProviderChoice,
+} from './config-catalogue.ts';
 
 export const AUTH_SECRET_SCHEMA_NAMES = new Set([
   'AccessToken',
@@ -99,6 +103,14 @@ export function isDeniedEmbeddingSchema(schema: {
   return AUTH_SECRET_SCHEMA_NAMES.has(schema.name);
 }
 
+export function isSchemaExtendable(modelOptions?: unknown): boolean {
+  if (!isRecord(modelOptions)) return false;
+  const conduit = modelOptions.conduit;
+  if (!isRecord(conduit)) return false;
+  const permissions = conduit.permissions;
+  return isRecord(permissions) && permissions.extendable === true;
+}
+
 export function isDeclaredSchemaEnabled(schema: {
   enabled?: unknown;
   modelOptions?: unknown;
@@ -109,16 +121,18 @@ export function isDeclaredSchemaEnabled(schema: {
   const conduit = schema.modelOptions.conduit;
   if (!isRecord(conduit)) return false;
   const cms = conduit.cms;
-  const permissions = conduit.permissions;
-  const cmsEnabled = isRecord(cms) && cms.enabled === true;
-  const extendable = isRecord(permissions) && permissions.extendable === true;
-  return cmsEnabled || extendable;
+  if (cms == null) return true;
+  return isRecord(cms) && cms.enabled === true;
 }
 
 export function isEligibleEmbeddingSchema(
   schema: EmbeddingSchemaEligibilityInput
 ): boolean {
-  return !isDeniedEmbeddingSchema(schema) && isDeclaredSchemaEnabled(schema);
+  return (
+    !isDeniedEmbeddingSchema(schema) &&
+    isDeclaredSchemaEnabled(schema) &&
+    isSchemaExtendable(schema.modelOptions)
+  );
 }
 
 export function toSchemaFieldMap(schema: {
@@ -294,16 +308,14 @@ export function requireEligibleDeclaredSchema(
 
 export function validateEmbeddingConfigInput(
   data: EmbeddingConfigInput,
-  schemas?: EmbeddingSchemaEligibilityInput[] | null
+  schemas?: EmbeddingSchemaEligibilityInput[] | null,
+  providers?: readonly ConfigProviderChoice[] | null
 ): EmbeddingConfigRequest {
   if (!isValidSchemaOrTargetName(data.schemaName)) {
     throw new Error('Schema name is not valid.');
   }
   if (!isValidSchemaOrTargetName(data.targetField)) {
     throw new Error('Target field is not valid.');
-  }
-  if (!Number.isInteger(data.dimensions) || data.dimensions <= 0) {
-    throw new Error('Dimensions must be a positive integer.');
   }
   if (data.sourceFields.length === 0) {
     throw new Error('Select at least one source field.');
@@ -321,5 +333,12 @@ export function validateEmbeddingConfigInput(
   if (ineligible) {
     throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
   }
-  return toEmbeddingConfigRequest(data);
+  const catalogue = catalogueDimensionsForInput(data, providers);
+  const provider = data.provider?.trim() ?? '';
+  return {
+    ...toEmbeddingConfigRequest(data),
+    provider,
+    model: catalogue.name,
+    dimensions: catalogue.dimensions,
+  };
 }

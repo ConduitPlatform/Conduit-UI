@@ -12,6 +12,7 @@ import {
 type SaveConfigButtonProps = {
   dirty: boolean;
   submitting: boolean;
+  blocked?: boolean;
   label: string;
   shortcutLabel: string;
   shortcutAria?: string;
@@ -20,6 +21,7 @@ type SaveConfigButtonProps = {
 export function SaveConfigButton({
   dirty,
   submitting,
+  blocked = false,
   label,
   shortcutLabel,
   shortcutAria,
@@ -30,7 +32,7 @@ export function SaveConfigButton({
         <TooltipTrigger asChild>
           <Button
             type="submit"
-            disabled={submitting || !dirty}
+            disabled={submitting || !dirty || blocked}
             className="gap-2"
             aria-keyshortcuts={!submitting && dirty ? shortcutAria : undefined}
           >

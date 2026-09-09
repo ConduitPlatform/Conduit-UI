@@ -22,12 +22,19 @@ import {
   findMatchingIndex,
   toMatchingIndexView,
 } from '@/lib/models/embeddings/index-state';
-import { workersEnabledFromStatus } from '@/lib/models/embeddings/overview-view';
-import { deriveEmbeddingsReadiness } from '@/lib/models/embeddings/readiness';
 import {
   listEligibleSchemas,
   toEmbeddingSchemaFormChoices,
 } from '@/lib/models/embeddings/source-fields';
+import { workersEnabledFromStatus } from '@/lib/models/embeddings/overview-view';
+import { deriveEmbeddingsReadiness } from '@/lib/models/embeddings/readiness';
+import {
+  isConfigModelInCatalogue,
+  listConfiguredProviders,
+  MODEL_ABSENT_DETAIL,
+  SETTINGS_CTA_LABEL,
+  SETTINGS_HREF,
+} from '@/lib/models/embeddings/config-catalogue';
 
 export default async function EmbeddingConfigDetailPage(props: {
   params: Promise<{ id: string }>;
@@ -82,11 +89,20 @@ export default async function EmbeddingConfigDetailPage(props: {
     matchingIndex,
     workersEnabled,
   });
-  const enableBlock = embeddingConfigEnableBlock({
-    capabilities,
-    matchingIndex,
-    workersEnabled,
-  });
+  const providers = listConfiguredProviders(settings);
+  const modelBlocked =
+    settings != null && !isConfigModelInCatalogue(config, providers);
+  const enableBlock = modelBlocked
+    ? {
+        reason: MODEL_ABSENT_DETAIL,
+        href: SETTINGS_HREF,
+        actionLabel: SETTINGS_CTA_LABEL,
+      }
+    : embeddingConfigEnableBlock({
+        capabilities,
+        matchingIndex,
+        workersEnabled,
+      });
   const rows = deriveEmbeddingsReadiness({
     capabilities,
     capabilitiesError: settledError(capabilitiesResult),
@@ -102,8 +118,10 @@ export default async function EmbeddingConfigDetailPage(props: {
     <ConfigDetail
       config={config}
       schemas={formSchemas}
+      providers={providers}
+      modelBlocked={modelBlocked}
       index={toMatchingIndexView(config, lookup)}
-      enableAllowed={enableAllowed}
+      enableAllowed={enableAllowed && !modelBlocked}
       enableBlock={enableBlock}
       readinessRows={rows}
     />

@@ -5,6 +5,7 @@ import {
   isDeclaredSchemaEnabled,
   isDeniedEmbeddingSchema,
   isEligibleEmbeddingSchema,
+  isSchemaExtendable,
   isEligibleSourceField,
   isHiddenField,
   isSensitiveFieldName,
@@ -22,16 +23,20 @@ import {
   validateEmbeddingConfigInput,
 } from './source-fields';
 
-function enabledArticle(extra: Record<string, unknown> = {}): {
+function extendableArticle(extra: Record<string, unknown> = {}): {
   name: string;
   ownerModule: string;
   enabled: boolean;
+  modelOptions: Record<string, unknown>;
   fields: Record<string, unknown>;
 } {
   return {
     name: 'Article',
     ownerModule: 'database',
     enabled: true,
+    modelOptions: {
+      conduit: { permissions: { extendable: true } },
+    },
     fields: { title: { type: 'String' } },
     ...extra,
   };
@@ -83,7 +88,7 @@ describe('source field eligibility', () => {
     expect(isDeniedEmbeddingSchema({ name: '_internal' })).toBe(true);
   });
 
-  it('treats missing or false enabled flags as disabled and honors cms/extendable', () => {
+  it('requires an enabled schema and extendable permissions', () => {
     expect(isDeclaredSchemaEnabled({ enabled: true })).toBe(true);
     expect(isDeclaredSchemaEnabled({ enabled: false })).toBe(false);
     expect(isDeclaredSchemaEnabled({})).toBe(false);
@@ -102,11 +107,34 @@ describe('source field eligibility', () => {
         modelOptions: { conduit: { permissions: { extendable: true } } },
       })
     ).toBe(true);
+    expect(isSchemaExtendable(undefined)).toBe(false);
+    expect(
+      isSchemaExtendable({
+        conduit: { permissions: { extendable: true } },
+      })
+    ).toBe(true);
+    expect(
+      isEligibleEmbeddingSchema({
+        name: 'Article',
+        ownerModule: 'database',
+        enabled: true,
+        modelOptions: { conduit: { permissions: { extendable: true } } },
+      })
+    ).toBe(true);
+    expect(
+      isEligibleEmbeddingSchema({
+        name: 'Article',
+        ownerModule: 'database',
+        enabled: true,
+        modelOptions: { conduit: { cms: { enabled: true } } },
+      })
+    ).toBe(false);
     expect(
       isEligibleEmbeddingSchema({
         name: 'Article',
         ownerModule: 'database',
         enabled: false,
+        modelOptions: { conduit: { permissions: { extendable: true } } },
       })
     ).toBe(false);
     expect(
@@ -114,6 +142,7 @@ describe('source field eligibility', () => {
         name: 'AccessToken',
         ownerModule: 'authentication',
         enabled: true,
+        modelOptions: { conduit: { permissions: { extendable: true } } },
       })
     ).toBe(false);
   });
@@ -129,6 +158,14 @@ describe('source field eligibility', () => {
         name: 'Article',
         ownerModule: 'database',
         enabled: true,
+        modelOptions: { conduit: { permissions: { extendable: true } } },
+        fields: { title: { type: 'String' } },
+      },
+      {
+        name: 'CmsOnly',
+        ownerModule: 'database',
+        enabled: true,
+        modelOptions: { conduit: { cms: { enabled: true } } },
         fields: { title: { type: 'String' } },
       },
       {
@@ -155,7 +192,13 @@ describe('source field eligibility', () => {
 
   it('drops configs for disabled schemas and skips their index ids', () => {
     const schemas = [
-      { _id: 's1', name: 'Article', ownerModule: 'database', enabled: true },
+      {
+        _id: 's1',
+        name: 'Article',
+        ownerModule: 'database',
+        enabled: true,
+        modelOptions: { conduit: { permissions: { extendable: true } } },
+      },
       { _id: 's2', name: 'Draft', ownerModule: 'database', enabled: false },
       {
         _id: 's3',
@@ -189,11 +232,32 @@ describe('source field eligibility', () => {
     };
     expect(toEmbeddingConfigRequest(input)).toEqual(input);
     expect(
-      validateEmbeddingConfigInput(input, [enabledArticle()]).sourceFields
+      validateEmbeddingConfigInput(
+        input,
+        [extendableArticle()],
+        [
+          {
+            key: 'openai-compatible',
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+          },
+        ]
+      ).sourceFields
     ).toEqual(['title']);
+    expect(
+      validateEmbeddingConfigInput(
+        { ...input, dimensions: 8 },
+        [extendableArticle()],
+        [
+          {
+            key: 'openai-compatible',
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+          },
+        ]
+      ).dimensions
+    ).toBe(1536);
     expect(() =>
       validateEmbeddingConfigInput({ ...input, sourceFields: ['password'] }, [
-        enabledArticle({
+        extendableArticle({
           fields: { password: { type: 'String' }, title: { type: 'String' } },
         }),
       ])
@@ -204,15 +268,28 @@ describe('source field eligibility', () => {
           name: 'AccessToken',
           ownerModule: 'authentication',
           enabled: true,
+          modelOptions: { conduit: { permissions: { extendable: true } } },
           fields: { title: { type: 'String' } },
         },
       ])
     ).toThrow(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
     expect(() =>
       validateEmbeddingConfigInput(input, [
-        enabledArticle({ enabled: false, name: 'Article' }),
+        extendableArticle({ enabled: false, name: 'Article' }),
       ])
     ).toThrow(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
+    expect(() =>
+      validateEmbeddingConfigInput(
+        input,
+        [extendableArticle()],
+        [
+          {
+            key: 'openai-compatible',
+            models: [{ name: 'other-model', dimensions: 768 }],
+          },
+        ]
+      )
+    ).toThrow('This model is not in the selected provider catalogue.');
     expect(() => requireEligibleDeclaredSchema('Article', null)).toThrow(
       SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE
     );

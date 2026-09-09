@@ -281,10 +281,8 @@ function isMockSchemaEnabled(schema: MockSchema): boolean {
     : undefined;
   if (!conduit) return false;
   const cms = isRecord(conduit.cms) ? conduit.cms : undefined;
-  const permissions = isRecord(conduit.permissions)
-    ? conduit.permissions
-    : undefined;
-  return cms?.enabled === true || permissions?.extendable === true;
+  if (cms == null) return true;
+  return cms.enabled === true;
 }
 
 function schemaIdForName(name: string): string | undefined {

@@ -20,18 +20,23 @@ import { upsertEmbeddingConfig } from '@/lib/api/embeddings';
 import { toast } from '@/lib/hooks/use-toast';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
 import { EmbeddingSchemaFormChoice } from '@/lib/models/embeddings/source-fields';
+import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
 import { rhfZodResolver } from '@/lib/zod-form';
 
 type CreateConfigFormProps = {
   schemas: EmbeddingSchemaFormChoice[];
+  providers: ConfigProviderChoice[];
   defaultProvider: string;
   defaultModel: string;
+  defaultDimensions: number;
 };
 
 export function CreateConfigForm({
   schemas,
+  providers,
   defaultProvider,
   defaultModel,
+  defaultDimensions,
 }: CreateConfigFormProps) {
   const router = useRouter();
   const shortcut = useSaveShortcutHint();
@@ -41,6 +46,7 @@ export function CreateConfigForm({
     defaultValues: defaultConfigFormValues({
       provider: defaultProvider,
       model: defaultModel,
+      dimensions: defaultDimensions,
     }),
   });
 
@@ -87,6 +93,7 @@ export function CreateConfigForm({
       >
         <ConfigFormFields
           schemas={schemas}
+          providers={providers}
           enableAllowed={false}
           enableBlockedReason="New configs start disabled until the matching index is queryable."
         />

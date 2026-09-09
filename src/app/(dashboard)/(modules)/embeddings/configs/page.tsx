@@ -9,20 +9,29 @@ import {
   PageHeader,
   PageTitle,
 } from '@/components/ui/page-header';
-import { getBackfills, getEmbeddingConfigs } from '@/lib/api/embeddings';
+import {
+  getBackfills,
+  getEmbeddingConfigs,
+  getEmbeddingsSettings,
+} from '@/lib/api/embeddings';
 import {
   getDeclaredSchemas,
   resolveIndexesBySchema,
 } from '@/lib/api/embeddings/indexes';
 import { buildConfigListRows } from '@/lib/models/embeddings/index-state';
+import {
+  isConfigModelInCatalogue,
+  listConfiguredProviders,
+} from '@/lib/models/embeddings/config-catalogue';
 import { settledError, settledValue } from '@/lib/models/embeddings/errors';
 
 export default async function EmbeddingConfigsPage() {
-  const [configsResult, backfillsResult, schemasResult] =
+  const [configsResult, backfillsResult, schemasResult, settingsResult] =
     await Promise.allSettled([
       getEmbeddingConfigs(),
       getBackfills({ skip: 0, limit: 100 }),
       getDeclaredSchemas(),
+      getEmbeddingsSettings(),
     ]);
 
   const configsError = settledError(configsResult);
@@ -42,11 +51,25 @@ export default async function EmbeddingConfigsPage() {
 
   const configs = settledValue(configsResult) ?? [];
   const runs = settledValue(backfillsResult)?.runs ?? [];
+  const settings = settledValue(settingsResult)?.config;
+  const providers = listConfiguredProviders(settings);
+  const modelBlockedIds = new Set(
+    settings
+      ? configs
+          .filter(config => !isConfigModelInCatalogue(config, providers))
+          .map(config => config._id)
+      : []
+  );
   const indexesBySchema = await resolveIndexesBySchema(
     configs.map(config => config.schemaName),
     settledValue(schemasResult)?.schemas
   );
-  const rows = buildConfigListRows(configs, indexesBySchema, runs);
+  const rows = buildConfigListRows(
+    configs,
+    indexesBySchema,
+    runs,
+    modelBlockedIds
+  );
 
   return (
     <div className="flex flex-col space-y-4">

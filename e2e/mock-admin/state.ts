@@ -1,8 +1,12 @@
 import {
   ARCHIVED_SCHEMA_ID,
   ARCHIVED_SCHEMA_NAME,
+  CMS_ONLY_SCHEMA_ID,
+  CMS_ONLY_SCHEMA_NAME,
   E2E_ENV_NAME,
   FIXED_NOW,
+  LEGACY_CONFIG_ID,
+  LEGACY_MODEL,
   OPENAI_COMPATIBLE_PROVIDER,
   PENDING_INDEX_NAME,
   PRODUCT_SCHEMA_ID,
@@ -12,6 +16,9 @@ import {
   PROVIDER_DIMENSIONS,
   READY_CONFIG_ID,
   READY_INDEX_NAME,
+  SECOND_PROVIDER,
+  SECOND_PROVIDER_DIMENSIONS,
+  SECOND_PROVIDER_MODEL,
   STORED_API_KEY,
 } from './constants.ts';
 import type {
@@ -37,8 +44,16 @@ function emptyQueue(): MockQueueCounts {
   };
 }
 
-function schemaModelOptions(enabled: boolean): Record<string, unknown> {
-  return { conduit: { cms: { enabled } } };
+function schemaModelOptions(args: {
+  enabled: boolean;
+  extendable: boolean;
+}): Record<string, unknown> {
+  return {
+    conduit: {
+      cms: { enabled: args.enabled },
+      permissions: { extendable: args.extendable },
+    },
+  };
 }
 
 function productSchema(): MockSchema {
@@ -53,9 +68,28 @@ function productSchema(): MockSchema {
     fields,
     compiledFields: fields,
     extensions: [],
-    modelOptions: schemaModelOptions(true),
+    modelOptions: schemaModelOptions({ enabled: true, extendable: true }),
     ownerModule: 'database',
     collectionName: 'products',
+    createdAt: FIXED_NOW,
+    updatedAt: FIXED_NOW,
+  };
+}
+
+function cmsOnlySchema(): MockSchema {
+  const fields = {
+    title: { type: 'String' },
+  };
+  return {
+    _id: CMS_ONLY_SCHEMA_ID,
+    name: CMS_ONLY_SCHEMA_NAME,
+    parentSchema: null,
+    fields,
+    compiledFields: fields,
+    extensions: [],
+    modelOptions: schemaModelOptions({ enabled: true, extendable: false }),
+    ownerModule: 'database',
+    collectionName: 'cms_only',
     createdAt: FIXED_NOW,
     updatedAt: FIXED_NOW,
   };
@@ -72,12 +106,16 @@ function archivedSchema(): MockSchema {
     fields,
     compiledFields: fields,
     extensions: [],
-    modelOptions: schemaModelOptions(false),
+    modelOptions: schemaModelOptions({ enabled: false, extendable: true }),
     ownerModule: 'database',
     collectionName: 'archived_products',
     createdAt: FIXED_NOW,
     updatedAt: FIXED_NOW,
   };
+}
+
+function declaredSchemas(): MockSchema[] {
+  return [productSchema(), archivedSchema(), cmsOnlySchema()];
 }
 
 function coreModules(
@@ -150,6 +188,22 @@ function unsupportedCapabilities(): MockCapabilities {
   };
 }
 
+function legacyConfig(): MockEmbeddingConfig {
+  return {
+    _id: LEGACY_CONFIG_ID,
+    schemaName: PRODUCT_SCHEMA_NAME,
+    sourceFields: ['title'],
+    targetField: 'legacyEmbedding',
+    provider: OPENAI_COMPATIBLE_PROVIDER,
+    model: LEGACY_MODEL,
+    dimensions: 1536,
+    similarity: 'cosine',
+    enabled: false,
+    createdAt: FIXED_NOW,
+    updatedAt: FIXED_NOW,
+  };
+}
+
 function readyConfig(): MockEmbeddingConfig {
   return {
     _id: READY_CONFIG_ID,
@@ -199,8 +253,8 @@ function readyState(enabled: boolean): MockAdminState {
     modules: coreModules(true, true),
     settings: defaultSettings({ enabled, apiKey: STORED_API_KEY }),
     capabilities: mongodbCapabilities(),
-    schemas: [productSchema(), archivedSchema()],
-    configs: [readyConfig()],
+    schemas: declaredSchemas(),
+    configs: [readyConfig(), legacyConfig()],
     indexesBySchemaId: {
       [PRODUCT_SCHEMA_ID]: readyIndexes(),
     },
@@ -224,7 +278,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         modules: coreModules(true, true),
         settings: defaultSettings({ enabled: false, apiKey: '' }),
         capabilities: unsupportedCapabilities(),
-        schemas: [productSchema(), archivedSchema()],
+        schemas: declaredSchemas(),
         configs: [],
         indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
         backfills: [],
@@ -237,9 +291,26 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
       return {
         scenario,
         modules: coreModules(true, true),
-        settings: defaultSettings({ enabled: true, apiKey: STORED_API_KEY }),
+        settings: (() => {
+          const settings = defaultSettings({
+            enabled: true,
+            apiKey: STORED_API_KEY,
+          });
+          settings.providers[SECOND_PROVIDER] = {
+            endpoint: PROVIDER_ENDPOINT,
+            apiKey: STORED_API_KEY,
+            models: [
+              {
+                name: SECOND_PROVIDER_MODEL,
+                dimensions: SECOND_PROVIDER_DIMENSIONS,
+              },
+            ],
+            defaultModel: SECOND_PROVIDER_MODEL,
+          };
+          return settings;
+        })(),
         capabilities: mongodbCapabilities(),
-        schemas: [productSchema(), archivedSchema()],
+        schemas: declaredSchemas(),
         configs: [],
         indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
         backfills: [],
@@ -254,7 +325,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         modules: coreModules(false, false),
         settings: defaultSettings({ enabled: false, apiKey: '' }),
         capabilities: unsupportedCapabilities(),
-        schemas: [productSchema(), archivedSchema()],
+        schemas: declaredSchemas(),
         configs: [],
         indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
         backfills: [],

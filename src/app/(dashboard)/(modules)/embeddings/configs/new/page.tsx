@@ -9,9 +9,9 @@ import { getEmbeddingsSettings } from '@/lib/api/embeddings';
 import { settledValue } from '@/lib/models/embeddings/errors';
 import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
 import {
-  openaiCompatibleProvider,
-  resolveProviderDefaultModel,
-} from '@/lib/models/embeddings/settings-form';
+  listConfiguredProviders,
+  resolveCreateDefaults,
+} from '@/lib/models/embeddings/config-catalogue';
 import {
   listEligibleSchemas,
   toEmbeddingSchemaFormChoices,
@@ -27,10 +27,14 @@ export default async function NewEmbeddingConfigPage() {
     listEligibleSchemas(settledValue(schemasResult)?.schemas ?? [])
   );
   const settings = settledValue(settingsResult)?.config;
-  const providerName = settings?.defaultProvider || OPENAI_COMPATIBLE_PROVIDER;
-  const model = resolveProviderDefaultModel(
-    settings ? openaiCompatibleProvider(settings) : undefined
-  );
+  const providers = listConfiguredProviders(settings);
+  const defaults = resolveCreateDefaults({
+    providers,
+    defaultProvider: settings?.defaultProvider || OPENAI_COMPATIBLE_PROVIDER,
+    defaultModel: settings
+      ? (settings.providers[settings.defaultProvider]?.defaultModel ?? '')
+      : '',
+  });
 
   return (
     <div className="flex flex-col space-y-4">
@@ -45,8 +49,10 @@ export default async function NewEmbeddingConfigPage() {
       </PageHeader>
       <CreateConfigForm
         schemas={schemas}
-        defaultProvider={providerName}
-        defaultModel={model}
+        providers={providers}
+        defaultProvider={defaults.provider}
+        defaultModel={defaults.model}
+        defaultDimensions={defaults.dimensions}
       />
     </div>
   );
