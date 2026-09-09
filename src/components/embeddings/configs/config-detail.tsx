@@ -56,7 +56,7 @@ export function ConfigDetail({
         </div>
         <PageActions className="flex-wrap">
           <Button variant="outline" asChild>
-            <Link href={`/embeddings/backfills?configId=${config._id}`}>
+            <Link href={`/embeddings/backfills?config=${config._id}`}>
               Backfills
             </Link>
           </Button>
