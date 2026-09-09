@@ -6,6 +6,11 @@ import type {
   BackfillRunState,
 } from './backfill.ts';
 
+export {
+  parseOperatorFilterJson,
+  type FilterParseResult,
+} from './operator-filter.ts';
+
 export const DEFAULT_BACKFILL_BATCH_SIZE = 100;
 export const MIN_BACKFILL_BATCH_SIZE = 1;
 export const MAX_BACKFILL_BATCH_SIZE = 500;
@@ -27,10 +32,6 @@ export type BackfillListUrlState = {
   skip: number;
   limit: number;
 };
-
-export type FilterParseResult =
-  | { ok: true; filter?: Record<string, unknown> }
-  | { ok: false; error: string };
 
 export type BackfillProgress = {
   scanned: number;
@@ -217,24 +218,6 @@ export function backfillStateClass(state: BackfillRunState): string {
       return exhaustive;
     }
   }
-}
-
-export function parseOperatorFilterJson(raw: string): FilterParseResult {
-  const trimmed = raw.trim();
-  if (trimmed === '') return { ok: true, filter: undefined };
-  if (trimmed.length > MAX_BACKFILL_FILTER_CHARS) {
-    return { ok: false, error: 'Filter is too large.' };
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(trimmed);
-  } catch {
-    return { ok: false, error: 'Filter is not valid JSON.' };
-  }
-  if (!isRecord(parsed)) {
-    return { ok: false, error: 'Filter must be a JSON object.' };
-  }
-  return { ok: true, filter: parsed };
 }
 
 export function maxAllowedBatchSize(configuredMax?: number): number {

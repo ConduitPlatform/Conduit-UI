@@ -19,6 +19,19 @@ test.describe('test search', () => {
     await expect(
       page.getByText('2 results. Higher score is better.')
     ).toBeVisible();
+    await expect(page.getByText('super-secret')).toHaveCount(0);
+    await expect(page.getByText('sk-live-secret')).toHaveCount(0);
+    await expect(page.getByText('tok-secret')).toHaveCount(0);
+    await expect(
+      page.getByRole('columnheader', { name: 'password' })
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole('columnheader', { name: 'embedding' })
+    ).toHaveCount(0);
+    await page.getByRole('tab', { name: 'JSON' }).click();
+    await expect(page.getByText('super-secret')).toHaveCount(0);
+    await expect(page.getByText('sk-live-secret')).toHaveCount(0);
+    await expect(page.getByText('tok-secret')).toHaveCount(0);
 
     await query.fill('nomatch');
     await page.getByRole('button', { name: 'Search' }).click();

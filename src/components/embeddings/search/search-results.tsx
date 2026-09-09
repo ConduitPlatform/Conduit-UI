@@ -20,6 +20,7 @@ import {
   documentColumnKeys,
   formatSearchScore,
   isSearchViewMode,
+  sanitizeSearchHits,
   searchHitLabel,
   SearchViewMode,
 } from '@/lib/models/embeddings/search-view';
@@ -45,12 +46,20 @@ function jsonViewStyles(base: typeof defaultStyles) {
 
 type SearchResultsProps = {
   hits: SemanticSearchHit[];
+  sourceFields?: readonly string[];
 };
 
-export function SearchResults({ hits }: SearchResultsProps) {
+export function SearchResults({ hits, sourceFields }: SearchResultsProps) {
   const { resolvedTheme } = useTheme();
   const [view, setView] = useState<SearchViewMode>('table');
-  const columns = useMemo(() => documentColumnKeys(hits), [hits]);
+  const displayHits = useMemo(
+    () => sanitizeSearchHits(hits, sourceFields),
+    [hits, sourceFields]
+  );
+  const columns = useMemo(
+    () => documentColumnKeys(displayHits, undefined, sourceFields),
+    [displayHits, sourceFields]
+  );
   const jsonStyles = jsonViewStyles(
     resolvedTheme === 'dark' ? darkStyles : defaultStyles
   );
@@ -58,12 +67,12 @@ export function SearchResults({ hits }: SearchResultsProps) {
   return (
     <section aria-live="polite" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {hits.length === 0 ? (
+        {displayHits.length === 0 ? (
           <p className="text-sm text-muted-foreground">No matches</p>
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              {`${hits.length.toLocaleString()} result${hits.length === 1 ? '' : 's'}. Higher score is better.`}
+              {`${displayHits.length.toLocaleString()} result${displayHits.length === 1 ? '' : 's'}. Higher score is better.`}
             </p>
             <Tabs
               value={view}
@@ -85,10 +94,10 @@ export function SearchResults({ hits }: SearchResultsProps) {
           </>
         )}
       </div>
-      {hits.length === 0 ? null : view === 'json' ? (
+      {displayHits.length === 0 ? null : view === 'json' ? (
         <div className="overflow-auto rounded-md border border-border/60 bg-surface-2 p-3">
           <JsonView
-            data={hits}
+            data={displayHits}
             shouldExpandNode={level => level < 2}
             style={jsonStyles}
           />
@@ -108,7 +117,7 @@ export function SearchResults({ hits }: SearchResultsProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {hits.map((hit, index) => (
+            {displayHits.map((hit, index) => (
               <TableRow
                 key={`${index}-${hit.score}`}
                 aria-label={searchHitLabel(index, hit)}

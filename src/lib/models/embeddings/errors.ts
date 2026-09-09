@@ -6,28 +6,8 @@ type AxiosLikeError = {
   message?: string;
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
 function isAxiosLikeError(err: unknown): err is AxiosLikeError {
   return Boolean(err && typeof err === 'object' && 'response' in err);
-}
-
-function readBackendMessage(data: unknown): string | undefined {
-  if (typeof data === 'string' && data.trim().length > 0) return data;
-  if (!isRecord(data)) return undefined;
-  if (typeof data.message === 'string' && data.message.trim().length > 0) {
-    return data.message;
-  }
-  if (typeof data.error === 'string' && data.error.trim().length > 0) {
-    return data.error;
-  }
-  if (isRecord(data.error) && typeof data.error.message === 'string') {
-    const nested = data.error.message.trim();
-    if (nested.length > 0) return nested;
-  }
-  return undefined;
 }
 
 export function isEmbeddingsNotFound(err: unknown): boolean {
@@ -37,6 +17,35 @@ export function isEmbeddingsNotFound(err: unknown): boolean {
 
 export const EMBEDDINGS_SERVICE_UNAVAILABLE =
   'The embeddings service is temporarily unavailable. Check that workers are enabled and the provider is reachable, then retry.';
+
+export const EMBEDDINGS_REQUEST_FAILED =
+  'The request failed. Retry, or check embeddings settings.';
+
+function operatorErrorForStatus(status: number | undefined): string {
+  switch (status) {
+    case 400:
+      return 'The request was rejected. Check the values and try again.';
+    case 401:
+      return 'Sign in again to continue.';
+    case 403:
+      return 'You do not have permission for this action.';
+    case 404:
+      return 'The requested embeddings resource was not found.';
+    case 409:
+      return 'This embeddings resource changed. Refresh and try again.';
+    case 413:
+      return 'The request is too large.';
+    case 429:
+      return 'Too many embeddings requests. Wait and retry.';
+    case 500:
+    case 502:
+    case 503:
+    case 504:
+      return EMBEDDINGS_SERVICE_UNAVAILABLE;
+    default:
+      return EMBEDDINGS_REQUEST_FAILED;
+  }
+}
 
 function readErrorMessage(err: unknown): string | undefined {
   if (isAxiosLikeError(err) && typeof err.message === 'string') {
@@ -52,14 +61,28 @@ function isServiceUnavailable(err: unknown): boolean {
   return typeof message === 'string' && /status code 503/.test(message);
 }
 
+function isOperatorSafeMessage(message: string): boolean {
+  const trimmed = message.trim();
+  if (!trimmed || trimmed.length > 240) return false;
+  if (/[\n\r]/.test(trimmed)) return false;
+  if (/\/(Users|home|var|tmp|src|node_modules)\b/i.test(trimmed)) return false;
+  if (/\bat\s+\S+\s+\(/.test(trimmed)) return false;
+  if (/status code \d+/i.test(trimmed)) return false;
+  if (/ECONNREFUSED|ENOTFOUND|ECONNRESET|ETIMEDOUT/i.test(trimmed))
+    return false;
+  if (/\b(stack|trace)\b/i.test(trimmed)) return false;
+  return true;
+}
+
 export function formatEmbeddingsApiError(err: unknown): string {
   if (isServiceUnavailable(err)) return EMBEDDINGS_SERVICE_UNAVAILABLE;
   if (isAxiosLikeError(err)) {
-    return (
-      readBackendMessage(err.response?.data) ?? err.message ?? 'Request failed'
-    );
+    return operatorErrorForStatus(err.response?.status);
   }
-  return err instanceof Error ? err.message : 'Request failed';
+  if (err instanceof Error && isOperatorSafeMessage(err.message)) {
+    return err.message;
+  }
+  return EMBEDDINGS_REQUEST_FAILED;
 }
 
 export function settledValue<T>(

@@ -16,6 +16,7 @@ import {
   settledError,
   settledValue,
   toEmbeddingSchemaChoice,
+  workersEnabledFromStatus,
 } from '@/lib/models/embeddings';
 
 export default async function EmbeddingConfigDetailPage(props: {
@@ -66,6 +67,10 @@ export default async function EmbeddingConfigDetailPage(props: {
         ...eligibleSchemas,
       ];
 
+  const workersEnabled = workersEnabledFromStatus({
+    status,
+    settingsEnabled: settings?.enabled,
+  });
   const rows = deriveEmbeddingsReadiness({
     capabilities,
     capabilitiesError: settledError(capabilitiesResult),
@@ -74,7 +79,7 @@ export default async function EmbeddingConfigDetailPage(props: {
     configs: [config],
     indexesBySchema,
     selectedConfigId: config._id,
-    workersEnabled: status?.enabled ?? settings?.enabled,
+    workersEnabled,
   });
 
   return (
@@ -83,7 +88,7 @@ export default async function EmbeddingConfigDetailPage(props: {
       schemas={schemaChoices}
       lookup={lookup}
       capabilities={capabilities}
-      workersEnabled={status?.enabled ?? settings?.enabled}
+      workersEnabled={workersEnabled}
       readinessRows={rows}
     />
   );

@@ -6,6 +6,8 @@ export const E2E_MASTER_KEY = 'e2e-master-key';
 export const E2E_USERNAME = 'admin';
 export const E2E_PASSWORD = 'admin';
 export const E2E_ENV_NAME = 'Local';
+export const E2E_TEST_CONTROL_HEADER = 'x-conduit-e2e-control';
+export const E2E_TEST_CONTROL_TOKEN = 'e2e-control-token';
 export const JWT_SECRET = 'e2e-jwt-secret';
 
 export const REDACTED_SECRET = '[REDACTED]';

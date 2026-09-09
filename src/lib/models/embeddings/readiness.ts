@@ -6,7 +6,6 @@ import {
 } from '@/lib/models/embeddings/capabilities';
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
 import { findMatchingIndex } from '@/lib/models/embeddings/index-state';
-import { isSecretConfigured } from '@/lib/models/embeddings/secrets';
 import {
   EmbeddingsSettings,
   OPENAI_COMPATIBLE_PROVIDER,
@@ -69,24 +68,12 @@ export function isProviderConfigured(
   const provider =
     settings.providers[name] ?? settings.providers[OPENAI_COMPATIBLE_PROVIDER];
   if (!provider) return false;
-  if (!isSecretConfigured(provider.apiKey)) return false;
-  const parsed =
-    parseHttpsEndpoint(provider.endpoint) ??
-    parseAnyEndpoint(provider.endpoint);
+  if (!provider.apiKeyConfigured) return false;
+  const parsed = parseHttpsEndpoint(provider.endpoint);
   if (!parsed) return false;
   const hostname = normalizeHost(parsed.hostname);
   const hosts = provider.allowedHosts.map(normalizeHost).filter(Boolean);
   return hosts.length > 0 && hosts.includes(hostname);
-}
-
-function parseAnyEndpoint(value: string): URL | undefined {
-  try {
-    const url = new URL(value.trim());
-    if (!url.hostname) return undefined;
-    return url;
-  } catch {
-    return undefined;
-  }
 }
 
 function configHref(config?: EmbeddingConfig): string {

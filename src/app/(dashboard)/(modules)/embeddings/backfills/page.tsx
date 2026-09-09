@@ -24,6 +24,7 @@ import {
   settledValue,
   toBackfillListQuery,
   uniqueSchemaNames,
+  workersEnabledFromStatus,
 } from '@/lib/models/embeddings';
 
 export default async function EmbeddingBackfillsPage(props: {
@@ -84,7 +85,10 @@ export default async function EmbeddingBackfillsPage(props: {
   }
   const settings = settledValue(settingsResult)?.config;
   const status = settledValue(statusResult);
-  const workersEnabled = status?.enabled ?? settings?.enabled;
+  const workersEnabled = workersEnabledFromStatus({
+    status,
+    settingsEnabled: settings?.enabled,
+  });
 
   return (
     <div className="flex flex-col space-y-4">

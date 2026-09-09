@@ -18,6 +18,7 @@ import {
   readSearchParam,
   settledError,
   settledValue,
+  workersEnabledFromStatus,
 } from '@/lib/models/embeddings';
 
 export default async function EmbeddingsTestSearchPage(props: {
@@ -73,7 +74,10 @@ export default async function EmbeddingsTestSearchPage(props: {
         capabilitiesError={settledError(capabilitiesResult)}
         settings={settings}
         settingsError={settledError(settingsResult)}
-        workersEnabled={status?.enabled ?? settings?.enabled}
+        workersEnabled={workersEnabledFromStatus({
+          status,
+          settingsEnabled: settings?.enabled,
+        })}
         initialConfigId={
           readSearchParam(searchParams.configId) ??
           readSearchParam(searchParams.config)

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CancelBackfillDialog } from '@/components/embeddings/backfills/cancel-backfill-dialog';
+import { ResumeBackfillDialog } from '@/components/embeddings/backfills/resume-backfill-dialog';
 import { Button } from '@/components/ui/button';
 import { cancelBackfill, resumeBackfill } from '@/lib/api/embeddings';
 import { toast } from '@/lib/hooks/use-toast';
@@ -24,6 +25,7 @@ export function BackfillActions({
 }: BackfillActionsProps) {
   const router = useRouter();
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [resumeOpen, setResumeOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const canCancel = canCancelBackfill(run.state);
   const canResume = isResumeEligible(run.state);
@@ -53,6 +55,7 @@ export function BackfillActions({
     try {
       await resumeBackfill(run._id);
       toast({ title: 'Backfill resumed' });
+      setResumeOpen(false);
       router.refresh();
     } catch (error) {
       toast({
@@ -85,9 +88,9 @@ export function BackfillActions({
           size={compact ? 'sm' : 'default'}
           disabled={pending}
           aria-label={compact ? `Resume ${run.schemaName} run` : 'Resume run'}
-          onClick={() => void onResume()}
+          onClick={() => setResumeOpen(true)}
         >
-          {pending ? 'Resuming…' : 'Resume run'}
+          Resume run
         </Button>
       ) : null}
       <CancelBackfillDialog
@@ -95,6 +98,12 @@ export function BackfillActions({
         onOpenChange={setCancelOpen}
         pending={pending}
         onConfirm={() => void onCancel()}
+      />
+      <ResumeBackfillDialog
+        open={resumeOpen}
+        onOpenChange={setResumeOpen}
+        pending={pending}
+        onConfirm={() => void onResume()}
       />
     </>
   );

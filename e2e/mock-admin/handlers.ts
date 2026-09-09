@@ -2,6 +2,8 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import {
   E2E_MASTER_KEY,
   E2E_PASSWORD,
+  E2E_TEST_CONTROL_HEADER,
+  E2E_TEST_CONTROL_TOKEN,
   E2E_USERNAME,
   FIXED_NOW,
   OPENAI_COMPATIBLE_PROVIDER,
@@ -53,8 +55,14 @@ function badRequest(response: ServerResponse, message: string): void {
 }
 
 function isPublicPath(pathname: string, method: string): boolean {
-  if (pathname === '/ready' || pathname.startsWith('/__test__/')) return true;
+  if (pathname === '/ready') return true;
   return method === 'POST' && pathname === '/login';
+}
+
+function hasTestControlHeader(request: IncomingMessage): boolean {
+  const value = request.headers[E2E_TEST_CONTROL_HEADER];
+  const token = Array.isArray(value) ? value[0] : value;
+  return token === E2E_TEST_CONTROL_TOKEN;
 }
 
 function requireAuth(
@@ -76,15 +84,12 @@ function requireAuth(
   return true;
 }
 
-function redactSettings(
+function toApiSettings(
   settings: MockEmbeddingsSettings
 ): MockEmbeddingsSettings {
   const providers: Record<string, MockProviderSettings> = {};
   for (const [name, provider] of Object.entries(settings.providers)) {
-    providers[name] = {
-      ...provider,
-      apiKey: provider.apiKey.length > 0 ? REDACTED_SECRET : '',
-    };
+    providers[name] = { ...provider };
   }
   return { ...settings, providers };
 }
@@ -368,6 +373,11 @@ function handleTestControl(
   request: IncomingMessage,
   response: ServerResponse
 ): Promise<boolean> | boolean {
+  if (!pathname.startsWith('/__test__/')) return false;
+  if (!hasTestControlHeader(request)) {
+    sendJson(response, 403, { status: 403, message: 'Forbidden' });
+    return true;
+  }
   if (pathname === '/__test__/health' && method === 'GET') {
     sendJson(response, 200, { ok: true });
     return true;
@@ -404,7 +414,8 @@ function handleTestControl(
     });
     return true;
   }
-  return false;
+  sendEmpty(response, 404);
+  return true;
 }
 
 export async function handleMockRequest(
@@ -463,7 +474,7 @@ export async function handleMockRequest(
   }
 
   if (pathname === '/config/embeddings' && method === 'GET') {
-    sendJson(response, 200, { config: redactSettings(getState().settings) });
+    sendJson(response, 200, { config: toApiSettings(getState().settings) });
     return;
   }
 
@@ -473,7 +484,7 @@ export async function handleMockRequest(
     const applied = applySettingsPatch(getState().settings, patch);
     getState().settings = applied.settings;
     getState().lastSettingsPatchHadApiKey = applied.hadApiKey;
-    sendJson(response, 200, { config: redactSettings(applied.settings) });
+    sendJson(response, 200, { config: toApiSettings(applied.settings) });
     return;
   }
 
@@ -748,14 +759,27 @@ export async function handleMockRequest(
     sendJson(response, 200, {
       hits: [
         {
-          document: { _id: 'doc_1', title: 'Published guide', schemaName },
+          document: {
+            _id: 'doc_1',
+            title: 'Published guide',
+            schemaName,
+            password: 'super-secret',
+            apiKey: 'sk-live-secret',
+            embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+          },
           score: 0.91,
           distance: 0.09,
           metric: 'cosine',
           provider: 'mongodb',
         },
         {
-          document: { _id: 'doc_2', title: 'Operator notes', schemaName },
+          document: {
+            _id: 'doc_2',
+            title: 'Operator notes',
+            schemaName,
+            refreshToken: 'tok-secret',
+            embedding: [8, 7, 6, 5, 4, 3, 2, 1, 0],
+          },
           score: 0.74,
           distance: 0.26,
           metric: 'cosine',

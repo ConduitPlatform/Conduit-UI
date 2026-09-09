@@ -192,6 +192,7 @@ describe('start dialog parsing', () => {
       error: 'Filter must be a JSON object.',
     });
     expect(parseOperatorFilterJson('{').ok).toBe(false);
+    expect(parseOperatorFilterJson('{"$where":"this.ok"}').ok).toBe(false);
   });
 
   it('bounds batch size to configured max', () => {
