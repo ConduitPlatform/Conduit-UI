@@ -36,8 +36,7 @@ export function ResumeBackfillDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Resume this run?</AlertDialogTitle>
           <AlertDialogDescription>
-            Resume queues remaining documents and uses provider quota. Confirm
-            before continuing.
+            Resume queues remaining documents and uses provider quota.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

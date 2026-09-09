@@ -51,6 +51,27 @@ type StartBackfillDialogProps = {
   defaultConfig?: string;
 };
 
+function startBackfillFormDefaults(
+  configs: EmbeddingConfigOption[],
+  maxBatchSize?: number,
+  defaultSchema?: string,
+  defaultConfig?: string
+) {
+  const enabledConfigs = startBackfillConfigs(configs);
+  const schemaOptions = startBackfillSchemas(configs);
+  const matched = enabledConfigs.find(config => config._id === defaultConfig);
+  return {
+    enabledConfigs,
+    schemaOptions,
+    schemaName:
+      defaultSchema && schemaOptions.includes(defaultSchema)
+        ? defaultSchema
+        : (matched?.schemaName ?? ''),
+    configId: matched?._id ?? ALL_CONFIGS,
+    batchSize: String(defaultBackfillBatchSize(maxBatchSize)),
+  };
+}
+
 export function StartBackfillDialog({
   configs,
   maxBatchSize,
@@ -59,27 +80,22 @@ export function StartBackfillDialog({
 }: StartBackfillDialogProps) {
   const router = useRouter();
   const allowedMax = maxAllowedBatchSize(maxBatchSize);
-  const enabledConfigs = useMemo(
-    () => startBackfillConfigs(configs),
-    [configs]
+  const defaults = useMemo(
+    () =>
+      startBackfillFormDefaults(
+        configs,
+        maxBatchSize,
+        defaultSchema,
+        defaultConfig
+      ),
+    [configs, maxBatchSize, defaultSchema, defaultConfig]
   );
-  const schemaOptions = useMemo(() => startBackfillSchemas(configs), [configs]);
-  const defaultEnabledConfig = enabledConfigs.find(
-    config => config._id === defaultConfig
-  );
+  const { enabledConfigs, schemaOptions } = defaults;
   const [open, setOpen] = useState(false);
-  const [schemaName, setSchemaName] = useState(
-    defaultSchema && schemaOptions.includes(defaultSchema)
-      ? defaultSchema
-      : (defaultEnabledConfig?.schemaName ?? '')
-  );
-  const [configId, setConfigId] = useState(
-    defaultEnabledConfig?._id ?? ALL_CONFIGS
-  );
+  const [schemaName, setSchemaName] = useState(defaults.schemaName);
+  const [configId, setConfigId] = useState(defaults.configId);
   const [onlyMissing, setOnlyMissing] = useState(true);
-  const [batchSize, setBatchSize] = useState(
-    String(defaultBackfillBatchSize(maxBatchSize))
-  );
+  const [batchSize, setBatchSize] = useState(defaults.batchSize);
   const [filterText, setFilterText] = useState('');
   const [filterError, setFilterError] = useState<string>();
   const [batchError, setBatchError] = useState<string>();
@@ -91,15 +107,16 @@ export function StartBackfillDialog({
   );
 
   const reset = () => {
-    const matched = enabledConfigs.find(config => config._id === defaultConfig);
-    const nextSchema =
-      defaultSchema && schemaOptions.includes(defaultSchema)
-        ? defaultSchema
-        : (matched?.schemaName ?? '');
-    setSchemaName(nextSchema);
-    setConfigId(matched?._id ?? ALL_CONFIGS);
+    const next = startBackfillFormDefaults(
+      configs,
+      maxBatchSize,
+      defaultSchema,
+      defaultConfig
+    );
+    setSchemaName(next.schemaName);
+    setConfigId(next.configId);
     setOnlyMissing(true);
-    setBatchSize(String(defaultBackfillBatchSize(maxBatchSize)));
+    setBatchSize(next.batchSize);
     setFilterText('');
     setFilterError(undefined);
     setBatchError(undefined);
