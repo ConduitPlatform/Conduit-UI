@@ -1,5 +1,6 @@
 export * from './config';
 export * from './backfill';
+export * from './backfill-view';
 export * from './capabilities';
 export * from './search';
 export * from './settings';
