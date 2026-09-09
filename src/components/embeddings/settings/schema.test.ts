@@ -1,9 +1,7 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
-import { REDACTED_SECRET } from '../../../lib/models/embeddings/secrets.ts';
-import { OPENAI_COMPATIBLE_PROVIDER } from '../../../lib/models/embeddings/settings.ts';
-import { embeddingsSettingsFormSchema } from './schema.ts';
+import { describe, expect, it } from 'vitest';
+import { REDACTED_SECRET } from '@/lib/models/embeddings/secrets';
+import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
+import { embeddingsSettingsFormSchema } from './schema';
 
 const valid = {
   defaultProvider: OPENAI_COMPATIBLE_PROVIDER,
@@ -31,8 +29,8 @@ const valid = {
 describe('embeddings settings schema', () => {
   it('accepts a redacted-configured key and normalizes hosts', () => {
     const parsed = embeddingsSettingsFormSchema.parse(valid);
-    assert.deepEqual(parsed.allowedHosts, ['api.openai.com']);
-    assert.equal(parsed.apiKey, '');
+    expect(parsed.allowedHosts).toEqual(['api.openai.com']);
+    expect(parsed.apiKey).toBe('');
   });
 
   it('requires a key when none is stored and requires HTTPS', () => {
@@ -41,12 +39,12 @@ describe('embeddings settings schema', () => {
       apiKeyConfigured: false,
       apiKey: '',
     });
-    assert.equal(missingKey.success, false);
+    expect(missingKey.success).toBe(false);
     const http = embeddingsSettingsFormSchema.safeParse({
       ...valid,
       endpoint: 'http://api.openai.com/v1/embeddings',
     });
-    assert.equal(http.success, false);
+    expect(http.success).toBe(false);
   });
 
   it('blanks a redaction marker instead of treating it as a new key', () => {
@@ -55,7 +53,7 @@ describe('embeddings settings schema', () => {
       apiKey: REDACTED_SECRET,
       apiKeyConfigured: true,
     });
-    assert.equal(parsed.apiKey, '');
+    expect(parsed.apiKey).toBe('');
   });
 
   it('requires the endpoint host and rejects out-of-range numbers', () => {
@@ -63,11 +61,11 @@ describe('embeddings settings schema', () => {
       ...valid,
       allowedHosts: ['example.com'],
     });
-    assert.equal(missingHost.success, false);
+    expect(missingHost.success).toBe(false);
     const concurrency = embeddingsSettingsFormSchema.safeParse({
       ...valid,
       queue: { ...valid.queue, concurrency: 0 },
     });
-    assert.equal(concurrency.success, false);
+    expect(concurrency.success).toBe(false);
   });
 });

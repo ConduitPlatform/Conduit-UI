@@ -1,8 +1,6 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
-import { REDACTED_SECRET } from './secrets.ts';
-import { OPENAI_COMPATIBLE_PROVIDER } from './settings.ts';
+import { describe, expect, it } from 'vitest';
+import { REDACTED_SECRET } from './secrets';
+import { OPENAI_COMPATIBLE_PROVIDER } from './settings';
 import {
   isValidHost,
   normalizeHosts,
@@ -10,7 +8,7 @@ import {
   SETTINGS_LIMITS,
   toSettingsFormValues,
   toSettingsPatch,
-} from './settings-form.ts';
+} from './settings-form';
 
 const settings = {
   enabled: false,
@@ -41,49 +39,45 @@ const settings = {
 
 describe('embeddings settings form mapping', () => {
   it('accepts HTTPS endpoints without credentials and rejects others', () => {
-    assert.equal(
-      parseHttpsEndpoint('https://api.openai.com/v1/embeddings')?.hostname,
-      'api.openai.com'
-    );
-    assert.equal(
-      parseHttpsEndpoint('http://api.openai.com/v1/embeddings'),
-      undefined
-    );
-    assert.equal(
-      parseHttpsEndpoint('https://user:pass@api.openai.com/v1/embeddings'),
-      undefined
-    );
-    assert.equal(parseHttpsEndpoint('not a url'), undefined);
+    expect(
+      parseHttpsEndpoint('https://api.openai.com/v1/embeddings')?.hostname
+    ).toBe('api.openai.com');
+    expect(
+      parseHttpsEndpoint('http://api.openai.com/v1/embeddings')
+    ).toBeUndefined();
+    expect(
+      parseHttpsEndpoint('https://user:pass@api.openai.com/v1/embeddings')
+    ).toBeUndefined();
+    expect(parseHttpsEndpoint('not a url')).toBeUndefined();
   });
 
   it('normalizes hosts and rejects empty or path-like values', () => {
-    assert.deepEqual(
+    expect(
       normalizeHosts([
         'API.OpenAI.com.',
         ' api.openai.com ',
         '',
         'api.openai.com',
-      ]),
-      ['api.openai.com']
-    );
-    assert.equal(isValidHost('api.openai.com'), true);
-    assert.equal(isValidHost('https://api.openai.com'), false);
-    assert.equal(isValidHost('api.openai.com/v1'), false);
-    assert.equal(isValidHost(''), false);
+      ])
+    ).toEqual(['api.openai.com']);
+    expect(isValidHost('api.openai.com')).toBe(true);
+    expect(isValidHost('https://api.openai.com')).toBe(false);
+    expect(isValidHost('api.openai.com/v1')).toBe(false);
+    expect(isValidHost('')).toBe(false);
   });
 
   it('blanks a redacted key in form values and omits it from PATCH', () => {
     const values = toSettingsFormValues(settings);
-    assert.equal(values.apiKey, '');
-    assert.equal(values.apiKeyConfigured, true);
-    assert.deepEqual(values.allowedHosts, ['api.openai.com']);
-    assert.deepEqual(values.security.sourceFieldAllowlist, ['title']);
+    expect(values.apiKey).toBe('');
+    expect(values.apiKeyConfigured).toBe(true);
+    expect(values.allowedHosts).toEqual(['api.openai.com']);
+    expect(values.security.sourceFieldAllowlist).toEqual(['title']);
 
     const patch = toSettingsPatch(values, settings, true);
-    assert.equal(patch.enabled, true);
+    expect(patch.enabled).toBe(true);
     const provider = patch.providers?.[OPENAI_COMPATIBLE_PROVIDER];
-    assert.equal(provider && 'apiKey' in provider, false);
-    assert.equal(provider?.endpoint, 'https://api.openai.com/v1/embeddings');
+    expect(provider && 'apiKey' in provider).toBe(false);
+    expect(provider?.endpoint).toBe('https://api.openai.com/v1/embeddings');
   });
 
   it('submits a replacement key and keeps numeric bounds defined', () => {
@@ -92,11 +86,11 @@ describe('embeddings settings form mapping', () => {
     const provider = toSettingsPatch(values, settings, false).providers?.[
       OPENAI_COMPATIBLE_PROVIDER
     ];
-    assert.equal(provider?.apiKey, 'sk-replacement');
-    assert.equal(SETTINGS_LIMITS.concurrency.min, 1);
-    assert.ok(
+    expect(provider?.apiKey).toBe('sk-replacement');
+    expect(SETTINGS_LIMITS.concurrency.min).toBe(1);
+    expect(
       SETTINGS_LIMITS.maxEmbedResponseBytes.max >
         SETTINGS_LIMITS.maxEmbedResponseBytes.min
-    );
+    ).toBe(true);
   });
 });

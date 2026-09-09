@@ -1,11 +1,9 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
+import { describe, expect, it } from 'vitest';
 import {
   diffMaterialEmbeddingConfig,
   isInPlaceDimensionChange,
   requiresIndexRecreation,
-} from './config-change.ts';
+} from './config-change';
 
 const base = {
   provider: 'openai-compatible',
@@ -18,17 +16,16 @@ const base = {
 
 describe('material embedding config changes', () => {
   it('treats source field order as equivalent', () => {
-    assert.deepEqual(
+    expect(
       diffMaterialEmbeddingConfig(base, {
         ...base,
         sourceFields: ['body', 'title'],
-      }),
-      []
-    );
+      })
+    ).toEqual([]);
   });
 
   it('detects provider, model, source, target, similarity, and dimension edits', () => {
-    assert.deepEqual(
+    expect(
       diffMaterialEmbeddingConfig(base, {
         provider: 'other',
         model: 'text-embedding-3-large',
@@ -36,37 +33,34 @@ describe('material embedding config changes', () => {
         sourceFields: ['title'],
         targetField: 'vector',
         similarity: 'euclidean',
-      }),
-      [
-        'provider',
-        'model',
-        'dimensions',
-        'sourceFields',
-        'targetField',
-        'similarity',
-      ]
-    );
+      })
+    ).toEqual([
+      'provider',
+      'model',
+      'dimensions',
+      'sourceFields',
+      'targetField',
+      'similarity',
+    ]);
   });
 
   it('requires index recreation only for dimensions, target, and similarity', () => {
-    assert.equal(requiresIndexRecreation(['sourceFields', 'provider']), false);
-    assert.equal(requiresIndexRecreation(['dimensions']), true);
-    assert.equal(requiresIndexRecreation(['targetField']), true);
-    assert.equal(requiresIndexRecreation(['similarity']), true);
+    expect(requiresIndexRecreation(['sourceFields', 'provider'])).toBe(false);
+    expect(requiresIndexRecreation(['dimensions'])).toBe(true);
+    expect(requiresIndexRecreation(['targetField'])).toBe(true);
+    expect(requiresIndexRecreation(['similarity'])).toBe(true);
   });
 
   it('flags in-place dimension changes on the same target field', () => {
-    assert.equal(
-      isInPlaceDimensionChange(base, { ...base, dimensions: 768 }),
+    expect(isInPlaceDimensionChange(base, { ...base, dimensions: 768 })).toBe(
       true
     );
-    assert.equal(
+    expect(
       isInPlaceDimensionChange(base, {
         ...base,
         dimensions: 768,
         targetField: 'vector',
-      }),
-      false
-    );
+      })
+    ).toBe(false);
   });
 });
