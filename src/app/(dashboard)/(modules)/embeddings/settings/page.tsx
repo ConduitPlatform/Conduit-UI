@@ -43,8 +43,7 @@ export default async function EmbeddingsSettingsPage() {
         <div>
           <PageTitle>Settings</PageTitle>
           <PageDescription>
-            Provider credentials, allowed hosts, workers, and operational
-            limits.
+            Provider, workers, and operational limits.
           </PageDescription>
         </div>
       </PageHeader>

@@ -22,6 +22,7 @@ import { AdvancedSettings } from '@/components/embeddings/settings/advanced-sett
 import { HostsField } from '@/components/embeddings/settings/hosts-field';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
+import { EmbeddingsSettingsFormValues } from '@/lib/models/embeddings/settings-form';
 
 type SettingsFormProps = {
   edit: boolean;
@@ -40,7 +41,7 @@ export function SettingsForm({
   setEdit,
   onCancel,
 }: SettingsFormProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext<EmbeddingsSettingsFormValues>();
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,8 +51,7 @@ export function SettingsForm({
             OpenAI-compatible provider
           </h2>
           <p className="mt-1 text-sm text-muted-foreground text-pretty">
-            Endpoint, stored API key, allowed hosts, and the default model used
-            when a config does not override them.
+            Endpoint, API key, hosts, and default model.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -77,9 +77,6 @@ export function SettingsForm({
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription className="text-xs">
-                  Currently the only supported provider.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -129,7 +126,7 @@ export function SettingsForm({
 }
 
 function ApiKeyField({ disabled }: { disabled: boolean }) {
-  const { control } = useFormContext();
+  const { control } = useFormContext<EmbeddingsSettingsFormValues>();
   const configured = useWatch({ control, name: 'apiKeyConfigured' });
 
   return (

@@ -6,6 +6,7 @@ import { InputField } from '@/components/ui/form-inputs/InputField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { SourceFieldsPicker } from '@/components/embeddings/configs/source-fields-picker';
+import { EmbeddingConfigFormValues } from '@/components/embeddings/configs/schema';
 import { VECTOR_SIMILARITIES } from '@/lib/models/embeddings/config';
 import { similarityLabel } from '@/lib/models/embeddings/index-state';
 import {
@@ -26,15 +27,10 @@ export function ConfigFormFields({
   enableAllowed,
   enableBlockedReason,
 }: ConfigFormFieldsProps) {
-  const { control, setValue } = useFormContext();
-  const schemaNameRaw = useWatch({ control, name: 'schemaName' });
-  const sourceFieldsRaw = useWatch({ control, name: 'sourceFields' });
-  const enabledRaw = useWatch({ control, name: 'enabled' });
-  const schemaName = typeof schemaNameRaw === 'string' ? schemaNameRaw : '';
-  const sourceFields = Array.isArray(sourceFieldsRaw)
-    ? sourceFieldsRaw.filter((item): item is string => typeof item === 'string')
-    : [];
-  const enabled = enabledRaw === true;
+  const { control, setValue } = useFormContext<EmbeddingConfigFormValues>();
+  const schemaName = useWatch({ control, name: 'schemaName' }) ?? '';
+  const sourceFields = useWatch({ control, name: 'sourceFields' }) ?? [];
+  const enabled = useWatch({ control, name: 'enabled' }) === true;
 
   const selectedSchema = schemas.find(schema => schema.name === schemaName);
   const choices = useMemo(
@@ -101,7 +97,7 @@ export function ConfigFormFields({
         min={1}
         step={1}
         inputMode="numeric"
-        description="Positive integer. Changing this on the same target field is not allowed."
+        description="Cannot change dimensions on the same target field."
       />
       <SelectField
         fieldName="similarity"

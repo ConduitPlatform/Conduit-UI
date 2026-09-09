@@ -11,22 +11,12 @@ import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
   deriveEmbeddingsReadiness,
   EmbeddingConfig,
-  formatEmbeddingsApiError,
   isEmbeddingsNotFound,
   listEligibleSchemas,
+  settledError,
+  settledValue,
   toEmbeddingSchemaChoice,
 } from '@/lib/models/embeddings';
-
-function settledValue<T>(result: PromiseSettledResult<T>): T | undefined {
-  return result.status === 'fulfilled' ? result.value : undefined;
-}
-
-function settledError(
-  result: PromiseSettledResult<unknown>
-): string | undefined {
-  if (result.status !== 'rejected') return undefined;
-  return formatEmbeddingsApiError(result.reason);
-}
 
 export default async function EmbeddingConfigDetailPage(props: {
   params: Promise<{ id: string }>;

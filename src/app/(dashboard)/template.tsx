@@ -50,6 +50,55 @@ const MODULE_NAMES: { [key: string]: string } = {
   payments: 'Payments',
 };
 
+function ModuleSubpathCrumbs({
+  pathSegments,
+  moduleSlug,
+}: {
+  pathSegments: string[];
+  moduleSlug?: string;
+}) {
+  if (moduleSlug === 'embeddings') {
+    return pathSegments.slice(1).map((segment, index) => {
+      const segmentIndex = index + 1;
+      const href = `/${pathSegments.slice(0, segmentIndex + 1).join('/')}`;
+      const isLast = segmentIndex === pathSegments.length - 1;
+      const label = formatBreadcrumbSegment(
+        segment,
+        moduleSlug,
+        pathSegments[segmentIndex - 1]
+      );
+      return (
+        <Fragment key={href}>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            {isLast ? (
+              <BreadcrumbPage>{label}</BreadcrumbPage>
+            ) : (
+              <BreadcrumbLink asChild>
+                <Link href={href}>{label}</Link>
+              </BreadcrumbLink>
+            )}
+          </BreadcrumbItem>
+        </Fragment>
+      );
+    });
+  }
+
+  return (
+    <>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>
+          {formatBreadcrumbSegment(
+            pathSegments[pathSegments.length - 1],
+            moduleSlug
+          )}
+        </BreadcrumbPage>
+      </BreadcrumbItem>
+    </>
+  );
+}
+
 export default function ModuleHeader({
   children,
 }: {
@@ -244,48 +293,12 @@ export default function ModuleHeader({
                           </BreadcrumbLink>
                         )}
                       </BreadcrumbItem>
-                      {pathSegments.length > 1 &&
-                        (whichModule === 'embeddings' ? (
-                          pathSegments.slice(1).map((segment, index) => {
-                            const segmentIndex = index + 1;
-                            const href = `/${pathSegments
-                              .slice(0, segmentIndex + 1)
-                              .join('/')}`;
-                            const isLast =
-                              segmentIndex === pathSegments.length - 1;
-                            const label = formatBreadcrumbSegment(
-                              segment,
-                              whichModule,
-                              pathSegments[segmentIndex - 1]
-                            );
-                            return (
-                              <Fragment key={href}>
-                                <BreadcrumbSeparator />
-                                <BreadcrumbItem>
-                                  {isLast ? (
-                                    <BreadcrumbPage>{label}</BreadcrumbPage>
-                                  ) : (
-                                    <BreadcrumbLink asChild>
-                                      <Link href={href}>{label}</Link>
-                                    </BreadcrumbLink>
-                                  )}
-                                </BreadcrumbItem>
-                              </Fragment>
-                            );
-                          })
-                        ) : (
-                          <>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                              <BreadcrumbPage>
-                                {formatBreadcrumbSegment(
-                                  pathSegments[pathSegments.length - 1],
-                                  whichModule
-                                )}
-                              </BreadcrumbPage>
-                            </BreadcrumbItem>
-                          </>
-                        ))}
+                      {pathSegments.length > 1 && (
+                        <ModuleSubpathCrumbs
+                          pathSegments={pathSegments}
+                          moduleSlug={whichModule}
+                        />
+                      )}
                     </>
                   )}
                 </>

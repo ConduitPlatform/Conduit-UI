@@ -15,20 +15,10 @@ import {
 } from '@/lib/api/embeddings';
 import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
-  formatEmbeddingsApiError,
   readSearchParam,
+  settledError,
+  settledValue,
 } from '@/lib/models/embeddings';
-
-function settledValue<T>(result: PromiseSettledResult<T>): T | undefined {
-  return result.status === 'fulfilled' ? result.value : undefined;
-}
-
-function settledError(
-  result: PromiseSettledResult<unknown>
-): string | undefined {
-  if (result.status !== 'rejected') return undefined;
-  return formatEmbeddingsApiError(result.reason);
-}
 
 export default async function EmbeddingsTestSearchPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

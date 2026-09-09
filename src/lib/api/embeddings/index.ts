@@ -24,7 +24,6 @@ import {
   unwrapSemanticSearch,
   unwrapStartBackfill,
   unwrapUpsertEmbeddingConfig,
-  formatEmbeddingsApiError,
 } from '@/lib/models/embeddings';
 
 export const getEmbeddingConfigs = async (args?: {
@@ -121,21 +120,17 @@ export const resumeBackfill = async (id: string) => {
 };
 
 export const searchEmbeddings = async (data: SemanticSearchInput) => {
-  try {
-    const filter = serializeBackfillFilter(data.filter);
-    const res = await (
-      await getApiClient()
-    ).post<unknown>('/embeddings/search', {
-      schemaName: data.schemaName,
-      text: data.text,
-      targetField: data.targetField,
-      limit: data.limit,
-      ...(filter ? { filter } : {}),
-    });
-    return unwrapSemanticSearch(res.data);
-  } catch (error) {
-    throw new Error(formatEmbeddingsApiError(error));
-  }
+  const filter = serializeBackfillFilter(data.filter);
+  const res = await (
+    await getApiClient()
+  ).post<unknown>('/embeddings/search', {
+    schemaName: data.schemaName,
+    text: data.text,
+    targetField: data.targetField,
+    limit: data.limit,
+    ...(filter ? { filter } : {}),
+  });
+  return unwrapSemanticSearch(res.data);
 };
 
 export const getEmbeddingsSettings =

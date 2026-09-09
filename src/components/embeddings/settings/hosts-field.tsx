@@ -14,7 +14,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { normalizeHost } from '@/lib/models/embeddings/settings-form';
+import {
+  EmbeddingsSettingsFormValues,
+  normalizeHost,
+} from '@/lib/models/embeddings/settings-form';
 
 type HostsFieldName = 'allowedHosts' | 'security.sourceFieldAllowlist';
 
@@ -33,7 +36,7 @@ export function HostsField({
   disabled = false,
   placeholder = 'Add a host and press Enter',
 }: HostsFieldProps) {
-  const { control } = useFormContext();
+  const { control } = useFormContext<EmbeddingsSettingsFormValues>();
   const [draft, setDraft] = useState('');
 
   return (
@@ -41,9 +44,7 @@ export function HostsField({
       control={control}
       name={name}
       render={({ field }) => {
-        const hosts = Array.isArray(field.value)
-          ? field.value.filter(item => typeof item === 'string')
-          : [];
+        const hosts = field.value ?? [];
 
         const commit = (raw: string) => {
           const host = normalizeHost(raw);

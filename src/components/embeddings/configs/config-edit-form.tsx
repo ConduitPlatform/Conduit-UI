@@ -71,10 +71,7 @@ export function ConfigEditForm({
   const persist = useCallback(
     async (values: EmbeddingConfigFormValues) => {
       try {
-        const result = await upsertEmbeddingConfig({
-          ...values,
-          enabled: values.enabled,
-        });
+        const result = await upsertEmbeddingConfig(values);
         toast({
           title: 'Config saved',
           description:

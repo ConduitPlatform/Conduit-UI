@@ -27,7 +27,7 @@ import {
   searchBlockAction,
 } from '@/lib/models/embeddings/search-view';
 
-type SearchFormValues = {
+export type SearchFormValues = {
   schemaName: string;
   configId: string;
   targetField: string;

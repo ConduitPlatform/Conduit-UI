@@ -3,7 +3,10 @@
 import { useMemo, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { EmbeddingsReadiness } from '@/components/embeddings/EmbeddingsReadiness';
-import { SearchForm } from '@/components/embeddings/search/search-form';
+import {
+  SearchForm,
+  type SearchFormValues,
+} from '@/components/embeddings/search/search-form';
 import { SearchResults } from '@/components/embeddings/search/search-results';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,6 +88,26 @@ export function TestSearch({
     ]
   );
 
+  const runSearch = async (values: SearchFormValues) => {
+    setPending(true);
+    setError(undefined);
+    try {
+      const result = await searchEmbeddings({
+        schemaName: values.schemaName,
+        text: values.text,
+        targetField: values.targetField,
+        limit: clampSearchLimit(values.limit),
+        filter: values.filter,
+      });
+      setHits(result.hits);
+    } catch (reason) {
+      setHits(undefined);
+      setError(formatEmbeddingsApiError(reason));
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-4">
       <EmbeddingsReadiness rows={rows} />
@@ -115,25 +138,7 @@ export function TestSearch({
               const matched = configs.find(config => config._id === next);
               if (matched) setSchemaName(matched.schemaName);
             }}
-            onSubmit={async values => {
-              setPending(true);
-              setError(undefined);
-              try {
-                const result = await searchEmbeddings({
-                  schemaName: values.schemaName,
-                  text: values.text,
-                  targetField: values.targetField,
-                  limit: clampSearchLimit(values.limit),
-                  filter: values.filter,
-                });
-                setHits(result.hits);
-              } catch (reason) {
-                setHits(undefined);
-                setError(formatEmbeddingsApiError(reason));
-              } finally {
-                setPending(false);
-              }
-            }}
+            onSubmit={runSearch}
           />
         </CardContent>
       </Card>

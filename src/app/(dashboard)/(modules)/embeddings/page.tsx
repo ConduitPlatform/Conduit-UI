@@ -21,10 +21,12 @@ import {
 } from '@/lib/api/embeddings';
 import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
+  addEmbeddingsQueues,
+  collectOverviewWarnings,
   deriveEmbeddingsReadiness,
-  EmbeddingsQueueCounts,
-  EmbeddingsStatus,
-  formatEmbeddingsApiError,
+  emptyEmbeddingsQueue,
+  settledError,
+  settledValue,
 } from '@/lib/models/embeddings';
 import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 import {
@@ -33,42 +35,6 @@ import {
   getSystemMetrics,
 } from '@/lib/prometheus/metrics';
 import { getApiModuleNameFromPath } from '@/lib/utils/module-utils';
-
-function settledValue<T>(result: PromiseSettledResult<T>): T | undefined {
-  return result.status === 'fulfilled' ? result.value : undefined;
-}
-
-function settledError(
-  result: PromiseSettledResult<unknown>
-): string | undefined {
-  if (result.status !== 'rejected') return undefined;
-  return formatEmbeddingsApiError(result.reason);
-}
-
-function emptyQueue(): EmbeddingsQueueCounts {
-  return {
-    waiting: 0,
-    active: 0,
-    completed: 0,
-    failed: 0,
-    delayed: 0,
-    paused: 0,
-  };
-}
-
-function addQueues(
-  left: EmbeddingsQueueCounts,
-  right: EmbeddingsQueueCounts
-): EmbeddingsQueueCounts {
-  return {
-    waiting: left.waiting + right.waiting,
-    active: left.active + right.active,
-    completed: left.completed + right.completed,
-    failed: left.failed + right.failed,
-    delayed: left.delayed + right.delayed,
-    paused: left.paused + right.paused,
-  };
-}
 
 function metricValue(
   value: number | undefined,
@@ -134,8 +100,8 @@ export default async function EmbeddingsDashboard() {
 
   const queueUnavailable = !status;
   const queues = status
-    ? addQueues(status.generationQueue, status.backfillQueue)
-    : emptyQueue();
+    ? addEmbeddingsQueues(status.generationQueue, status.backfillQueue)
+    : emptyEmbeddingsQueue();
 
   const metricCards: MetricCardProps[] = [
     {
@@ -203,7 +169,7 @@ export default async function EmbeddingsDashboard() {
     },
   ];
 
-  const warnings = collectWarnings({
+  const warnings = collectOverviewWarnings({
     status,
     capabilitiesError: settledError(capabilitiesResult),
     statusError: settledError(statusResult),
@@ -251,91 +217,4 @@ export default async function EmbeddingsDashboard() {
       </div>
     </ModuleDashboard>
   );
-}
-
-type OverviewWarning = {
-  title: string;
-  description: string;
-  variant: 'warning' | 'destructive';
-};
-
-function collectWarnings(args: {
-  status?: EmbeddingsStatus;
-  capabilitiesError?: string;
-  statusError?: string;
-  configsError?: string;
-  settingsError?: string;
-  backfillsError?: string;
-  workersEnabled?: boolean;
-  capabilitiesSupported?: boolean;
-  capabilitiesReason?: string;
-}): OverviewWarning[] {
-  const warnings: OverviewWarning[] = [];
-
-  if (args.capabilitiesSupported === false) {
-    warnings.push({
-      title: 'Vector capabilities unavailable',
-      description:
-        args.capabilitiesReason ??
-        'This database does not support vector storage and search.',
-      variant: 'destructive',
-    });
-  } else if (args.capabilitiesError) {
-    warnings.push({
-      title: 'Could not load capabilities',
-      description: args.capabilitiesError,
-      variant: 'warning',
-    });
-  }
-
-  if (args.workersEnabled === false) {
-    warnings.push({
-      title: 'Workers disabled',
-      description:
-        'Overview stays available. Enable workers in Settings to process jobs.',
-      variant: 'warning',
-    });
-  }
-
-  if (args.statusError) {
-    warnings.push({
-      title: 'Status unavailable',
-      description: args.statusError,
-      variant: 'warning',
-    });
-  }
-
-  if (args.settingsError) {
-    warnings.push({
-      title: 'Settings unavailable',
-      description: args.settingsError,
-      variant: 'warning',
-    });
-  }
-
-  if (args.configsError) {
-    warnings.push({
-      title: 'Configs unavailable',
-      description: args.configsError,
-      variant: 'warning',
-    });
-  }
-
-  if (args.backfillsError) {
-    warnings.push({
-      title: 'Backfill count unavailable',
-      description: args.backfillsError,
-      variant: 'warning',
-    });
-  }
-
-  for (const message of args.status?.warnings ?? []) {
-    warnings.push({
-      title: 'Embeddings warning',
-      description: message,
-      variant: 'warning',
-    });
-  }
-
-  return warnings;
 }
