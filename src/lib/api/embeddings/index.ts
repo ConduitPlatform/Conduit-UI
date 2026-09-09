@@ -1,8 +1,6 @@
 'use server';
 
 import { getApiClient } from '@/lib/api';
-import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
-import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 import {
   BackfillListQuery,
   EmbeddingConfig,
@@ -140,10 +138,11 @@ export const getEmbeddingsSettings =
   };
 
 export const patchEmbeddingsSettings = async (
-  data: Partial<EmbeddingsSettings>,
-  options?: PatchSettingsOptions
+  data: Partial<EmbeddingsSettings>
 ) => {
   const config = sanitizeEmbeddingsSettingsPatch(data);
-  await (await getApiClient()).patch<unknown>('/config/embeddings', { config });
-  return afterPatchServing(options);
+  const res = await (
+    await getApiClient()
+  ).patch<unknown>('/config/embeddings', { config });
+  return unwrapEmbeddingsSettings(res.data);
 };

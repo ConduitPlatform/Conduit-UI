@@ -14,15 +14,8 @@ import {
   useSaveShortcutLabel,
 } from '@/components/embeddings/configs/use-save-shortcut';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import {
-  activeTogglePatchOptions,
-  useSettingsSave,
-} from '@/lib/hooks/use-settings-save';
+import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { patchEmbeddingsSettings } from '@/lib/api/embeddings';
-import {
-  isModuleServing,
-  PatchSettingsResult,
-} from '@/lib/api/modules/patch-settings-options';
 import type { EmbeddingsSettings as EmbeddingsModuleSettings } from '@/lib/models/embeddings/settings';
 import {
   EmbeddingsSettingsFormValues,
@@ -70,9 +63,11 @@ function workersToggleDescription(nextEnabled: boolean, serving?: boolean) {
   return 'Enable generation workers and mutation subscriptions? This does not deploy or stop the embeddings workload.';
 }
 
-function isWorkersPatchSuccess(result: PatchSettingsResult | void) {
-  if (!result) return true;
-  return isModuleServing(result.modules, 'embeddings');
+function isWorkersPatchSuccess(
+  result: { config: EmbeddingsModuleSettings },
+  expectedEnabled: boolean
+) {
+  return result.config.enabled === expectedEnabled;
 }
 
 export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
@@ -102,7 +97,10 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
           patchEmbeddingsSettings(
             toSettingsPatch(values, data, workersEnabled)
           ),
-        onSuccess: () => router.refresh(),
+        onSuccess: result => {
+          setWorkersEnabled(result.config.enabled);
+          router.refresh();
+        },
       });
       if (result.ok) {
         setEdit(false);
@@ -145,17 +143,17 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
         if (cancel) return;
         setWorkersEnabled(nextEnabled);
         void save({
-          action: () =>
-            patchEmbeddingsSettings(
-              { enabled: nextEnabled },
-              nextEnabled
-                ? activeTogglePatchOptions(['embeddings'], true)
-                : undefined
-            ),
-          isActivationSuccess: nextEnabled ? isWorkersPatchSuccess : undefined,
-          onSuccess: () => router.refresh(),
+          action: () => patchEmbeddingsSettings({ enabled: nextEnabled }),
+          isActivationSuccess: result =>
+            isWorkersPatchSuccess(result, nextEnabled),
+          onSuccess: result => {
+            setWorkersEnabled(result.config.enabled);
+            router.refresh();
+          },
           onError: () => setWorkersEnabled(data.enabled),
-          onActivationFailure: () => setWorkersEnabled(data.enabled),
+          onActivationFailure: result => {
+            setWorkersEnabled(result.config.enabled);
+          },
         });
       },
     });

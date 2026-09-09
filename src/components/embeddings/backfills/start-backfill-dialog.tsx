@@ -38,13 +38,14 @@ import {
   maxAllowedBatchSize,
   parseBatchSizeInput,
   parseOperatorFilterJson,
+  startBackfillConfigs,
+  startBackfillSchemas,
 } from '@/lib/models/embeddings/backfill-view';
 
 const ALL_CONFIGS = 'all';
 
 type StartBackfillDialogProps = {
   configs: EmbeddingConfig[];
-  schemas: string[];
   maxBatchSize?: number;
   defaultSchema?: string;
   defaultConfig?: string;
@@ -52,16 +53,29 @@ type StartBackfillDialogProps = {
 
 export function StartBackfillDialog({
   configs,
-  schemas,
   maxBatchSize,
   defaultSchema,
   defaultConfig,
 }: StartBackfillDialogProps) {
   const router = useRouter();
   const allowedMax = maxAllowedBatchSize(maxBatchSize);
+  const enabledConfigs = useMemo(
+    () => startBackfillConfigs(configs),
+    [configs]
+  );
+  const schemaOptions = useMemo(() => startBackfillSchemas(configs), [configs]);
+  const defaultEnabledConfig = enabledConfigs.find(
+    config => config._id === defaultConfig
+  );
   const [open, setOpen] = useState(false);
-  const [schemaName, setSchemaName] = useState(defaultSchema ?? '');
-  const [configId, setConfigId] = useState(defaultConfig ?? ALL_CONFIGS);
+  const [schemaName, setSchemaName] = useState(
+    defaultSchema && schemaOptions.includes(defaultSchema)
+      ? defaultSchema
+      : (defaultEnabledConfig?.schemaName ?? '')
+  );
+  const [configId, setConfigId] = useState(
+    defaultEnabledConfig?._id ?? ALL_CONFIGS
+  );
   const [onlyMissing, setOnlyMissing] = useState(true);
   const [batchSize, setBatchSize] = useState(
     String(defaultBackfillBatchSize(maxBatchSize))
@@ -72,17 +86,18 @@ export function StartBackfillDialog({
   const [pending, setPending] = useState(false);
 
   const schemaConfigs = useMemo(
-    () =>
-      schemaName
-        ? configs.filter(config => config.schemaName === schemaName)
-        : configs,
+    () => startBackfillConfigs(configs, schemaName || undefined),
     [configs, schemaName]
   );
 
   const reset = () => {
-    const matched = configs.find(config => config._id === defaultConfig);
-    setSchemaName(defaultSchema ?? matched?.schemaName ?? '');
-    setConfigId(defaultConfig ?? ALL_CONFIGS);
+    const matched = enabledConfigs.find(config => config._id === defaultConfig);
+    const nextSchema =
+      defaultSchema && schemaOptions.includes(defaultSchema)
+        ? defaultSchema
+        : (matched?.schemaName ?? '');
+    setSchemaName(nextSchema);
+    setConfigId(matched?._id ?? ALL_CONFIGS);
     setOnlyMissing(true);
     setBatchSize(String(defaultBackfillBatchSize(maxBatchSize)));
     setFilterText('');
@@ -127,7 +142,7 @@ export function StartBackfillDialog({
     }
   };
 
-  const disabled = configs.length === 0;
+  const disabled = enabledConfigs.length === 0;
 
   return (
     <Dialog
@@ -140,7 +155,7 @@ export function StartBackfillDialog({
       <DialogTrigger asChild>
         <Button
           disabled={disabled}
-          title={disabled ? 'Create a config first' : undefined}
+          title={disabled ? 'Enable a config first' : undefined}
         >
           Start backfill
         </Button>
@@ -173,7 +188,7 @@ export function StartBackfillDialog({
                 <SelectValue placeholder="Select a schema" />
               </SelectTrigger>
               <SelectContent>
-                {schemas.map(schema => (
+                {schemaOptions.map(schema => (
                   <SelectItem key={schema} value={schema}>
                     {schema}
                   </SelectItem>
@@ -188,7 +203,9 @@ export function StartBackfillDialog({
               onValueChange={value => {
                 setConfigId(value);
                 if (value === ALL_CONFIGS) return;
-                const matched = configs.find(config => config._id === value);
+                const matched = enabledConfigs.find(
+                  config => config._id === value
+                );
                 if (matched) setSchemaName(matched.schemaName);
               }}
             >

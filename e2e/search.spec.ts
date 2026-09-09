@@ -37,4 +37,18 @@ test.describe('test search', () => {
       page.getByRole('cell', { name: 'Published guide' })
     ).toHaveCount(0);
   });
+
+  test('searches when workers are off', async ({ page }) => {
+    await resetMock('workers-off');
+    await page.goto('/embeddings/test');
+    await expect(
+      page.getByRole('heading', { name: 'Workers disabled' })
+    ).toBeVisible();
+    await page.getByLabel('Query').fill('published guide');
+    await expect(page.getByRole('button', { name: 'Search' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Search' }).click();
+    await expect(
+      page.getByRole('cell', { name: 'Published guide' })
+    ).toBeVisible();
+  });
 });

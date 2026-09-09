@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import Link from 'next/link';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
@@ -19,6 +20,8 @@ type ConfigFormFieldsProps = {
   schemaLocked?: boolean;
   enableAllowed: boolean;
   enableBlockedReason?: string;
+  enableBlockedHref?: string;
+  enableBlockedAction?: string;
 };
 
 export function ConfigFormFields({
@@ -26,6 +29,8 @@ export function ConfigFormFields({
   schemaLocked = false,
   enableAllowed,
   enableBlockedReason,
+  enableBlockedHref,
+  enableBlockedAction,
 }: ConfigFormFieldsProps) {
   const { control, setValue } = useFormContext<EmbeddingConfigFormValues>();
   const schemaName = useWatch({ control, name: 'schemaName' }) ?? '';
@@ -117,7 +122,18 @@ export function ConfigFormFields({
           {enableAllowed
             ? 'Documents will embed after the matching index is queryable.'
             : (enableBlockedReason ??
-              'Enablement stays off until capabilities and a matching index are ready.')}
+              'Enablement stays off until workers, capabilities, and a matching index are ready.')}
+          {enableBlockedHref && enableBlockedAction ? (
+            <>
+              {' '}
+              <Link
+                href={enableBlockedHref}
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {enableBlockedAction}
+              </Link>
+            </>
+          ) : null}
         </p>
       </div>
     </div>

@@ -91,6 +91,8 @@ export function isVectorCapabilityProvider(
   );
 }
 
+export const DEFAULT_VECTOR_INDEX_METHOD: VectorIndexMethod = 'hnsw';
+
 export function isVectorIndexQueryable(index?: VectorIndexDefinition): boolean {
   if (!index) return false;
   if (index.queryable === false) return false;
@@ -98,4 +100,11 @@ export function isVectorIndexQueryable(index?: VectorIndexDefinition): boolean {
   if (index.status === 'pending' && index.queryable !== true) return false;
   if (index.queryable === true) return true;
   return index.status === 'ready';
+}
+
+export function isVectorStorageSearchReady(
+  capabilities: VectorCapabilities | undefined
+): boolean | undefined {
+  if (!capabilities) return undefined;
+  return capabilities.supported && capabilities.storage && capabilities.search;
 }

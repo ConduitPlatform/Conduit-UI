@@ -55,7 +55,17 @@ export default defineConfig({
     {
       name: 'chromium',
       dependencies: ['setup'],
-      testIgnore: /auth\.setup\.ts/,
+      testMatch: [
+        /navigation\.spec\.ts/,
+        /overview\.spec\.ts/,
+        /configs\.spec\.ts/,
+        /backfills\.spec\.ts/,
+        /search\.spec\.ts/,
+        /settings\.spec\.ts/,
+        /session\.spec\.ts/,
+        /keyboard\.spec\.ts/,
+        /smoke\.spec\.ts/,
+      ],
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'e2e/.auth/user.json',

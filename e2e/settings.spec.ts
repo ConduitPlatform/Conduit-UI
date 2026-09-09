@@ -30,4 +30,23 @@ test.describe('embeddings settings', () => {
     expect(inspect.storedApiKeyConfigured).toBe(true);
     expect(inspect.lastSettingsPatchHadApiKey).toBe(false);
   });
+
+  test('toggles workers from module config without waiting for serving', async ({
+    page,
+  }) => {
+    await resetMock('workers-off');
+    await page.goto('/embeddings/settings');
+    const workers = page.getByRole('switch', { name: 'Workers' });
+    await expect(workers).not.toBeChecked();
+    await expect(
+      page.getByText('Workload is serving. Workers can run when enabled.')
+    ).toBeVisible();
+    await workers.click();
+    await expect(page.getByRole('alertdialog')).toBeVisible();
+    await page.getByRole('button', { name: 'Proceed' }).click();
+    await expect(page.getByText('Embeddings settings saved')).toBeVisible();
+    await expect(workers).toBeChecked();
+    const inspect = await inspectMock();
+    expect(inspect.workersEnabled).toBe(true);
+  });
 });

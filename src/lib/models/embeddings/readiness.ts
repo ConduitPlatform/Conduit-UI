@@ -1,14 +1,20 @@
 import {
   isVectorIndexQueryable,
+  isVectorStorageSearchReady,
   VectorCapabilities,
   VectorIndexDefinition,
 } from '@/lib/models/embeddings/capabilities';
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import { findMatchingIndex } from '@/lib/models/embeddings/index-state';
 import { isSecretConfigured } from '@/lib/models/embeddings/secrets';
 import {
   EmbeddingsSettings,
   OPENAI_COMPATIBLE_PROVIDER,
 } from '@/lib/models/embeddings/settings';
+import {
+  normalizeHost,
+  parseHttpsEndpoint,
+} from '@/lib/models/embeddings/settings-form';
 
 export const READINESS_STATES = [
   'ready',
@@ -40,6 +46,9 @@ export type ReadinessRow = {
 
 export type SchemaIndexLookup = VectorIndexDefinition[] | 'unknown';
 
+export { findMatchingIndex } from '@/lib/models/embeddings/index-state';
+export { isVectorStorageSearchReady } from '@/lib/models/embeddings/capabilities';
+
 export type EmbeddingsReadinessInput = {
   capabilities?: VectorCapabilities;
   capabilitiesError?: string;
@@ -52,18 +61,6 @@ export type EmbeddingsReadinessInput = {
   workersEnabled?: boolean;
 };
 
-export function findMatchingIndex(
-  config: EmbeddingConfig,
-  indexes: VectorIndexDefinition[]
-): VectorIndexDefinition | undefined {
-  return indexes.find(
-    index =>
-      index.field === config.targetField &&
-      index.dimensions === config.dimensions &&
-      index.similarity === config.similarity
-  );
-}
-
 export function isProviderConfigured(
   settings: EmbeddingsSettings | undefined
 ): boolean | undefined {
@@ -72,16 +69,24 @@ export function isProviderConfigured(
   const provider =
     settings.providers[name] ?? settings.providers[OPENAI_COMPATIBLE_PROVIDER];
   if (!provider) return false;
-  return (
-    isSecretConfigured(provider.apiKey) && provider.endpoint.trim().length > 0
-  );
+  if (!isSecretConfigured(provider.apiKey)) return false;
+  const parsed =
+    parseHttpsEndpoint(provider.endpoint) ??
+    parseAnyEndpoint(provider.endpoint);
+  if (!parsed) return false;
+  const hostname = normalizeHost(parsed.hostname);
+  const hosts = provider.allowedHosts.map(normalizeHost).filter(Boolean);
+  return hosts.length > 0 && hosts.includes(hostname);
 }
 
-export function isVectorStorageSearchReady(
-  capabilities: VectorCapabilities | undefined
-): boolean | undefined {
-  if (!capabilities) return undefined;
-  return capabilities.supported && capabilities.storage && capabilities.search;
+function parseAnyEndpoint(value: string): URL | undefined {
+  try {
+    const url = new URL(value.trim());
+    if (!url.hostname) return undefined;
+    return url;
+  } catch {
+    return undefined;
+  }
 }
 
 function configHref(config?: EmbeddingConfig): string {
@@ -161,7 +166,7 @@ function evaluateIndexRow(
   if (missing) {
     return {
       state: 'blocked',
-      detail: 'No index matches field, dimensions, and similarity',
+      detail: 'No index matches field, dimensions, similarity, and method',
       href: configHref(selectedConfig ?? missing),
       actionLabel: 'Open config',
     };
@@ -171,7 +176,7 @@ function evaluateIndexRow(
   }
   return {
     state: 'blocked',
-    detail: 'No index matches field, dimensions, and similarity',
+    detail: 'No index matches field, dimensions, similarity, and method',
     href: configHref(selectedConfig),
     actionLabel: selectedConfig ? 'Open config' : 'Open configs',
   };
@@ -219,7 +224,8 @@ export function deriveEmbeddingsReadiness(
     providerRow.detail = 'Endpoint and API key are set';
   } else if (providerReady === false) {
     providerRow.state = 'blocked';
-    providerRow.detail = 'Set an endpoint and API key';
+    providerRow.detail =
+      'Set an endpoint, API key, and allowed hosts that include the endpoint hostname';
     providerRow.href = '/embeddings/settings';
     providerRow.actionLabel = 'Configure provider';
   }

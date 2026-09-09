@@ -98,7 +98,6 @@ export default async function EmbeddingBackfillsPage(props: {
         <PageActions className="flex-wrap">
           <StartBackfillDialog
             configs={configs}
-            schemas={schemas}
             maxBatchSize={settings?.queue.maxBatchSize}
             defaultSchema={query.schema}
             defaultConfig={query.config}

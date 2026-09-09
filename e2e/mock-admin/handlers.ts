@@ -29,6 +29,7 @@ import {
   registerIssuedToken,
   resetState,
   revokeActiveTokens,
+  toApiConfig,
   toApiRun,
 } from './state.ts';
 import { isMockScenario } from './types.ts';
@@ -204,12 +205,45 @@ function matchingIndex(
 ) {
   const state = getState();
   if (!schemaId) return undefined;
-  return (state.indexesBySchemaId[schemaId] ?? []).find(
+  const matches = (state.indexesBySchemaId[schemaId] ?? []).filter(
     index =>
       index.field === config.targetField &&
       index.dimensions === config.dimensions &&
-      index.similarity === config.similarity
+      index.similarity === config.similarity &&
+      (index.method ?? 'hnsw') === 'hnsw'
   );
+  if (matches.length === 0) return undefined;
+  const defaultName = `${config.targetField}_vector`;
+  return matches.reduce((best, current) => {
+    const bestGen = parseGeneration(best.name);
+    const currentGen = parseGeneration(current.name);
+    if (currentGen !== bestGen) {
+      return currentGen > bestGen ? current : best;
+    }
+    if (current.name === defaultName) return current;
+    if (best.name === defaultName) return best;
+    return best;
+  });
+}
+
+function parseGeneration(name: string): number {
+  if (!name) return 0;
+  const match = /^(.*)_v(\d+)$/.exec(name);
+  if (match) return Number(match[2]);
+  return 1;
+}
+
+function readFilter(value: unknown): Record<string, unknown> | undefined {
+  if (typeof value === 'string') {
+    try {
+      const parsed: unknown = JSON.parse(value);
+      return isRecord(parsed) ? parsed : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  if (isRecord(value)) return { ...value };
+  return undefined;
 }
 
 function schemaIdForName(name: string): string | undefined {
@@ -365,6 +399,7 @@ function handleTestControl(
       backfillCount: state.backfills.length,
       storedApiKeyConfigured: Boolean(provider?.apiKey),
       lastSettingsPatchHadApiKey: state.lastSettingsPatchHadApiKey,
+      workersEnabled: state.settings.enabled,
       modules: state.modules.map(module => module.moduleName),
     });
     return true;
@@ -481,7 +516,7 @@ export async function handleMockRequest(
       configs = configs.filter(config => config.schemaName === schemaName);
     }
     if (id) configs = configs.filter(config => config._id === id);
-    sendJson(response, 200, { configs });
+    sendJson(response, 200, { configs: configs.map(toApiConfig) });
     return;
   }
 
@@ -547,7 +582,7 @@ export async function handleMockRequest(
     } else {
       state.configs.push(next);
     }
-    sendJson(response, 200, { config: next, warnings });
+    sendJson(response, 200, { config: toApiConfig(next), warnings });
     return;
   }
 
@@ -558,7 +593,7 @@ export async function handleMockRequest(
       notFound(response, 'Embedding config not found');
       return;
     }
-    sendJson(response, 200, config);
+    sendJson(response, 200, { config: toApiConfig(config) });
     return;
   }
   if (configMatch && method === 'DELETE') {
@@ -569,7 +604,7 @@ export async function handleMockRequest(
       return;
     }
     state.configs = state.configs.filter(item => item._id !== config._id);
-    sendJson(response, 200, { config });
+    sendJson(response, 200, { config: toApiConfig(config) });
     return;
   }
 
@@ -607,7 +642,7 @@ export async function handleMockRequest(
       state: 'queued',
       batchSize: readNumber(body.batchSize, 100) ?? 100,
       onlyMissing: readBoolean(body.onlyMissing, true),
-      filter: isRecord(body.filter) ? { ...body.filter } : undefined,
+      filter: readFilter(body.filter),
       scannedCount: 0,
       queuedCount: 0,
       processedCount: 0,

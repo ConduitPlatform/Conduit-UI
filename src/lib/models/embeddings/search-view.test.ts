@@ -129,7 +129,7 @@ describe('searchable configs', () => {
 });
 
 describe('readiness gate', () => {
-  it('blocks submit until every row is ready and returns the next action', () => {
+  it('allows search when workers are off and the other gates are ready', () => {
     const blocked = [
       row({
         id: 'provider',
@@ -144,8 +144,16 @@ describe('readiness gate', () => {
     expect(searchBlockAction(blocked)?.href).toBe('/embeddings/settings');
     expect(
       isSearchReady([
+        row({ id: 'capabilities', state: 'ready' }),
         row({ id: 'provider', state: 'ready' }),
         row({ id: 'index', state: 'ready' }),
+        row({ id: 'config', state: 'ready' }),
+        row({
+          id: 'workers',
+          state: 'blocked',
+          href: '/embeddings/settings',
+          actionLabel: 'Open settings',
+        }),
       ])
     ).toBe(true);
   });

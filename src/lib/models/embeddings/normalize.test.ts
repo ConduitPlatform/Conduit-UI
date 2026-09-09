@@ -36,6 +36,16 @@ describe('embedding config unwrapping', () => {
     expect(unwrapEmbeddingConfigList([configDoc])[0]?.schemaName).toBe(
       'Article'
     );
+    const live = unwrapEmbeddingConfig({
+      id: 'cfg_live',
+      schemaName: 'Article',
+      sourceFields: ['title'],
+      targetField: 'embedding',
+      model: 'text-embedding-3-small',
+      dimensions: 1536,
+    });
+    expect(live._id).toBe('cfg_live');
+    expect(live.model).toBe('text-embedding-3-small');
     expect(
       unwrapUpsertEmbeddingConfig({
         config: configDoc,
@@ -83,6 +93,14 @@ describe('backfill filter parsing', () => {
     expect(run._id).toBe('run_1');
     expect(run.filter).toEqual({ published: true });
     expect(run.onlyMissing).toBe(true);
+    const stringFilter = unwrapBackfillRun({
+      id: 'run_2',
+      schemaName: 'Article',
+      state: 'queued',
+      filter: '{"published":true}',
+    });
+    expect(stringFilter._id).toBe('run_2');
+    expect(stringFilter.filter).toEqual({ published: true });
   });
 });
 

@@ -77,10 +77,22 @@ const queryableIndex: VectorIndexDefinition = {
 };
 
 describe('provider and capability readiness', () => {
-  it('treats a redacted key plus endpoint as configured', () => {
+  it('treats a redacted key plus endpoint as configured only with matching hosts', () => {
     expect(isProviderConfigured(undefined)).toBeUndefined();
     expect(isProviderConfigured(settings(true))).toBe(true);
     expect(isProviderConfigured(settings(false))).toBe(false);
+    const missingHosts = settings(true);
+    missingHosts.providers[OPENAI_COMPATIBLE_PROVIDER] = {
+      ...missingHosts.providers[OPENAI_COMPATIBLE_PROVIDER],
+      allowedHosts: [],
+    };
+    expect(isProviderConfigured(missingHosts)).toBe(false);
+    const wrongHost = settings(true);
+    wrongHost.providers[OPENAI_COMPATIBLE_PROVIDER] = {
+      ...wrongHost.providers[OPENAI_COMPATIBLE_PROVIDER],
+      allowedHosts: ['example.com'],
+    };
+    expect(isProviderConfigured(wrongHost)).toBe(false);
   });
 
   it('requires storage and search together', () => {
@@ -98,7 +110,7 @@ describe('provider and capability readiness', () => {
 });
 
 describe('matching index lookup', () => {
-  it('matches field, dimensions, and similarity together', () => {
+  it('matches field, dimensions, similarity, and default method together', () => {
     const article = config({ _id: 'cfg_1', schemaName: 'Article' });
     expect(
       findMatchingIndex(article, [
@@ -111,6 +123,35 @@ describe('matching index lookup', () => {
         { field: 'embedding', dimensions: 768, similarity: 'cosine' },
       ])
     ).toBeUndefined();
+  });
+
+  it('selects ready v2 over pending v1', () => {
+    const article = config({ _id: 'cfg_1', schemaName: 'Article' });
+    const pendingV1 = {
+      name: 'embedding_vector_v1',
+      field: 'embedding',
+      dimensions: 1536,
+      similarity: 'cosine' as const,
+      method: 'hnsw' as const,
+      status: 'pending' as const,
+    };
+    const readyV2 = {
+      name: 'embedding_vector_v2',
+      field: 'embedding',
+      dimensions: 1536,
+      similarity: 'cosine' as const,
+      method: 'hnsw' as const,
+      status: 'ready' as const,
+      queryable: true,
+    };
+    expect(findMatchingIndex(article, [pendingV1, readyV2])?.name).toBe(
+      'embedding_vector_v2'
+    );
+    const rows = deriveEmbeddingsReadiness({
+      configs: [article],
+      indexesBySchema: { Article: [pendingV1, readyV2] },
+    });
+    expect(rows.find(row => row.id === 'index')?.state).toBe('ready');
   });
 });
 
@@ -235,7 +276,7 @@ describe('deriveEmbeddingsReadiness', () => {
     });
     expect(missing.find(row => row.id === 'index')).toMatchObject({
       state: 'blocked',
-      detail: 'No index matches field, dimensions, and similarity',
+      detail: 'No index matches field, dimensions, similarity, and method',
     });
   });
 

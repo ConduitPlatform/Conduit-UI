@@ -64,4 +64,18 @@ test.describe('embedding configs', () => {
       page.getByRole('definition').filter({ hasText: 'Ready' })
     ).toBeVisible();
   });
+
+  test('selects the highest ready generation over a pending v1', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/configs/cfg_product');
+    await expect(page.getByText('Product_embedding_v2')).toBeVisible();
+    await expect(page.getByText('Product_embedding_v1')).toHaveCount(0);
+    const generation = page.getByRole('term').filter({ hasText: 'Generation' });
+    await expect(generation).toBeVisible();
+    await expect(
+      generation.locator('xpath=following-sibling::dd[1]')
+    ).toHaveText('2');
+  });
 });
