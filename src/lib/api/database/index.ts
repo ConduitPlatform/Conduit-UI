@@ -11,6 +11,7 @@ import {
   SchemaOptions,
 } from '@/lib/models/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
+import { normalizeSchemaIndexResponse } from '@/lib/database/schema-indexes';
 
 export const getPendingSchemas = async (args: {
   skip?: number;
@@ -342,9 +343,10 @@ export const createSchemaIndexes = async (
 };
 
 export const getSchemaIndexes = async (schemaId: string) => {
-  return await (await getApiClient())
-    .get<{ indexes: unknown[] }>(`/database/schemas/${schemaId}/indexes`)
+  const data = await (await getApiClient())
+    .get<unknown>(`/database/schemas/${schemaId}/indexes`)
     .then(res => res.data);
+  return { indexes: normalizeSchemaIndexResponse(data) };
 };
 
 export const deleteSchemaIndexes = async (

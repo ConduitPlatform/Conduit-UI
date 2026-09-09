@@ -99,7 +99,7 @@ function getIndexSignature(index: SchemaIndex) {
 }
 
 function isPrimaryIndex(index: SchemaIndex) {
-  return index.fields.length === 1 && index.fields[0] === '_id';
+  return index.fields?.length === 1 && index.fields[0] === '_id';
 }
 
 function getSchemaReadPreference(schema: DeclaredSchema) {
@@ -174,7 +174,7 @@ export function SettingsPanel({
     setIsLoadingIndices(true);
     try {
       const result = await getSchemaIndexes(schema._id);
-      const customIndexes = (result.indexes as SchemaIndex[]).filter(
+      const customIndexes = result.indexes.filter(
         index => !isPrimaryIndex(index)
       );
       setIndices(customIndexes);
