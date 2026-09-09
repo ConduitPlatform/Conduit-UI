@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Form } from '@/components/ui/form';
@@ -10,8 +10,11 @@ import { DeleteConfigDialog } from '@/components/embeddings/configs/delete-confi
 import { MaterialEditDialog } from '@/components/embeddings/configs/material-edit-dialog';
 import { SaveConfigButton } from '@/components/embeddings/configs/save-config-button';
 import {
+  configFormSignature,
   embeddingConfigFormSchema,
   EmbeddingConfigFormValues,
+  shouldResetConfigForm,
+  toConfigFormValues,
 } from '@/components/embeddings/configs/schema';
 import {
   useSaveShortcut,
@@ -57,7 +60,8 @@ export function ConfigEditForm({
 }: ConfigEditFormProps) {
   const router = useRouter();
   const shortcut = useSaveShortcutHint();
-  const existing = toMaterialEmbeddingConfig(config);
+  const [applied, setApplied] = useState(config);
+  const ignoredIncomingSignatureRef = useRef<string | null>(null);
   const [materialOpen, setMaterialOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -67,17 +71,52 @@ export function ConfigEditForm({
   const form = useForm<EmbeddingConfigFormValues>({
     resolver: rhfZodResolver(embeddingConfigFormSchema),
     mode: 'onChange',
-    defaultValues: {
-      schemaName: config.schemaName,
-      sourceFields: config.sourceFields,
-      targetField: config.targetField,
-      provider: config.provider,
-      model: config.model,
-      dimensions: config.dimensions,
-      similarity: config.similarity,
-      enabled: config.enabled,
-    },
+    defaultValues: toConfigFormValues(config),
   });
+  const { reset, watch } = form;
+  const currentValues = watch();
+  const appliedSignature = configFormSignature(toConfigFormValues(applied));
+  const dirty = configFormSignature(currentValues) !== appliedSignature;
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+
+  const applyPersistedConfig = useCallback(
+    (next: EmbeddingConfig) => {
+      setApplied(next);
+      reset(toConfigFormValues(next));
+    },
+    [reset]
+  );
+
+  useEffect(() => {
+    const incomingSignature = configFormSignature(toConfigFormValues(config));
+    const nextAppliedSignature = configFormSignature(
+      toConfigFormValues(applied)
+    );
+    if (
+      incomingSignature === nextAppliedSignature &&
+      config._id === applied._id
+    ) {
+      ignoredIncomingSignatureRef.current = null;
+      return;
+    }
+    if (
+      !shouldResetConfigForm({
+        incomingId: config._id,
+        incomingSignature,
+        appliedId: applied._id,
+        appliedSignature: nextAppliedSignature,
+        dirty: dirtyRef.current,
+        ignoredIncomingSignature: ignoredIncomingSignatureRef.current,
+      })
+    ) {
+      return;
+    }
+    ignoredIncomingSignatureRef.current = null;
+    applyPersistedConfig(config);
+  }, [applied, applyPersistedConfig, config]);
+
+  const existing = toMaterialEmbeddingConfig(applied);
 
   const persist = useCallback(
     async (values: EmbeddingConfigFormValues) => {
@@ -90,6 +129,10 @@ export function ConfigEditForm({
         });
         setMaterialOpen(false);
         setPendingValues(null);
+        ignoredIncomingSignatureRef.current = configFormSignature(
+          toConfigFormValues(config)
+        );
+        applyPersistedConfig(result.config);
         if (result.config._id !== config._id) {
           router.push(`/embeddings/configs/${result.config._id}`);
           return;
@@ -103,7 +146,7 @@ export function ConfigEditForm({
         });
       }
     },
-    [config._id, router]
+    [applyPersistedConfig, config, router]
   );
 
   const submit = useCallback(
@@ -129,7 +172,6 @@ export function ConfigEditForm({
     [existing, form, modelBlocked, persist]
   );
 
-  const dirty = form.formState.isDirty;
   const submitting = form.formState.isSubmitting;
   useSaveShortcut(
     dirty && !submitting && !materialOpen && !deleteOpen && !modelBlocked,

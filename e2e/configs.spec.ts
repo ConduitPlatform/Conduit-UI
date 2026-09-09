@@ -155,6 +155,36 @@ test.describe('embedding configs', () => {
     ).toBeVisible();
   });
 
+  test('resets enabled after a material edit that stays pending', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/configs/cfg_product');
+    const enabled = page.getByRole('switch', { name: 'Enabled' });
+    await expect(enabled).toBeChecked();
+    await page.getByRole('combobox', { name: 'Similarity' }).click();
+    await page.getByRole('option', { name: 'Euclidean' }).click();
+    await page.getByRole('button', { name: /Save changes/ }).click();
+    const dialog = page.getByRole('alertdialog');
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByRole('heading', { name: 'Save material changes?' })
+    ).toBeVisible();
+    await dialog.getByRole('button', { name: 'Save changes' }).click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText(
+          'Config stayed disabled until the matching index is queryable.'
+        )
+    ).toBeVisible();
+    await expect(enabled).not.toBeChecked();
+    await expect(
+      page.getByRole('button', { name: 'Save changes', exact: true })
+    ).toBeDisabled();
+    await expect(page.getByText('Pending', { exact: true })).toBeVisible();
+  });
+
   test('blocks a config whose model is absent from the catalogue', async ({
     page,
   }) => {
