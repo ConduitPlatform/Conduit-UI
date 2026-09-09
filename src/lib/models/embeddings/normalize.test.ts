@@ -230,4 +230,28 @@ describe('settings unwrapping', () => {
     });
     expect(parsed.config.security).not.toHaveProperty('requireGrpcKey');
   });
+
+  it('returns a catalogue GET payload without plaintext keys or legacy fields', () => {
+    const parsed = unwrapEmbeddingsSettings({
+      config: {
+        enabled: true,
+        providers: {
+          [OPENAI_COMPATIBLE_PROVIDER]: {
+            endpoint: 'https://api.openai.com/v1/embeddings',
+            apiKey: '',
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+            defaultModel: 'text-embedding-3-small',
+          },
+        },
+      },
+    });
+    const provider = parsed.config.providers[OPENAI_COMPATIBLE_PROVIDER];
+    expect(provider && 'apiKey' in provider).toBe(false);
+    expect(provider && 'model' in provider).toBe(false);
+    expect(provider && 'allowedHosts' in provider).toBe(false);
+    expect(provider?.models).toEqual([
+      { name: 'text-embedding-3-small', dimensions: 1536 },
+    ]);
+    expect(provider?.defaultModel).toBe('text-embedding-3-small');
+  });
 });

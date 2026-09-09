@@ -3,6 +3,8 @@ import {
   ARCHIVED_SCHEMA_NAME,
   CMS_ONLY_SCHEMA_ID,
   CMS_ONLY_SCHEMA_NAME,
+  COLLISION_SCHEMA_ID,
+  COLLISION_SCHEMA_NAME,
   E2E_ENV_NAME,
   FIXED_NOW,
   LEGACY_CONFIG_ID,
@@ -114,8 +116,33 @@ function archivedSchema(): MockSchema {
   };
 }
 
+function collisionSchema(): MockSchema {
+  const fields = {
+    title: { type: 'String' },
+    embedding: { type: 'String' },
+  };
+  return {
+    _id: COLLISION_SCHEMA_ID,
+    name: COLLISION_SCHEMA_NAME,
+    parentSchema: null,
+    fields,
+    compiledFields: fields,
+    extensions: [],
+    modelOptions: schemaModelOptions({ enabled: true, extendable: true }),
+    ownerModule: 'database',
+    collectionName: 'notes',
+    createdAt: FIXED_NOW,
+    updatedAt: FIXED_NOW,
+  };
+}
+
 function declaredSchemas(): MockSchema[] {
-  return [productSchema(), archivedSchema(), cmsOnlySchema()];
+  return [
+    productSchema(),
+    archivedSchema(),
+    cmsOnlySchema(),
+    collisionSchema(),
+  ];
 }
 
 function coreModules(
@@ -296,6 +323,20 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
             enabled: true,
             apiKey: STORED_API_KEY,
           });
+          settings.providers[OPENAI_COMPATIBLE_PROVIDER] = {
+            ...settings.providers[OPENAI_COMPATIBLE_PROVIDER],
+            models: [
+              {
+                name: PROVIDER_MODEL,
+                dimensions: PROVIDER_DIMENSIONS,
+              },
+              {
+                name: 'text-embedding-3-large',
+                dimensions: 3072,
+              },
+            ],
+            defaultModel: PROVIDER_MODEL,
+          };
           settings.providers[SECOND_PROVIDER] = {
             endpoint: PROVIDER_ENDPOINT,
             apiKey: STORED_API_KEY,

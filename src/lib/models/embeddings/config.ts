@@ -26,7 +26,7 @@ export type EmbeddingConfigInput = {
   targetField: string;
   provider?: string;
   model?: string;
-  dimensions: number;
+  dimensions?: number;
   similarity?: VectorSimilarity;
   enabled?: boolean;
 };
@@ -54,7 +54,7 @@ export type EmbeddingConfigRequest = {
   targetField: string;
   provider?: string;
   model?: string;
-  dimensions: number;
+  dimensions?: number;
   similarity?: VectorSimilarity;
   enabled?: boolean;
 };

@@ -33,6 +33,8 @@ function operatorErrorForStatus(status: number | undefined): string {
       return 'The requested embeddings resource was not found.';
     case 409:
       return 'This embeddings resource changed. Refresh and try again.';
+    case 412:
+      return 'The request was rejected. Check the values and try again.';
     case 413:
       return 'The request is too large.';
     case 429:

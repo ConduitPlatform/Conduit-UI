@@ -79,6 +79,20 @@ describe('ConfigFormFields', () => {
     cleanup();
   });
 
+  it('filters models and keeps keyboard selection', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('combobox', { name: 'Model' }));
+    const search = screen.getByPlaceholderText('Search models');
+    fireEvent.change(search, { target: { value: 'large' } });
+    expect(
+      screen.getByRole('option', { name: 'text-embedding-3-large' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: 'text-embedding-3-small' })
+    ).toBeNull();
+    fireEvent.keyDown(search, { key: 'Escape' });
+  });
+
   it('filters schemas and keeps keyboard selection', () => {
     render(<Harness />);
     fireEvent.click(screen.getByRole('combobox', { name: 'Schema' }));

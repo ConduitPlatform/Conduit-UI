@@ -31,6 +31,27 @@ test.describe('keyboard', () => {
     await expect(page.getByText('Embeddings settings saved')).toBeVisible();
   });
 
+  test('searches schemas and models with arrows and enter', async ({
+    page,
+  }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs/new');
+    const schema = page.getByRole('combobox', { name: 'Schema' });
+    await schema.click();
+    await page.getByPlaceholder('Search schemas').fill('pro');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(schema).toContainText('Product');
+
+    const model = page.getByRole('combobox', { name: 'Model' });
+    await model.click();
+    await page.getByPlaceholder('Search models').fill('large');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(model).toContainText('text-embedding-3-large');
+    await expect(page.getByLabel('Dimensions')).toHaveValue('3072');
+  });
+
   test('keeps a visible focus ring on the Test Search submit control', async ({
     page,
   }) => {

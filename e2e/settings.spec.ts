@@ -22,6 +22,7 @@ test.describe('embeddings settings', () => {
     await expect(page.getByLabel('Provider')).toHaveValue('openai-compatible');
     await expect(page.getByText('Allowed hosts')).toHaveCount(0);
     await expect(page.getByText('Require gRPC key')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Models' })).toBeVisible();
     await page.getByRole('button', { name: 'Edit' }).click();
     await expect(page.getByLabel('Model name')).toBeVisible();
     await page.getByLabel('Dimensions').fill('3072');

@@ -16,9 +16,12 @@ describe('formatEmbeddingsApiError', () => {
     ).toBe('The request was rejected. Check the values and try again.');
     expect(
       formatEmbeddingsApiError({
-        response: { status: 404, data: { error: 'missing' } },
+        response: {
+          status: 412,
+          data: { message: 'Schema is not extendable' },
+        },
       })
-    ).toBe('The requested embeddings resource was not found.');
+    ).toBe('The request was rejected. Check the values and try again.');
     expect(
       formatEmbeddingsApiError({
         response: { status: 500, data: { error: { message: 'stack at fn' } } },
@@ -43,8 +46,14 @@ describe('formatEmbeddingsApiError', () => {
 
   it('keeps operator-safe thrown messages and hides internals', () => {
     expect(
-      formatEmbeddingsApiError(new Error('Filter must be a JSON object.'))
-    ).toBe('Filter must be a JSON object.');
+      formatEmbeddingsApiError(
+        new Error(
+          "Field 'embedding' already exists on schema 'Article' and is not a compatible embeddings extension"
+        )
+      )
+    ).toBe(
+      "Field 'embedding' already exists on schema 'Article' and is not a compatible embeddings extension"
+    );
     expect(
       formatEmbeddingsApiError(new Error('ECONNREFUSED 127.0.0.1:5512'))
     ).toBe(EMBEDDINGS_REQUEST_FAILED);

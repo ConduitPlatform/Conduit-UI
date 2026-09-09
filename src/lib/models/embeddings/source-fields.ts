@@ -1,6 +1,7 @@
 import type { EmbeddingConfigInput, EmbeddingConfigRequest } from './config.ts';
 import {
   catalogueDimensionsForInput,
+  resolveRequestedCatalogueDimensions,
   type ConfigProviderChoice,
 } from './config-catalogue.ts';
 
@@ -82,6 +83,11 @@ export function isValidSchemaOrTargetName(value: string): boolean {
   return SCHEMA_OR_TARGET_NAME.test(value);
 }
 
+export type SchemaExtensionInfo = {
+  ownerModule?: string;
+  fields?: Record<string, unknown>;
+};
+
 export type EmbeddingSchemaEligibilityInput = {
   name: string;
   ownerModule?: string;
@@ -89,6 +95,7 @@ export type EmbeddingSchemaEligibilityInput = {
   modelOptions?: unknown;
   fields?: unknown;
   compiledFields?: unknown;
+  extensions?: SchemaExtensionInfo[];
 };
 
 export function isDeniedEmbeddingSchema(schema: {
@@ -117,9 +124,9 @@ export function isDeclaredSchemaEnabled(schema: {
 }): boolean {
   if (schema.enabled === false) return false;
   if (schema.enabled === true) return true;
-  if (!isRecord(schema.modelOptions)) return false;
+  if (!isRecord(schema.modelOptions)) return true;
   const conduit = schema.modelOptions.conduit;
-  if (!isRecord(conduit)) return false;
+  if (!isRecord(conduit)) return true;
   const cms = conduit.cms;
   if (cms == null) return true;
   return isRecord(cms) && cms.enabled === true;
@@ -258,6 +265,116 @@ export const UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE =
 export const SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE =
   'Schema eligibility could not be verified. Retry.';
 
+export function embeddingSourceHashField(targetField: string): string {
+  return `${targetField}SourceHash`;
+}
+
+export function embeddingExtensionCollisionMessage(
+  fieldName: string,
+  schemaName: string
+): string {
+  return `Field '${fieldName}' already exists on schema '${schemaName}' and is not a compatible embeddings extension`;
+}
+
+type EmbeddingExtensionField = {
+  type: string;
+  dimensions?: number;
+  similarity?: string;
+  required?: boolean;
+};
+
+function fieldType(field: unknown): string | undefined {
+  if (typeof field === 'string') return field;
+  if (!isRecord(field)) return undefined;
+  if (typeof field.type === 'string') return field.type;
+  return undefined;
+}
+
+function isCompatibleEmbeddingField(
+  existing: unknown,
+  proposed: EmbeddingExtensionField
+): boolean {
+  const type = fieldType(existing);
+  if (type !== proposed.type) return false;
+  if (proposed.type === 'Vector') {
+    if (!isRecord(existing)) return false;
+    if (existing.dimensions !== proposed.dimensions) return false;
+    if (
+      typeof existing.similarity === 'string' &&
+      existing.similarity !== proposed.similarity
+    ) {
+      return false;
+    }
+    return true;
+  }
+  if (proposed.type === 'String') {
+    if (isRecord(existing) && existing.required === true) return false;
+    return isStringLikeField(existing);
+  }
+  return false;
+}
+
+function extensionOwner(
+  fieldName: string,
+  extensions: SchemaExtensionInfo[]
+): SchemaExtensionInfo | undefined {
+  return extensions.find(extension => fieldName in (extension.fields ?? {}));
+}
+
+export function assertEmbeddingExtensionAvailability(args: {
+  schemaName: string;
+  targetField: string;
+  dimensions: number;
+  similarity: string;
+  baseFields?: Record<string, unknown>;
+  compiledFields: Record<string, unknown>;
+  extensions?: SchemaExtensionInfo[];
+}): void {
+  const hashField = embeddingSourceHashField(args.targetField);
+  const proposed: Record<string, EmbeddingExtensionField> = {
+    [args.targetField]: {
+      type: 'Vector',
+      dimensions: args.dimensions,
+      similarity: args.similarity,
+    },
+    [hashField]: {
+      type: 'String',
+      required: false,
+    },
+  };
+  const extensions = args.extensions ?? [];
+  for (const [fieldName, definition] of Object.entries(proposed)) {
+    const owned = extensionOwner(fieldName, extensions);
+    if (owned && owned.ownerModule !== EMBEDDINGS_OWNER_MODULE) {
+      throw new Error(
+        embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+      );
+    }
+    if (owned?.ownerModule === EMBEDDINGS_OWNER_MODULE) {
+      if (!isCompatibleEmbeddingField(owned.fields?.[fieldName], definition)) {
+        throw new Error(
+          embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+        );
+      }
+      continue;
+    }
+    if (args.baseFields && fieldName in args.baseFields) {
+      throw new Error(
+        embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+      );
+    }
+    if (fieldName in args.compiledFields) {
+      if (
+        !isCompatibleEmbeddingField(args.compiledFields[fieldName], definition)
+      ) {
+        throw new Error(
+          embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+        );
+      }
+    }
+  }
+}
+
 export function toEmbeddingSchemaFormChoice(
   schema: EmbeddingSchemaChoice,
   current: readonly string[] = []
@@ -286,7 +403,9 @@ export function toEmbeddingConfigRequest(
     targetField: data.targetField,
     ...(data.provider ? { provider: data.provider } : {}),
     ...(data.model ? { model: data.model } : {}),
-    dimensions: data.dimensions,
+    ...(typeof data.dimensions === 'number' && data.dimensions > 0
+      ? { dimensions: data.dimensions }
+      : {}),
     ...(data.similarity ? { similarity: data.similarity } : {}),
     ...(typeof data.enabled === 'boolean' ? { enabled: data.enabled } : {}),
   };
@@ -334,11 +453,25 @@ export function validateEmbeddingConfigInput(
     throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
   }
   const catalogue = catalogueDimensionsForInput(data, providers);
+  const dimensions = resolveRequestedCatalogueDimensions(
+    catalogue,
+    data.dimensions
+  );
+  assertEmbeddingExtensionAvailability({
+    schemaName: data.schemaName,
+    targetField: data.targetField,
+    dimensions,
+    similarity: data.similarity ?? 'cosine',
+    baseFields: isRecord(schema.fields) ? schema.fields : undefined,
+    compiledFields: fields,
+    extensions: schema.extensions,
+  });
   const provider = data.provider?.trim() ?? '';
+  const request = toEmbeddingConfigRequest(data);
   return {
-    ...toEmbeddingConfigRequest(data),
+    ...request,
     provider,
     model: catalogue.name,
-    dimensions: catalogue.dimensions,
+    ...(data.dimensions == null || data.dimensions === 0 ? {} : { dimensions }),
   };
 }
