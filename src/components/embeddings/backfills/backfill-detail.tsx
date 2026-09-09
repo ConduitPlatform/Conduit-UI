@@ -49,7 +49,7 @@ export function BackfillDetail({ run }: BackfillDetailProps) {
 
   return (
     <div className="flex flex-col space-y-6">
-      <PageHeader className="flex-col items-start gap-3 sm:flex-row sm:items-center">
+      <PageHeader className="flex-col items-start gap-3 lg:flex-row lg:items-center">
         <div className="min-w-0">
           <PageTitle className="text-balance">{run.schemaName}</PageTitle>
           <PageDescription>

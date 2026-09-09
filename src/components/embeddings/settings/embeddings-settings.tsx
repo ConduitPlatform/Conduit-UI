@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { AlertTriangle, CheckCircle2, CircleHelp } from 'lucide-react';
 import { Form } from '@/components/ui/form';
 import { ModuleToggle } from '@/components/settings/ModuleToggle';
 import { SettingsForm } from '@/components/embeddings/settings/settings-form';
@@ -34,6 +35,29 @@ type EmbeddingsSettingsProps = {
   data: EmbeddingsModuleSettings;
   serving?: boolean;
 };
+
+function servingPresentation(serving?: boolean) {
+  switch (serving) {
+    case true:
+      return {
+        Icon: CheckCircle2,
+        className: 'text-status-healthy',
+        text: 'Workload is serving. Workers can run when enabled.',
+      };
+    case false:
+      return {
+        Icon: AlertTriangle,
+        className: 'text-status-critical',
+        text: 'Workload is not serving. Deploy the embeddings module before jobs can run.',
+      };
+    default:
+      return {
+        Icon: CircleHelp,
+        className: 'text-status-unknown',
+        text: 'Workload serving state is unavailable.',
+      };
+  }
+}
 
 function isWorkersPatchSuccess(result: PatchSettingsResult | void) {
   if (!result) return true;
@@ -130,6 +154,9 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
     });
   };
 
+  const servingStatus = servingPresentation(serving);
+  const ServingIcon = servingStatus.Icon;
+
   return (
     <div className="flex flex-col gap-6">
       <section className="space-y-3 rounded-lg border border-border/60 bg-card p-3">
@@ -145,19 +172,12 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
         </p>
         <p
           className={cn(
-            'text-xs font-medium',
-            serving === true
-              ? 'text-status-healthy'
-              : serving === false
-                ? 'text-status-critical'
-                : 'text-status-unknown'
+            'flex items-center gap-2 text-xs font-medium',
+            servingStatus.className
           )}
         >
-          {serving === true
-            ? 'Workload is serving. Workers can run when enabled.'
-            : serving === false
-              ? 'Workload is not serving. Deploy the embeddings module before jobs can run.'
-              : 'Workload serving state is unavailable.'}
+          <ServingIcon aria-hidden className="size-4 shrink-0" />
+          {servingStatus.text}
         </p>
       </section>
       <Form {...form}>

@@ -57,14 +57,14 @@ export default async function EmbeddingConfigsPage() {
 
   return (
     <div className="flex flex-col space-y-4">
-      <PageHeader className="flex-col items-start gap-3 sm:flex-row sm:items-center">
+      <PageHeader className="flex-col items-start gap-3 lg:flex-row lg:items-center">
         <div>
           <PageTitle>Configs</PageTitle>
           <PageDescription>
             Schema embedding configurations and matching index readiness.
           </PageDescription>
         </div>
-        <PageActions>
+        <PageActions className="flex-wrap">
           <Button asChild>
             <Link href="/embeddings/configs/new">
               <Plus className="size-4" />

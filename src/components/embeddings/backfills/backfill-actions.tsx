@@ -15,9 +15,13 @@ import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
 
 type BackfillActionsProps = {
   run: BackfillRun;
+  compact?: boolean;
 };
 
-export function BackfillActions({ run }: BackfillActionsProps) {
+export function BackfillActions({
+  run,
+  compact = false,
+}: BackfillActionsProps) {
   const router = useRouter();
   const [cancelOpen, setCancelOpen] = useState(false);
   const [pending, setPending] = useState(false);
@@ -65,15 +69,24 @@ export function BackfillActions({ run }: BackfillActionsProps) {
     <>
       {canCancel ? (
         <Button
+          type="button"
           variant="destructive"
+          size={compact ? 'sm' : 'default'}
           disabled={pending}
+          aria-label={compact ? `Cancel ${run.schemaName} run` : 'Cancel run'}
           onClick={() => setCancelOpen(true)}
         >
           Cancel run
         </Button>
       ) : null}
       {canResume ? (
-        <Button disabled={pending} onClick={() => void onResume()}>
+        <Button
+          type="button"
+          size={compact ? 'sm' : 'default'}
+          disabled={pending}
+          aria-label={compact ? `Resume ${run.schemaName} run` : 'Resume run'}
+          onClick={() => void onResume()}
+        >
           {pending ? 'Resuming…' : 'Resume run'}
         </Button>
       ) : null}

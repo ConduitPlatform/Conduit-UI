@@ -79,7 +79,10 @@ export function ConfigFormFields({
         description="Vector field written on each document."
       />
       <div className="md:col-span-2">
-        <SourceFieldsPicker choices={schemaName ? choices : []} />
+        <SourceFieldsPicker
+          choices={schemaName ? choices : []}
+          hasSchema={Boolean(schemaName)}
+        />
       </div>
       <InputField
         fieldName="provider"

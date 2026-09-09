@@ -51,4 +51,36 @@ test.describe('embedding backfills', () => {
     await expect(exactText(page, 'Backfill resumed')).toBeVisible();
     await expect(exactText(page, 'Queued')).toBeVisible();
   });
+
+  test('cancels and resumes from the list row', async ({ page }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/backfills');
+    await page.getByRole('button', { name: 'Start backfill' }).click();
+    await page.locator('#start-schema').click();
+    await page.getByRole('option', { name: 'Product' }).click();
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Start backfill' })
+      .click();
+    await expect(exactText(page, 'Backfill queued')).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
+    await page.getByRole('button', { name: 'Cancel Product run' }).click();
+    await expect(page.getByRole('alertdialog')).toBeVisible();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Cancel run' })
+      .click();
+    await expect(exactText(page, 'Backfill canceled')).toBeVisible();
+    await page.getByRole('button', { name: 'Resume Product run' }).click();
+    await expect(exactText(page, 'Backfill resumed')).toBeVisible();
+    await expect(exactText(page, 'Queued')).toBeVisible();
+  });
+
+  test('disables next page when the list is empty', async ({ page }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/backfills');
+    await expect(
+      page.getByRole('button', { name: 'Go to next page' })
+    ).toBeDisabled();
+  });
 });

@@ -8,12 +8,19 @@ test.describe('embeddings settings', () => {
     await resetMock('ready');
     await page.goto('/embeddings/settings');
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('switch', { name: 'Workers' })).toBeVisible();
+    await expect(
+      page.getByText('Workload is serving. Workers can run when enabled.')
+    ).toBeVisible();
     await expect(
       page.getByText(
         'A key is already stored. Leave blank to keep it, or enter a replacement.'
       )
     ).toBeVisible();
     await page.getByRole('button', { name: 'Edit' }).click();
+    await expect(
+      page.getByRole('textbox', { name: 'Add allowed hosts' })
+    ).toBeVisible();
     const model = page.getByLabel('Default model');
     await model.fill('text-embedding-3-large');
     await expect(page.getByLabel('API key')).toHaveValue('');

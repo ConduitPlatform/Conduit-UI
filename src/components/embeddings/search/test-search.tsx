@@ -128,6 +128,7 @@ export function TestSearch({
                 });
                 setHits(result.hits);
               } catch (reason) {
+                setHits(undefined);
                 setError(formatEmbeddingsApiError(reason));
               } finally {
                 setPending(false);

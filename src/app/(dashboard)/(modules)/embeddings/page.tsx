@@ -224,6 +224,9 @@ export default async function EmbeddingsDashboard() {
       systemMetrics={settledValue(systemMetricsResult)}
       quickActions={quickActions}
       prometheusState={promAvailability?.state}
+      showModuleInformation={false}
+      prometheusPlacement="after"
+      leadWithChildren
     >
       <div className="space-y-4">
         {warnings.length > 0 ? (

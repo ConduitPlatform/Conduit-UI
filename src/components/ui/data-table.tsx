@@ -26,6 +26,10 @@ import {
 } from '@/components/ui/pagination';
 import { useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  DATA_TABLE_PAGE_SIZE,
+  getServerPageCount,
+} from '@/components/ui/data-table-pagination';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -48,13 +52,13 @@ export function DataTable<TData, TValue>({
   const currentPage = useMemo(() => {
     if (!isServerPaginated) return 1;
     const skip = searchParams.get('skip') ?? '0';
-    const limit = searchParams.get('limit') ?? '10';
+    const limit = searchParams.get('limit') ?? String(DATA_TABLE_PAGE_SIZE);
     return Math.ceil(parseInt(skip) / parseInt(limit)) + 1;
   }, [searchParams, isServerPaginated]);
 
   const tableData = useMemo(() => data, [data]);
   const pageCount = useMemo(
-    () => (isServerPaginated ? Math.ceil(count! / 10) : undefined),
+    () => (isServerPaginated ? getServerPageCount(count ?? 0) : undefined),
     [count, isServerPaginated]
   );
 
@@ -105,8 +109,8 @@ export function DataTable<TData, TValue>({
 
   const handlePaginationClick = (pageIndex: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('skip', (pageIndex * 10).toString());
-    params.set('limit', '10');
+    params.set('skip', (pageIndex * DATA_TABLE_PAGE_SIZE).toString());
+    params.set('limit', String(DATA_TABLE_PAGE_SIZE));
     router.push(`?${params.toString()}`);
   };
 
@@ -209,7 +213,7 @@ export function DataTable<TData, TValue>({
                   variant="outline"
                   size="icon"
                   onClick={() => handlePaginationClick(currentPage)}
-                  disabled={currentPage === pageCount}
+                  disabled={currentPage >= (pageCount ?? 1)}
                   className="h-8 w-8"
                 >
                   <ChevronRight className="h-4 w-4" />

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { formatEmbeddingsApiError, isEmbeddingsNotFound } from './errors';
+import {
+  EMBEDDINGS_SERVICE_UNAVAILABLE,
+  formatEmbeddingsApiError,
+  isEmbeddingsNotFound,
+} from './errors';
 
 describe('formatEmbeddingsApiError', () => {
   it('prefers backend message, then error, then the request message', () => {
@@ -32,6 +36,15 @@ describe('formatEmbeddingsApiError', () => {
     ).toBe('Network Error');
     expect(formatEmbeddingsApiError(new Error('boom'))).toBe('boom');
     expect(formatEmbeddingsApiError('nope')).toBe('Request failed');
+    expect(
+      formatEmbeddingsApiError({
+        response: { status: 503, data: { message: 'Provider request failed' } },
+        message: 'Request failed with status code 503',
+      })
+    ).toBe(EMBEDDINGS_SERVICE_UNAVAILABLE);
+    expect(
+      formatEmbeddingsApiError(new Error('Request failed with status code 503'))
+    ).toBe(EMBEDDINGS_SERVICE_UNAVAILABLE);
   });
 });
 

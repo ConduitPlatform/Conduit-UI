@@ -36,6 +36,9 @@ export interface ModuleDashboardProps {
   className?: string;
   prometheusState?: ObservabilityServiceState;
   sharedRuntime?: SharedRuntimeInfo;
+  showModuleInformation?: boolean;
+  prometheusPlacement?: 'before' | 'after';
+  leadWithChildren?: boolean;
 }
 
 export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
@@ -49,7 +52,22 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
   className,
   prometheusState,
   sharedRuntime,
+  showModuleInformation = true,
+  prometheusPlacement = 'before',
+  leadWithChildren = false,
 }) => {
+  const prometheusAlert =
+    prometheusState && prometheusState !== 'ready' ? (
+      <Alert variant="warning">
+        <Info className="size-4" />
+        <AlertDescription>
+          {prometheusState === 'not_configured'
+            ? 'Metrics are disabled for this environment. Set PROMETHEUS_URL to enable.'
+            : 'Cannot reach Prometheus at the configured URL.'}
+        </AlertDescription>
+      </Alert>
+    ) : null;
+
   return (
     <motion.div
       className={cn('space-y-6', className)}
@@ -57,16 +75,7 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
       initial="initial"
       animate="animate"
     >
-      {prometheusState && prometheusState !== 'ready' && (
-        <Alert variant="warning">
-          <Info className="size-4" />
-          <AlertDescription>
-            {prometheusState === 'not_configured'
-              ? 'Metrics are disabled for this environment. Set PROMETHEUS_URL to enable.'
-              : 'Cannot reach Prometheus at the configured URL.'}
-          </AlertDescription>
-        </Alert>
-      )}
+      {prometheusPlacement === 'before' ? prometheusAlert : null}
 
       <motion.div className="flex items-center gap-3" variants={fadeUp}>
         <div className="flex items-center gap-2">
@@ -81,59 +90,71 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
         />
       </motion.div>
 
-      <motion.div className="grid gap-4 md:grid-cols-3" variants={fadeUp}>
+      {leadWithChildren && children ? (
+        <motion.div variants={fadeUp}>{children}</motion.div>
+      ) : null}
+
+      <motion.div
+        className={cn(
+          'grid gap-4',
+          showModuleInformation ? 'md:grid-cols-3' : 'md:grid-cols-2'
+        )}
+        variants={fadeUp}
+      >
         <ModuleStatusCard module={moduleStatus} />
         <QuickActionsCard actions={quickActions} />
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Module Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Module:</span>
-                <span className="font-medium">{moduleName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                <span className="font-medium capitalize">
-                  {moduleStatus.status}
-                </span>
-              </div>
-              {moduleStatus.version && (
+        {showModuleInformation ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">
+                Module Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Version:</span>
-                  <span className="font-medium">{moduleStatus.version}</span>
+                  <span className="text-muted-foreground">Module:</span>
+                  <span className="font-medium">{moduleName}</span>
                 </div>
-              )}
-              {moduleStatus.instances !== undefined && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Instances:</span>
-                  <span className="font-medium tabular-nums">
-                    {moduleStatus.instances}
+                  <span className="text-muted-foreground">Status:</span>
+                  <span className="font-medium capitalize">
+                    {moduleStatus.status}
                   </span>
                 </div>
-              )}
-              {sharedRuntime && (
-                <>
+                {moduleStatus.version && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Runtime module:
-                    </span>
-                    <span className="font-medium">
-                      {sharedRuntime.moduleName}
+                    <span className="text-muted-foreground">Version:</span>
+                    <span className="font-medium">{moduleStatus.version}</span>
+                  </div>
+                )}
+                {moduleStatus.instances !== undefined && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Instances:</span>
+                    <span className="font-medium tabular-nums">
+                      {moduleStatus.instances}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground text-pretty">
-                    {sharedRuntime.description}
-                  </p>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                )}
+                {sharedRuntime && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Runtime module:
+                      </span>
+                      <span className="font-medium">
+                        {sharedRuntime.moduleName}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-pretty">
+                      {sharedRuntime.description}
+                    </p>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
       </motion.div>
 
       <motion.div variants={fadeUp}>
@@ -154,7 +175,11 @@ export const ModuleDashboard: React.FC<ModuleDashboardProps> = ({
         </motion.div>
       )}
 
-      {children && <motion.div variants={fadeUp}>{children}</motion.div>}
+      {!leadWithChildren && children ? (
+        <motion.div variants={fadeUp}>{children}</motion.div>
+      ) : null}
+
+      {prometheusPlacement === 'after' ? prometheusAlert : null}
     </motion.div>
   );
 };

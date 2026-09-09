@@ -19,6 +19,15 @@ test.describe('embeddings overview', () => {
     await expect(page.getByText('Config enabled')).toBeVisible();
     await expect(page.getByText('Workers enabled')).toBeVisible();
     await expect(page.getByText('Ready').first()).toBeVisible();
+    await expect(page.getByText('Module Information')).toHaveCount(0);
+    const readiness = page.getByRole('heading', { name: 'Readiness' });
+    const metrics = page.getByRole('heading', { name: 'Key Metrics' });
+    await expect(readiness).toBeVisible();
+    const readinessBox = await readiness.boundingBox();
+    const metricsBox = await metrics.boundingBox();
+    expect(readinessBox && metricsBox && readinessBox.y < metricsBox.y).toBe(
+      true
+    );
   });
 
   test('shows a gated overview when capabilities and workers are blocked', async ({
@@ -41,5 +50,6 @@ test.describe('embeddings overview', () => {
     await expect(
       page.getByRole('link', { name: 'Configure provider' }).first()
     ).toBeVisible();
+    await expect(page.getByText('Module Information')).toHaveCount(0);
   });
 });
