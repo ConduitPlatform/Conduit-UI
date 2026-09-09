@@ -28,6 +28,29 @@ export const CMS_ONLY_SCHEMA_ID = 'schema_cms_only';
 export const CMS_ONLY_SCHEMA_NAME = 'CmsOnly';
 export const COLLISION_SCHEMA_ID = 'schema_note';
 export const COLLISION_SCHEMA_NAME = 'Note';
+export const USER_SCHEMA_ID = 'schema_user';
+export const USER_SCHEMA_NAME = 'User';
+export const TEAM_SCHEMA_ID = 'schema_team';
+export const TEAM_SCHEMA_NAME = 'Team';
+export const ADMIN_SCHEMA_ID = 'schema_admin';
+export const ADMIN_SCHEMA_NAME = 'Admin';
+export const ADMIN_MIDDLEWARE_SCHEMA_ID = 'schema_admin_middleware';
+export const ADMIN_MIDDLEWARE_SCHEMA_NAME = 'AdminMiddleware';
+export const APP_MIDDLEWARE_SCHEMA_ID = 'schema_app_middleware';
+export const APP_MIDDLEWARE_SCHEMA_NAME = 'AppMiddleware';
+export const CLIENT_SCHEMA_ID = 'schema_client';
+export const CLIENT_SCHEMA_NAME = 'Client';
+export const CONFIG_SCHEMA_ID = 'schema_config';
+export const CONFIG_SCHEMA_NAME = 'Config';
+export const VIEWS_SCHEMA_ID = 'schema_views';
+export const VIEWS_SCHEMA_NAME = 'Views';
+export const DATABASE_SYSTEM_SCHEMAS = [
+  '_DeclaredSchema',
+  'MigratedSchemas',
+  'CustomEndpoints',
+  'PendingSchemas',
+  'Views',
+] as const;
 export const READY_CONFIG_ID = 'cfg_product';
 export const LEGACY_CONFIG_ID = 'cfg_legacy';
 export const LEGACY_MODEL = 'text-embedding-ada-002';

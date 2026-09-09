@@ -1,10 +1,20 @@
 import {
+  ADMIN_MIDDLEWARE_SCHEMA_ID,
+  ADMIN_MIDDLEWARE_SCHEMA_NAME,
+  ADMIN_SCHEMA_ID,
+  ADMIN_SCHEMA_NAME,
+  APP_MIDDLEWARE_SCHEMA_ID,
+  APP_MIDDLEWARE_SCHEMA_NAME,
   ARCHIVED_SCHEMA_ID,
   ARCHIVED_SCHEMA_NAME,
+  CLIENT_SCHEMA_ID,
+  CLIENT_SCHEMA_NAME,
   CMS_ONLY_SCHEMA_ID,
   CMS_ONLY_SCHEMA_NAME,
   COLLISION_SCHEMA_ID,
   COLLISION_SCHEMA_NAME,
+  CONFIG_SCHEMA_ID,
+  CONFIG_SCHEMA_NAME,
   E2E_ENV_NAME,
   FIXED_NOW,
   LEGACY_CONFIG_ID,
@@ -22,6 +32,12 @@ import {
   SECOND_PROVIDER_DIMENSIONS,
   SECOND_PROVIDER_MODEL,
   STORED_API_KEY,
+  TEAM_SCHEMA_ID,
+  TEAM_SCHEMA_NAME,
+  USER_SCHEMA_ID,
+  USER_SCHEMA_NAME,
+  VIEWS_SCHEMA_ID,
+  VIEWS_SCHEMA_NAME,
 } from './constants.ts';
 import type {
   MockAdminState,
@@ -55,6 +71,36 @@ function schemaModelOptions(args: {
       cms: { enabled: args.enabled },
       permissions: { extendable: args.extendable },
     },
+  };
+}
+
+function namedSchema(args: {
+  id: string;
+  name: string;
+  ownerModule: string;
+  collectionName: string;
+  enabled?: boolean;
+  extendable?: boolean;
+  fields?: Record<string, unknown>;
+}): MockSchema {
+  const fields = args.fields ?? {
+    title: { type: 'String' },
+  };
+  return {
+    _id: args.id,
+    name: args.name,
+    parentSchema: null,
+    fields,
+    compiledFields: fields,
+    extensions: [],
+    modelOptions: schemaModelOptions({
+      enabled: args.enabled ?? true,
+      extendable: args.extendable ?? true,
+    }),
+    ownerModule: args.ownerModule,
+    collectionName: args.collectionName,
+    createdAt: FIXED_NOW,
+    updatedAt: FIXED_NOW,
   };
 }
 
@@ -142,6 +188,62 @@ function declaredSchemas(): MockSchema[] {
     archivedSchema(),
     cmsOnlySchema(),
     collisionSchema(),
+    namedSchema({
+      id: USER_SCHEMA_ID,
+      name: USER_SCHEMA_NAME,
+      ownerModule: 'authentication',
+      collectionName: 'users',
+      fields: { email: { type: 'String' } },
+    }),
+    namedSchema({
+      id: TEAM_SCHEMA_ID,
+      name: TEAM_SCHEMA_NAME,
+      ownerModule: 'authentication',
+      collectionName: 'teams',
+      fields: { name: { type: 'String' } },
+    }),
+    namedSchema({
+      id: ADMIN_SCHEMA_ID,
+      name: ADMIN_SCHEMA_NAME,
+      ownerModule: 'core',
+      collectionName: 'admins',
+      fields: { username: { type: 'String' } },
+    }),
+    namedSchema({
+      id: ADMIN_MIDDLEWARE_SCHEMA_ID,
+      name: ADMIN_MIDDLEWARE_SCHEMA_NAME,
+      ownerModule: 'core',
+      collectionName: 'admin_middleware',
+      fields: { path: { type: 'String' } },
+    }),
+    namedSchema({
+      id: APP_MIDDLEWARE_SCHEMA_ID,
+      name: APP_MIDDLEWARE_SCHEMA_NAME,
+      ownerModule: 'router',
+      collectionName: 'app_middleware',
+      fields: { path: { type: 'String' } },
+    }),
+    namedSchema({
+      id: CLIENT_SCHEMA_ID,
+      name: CLIENT_SCHEMA_NAME,
+      ownerModule: 'router',
+      collectionName: 'clients',
+      fields: { alias: { type: 'String' } },
+    }),
+    namedSchema({
+      id: CONFIG_SCHEMA_ID,
+      name: CONFIG_SCHEMA_NAME,
+      ownerModule: 'core',
+      collectionName: 'config',
+      fields: { name: { type: 'String' } },
+    }),
+    namedSchema({
+      id: VIEWS_SCHEMA_ID,
+      name: VIEWS_SCHEMA_NAME,
+      ownerModule: 'database',
+      collectionName: 'views',
+      fields: { name: { type: 'String' } },
+    }),
   ];
 }
 

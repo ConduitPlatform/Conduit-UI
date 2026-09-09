@@ -85,7 +85,8 @@ export default async function EmbeddingBackfillsPage(props: {
   const configs = settledValue(configsResult) ?? [];
   const startableConfigs = filterByEligibleSchemas(
     configs,
-    settledValue(schemasResult)?.schemas
+    settledValue(schemasResult)?.schemas,
+    settledValue(schemasResult)?.systemSchemaNames
   );
   const configOptions = startableConfigs.map(toEmbeddingConfigOption);
   const schemas = uniqueSchemaNames(configs, runs);

@@ -16,13 +16,7 @@ export const AUTH_SECRET_SCHEMA_NAMES = new Set([
   'AdminApiToken',
 ]);
 
-export const SYSTEM_SCHEMA_NAMES = new Set([
-  'Views',
-  'Config',
-  'MigratedSchemas',
-  'PendingSchemas',
-  'CustomEndpoints',
-]);
+export const PLATFORM_INTERNAL_OWNER_MODULES = new Set(['core', 'router']);
 
 export const EMBEDDINGS_OWNER_MODULE = 'embeddings';
 
@@ -30,6 +24,15 @@ export const EMBEDDING_OWNED_SCHEMA_NAMES = new Set([
   'EmbeddingConfig',
   'BackfillRun',
 ]);
+
+export const INELIGIBLE_SOURCE_FIELDS_MESSAGE =
+  'One or more source fields are not eligible.';
+
+export const UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE =
+  'This schema cannot be used for embeddings.';
+
+export const SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE =
+  'Schema eligibility could not be verified. Retry.';
 
 const SENSITIVE_FIELD_NAME =
   /(password|secret|token|credential|apikey|api_key|private[_-]?key|authorization|refresh[_-]?token|access[_-]?token)/i;
@@ -98,15 +101,50 @@ export type EmbeddingSchemaEligibilityInput = {
   extensions?: SchemaExtensionInfo[];
 };
 
-export function isDeniedEmbeddingSchema(schema: {
-  name: string;
-  ownerModule?: string;
-}): boolean {
+export function parseDatabaseSystemSchemaNames(payload: unknown): string[] {
+  if (!isRecord(payload) || !Array.isArray(payload.databaseSystemSchemas)) {
+    throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
+  }
+  const names: string[] = [];
+  for (const name of payload.databaseSystemSchemas) {
+    if (typeof name !== 'string' || name.length === 0) {
+      throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
+    }
+    names.push(name);
+  }
+  return names;
+}
+
+export function toSystemSchemaNameSet(
+  names: Iterable<string> | null | undefined
+): Set<string> | null {
+  if (names == null) return null;
+  return new Set(
+    [...names]
+      .map(name => name.trim().toLowerCase())
+      .filter(name => name.length > 0)
+  );
+}
+
+export function isDeniedEmbeddingSchema(
+  schema: {
+    name: string;
+    ownerModule?: string;
+  },
+  systemSchemaNames?: Iterable<string> | null
+): boolean {
   if (!schema.name) return true;
   if (schema.ownerModule === EMBEDDINGS_OWNER_MODULE) return true;
   if (EMBEDDING_OWNED_SCHEMA_NAMES.has(schema.name)) return true;
   if (schema.name.startsWith('_')) return true;
-  if (SYSTEM_SCHEMA_NAMES.has(schema.name)) return true;
+  if (
+    schema.ownerModule != null &&
+    PLATFORM_INTERNAL_OWNER_MODULES.has(schema.ownerModule)
+  ) {
+    return true;
+  }
+  const systemNames = toSystemSchemaNameSet(systemSchemaNames);
+  if (systemNames?.has(schema.name.toLowerCase())) return true;
   return AUTH_SECRET_SCHEMA_NAMES.has(schema.name);
 }
 
@@ -133,10 +171,11 @@ export function isDeclaredSchemaEnabled(schema: {
 }
 
 export function isEligibleEmbeddingSchema(
-  schema: EmbeddingSchemaEligibilityInput
+  schema: EmbeddingSchemaEligibilityInput,
+  systemSchemaNames?: Iterable<string> | null
 ): boolean {
   return (
-    !isDeniedEmbeddingSchema(schema) &&
+    !isDeniedEmbeddingSchema(schema, systemSchemaNames) &&
     isDeclaredSchemaEnabled(schema) &&
     isSchemaExtendable(schema.modelOptions)
   );
@@ -202,10 +241,12 @@ export function toEmbeddingSchemaChoice(schema: {
 }
 
 export function listEligibleSchemas(
-  schemas: EmbeddingSchemaEligibilityInput[]
+  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined,
+  systemSchemaNames?: Iterable<string> | null
 ): EmbeddingSchemaChoice[] {
+  if (schemas == null || systemSchemaNames == null) return [];
   return schemas
-    .filter(isEligibleEmbeddingSchema)
+    .filter(schema => isEligibleEmbeddingSchema(schema, systemSchemaNames))
     .map(schema =>
       toEmbeddingSchemaChoice({
         ...schema,
@@ -216,17 +257,20 @@ export function listEligibleSchemas(
 }
 
 export function eligibleSchemaNames(
-  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined
+  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined,
+  systemSchemaNames?: Iterable<string> | null
 ): Set<string> {
-  if (schemas == null) return new Set();
-  return new Set(listEligibleSchemas(schemas).map(schema => schema.name));
+  return new Set(
+    listEligibleSchemas(schemas, systemSchemaNames).map(schema => schema.name)
+  );
 }
 
 export function filterByEligibleSchemas<T extends { schemaName: string }>(
   items: T[],
-  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined
+  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined,
+  systemSchemaNames?: Iterable<string> | null
 ): T[] {
-  const names = eligibleSchemaNames(schemas);
+  const names = eligibleSchemaNames(schemas, systemSchemaNames);
   return items.filter(item => names.has(item.schemaName));
 }
 
@@ -235,11 +279,13 @@ export function eligibleSchemaIdsByName(
     EmbeddingSchemaEligibilityInput & {
       _id: string;
     }
-  >
+  >,
+  systemSchemaNames?: Iterable<string> | null
 ): Map<string, string> {
+  if (systemSchemaNames == null) return new Map();
   return new Map(
     schemas
-      .filter(isEligibleEmbeddingSchema)
+      .filter(schema => isEligibleEmbeddingSchema(schema, systemSchemaNames))
       .map(schema => [schema.name, schema._id])
   );
 }
@@ -255,15 +301,6 @@ export function normalizeSourceFieldAllowlist(values: string[]): string[] {
   }
   return names;
 }
-
-export const INELIGIBLE_SOURCE_FIELDS_MESSAGE =
-  'One or more source fields are not eligible.';
-
-export const UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE =
-  'This schema cannot be used for embeddings.';
-
-export const SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE =
-  'Schema eligibility could not be verified. Retry.';
 
 export function embeddingSourceHashField(targetField: string): string {
   return `${targetField}SourceHash`;
@@ -413,13 +450,14 @@ export function toEmbeddingConfigRequest(
 
 export function requireEligibleDeclaredSchema(
   schemaName: string,
-  schemas?: EmbeddingSchemaEligibilityInput[] | null
+  schemas?: EmbeddingSchemaEligibilityInput[] | null,
+  systemSchemaNames?: Iterable<string> | null
 ): EmbeddingSchemaEligibilityInput {
-  if (schemas == null) {
+  if (schemas == null || systemSchemaNames == null) {
     throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
   }
   const schema = schemas.find(item => item.name === schemaName);
-  if (!schema || !isEligibleEmbeddingSchema(schema)) {
+  if (!schema || !isEligibleEmbeddingSchema(schema, systemSchemaNames)) {
     throw new Error(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
   }
   return schema;
@@ -428,7 +466,8 @@ export function requireEligibleDeclaredSchema(
 export function validateEmbeddingConfigInput(
   data: EmbeddingConfigInput,
   schemas?: EmbeddingSchemaEligibilityInput[] | null,
-  providers?: readonly ConfigProviderChoice[] | null
+  providers?: readonly ConfigProviderChoice[] | null,
+  systemSchemaNames?: Iterable<string> | null
 ): EmbeddingConfigRequest {
   if (!isValidSchemaOrTargetName(data.schemaName)) {
     throw new Error('Schema name is not valid.');
@@ -444,7 +483,11 @@ export function validateEmbeddingConfigInput(
       throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
     }
   }
-  const schema = requireEligibleDeclaredSchema(data.schemaName, schemas);
+  const schema = requireEligibleDeclaredSchema(
+    data.schemaName,
+    schemas,
+    systemSchemaNames
+  );
   const fields = toSchemaFieldMap(schema);
   const ineligible = data.sourceFields.some(
     name => !isEligibleSourceField(name, fields[name])

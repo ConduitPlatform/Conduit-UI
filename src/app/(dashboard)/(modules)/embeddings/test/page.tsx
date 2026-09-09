@@ -61,11 +61,15 @@ export default async function EmbeddingsTestSearchPage(props: {
   const capabilities =
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
   const settings = settledValue(settingsResult)?.config;
-  const declaredSchemas = settledValue(schemasResult)?.schemas;
-  const searchableConfigs = filterByEligibleSchemas(configs, declaredSchemas);
+  const declared = settledValue(schemasResult);
+  const searchableConfigs = filterByEligibleSchemas(
+    configs,
+    declared?.schemas,
+    declared?.systemSchemaNames
+  );
   const indexesBySchema = await resolveIndexesBySchema(
     searchableConfigs.map(config => config.schemaName),
-    declaredSchemas
+    declared
   );
   const workersEnabled = workersEnabledFromStatus({
     status,

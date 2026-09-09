@@ -24,7 +24,10 @@ export default async function NewEmbeddingConfigPage() {
   ]);
 
   const schemas = toEmbeddingSchemaFormChoices(
-    listEligibleSchemas(settledValue(schemasResult)?.schemas ?? [])
+    listEligibleSchemas(
+      settledValue(schemasResult)?.schemas,
+      settledValue(schemasResult)?.systemSchemaNames
+    )
   );
   const settings = settledValue(settingsResult)?.config;
   const providers = listConfiguredProviders(settings);

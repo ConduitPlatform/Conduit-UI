@@ -62,7 +62,7 @@ export default async function EmbeddingConfigsPage() {
   );
   const indexesBySchema = await resolveIndexesBySchema(
     configs.map(config => config.schemaName),
-    settledValue(schemasResult)?.schemas
+    settledValue(schemasResult)
   );
   const rows = buildConfigListRows(
     configs,
