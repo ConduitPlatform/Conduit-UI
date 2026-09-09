@@ -24,6 +24,7 @@ export type EmbeddingConfigListRow = {
   config: EmbeddingConfig;
   indexState: ConfigIndexState;
   latestBackfill?: BackfillRun;
+  modelBlocked: boolean;
 };
 
 export function resolveConfigIndexState(
@@ -225,7 +226,8 @@ export function pickLatestBackfill(
 export function buildConfigListRows(
   configs: EmbeddingConfig[],
   indexesBySchema: Record<string, SchemaIndexLookup>,
-  runs: BackfillRun[]
+  runs: BackfillRun[],
+  modelBlockedIds: ReadonlySet<string> = new Set()
 ): EmbeddingConfigListRow[] {
   return configs.map(config => ({
     config,
@@ -234,5 +236,6 @@ export function buildConfigListRows(
       indexesBySchema[config.schemaName]
     ),
     latestBackfill: pickLatestBackfill(runs, config),
+    modelBlocked: modelBlockedIds.has(config._id),
   }));
 }

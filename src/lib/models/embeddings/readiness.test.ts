@@ -308,4 +308,25 @@ describe('deriveEmbeddingsReadiness', () => {
       detail: 'Enable this config after the index is ready',
     });
   });
+
+  it('blocks a selected config whose model is absent from the catalogue', () => {
+    const legacy = config({
+      _id: 'cfg_legacy',
+      schemaName: 'Article',
+      model: 'text-embedding-ada-002',
+      enabled: true,
+    });
+    const rows = deriveEmbeddingsReadiness({
+      settings: settings(true),
+      configs: [legacy],
+      indexesBySchema: { Article: [queryableIndex] },
+      selectedConfigId: 'cfg_legacy',
+    });
+    expect(rows.find(row => row.id === 'config')).toMatchObject({
+      state: 'blocked',
+      detail: 'This model is not in the provider catalogue.',
+      href: '/embeddings/settings',
+      actionLabel: 'Open settings',
+    });
+  });
 });

@@ -18,10 +18,13 @@ import {
 } from '@/lib/models/embeddings/index-state';
 import { ReadinessRow } from '@/lib/models/embeddings/readiness';
 import { EmbeddingSchemaFormChoice } from '@/lib/models/embeddings/source-fields';
+import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
 
 type ConfigDetailProps = {
   config: EmbeddingConfig;
   schemas: EmbeddingSchemaFormChoice[];
+  providers: ConfigProviderChoice[];
+  modelBlocked: boolean;
   index: MatchingIndexView;
   enableAllowed: boolean;
   enableBlock?: EmbeddingConfigEnableBlock;
@@ -31,6 +34,8 @@ type ConfigDetailProps = {
 export function ConfigDetail({
   config,
   schemas,
+  providers,
+  modelBlocked,
   index,
   enableAllowed,
   enableBlock,
@@ -63,6 +68,8 @@ export function ConfigDetail({
       <ConfigEditForm
         config={config}
         schemas={schemas}
+        providers={providers}
+        modelBlocked={modelBlocked}
         enableAllowed={enableAllowed}
         enableBlockedReason={enableBlock?.reason}
         enableBlockedHref={enableBlock?.href}

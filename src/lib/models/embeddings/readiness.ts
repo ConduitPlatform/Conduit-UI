@@ -5,6 +5,13 @@ import {
   VectorIndexDefinition,
 } from '@/lib/models/embeddings/capabilities';
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import {
+  isConfigModelInCatalogue,
+  listConfiguredProviders,
+  MODEL_ABSENT_DETAIL,
+  SETTINGS_CTA_LABEL,
+  SETTINGS_HREF,
+} from '@/lib/models/embeddings/config-catalogue';
 import { findMatchingIndex } from '@/lib/models/embeddings/index-state';
 import {
   EmbeddingsSettings,
@@ -242,11 +249,21 @@ export function deriveEmbeddingsReadiness(
     configRow.detail = input.configsError;
   } else if (input.configs) {
     const scoped = selectedConfig ? [selectedConfig] : input.configs;
+    const providers = listConfiguredProviders(input.settings);
+    const missingModel =
+      selectedConfig && input.settings != null
+        ? scoped.find(config => !isConfigModelInCatalogue(config, providers))
+        : undefined;
     if (scoped.length === 0) {
       configRow.state = 'blocked';
       configRow.detail = 'Create a config to start embedding';
       configRow.href = '/embeddings/configs/new';
       configRow.actionLabel = 'New config';
+    } else if (missingModel) {
+      configRow.state = 'blocked';
+      configRow.detail = MODEL_ABSENT_DETAIL;
+      configRow.href = SETTINGS_HREF;
+      configRow.actionLabel = SETTINGS_CTA_LABEL;
     } else if (scoped.some(config => config.enabled)) {
       configRow.state = 'ready';
       configRow.detail = selectedConfig

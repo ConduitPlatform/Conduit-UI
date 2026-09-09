@@ -9,6 +9,10 @@ import {
   similarityLabel,
 } from '@/lib/models/embeddings/index-state';
 import { cn } from '@/lib/utils';
+import {
+  SETTINGS_CTA_LABEL,
+  SETTINGS_HREF,
+} from '@/lib/models/embeddings/config-catalogue';
 
 const INDEX_STATE_CLASS: Record<EmbeddingConfigListRow['indexState'], string> =
   {
@@ -47,8 +51,18 @@ export const CONFIG_COLUMNS: ColumnDef<EmbeddingConfigListRow>[] = [
     id: 'provider',
     header: 'Provider / model',
     cell: ({ row }) => (
-      <div className="truncate">
-        {row.original.config.provider}/{row.original.config.model}
+      <div className="min-w-0">
+        <div className="truncate">
+          {row.original.config.provider}/{row.original.config.model}
+        </div>
+        {row.original.modelBlocked ? (
+          <Link
+            href={SETTINGS_HREF}
+            className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {SETTINGS_CTA_LABEL}
+          </Link>
+        ) : null}
       </div>
     ),
   },

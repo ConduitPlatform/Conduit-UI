@@ -13,4 +13,4 @@ export * from './overview-view';
 export * from './source-fields';
 export * from './config-change';
 export * from './index-state';
-export * from './settings-form';
+export * from './config-catalogue';

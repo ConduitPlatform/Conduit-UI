@@ -27,6 +27,8 @@ import {
   SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
   requireEligibleDeclaredSchema,
   validateEmbeddingConfigInput,
+  listConfiguredProviders,
+  CATALOGUE_UNAVAILABLE_MESSAGE,
 } from '@/lib/models/embeddings';
 
 export const getEmbeddingConfigs = cache(
@@ -53,9 +55,21 @@ async function loadDeclaredSchemasOrThrow() {
   }
 }
 
+async function loadProviderCatalogueOrThrow() {
+  try {
+    const settings = await getEmbeddingsSettings();
+    return listConfiguredProviders(settings.config);
+  } catch {
+    throw new Error(CATALOGUE_UNAVAILABLE_MESSAGE);
+  }
+}
+
 export const upsertEmbeddingConfig = async (data: EmbeddingConfigInput) => {
-  const schemas = await loadDeclaredSchemasOrThrow();
-  const body = validateEmbeddingConfigInput(data, schemas);
+  const [schemas, settings] = await Promise.all([
+    loadDeclaredSchemasOrThrow(),
+    loadProviderCatalogueOrThrow(),
+  ]);
+  const body = validateEmbeddingConfigInput(data, schemas, settings);
   const res = await (
     await getApiClient()
   ).post<unknown>('/embeddings/configs', body);

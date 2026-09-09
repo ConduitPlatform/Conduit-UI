@@ -38,14 +38,15 @@ export type EmbeddingConfigFormValues = z.infer<
 export function defaultConfigFormValues(args: {
   provider?: string;
   model?: string;
+  dimensions?: number;
 }): EmbeddingConfigFormValues {
   return {
     schemaName: '',
     sourceFields: [],
     targetField: '',
-    provider: args.provider || 'openai-compatible',
+    provider: args.provider || '',
     model: args.model || '',
-    dimensions: 1536,
+    dimensions: args.dimensions && args.dimensions > 0 ? args.dimensions : 0,
     similarity: 'cosine',
     enabled: false,
   };
