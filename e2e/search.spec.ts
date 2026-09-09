@@ -1,0 +1,34 @@
+import { expect, test } from '@playwright/test';
+import { resetMock } from './helpers/mock.ts';
+
+test.describe('test search', () => {
+  test('returns hits, an empty result, and a provider error', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/test');
+    await expect(
+      page.getByRole('heading', { name: 'Test Search' })
+    ).toBeVisible();
+    const query = page.getByLabel('Query');
+    await query.fill('published guide');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await expect(
+      page.getByRole('cell', { name: 'Published guide' })
+    ).toBeVisible();
+    await expect(
+      page.getByText('2 results. Higher score is better.')
+    ).toBeVisible();
+
+    await query.fill('nomatch');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await expect(page.getByText('No matches')).toBeVisible();
+
+    await query.fill('fail');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await expect(page.getByText('Search failed')).toBeVisible();
+    await expect(
+      page.getByText('Request failed with status code 503')
+    ).toBeVisible();
+  });
+});
