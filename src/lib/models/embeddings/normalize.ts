@@ -36,9 +36,9 @@ import {
   EmbeddingsProviderSettings,
   EmbeddingsQueueSettings,
   EmbeddingsSecuritySettings,
-  EmbeddingsSettings,
   OPENAI_COMPATIBLE_PROVIDER,
 } from '@/lib/models/embeddings/settings';
+import { normalizeProviderCatalogue } from '@/lib/models/embeddings/settings-form';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -358,11 +358,12 @@ function unwrapSearchHit(value: unknown): SemanticSearchHit {
 
 function unwrapProviderSettings(value: unknown): EmbeddingsProviderSettings {
   const raw = isRecord(value) ? value : {};
+  const catalogue = normalizeProviderCatalogue(raw);
   return toClientSafeProvider({
     endpoint: typeof raw.endpoint === 'string' ? raw.endpoint : '',
     apiKey: typeof raw.apiKey === 'string' ? raw.apiKey : undefined,
-    model: typeof raw.model === 'string' ? raw.model : '',
-    allowedHosts: readStringArray(raw.allowedHosts),
+    models: catalogue.models,
+    defaultModel: catalogue.defaultModel,
   });
 }
 
@@ -379,7 +380,6 @@ function unwrapQueueSettings(value: unknown): EmbeddingsQueueSettings {
 function unwrapSecuritySettings(value: unknown): EmbeddingsSecuritySettings {
   const raw = isRecord(value) ? value : {};
   return {
-    requireGrpcKey: readBoolean(raw.requireGrpcKey),
     sourceFieldAllowlist: readStringArray(raw.sourceFieldAllowlist),
     maxMutationEventIds: readNumber(raw.maxMutationEventIds, 500),
     embedTimeoutMs: readNumber(raw.embedTimeoutMs, 10_000),

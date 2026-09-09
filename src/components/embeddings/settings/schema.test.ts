@@ -8,8 +8,8 @@ const valid = {
   endpoint: 'https://api.openai.com/v1/embeddings',
   apiKey: '',
   apiKeyConfigured: true,
-  model: 'text-embedding-3-small',
-  allowedHosts: ['api.openai.com', ' API.OpenAI.com '],
+  models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+  defaultModel: 'text-embedding-3-small',
   queue: {
     concurrency: 2,
     attempts: 3,
@@ -17,8 +17,6 @@ const valid = {
     drainTimeoutMs: 15 * 60 * 1000,
   },
   security: {
-    requireGrpcKey: false,
-    sourceFieldAllowlist: ['title'],
     maxMutationEventIds: 500,
     embedTimeoutMs: 10_000,
     maxEmbedInputBytes: 32 * 1024,
@@ -27,11 +25,13 @@ const valid = {
 };
 
 describe('embeddings settings schema', () => {
-  it('accepts a redacted-configured key and normalizes hosts', () => {
+  it('accepts a redacted-configured key and unique models', () => {
     const parsed = embeddingsSettingsFormSchema.parse(valid);
-    expect(parsed.allowedHosts).toEqual(['api.openai.com']);
+    expect(parsed.models).toEqual([
+      { name: 'text-embedding-3-small', dimensions: 1536 },
+    ]);
     expect(parsed.apiKey).toBe('');
-    expect(parsed.security.sourceFieldAllowlist).toEqual(['title']);
+    expect(parsed.defaultModel).toBe('text-embedding-3-small');
   });
 
   it('requires a key when none is stored and requires HTTPS', () => {
@@ -49,7 +49,6 @@ describe('embeddings settings schema', () => {
     const loopback = embeddingsSettingsFormSchema.safeParse({
       ...valid,
       endpoint: 'https://127.0.0.1/v1/embeddings',
-      allowedHosts: ['127.0.0.1'],
     });
     expect(loopback.success).toBe(false);
   });
@@ -63,35 +62,39 @@ describe('embeddings settings schema', () => {
     expect(parsed.apiKey).toBe('');
   });
 
-  it('requires the endpoint host and rejects out-of-range numbers', () => {
-    const missingHost = embeddingsSettingsFormSchema.safeParse({
+  it('requires unique trimmed names, positive dimensions, and a listed default', () => {
+    const duplicate = embeddingsSettingsFormSchema.safeParse({
       ...valid,
-      allowedHosts: ['example.com'],
+      models: [
+        { name: 'same', dimensions: 8 },
+        { name: ' same ', dimensions: 16 },
+      ],
     });
-    expect(missingHost.success).toBe(false);
+    expect(duplicate.success).toBe(false);
+    const emptyCatalogue = embeddingsSettingsFormSchema.safeParse({
+      ...valid,
+      models: [],
+    });
+    expect(emptyCatalogue.success).toBe(false);
+    const zeroDimensions = embeddingsSettingsFormSchema.safeParse({
+      ...valid,
+      models: [{ name: 'ok', dimensions: 0 }],
+    });
+    expect(zeroDimensions.success).toBe(false);
+    const missingDefault = embeddingsSettingsFormSchema.safeParse({
+      ...valid,
+      defaultModel: 'not-listed',
+    });
+    expect(missingDefault.success).toBe(false);
+    const optionalDefault = embeddingsSettingsFormSchema.parse({
+      ...valid,
+      defaultModel: '',
+    });
+    expect(optionalDefault.defaultModel).toBe('');
     const concurrency = embeddingsSettingsFormSchema.safeParse({
       ...valid,
       queue: { ...valid.queue, concurrency: 0 },
     });
     expect(concurrency.success).toBe(false);
-  });
-
-  it('preserves source field allowlist case and rejects invalid names', () => {
-    const parsed = embeddingsSettingsFormSchema.parse({
-      ...valid,
-      security: {
-        ...valid.security,
-        sourceFieldAllowlist: [' Title ', 'bodyText'],
-      },
-    });
-    expect(parsed.security.sourceFieldAllowlist).toEqual(['Title', 'bodyText']);
-    const invalid = embeddingsSettingsFormSchema.safeParse({
-      ...valid,
-      security: {
-        ...valid.security,
-        sourceFieldAllowlist: ['1bad'],
-      },
-    });
-    expect(invalid.success).toBe(false);
   });
 });

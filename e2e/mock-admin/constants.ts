@@ -15,6 +15,7 @@ export const STORED_API_KEY = 'sk-e2e-stored-key';
 export const OPENAI_COMPATIBLE_PROVIDER = 'openai-compatible';
 export const PROVIDER_ENDPOINT = 'https://api.openai.com/v1/embeddings';
 export const PROVIDER_MODEL = 'text-embedding-3-small';
+export const PROVIDER_DIMENSIONS = 1536;
 
 export const PRODUCT_SCHEMA_ID = 'schema_product';
 export const PRODUCT_SCHEMA_NAME = 'Product';

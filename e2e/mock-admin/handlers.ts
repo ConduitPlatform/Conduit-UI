@@ -90,7 +90,12 @@ function toApiSettings(
 ): MockEmbeddingsSettings {
   const providers: Record<string, MockProviderSettings> = {};
   for (const [name, provider] of Object.entries(settings.providers)) {
-    providers[name] = { ...provider };
+    providers[name] = {
+      endpoint: provider.endpoint,
+      apiKey: provider.apiKey ? REDACTED_SECRET : '',
+      models: provider.models.map(model => ({ ...model })),
+      defaultModel: provider.defaultModel,
+    };
   }
   return { ...settings, providers };
 }
@@ -99,16 +104,38 @@ function isRecordOfProviders(value: unknown): value is Record<string, unknown> {
   return isRecord(value);
 }
 
+function parseMockModels(
+  value: unknown
+): MockProviderSettings['models'] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const models: MockProviderSettings['models'] = [];
+  const names = new Set<string>();
+  for (const item of value) {
+    if (!isRecord(item)) continue;
+    const name = readString(item.name)?.trim();
+    const dimensions = readNumber(item.dimensions);
+    if (!name || dimensions == null || dimensions <= 0) continue;
+    if (names.has(name)) continue;
+    names.add(name);
+    models.push({ name, dimensions });
+  }
+  return models;
+}
+
 function mergeProvider(
   current: MockProviderSettings,
   patch: unknown
 ): MockProviderSettings {
   if (!isRecord(patch)) return current;
-  const next: MockProviderSettings = { ...current };
+  const next: MockProviderSettings = {
+    ...current,
+    models: current.models.map(model => ({ ...model })),
+  };
   if (typeof patch.endpoint === 'string') next.endpoint = patch.endpoint;
-  if (typeof patch.model === 'string') next.model = patch.model;
-  if (Array.isArray(patch.allowedHosts)) {
-    next.allowedHosts = readStringArray(patch.allowedHosts);
+  const models = parseMockModels(patch.models);
+  if (models) next.models = models;
+  if (typeof patch.defaultModel === 'string') {
+    next.defaultModel = patch.defaultModel.trim();
   }
   const apiKey = patch.apiKey;
   if (
@@ -158,10 +185,6 @@ function applySettingsPatch(
   }
   if (isRecord(patch.security)) {
     next.security = {
-      requireGrpcKey: readBoolean(
-        patch.security.requireGrpcKey,
-        next.security.requireGrpcKey
-      ),
       sourceFieldAllowlist: Array.isArray(patch.security.sourceFieldAllowlist)
         ? readStringArray(patch.security.sourceFieldAllowlist)
         : next.security.sourceFieldAllowlist,
@@ -196,8 +219,8 @@ function applySettingsPatch(
       const existing = next.providers[name] ?? {
         endpoint: '',
         apiKey: '',
-        model: '',
-        allowedHosts: [],
+        models: [],
+        defaultModel: '',
       };
       next.providers[name] = mergeProvider(existing, providerPatch);
     }
@@ -520,7 +543,8 @@ export async function handleMockRequest(
       state.capabilities.storage &&
       state.capabilities.search &&
       Boolean(provider?.endpoint) &&
-      Boolean(provider?.apiKey);
+      Boolean(provider?.apiKey) &&
+      (provider?.models?.length ?? 0) > 0;
     sendJson(response, 200, {
       enabled: state.settings.enabled,
       ready,

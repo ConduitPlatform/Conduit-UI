@@ -1,17 +1,22 @@
 export const OPENAI_COMPATIBLE_PROVIDER = 'openai-compatible' as const;
 
+export type EmbeddingProviderModel = {
+  name: string;
+  dimensions: number;
+};
+
 export type EmbeddingsProviderSettings = {
   endpoint: string;
   apiKeyConfigured: boolean;
-  model: string;
-  allowedHosts: string[];
+  models: EmbeddingProviderModel[];
+  defaultModel: string;
 };
 
 export type EmbeddingsProviderPatch = {
   endpoint: string;
   apiKey?: string;
-  model: string;
-  allowedHosts: string[];
+  models: EmbeddingProviderModel[];
+  defaultModel?: string;
 };
 
 export type EmbeddingsQueueSettings = {
@@ -22,7 +27,6 @@ export type EmbeddingsQueueSettings = {
 };
 
 export type EmbeddingsSecuritySettings = {
-  requireGrpcKey: boolean;
   sourceFieldAllowlist: string[];
   maxMutationEventIds: number;
   embedTimeoutMs: number;

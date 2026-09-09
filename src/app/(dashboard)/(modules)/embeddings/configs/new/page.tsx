@@ -6,8 +6,12 @@ import {
 } from '@/components/ui/page-header';
 import { getDeclaredSchemas } from '@/lib/api/embeddings/indexes';
 import { getEmbeddingsSettings } from '@/lib/api/embeddings';
-import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
 import { settledValue } from '@/lib/models/embeddings/errors';
+import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
+import {
+  openaiCompatibleProvider,
+  resolveProviderDefaultModel,
+} from '@/lib/models/embeddings/settings-form';
 import {
   listEligibleSchemas,
   toEmbeddingSchemaFormChoices,
@@ -23,8 +27,10 @@ export default async function NewEmbeddingConfigPage() {
     listEligibleSchemas(settledValue(schemasResult)?.schemas ?? [])
   );
   const settings = settledValue(settingsResult)?.config;
-  const provider = settings?.defaultProvider || OPENAI_COMPATIBLE_PROVIDER;
-  const model = settings?.providers[provider]?.model ?? '';
+  const providerName = settings?.defaultProvider || OPENAI_COMPATIBLE_PROVIDER;
+  const model = resolveProviderDefaultModel(
+    settings ? openaiCompatibleProvider(settings) : undefined
+  );
 
   return (
     <div className="flex flex-col space-y-4">
@@ -39,7 +45,7 @@ export default async function NewEmbeddingConfigPage() {
       </PageHeader>
       <CreateConfigForm
         schemas={schemas}
-        defaultProvider={provider}
+        defaultProvider={providerName}
         defaultModel={model}
       />
     </div>

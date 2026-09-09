@@ -10,6 +10,8 @@ import {
   toClientSafeProvider,
 } from './secrets';
 
+const models = [{ name: 'text-embedding-3-small', dimensions: 1536 }];
+
 describe('embeddings secret handling', () => {
   it('treats a redacted marker as configured without submitting it', () => {
     expect(isSecretConfigured(REDACTED_SECRET)).toBe(true);
@@ -23,21 +25,20 @@ describe('embeddings secret handling', () => {
       omitRedactedApiKey({
         endpoint: 'https://api.openai.com/v1/embeddings',
         apiKey: REDACTED_SECRET,
-        model: 'text-embedding-3-small',
-        allowedHosts: ['api.openai.com'],
+        models,
+        defaultModel: 'text-embedding-3-small',
       })
     ).toEqual({
       endpoint: 'https://api.openai.com/v1/embeddings',
-      model: 'text-embedding-3-small',
-      allowedHosts: ['api.openai.com'],
+      models,
+      defaultModel: 'text-embedding-3-small',
     });
     expect(
       'apiKey' in
         omitRedactedApiKey({
           endpoint: 'https://api.openai.com/v1/embeddings',
           apiKey: 'sk-live',
-          model: 'text-embedding-3-small',
-          allowedHosts: ['api.openai.com'],
+          models,
         })
     ).toBe(true);
   });
@@ -48,8 +49,7 @@ describe('embeddings secret handling', () => {
         'openai-compatible': {
           endpoint: 'https://api.openai.com/v1/embeddings',
           apiKey: REDACTED_SECRET,
-          model: 'text-embedding-3-small',
-          allowedHosts: ['api.openai.com'],
+          models,
         },
       },
     });
@@ -63,15 +63,15 @@ describe('embeddings secret handling', () => {
     const provider = toClientSafeProvider({
       endpoint: 'https://api.openai.com/v1/embeddings',
       apiKey: 'sk-live-plaintext',
-      model: 'text-embedding-3-small',
-      allowedHosts: ['api.openai.com'],
+      models,
+      defaultModel: 'text-embedding-3-small',
     });
     expect(provider.apiKeyConfigured).toBe(true);
     expect(provider).toEqual({
       endpoint: 'https://api.openai.com/v1/embeddings',
       apiKeyConfigured: true,
-      model: 'text-embedding-3-small',
-      allowedHosts: ['api.openai.com'],
+      models,
+      defaultModel: 'text-embedding-3-small',
     });
   });
 });

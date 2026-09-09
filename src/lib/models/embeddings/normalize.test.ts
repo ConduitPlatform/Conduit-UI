@@ -178,8 +178,8 @@ describe('settings unwrapping', () => {
     expect(parsed.config.providers[OPENAI_COMPATIBLE_PROVIDER]).toEqual({
       endpoint: '',
       apiKeyConfigured: false,
-      model: '',
-      allowedHosts: [],
+      models: [],
+      defaultModel: '',
     });
   });
 
@@ -191,8 +191,8 @@ describe('settings unwrapping', () => {
           [OPENAI_COMPATIBLE_PROVIDER]: {
             endpoint: 'https://api.openai.com/v1/embeddings',
             apiKey: 'sk-live-plaintext',
-            model: 'text-embedding-3-small',
-            allowedHosts: ['api.openai.com'],
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+            defaultModel: 'text-embedding-3-small',
           },
         },
       },
@@ -200,5 +200,34 @@ describe('settings unwrapping', () => {
     const provider = parsed.config.providers[OPENAI_COMPATIBLE_PROVIDER];
     expect(provider?.apiKeyConfigured).toBe(true);
     expect(provider && 'apiKey' in provider).toBe(false);
+    expect(provider?.models).toEqual([
+      { name: 'text-embedding-3-small', dimensions: 1536 },
+    ]);
+  });
+
+  it('migrates a legacy singular model into the catalogue', () => {
+    const parsed = unwrapEmbeddingsSettings({
+      config: {
+        enabled: true,
+        providers: {
+          [OPENAI_COMPATIBLE_PROVIDER]: {
+            endpoint: 'https://api.openai.com/v1/embeddings',
+            apiKey: '[REDACTED]',
+            model: 'text-embedding-3-small',
+            dimensions: '1536',
+            allowedHosts: ['api.openai.com'],
+          },
+        },
+        security: { requireGrpcKey: true },
+      },
+    });
+    const provider = parsed.config.providers[OPENAI_COMPATIBLE_PROVIDER];
+    expect(provider).toEqual({
+      endpoint: 'https://api.openai.com/v1/embeddings',
+      apiKeyConfigured: true,
+      models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+      defaultModel: 'text-embedding-3-small',
+    });
+    expect(parsed.config.security).not.toHaveProperty('requireGrpcKey');
   });
 });

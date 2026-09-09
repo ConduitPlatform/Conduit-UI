@@ -1,4 +1,5 @@
 import type {
+  EmbeddingProviderModel,
   EmbeddingsProviderPatch,
   EmbeddingsProviderSettings,
   EmbeddingsSettingsPatch,
@@ -26,33 +27,29 @@ export function shouldSubmitApiKey(value: string | undefined): value is string {
 export function toClientSafeProvider(args: {
   endpoint: string;
   apiKey?: string;
-  model: string;
-  allowedHosts: string[];
+  models: EmbeddingProviderModel[];
+  defaultModel: string;
 }): EmbeddingsProviderSettings {
   return {
     endpoint: args.endpoint,
     apiKeyConfigured: isSecretConfigured(args.apiKey),
-    model: args.model,
-    allowedHosts: args.allowedHosts,
+    models: args.models,
+    defaultModel: args.defaultModel,
   };
 }
 
 export function omitRedactedApiKey(
   provider: EmbeddingsProviderPatch
 ): EmbeddingsProviderPatch {
-  if (!shouldSubmitApiKey(provider.apiKey)) {
-    return {
-      endpoint: provider.endpoint,
-      model: provider.model,
-      allowedHosts: provider.allowedHosts,
-    };
-  }
-  return {
+  const next: EmbeddingsProviderPatch = {
     endpoint: provider.endpoint,
-    apiKey: provider.apiKey,
-    model: provider.model,
-    allowedHosts: provider.allowedHosts,
+    models: provider.models,
+    defaultModel: provider.defaultModel ?? '',
   };
+  if (shouldSubmitApiKey(provider.apiKey)) {
+    next.apiKey = provider.apiKey;
+  }
+  return next;
 }
 
 export function sanitizeEmbeddingsSettingsPatch(
