@@ -21,6 +21,7 @@ export default defineConfig({
       '**/.next/**',
       'src/lib/semantic-colors.test.ts',
       'src/lib/reactflow-edge-colors.test.ts',
+      'src/lib/database/schema-field-definition.test.ts',
     ],
     css: false,
   },
