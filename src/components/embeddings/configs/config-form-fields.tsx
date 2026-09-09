@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Link from 'next/link';
 import { InputField } from '@/components/ui/form-inputs/InputField';
@@ -10,13 +9,10 @@ import { SourceFieldsPicker } from '@/components/embeddings/configs/source-field
 import { EmbeddingConfigFormValues } from '@/components/embeddings/configs/schema';
 import { VECTOR_SIMILARITIES } from '@/lib/models/embeddings/config';
 import { similarityLabel } from '@/lib/models/embeddings/index-state';
-import {
-  EmbeddingSchemaChoice,
-  listSourceFieldChoices,
-} from '@/lib/models/embeddings/source-fields';
+import { EmbeddingSchemaFormChoice } from '@/lib/models/embeddings/source-fields';
 
 type ConfigFormFieldsProps = {
-  schemas: EmbeddingSchemaChoice[];
+  schemas: EmbeddingSchemaFormChoice[];
   schemaLocked?: boolean;
   enableAllowed: boolean;
   enableBlockedReason?: string;
@@ -34,14 +30,10 @@ export function ConfigFormFields({
 }: ConfigFormFieldsProps) {
   const { control, setValue } = useFormContext<EmbeddingConfigFormValues>();
   const schemaName = useWatch({ control, name: 'schemaName' }) ?? '';
-  const sourceFields = useWatch({ control, name: 'sourceFields' }) ?? [];
   const enabled = useWatch({ control, name: 'enabled' }) === true;
 
   const selectedSchema = schemas.find(schema => schema.name === schemaName);
-  const choices = useMemo(
-    () => listSourceFieldChoices(selectedSchema?.fields ?? {}, sourceFields),
-    [selectedSchema, sourceFields]
-  );
+  const choices = selectedSchema?.fields ?? [];
 
   return (
     <div className="grid gap-5 md:grid-cols-2">

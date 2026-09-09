@@ -12,6 +12,7 @@ interface SettingsFormActionsProps {
   onEdit: () => void;
   onCancel: () => void;
   shortcutLabel?: string;
+  shortcutAria?: string;
   dirty?: boolean;
   submitLabel?: string;
 }
@@ -22,6 +23,7 @@ export function SettingsFormActions({
   onEdit,
   onCancel,
   shortcutLabel,
+  shortcutAria,
   dirty,
   submitLabel = 'Submit',
 }: SettingsFormActionsProps) {
@@ -47,7 +49,7 @@ export function SettingsFormActions({
                 <Button
                   type="submit"
                   disabled={submitDisabled}
-                  aria-keyshortcuts={showShortcut ? shortcutLabel : undefined}
+                  aria-keyshortcuts={showShortcut ? shortcutAria : undefined}
                 >
                   {isSaving ? 'Saving…' : submitLabel}
                   {showShortcut ? (

@@ -4,22 +4,23 @@ import {
   PageHeader,
   PageTitle,
 } from '@/components/ui/page-header';
-import { getSchemas } from '@/lib/api/database';
+import { getDeclaredSchemas } from '@/lib/api/embeddings/indexes';
 import { getEmbeddingsSettings } from '@/lib/api/embeddings';
+import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
+import { settledValue } from '@/lib/models/embeddings/errors';
 import {
   listEligibleSchemas,
-  OPENAI_COMPATIBLE_PROVIDER,
-  settledValue,
-} from '@/lib/models/embeddings';
+  toEmbeddingSchemaFormChoices,
+} from '@/lib/models/embeddings/source-fields';
 
 export default async function NewEmbeddingConfigPage() {
   const [schemasResult, settingsResult] = await Promise.allSettled([
-    getSchemas({ limit: 1000, enabled: true }),
+    getDeclaredSchemas(),
     getEmbeddingsSettings(),
   ]);
 
-  const schemas = listEligibleSchemas(
-    settledValue(schemasResult)?.schemas ?? []
+  const schemas = toEmbeddingSchemaFormChoices(
+    listEligibleSchemas(settledValue(schemasResult)?.schemas ?? [])
   );
   const settings = settledValue(settingsResult)?.config;
   const provider = settings?.defaultProvider || OPENAI_COMPATIBLE_PROVIDER;

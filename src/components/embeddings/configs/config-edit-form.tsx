@@ -15,7 +15,7 @@ import {
 } from '@/components/embeddings/configs/schema';
 import {
   useSaveShortcut,
-  useSaveShortcutLabel,
+  useSaveShortcutHint,
 } from '@/components/embeddings/configs/use-save-shortcut';
 import {
   deleteEmbeddingConfig,
@@ -30,12 +30,12 @@ import {
 } from '@/lib/models/embeddings/config-change';
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
-import { EmbeddingSchemaChoice } from '@/lib/models/embeddings/source-fields';
+import { EmbeddingSchemaFormChoice } from '@/lib/models/embeddings/source-fields';
 import { rhfZodResolver } from '@/lib/zod-form';
 
 type ConfigEditFormProps = {
   config: EmbeddingConfig;
-  schemas: EmbeddingSchemaChoice[];
+  schemas: EmbeddingSchemaFormChoice[];
   enableAllowed: boolean;
   enableBlockedReason?: string;
   enableBlockedHref?: string;
@@ -51,7 +51,7 @@ export function ConfigEditForm({
   enableBlockedAction,
 }: ConfigEditFormProps) {
   const router = useRouter();
-  const shortcutLabel = useSaveShortcutLabel();
+  const shortcut = useSaveShortcutHint();
   const existing = toMaterialEmbeddingConfig(config);
   const [materialOpen, setMaterialOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -154,7 +154,8 @@ export function ConfigEditForm({
               dirty={dirty}
               submitting={submitting}
               label="Save changes"
-              shortcutLabel={shortcutLabel}
+              shortcutLabel={shortcut.label}
+              shortcutAria={shortcut.aria}
             />
             <Button
               type="button"

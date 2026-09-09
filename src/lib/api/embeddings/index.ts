@@ -1,6 +1,7 @@
 'use server';
 
-import { getSchemas } from '@/lib/api/database';
+import { cache } from 'react';
+import { getDeclaredSchemas } from '@/lib/api/embeddings/indexes';
 import { getApiClient } from '@/lib/api';
 import {
   BackfillListQuery,
@@ -23,39 +24,32 @@ import {
   unwrapSemanticSearch,
   unwrapStartBackfill,
   unwrapUpsertEmbeddingConfig,
+  SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
   validateEmbeddingConfigInput,
 } from '@/lib/models/embeddings';
 
-export const getEmbeddingConfigs = async (args?: {
-  schemaName?: string;
-  id?: string;
-}) => {
-  const res = await (
-    await getApiClient()
-  ).get<unknown>('/embeddings/configs', { params: args });
-  return unwrapEmbeddingConfigList(res.data);
-};
+export const getEmbeddingConfigs = cache(
+  async (args?: { schemaName?: string; id?: string }) => {
+    const res = await (
+      await getApiClient()
+    ).get<unknown>('/embeddings/configs', { params: args });
+    return unwrapEmbeddingConfigList(res.data);
+  }
+);
 
-export const getEmbeddingConfig = async (id: string) => {
+export const getEmbeddingConfig = cache(async (id: string) => {
   const res = await (
     await getApiClient()
   ).get<unknown>(`/embeddings/configs/${id}`);
   return unwrapEmbeddingConfig(res.data);
-};
+});
 
 export const upsertEmbeddingConfig = async (data: EmbeddingConfigInput) => {
-  let schemas:
-    | Array<{
-        name: string;
-        ownerModule: string;
-        fields?: unknown;
-        compiledFields?: unknown;
-      }>
-    | undefined;
+  let schemas;
   try {
-    schemas = (await getSchemas({ limit: 1000, enabled: true })).schemas;
+    schemas = (await getDeclaredSchemas()).schemas;
   } catch {
-    schemas = undefined;
+    throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
   }
   const body = validateEmbeddingConfigInput(data, schemas);
   const res = await (
@@ -73,23 +67,23 @@ export const deleteEmbeddingConfig = async (
   return unwrapDeletedEmbeddingConfig(res.data);
 };
 
-export const getEmbeddingsCapabilities = async (schemaName?: string) => {
+export const getEmbeddingsCapabilities = cache(async (schemaName?: string) => {
   const res = await (
     await getApiClient()
   ).get<unknown>('/embeddings/capabilities', {
     params: schemaName ? { schemaName } : undefined,
   });
   return unwrapEmbeddingsCapabilities(res.data);
-};
+});
 
-export const getEmbeddingsStatus = async (schemaName?: string) => {
+export const getEmbeddingsStatus = cache(async (schemaName?: string) => {
   const res = await (
     await getApiClient()
   ).get<unknown>('/embeddings/status', {
     params: schemaName ? { schemaName } : undefined,
   });
   return unwrapEmbeddingsStatus(res.data);
-};
+});
 
 export const getBackfills = async (args?: BackfillListQuery) => {
   const res = await (
@@ -147,11 +141,12 @@ export const searchEmbeddings = async (data: SemanticSearchInput) => {
   return unwrapSemanticSearch(res.data);
 };
 
-export const getEmbeddingsSettings =
+export const getEmbeddingsSettings = cache(
   async (): Promise<EmbeddingsConfigResponse> => {
     const res = await (await getApiClient()).get<unknown>('/config/embeddings');
     return unwrapEmbeddingsSettings(res.data);
-  };
+  }
+);
 
 export const patchEmbeddingsSettings = async (
   data: EmbeddingsSettingsPatch

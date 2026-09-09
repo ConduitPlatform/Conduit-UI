@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SearchResults } from './search-results';
 import type { SemanticSearchHit } from '@/lib/models/embeddings/search';
@@ -33,7 +39,7 @@ describe('SearchResults', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  it('renders scores and skips vector document columns', () => {
+  it('renders scores and skips vector document columns', async () => {
     render(<SearchResults hits={hits} />);
     expect(
       screen.getByText('1 result. Higher score is better.')
@@ -52,8 +58,13 @@ describe('SearchResults', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('super-secret')).toBeNull();
     expect(screen.queryByRole('columnheader', { name: 'password' })).toBeNull();
-    fireEvent.click(screen.getByRole('tab', { name: 'JSON' }));
+    fireEvent.mouseDown(screen.getByRole('tab', { name: 'JSON' }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole('tree', { name: 'JSON view' })
+      ).toBeInTheDocument();
+    });
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.queryByText('super-secret')).toBeNull();
-    expect(screen.getByText('Alpha')).toBeInTheDocument();
   });
 });

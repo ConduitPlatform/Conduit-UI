@@ -10,6 +10,7 @@ import {
   listEligibleSourceFields,
   listSourceFieldChoices,
   normalizeSourceFieldAllowlist,
+  SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
   toEmbeddingConfigRequest,
   toSchemaFieldMap,
   validateEmbeddingConfigInput,
@@ -121,6 +122,12 @@ describe('source field eligibility', () => {
         },
       ])
     ).toThrow('This schema cannot be used for embeddings.');
+    expect(() => validateEmbeddingConfigInput(input)).toThrow(
+      SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE
+    );
+    expect(() => validateEmbeddingConfigInput(input, null)).toThrow(
+      SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE
+    );
   });
 
   it('preserves source field allowlist case and rejects invalid names', () => {

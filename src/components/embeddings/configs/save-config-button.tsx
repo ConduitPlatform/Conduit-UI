@@ -14,6 +14,7 @@ type SaveConfigButtonProps = {
   submitting: boolean;
   label: string;
   shortcutLabel: string;
+  shortcutAria?: string;
 };
 
 export function SaveConfigButton({
@@ -21,6 +22,7 @@ export function SaveConfigButton({
   submitting,
   label,
   shortcutLabel,
+  shortcutAria,
 }: SaveConfigButtonProps) {
   return (
     <TooltipProvider delayDuration={250}>
@@ -30,6 +32,7 @@ export function SaveConfigButton({
             type="submit"
             disabled={submitting || !dirty}
             className="gap-2"
+            aria-keyshortcuts={!submitting && dirty ? shortcutAria : undefined}
           >
             {submitting ? (
               <Loader2 className="size-4 animate-spin" />

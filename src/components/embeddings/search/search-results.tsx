@@ -1,10 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useTheme } from 'next-themes';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { Braces, Table2 } from 'lucide-react';
-import { JsonView, darkStyles, defaultStyles } from 'react-json-view-lite';
-import 'react-json-view-lite/dist/index.css';
 import {
   Table,
   TableBody,
@@ -21,28 +18,16 @@ import {
   formatSearchScore,
   isSearchViewMode,
   sanitizeSearchHits,
+  searchHitKey,
   searchHitLabel,
   SearchViewMode,
 } from '@/lib/models/embeddings/search-view';
 
-function jsonViewStyles(base: typeof defaultStyles) {
-  return {
-    ...base,
-    container: `${base.container} semantic-json-view font-mono text-sm`,
-    label: `${base.label} semantic-json-view__property`,
-    clickableLabel: `${base.clickableLabel} semantic-json-view__property`,
-    nullValue: `${base.nullValue} semantic-json-view__null`,
-    undefinedValue: `${base.undefinedValue} semantic-json-view__null`,
-    stringValue: `${base.stringValue} semantic-json-view__string wrap-break-word`,
-    booleanValue: `${base.booleanValue} semantic-json-view__boolean`,
-    numberValue: `${base.numberValue} semantic-json-view__number font-medium`,
-    otherValue: `${base.otherValue} semantic-json-view__value`,
-    punctuation: `${base.punctuation} semantic-json-view__punctuation`,
-    expandIcon: `${base.expandIcon} semantic-json-view__control`,
-    collapseIcon: `${base.collapseIcon} semantic-json-view__control`,
-    collapsedContent: `${base.collapsedContent} semantic-json-view__collapsed`,
-  };
-}
+const SearchJsonView = lazy(() =>
+  import('./search-json-view').then(module => ({
+    default: module.SearchJsonView,
+  }))
+);
 
 type SearchResultsProps = {
   hits: SemanticSearchHit[];
@@ -50,7 +35,6 @@ type SearchResultsProps = {
 };
 
 export function SearchResults({ hits, sourceFields }: SearchResultsProps) {
-  const { resolvedTheme } = useTheme();
   const [view, setView] = useState<SearchViewMode>('table');
   const displayHits = useMemo(
     () => sanitizeSearchHits(hits, sourceFields),
@@ -59,9 +43,6 @@ export function SearchResults({ hits, sourceFields }: SearchResultsProps) {
   const columns = useMemo(
     () => documentColumnKeys(displayHits, undefined, sourceFields),
     [displayHits, sourceFields]
-  );
-  const jsonStyles = jsonViewStyles(
-    resolvedTheme === 'dark' ? darkStyles : defaultStyles
   );
 
   return (
@@ -95,13 +76,15 @@ export function SearchResults({ hits, sourceFields }: SearchResultsProps) {
         )}
       </div>
       {displayHits.length === 0 ? null : view === 'json' ? (
-        <div className="overflow-auto rounded-md border border-border/60 bg-surface-2 p-3">
-          <JsonView
-            data={displayHits}
-            shouldExpandNode={level => level < 2}
-            style={jsonStyles}
-          />
-        </div>
+        <Suspense
+          fallback={
+            <div className="overflow-auto rounded-md border border-border/60 bg-surface-2 p-3">
+              <p className="text-sm text-muted-foreground">Loading JSON…</p>
+            </div>
+          }
+        >
+          <SearchJsonView hits={displayHits} />
+        </Suspense>
       ) : (
         <Table>
           <TableHeader>
@@ -119,7 +102,7 @@ export function SearchResults({ hits, sourceFields }: SearchResultsProps) {
           <TableBody>
             {displayHits.map((hit, index) => (
               <TableRow
-                key={`${index}-${hit.score}`}
+                key={searchHitKey(hit, index)}
                 aria-label={searchHitLabel(index, hit)}
               >
                 <TableCell className="tabular-nums text-muted-foreground">

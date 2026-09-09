@@ -25,7 +25,13 @@ export function DeleteConfigDialog({
   pending = false,
 }: DeleteConfigDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog
+      open={open}
+      onOpenChange={next => {
+        if (pending && !next) return;
+        onOpenChange(next);
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete this config?</AlertDialogTitle>
@@ -39,7 +45,10 @@ export function DeleteConfigDialog({
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             disabled={pending}
-            onClick={onConfirm}
+            onClick={event => {
+              event.preventDefault();
+              onConfirm();
+            }}
           >
             {pending ? 'Deleting…' : 'Delete config'}
           </AlertDialogAction>

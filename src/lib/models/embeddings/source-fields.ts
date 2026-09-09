@@ -43,6 +43,11 @@ export type SourceFieldChoice = {
   eligible: boolean;
 };
 
+export type EmbeddingSchemaFormChoice = {
+  name: string;
+  fields: SourceFieldChoice[];
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -176,6 +181,28 @@ export const INELIGIBLE_SOURCE_FIELDS_MESSAGE =
 export const UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE =
   'This schema cannot be used for embeddings.';
 
+export const SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE =
+  'Schema eligibility could not be verified. Retry the save.';
+
+export function toEmbeddingSchemaFormChoice(
+  schema: EmbeddingSchemaChoice,
+  current: readonly string[] = []
+): EmbeddingSchemaFormChoice {
+  return {
+    name: schema.name,
+    fields: listSourceFieldChoices(schema.fields, current),
+  };
+}
+
+export function toEmbeddingSchemaFormChoices(
+  schemas: EmbeddingSchemaChoice[],
+  currentBySchema: Readonly<Record<string, readonly string[]>> = {}
+): EmbeddingSchemaFormChoice[] {
+  return schemas.map(schema =>
+    toEmbeddingSchemaFormChoice(schema, currentBySchema[schema.name] ?? [])
+  );
+}
+
 export function toEmbeddingConfigRequest(
   data: EmbeddingConfigInput
 ): EmbeddingConfigRequest {
@@ -198,7 +225,7 @@ export function validateEmbeddingConfigInput(
     ownerModule: string;
     fields?: unknown;
     compiledFields?: unknown;
-  }>
+  }> | null
 ): EmbeddingConfigRequest {
   if (!isValidSchemaOrTargetName(data.schemaName)) {
     throw new Error('Schema name is not valid.');
@@ -217,18 +244,19 @@ export function validateEmbeddingConfigInput(
       throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
     }
   }
-  if (schemas) {
-    const schema = schemas.find(item => item.name === data.schemaName);
-    if (!schema || isDeniedEmbeddingSchema(schema)) {
-      throw new Error(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
-    }
-    const fields = toSchemaFieldMap(schema);
-    const ineligible = data.sourceFields.some(
-      name => !isEligibleSourceField(name, fields[name])
-    );
-    if (ineligible) {
-      throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
-    }
+  if (schemas == null) {
+    throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
+  }
+  const schema = schemas.find(item => item.name === data.schemaName);
+  if (!schema || isDeniedEmbeddingSchema(schema)) {
+    throw new Error(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
+  }
+  const fields = toSchemaFieldMap(schema);
+  const ineligible = data.sourceFields.some(
+    name => !isEligibleSourceField(name, fields[name])
+  );
+  if (ineligible) {
+    throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
   }
   return toEmbeddingConfigRequest(data);
 }

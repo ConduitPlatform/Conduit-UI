@@ -11,7 +11,7 @@ import { embeddingsSettingsFormSchema } from '@/components/embeddings/settings/s
 import {
   isCancelShortcut,
   useSaveShortcut,
-  useSaveShortcutLabel,
+  useSaveShortcutHint,
 } from '@/components/embeddings/configs/use-save-shortcut';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
@@ -74,7 +74,7 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
   const router = useRouter();
   const { addAlert } = useAlerts();
   const { save, isSaving } = useSettingsSave('Embeddings');
-  const shortcutLabel = useSaveShortcutLabel();
+  const shortcut = useSaveShortcutHint();
   const [workersEnabled, setWorkersEnabled] = useState(data.enabled);
   const [edit, setEdit] = useState(false);
   const form = useForm<EmbeddingsSettingsFormValues>({
@@ -191,7 +191,8 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
             edit={edit}
             isSaving={isSaving}
             dirty={dirty}
-            shortcutLabel={shortcutLabel}
+            shortcutLabel={shortcut.label}
+            shortcutAria={shortcut.aria}
             setEdit={setEdit}
             onCancel={cancelEdit}
           />

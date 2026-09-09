@@ -5,6 +5,7 @@ import {
   isVectorStorageSearchReady,
   VectorCapabilities,
   VectorIndexDefinition,
+  VectorIndexMethod,
 } from './capabilities';
 import { EmbeddingConfig, VectorSimilarity } from './config';
 import type { SchemaIndexLookup } from './readiness';
@@ -35,6 +36,38 @@ export function resolveConfigIndexState(
   if (match.status === 'failed') return 'failed';
   if (isVectorIndexQueryable(match)) return 'ready';
   return 'pending';
+}
+
+export type MatchingIndexView = {
+  state: ConfigIndexState;
+  name?: string;
+  field: string;
+  dimensions: number;
+  similarity: VectorSimilarity;
+  method: VectorIndexMethod;
+  generation: number;
+  queryable: boolean;
+};
+
+export function toMatchingIndexView(
+  config: EmbeddingConfig,
+  lookup?: SchemaIndexLookup
+): MatchingIndexView {
+  const match =
+    lookup && lookup !== 'unknown'
+      ? findMatchingIndex(config, lookup)
+      : undefined;
+  const parsed = parseIndexGeneration(match?.name);
+  return {
+    state: resolveConfigIndexState(config, lookup),
+    name: match?.name,
+    field: match?.field ?? config.targetField,
+    dimensions: match?.dimensions ?? config.dimensions,
+    similarity: match?.similarity ?? config.similarity,
+    method: match?.method ?? DEFAULT_VECTOR_INDEX_METHOD,
+    generation: parsed.generation,
+    queryable: match ? isVectorIndexQueryable(match) : false,
+  };
 }
 
 export function configIndexStateLabel(state: ConfigIndexState): string {

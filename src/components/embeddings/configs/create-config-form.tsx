@@ -14,16 +14,16 @@ import {
 } from '@/components/embeddings/configs/schema';
 import {
   useSaveShortcut,
-  useSaveShortcutLabel,
+  useSaveShortcutHint,
 } from '@/components/embeddings/configs/use-save-shortcut';
 import { upsertEmbeddingConfig } from '@/lib/api/embeddings';
 import { toast } from '@/lib/hooks/use-toast';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
-import { EmbeddingSchemaChoice } from '@/lib/models/embeddings/source-fields';
+import { EmbeddingSchemaFormChoice } from '@/lib/models/embeddings/source-fields';
 import { rhfZodResolver } from '@/lib/zod-form';
 
 type CreateConfigFormProps = {
-  schemas: EmbeddingSchemaChoice[];
+  schemas: EmbeddingSchemaFormChoice[];
   defaultProvider: string;
   defaultModel: string;
 };
@@ -34,7 +34,7 @@ export function CreateConfigForm({
   defaultModel,
 }: CreateConfigFormProps) {
   const router = useRouter();
-  const shortcutLabel = useSaveShortcutLabel();
+  const shortcut = useSaveShortcutHint();
   const form = useForm<EmbeddingConfigFormValues>({
     resolver: rhfZodResolver(embeddingConfigFormSchema),
     mode: 'onChange',
@@ -95,7 +95,8 @@ export function CreateConfigForm({
             dirty={dirty}
             submitting={submitting}
             label="Create config"
-            shortcutLabel={shortcutLabel}
+            shortcutLabel={shortcut.label}
+            shortcutAria={shortcut.aria}
           />
           <Button
             type="button"

@@ -1,10 +1,16 @@
 import { isVectorIndexQueryable } from './capabilities.ts';
-import type { EmbeddingConfig } from './config.ts';
+import {
+  toEmbeddingConfigOption,
+  type EmbeddingConfig,
+  type EmbeddingConfigOption,
+} from './config.ts';
 import { findMatchingIndex } from './index-state.ts';
-import type {
-  ReadinessRow,
-  ReadinessRowId,
-  SchemaIndexLookup,
+import {
+  deriveEmbeddingsReadiness,
+  type EmbeddingsReadinessInput,
+  type ReadinessRow,
+  type ReadinessRowId,
+  type SchemaIndexLookup,
 } from './readiness.ts';
 import { parseOperatorFilterJson } from './operator-filter.ts';
 import type { SemanticSearchHit } from './search.ts';
@@ -73,12 +79,12 @@ export function uniqueSearchSchemas(configs: EmbeddingConfig[]): string[] {
   return [...names].sort((left, right) => left.localeCompare(right));
 }
 
-export function pickInitialSearchConfig(args: {
-  configs: EmbeddingConfig[];
+export function pickInitialSearchConfig<T extends EmbeddingConfig>(args: {
+  configs: T[];
   indexesBySchema: Record<string, SchemaIndexLookup>;
   configId?: string;
   schemaName?: string;
-}): EmbeddingConfig | undefined {
+}): T | undefined {
   const { configs, indexesBySchema, configId, schemaName } = args;
   if (configs.length === 0) return undefined;
   const byId = configId
@@ -94,6 +100,69 @@ export function pickInitialSearchConfig(args: {
       isSearchableConfig(config, indexesBySchema[config.schemaName])
     ) ?? pool[0]
   );
+}
+
+export type SearchPageModel = {
+  configs: EmbeddingConfigOption[];
+  schemas: string[];
+  initialConfigId: string;
+  initialSchema: string;
+  fallbackRows: ReadinessRow[];
+  readinessByConfigId: Record<string, ReadinessRow[]>;
+};
+
+export function buildSearchPageModel(args: {
+  configs: EmbeddingConfig[];
+  indexesBySchema: Record<string, SchemaIndexLookup>;
+  capabilities?: EmbeddingsReadinessInput['capabilities'];
+  capabilitiesError?: string;
+  settings?: EmbeddingsReadinessInput['settings'];
+  settingsError?: string;
+  workersEnabled?: boolean;
+  configId?: string;
+  schemaName?: string;
+}): SearchPageModel {
+  const initial = pickInitialSearchConfig({
+    configs: args.configs,
+    indexesBySchema: args.indexesBySchema,
+    configId: args.configId,
+    schemaName: args.schemaName,
+  });
+  const shared = {
+    capabilities: args.capabilities,
+    capabilitiesError: args.capabilitiesError,
+    settings: args.settings,
+    settingsError: args.settingsError,
+    configs: args.configs,
+    indexesBySchema: args.indexesBySchema,
+    workersEnabled: args.workersEnabled,
+  };
+  const readinessByConfigId: Record<string, ReadinessRow[]> = {};
+  for (const config of args.configs) {
+    readinessByConfigId[config._id] = deriveEmbeddingsReadiness({
+      ...shared,
+      selectedConfigId: config._id,
+    });
+  }
+  return {
+    configs: args.configs.map(toEmbeddingConfigOption),
+    schemas: uniqueSearchSchemas(args.configs),
+    initialConfigId: initial?._id ?? '',
+    initialSchema: initial?.schemaName ?? args.schemaName ?? '',
+    fallbackRows: deriveEmbeddingsReadiness(shared),
+    readinessByConfigId,
+  };
+}
+
+export function searchHitKey(hit: SemanticSearchHit, index: number): string {
+  const documentId = hit.document._id;
+  if (typeof documentId === 'string' && documentId.length > 0) {
+    return documentId;
+  }
+  if (typeof documentId === 'number' && Number.isFinite(documentId)) {
+    return String(documentId);
+  }
+  return `hit-${index}-${hit.score}`;
 }
 
 export function parseSearchLimit(raw: string): SearchLimitParseResult {

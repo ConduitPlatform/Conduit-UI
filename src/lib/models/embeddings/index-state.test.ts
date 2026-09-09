@@ -7,6 +7,7 @@ import {
   embeddingConfigEnableBlock,
   findMatchingIndex,
   resolveConfigIndexState,
+  toMatchingIndexView,
   vectorIndexGeneration,
 } from './index-state';
 
@@ -76,6 +77,17 @@ describe('config index gating', () => {
     expect(resolveConfigIndexState(config, 'unknown')).toBe('unknown');
     expect(resolveConfigIndexState(config, undefined)).toBe('unknown');
     expect(configIndexStateLabel('missing')).toBe('Missing');
+    expect(toMatchingIndexView(config, [matchingReady])).toEqual({
+      state: 'ready',
+      name: 'embedding_vector_v2',
+      field: 'embedding',
+      dimensions: 1536,
+      similarity: 'cosine',
+      method: 'hnsw',
+      generation: 2,
+      queryable: true,
+    });
+    expect(toMatchingIndexView(config, 'unknown').state).toBe('unknown');
   });
 
   it('selects the highest _vN match even when a pending v1 comes first', () => {

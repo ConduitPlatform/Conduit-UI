@@ -29,6 +29,7 @@ type SettingsFormProps = {
   isSaving: boolean;
   dirty: boolean;
   shortcutLabel: string;
+  shortcutAria?: string;
   setEdit: (edit: boolean) => void;
   onCancel: () => void;
 };
@@ -38,6 +39,7 @@ export function SettingsForm({
   isSaving,
   dirty,
   shortcutLabel,
+  shortcutAria,
   setEdit,
   onCancel,
 }: SettingsFormProps) {
@@ -117,6 +119,7 @@ export function SettingsForm({
         isSaving={isSaving}
         dirty={dirty}
         shortcutLabel={shortcutLabel}
+        shortcutAria={shortcutAria}
         submitLabel="Save"
         onEdit={() => setEdit(true)}
         onCancel={onCancel}

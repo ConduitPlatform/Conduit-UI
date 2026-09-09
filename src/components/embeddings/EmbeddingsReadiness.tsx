@@ -12,7 +12,7 @@ import {
   getNextReadinessAction,
   type ReadinessRow,
   type ReadinessState,
-} from '@/lib/models/embeddings';
+} from '@/lib/models/embeddings/readiness';
 
 const STATE_LABEL: Record<ReadinessState, string> = {
   ready: 'Ready',

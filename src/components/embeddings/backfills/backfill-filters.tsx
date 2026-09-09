@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -10,10 +10,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { BACKFILL_RUN_STATES } from '@/lib/models/embeddings/backfill';
-import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import { EmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import {
   backfillStateLabel,
   BackfillListUrlState,
+  DEFAULT_BACKFILL_LIST_LIMIT,
 } from '@/lib/models/embeddings/backfill-view';
 
 const ALL = 'all';
@@ -21,7 +22,7 @@ const ALL = 'all';
 type BackfillFiltersProps = {
   query: BackfillListUrlState;
   schemas: string[];
-  configs: EmbeddingConfig[];
+  configs: EmbeddingConfigOption[];
 };
 
 function FilterSelect({
@@ -66,7 +67,6 @@ export function BackfillFilters({
 }: BackfillFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const schemaConfigs = query.schema
     ? configs.filter(config => config.schemaName === query.schema)
     : configs;
@@ -82,17 +82,24 @@ export function BackfillFilters({
   }
 
   const setFilter = (key: 'schema' | 'config' | 'state', value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value === ALL) params.delete(key);
-    else params.set(key, value);
+    const params = new URLSearchParams();
+    const nextSchema = key === 'schema' ? value : (query.schema ?? ALL);
+    const nextConfig = key === 'config' ? value : (query.config ?? ALL);
+    const nextState = key === 'state' ? value : (query.state ?? ALL);
+    if (nextSchema !== ALL) params.set('schema', nextSchema);
+    let configValue = nextConfig;
     if (key === 'schema') {
-      const selected = params.get('config');
+      const selected = query.config;
       const match = configs.find(config => config._id === selected);
       if (match && value !== ALL && match.schemaName !== value) {
-        params.delete('config');
+        configValue = ALL;
       }
     }
-    params.delete('skip');
+    if (configValue !== ALL) params.set('config', configValue);
+    if (nextState !== ALL) params.set('state', nextState);
+    if (query.limit !== DEFAULT_BACKFILL_LIST_LIMIT) {
+      params.set('limit', String(query.limit));
+    }
     const next = params.toString();
     router.push(next ? `${pathname}?${next}` : pathname);
   };

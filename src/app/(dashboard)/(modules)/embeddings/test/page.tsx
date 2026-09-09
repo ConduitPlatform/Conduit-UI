@@ -13,25 +13,32 @@ import {
   getEmbeddingsSettings,
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
-import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
-  readSearchParam,
-  settledError,
-  settledValue,
-  workersEnabledFromStatus,
-} from '@/lib/models/embeddings';
+  getDeclaredSchemas,
+  resolveIndexesBySchema,
+} from '@/lib/api/embeddings/indexes';
+import { settledError, settledValue } from '@/lib/models/embeddings/errors';
+import { workersEnabledFromStatus } from '@/lib/models/embeddings/overview-view';
+import { readSearchParam } from '@/lib/models/embeddings/backfill-view';
+import { buildSearchPageModel } from '@/lib/models/embeddings/search-view';
 
 export default async function EmbeddingsTestSearchPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const searchParams = await props.searchParams;
-  const [configsResult, statusResult, capabilitiesResult, settingsResult] =
-    await Promise.allSettled([
-      getEmbeddingConfigs(),
-      getEmbeddingsStatus(),
-      getEmbeddingsCapabilities(),
-      getEmbeddingsSettings(),
-    ]);
+  const [
+    configsResult,
+    statusResult,
+    capabilitiesResult,
+    settingsResult,
+    schemasResult,
+  ] = await Promise.allSettled([
+    getEmbeddingConfigs(),
+    getEmbeddingsStatus(),
+    getEmbeddingsCapabilities(),
+    getEmbeddingsSettings(),
+    getDeclaredSchemas(),
+  ]);
 
   const configsError = settledError(configsResult);
   if (configsError) {
@@ -54,8 +61,28 @@ export default async function EmbeddingsTestSearchPage(props: {
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
   const settings = settledValue(settingsResult)?.config;
   const indexesBySchema = await resolveIndexesBySchema(
-    configs.map(config => config.schemaName)
+    configs.map(config => config.schemaName),
+    settledValue(schemasResult)?.schemas
   );
+  const workersEnabled = workersEnabledFromStatus({
+    status,
+    settingsEnabled: settings?.enabled,
+  });
+  const model = buildSearchPageModel({
+    configs,
+    indexesBySchema,
+    capabilities,
+    capabilitiesError: settledError(capabilitiesResult),
+    settings,
+    settingsError: settledError(settingsResult),
+    workersEnabled,
+    configId:
+      readSearchParam(searchParams.configId) ??
+      readSearchParam(searchParams.config),
+    schemaName:
+      readSearchParam(searchParams.schema) ??
+      readSearchParam(searchParams.schemaName),
+  });
 
   return (
     <div className="flex flex-col space-y-4">
@@ -68,24 +95,13 @@ export default async function EmbeddingsTestSearchPage(props: {
         </div>
       </PageHeader>
       <TestSearch
-        configs={configs}
-        indexesBySchema={indexesBySchema}
-        capabilities={capabilities}
-        capabilitiesError={settledError(capabilitiesResult)}
-        settings={settings}
-        settingsError={settledError(settingsResult)}
-        workersEnabled={workersEnabledFromStatus({
-          status,
-          settingsEnabled: settings?.enabled,
-        })}
-        initialConfigId={
-          readSearchParam(searchParams.configId) ??
-          readSearchParam(searchParams.config)
-        }
-        initialSchema={
-          readSearchParam(searchParams.schema) ??
-          readSearchParam(searchParams.schemaName)
-        }
+        configs={model.configs}
+        schemas={model.schemas}
+        fallbackRows={model.fallbackRows}
+        readinessByConfigId={model.readinessByConfigId}
+        workersEnabled={workersEnabled}
+        initialConfigId={model.initialConfigId}
+        initialSchema={model.initialSchema}
       />
     </div>
   );

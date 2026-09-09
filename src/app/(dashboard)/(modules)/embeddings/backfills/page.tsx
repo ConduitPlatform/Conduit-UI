@@ -17,6 +17,7 @@ import {
   getEmbeddingsSettings,
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
+import { toEmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import {
   mergeActiveBackfillRuns,
   parseBackfillListParams,
@@ -78,6 +79,7 @@ export default async function EmbeddingBackfillsPage(props: {
     state: query.state,
   });
   const configs = settledValue(configsResult) ?? [];
+  const configOptions = configs.map(toEmbeddingConfigOption);
   const schemas = uniqueSchemaNames(configs, runs);
   if (query.schema && !schemas.includes(query.schema)) {
     schemas.push(query.schema);
@@ -101,7 +103,7 @@ export default async function EmbeddingBackfillsPage(props: {
         </div>
         <PageActions className="flex-wrap">
           <StartBackfillDialog
-            configs={configs}
+            configs={configOptions}
             maxBatchSize={settings?.queue.maxBatchSize}
             defaultSchema={query.schema}
             defaultConfig={query.config}
@@ -128,7 +130,7 @@ export default async function EmbeddingBackfillsPage(props: {
         runs={runs}
         count={list.count}
         query={query}
-        configs={configs}
+        configs={configOptions}
         schemas={schemas}
         hasConfigs={configs.length > 0}
       />

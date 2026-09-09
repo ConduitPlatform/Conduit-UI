@@ -4,6 +4,7 @@ import {
   isCancelShortcut,
   isSaveShortcut,
   isShortcutOverlayOpen,
+  saveShortcutPresentation,
   useSaveShortcut,
 } from './use-save-shortcut';
 
@@ -17,6 +18,19 @@ function keyEvent(init: KeyboardEventInit): KeyboardEvent {
 
 afterEach(() => {
   document.body.replaceChildren();
+});
+
+describe('saveShortcutPresentation', () => {
+  it('uses valid aria-keyshortcuts tokens', () => {
+    expect(saveShortcutPresentation('Mac OS X')).toEqual({
+      label: '⌘S',
+      aria: 'Meta+s',
+    });
+    expect(saveShortcutPresentation('Windows NT')).toEqual({
+      label: 'Ctrl+S',
+      aria: 'Control+s',
+    });
+  });
 });
 
 describe('isSaveShortcut', () => {
