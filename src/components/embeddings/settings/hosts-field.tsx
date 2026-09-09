@@ -27,6 +27,7 @@ type HostsFieldProps = {
   description: string;
   disabled?: boolean;
   placeholder?: string;
+  normalizeItem?: (raw: string) => string;
 };
 
 export function HostsField({
@@ -35,6 +36,7 @@ export function HostsField({
   description,
   disabled = false,
   placeholder = 'Add a host and press Enter',
+  normalizeItem = normalizeHost,
 }: HostsFieldProps) {
   const { control } = useFormContext<EmbeddingsSettingsFormValues>();
   const [draft, setDraft] = useState('');
@@ -47,7 +49,7 @@ export function HostsField({
         const hosts = field.value ?? [];
 
         const commit = (raw: string) => {
-          const host = normalizeHost(raw);
+          const host = normalizeItem(raw);
           if (!host) return;
           if (hosts.includes(host)) {
             setDraft('');

@@ -34,6 +34,14 @@ export function addEmbeddingsQueues(
   };
 }
 
+export function workersEnabledFromStatus(args: {
+  status?: Pick<EmbeddingsStatus, 'enabled'>;
+  settingsEnabled?: boolean;
+}): boolean | undefined {
+  if (args.status) return args.status.enabled;
+  return args.settingsEnabled;
+}
+
 export function collectOverviewWarnings(args: {
   status?: EmbeddingsStatus;
   capabilitiesError?: string;
@@ -70,6 +78,13 @@ export function collectOverviewWarnings(args: {
         'Overview stays available. Enable workers in Settings to process jobs.',
       variant: 'warning',
     });
+  } else if (args.status?.enabled === true && args.status.ready === false) {
+    warnings.push({
+      title: 'Embeddings not ready',
+      description:
+        'Workers are enabled, but the embeddings module is not ready yet.',
+      variant: 'warning',
+    });
   }
 
   if (args.statusError) {
@@ -100,14 +115,6 @@ export function collectOverviewWarnings(args: {
     warnings.push({
       title: 'Backfill count unavailable',
       description: args.backfillsError,
-      variant: 'warning',
-    });
-  }
-
-  for (const message of args.status?.warnings ?? []) {
-    warnings.push({
-      title: 'Embeddings warning',
-      description: message,
       variant: 'warning',
     });
   }

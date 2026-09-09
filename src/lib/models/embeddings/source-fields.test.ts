@@ -5,10 +5,14 @@ import {
   isHiddenField,
   isSensitiveFieldName,
   isStringLikeField,
+  isValidSourceFieldName,
   listEligibleSchemas,
   listEligibleSourceFields,
   listSourceFieldChoices,
+  normalizeSourceFieldAllowlist,
+  toEmbeddingConfigRequest,
   toSchemaFieldMap,
+  validateEmbeddingConfigInput,
 } from './source-fields';
 
 describe('source field eligibility', () => {
@@ -76,5 +80,54 @@ describe('source field eligibility', () => {
       },
     ]);
     expect(eligible.map(schema => schema.name)).toEqual(['Article']);
+  });
+
+  it('builds an explicit upsert body and revalidates eligible fields', () => {
+    const input = {
+      schemaName: 'Article',
+      sourceFields: ['title'],
+      targetField: 'embedding',
+      provider: 'openai-compatible',
+      model: 'text-embedding-3-small',
+      dimensions: 1536,
+      similarity: 'cosine' as const,
+      enabled: false,
+    };
+    expect(toEmbeddingConfigRequest(input)).toEqual(input);
+    expect(
+      validateEmbeddingConfigInput(input, [
+        {
+          name: 'Article',
+          ownerModule: 'database',
+          fields: { title: { type: 'String' } },
+        },
+      ]).sourceFields
+    ).toEqual(['title']);
+    expect(() =>
+      validateEmbeddingConfigInput({ ...input, sourceFields: ['password'] }, [
+        {
+          name: 'Article',
+          ownerModule: 'database',
+          fields: { password: { type: 'String' }, title: { type: 'String' } },
+        },
+      ])
+    ).toThrow('One or more source fields are not eligible.');
+    expect(() =>
+      validateEmbeddingConfigInput({ ...input, schemaName: 'AccessToken' }, [
+        {
+          name: 'AccessToken',
+          ownerModule: 'authentication',
+          fields: { title: { type: 'String' } },
+        },
+      ])
+    ).toThrow('This schema cannot be used for embeddings.');
+  });
+
+  it('preserves source field allowlist case and rejects invalid names', () => {
+    expect(
+      normalizeSourceFieldAllowlist([' Title ', 'Title', 'bodyText'])
+    ).toEqual(['Title', 'bodyText']);
+    expect(isValidSourceFieldName('bodyText')).toBe(true);
+    expect(isValidSourceFieldName('1bad')).toBe(false);
   });
 });

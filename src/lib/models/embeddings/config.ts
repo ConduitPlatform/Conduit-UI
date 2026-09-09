@@ -28,7 +28,17 @@ export type EmbeddingConfigInput = {
   model?: string;
   dimensions: number;
   similarity?: VectorSimilarity;
-  sourceFieldAllowlist?: string[];
+  enabled?: boolean;
+};
+
+export type EmbeddingConfigRequest = {
+  schemaName: string;
+  sourceFields: string[];
+  targetField: string;
+  provider?: string;
+  model?: string;
+  dimensions: number;
+  similarity?: VectorSimilarity;
   enabled?: boolean;
 };
 

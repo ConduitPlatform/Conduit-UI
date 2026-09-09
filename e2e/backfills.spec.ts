@@ -48,6 +48,11 @@ test.describe('embedding backfills', () => {
     await expect(exactText(page, 'Backfill canceled')).toBeVisible();
     await expect(exactText(page, 'Canceled').first()).toBeVisible();
     await page.getByRole('button', { name: 'Resume run' }).click();
+    await expect(page.getByRole('alertdialog')).toBeVisible();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Resume run' })
+      .click();
     await expect(exactText(page, 'Backfill resumed')).toBeVisible();
     await expect(exactText(page, 'Queued')).toBeVisible();
   });
@@ -72,6 +77,11 @@ test.describe('embedding backfills', () => {
       .click();
     await expect(exactText(page, 'Backfill canceled')).toBeVisible();
     await page.getByRole('button', { name: 'Resume Product run' }).click();
+    await expect(page.getByRole('alertdialog')).toBeVisible();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Resume run' })
+      .click();
     await expect(exactText(page, 'Backfill resumed')).toBeVisible();
     await expect(exactText(page, 'Queued')).toBeVisible();
   });

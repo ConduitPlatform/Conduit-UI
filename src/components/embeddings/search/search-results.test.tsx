@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SearchResults } from './search-results';
 import type { SemanticSearchHit } from '@/lib/models/embeddings/search';
 
@@ -7,11 +7,16 @@ vi.mock('next-themes', () => ({
   useTheme: () => ({ resolvedTheme: 'light' }),
 }));
 
+afterEach(() => {
+  cleanup();
+});
+
 const hits: SemanticSearchHit[] = [
   {
     document: {
       _id: 'doc_1',
       title: 'Alpha',
+      password: 'super-secret',
       embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
     },
     score: 0.9123,
@@ -45,5 +50,10 @@ describe('SearchResults', () => {
     expect(
       screen.getByRole('columnheader', { name: 'title' })
     ).toBeInTheDocument();
+    expect(screen.queryByText('super-secret')).toBeNull();
+    expect(screen.queryByRole('columnheader', { name: 'password' })).toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: 'JSON' }));
+    expect(screen.queryByText('super-secret')).toBeNull();
+    expect(screen.getByText('Alpha')).toBeInTheDocument();
   });
 });

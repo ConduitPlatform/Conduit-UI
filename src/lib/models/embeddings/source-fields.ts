@@ -1,3 +1,5 @@
+import type { EmbeddingConfigInput, EmbeddingConfigRequest } from './config.ts';
+
 export const AUTH_SECRET_SCHEMA_NAMES = new Set([
   'AccessToken',
   'RefreshToken',
@@ -154,4 +156,79 @@ export function listEligibleSchemas(
     .filter(schema => !isDeniedEmbeddingSchema(schema))
     .map(toEmbeddingSchemaChoice)
     .sort((left, right) => left.name.localeCompare(right.name));
+}
+
+export function normalizeSourceFieldAllowlist(values: string[]): string[] {
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const value of values) {
+    const name = value.trim();
+    if (!name || seen.has(name)) continue;
+    seen.add(name);
+    names.push(name);
+  }
+  return names;
+}
+
+export const INELIGIBLE_SOURCE_FIELDS_MESSAGE =
+  'One or more source fields are not eligible.';
+
+export const UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE =
+  'This schema cannot be used for embeddings.';
+
+export function toEmbeddingConfigRequest(
+  data: EmbeddingConfigInput
+): EmbeddingConfigRequest {
+  return {
+    schemaName: data.schemaName,
+    sourceFields: [...data.sourceFields],
+    targetField: data.targetField,
+    ...(data.provider ? { provider: data.provider } : {}),
+    ...(data.model ? { model: data.model } : {}),
+    dimensions: data.dimensions,
+    ...(data.similarity ? { similarity: data.similarity } : {}),
+    ...(typeof data.enabled === 'boolean' ? { enabled: data.enabled } : {}),
+  };
+}
+
+export function validateEmbeddingConfigInput(
+  data: EmbeddingConfigInput,
+  schemas?: Array<{
+    name: string;
+    ownerModule: string;
+    fields?: unknown;
+    compiledFields?: unknown;
+  }>
+): EmbeddingConfigRequest {
+  if (!isValidSchemaOrTargetName(data.schemaName)) {
+    throw new Error('Schema name is not valid.');
+  }
+  if (!isValidSchemaOrTargetName(data.targetField)) {
+    throw new Error('Target field is not valid.');
+  }
+  if (!Number.isInteger(data.dimensions) || data.dimensions <= 0) {
+    throw new Error('Dimensions must be a positive integer.');
+  }
+  if (data.sourceFields.length === 0) {
+    throw new Error('Select at least one source field.');
+  }
+  for (const field of data.sourceFields) {
+    if (!isValidSourceFieldName(field)) {
+      throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
+    }
+  }
+  if (schemas) {
+    const schema = schemas.find(item => item.name === data.schemaName);
+    if (!schema || isDeniedEmbeddingSchema(schema)) {
+      throw new Error(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
+    }
+    const fields = toSchemaFieldMap(schema);
+    const ineligible = data.sourceFields.some(
+      name => !isEligibleSourceField(name, fields[name])
+    );
+    if (ineligible) {
+      throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
+    }
+  }
+  return toEmbeddingConfigRequest(data);
 }

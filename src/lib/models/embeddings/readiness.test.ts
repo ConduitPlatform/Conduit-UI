@@ -8,7 +8,6 @@ import {
   isProviderConfigured,
   isVectorStorageSearchReady,
 } from './readiness';
-import { REDACTED_SECRET } from './secrets';
 import { EmbeddingsSettings, OPENAI_COMPATIBLE_PROVIDER } from './settings';
 
 function config(
@@ -46,7 +45,7 @@ function settings(ready: boolean): EmbeddingsSettings {
     providers: {
       [OPENAI_COMPATIBLE_PROVIDER]: {
         endpoint: ready ? 'https://api.openai.com/v1/embeddings' : '',
-        apiKey: ready ? REDACTED_SECRET : undefined,
+        apiKeyConfigured: ready,
         model: 'text-embedding-3-small',
         allowedHosts: ['api.openai.com'],
       },
@@ -93,6 +92,13 @@ describe('provider and capability readiness', () => {
       allowedHosts: ['example.com'],
     };
     expect(isProviderConfigured(wrongHost)).toBe(false);
+    const privateHost = settings(true);
+    privateHost.providers[OPENAI_COMPATIBLE_PROVIDER] = {
+      ...privateHost.providers[OPENAI_COMPATIBLE_PROVIDER],
+      endpoint: 'https://127.0.0.1/v1/embeddings',
+      allowedHosts: ['127.0.0.1'],
+    };
+    expect(isProviderConfigured(privateHost)).toBe(false);
   });
 
   it('requires storage and search together', () => {

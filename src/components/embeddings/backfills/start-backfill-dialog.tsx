@@ -281,7 +281,8 @@ export function StartBackfillDialog({
                 <p className="text-sm text-destructive">{filterError}</p>
               ) : (
                 <p className="text-xs text-muted-foreground">
-                  Must be a JSON object. Leave empty to scan the whole schema.
+                  Equality, comparisons, bounded $in/$nin, and $and only. Leave
+                  empty to scan the whole schema.
                 </p>
               )}
             </CollapsibleContent>

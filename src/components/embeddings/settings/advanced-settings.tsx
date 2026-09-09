@@ -100,7 +100,8 @@ export function AdvancedSettings({ disabled }: AdvancedSettingsProps) {
               label="Source field allowlist"
               disabled={disabled}
               placeholder="Add a field name and press Enter"
-              description="Operator-approved source fields, including names that would otherwise be rejected."
+              normalizeItem={value => value.trim()}
+              description="Operator-approved source fields, including names that would otherwise be rejected. Case is preserved."
             />
           </section>
           <section className="space-y-3">

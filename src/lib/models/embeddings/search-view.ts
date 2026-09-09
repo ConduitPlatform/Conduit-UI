@@ -6,13 +6,18 @@ import type {
   ReadinessRowId,
   SchemaIndexLookup,
 } from './readiness.ts';
+import { parseOperatorFilterJson } from './operator-filter.ts';
 import type { SemanticSearchHit } from './search.ts';
-import { parseOperatorFilterJson } from './backfill-view.ts';
+import { isSensitiveFieldName } from './source-fields.ts';
 
 export const DEFAULT_SEARCH_LIMIT = 10;
 export const MIN_SEARCH_LIMIT = 1;
 export const MAX_SEARCH_LIMIT = 50;
 export const MAX_SEARCH_DOCUMENT_COLUMNS = 6;
+export const MAX_SEARCH_DOCUMENT_DEPTH = 4;
+export const MAX_SEARCH_DOCUMENT_KEYS = 32;
+export const MAX_SEARCH_DOCUMENT_STRING = 2048;
+export const MAX_SEARCH_DOCUMENT_ARRAY = 32;
 
 export const SEARCH_VIEW_MODES = ['table', 'json'] as const;
 
@@ -116,31 +121,105 @@ export function parseSearchFilter(raw: string) {
   return parseOperatorFilterJson(raw);
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function isLikelyVector(value: unknown): boolean {
   if (!Array.isArray(value) || value.length < 8) return false;
   return value.every(item => typeof item === 'number');
 }
 
+function isSecretLikeKey(key: string): boolean {
+  if (key === '__proto__' || key === 'prototype' || key === 'constructor') {
+    return true;
+  }
+  return isSensitiveFieldName(key);
+}
+
+function capString(value: string): string {
+  if (value.length <= MAX_SEARCH_DOCUMENT_STRING) return value;
+  return value.slice(0, MAX_SEARCH_DOCUMENT_STRING);
+}
+
+export function sanitizeSearchValue(value: unknown, depth = 1): unknown {
+  if (depth > MAX_SEARCH_DOCUMENT_DEPTH) return undefined;
+  if (value == null) return value;
+  if (typeof value === 'string') return capString(value);
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (isLikelyVector(value)) return undefined;
+  if (Array.isArray(value)) {
+    return value
+      .slice(0, MAX_SEARCH_DOCUMENT_ARRAY)
+      .map(item => sanitizeSearchValue(item, depth + 1))
+      .filter(item => item !== undefined);
+  }
+  if (!isRecord(value)) return undefined;
+  const sanitized: Record<string, unknown> = {};
+  let count = 0;
+  for (const [key, nested] of Object.entries(value)) {
+    if (count >= MAX_SEARCH_DOCUMENT_KEYS) break;
+    if (isSecretLikeKey(key)) continue;
+    const next = sanitizeSearchValue(nested, depth + 1);
+    if (next === undefined && nested !== undefined && nested !== null) {
+      continue;
+    }
+    sanitized[key] = next;
+    count += 1;
+  }
+  return sanitized;
+}
+
+export function sanitizeSearchDocument(
+  document: Record<string, unknown>,
+  sourceFields?: readonly string[]
+): Record<string, unknown> {
+  const sanitized = sanitizeSearchValue(document);
+  if (!isRecord(sanitized)) return {};
+  if (!sourceFields || sourceFields.length === 0) return sanitized;
+  const picked: Record<string, unknown> = {};
+  if ('_id' in sanitized) picked._id = sanitized._id;
+  for (const field of sourceFields) {
+    if (field === '_id') continue;
+    if (field in sanitized) picked[field] = sanitized[field];
+  }
+  return picked;
+}
+
+export function sanitizeSearchHits(
+  hits: SemanticSearchHit[],
+  sourceFields?: readonly string[]
+): SemanticSearchHit[] {
+  return hits.map(hit => ({
+    ...hit,
+    document: sanitizeSearchDocument(hit.document, sourceFields),
+  }));
+}
+
 export function documentColumnKeys(
   hits: SemanticSearchHit[],
-  maxColumns = MAX_SEARCH_DOCUMENT_COLUMNS
+  maxColumns = MAX_SEARCH_DOCUMENT_COLUMNS,
+  sourceFields?: readonly string[]
 ): string[] {
+  const preferred = ['_id', ...(sourceFields ?? [])];
   const seen = new Set<string>();
   const keys: string[] = [];
+  const add = (key: string) => {
+    if (seen.has(key) || keys.length >= maxColumns) return;
+    if (isSecretLikeKey(key)) return;
+    if (hits.some(hit => isLikelyVector(hit.document[key]))) return;
+    seen.add(key);
+    keys.push(key);
+  };
+  for (const key of preferred) {
+    if (hits.some(hit => key in hit.document)) add(key);
+  }
   for (const hit of hits) {
     for (const key of Object.keys(hit.document)) {
-      if (seen.has(key)) continue;
-      if (isLikelyVector(hit.document[key])) continue;
-      seen.add(key);
-      keys.push(key);
+      add(key);
     }
   }
-  keys.sort((left, right) => {
-    if (left === '_id') return -1;
-    if (right === '_id') return 1;
-    return left.localeCompare(right);
-  });
-  return keys.slice(0, maxColumns);
+  return keys;
 }
 
 export function formatSearchScore(value: number): string {

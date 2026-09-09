@@ -97,7 +97,7 @@ export function SettingsForm({
               disabled={!edit}
               autoComplete="off"
               inputMode="url"
-              description="HTTPS OpenAI-compatible embeddings URL. Credentials in the URL are rejected."
+              description="HTTPS OpenAI-compatible embeddings URL with a public DNS hostname. Credentials in the URL are rejected."
             />
           </div>
           <ApiKeyField disabled={!edit} />
@@ -106,7 +106,7 @@ export function SettingsForm({
               name="allowedHosts"
               label="Allowed hosts"
               disabled={!edit}
-              description="Hosts this provider may call after DNS resolution. Include the endpoint hostname."
+              description="Public DNS hostnames this provider may call. Include the endpoint hostname. Private, loopback, and metadata hosts are rejected."
             />
           </div>
         </div>

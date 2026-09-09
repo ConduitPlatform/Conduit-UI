@@ -31,6 +31,7 @@ describe('embeddings settings schema', () => {
     const parsed = embeddingsSettingsFormSchema.parse(valid);
     expect(parsed.allowedHosts).toEqual(['api.openai.com']);
     expect(parsed.apiKey).toBe('');
+    expect(parsed.security.sourceFieldAllowlist).toEqual(['title']);
   });
 
   it('requires a key when none is stored and requires HTTPS', () => {
@@ -45,6 +46,12 @@ describe('embeddings settings schema', () => {
       endpoint: 'http://api.openai.com/v1/embeddings',
     });
     expect(http.success).toBe(false);
+    const loopback = embeddingsSettingsFormSchema.safeParse({
+      ...valid,
+      endpoint: 'https://127.0.0.1/v1/embeddings',
+      allowedHosts: ['127.0.0.1'],
+    });
+    expect(loopback.success).toBe(false);
   });
 
   it('blanks a redaction marker instead of treating it as a new key', () => {
@@ -67,5 +74,24 @@ describe('embeddings settings schema', () => {
       queue: { ...valid.queue, concurrency: 0 },
     });
     expect(concurrency.success).toBe(false);
+  });
+
+  it('preserves source field allowlist case and rejects invalid names', () => {
+    const parsed = embeddingsSettingsFormSchema.parse({
+      ...valid,
+      security: {
+        ...valid.security,
+        sourceFieldAllowlist: [' Title ', 'bodyText'],
+      },
+    });
+    expect(parsed.security.sourceFieldAllowlist).toEqual(['Title', 'bodyText']);
+    const invalid = embeddingsSettingsFormSchema.safeParse({
+      ...valid,
+      security: {
+        ...valid.security,
+        sourceFieldAllowlist: ['1bad'],
+      },
+    });
+    expect(invalid.success).toBe(false);
   });
 });

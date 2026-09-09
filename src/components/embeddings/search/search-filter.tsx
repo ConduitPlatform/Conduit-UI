@@ -58,7 +58,8 @@ export function SearchFilterFields({
           <p className="text-sm text-destructive">{error}</p>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Must be a JSON object. Leave empty to search the whole schema.
+            Equality, comparisons, bounded $in/$nin, and $and only. Leave empty
+            to search the whole schema.
           </p>
         )}
       </CollapsibleContent>

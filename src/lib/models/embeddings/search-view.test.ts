@@ -14,6 +14,8 @@ import {
   parseSearchFilter,
   parseSearchLimit,
   pickInitialSearchConfig,
+  sanitizeSearchDocument,
+  sanitizeSearchHits,
   searchBlockAction,
   searchHitLabel,
   uniqueSearchSchemas,
@@ -71,6 +73,7 @@ describe('search filter', () => {
       error: 'Filter must be a JSON object.',
     });
     expect(parseSearchFilter('{').ok).toBe(false);
+    expect(parseSearchFilter('{"$where":"1==1"}').ok).toBe(false);
   });
 });
 
@@ -179,5 +182,29 @@ describe('hit rendering helpers', () => {
     expect(documentColumnKeys([hit])).toEqual(['_id', 'body', 'title']);
     expect(isSearchViewMode('table')).toBe(true);
     expect(isSearchViewMode('grid')).toBe(false);
+  });
+
+  it('removes secret-like keys and prefers configured source fields', () => {
+    const document = {
+      _id: 'doc_1',
+      title: 'One',
+      password: 'secret',
+      apiKey: 'sk-live',
+      embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      extra: 'noise',
+    };
+    expect(sanitizeSearchDocument(document)).toEqual({
+      _id: 'doc_1',
+      title: 'One',
+      extra: 'noise',
+    });
+    expect(sanitizeSearchDocument(document, ['title'])).toEqual({
+      _id: 'doc_1',
+      title: 'One',
+    });
+    const hits = sanitizeSearchHits([{ document, score: 1 }], ['title']);
+    expect(documentColumnKeys(hits, 6, ['title'])).toEqual(['_id', 'title']);
+    expect(hits[0]?.document).not.toHaveProperty('password');
+    expect(hits[0]?.document).not.toHaveProperty('embedding');
   });
 });

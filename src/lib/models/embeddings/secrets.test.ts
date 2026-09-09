@@ -7,6 +7,7 @@ import {
   REDACTED_SECRET,
   sanitizeEmbeddingsSettingsPatch,
   shouldSubmitApiKey,
+  toClientSafeProvider,
 } from './secrets';
 
 describe('embeddings secret handling', () => {
@@ -56,5 +57,21 @@ describe('embeddings secret handling', () => {
       patched.providers?.['openai-compatible'] &&
         'apiKey' in patched.providers['openai-compatible']
     ).toBe(false);
+  });
+
+  it('derives apiKeyConfigured and never copies the secret value', () => {
+    const provider = toClientSafeProvider({
+      endpoint: 'https://api.openai.com/v1/embeddings',
+      apiKey: 'sk-live-plaintext',
+      model: 'text-embedding-3-small',
+      allowedHosts: ['api.openai.com'],
+    });
+    expect(provider.apiKeyConfigured).toBe(true);
+    expect(provider).toEqual({
+      endpoint: 'https://api.openai.com/v1/embeddings',
+      apiKeyConfigured: true,
+      model: 'text-embedding-3-small',
+      allowedHosts: ['api.openai.com'],
+    });
   });
 });

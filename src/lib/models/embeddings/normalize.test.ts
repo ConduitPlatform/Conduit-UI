@@ -76,7 +76,10 @@ describe('backfill filter parsing', () => {
     expect(parseBackfillFilter('{')).toBeUndefined();
     expect(serializeBackfillFilter('{"ok":true}')).toEqual({ ok: true });
     expect(() => serializeBackfillFilter('[1]')).toThrow(
-      'filter must be a JSON object'
+      'Filter must be a JSON object.'
+    );
+    expect(() => serializeBackfillFilter('{"$where":"1==1"}')).toThrow(
+      'Filter allows equality, comparisons, bounded $in/$nin, and $and only.'
     );
   });
 
@@ -142,6 +145,24 @@ describe('capability and search unwrapping', () => {
       title: 'One',
     });
     expect(unwrapSemanticSearch({ hits: [hit] }).hits).toHaveLength(1);
+    expect(unwrapSemanticSearch({ hits: [hit] }).hits[0]?.document).toEqual({
+      title: 'One',
+    });
+    const secretHit = {
+      score: 0.1,
+      document: {
+        _id: 'doc_1',
+        title: 'Visible',
+        password: 'nope',
+        embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      },
+    };
+    expect(
+      unwrapSemanticSearch({ hits: [secretHit] }).hits[0]?.document
+    ).toEqual({
+      _id: 'doc_1',
+      title: 'Visible',
+    });
     expect(() => unwrapSemanticSearch({ results: [] })).toThrow(
       'Invalid semantic search response'
     );
@@ -156,9 +177,28 @@ describe('settings unwrapping', () => {
     expect(parsed.config.enabled).toBe(true);
     expect(parsed.config.providers[OPENAI_COMPATIBLE_PROVIDER]).toEqual({
       endpoint: '',
-      apiKey: undefined,
+      apiKeyConfigured: false,
       model: '',
       allowedHosts: [],
     });
+  });
+
+  it('strips plaintext provider apiKey and derives apiKeyConfigured', () => {
+    const parsed = unwrapEmbeddingsSettings({
+      config: {
+        enabled: true,
+        providers: {
+          [OPENAI_COMPATIBLE_PROVIDER]: {
+            endpoint: 'https://api.openai.com/v1/embeddings',
+            apiKey: 'sk-live-plaintext',
+            model: 'text-embedding-3-small',
+            allowedHosts: ['api.openai.com'],
+          },
+        },
+      },
+    });
+    const provider = parsed.config.providers[OPENAI_COMPATIBLE_PROVIDER];
+    expect(provider?.apiKeyConfigured).toBe(true);
+    expect(provider && 'apiKey' in provider).toBe(false);
   });
 });

@@ -27,6 +27,7 @@ import {
   emptyEmbeddingsQueue,
   settledError,
   settledValue,
+  workersEnabledFromStatus,
 } from '@/lib/models/embeddings';
 import { getPrometheusAvailability } from '@/lib/observability/prometheusAvailability';
 import {
@@ -86,7 +87,10 @@ export default async function EmbeddingsDashboard() {
     ? await resolveIndexesBySchema(configs.map(config => config.schemaName))
     : undefined;
 
-  const workersEnabled = status?.enabled ?? settings?.enabled;
+  const workersEnabled = workersEnabledFromStatus({
+    status,
+    settingsEnabled: settings?.enabled,
+  });
   const rows = deriveEmbeddingsReadiness({
     capabilities,
     capabilitiesError: settledError(capabilitiesResult),

@@ -1,12 +1,13 @@
 'use server';
 
+import { getSchemas } from '@/lib/api/database';
 import { getApiClient } from '@/lib/api';
 import {
   BackfillListQuery,
   EmbeddingConfig,
   EmbeddingConfigInput,
   EmbeddingsConfigResponse,
-  EmbeddingsSettings,
+  EmbeddingsSettingsPatch,
   sanitizeEmbeddingsSettingsPatch,
   SemanticSearchInput,
   serializeBackfillFilter,
@@ -22,6 +23,7 @@ import {
   unwrapSemanticSearch,
   unwrapStartBackfill,
   unwrapUpsertEmbeddingConfig,
+  validateEmbeddingConfigInput,
 } from '@/lib/models/embeddings';
 
 export const getEmbeddingConfigs = async (args?: {
@@ -42,9 +44,23 @@ export const getEmbeddingConfig = async (id: string) => {
 };
 
 export const upsertEmbeddingConfig = async (data: EmbeddingConfigInput) => {
+  let schemas:
+    | Array<{
+        name: string;
+        ownerModule: string;
+        fields?: unknown;
+        compiledFields?: unknown;
+      }>
+    | undefined;
+  try {
+    schemas = (await getSchemas({ limit: 1000, enabled: true })).schemas;
+  } catch {
+    schemas = undefined;
+  }
+  const body = validateEmbeddingConfigInput(data, schemas);
   const res = await (
     await getApiClient()
-  ).post<unknown>('/embeddings/configs', data);
+  ).post<unknown>('/embeddings/configs', body);
   return unwrapUpsertEmbeddingConfig(res.data);
 };
 
@@ -138,7 +154,7 @@ export const getEmbeddingsSettings =
   };
 
 export const patchEmbeddingsSettings = async (
-  data: Partial<EmbeddingsSettings>
+  data: EmbeddingsSettingsPatch
 ) => {
   const config = sanitizeEmbeddingsSettingsPatch(data);
   const res = await (

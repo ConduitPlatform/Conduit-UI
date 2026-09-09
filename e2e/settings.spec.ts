@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { inspectMock, resetMock } from './helpers/mock.ts';
+import { exactText } from './helpers/ui.ts';
+import { MOCK_ADMIN_ORIGIN, STORED_API_KEY } from './mock-admin/constants.ts';
 
 test.describe('embeddings settings', () => {
   test('keeps the stored API key when a redacted update omits it', async ({
@@ -24,8 +26,9 @@ test.describe('embeddings settings', () => {
     const model = page.getByLabel('Default model');
     await model.fill('text-embedding-3-large');
     await expect(page.getByLabel('API key')).toHaveValue('');
+    expect(await page.content()).not.toContain(STORED_API_KEY);
     await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Embeddings settings saved')).toBeVisible();
+    await expect(exactText(page, 'Embeddings settings saved')).toBeVisible();
     const inspect = await inspectMock();
     expect(inspect.storedApiKeyConfigured).toBe(true);
     expect(inspect.lastSettingsPatchHadApiKey).toBe(false);
@@ -44,9 +47,14 @@ test.describe('embeddings settings', () => {
     await workers.click();
     await expect(page.getByRole('alertdialog')).toBeVisible();
     await page.getByRole('button', { name: 'Proceed' }).click();
-    await expect(page.getByText('Embeddings settings saved')).toBeVisible();
+    await expect(exactText(page, 'Embeddings settings saved')).toBeVisible();
     await expect(workers).toBeChecked();
     const inspect = await inspectMock();
     expect(inspect.workersEnabled).toBe(true);
+  });
+
+  test('rejects mock test-control routes without the control header', async () => {
+    const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/state`);
+    expect(response.status).toBe(403);
   });
 });

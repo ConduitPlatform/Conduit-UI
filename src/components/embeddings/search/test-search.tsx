@@ -172,7 +172,7 @@ export function TestSearch({
             <CardTitle>Results</CardTitle>
           </CardHeader>
           <CardContent>
-            <SearchResults hits={hits} />
+            <SearchResults hits={hits} sourceFields={selected?.sourceFields} />
           </CardContent>
         </Card>
       ) : null}

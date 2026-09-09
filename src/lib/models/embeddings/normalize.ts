@@ -22,9 +22,15 @@ import {
   UpsertEmbeddingConfigResult,
 } from '@/lib/models/embeddings/config';
 import {
+  FILTER_UNSAFE_MESSAGE,
+  isSafeOperatorFilter,
+} from '@/lib/models/embeddings/operator-filter';
+import {
   SemanticSearchHit,
   SemanticSearchResponse,
 } from '@/lib/models/embeddings/search';
+import { sanitizeSearchDocument } from '@/lib/models/embeddings/search-view';
+import { toClientSafeProvider } from '@/lib/models/embeddings/secrets';
 import {
   EmbeddingsConfigResponse,
   EmbeddingsProviderSettings,
@@ -86,7 +92,10 @@ export function serializeBackfillFilter(
   if (filter == null || filter === '') return undefined;
   const parsed = parseBackfillFilter(filter);
   if (!parsed) {
-    throw new Error('filter must be a JSON object');
+    throw new Error('Filter must be a JSON object.');
+  }
+  if (!isSafeOperatorFilter(parsed)) {
+    throw new Error(FILTER_UNSAFE_MESSAGE);
   }
   return parsed;
 }
@@ -312,11 +321,11 @@ function unwrapVectorIndex(value: unknown): VectorIndexDefinition {
 }
 
 function unwrapSearchDocument(value: unknown): Record<string, unknown> {
-  if (isRecord(value)) return value;
+  if (isRecord(value)) return sanitizeSearchDocument(value);
   if (typeof value !== 'string' || value.length === 0) return {};
   try {
     const parsed: unknown = JSON.parse(value);
-    return isRecord(parsed) ? parsed : {};
+    return isRecord(parsed) ? sanitizeSearchDocument(parsed) : {};
   } catch {
     return {};
   }
@@ -349,12 +358,12 @@ function unwrapSearchHit(value: unknown): SemanticSearchHit {
 
 function unwrapProviderSettings(value: unknown): EmbeddingsProviderSettings {
   const raw = isRecord(value) ? value : {};
-  return {
+  return toClientSafeProvider({
     endpoint: typeof raw.endpoint === 'string' ? raw.endpoint : '',
     apiKey: typeof raw.apiKey === 'string' ? raw.apiKey : undefined,
     model: typeof raw.model === 'string' ? raw.model : '',
     allowedHosts: readStringArray(raw.allowedHosts),
-  };
+  });
 }
 
 function unwrapQueueSettings(value: unknown): EmbeddingsQueueSettings {

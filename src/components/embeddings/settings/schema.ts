@@ -7,6 +7,10 @@ import {
   parseHttpsEndpoint,
   SETTINGS_LIMITS,
 } from '../../../lib/models/embeddings/settings-form.ts';
+import {
+  isValidSourceFieldName,
+  normalizeSourceFieldAllowlist,
+} from '../../../lib/models/embeddings/source-fields.ts';
 
 function boundedInt(limits: { min: number; max: number }, message: string) {
   return z.coerce
@@ -23,7 +27,7 @@ const hostListSchema = z
     if (hosts.some(host => !isValidHost(host))) {
       ctx.addIssue({
         code: 'custom',
-        message: 'Use a hostname such as api.openai.com',
+        message: 'Use a public DNS hostname such as api.openai.com',
       });
     }
   });
@@ -43,7 +47,7 @@ export const embeddingsSettingsFormSchema = z
       .min(1, 'Endpoint is required')
       .refine(
         value => parseHttpsEndpoint(value) != null,
-        'Endpoint must be HTTPS with no credentials'
+        'Endpoint must be HTTPS with a public DNS hostname and no credentials'
       ),
     apiKey: z.string().transform(formApiKeyValue),
     apiKeyConfigured: z.boolean(),
@@ -71,9 +75,16 @@ export const embeddingsSettingsFormSchema = z
       requireGrpcKey: z.boolean(),
       sourceFieldAllowlist: z
         .array(z.string())
-        .transform(values =>
-          values.map(value => value.trim()).filter(value => value.length > 0)
-        ),
+        .transform(normalizeSourceFieldAllowlist)
+        .superRefine((fields, ctx) => {
+          if (fields.some(field => !isValidSourceFieldName(field))) {
+            ctx.addIssue({
+              code: 'custom',
+              message:
+                'Use a letter or underscore first, then letters, numbers, or underscores',
+            });
+          }
+        }),
       maxMutationEventIds: boundedInt(
         SETTINGS_LIMITS.maxMutationEventIds,
         `Max mutation event ids must be ${SETTINGS_LIMITS.maxMutationEventIds.min}–${SETTINGS_LIMITS.maxMutationEventIds.max}`
