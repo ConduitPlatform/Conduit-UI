@@ -10,18 +10,20 @@ import {
   PageTitle,
 } from '@/components/ui/page-header';
 import { getBackfills, getEmbeddingConfigs } from '@/lib/api/embeddings';
-import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
-  buildConfigListRows,
-  settledError,
-  settledValue,
-} from '@/lib/models/embeddings';
+  getDeclaredSchemas,
+  resolveIndexesBySchema,
+} from '@/lib/api/embeddings/indexes';
+import { buildConfigListRows } from '@/lib/models/embeddings/index-state';
+import { settledError, settledValue } from '@/lib/models/embeddings/errors';
 
 export default async function EmbeddingConfigsPage() {
-  const [configsResult, backfillsResult] = await Promise.allSettled([
-    getEmbeddingConfigs(),
-    getBackfills({ skip: 0, limit: 100 }),
-  ]);
+  const [configsResult, backfillsResult, schemasResult] =
+    await Promise.allSettled([
+      getEmbeddingConfigs(),
+      getBackfills({ skip: 0, limit: 100 }),
+      getDeclaredSchemas(),
+    ]);
 
   const configsError = settledError(configsResult);
   if (configsError) {
@@ -41,7 +43,8 @@ export default async function EmbeddingConfigsPage() {
   const configs = settledValue(configsResult) ?? [];
   const runs = settledValue(backfillsResult)?.runs ?? [];
   const indexesBySchema = await resolveIndexesBySchema(
-    configs.map(config => config.schemaName)
+    configs.map(config => config.schemaName),
+    settledValue(schemasResult)?.schemas
   );
   const rows = buildConfigListRows(configs, indexesBySchema, runs);
 

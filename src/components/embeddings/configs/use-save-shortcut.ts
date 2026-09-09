@@ -26,6 +26,17 @@ export function isCancelShortcut(event: KeyboardEvent): boolean {
   return true;
 }
 
+export function saveShortcutPresentation(platform: string): {
+  label: string;
+  aria: string;
+} {
+  const isApple = /Mac|iPhone|iPad|iPod/i.test(platform);
+  return {
+    label: isApple ? '⌘S' : 'Ctrl+S',
+    aria: isApple ? 'Meta+s' : 'Control+s',
+  };
+}
+
 export function useSaveShortcut(enabled: boolean, onSave: () => void): void {
   useEffect(() => {
     if (!enabled) return;
@@ -42,8 +53,18 @@ export function useSaveShortcut(enabled: boolean, onSave: () => void): void {
 export function useSaveShortcutLabel(): string {
   const [label, setLabel] = useState('Ctrl+S');
   useEffect(() => {
-    const platform = navigator.userAgent;
-    setLabel(/Mac|iPhone|iPad|iPod/i.test(platform) ? '⌘S' : 'Ctrl+S');
+    setLabel(saveShortcutPresentation(navigator.userAgent).label);
   }, []);
   return label;
+}
+
+export function useSaveShortcutHint(): { label: string; aria: string } {
+  const [hint, setHint] = useState({
+    label: 'Ctrl+S',
+    aria: 'Control+s',
+  });
+  useEffect(() => {
+    setHint(saveShortcutPresentation(navigator.userAgent));
+  }, []);
+  return hint;
 }

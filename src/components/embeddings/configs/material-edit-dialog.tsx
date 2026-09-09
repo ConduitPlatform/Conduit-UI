@@ -29,7 +29,13 @@ export function MaterialEditDialog({
   pending = false,
 }: MaterialEditDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog
+      open={open}
+      onOpenChange={next => {
+        if (pending && !next) return;
+        onOpenChange(next);
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Save material changes?</AlertDialogTitle>
@@ -47,7 +53,13 @@ export function MaterialEditDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-          <AlertDialogAction disabled={pending} onClick={onConfirm}>
+          <AlertDialogAction
+            disabled={pending}
+            onClick={event => {
+              event.preventDefault();
+              onConfirm();
+            }}
+          >
             {pending ? 'Saving…' : 'Save changes'}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -10,22 +10,24 @@ export function useBackfillPolling(active: boolean) {
   useEffect(() => {
     if (!active) return;
 
-    let timer: ReturnType<typeof setInterval> | undefined;
-
-    const tick = () => {
-      if (document.hidden) return;
-      router.refresh();
-    };
-
-    const start = () => {
-      if (timer) return;
-      timer = setInterval(tick, BACKFILL_POLL_MS);
-    };
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let cancelled = false;
 
     const stop = () => {
       if (!timer) return;
-      clearInterval(timer);
+      clearTimeout(timer);
       timer = undefined;
+    };
+
+    const loop = () => {
+      if (cancelled || document.hidden) return;
+      router.refresh();
+      timer = setTimeout(loop, BACKFILL_POLL_MS);
+    };
+
+    const start = () => {
+      if (timer || cancelled || document.hidden) return;
+      timer = setTimeout(loop, BACKFILL_POLL_MS);
     };
 
     const onVisibility = () => {
@@ -33,13 +35,14 @@ export function useBackfillPolling(active: boolean) {
         stop();
         return;
       }
-      tick();
+      router.refresh();
       start();
     };
 
     if (!document.hidden) start();
     document.addEventListener('visibilitychange', onVisibility);
     return () => {
+      cancelled = true;
       stop();
       document.removeEventListener('visibilitychange', onVisibility);
     };

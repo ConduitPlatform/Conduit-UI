@@ -1,12 +1,13 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { DataTable } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { getConfigColumns } from '@/components/embeddings/configs/columns';
+import { CONFIG_COLUMNS } from '@/components/embeddings/configs/columns';
 import {
   configIndexStateLabel,
   EmbeddingConfigListRow,
@@ -114,9 +115,15 @@ export function ConfigsTable({ rows }: ConfigsTableProps) {
         )}
       </div>
       <div className="hidden md:block">
-        <DataTable columns={getConfigColumns()} data={rows}>
-          <ConfigsEmpty />
-        </DataTable>
+        <Suspense
+          fallback={
+            <div className="h-64 rounded-md border border-border/60 bg-muted/20" />
+          }
+        >
+          <DataTable columns={CONFIG_COLUMNS} data={rows}>
+            <ConfigsEmpty />
+          </DataTable>
+        </Suspense>
       </div>
     </>
   );

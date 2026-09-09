@@ -1,52 +1,71 @@
 import { notFound } from 'next/navigation';
 import { ConfigDetail } from '@/components/embeddings/configs/config-detail';
-import { getSchemas } from '@/lib/api/database';
 import {
   getEmbeddingConfig,
   getEmbeddingsCapabilities,
   getEmbeddingsSettings,
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
-import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
-  deriveEmbeddingsReadiness,
-  EmbeddingConfig,
+  getDeclaredSchemas,
+  resolveIndexesBySchema,
+} from '@/lib/api/embeddings/indexes';
+import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import {
   isEmbeddingsNotFound,
-  listEligibleSchemas,
   settledError,
   settledValue,
+} from '@/lib/models/embeddings/errors';
+import {
+  canEnableEmbeddingConfig,
+  embeddingConfigEnableBlock,
+  findMatchingIndex,
+  toMatchingIndexView,
+} from '@/lib/models/embeddings/index-state';
+import { workersEnabledFromStatus } from '@/lib/models/embeddings/overview-view';
+import { deriveEmbeddingsReadiness } from '@/lib/models/embeddings/readiness';
+import {
+  listEligibleSchemas,
   toEmbeddingSchemaChoice,
-  workersEnabledFromStatus,
-} from '@/lib/models/embeddings';
+  toEmbeddingSchemaFormChoices,
+} from '@/lib/models/embeddings/source-fields';
 
 export default async function EmbeddingConfigDetailPage(props: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await props.params;
 
-  let config: EmbeddingConfig;
-  try {
-    config = await getEmbeddingConfig(id);
-  } catch (error) {
-    if (isEmbeddingsNotFound(error)) notFound();
-    throw error;
-  }
-
-  const [capabilitiesResult, settingsResult, statusResult, schemasResult] =
+  const [configResult, schemasResult, settingsResult] =
     await Promise.allSettled([
-      getEmbeddingsCapabilities(config.schemaName),
+      getEmbeddingConfig(id),
+      getDeclaredSchemas(),
       getEmbeddingsSettings(),
-      getEmbeddingsStatus(config.schemaName),
-      getSchemas({ limit: 1000, enabled: true }),
     ]);
 
-  const indexesBySchema = await resolveIndexesBySchema([config.schemaName]);
+  if (configResult.status === 'rejected') {
+    if (isEmbeddingsNotFound(configResult.reason)) notFound();
+    throw configResult.reason;
+  }
+
+  const config: EmbeddingConfig = configResult.value;
+  const schemas = settledValue(schemasResult)?.schemas;
+  const settings = settledValue(settingsResult)?.config;
+
+  const [capabilitiesResult, statusResult, indexesResult] =
+    await Promise.allSettled([
+      getEmbeddingsCapabilities(config.schemaName),
+      getEmbeddingsStatus(config.schemaName),
+      resolveIndexesBySchema([config.schemaName], schemas),
+    ]);
+  const indexesBySchema = settledValue(indexesResult) ?? {
+    [config.schemaName]: 'unknown' as const,
+  };
+
   const lookup = indexesBySchema[config.schemaName];
   const status = settledValue(statusResult);
   const capabilities =
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
-  const settings = settledValue(settingsResult)?.config;
-  const rawSchemas = settledValue(schemasResult)?.schemas ?? [];
+  const rawSchemas = schemas ?? [];
   const eligibleSchemas = listEligibleSchemas(rawSchemas);
   const currentSchema = rawSchemas.find(
     schema => schema.name === config.schemaName
@@ -66,10 +85,27 @@ export default async function EmbeddingConfigDetailPage(props: {
         }),
         ...eligibleSchemas,
       ];
+  const formSchemas = toEmbeddingSchemaFormChoices(schemaChoices, {
+    [config.schemaName]: config.sourceFields,
+  });
 
   const workersEnabled = workersEnabledFromStatus({
     status,
     settingsEnabled: settings?.enabled,
+  });
+  const matchingIndex =
+    lookup && lookup !== 'unknown'
+      ? findMatchingIndex(config, lookup)
+      : undefined;
+  const enableAllowed = canEnableEmbeddingConfig({
+    capabilities,
+    matchingIndex,
+    workersEnabled,
+  });
+  const enableBlock = embeddingConfigEnableBlock({
+    capabilities,
+    matchingIndex,
+    workersEnabled,
   });
   const rows = deriveEmbeddingsReadiness({
     capabilities,
@@ -85,10 +121,10 @@ export default async function EmbeddingConfigDetailPage(props: {
   return (
     <ConfigDetail
       config={config}
-      schemas={schemaChoices}
-      lookup={lookup}
-      capabilities={capabilities}
-      workersEnabled={workersEnabled}
+      schemas={formSchemas}
+      index={toMatchingIndexView(config, lookup)}
+      enableAllowed={enableAllowed}
+      enableBlock={enableBlock}
       readinessRows={rows}
     />
   );

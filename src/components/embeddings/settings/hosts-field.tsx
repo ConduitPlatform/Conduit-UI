@@ -70,10 +70,6 @@ export function HostsField({
             event.preventDefault();
             event.stopPropagation();
             setDraft('');
-            return;
-          }
-          if (event.key === 'Backspace' && !draft && hosts.length > 0) {
-            field.onChange(hosts.slice(0, -1));
           }
         };
 

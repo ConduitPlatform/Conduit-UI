@@ -25,7 +25,13 @@ export function CancelBackfillDialog({
   pending = false,
 }: CancelBackfillDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog
+      open={open}
+      onOpenChange={next => {
+        if (pending && !next) return;
+        onOpenChange(next);
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Cancel this run?</AlertDialogTitle>
@@ -38,7 +44,10 @@ export function CancelBackfillDialog({
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             disabled={pending}
-            onClick={onConfirm}
+            onClick={event => {
+              event.preventDefault();
+              onConfirm();
+            }}
           >
             {pending ? 'Canceling…' : 'Cancel run'}
           </AlertDialogAction>

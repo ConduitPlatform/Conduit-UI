@@ -19,7 +19,10 @@ import {
   getEmbeddingsSettings,
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
-import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
+import {
+  getDeclaredSchemas,
+  resolveIndexesBySchema,
+} from '@/lib/api/embeddings/indexes';
 import {
   addEmbeddingsQueues,
   collectOverviewWarnings,
@@ -63,6 +66,7 @@ export default async function EmbeddingsDashboard() {
     moduleHealthResult,
     uptimeResult,
     systemMetricsResult,
+    schemasResult,
   ] = await Promise.allSettled([
     getEmbeddingsStatus(),
     getEmbeddingsCapabilities(),
@@ -73,6 +77,7 @@ export default async function EmbeddingsDashboard() {
     getModuleStatus(apiModuleName),
     getModuleUptime(apiModuleName),
     getSystemMetrics(apiModuleName),
+    getDeclaredSchemas(),
   ]);
 
   const status = settledValue(statusResult);
@@ -84,7 +89,10 @@ export default async function EmbeddingsDashboard() {
   const promAvailability = settledValue(promAvailabilityResult);
 
   const indexesBySchema = configs
-    ? await resolveIndexesBySchema(configs.map(config => config.schemaName))
+    ? await resolveIndexesBySchema(
+        configs.map(config => config.schemaName),
+        settledValue(schemasResult)?.schemas
+      )
     : undefined;
 
   const workersEnabled = workersEnabledFromStatus({

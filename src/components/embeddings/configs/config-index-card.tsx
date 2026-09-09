@@ -10,28 +10,14 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EmbeddingConfig } from '@/lib/models/embeddings/config';
-import {
-  DEFAULT_VECTOR_INDEX_METHOD,
-  isVectorIndexQueryable,
-  VectorIndexDefinition,
-} from '@/lib/models/embeddings/capabilities';
 import {
   configIndexStateLabel,
-  parseIndexGeneration,
-  resolveConfigIndexState,
+  MatchingIndexView,
   similarityLabel,
 } from '@/lib/models/embeddings/index-state';
-import {
-  findMatchingIndex,
-  SchemaIndexLookup,
-} from '@/lib/models/embeddings/readiness';
 import { cn } from '@/lib/utils';
 
-const STATE_ICON: Record<
-  ReturnType<typeof resolveConfigIndexState>,
-  LucideIcon
-> = {
+const STATE_ICON: Record<MatchingIndexView['state'], LucideIcon> = {
   ready: CheckCircle2,
   pending: Clock,
   failed: AlertTriangle,
@@ -39,10 +25,7 @@ const STATE_ICON: Record<
   unknown: CircleHelp,
 };
 
-const STATE_CLASS: Record<
-  ReturnType<typeof resolveConfigIndexState>,
-  string
-> = {
+const STATE_CLASS: Record<MatchingIndexView['state'], string> = {
   ready: 'text-status-healthy',
   pending: 'text-status-warning',
   failed: 'text-status-critical',
@@ -51,19 +34,12 @@ const STATE_CLASS: Record<
 };
 
 type ConfigIndexCardProps = {
-  config: EmbeddingConfig;
-  lookup?: SchemaIndexLookup;
+  index: MatchingIndexView;
 };
 
-export function ConfigIndexCard({ config, lookup }: ConfigIndexCardProps) {
-  const match =
-    lookup && lookup !== 'unknown'
-      ? findMatchingIndex(config, lookup)
-      : undefined;
-  const state = resolveConfigIndexState(config, lookup);
-  const Icon = STATE_ICON[state];
-  const parsed = parseIndexGeneration(match?.name);
-  const warning = indexWarning(state, match);
+export function ConfigIndexCard({ index }: ConfigIndexCardProps) {
+  const Icon = STATE_ICON[index.state];
+  const warning = indexWarning(index);
 
   return (
     <Card>
@@ -75,38 +51,37 @@ export function ConfigIndexCard({ config, lookup }: ConfigIndexCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex min-h-8 items-center gap-2">
-          <Icon className={cn('size-4', STATE_CLASS[state])} aria-hidden />
-          <span className={cn('text-sm font-medium', STATE_CLASS[state])}>
-            {configIndexStateLabel(state)}
+          <Icon
+            className={cn('size-4', STATE_CLASS[index.state])}
+            aria-hidden
+          />
+          <span className={cn('text-sm font-medium', STATE_CLASS[index.state])}>
+            {configIndexStateLabel(index.state)}
           </span>
-          {match ? (
+          {index.name ? (
             <span className="text-xs text-muted-foreground">
-              {isVectorIndexQueryable(match) ? 'Queryable' : 'Not queryable'}
+              {index.queryable ? 'Queryable' : 'Not queryable'}
             </span>
           ) : null}
         </div>
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
-          <IndexFact label="Name" value={match?.name ?? '—'} />
+          <IndexFact label="Name" value={index.name ?? '—'} />
           <IndexFact
             label="Generation"
-            value={parsed.generation > 0 ? String(parsed.generation) : '—'}
+            value={index.generation > 0 ? String(index.generation) : '—'}
           />
-          <IndexFact label="Field" value={match?.field ?? config.targetField} />
-          <IndexFact
-            label="Dimensions"
-            value={String(match?.dimensions ?? config.dimensions)}
-          />
+          <IndexFact label="Field" value={index.field} />
+          <IndexFact label="Dimensions" value={String(index.dimensions)} />
           <IndexFact
             label="Similarity"
-            value={similarityLabel(match?.similarity ?? config.similarity)}
+            value={similarityLabel(index.similarity)}
           />
-          <IndexFact
-            label="Method"
-            value={match?.method ?? DEFAULT_VECTOR_INDEX_METHOD}
-          />
+          <IndexFact label="Method" value={index.method} />
         </dl>
         {warning ? (
-          <Alert variant={state === 'unknown' ? 'warning' : 'destructive'}>
+          <Alert
+            variant={index.state === 'unknown' ? 'warning' : 'destructive'}
+          >
             <AlertTriangle className="size-4" />
             <AlertTitle>{warning.title}</AlertTitle>
             <AlertDescription>
@@ -137,12 +112,11 @@ function IndexFact({ label, value }: { label: string; value: string }) {
 }
 
 function indexWarning(
-  state: ReturnType<typeof resolveConfigIndexState>,
-  match?: VectorIndexDefinition
+  index: MatchingIndexView
 ):
   | { title: string; description: string; href?: string; action?: string }
   | undefined {
-  switch (state) {
+  switch (index.state) {
     case 'ready':
       return undefined;
     case 'pending':
@@ -154,8 +128,8 @@ function indexWarning(
     case 'failed':
       return {
         title: 'Matching index failed',
-        description: match?.name
-          ? `${match.name} failed. Inspect Database indexes for this schema.`
+        description: index.name
+          ? `${index.name} failed. Inspect Database indexes for this schema.`
           : 'The matching index failed. Inspect Database indexes for this schema.',
         href: '/database/models',
         action: 'Open Database',
@@ -172,7 +146,7 @@ function indexWarning(
         description: 'Index lookup failed. Refresh this page and try again.',
       };
     default: {
-      const exhaustive: never = state;
+      const exhaustive: never = index.state;
       return exhaustive;
     }
   }

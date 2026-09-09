@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import {
   Collapsible,
@@ -25,18 +24,16 @@ export function SearchFilterFields({
   error,
   onChange,
 }: SearchFilterFieldsProps) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      onOpenChange(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open, onOpenChange]);
-
   return (
-    <Collapsible open={open} onOpenChange={onOpenChange}>
+    <Collapsible
+      open={open}
+      onOpenChange={onOpenChange}
+      onKeyDown={event => {
+        if (event.key !== 'Escape' || !open) return;
+        event.stopPropagation();
+        onOpenChange(false);
+      }}
+    >
       <CollapsibleTrigger
         type="button"
         className="flex min-h-8 w-full items-center justify-between rounded-md px-1 text-left text-sm font-medium hover:bg-accent/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&[data-state=open]>svg]:rotate-180"
@@ -50,14 +47,23 @@ export function SearchFilterFields({
           id="search-filter"
           value={value}
           aria-invalid={Boolean(error)}
+          aria-describedby={
+            error ? 'search-filter-error' : 'search-filter-help'
+          }
           onChange={event => onChange(event.target.value)}
           className="min-h-24 font-mono text-xs"
           placeholder='{"status":"published"}'
         />
         {error ? (
-          <p className="text-sm text-destructive">{error}</p>
+          <p
+            id="search-filter-error"
+            role="alert"
+            className="text-sm text-destructive"
+          >
+            {error}
+          </p>
         ) : (
-          <p className="text-xs text-muted-foreground">
+          <p id="search-filter-help" className="text-xs text-muted-foreground">
             Equality, comparisons, bounded $in/$nin, and $and only. Leave empty
             to search the whole schema.
           </p>

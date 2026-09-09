@@ -31,6 +31,23 @@ export type EmbeddingConfigInput = {
   enabled?: boolean;
 };
 
+export type EmbeddingConfigOption = Pick<
+  EmbeddingConfig,
+  '_id' | 'schemaName' | 'targetField' | 'sourceFields' | 'enabled'
+>;
+
+export function toEmbeddingConfigOption(
+  config: EmbeddingConfig
+): EmbeddingConfigOption {
+  return {
+    _id: config._id,
+    schemaName: config.schemaName,
+    targetField: config.targetField,
+    sourceFields: [...config.sourceFields],
+    enabled: config.enabled,
+  };
+}
+
 export type EmbeddingConfigRequest = {
   schemaName: string;
   sourceFields: string[];

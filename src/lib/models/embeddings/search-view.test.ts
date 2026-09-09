@@ -17,8 +17,10 @@ import {
   sanitizeSearchDocument,
   sanitizeSearchHits,
   searchBlockAction,
+  searchHitKey,
   searchHitLabel,
   uniqueSearchSchemas,
+  buildSearchPageModel,
 } from './search-view';
 
 function config(
@@ -182,6 +184,57 @@ describe('hit rendering helpers', () => {
     expect(documentColumnKeys([hit])).toEqual(['_id', 'body', 'title']);
     expect(isSearchViewMode('table')).toBe(true);
     expect(isSearchViewMode('grid')).toBe(false);
+    expect(searchHitKey(hit, 0)).toBe('doc_1');
+    expect(searchHitKey({ document: { title: 'No id' }, score: 0.4 }, 3)).toBe(
+      'hit-3-0.4'
+    );
+  });
+
+  it('builds search page summaries without full config payloads', () => {
+    const ready = config({ _id: 'ready', schemaName: 'Article' });
+    const pending = config({
+      _id: 'pending',
+      schemaName: 'Article',
+      enabled: false,
+    });
+    const indexes = {
+      Article: [
+        {
+          field: 'embedding',
+          dimensions: 1536,
+          similarity: 'cosine' as const,
+          status: 'ready' as const,
+          queryable: true,
+        },
+      ],
+    };
+    const model = buildSearchPageModel({
+      configs: [pending, ready],
+      indexesBySchema: indexes,
+      workersEnabled: true,
+      schemaName: 'Article',
+    });
+    expect(model.initialConfigId).toBe('ready');
+    expect(model.schemas).toEqual(['Article']);
+    expect(model.configs).toEqual([
+      {
+        _id: 'pending',
+        schemaName: 'Article',
+        targetField: 'embedding',
+        sourceFields: ['title'],
+        enabled: false,
+      },
+      {
+        _id: 'ready',
+        schemaName: 'Article',
+        targetField: 'embedding',
+        sourceFields: ['title'],
+        enabled: true,
+      },
+    ]);
+    expect(
+      model.readinessByConfigId.ready?.some(row => row.id === 'index')
+    ).toBe(true);
   });
 
   it('removes secret-like keys and prefers configured source fields', () => {

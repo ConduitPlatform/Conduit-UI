@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import { EmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import { ReadinessRow } from '@/lib/models/embeddings/readiness';
 import {
   DEFAULT_SEARCH_LIMIT,
@@ -37,7 +37,7 @@ export type SearchFormValues = {
 };
 
 type SearchFormProps = {
-  configs: EmbeddingConfig[];
+  configs: EmbeddingConfigOption[];
   schemas: string[];
   schemaName: string;
   configId: string;
@@ -180,15 +180,24 @@ export function SearchForm({
           step={1}
           value={limit}
           aria-invalid={Boolean(limitError)}
+          aria-describedby={
+            limitError ? 'search-limit-error' : 'search-limit-help'
+          }
           onChange={event => {
             setLimit(event.target.value);
             setLimitError(undefined);
           }}
         />
         {limitError ? (
-          <p className="text-sm text-destructive">{limitError}</p>
+          <p
+            id="search-limit-error"
+            role="alert"
+            className="text-sm text-destructive"
+          >
+            {limitError}
+          </p>
         ) : (
-          <p className="text-xs text-muted-foreground">
+          <p id="search-limit-help" className="text-xs text-muted-foreground">
             {`Maximum ${MAX_SEARCH_LIMIT} results.`}
           </p>
         )}

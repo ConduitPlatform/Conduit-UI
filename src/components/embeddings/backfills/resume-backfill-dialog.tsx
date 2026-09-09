@@ -25,7 +25,13 @@ export function ResumeBackfillDialog({
   pending = false,
 }: ResumeBackfillDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog
+      open={open}
+      onOpenChange={next => {
+        if (pending && !next) return;
+        onOpenChange(next);
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Resume this run?</AlertDialogTitle>
@@ -36,7 +42,13 @@ export function ResumeBackfillDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>Keep paused</AlertDialogCancel>
-          <AlertDialogAction disabled={pending} onClick={onConfirm}>
+          <AlertDialogAction
+            disabled={pending}
+            onClick={event => {
+              event.preventDefault();
+              onConfirm();
+            }}
+          >
             {pending ? 'Resuming…' : 'Resume run'}
           </AlertDialogAction>
         </AlertDialogFooter>

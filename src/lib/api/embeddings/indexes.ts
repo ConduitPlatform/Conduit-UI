@@ -1,23 +1,30 @@
 'use server';
 
+import { cache } from 'react';
 import { getSchemas, getSchemaVectorIndexes } from '@/lib/api/database';
-import { SchemaIndexLookup } from '@/lib/models/embeddings';
+import { SchemaIndexLookup } from '@/lib/models/embeddings/readiness';
+
+export const getDeclaredSchemas = cache(async () => {
+  return getSchemas({ limit: 1000 });
+});
 
 export async function resolveIndexesBySchema(
-  schemaNames: Iterable<string>
+  schemaNames: Iterable<string>,
+  schemas?: { name: string; _id: string }[]
 ): Promise<Record<string, SchemaIndexLookup>> {
   const names = [...new Set(schemaNames)].filter(name => name.length > 0);
   if (names.length === 0) return {};
 
-  let schemas: { name: string; _id: string }[] | undefined;
-  try {
-    const response = await getSchemas({ limit: 1000 });
-    schemas = response.schemas;
-  } catch {
-    return Object.fromEntries(names.map(name => [name, 'unknown']));
+  let resolved = schemas;
+  if (!resolved) {
+    try {
+      resolved = (await getDeclaredSchemas()).schemas;
+    } catch {
+      return Object.fromEntries(names.map(name => [name, 'unknown']));
+    }
   }
 
-  const idByName = new Map(schemas.map(schema => [schema.name, schema._id]));
+  const idByName = new Map(resolved.map(schema => [schema.name, schema._id]));
   const lookups = await Promise.allSettled(
     names.map(async (name): Promise<[string, SchemaIndexLookup]> => {
       const schemaId = idByName.get(name);

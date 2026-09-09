@@ -29,6 +29,7 @@ test.describe('test search', () => {
       page.getByRole('columnheader', { name: 'embedding' })
     ).toHaveCount(0);
     await page.getByRole('tab', { name: 'JSON' }).click();
+    await expect(page.getByRole('tree', { name: 'JSON view' })).toBeVisible();
     await expect(page.getByText('super-secret')).toHaveCount(0);
     await expect(page.getByText('sk-live-secret')).toHaveCount(0);
     await expect(page.getByText('tok-secret')).toHaveCount(0);

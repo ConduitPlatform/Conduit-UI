@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { AlertCircle, Info } from 'lucide-react';
 import { EmbeddingsReadiness } from '@/components/embeddings/EmbeddingsReadiness';
@@ -12,28 +12,20 @@ import { SearchResults } from '@/components/embeddings/search/search-results';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { searchEmbeddings } from '@/lib/api/embeddings';
-import { VectorCapabilities } from '@/lib/models/embeddings/capabilities';
-import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import { EmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
-import {
-  deriveEmbeddingsReadiness,
-  SchemaIndexLookup,
-} from '@/lib/models/embeddings/readiness';
+import { ReadinessRow } from '@/lib/models/embeddings/readiness';
 import { SemanticSearchHit } from '@/lib/models/embeddings/search';
 import {
   clampSearchLimit,
-  pickInitialSearchConfig,
-  uniqueSearchSchemas,
+  isSearchReady,
 } from '@/lib/models/embeddings/search-view';
-import { EmbeddingsSettings } from '@/lib/models/embeddings/settings';
 
 type TestSearchProps = {
-  configs: EmbeddingConfig[];
-  indexesBySchema: Record<string, SchemaIndexLookup>;
-  capabilities?: VectorCapabilities;
-  capabilitiesError?: string;
-  settings?: EmbeddingsSettings;
-  settingsError?: string;
+  configs: EmbeddingConfigOption[];
+  schemas: string[];
+  fallbackRows: ReadinessRow[];
+  readinessByConfigId: Record<string, ReadinessRow[]>;
   workersEnabled?: boolean;
   initialConfigId?: string;
   initialSchema?: string;
@@ -41,53 +33,22 @@ type TestSearchProps = {
 
 export function TestSearch({
   configs,
-  indexesBySchema,
-  capabilities,
-  capabilitiesError,
-  settings,
-  settingsError,
+  schemas,
+  fallbackRows,
+  readinessByConfigId,
   workersEnabled,
   initialConfigId,
   initialSchema,
 }: TestSearchProps) {
-  const initial = pickInitialSearchConfig({
-    configs,
-    indexesBySchema,
-    configId: initialConfigId,
-    schemaName: initialSchema,
-  });
-  const [schemaName, setSchemaName] = useState(
-    initial?.schemaName ?? initialSchema ?? ''
-  );
-  const [configId, setConfigId] = useState(initial?._id ?? '');
+  const [schemaName, setSchemaName] = useState(initialSchema ?? '');
+  const [configId, setConfigId] = useState(initialConfigId ?? '');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [hits, setHits] = useState<SemanticSearchHit[]>();
-  const schemas = uniqueSearchSchemas(configs);
   const selected = configs.find(config => config._id === configId);
-  const rows = useMemo(
-    () =>
-      deriveEmbeddingsReadiness({
-        capabilities,
-        capabilitiesError,
-        settings,
-        settingsError,
-        configs,
-        indexesBySchema,
-        selectedConfigId: configId || undefined,
-        workersEnabled,
-      }),
-    [
-      capabilities,
-      capabilitiesError,
-      settings,
-      settingsError,
-      configs,
-      indexesBySchema,
-      configId,
-      workersEnabled,
-    ]
-  );
+  const rows = configId
+    ? (readinessByConfigId[configId] ?? fallbackRows)
+    : fallbackRows;
 
   const runSearch = async (values: SearchFormValues) => {
     setPending(true);
@@ -143,12 +104,11 @@ export function TestSearch({
             pending={pending}
             onSchemaChange={next => {
               setSchemaName(next);
-              const nextConfig = pickInitialSearchConfig({
-                configs,
-                indexesBySchema,
-                schemaName: next,
-              });
-              setConfigId(nextConfig?._id ?? '');
+              const pool = configs.filter(config => config.schemaName === next);
+              const ready = pool.find(config =>
+                isSearchReady(readinessByConfigId[config._id] ?? [])
+              );
+              setConfigId(ready?._id ?? pool[0]?._id ?? '');
             }}
             onConfigChange={next => {
               setConfigId(next);

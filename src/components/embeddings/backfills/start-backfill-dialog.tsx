@@ -31,7 +31,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { startBackfill } from '@/lib/api/embeddings';
 import { toast } from '@/lib/hooks/use-toast';
-import { EmbeddingConfig } from '@/lib/models/embeddings/config';
+import { EmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
 import {
   defaultBackfillBatchSize,
@@ -45,7 +45,7 @@ import {
 const ALL_CONFIGS = 'all';
 
 type StartBackfillDialogProps = {
-  configs: EmbeddingConfig[];
+  configs: EmbeddingConfigOption[];
   maxBatchSize?: number;
   defaultSchema?: string;
   defaultConfig?: string;
@@ -148,6 +148,7 @@ export function StartBackfillDialog({
     <Dialog
       open={open}
       onOpenChange={next => {
+        if (pending && !next) return;
         setOpen(next);
         if (next) reset();
       }}
@@ -233,16 +234,25 @@ export function StartBackfillDialog({
               step={1}
               value={batchSize}
               aria-invalid={Boolean(batchError)}
+              aria-describedby={
+                batchError ? 'start-batch-error' : 'start-batch-help'
+              }
               onChange={event => {
                 setBatchSize(event.target.value);
                 setBatchError(undefined);
               }}
             />
-            <p className="text-xs text-muted-foreground">
+            <p id="start-batch-help" className="text-xs text-muted-foreground">
               {`Default 100. Maximum ${allowedMax.toLocaleString()}.`}
             </p>
             {batchError ? (
-              <p className="text-sm text-destructive">{batchError}</p>
+              <p
+                id="start-batch-error"
+                role="alert"
+                className="text-sm text-destructive"
+              >
+                {batchError}
+              </p>
             ) : null}
           </div>
           <label className="flex min-h-8 items-center gap-2 text-sm">
@@ -270,6 +280,9 @@ export function StartBackfillDialog({
                 id="start-filter"
                 value={filterText}
                 aria-invalid={Boolean(filterError)}
+                aria-describedby={
+                  filterError ? 'start-filter-error' : 'start-filter-help'
+                }
                 onChange={event => {
                   setFilterText(event.target.value);
                   setFilterError(undefined);
@@ -278,9 +291,18 @@ export function StartBackfillDialog({
                 placeholder='{"status":"published"}'
               />
               {filterError ? (
-                <p className="text-sm text-destructive">{filterError}</p>
+                <p
+                  id="start-filter-error"
+                  role="alert"
+                  className="text-sm text-destructive"
+                >
+                  {filterError}
+                </p>
               ) : (
-                <p className="text-xs text-muted-foreground">
+                <p
+                  id="start-filter-help"
+                  className="text-xs text-muted-foreground"
+                >
                   Equality, comparisons, bounded $in/$nin, and $and only. Leave
                   empty to scan the whole schema.
                 </p>
