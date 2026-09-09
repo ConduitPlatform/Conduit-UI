@@ -13,19 +13,9 @@ import { getBackfills, getEmbeddingConfigs } from '@/lib/api/embeddings';
 import { resolveIndexesBySchema } from '@/lib/api/embeddings/indexes';
 import {
   buildConfigListRows,
-  formatEmbeddingsApiError,
+  settledError,
+  settledValue,
 } from '@/lib/models/embeddings';
-
-function settledValue<T>(result: PromiseSettledResult<T>): T | undefined {
-  return result.status === 'fulfilled' ? result.value : undefined;
-}
-
-function settledError(
-  result: PromiseSettledResult<unknown>
-): string | undefined {
-  if (result.status !== 'rejected') return undefined;
-  return formatEmbeddingsApiError(result.reason);
-}
 
 export default async function EmbeddingConfigsPage() {
   const [configsResult, backfillsResult] = await Promise.allSettled([
@@ -60,9 +50,7 @@ export default async function EmbeddingConfigsPage() {
       <PageHeader className="flex-col items-start gap-3 lg:flex-row lg:items-center">
         <div>
           <PageTitle>Configs</PageTitle>
-          <PageDescription>
-            Schema embedding configurations and matching index readiness.
-          </PageDescription>
+          <PageDescription>Schema embedding configurations.</PageDescription>
         </div>
         <PageActions className="flex-wrap">
           <Button asChild>

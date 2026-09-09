@@ -61,3 +61,16 @@ export function formatEmbeddingsApiError(err: unknown): string {
   }
   return err instanceof Error ? err.message : 'Request failed';
 }
+
+export function settledValue<T>(
+  result: PromiseSettledResult<T>
+): T | undefined {
+  return result.status === 'fulfilled' ? result.value : undefined;
+}
+
+export function settledError(
+  result: PromiseSettledResult<unknown>
+): string | undefined {
+  if (result.status !== 'rejected') return undefined;
+  return formatEmbeddingsApiError(result.reason);
+}

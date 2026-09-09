@@ -9,11 +9,8 @@ import { getEmbeddingsSettings } from '@/lib/api/embeddings';
 import {
   listEligibleSchemas,
   OPENAI_COMPATIBLE_PROVIDER,
+  settledValue,
 } from '@/lib/models/embeddings';
-
-function settledValue<T>(result: PromiseSettledResult<T>): T | undefined {
-  return result.status === 'fulfilled' ? result.value : undefined;
-}
 
 export default async function NewEmbeddingConfigPage() {
   const [schemasResult, settingsResult] = await Promise.allSettled([

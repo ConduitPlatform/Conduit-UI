@@ -18,23 +18,13 @@ import {
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
 import {
-  formatEmbeddingsApiError,
   mergeActiveBackfillRuns,
   parseBackfillListParams,
+  settledError,
+  settledValue,
   toBackfillListQuery,
   uniqueSchemaNames,
 } from '@/lib/models/embeddings';
-
-function settledValue<T>(result: PromiseSettledResult<T>): T | undefined {
-  return result.status === 'fulfilled' ? result.value : undefined;
-}
-
-function settledError(
-  result: PromiseSettledResult<unknown>
-): string | undefined {
-  if (result.status !== 'rejected') return undefined;
-  return formatEmbeddingsApiError(result.reason);
-}
 
 export default async function EmbeddingBackfillsPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -102,7 +92,7 @@ export default async function EmbeddingBackfillsPage(props: {
         <div>
           <PageTitle>Backfills</PageTitle>
           <PageDescription>
-            Filterable run history. Active runs appear first.
+            Run history. Active runs appear first.
           </PageDescription>
         </div>
         <PageActions className="flex-wrap">

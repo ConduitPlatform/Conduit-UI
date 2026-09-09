@@ -25,6 +25,7 @@ import {
 } from '@/lib/api/modules/patch-settings-options';
 import type { EmbeddingsSettings as EmbeddingsModuleSettings } from '@/lib/models/embeddings/settings';
 import {
+  EmbeddingsSettingsFormValues,
   toSettingsFormValues,
   toSettingsPatch,
 } from '@/lib/models/embeddings/settings-form';
@@ -59,6 +60,16 @@ function servingPresentation(serving?: boolean) {
   }
 }
 
+function workersToggleDescription(nextEnabled: boolean, serving?: boolean) {
+  if (!nextEnabled) {
+    return 'Disable generation workers and mutation subscriptions? The embeddings workload stays deployed.';
+  }
+  if (serving === false) {
+    return 'The embeddings workload is not serving. Workers will not process jobs until the module is deployed. Enable workers anyway?';
+  }
+  return 'Enable generation workers and mutation subscriptions? This does not deploy or stop the embeddings workload.';
+}
+
 function isWorkersPatchSuccess(result: PatchSettingsResult | void) {
   if (!result) return true;
   return isModuleServing(result.modules, 'embeddings');
@@ -71,7 +82,7 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
   const shortcutLabel = useSaveShortcutLabel();
   const [workersEnabled, setWorkersEnabled] = useState(data.enabled);
   const [edit, setEdit] = useState(false);
-  const form = useForm({
+  const form = useForm<EmbeddingsSettingsFormValues>({
     resolver: rhfZodResolver(embeddingsSettingsFormSchema),
     mode: 'onChange',
     defaultValues: toSettingsFormValues(data),
@@ -85,7 +96,7 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
   }, [data, reset]);
 
   const onSubmit = useCallback(
-    async (values: ReturnType<typeof toSettingsFormValues>) => {
+    async (values: EmbeddingsSettingsFormValues) => {
       const result = await save({
         action: () =>
           patchEmbeddingsSettings(
@@ -127,11 +138,7 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
     const nextEnabled = !workersEnabled;
     addAlert({
       title: nextEnabled ? 'Enable workers' : 'Disable workers',
-      description: nextEnabled
-        ? serving === false
-          ? 'The embeddings workload is not serving. Workers will not process jobs until the module is deployed. Enable workers anyway?'
-          : 'Enable generation workers and mutation subscriptions? This does not deploy or stop the embeddings workload.'
-        : 'Disable generation workers and mutation subscriptions? The embeddings workload stays deployed.',
+      description: workersToggleDescription(nextEnabled, serving),
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {
