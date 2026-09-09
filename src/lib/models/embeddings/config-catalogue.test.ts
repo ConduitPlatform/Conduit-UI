@@ -125,7 +125,7 @@ describe('config catalogue', () => {
 
   it('describes similarity options', () => {
     expect(similarityHelp('cosine')).toContain('Recommended for text');
-    expect(similarityHelp('euclidean')).toContain('Direct distance');
-    expect(similarityHelp('dotProduct')).toContain('direction and magnitude');
+    expect(similarityHelp('euclidean')).toContain('Straight-line');
+    expect(similarityHelp('dotProduct')).toContain('Direction and magnitude');
   });
 });

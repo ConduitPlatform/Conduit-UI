@@ -13,6 +13,7 @@ import {
   ConfigProviderChoice,
   DIMENSIONS_HELP,
   findCatalogueModel,
+  MODEL_ABSENT_EDIT_DETAIL,
   SETTINGS_CTA_LABEL,
   SETTINGS_HREF,
   similarityHelp,
@@ -27,6 +28,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+
+function schemaHint(schemaLocked: boolean, schemaCount: number) {
+  if (schemaLocked) return 'Schema cannot change after create.';
+  if (schemaCount === 0) return 'No eligible Database schemas are available.';
+  return 'Disabled, system, and embeddings-owned schemas are omitted.';
+}
+
+function providerHint(providerCount: number) {
+  if (providerCount === 0) {
+    return 'Configure a provider before creating a config.';
+  }
+  if (providerCount === 1) return 'Only one provider is configured.';
+  return 'Changing provider clears a model that is not in that catalogue.';
+}
 
 type ConfigFormFieldsProps = {
   schemas: EmbeddingSchemaFormChoice[];
@@ -79,10 +94,7 @@ export function ConfigFormFields({
     <div className="grid gap-5 md:grid-cols-2">
       {modelBlocked ? (
         <div className="rounded-md border border-border/60 bg-surface-1 p-3 md:col-span-2">
-          <p className="text-sm text-pretty">
-            This model is not in the provider catalogue. Add it in Settings
-            before changing this config.
-          </p>
+          <p className="text-sm text-pretty">{MODEL_ABSENT_EDIT_DETAIL}</p>
           <Link
             href={SETTINGS_HREF}
             className="mt-2 inline-flex min-h-8 items-center text-sm font-medium text-primary underline-offset-4 hover:underline"
@@ -119,11 +131,7 @@ export function ConfigFormFields({
               />
             </FormControl>
             <FormDescription className="text-xs">
-              {schemaLocked
-                ? 'Schema cannot change after create.'
-                : schemas.length === 0
-                  ? 'No eligible Database schemas are available.'
-                  : 'Disabled, system, and embeddings-owned schemas are omitted.'}
+              {schemaHint(schemaLocked, schemas.length)}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -158,36 +166,35 @@ export function ConfigFormFields({
               });
               const nextModels =
                 providers.find(item => item.key === value)?.models ?? [];
-              if (!nextModels.some(item => item.name === model)) {
-                setValue('model', '', {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-                setValue('dimensions', 0, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
+              if (nextModels.some(item => item.name === model)) return;
+              setValue('model', '', {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
+              setValue('dimensions', 0, {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
             }}
           />
         ) : (
-          <div className="space-y-1.5">
-            <p className="pl-1 text-base font-medium">Provider</p>
-            <button
-              type="button"
-              disabled
-              className="flex h-8 min-h-8 w-full items-center rounded-md border border-input px-3 text-left text-[13px] text-muted-foreground"
-            >
-              Select a provider
-            </button>
-          </div>
+          <FormItem className="space-y-1.5">
+            <FormLabel>Provider</FormLabel>
+            <FormControl>
+              <SearchableCombobox
+                value=""
+                disabled
+                placeholder="Select a provider"
+                searchPlaceholder="Search providers"
+                emptyLabel="No providers"
+                ariaLabel="Provider"
+                options={[]}
+              />
+            </FormControl>
+          </FormItem>
         )}
         <p className="pl-1 text-xs text-muted-foreground">
-          {providers.length === 0
-            ? 'Configure a provider before creating a config.'
-            : providers.length === 1
-              ? 'Only one provider is configured.'
-              : 'Changing provider clears a model that is not in that catalogue.'}
+          {providerHint(providers.length)}
           {providers.length === 0 ? (
             <>
               {' '}
@@ -231,7 +238,7 @@ export function ConfigFormFields({
             <FormDescription className="text-xs">
               {modelBlocked
                 ? 'The saved model is not in the current catalogue.'
-                : 'Chosen from the selected provider catalogue.'}
+                : 'From the selected provider catalogue.'}
             </FormDescription>
             <FormMessage />
           </FormItem>

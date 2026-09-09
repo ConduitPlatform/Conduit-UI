@@ -1,4 +1,8 @@
-import type { EmbeddingConfig, EmbeddingConfigInput } from './config.ts';
+import type {
+  EmbeddingConfig,
+  EmbeddingConfigInput,
+  VectorSimilarity,
+} from './config.ts';
 import type {
   EmbeddingProviderModel,
   EmbeddingsProviderSettings,
@@ -34,6 +38,8 @@ export function catalogueDimensionsMismatchMessage(
 export const MODEL_ABSENT_DETAIL =
   'This model is not in the provider catalogue.';
 
+export const MODEL_ABSENT_EDIT_DETAIL = `${MODEL_ABSENT_DETAIL} Add it in Settings before changing this config.`;
+
 export const SETTINGS_CTA_LABEL = 'Open settings';
 
 export const SETTINGS_HREF = '/embeddings/settings';
@@ -41,16 +47,18 @@ export const SETTINGS_HREF = '/embeddings/settings';
 export const DIMENSIONS_HELP =
   'Must match the model and the index. Changing it requires a rebuild and backfill.';
 
-export function similarityHelp(value: string): string {
+export function similarityHelp(value: VectorSimilarity): string {
   switch (value) {
     case 'cosine':
-      return 'Recommended for text. Compares direction, not magnitude.';
+      return 'Recommended for text.';
     case 'euclidean':
-      return 'Direct distance between vectors.';
+      return 'Straight-line vector distance.';
     case 'dotProduct':
-      return 'Uses direction and magnitude. Use when the model recommends it.';
-    default:
-      return 'Choose the metric the index will use.';
+      return 'Direction and magnitude.';
+    default: {
+      const exhaustive: never = value;
+      return exhaustive;
+    }
   }
 }
 
