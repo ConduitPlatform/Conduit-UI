@@ -94,7 +94,11 @@ export function ConfigFormFields({
         min={1}
         step={1}
         inputMode="numeric"
-        description="Cannot change dimensions on the same target field."
+        description={
+          schemaLocked
+            ? 'Cannot change dimensions on the same target field.'
+            : undefined
+        }
       />
       <SelectField
         fieldName="similarity"
@@ -114,7 +118,7 @@ export function ConfigFormFields({
           {enableAllowed
             ? 'Documents will embed after the matching index is queryable.'
             : (enableBlockedReason ??
-              'Enablement stays off until workers, capabilities, and a matching index are ready.')}
+              'Stays disabled until workers, capabilities, and a matching index are ready.')}
           {enableBlockedHref && enableBlockedAction ? (
             <>
               {' '}

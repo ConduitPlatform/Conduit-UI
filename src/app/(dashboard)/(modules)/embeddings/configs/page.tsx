@@ -53,7 +53,9 @@ export default async function EmbeddingConfigsPage() {
       <PageHeader className="flex-col items-start gap-3 lg:flex-row lg:items-center">
         <div>
           <PageTitle>Configs</PageTitle>
-          <PageDescription>Schema embedding configurations.</PageDescription>
+          <PageDescription>
+            Source fields, target field, and matching index.
+          </PageDescription>
         </div>
         <PageActions className="flex-wrap">
           <Button asChild>

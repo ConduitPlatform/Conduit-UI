@@ -63,7 +63,7 @@ describe('status readiness', () => {
       {
         title: 'Embeddings not ready',
         description:
-          'Workers are enabled, but the embeddings module is not ready yet.',
+          'Workers are enabled, but the embeddings module is not ready.',
         variant: 'warning',
       },
     ]);

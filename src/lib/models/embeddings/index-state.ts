@@ -192,12 +192,11 @@ export function embeddingConfigEnableBlock(args: {
   }
   if (isVectorStorageSearchReady(args.capabilities) !== true) {
     return {
-      reason:
-        'Enablement stays off until vector storage and search are available.',
+      reason: 'Stays disabled until vector storage and search are available.',
     };
   }
   return {
-    reason: 'Enablement stays off until a matching index is queryable.',
+    reason: 'Stays disabled until a matching index is queryable.',
   };
 }
 
