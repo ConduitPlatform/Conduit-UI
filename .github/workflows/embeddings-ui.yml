@@ -8,10 +8,18 @@ on:
       - reopened
     paths:
       - 'src/app/(dashboard)/(modules)/embeddings/**'
+      - 'src/app/(dashboard)/template.tsx'
       - 'src/components/embeddings/**'
+      - 'src/components/dashboard/ActiveModuleGrid.tsx'
+      - 'src/components/dashboard/ModuleDashboard.tsx'
+      - 'src/components/navigation/navList.config.ts'
       - 'src/lib/models/embeddings/**'
       - 'src/lib/api/embeddings/**'
       - 'src/lib/api/database/**'
+      - 'src/lib/utils/module-utils.ts'
+      - 'src/lib/utils/module-utils.test.ts'
+      - 'src/lib/utils/breadcrumbs.ts'
+      - 'src/lib/utils/breadcrumbs.test.ts'
       - 'src/test/**'
       - 'e2e/**'
       - 'playwright.config.ts'
