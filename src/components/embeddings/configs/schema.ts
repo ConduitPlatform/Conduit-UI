@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { VECTOR_SIMILARITIES } from '@/lib/models/embeddings/config';
+import {
+  EmbeddingConfig,
+  VECTOR_SIMILARITIES,
+} from '@/lib/models/embeddings/config';
 import {
   isInPlaceDimensionChange,
   MaterialEmbeddingConfig,
@@ -34,6 +37,55 @@ export const embeddingConfigFormSchema = z.object({
 export type EmbeddingConfigFormValues = z.infer<
   typeof embeddingConfigFormSchema
 >;
+
+export function toConfigFormValues(
+  config: EmbeddingConfig
+): EmbeddingConfigFormValues {
+  return {
+    schemaName: config.schemaName,
+    sourceFields: [...config.sourceFields],
+    targetField: config.targetField,
+    provider: config.provider,
+    model: config.model,
+    dimensions: config.dimensions,
+    similarity: config.similarity,
+    enabled: config.enabled,
+  };
+}
+
+export function configFormSignature(values: EmbeddingConfigFormValues): string {
+  return JSON.stringify({
+    schemaName: values.schemaName,
+    sourceFields: [...(values.sourceFields ?? [])]
+      .map(field => field.trim())
+      .sort(),
+    targetField: values.targetField,
+    provider: values.provider,
+    model: values.model,
+    dimensions: Number(values.dimensions),
+    similarity: values.similarity,
+    enabled: values.enabled === true,
+  });
+}
+
+export function shouldResetConfigForm(args: {
+  incomingId: string;
+  incomingSignature: string;
+  appliedId: string;
+  appliedSignature: string;
+  dirty: boolean;
+  ignoredIncomingSignature?: string | null;
+}): boolean {
+  if (args.incomingId !== args.appliedId) return true;
+  if (args.incomingSignature === args.appliedSignature) return false;
+  if (
+    args.ignoredIncomingSignature != null &&
+    args.incomingSignature === args.ignoredIncomingSignature
+  ) {
+    return false;
+  }
+  return !args.dirty;
+}
 
 export function defaultConfigFormValues(args: {
   provider?: string;
