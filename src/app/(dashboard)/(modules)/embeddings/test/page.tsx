@@ -21,6 +21,7 @@ import { settledError, settledValue } from '@/lib/models/embeddings/errors';
 import { workersEnabledFromStatus } from '@/lib/models/embeddings/overview-view';
 import { readSearchParam } from '@/lib/models/embeddings/backfill-view';
 import { buildSearchPageModel } from '@/lib/models/embeddings/search-view';
+import { filterByEligibleSchemas } from '@/lib/models/embeddings/source-fields';
 
 export default async function EmbeddingsTestSearchPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -60,16 +61,18 @@ export default async function EmbeddingsTestSearchPage(props: {
   const capabilities =
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
   const settings = settledValue(settingsResult)?.config;
+  const declaredSchemas = settledValue(schemasResult)?.schemas;
+  const searchableConfigs = filterByEligibleSchemas(configs, declaredSchemas);
   const indexesBySchema = await resolveIndexesBySchema(
-    configs.map(config => config.schemaName),
-    settledValue(schemasResult)?.schemas
+    searchableConfigs.map(config => config.schemaName),
+    declaredSchemas
   );
   const workersEnabled = workersEnabledFromStatus({
     status,
     settingsEnabled: settings?.enabled,
   });
   const model = buildSearchPageModel({
-    configs,
+    configs: searchableConfigs,
     indexesBySchema,
     capabilities,
     capabilitiesError: settledError(capabilitiesResult),

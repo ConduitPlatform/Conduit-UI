@@ -1,4 +1,6 @@
 import {
+  ARCHIVED_SCHEMA_ID,
+  ARCHIVED_SCHEMA_NAME,
   E2E_ENV_NAME,
   FIXED_NOW,
   OPENAI_COMPATIBLE_PROVIDER,
@@ -34,6 +36,10 @@ function emptyQueue(): MockQueueCounts {
   };
 }
 
+function schemaModelOptions(enabled: boolean): Record<string, unknown> {
+  return { conduit: { cms: { enabled } } };
+}
+
 function productSchema(): MockSchema {
   const fields = {
     title: { type: 'String' },
@@ -46,9 +52,28 @@ function productSchema(): MockSchema {
     fields,
     compiledFields: fields,
     extensions: [],
-    modelOptions: {},
+    modelOptions: schemaModelOptions(true),
     ownerModule: 'database',
     collectionName: 'products',
+    createdAt: FIXED_NOW,
+    updatedAt: FIXED_NOW,
+  };
+}
+
+function archivedSchema(): MockSchema {
+  const fields = {
+    title: { type: 'String' },
+  };
+  return {
+    _id: ARCHIVED_SCHEMA_ID,
+    name: ARCHIVED_SCHEMA_NAME,
+    parentSchema: null,
+    fields,
+    compiledFields: fields,
+    extensions: [],
+    modelOptions: schemaModelOptions(false),
+    ownerModule: 'database',
+    collectionName: 'archived_products',
     createdAt: FIXED_NOW,
     updatedAt: FIXED_NOW,
   };
@@ -174,7 +199,7 @@ function readyState(enabled: boolean): MockAdminState {
     modules: coreModules(true, true),
     settings: defaultSettings({ enabled, apiKey: STORED_API_KEY }),
     capabilities: mongodbCapabilities(),
-    schemas: [productSchema()],
+    schemas: [productSchema(), archivedSchema()],
     configs: [readyConfig()],
     indexesBySchemaId: {
       [PRODUCT_SCHEMA_ID]: readyIndexes(),
@@ -199,7 +224,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         modules: coreModules(true, true),
         settings: defaultSettings({ enabled: false, apiKey: '' }),
         capabilities: unsupportedCapabilities(),
-        schemas: [productSchema()],
+        schemas: [productSchema(), archivedSchema()],
         configs: [],
         indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
         backfills: [],
@@ -214,7 +239,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         modules: coreModules(true, true),
         settings: defaultSettings({ enabled: true, apiKey: STORED_API_KEY }),
         capabilities: mongodbCapabilities(),
-        schemas: [productSchema()],
+        schemas: [productSchema(), archivedSchema()],
         configs: [],
         indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
         backfills: [],
@@ -229,7 +254,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         modules: coreModules(false, false),
         settings: defaultSettings({ enabled: false, apiKey: '' }),
         capabilities: unsupportedCapabilities(),
-        schemas: [productSchema()],
+        schemas: [productSchema(), archivedSchema()],
         configs: [],
         indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
         backfills: [],

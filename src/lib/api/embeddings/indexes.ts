@@ -2,15 +2,22 @@
 
 import { cache } from 'react';
 import { getSchemas, getSchemaVectorIndexes } from '@/lib/api/database';
+import { eligibleSchemaIdsByName } from '@/lib/models/embeddings/source-fields';
 import { SchemaIndexLookup } from '@/lib/models/embeddings/readiness';
 
 export const getDeclaredSchemas = cache(async () => {
-  return getSchemas({ limit: 1000 });
+  return getSchemas({ limit: 1000, enabled: true });
 });
 
 export async function resolveIndexesBySchema(
   schemaNames: Iterable<string>,
-  schemas?: { name: string; _id: string }[]
+  schemas?: Array<{
+    name: string;
+    _id: string;
+    ownerModule?: string;
+    enabled?: unknown;
+    modelOptions?: unknown;
+  }>
 ): Promise<Record<string, SchemaIndexLookup>> {
   const names = [...new Set(schemaNames)].filter(name => name.length > 0);
   if (names.length === 0) return {};
@@ -24,7 +31,7 @@ export async function resolveIndexesBySchema(
     }
   }
 
-  const idByName = new Map(resolved.map(schema => [schema.name, schema._id]));
+  const idByName = eligibleSchemaIdsByName(resolved);
   const lookups = await Promise.allSettled(
     names.map(async (name): Promise<[string, SchemaIndexLookup]> => {
       const schemaId = idByName.get(name);

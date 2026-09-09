@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  eligibleSchemaIdsByName,
+  filterByEligibleSchemas,
+  isDeclaredSchemaEnabled,
   isDeniedEmbeddingSchema,
+  isEligibleEmbeddingSchema,
   isEligibleSourceField,
   isHiddenField,
   isSensitiveFieldName,
@@ -10,11 +14,28 @@ import {
   listEligibleSourceFields,
   listSourceFieldChoices,
   normalizeSourceFieldAllowlist,
+  requireEligibleDeclaredSchema,
   SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
   toEmbeddingConfigRequest,
   toSchemaFieldMap,
+  UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE,
   validateEmbeddingConfigInput,
 } from './source-fields';
+
+function enabledArticle(extra: Record<string, unknown> = {}): {
+  name: string;
+  ownerModule: string;
+  enabled: boolean;
+  fields: Record<string, unknown>;
+} {
+  return {
+    name: 'Article',
+    ownerModule: 'database',
+    enabled: true,
+    fields: { title: { type: 'String' } },
+    ...extra,
+  };
+}
 
 describe('source field eligibility', () => {
   it('accepts string-like definitions and rejects hidden or sensitive names', () => {
@@ -62,7 +83,42 @@ describe('source field eligibility', () => {
     expect(isDeniedEmbeddingSchema({ name: '_internal' })).toBe(true);
   });
 
-  it('prefers compiled fields and filters denied schemas', () => {
+  it('treats missing or false enabled flags as disabled and honors cms/extendable', () => {
+    expect(isDeclaredSchemaEnabled({ enabled: true })).toBe(true);
+    expect(isDeclaredSchemaEnabled({ enabled: false })).toBe(false);
+    expect(isDeclaredSchemaEnabled({})).toBe(false);
+    expect(
+      isDeclaredSchemaEnabled({
+        modelOptions: { conduit: { cms: { enabled: true } } },
+      })
+    ).toBe(true);
+    expect(
+      isDeclaredSchemaEnabled({
+        modelOptions: { conduit: { cms: { enabled: false } } },
+      })
+    ).toBe(false);
+    expect(
+      isDeclaredSchemaEnabled({
+        modelOptions: { conduit: { permissions: { extendable: true } } },
+      })
+    ).toBe(true);
+    expect(
+      isEligibleEmbeddingSchema({
+        name: 'Article',
+        ownerModule: 'database',
+        enabled: false,
+      })
+    ).toBe(false);
+    expect(
+      isEligibleEmbeddingSchema({
+        name: 'AccessToken',
+        ownerModule: 'authentication',
+        enabled: true,
+      })
+    ).toBe(false);
+  });
+
+  it('prefers compiled fields and filters denied and disabled schemas', () => {
     const fields = toSchemaFieldMap({
       fields: { title: { type: 'String' } },
       compiledFields: { body: { type: 'String' } },
@@ -72,15 +128,52 @@ describe('source field eligibility', () => {
       {
         name: 'Article',
         ownerModule: 'database',
+        enabled: true,
+        fields: { title: { type: 'String' } },
+      },
+      {
+        name: 'Draft',
+        ownerModule: 'database',
+        enabled: false,
+        fields: { title: { type: 'String' } },
+      },
+      {
+        name: 'Legacy',
+        ownerModule: 'database',
+        modelOptions: { conduit: { cms: { enabled: false } } },
         fields: { title: { type: 'String' } },
       },
       {
         name: 'EmbeddingConfig',
         ownerModule: 'embeddings',
+        enabled: true,
         fields: { title: { type: 'String' } },
       },
     ]);
     expect(eligible.map(schema => schema.name)).toEqual(['Article']);
+  });
+
+  it('drops configs for disabled schemas and skips their index ids', () => {
+    const schemas = [
+      { _id: 's1', name: 'Article', ownerModule: 'database', enabled: true },
+      { _id: 's2', name: 'Draft', ownerModule: 'database', enabled: false },
+      {
+        _id: 's3',
+        name: 'AccessToken',
+        ownerModule: 'authentication',
+        enabled: true,
+      },
+    ];
+    expect(
+      filterByEligibleSchemas(
+        [{ schemaName: 'Article' }, { schemaName: 'Draft' }],
+        schemas
+      )
+    ).toEqual([{ schemaName: 'Article' }]);
+    expect(filterByEligibleSchemas([{ schemaName: 'Article' }], null)).toEqual(
+      []
+    );
+    expect([...eligibleSchemaIdsByName(schemas).keys()]).toEqual(['Article']);
   });
 
   it('builds an explicit upsert body and revalidates eligible fields', () => {
@@ -96,21 +189,13 @@ describe('source field eligibility', () => {
     };
     expect(toEmbeddingConfigRequest(input)).toEqual(input);
     expect(
-      validateEmbeddingConfigInput(input, [
-        {
-          name: 'Article',
-          ownerModule: 'database',
-          fields: { title: { type: 'String' } },
-        },
-      ]).sourceFields
+      validateEmbeddingConfigInput(input, [enabledArticle()]).sourceFields
     ).toEqual(['title']);
     expect(() =>
       validateEmbeddingConfigInput({ ...input, sourceFields: ['password'] }, [
-        {
-          name: 'Article',
-          ownerModule: 'database',
+        enabledArticle({
           fields: { password: { type: 'String' }, title: { type: 'String' } },
-        },
+        }),
       ])
     ).toThrow('One or more source fields are not eligible.');
     expect(() =>
@@ -118,10 +203,19 @@ describe('source field eligibility', () => {
         {
           name: 'AccessToken',
           ownerModule: 'authentication',
+          enabled: true,
           fields: { title: { type: 'String' } },
         },
       ])
-    ).toThrow('This schema cannot be used for embeddings.');
+    ).toThrow(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
+    expect(() =>
+      validateEmbeddingConfigInput(input, [
+        enabledArticle({ enabled: false, name: 'Article' }),
+      ])
+    ).toThrow(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
+    expect(() => requireEligibleDeclaredSchema('Article', null)).toThrow(
+      SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE
+    );
     expect(() => validateEmbeddingConfigInput(input)).toThrow(
       SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE
     );

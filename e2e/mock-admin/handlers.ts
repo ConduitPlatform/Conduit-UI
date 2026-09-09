@@ -40,6 +40,7 @@ import type {
   MockEmbeddingConfig,
   MockEmbeddingsSettings,
   MockProviderSettings,
+  MockSchema,
 } from './types.ts';
 
 function unauthorized(response: ServerResponse): void {
@@ -249,6 +250,18 @@ function readFilter(value: unknown): Record<string, unknown> | undefined {
   }
   if (isRecord(value)) return { ...value };
   return undefined;
+}
+
+function isMockSchemaEnabled(schema: MockSchema): boolean {
+  const conduit = isRecord(schema.modelOptions.conduit)
+    ? schema.modelOptions.conduit
+    : undefined;
+  if (!conduit) return false;
+  const cms = isRecord(conduit.cms) ? conduit.cms : undefined;
+  const permissions = isRecord(conduit.permissions)
+    ? conduit.permissions
+    : undefined;
+  return cms?.enabled === true || permissions?.extendable === true;
 }
 
 function schemaIdForName(name: string): string | undefined {
@@ -791,9 +804,16 @@ export async function handleMockRequest(
   }
 
   if (pathname === '/database/schemas' && method === 'GET') {
+    const enabledParam = search.get('enabled');
+    let schemas = getState().schemas;
+    if (enabledParam === 'true') {
+      schemas = schemas.filter(isMockSchemaEnabled);
+    } else if (enabledParam === 'false') {
+      schemas = schemas.filter(schema => !isMockSchemaEnabled(schema));
+    }
     sendJson(response, 200, {
-      schemas: getState().schemas,
-      count: getState().schemas.length,
+      schemas,
+      count: schemas.length,
     });
     return;
   }
