@@ -1,7 +1,5 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
-import { canCancelBackfill, isResumeEligible } from './backfill.ts';
+import { describe, expect, it } from 'vitest';
+import { canCancelBackfill, isResumeEligible } from './backfill';
 import {
   backfillProgress,
   backfillTimeline,
@@ -15,8 +13,8 @@ import {
   sortBackfillRuns,
   toBackfillListQuery,
   uniqueSchemaNames,
-} from './backfill-view.ts';
-import type { BackfillRun, BackfillRunState } from './backfill.ts';
+} from './backfill-view';
+import type { BackfillRun, BackfillRunState } from './backfill';
 
 function run(
   partial: Partial<BackfillRun> & { _id: string; state: BackfillRunState }
@@ -42,14 +40,14 @@ describe('backfill list URL state', () => {
       skip: '20',
       limit: '25',
     });
-    assert.deepEqual(parsed, {
+    expect(parsed).toEqual({
       schema: 'Article',
       config: 'cfg_1',
       state: 'running',
       skip: 20,
       limit: 25,
     });
-    assert.deepEqual(toBackfillListQuery(parsed), {
+    expect(toBackfillListQuery(parsed)).toEqual({
       schemaName: 'Article',
       configId: 'cfg_1',
       state: 'running',
@@ -68,11 +66,11 @@ describe('backfill list URL state', () => {
       skip: '-4',
       limit: '999',
     });
-    assert.equal(parsed.schema, 'Post');
-    assert.equal(parsed.config, 'cfg_2');
-    assert.equal(parsed.state, undefined);
-    assert.equal(parsed.skip, 0);
-    assert.equal(parsed.limit, 100);
+    expect(parsed.schema).toBe('Post');
+    expect(parsed.config).toBe('cfg_2');
+    expect(parsed.state).toBeUndefined();
+    expect(parsed.skip).toBe(0);
+    expect(parsed.limit).toBe(100);
   });
 });
 
@@ -100,10 +98,12 @@ describe('active-first ordering', () => {
         createdAt: '2026-01-03T00:00:00.000Z',
       }),
     ]);
-    assert.deepEqual(
-      sorted.map(item => item._id),
-      ['wait', 'run', 'done', 'fail']
-    );
+    expect(sorted.map(item => item._id)).toEqual([
+      'wait',
+      'run',
+      'done',
+      'fail',
+    ]);
   });
 
   it('prepends active runs on the first page and hides them later', () => {
@@ -120,20 +120,14 @@ describe('active-first ordering', () => {
       runningRuns: [running],
       skip: 0,
     });
-    assert.deepEqual(
-      first.map(item => item._id),
-      ['q', 'r', 'old']
-    );
+    expect(first.map(item => item._id)).toEqual(['q', 'r', 'old']);
     const next = mergeActiveBackfillRuns({
       pageRuns: [queued, older],
       queuedRuns: [queued],
       runningRuns: [running],
       skip: 10,
     });
-    assert.deepEqual(
-      next.map(item => item._id),
-      ['old']
-    );
+    expect(next.map(item => item._id)).toEqual(['old']);
   });
 });
 
@@ -149,11 +143,11 @@ describe('queued progress', () => {
         failedCount: 10,
       })
     );
-    assert.equal(progress.done, 50);
-    assert.equal(progress.percent, 50);
-    assert.equal(progress.scanning, false);
-    assert.match(progress.caption, /50 of 100 queued/);
-    assert.doesNotMatch(progress.caption.toLowerCase(), /collection/);
+    expect(progress.done).toBe(50);
+    expect(progress.percent).toBe(50);
+    expect(progress.scanning).toBe(false);
+    expect(progress.caption).toMatch(/50 of 100 queued/);
+    expect(progress.caption.toLowerCase()).not.toMatch(/collection/);
   });
 
   it('labels scanning when queued is still empty', () => {
@@ -165,19 +159,17 @@ describe('queued progress', () => {
         queuedCount: 0,
       })
     );
-    assert.equal(progress.percent, undefined);
-    assert.equal(progress.scanning, true);
-    assert.match(progress.caption, /Scanning/);
-    assert.match(progress.caption, /not the collection/);
+    expect(progress.percent).toBeUndefined();
+    expect(progress.scanning).toBe(true);
+    expect(progress.caption).toMatch(/Scanning/);
+    expect(progress.caption).toMatch(/not the collection/);
   });
 
   it('detects active runs for polling', () => {
-    assert.equal(
-      hasActiveBackfillRuns([run({ _id: '1', state: 'completed' })]),
+    expect(hasActiveBackfillRuns([run({ _id: '1', state: 'completed' })])).toBe(
       false
     );
-    assert.equal(
-      hasActiveBackfillRuns([run({ _id: '1', state: 'queued' })]),
+    expect(hasActiveBackfillRuns([run({ _id: '1', state: 'queued' })])).toBe(
       true
     );
   });
@@ -185,41 +177,41 @@ describe('queued progress', () => {
 
 describe('start dialog parsing', () => {
   it('accepts empty or object filters and rejects arrays or invalid JSON', () => {
-    assert.deepEqual(parseOperatorFilterJson(''), {
+    expect(parseOperatorFilterJson('')).toEqual({
       ok: true,
       filter: undefined,
     });
-    assert.deepEqual(parseOperatorFilterJson(' {"status":"draft"} '), {
+    expect(parseOperatorFilterJson(' {"status":"draft"} ')).toEqual({
       ok: true,
       filter: { status: 'draft' },
     });
-    assert.deepEqual(parseOperatorFilterJson('[1]'), {
+    expect(parseOperatorFilterJson('[1]')).toEqual({
       ok: false,
       error: 'Filter must be a JSON object.',
     });
-    assert.equal(parseOperatorFilterJson('{').ok, false);
+    expect(parseOperatorFilterJson('{').ok).toBe(false);
   });
 
   it('bounds batch size to configured max', () => {
-    assert.equal(defaultBackfillBatchSize(40), 40);
-    assert.equal(defaultBackfillBatchSize(500), 100);
-    assert.deepEqual(parseBatchSizeInput('100', 500), {
+    expect(defaultBackfillBatchSize(40)).toBe(40);
+    expect(defaultBackfillBatchSize(500)).toBe(100);
+    expect(parseBatchSizeInput('100', 500)).toEqual({
       ok: true,
       batchSize: 100,
     });
-    assert.equal(parseBatchSizeInput('0', 500).ok, false);
-    assert.equal(parseBatchSizeInput('501', 500).ok, false);
+    expect(parseBatchSizeInput('0', 500).ok).toBe(false);
+    expect(parseBatchSizeInput('501', 500).ok).toBe(false);
   });
 });
 
 describe('detail helpers', () => {
   it('allows cancel on queued or running and resume on failed or canceled', () => {
-    assert.equal(canCancelBackfill('queued'), true);
-    assert.equal(canCancelBackfill('running'), true);
-    assert.equal(canCancelBackfill('completed'), false);
-    assert.equal(isResumeEligible('failed'), true);
-    assert.equal(isResumeEligible('canceled'), true);
-    assert.equal(isResumeEligible('completed'), false);
+    expect(canCancelBackfill('queued')).toBe(true);
+    expect(canCancelBackfill('running')).toBe(true);
+    expect(canCancelBackfill('completed')).toBe(false);
+    expect(isResumeEligible('failed')).toBe(true);
+    expect(isResumeEligible('canceled')).toBe(true);
+    expect(isResumeEligible('completed')).toBe(false);
   });
 
   it('builds a running drain timeline and sanitizes error text', () => {
@@ -232,20 +224,19 @@ describe('detail helpers', () => {
         drainStartedAt: '2026-01-01T00:02:00.000Z',
       })
     );
-    assert.equal(items[1]?.status, 'done');
-    assert.equal(items[2]?.status, 'current');
-    assert.equal(items[3]?.status, 'pending');
-    assert.equal(sanitizeBackfillErrorDisplay('  boom\u0000  '), 'boom');
-    assert.equal(sanitizeBackfillErrorDisplay(''), undefined);
+    expect(items[1]?.status).toBe('done');
+    expect(items[2]?.status).toBe('current');
+    expect(items[3]?.status).toBe('pending');
+    expect(sanitizeBackfillErrorDisplay('  boom\u0000  ')).toBe('boom');
+    expect(sanitizeBackfillErrorDisplay('')).toBeUndefined();
   });
 
   it('collects schema names from configs and runs', () => {
-    assert.deepEqual(
+    expect(
       uniqueSchemaNames(
         [{ schemaName: 'Post' }, { schemaName: 'Article' }],
         [run({ _id: '1', state: 'queued', schemaName: 'Comment' })]
-      ),
-      ['Article', 'Comment', 'Post']
-    );
+      )
+    ).toEqual(['Article', 'Comment', 'Post']);
   });
 });

@@ -1,6 +1,4 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
+import { describe, expect, it } from 'vitest';
 import {
   isDeniedEmbeddingSchema,
   isEligibleSourceField,
@@ -11,22 +9,21 @@ import {
   listEligibleSourceFields,
   listSourceFieldChoices,
   toSchemaFieldMap,
-} from './source-fields.ts';
+} from './source-fields';
 
 describe('source field eligibility', () => {
   it('accepts string-like definitions and rejects hidden or sensitive names', () => {
-    assert.equal(isStringLikeField('String'), true);
-    assert.equal(isStringLikeField({ type: 'String' }), true);
-    assert.equal(isStringLikeField(['String']), true);
-    assert.equal(isStringLikeField('Number'), false);
-    assert.equal(isHiddenField({ type: 'String', select: false }), true);
-    assert.equal(isSensitiveFieldName('apiKey'), true);
-    assert.equal(isEligibleSourceField('title', { type: 'String' }), true);
-    assert.equal(isEligibleSourceField('password', { type: 'String' }), false);
-    assert.equal(
-      isEligibleSourceField('notes', { type: 'String', select: false }),
-      false
-    );
+    expect(isStringLikeField('String')).toBe(true);
+    expect(isStringLikeField({ type: 'String' })).toBe(true);
+    expect(isStringLikeField(['String'])).toBe(true);
+    expect(isStringLikeField('Number')).toBe(false);
+    expect(isHiddenField({ type: 'String', select: false })).toBe(true);
+    expect(isSensitiveFieldName('apiKey')).toBe(true);
+    expect(isEligibleSourceField('title', { type: 'String' })).toBe(true);
+    expect(isEligibleSourceField('password', { type: 'String' })).toBe(false);
+    expect(
+      isEligibleSourceField('notes', { type: 'String', select: false })
+    ).toBe(false);
   });
 
   it('lists eligible fields and keeps currently selected ineligible names', () => {
@@ -37,30 +34,27 @@ describe('source field eligibility', () => {
       hidden: { type: 'String', select: false },
       count: { type: 'Number' },
     };
-    assert.deepEqual(listEligibleSourceFields(fields), ['body', 'title']);
-    assert.deepEqual(
+    expect(listEligibleSourceFields(fields)).toEqual(['body', 'title']);
+    expect(
       listSourceFieldChoices(fields, ['title', 'password']).map(
         choice => choice.name
-      ),
-      ['body', 'password', 'title']
-    );
+      )
+    ).toEqual(['body', 'password', 'title']);
   });
 
   it('denies embeddings-owned, system, and auth-secret schemas', () => {
-    assert.equal(
-      isDeniedEmbeddingSchema({ name: 'Article', ownerModule: 'database' }),
-      false
-    );
-    assert.equal(
+    expect(
+      isDeniedEmbeddingSchema({ name: 'Article', ownerModule: 'database' })
+    ).toBe(false);
+    expect(
       isDeniedEmbeddingSchema({
         name: 'EmbeddingConfig',
         ownerModule: 'embeddings',
-      }),
-      true
-    );
-    assert.equal(isDeniedEmbeddingSchema({ name: 'Config' }), true);
-    assert.equal(isDeniedEmbeddingSchema({ name: 'AccessToken' }), true);
-    assert.equal(isDeniedEmbeddingSchema({ name: '_internal' }), true);
+      })
+    ).toBe(true);
+    expect(isDeniedEmbeddingSchema({ name: 'Config' })).toBe(true);
+    expect(isDeniedEmbeddingSchema({ name: 'AccessToken' })).toBe(true);
+    expect(isDeniedEmbeddingSchema({ name: '_internal' })).toBe(true);
   });
 
   it('prefers compiled fields and filters denied schemas', () => {
@@ -68,7 +62,7 @@ describe('source field eligibility', () => {
       fields: { title: { type: 'String' } },
       compiledFields: { body: { type: 'String' } },
     });
-    assert.deepEqual(Object.keys(fields), ['body']);
+    expect(Object.keys(fields)).toEqual(['body']);
     const eligible = listEligibleSchemas([
       {
         name: 'Article',
@@ -81,9 +75,6 @@ describe('source field eligibility', () => {
         fields: { title: { type: 'String' } },
       },
     ]);
-    assert.deepEqual(
-      eligible.map(schema => schema.name),
-      ['Article']
-    );
+    expect(eligible.map(schema => schema.name)).toEqual(['Article']);
   });
 });

@@ -1,10 +1,8 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
-import type { VectorIndexDefinition } from './capabilities.ts';
-import type { EmbeddingConfig } from './config.ts';
-import type { ReadinessRow } from './readiness.ts';
-import type { SemanticSearchHit } from './search.ts';
+import { describe, expect, it } from 'vitest';
+import type { VectorIndexDefinition } from './capabilities';
+import type { EmbeddingConfig } from './config';
+import type { ReadinessRow } from './readiness';
+import type { SemanticSearchHit } from './search';
 import {
   clampSearchLimit,
   documentColumnKeys,
@@ -19,7 +17,7 @@ import {
   searchBlockAction,
   searchHitLabel,
   uniqueSearchSchemas,
-} from './search-view.ts';
+} from './search-view';
 
 function config(
   partial: Partial<EmbeddingConfig> & { _id: string; schemaName: string }
@@ -51,28 +49,28 @@ function row(
 
 describe('search limit', () => {
   it('accepts integers up to 50 and rejects out of range', () => {
-    assert.deepEqual(parseSearchLimit('10'), { ok: true, limit: 10 });
-    assert.deepEqual(parseSearchLimit('50'), { ok: true, limit: 50 });
-    assert.equal(parseSearchLimit('0').ok, false);
-    assert.equal(parseSearchLimit('51').ok, false);
-    assert.equal(parseSearchLimit('1.5').ok, false);
-    assert.equal(clampSearchLimit(99), MAX_SEARCH_LIMIT);
-    assert.equal(clampSearchLimit(0), 1);
+    expect(parseSearchLimit('10')).toEqual({ ok: true, limit: 10 });
+    expect(parseSearchLimit('50')).toEqual({ ok: true, limit: 50 });
+    expect(parseSearchLimit('0').ok).toBe(false);
+    expect(parseSearchLimit('51').ok).toBe(false);
+    expect(parseSearchLimit('1.5').ok).toBe(false);
+    expect(clampSearchLimit(99)).toBe(MAX_SEARCH_LIMIT);
+    expect(clampSearchLimit(0)).toBe(1);
   });
 });
 
 describe('search filter', () => {
   it('accepts empty or object filters and rejects arrays', () => {
-    assert.deepEqual(parseSearchFilter(''), { ok: true, filter: undefined });
-    assert.deepEqual(parseSearchFilter('{"status":"published"}'), {
+    expect(parseSearchFilter('')).toEqual({ ok: true, filter: undefined });
+    expect(parseSearchFilter('{"status":"published"}')).toEqual({
       ok: true,
       filter: { status: 'published' },
     });
-    assert.deepEqual(parseSearchFilter('[1]'), {
+    expect(parseSearchFilter('[1]')).toEqual({
       ok: false,
       error: 'Filter must be a JSON object.',
     });
-    assert.equal(parseSearchFilter('{').ok, false);
+    expect(parseSearchFilter('{').ok).toBe(false);
   });
 });
 
@@ -107,25 +105,23 @@ describe('searchable configs', () => {
       Article: articleIndexes,
       Post: postIndexes,
     };
-    assert.equal(isSearchableConfig(ready, indexes.Article), true);
-    assert.equal(isSearchableConfig(pending, indexes.Article), false);
-    assert.equal(
+    expect(isSearchableConfig(ready, indexes.Article)).toBe(true);
+    expect(isSearchableConfig(pending, indexes.Article)).toBe(false);
+    expect(
       pickInitialSearchConfig({
         configs: [pending, ready, other],
         indexesBySchema: indexes,
         configId: 'other',
-      })?._id,
-      'other'
-    );
-    assert.equal(
+      })?._id
+    ).toBe('other');
+    expect(
       pickInitialSearchConfig({
         configs: [pending, ready, other],
         indexesBySchema: indexes,
         schemaName: 'Article',
-      })?._id,
-      'ready'
-    );
-    assert.deepEqual(uniqueSearchSchemas([other, ready, pending]), [
+      })?._id
+    ).toBe('ready');
+    expect(uniqueSearchSchemas([other, ready, pending])).toEqual([
       'Article',
       'Post',
     ]);
@@ -144,15 +140,14 @@ describe('readiness gate', () => {
       }),
       row({ id: 'index', state: 'ready' }),
     ];
-    assert.equal(isSearchReady(blocked), false);
-    assert.equal(searchBlockAction(blocked)?.href, '/embeddings/settings');
-    assert.equal(
+    expect(isSearchReady(blocked)).toBe(false);
+    expect(searchBlockAction(blocked)?.href).toBe('/embeddings/settings');
+    expect(
       isSearchReady([
         row({ id: 'provider', state: 'ready' }),
         row({ id: 'index', state: 'ready' }),
-      ]),
-      true
-    );
+      ])
+    ).toBe(true);
   });
 });
 
@@ -169,12 +164,12 @@ describe('hit rendering helpers', () => {
       distance: 0.1,
       provider: 'postgres',
     };
-    assert.match(formatSearchScore(0.91234), /0[.,]9123/);
-    assert.match(searchHitLabel(0, hit), /Result 1/);
-    assert.match(searchHitLabel(0, hit), /higher is better/);
-    assert.match(searchHitLabel(0, hit), /postgres/);
-    assert.deepEqual(documentColumnKeys([hit]), ['_id', 'body', 'title']);
-    assert.equal(isSearchViewMode('table'), true);
-    assert.equal(isSearchViewMode('grid'), false);
+    expect(formatSearchScore(0.91234)).toMatch(/0[.,]9123/);
+    expect(searchHitLabel(0, hit)).toMatch(/Result 1/);
+    expect(searchHitLabel(0, hit)).toMatch(/higher is better/);
+    expect(searchHitLabel(0, hit)).toMatch(/postgres/);
+    expect(documentColumnKeys([hit])).toEqual(['_id', 'body', 'title']);
+    expect(isSearchViewMode('table')).toBe(true);
+    expect(isSearchViewMode('grid')).toBe(false);
   });
 });
