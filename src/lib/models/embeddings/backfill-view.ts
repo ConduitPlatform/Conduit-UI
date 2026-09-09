@@ -305,8 +305,16 @@ function step(
   return { id, label, at, status };
 }
 
+function drainReached(run: BackfillRun): boolean {
+  if (run.drainStartedAt) return true;
+  if (run.state === 'queued') return false;
+  if (run.state === 'completed') return true;
+  return run.queuedCount > 0;
+}
+
 export function backfillTimeline(run: BackfillRun): BackfillTimelineItem[] {
   const created = step('created', 'Created', 'done', run.createdAt);
+  const draining = drainReached(run);
   switch (run.state) {
     case 'queued':
       return [
@@ -321,13 +329,13 @@ export function backfillTimeline(run: BackfillRun): BackfillTimelineItem[] {
         step(
           'started',
           'Started',
-          run.drainStartedAt ? 'done' : 'current',
+          draining ? 'done' : 'current',
           run.startedAt
         ),
         step(
           'drain',
           'Drain',
-          run.drainStartedAt ? 'current' : 'pending',
+          draining ? 'current' : 'pending',
           run.drainStartedAt
         ),
         step('finished', 'Finished', 'pending'),
@@ -336,12 +344,7 @@ export function backfillTimeline(run: BackfillRun): BackfillTimelineItem[] {
       return [
         created,
         step('started', 'Started', 'done', run.startedAt),
-        step(
-          'drain',
-          'Drain',
-          run.drainStartedAt ? 'done' : 'pending',
-          run.drainStartedAt
-        ),
+        step('drain', 'Drain', 'done', run.drainStartedAt),
         step('finished', 'Finished', 'done', run.finishedAt),
       ];
     case 'failed':
@@ -356,7 +359,7 @@ export function backfillTimeline(run: BackfillRun): BackfillTimelineItem[] {
         step(
           'drain',
           'Drain',
-          run.drainStartedAt ? 'done' : 'pending',
+          draining ? 'done' : 'pending',
           run.drainStartedAt
         ),
         step('finished', 'Failed', 'current', run.finishedAt),
@@ -373,7 +376,7 @@ export function backfillTimeline(run: BackfillRun): BackfillTimelineItem[] {
         step(
           'drain',
           'Drain',
-          run.drainStartedAt ? 'done' : 'pending',
+          draining ? 'done' : 'pending',
           run.drainStartedAt
         ),
         step('finished', 'Canceled', 'current', run.finishedAt),
@@ -393,4 +396,18 @@ export function uniqueSchemaNames(
   for (const config of configs) names.add(config.schemaName);
   for (const run of runs) names.add(run.schemaName);
   return [...names].sort((left, right) => left.localeCompare(right));
+}
+
+export function startBackfillConfigs<
+  T extends { schemaName: string; enabled: boolean },
+>(configs: T[], schemaName?: string): T[] {
+  const enabled = configs.filter(config => config.enabled);
+  if (!schemaName) return enabled;
+  return enabled.filter(config => config.schemaName === schemaName);
+}
+
+export function startBackfillSchemas(
+  configs: { schemaName: string; enabled: boolean }[]
+): string[] {
+  return uniqueSchemaNames(startBackfillConfigs(configs), []);
 }

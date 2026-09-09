@@ -13,7 +13,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { VectorCapabilities } from '@/lib/models/embeddings/capabilities';
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
-import { canEnableEmbeddingConfig } from '@/lib/models/embeddings/index-state';
+import {
+  canEnableEmbeddingConfig,
+  embeddingConfigEnableBlock,
+} from '@/lib/models/embeddings/index-state';
 import {
   findMatchingIndex,
   ReadinessRow,
@@ -26,6 +29,7 @@ type ConfigDetailProps = {
   schemas: EmbeddingSchemaChoice[];
   lookup?: SchemaIndexLookup;
   capabilities?: VectorCapabilities;
+  workersEnabled?: boolean;
   readinessRows: ReadinessRow[];
 };
 
@@ -34,6 +38,7 @@ export function ConfigDetail({
   schemas,
   lookup,
   capabilities,
+  workersEnabled,
   readinessRows,
 }: ConfigDetailProps) {
   const matchingIndex =
@@ -43,6 +48,12 @@ export function ConfigDetail({
   const enableAllowed = canEnableEmbeddingConfig({
     capabilities,
     matchingIndex,
+    workersEnabled,
+  });
+  const enableBlock = embeddingConfigEnableBlock({
+    capabilities,
+    matchingIndex,
+    workersEnabled,
   });
 
   return (
@@ -73,6 +84,9 @@ export function ConfigDetail({
         config={config}
         schemas={schemas}
         enableAllowed={enableAllowed}
+        enableBlockedReason={enableBlock?.reason}
+        enableBlockedHref={enableBlock?.href}
+        enableBlockedAction={enableBlock?.actionLabel}
       />
     </div>
   );

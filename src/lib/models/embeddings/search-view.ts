@@ -1,5 +1,11 @@
+import { isVectorIndexQueryable } from './capabilities.ts';
 import type { EmbeddingConfig } from './config.ts';
-import type { ReadinessRow, SchemaIndexLookup } from './readiness.ts';
+import { findMatchingIndex } from './index-state.ts';
+import type {
+  ReadinessRow,
+  ReadinessRowId,
+  SchemaIndexLookup,
+} from './readiness.ts';
 import type { SemanticSearchHit } from './search.ts';
 import { parseOperatorFilterJson } from './backfill-view.ts';
 
@@ -20,26 +26,30 @@ export function isSearchViewMode(value: string): value is SearchViewMode {
   return SEARCH_VIEW_MODES.some(mode => mode === value);
 }
 
+export const SEARCH_GATE_ROW_IDS: readonly ReadinessRowId[] = [
+  'capabilities',
+  'provider',
+  'index',
+  'config',
+];
+
 export function isSearchReady(rows: ReadinessRow[]): boolean {
-  return rows.length > 0 && rows.every(row => row.state === 'ready');
+  if (rows.length === 0) return false;
+  return SEARCH_GATE_ROW_IDS.every(
+    id => rows.find(row => row.id === id)?.state === 'ready'
+  );
 }
 
 export function searchBlockAction(
   rows: ReadinessRow[]
 ): ReadinessRow | undefined {
   if (isSearchReady(rows)) return undefined;
-  return rows.find(row => row.state !== 'ready' && row.href);
-}
-
-function isQueryableIndex(index: {
-  status?: string;
-  queryable?: boolean;
-}): boolean {
-  if (index.queryable === false) return false;
-  if (index.status === 'failed') return false;
-  if (index.status === 'pending' && index.queryable !== true) return false;
-  if (index.queryable === true) return true;
-  return index.status === 'ready';
+  return rows.find(
+    row =>
+      SEARCH_GATE_ROW_IDS.some(id => id === row.id) &&
+      row.state !== 'ready' &&
+      row.href
+  );
 }
 
 export function isSearchableConfig(
@@ -48,13 +58,8 @@ export function isSearchableConfig(
 ): boolean {
   if (!config.enabled) return false;
   if (lookup == null || lookup === 'unknown') return false;
-  const match = lookup.find(
-    index =>
-      index.field === config.targetField &&
-      index.dimensions === config.dimensions &&
-      index.similarity === config.similarity
-  );
-  return Boolean(match && isQueryableIndex(match));
+  const match = findMatchingIndex(config, lookup);
+  return Boolean(match && isVectorIndexQueryable(match));
 }
 
 export function uniqueSearchSchemas(configs: EmbeddingConfig[]): string[] {

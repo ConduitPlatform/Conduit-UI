@@ -1,5 +1,6 @@
 export const MOCK_SCENARIOS = [
   'ready',
+  'workers-off',
   'gated',
   'blank',
   'no-embeddings',

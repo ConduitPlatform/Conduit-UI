@@ -66,7 +66,14 @@ export function DataTable<TData, TValue>({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    ...(isServerPaginated
+      ? {
+          manualPagination: true,
+          pageCount,
+        }
+      : {
+          getPaginationRowModel: getPaginationRowModel(),
+        }),
   });
 
   const visiblePages = useMemo<

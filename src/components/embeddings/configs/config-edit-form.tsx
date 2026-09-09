@@ -37,12 +37,18 @@ type ConfigEditFormProps = {
   config: EmbeddingConfig;
   schemas: EmbeddingSchemaChoice[];
   enableAllowed: boolean;
+  enableBlockedReason?: string;
+  enableBlockedHref?: string;
+  enableBlockedAction?: string;
 };
 
 export function ConfigEditForm({
   config,
   schemas,
   enableAllowed,
+  enableBlockedReason,
+  enableBlockedHref,
+  enableBlockedAction,
 }: ConfigEditFormProps) {
   const router = useRouter();
   const shortcutLabel = useSaveShortcutLabel();
@@ -139,6 +145,9 @@ export function ConfigEditForm({
             schemas={schemas}
             schemaLocked
             enableAllowed={enableAllowed}
+            enableBlockedReason={enableBlockedReason}
+            enableBlockedHref={enableBlockedHref}
+            enableBlockedAction={enableBlockedAction}
           />
           <div className="flex flex-wrap gap-2">
             <SaveConfigButton

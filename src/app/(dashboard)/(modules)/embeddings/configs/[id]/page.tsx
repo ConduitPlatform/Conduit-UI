@@ -83,6 +83,7 @@ export default async function EmbeddingConfigDetailPage(props: {
       schemas={schemaChoices}
       lookup={lookup}
       capabilities={capabilities}
+      workersEnabled={status?.enabled ?? settings?.enabled}
       readinessRows={rows}
     />
   );

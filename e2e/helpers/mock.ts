@@ -29,6 +29,7 @@ export type MockInspectState = {
   backfillCount: number;
   storedApiKeyConfigured: boolean;
   lastSettingsPatchHadApiKey: boolean;
+  workersEnabled: boolean;
   modules: string[];
 };
 

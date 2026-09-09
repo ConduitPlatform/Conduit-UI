@@ -4,7 +4,10 @@ import type { EmbeddingConfig } from './config';
 import {
   canEnableEmbeddingConfig,
   configIndexStateLabel,
+  embeddingConfigEnableBlock,
+  findMatchingIndex,
   resolveConfigIndexState,
+  vectorIndexGeneration,
 } from './index-state';
 
 const config: EmbeddingConfig = {
@@ -28,11 +31,22 @@ const readyCapabilities: VectorCapabilities = {
 };
 
 const matchingReady: VectorIndexDefinition = {
+  name: 'embedding_vector_v2',
   field: 'embedding',
   dimensions: 1536,
   similarity: 'cosine',
+  method: 'hnsw',
   status: 'ready',
   queryable: true,
+};
+
+const pendingV1: VectorIndexDefinition = {
+  name: 'embedding_vector_v1',
+  field: 'embedding',
+  dimensions: 1536,
+  similarity: 'cosine',
+  method: 'hnsw',
+  status: 'pending',
 };
 
 describe('config index gating', () => {
@@ -64,17 +78,77 @@ describe('config index gating', () => {
     expect(configIndexStateLabel('missing')).toBe('Missing');
   });
 
-  it('enables a config only when capabilities and a queryable match are ready', () => {
+  it('selects the highest _vN match even when a pending v1 comes first', () => {
+    expect(findMatchingIndex(config, [pendingV1, matchingReady])?.name).toBe(
+      'embedding_vector_v2'
+    );
+    expect(resolveConfigIndexState(config, [pendingV1, matchingReady])).toBe(
+      'ready'
+    );
+    expect(resolveConfigIndexState(config, [matchingReady, pendingV1])).toBe(
+      'ready'
+    );
+  });
+
+  it('prefers the default field_vector name when generations tie', () => {
+    const defaultName = {
+      ...matchingReady,
+      name: 'embedding_vector',
+    };
+    const alias = {
+      ...matchingReady,
+      name: 'embedding_custom',
+    };
+    expect(findMatchingIndex(config, [alias, defaultName])?.name).toBe(
+      'embedding_vector'
+    );
+    expect(vectorIndexGeneration(undefined)).toBe(0);
+    expect(vectorIndexGeneration('embedding_vector')).toBe(1);
+    expect(vectorIndexGeneration('embedding_vector_v3')).toBe(3);
+  });
+
+  it('requires field, dimensions, similarity, and default hnsw method', () => {
+    expect(
+      findMatchingIndex(config, [{ ...matchingReady, method: 'ivfflat' }])
+    ).toBeUndefined();
+    expect(
+      findMatchingIndex(config, [{ ...matchingReady, dimensions: 768 }])
+    ).toBeUndefined();
+    expect(
+      findMatchingIndex(config, [{ ...matchingReady, method: undefined }])
+    ).toEqual({ ...matchingReady, method: undefined });
+  });
+
+  it('enables a config only when workers, capabilities, and a queryable match are ready', () => {
     expect(
       canEnableEmbeddingConfig({
         capabilities: readyCapabilities,
         matchingIndex: matchingReady,
+        workersEnabled: true,
       })
     ).toBe(true);
     expect(
       canEnableEmbeddingConfig({
+        capabilities: readyCapabilities,
+        matchingIndex: matchingReady,
+        workersEnabled: false,
+      })
+    ).toBe(false);
+    expect(
+      embeddingConfigEnableBlock({
+        capabilities: readyCapabilities,
+        matchingIndex: matchingReady,
+        workersEnabled: false,
+      })
+    ).toMatchObject({
+      href: '/embeddings/settings',
+      actionLabel: 'Open settings',
+    });
+    expect(
+      canEnableEmbeddingConfig({
         capabilities: { ...readyCapabilities, search: false },
         matchingIndex: matchingReady,
+        workersEnabled: true,
       })
     ).toBe(false);
     expect(
@@ -85,11 +159,13 @@ describe('config index gating', () => {
           status: 'pending',
           queryable: false,
         },
+        workersEnabled: true,
       })
     ).toBe(false);
     expect(
       canEnableEmbeddingConfig({
         capabilities: readyCapabilities,
+        workersEnabled: true,
       })
     ).toBe(false);
   });

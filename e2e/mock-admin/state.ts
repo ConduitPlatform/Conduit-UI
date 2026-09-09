@@ -2,6 +2,7 @@ import {
   E2E_ENV_NAME,
   FIXED_NOW,
   OPENAI_COMPATIBLE_PROVIDER,
+  PENDING_INDEX_NAME,
   PRODUCT_SCHEMA_ID,
   PRODUCT_SCHEMA_NAME,
   PROVIDER_ENDPOINT,
@@ -144,35 +145,54 @@ export function emptyQueueCounts(): MockQueueCounts {
   return emptyQueue();
 }
 
+function readyIndexes() {
+  return [
+    {
+      name: PENDING_INDEX_NAME,
+      field: 'embedding',
+      dimensions: 1536,
+      similarity: 'cosine' as const,
+      method: 'hnsw' as const,
+      status: 'pending' as const,
+      queryable: false,
+    },
+    {
+      name: READY_INDEX_NAME,
+      field: 'embedding',
+      dimensions: 1536,
+      similarity: 'cosine' as const,
+      method: 'hnsw' as const,
+      status: 'ready' as const,
+      queryable: true,
+    },
+  ];
+}
+
+function readyState(enabled: boolean): MockAdminState {
+  return {
+    scenario: enabled ? 'ready' : 'workers-off',
+    modules: coreModules(true, true),
+    settings: defaultSettings({ enabled, apiKey: STORED_API_KEY }),
+    capabilities: mongodbCapabilities(),
+    schemas: [productSchema()],
+    configs: [readyConfig()],
+    indexesBySchemaId: {
+      [PRODUCT_SCHEMA_ID]: readyIndexes(),
+    },
+    backfills: [],
+    tokens: new Set(),
+    lastSettingsPatchHadApiKey: false,
+    configSeq: 1,
+    backfillSeq: 0,
+  };
+}
+
 export function createState(scenario: MockScenario = 'ready'): MockAdminState {
   switch (scenario) {
     case 'ready':
-      return {
-        scenario,
-        modules: coreModules(true, true),
-        settings: defaultSettings({ enabled: true, apiKey: STORED_API_KEY }),
-        capabilities: mongodbCapabilities(),
-        schemas: [productSchema()],
-        configs: [readyConfig()],
-        indexesBySchemaId: {
-          [PRODUCT_SCHEMA_ID]: [
-            {
-              name: READY_INDEX_NAME,
-              field: 'embedding',
-              dimensions: 1536,
-              similarity: 'cosine',
-              method: 'hnsw',
-              status: 'ready',
-              queryable: true,
-            },
-          ],
-        },
-        backfills: [],
-        tokens: new Set(),
-        lastSettingsPatchHadApiKey: false,
-        configSeq: 1,
-        backfillSeq: 0,
-      };
+      return readyState(true);
+    case 'workers-off':
+      return readyState(false);
     case 'gated':
       return {
         scenario,
@@ -262,23 +282,38 @@ export function cloneRun(run: MockBackfillRun): MockBackfillRun {
   };
 }
 
+export function toApiConfig(config: MockEmbeddingConfig) {
+  return {
+    id: config._id,
+    schemaName: config.schemaName,
+    sourceFields: config.sourceFields,
+    targetField: config.targetField,
+    provider: config.provider,
+    model: config.model,
+    dimensions: config.dimensions,
+    similarity: config.similarity,
+    enabled: config.enabled,
+    createdAt: config.createdAt,
+    updatedAt: config.updatedAt,
+  };
+}
+
 export function toApiRun(run: MockBackfillRun) {
   return {
-    _id: run._id,
+    id: run._id,
     schemaName: run.schemaName,
     configId: run.configId,
     state: run.state,
     cursor: run.cursor,
     batchSize: run.batchSize,
     onlyMissing: run.onlyMissing,
-    filter: run.filter,
+    filter: run.filter ? JSON.stringify(run.filter) : undefined,
     scannedCount: run.scannedCount,
     queuedCount: run.queuedCount,
     processedCount: run.processedCount,
     failedCount: run.failedCount,
     startedAt: run.startedAt,
     finishedAt: run.finishedAt,
-    drainStartedAt: run.drainStartedAt,
     error: run.error,
     createdAt: run.createdAt,
     updatedAt: run.updatedAt,

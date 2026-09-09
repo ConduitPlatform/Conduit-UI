@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { AlertCircle, Info } from 'lucide-react';
 import { EmbeddingsReadiness } from '@/components/embeddings/EmbeddingsReadiness';
 import {
   SearchForm,
@@ -111,6 +112,22 @@ export function TestSearch({
   return (
     <div className="flex flex-col space-y-4">
       <EmbeddingsReadiness rows={rows} />
+      {workersEnabled === false ? (
+        <Alert variant="warning">
+          <Info className="size-4" />
+          <AlertTitle>Workers disabled</AlertTitle>
+          <AlertDescription>
+            Search still runs.{' '}
+            <Link
+              href="/embeddings/settings"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Enable workers
+            </Link>{' '}
+            to process new embeddings.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       <Card>
         <CardHeader>
           <CardTitle>Query</CardTitle>

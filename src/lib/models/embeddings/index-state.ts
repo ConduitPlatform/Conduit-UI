@@ -1,15 +1,13 @@
 import { BackfillRun } from './backfill';
 import {
+  DEFAULT_VECTOR_INDEX_METHOD,
   isVectorIndexQueryable,
+  isVectorStorageSearchReady,
   VectorCapabilities,
   VectorIndexDefinition,
 } from './capabilities';
 import { EmbeddingConfig, VectorSimilarity } from './config';
-import {
-  findMatchingIndex,
-  isVectorStorageSearchReady,
-  SchemaIndexLookup,
-} from './readiness';
+import type { SchemaIndexLookup } from './readiness';
 
 export const CONFIG_INDEX_STATES = [
   'ready',
@@ -85,14 +83,89 @@ export function parseIndexGeneration(name?: string): {
   return { base: name, generation: 1 };
 }
 
+export function vectorIndexGeneration(name?: string): number {
+  if (typeof name !== 'string' || name.length === 0) return 0;
+  return parseIndexGeneration(name).generation;
+}
+
+export function defaultVectorIndexName(field: string): string {
+  return `${field}_vector`;
+}
+
+export function vectorIndexMatchesConfig(
+  index: VectorIndexDefinition,
+  config: Pick<EmbeddingConfig, 'targetField' | 'dimensions' | 'similarity'>
+): boolean {
+  if (index.field !== config.targetField) return false;
+  if (index.dimensions !== config.dimensions) return false;
+  if (index.similarity !== config.similarity) return false;
+  return (
+    (index.method ?? DEFAULT_VECTOR_INDEX_METHOD) ===
+    DEFAULT_VECTOR_INDEX_METHOD
+  );
+}
+
+export function findMatchingIndex(
+  config: Pick<EmbeddingConfig, 'targetField' | 'dimensions' | 'similarity'>,
+  indexes: readonly VectorIndexDefinition[]
+): VectorIndexDefinition | undefined {
+  const matches = indexes.filter(index =>
+    vectorIndexMatchesConfig(index, config)
+  );
+  if (matches.length === 0) return undefined;
+  const defaultName = defaultVectorIndexName(config.targetField);
+  return matches.reduce((best, current) => {
+    const bestGeneration = vectorIndexGeneration(best.name);
+    const currentGeneration = vectorIndexGeneration(current.name);
+    if (currentGeneration !== bestGeneration) {
+      return currentGeneration > bestGeneration ? current : best;
+    }
+    if (current.name === defaultName) return current;
+    if (best.name === defaultName) return best;
+    return best;
+  });
+}
+
+export type EmbeddingConfigEnableBlock = {
+  reason: string;
+  href?: string;
+  actionLabel?: string;
+};
+
 export function canEnableEmbeddingConfig(args: {
   capabilities?: VectorCapabilities;
   matchingIndex?: VectorIndexDefinition;
+  workersEnabled?: boolean;
 }): boolean {
   return (
+    args.workersEnabled === true &&
     isVectorStorageSearchReady(args.capabilities) === true &&
     isVectorIndexQueryable(args.matchingIndex)
   );
+}
+
+export function embeddingConfigEnableBlock(args: {
+  capabilities?: VectorCapabilities;
+  matchingIndex?: VectorIndexDefinition;
+  workersEnabled?: boolean;
+}): EmbeddingConfigEnableBlock | undefined {
+  if (canEnableEmbeddingConfig(args)) return undefined;
+  if (args.workersEnabled !== true) {
+    return {
+      reason: 'Enable workers before turning this config on.',
+      href: '/embeddings/settings',
+      actionLabel: 'Open settings',
+    };
+  }
+  if (isVectorStorageSearchReady(args.capabilities) !== true) {
+    return {
+      reason:
+        'Enablement stays off until vector storage and search are available.',
+    };
+  }
+  return {
+    reason: 'Enablement stays off until a matching index is queryable.',
+  };
 }
 
 function backfillTimestamp(run: BackfillRun): number {

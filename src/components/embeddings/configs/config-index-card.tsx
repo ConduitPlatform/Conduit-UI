@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmbeddingConfig } from '@/lib/models/embeddings/config';
 import {
+  DEFAULT_VECTOR_INDEX_METHOD,
   isVectorIndexQueryable,
   VectorIndexDefinition,
 } from '@/lib/models/embeddings/capabilities';
@@ -99,7 +100,10 @@ export function ConfigIndexCard({ config, lookup }: ConfigIndexCardProps) {
             label="Similarity"
             value={similarityLabel(match?.similarity ?? config.similarity)}
           />
-          <IndexFact label="Method" value={match?.method ?? '—'} />
+          <IndexFact
+            label="Method"
+            value={match?.method ?? DEFAULT_VECTOR_INDEX_METHOD}
+          />
         </dl>
         {warning ? (
           <Alert variant={state === 'unknown' ? 'warning' : 'destructive'}>
@@ -160,7 +164,7 @@ function indexWarning(
       return {
         title: 'No matching index',
         description:
-          'No index matches this field, dimensions, and similarity yet. Save the config to provision one.',
+          'No index matches this field, dimensions, similarity, and method yet. Save the config to provision one.',
       };
     case 'unknown':
       return {

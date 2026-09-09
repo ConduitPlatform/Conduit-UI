@@ -1,4 +1,5 @@
 import { Module } from '@/lib/models/Module';
+import type { NavItem } from '@/components/navigation/navList.config';
 
 // Modules that the Communications module provides (for backward compatibility)
 export const COMMUNICATIONS_PROVIDED_MODULES = [
@@ -175,9 +176,9 @@ export function isModuleServing(
 
 // Filter navigation items based on available modules
 export function filterNavigationByModules(
-  navigationItems: any[],
+  navigationItems: NavItem[],
   modules: Module[]
-): any[] {
+): NavItem[] {
   return navigationItems.filter(item => {
     // Always include core routes and other non-module items
     if (CORE_ROUTES.includes(item.url) || !MODULE_URL_TO_NAME[item.url]) {

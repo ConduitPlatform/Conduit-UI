@@ -12,6 +12,8 @@ import {
   sanitizeBackfillErrorDisplay,
   sortBackfillRuns,
   toBackfillListQuery,
+  startBackfillConfigs,
+  startBackfillSchemas,
   uniqueSchemaNames,
 } from './backfill-view';
 import type { BackfillRun, BackfillRunState } from './backfill';
@@ -229,6 +231,40 @@ describe('detail helpers', () => {
     expect(items[3]?.status).toBe('pending');
     expect(sanitizeBackfillErrorDisplay('  boom\u0000  ')).toBe('boom');
     expect(sanitizeBackfillErrorDisplay('')).toBeUndefined();
+  });
+
+  it('reaches Drain when the API omits drainStartedAt', () => {
+    const running = backfillTimeline(
+      run({
+        _id: '1',
+        state: 'running',
+        startedAt: '2026-01-01T00:01:00.000Z',
+        queuedCount: 40,
+        processedCount: 10,
+      })
+    );
+    expect(running[1]?.status).toBe('done');
+    expect(running[2]?.id).toBe('drain');
+    expect(running[2]?.status).toBe('current');
+
+    const completed = backfillTimeline(
+      run({
+        _id: '2',
+        state: 'completed',
+        startedAt: '2026-01-01T00:01:00.000Z',
+        finishedAt: '2026-01-01T00:03:00.000Z',
+        queuedCount: 40,
+        processedCount: 40,
+      })
+    );
+    expect(completed[2]?.status).toBe('done');
+  });
+
+  it('excludes disabled configs from the start picker', () => {
+    const enabled = { schemaName: 'Article', enabled: true };
+    const disabled = { schemaName: 'Post', enabled: false };
+    expect(startBackfillConfigs([enabled, disabled])).toEqual([enabled]);
+    expect(startBackfillSchemas([enabled, disabled])).toEqual(['Article']);
   });
 
   it('collects schema names from configs and runs', () => {
