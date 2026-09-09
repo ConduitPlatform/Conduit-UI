@@ -5,6 +5,7 @@ import { io, type Socket } from 'socket.io-client';
 import { issueAdminRealtimeTicket } from '@/lib/api/realtime/ticket';
 import {
   parseDatabaseChangeEvent,
+  rememberResumeToken,
   shouldCountChange,
 } from '@/lib/realtime/change-events';
 
@@ -71,9 +72,11 @@ export function useDatabaseLiveUpdates(options: {
           socket?.emit('subscribe', { schema: schemaName });
         });
 
+        const seenResumeTokens = new Set<string>();
         socket.on('change', (data: unknown) => {
           const event = parseDatabaseChangeEvent(data);
           if (!event || !shouldCountChange(event, schemaName)) return;
+          if (!rememberResumeToken(seenResumeTokens, event.resumeToken)) return;
           setPendingUpdates(count => count + 1);
         });
 
@@ -89,7 +92,10 @@ export function useDatabaseLiveUpdates(options: {
           setConnectionState('error');
         });
 
-        socket.on('connect_error', () => {
+        socket.on('connect_error', err => {
+          setErrorMessage(
+            err instanceof Error ? err.message : 'Live updates failed'
+          );
           scheduleReconnect();
         });
 

@@ -15,6 +15,7 @@ import { CrudPermissions } from './crud-permissions';
 import { deriveCrudOperationsFromSchema } from './crud-state';
 import { AuthSettings } from './auth-settings';
 import { IndicesConfig } from './indices-config';
+import { LiveUpdateSnippets } from './live-update-snippets';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -462,6 +463,12 @@ export function SettingsPanel({
                     Explorer can still listen.
                   </p>
                 )}
+                <LiveUpdateSnippets
+                  schemaName={schema.name}
+                  realtimeEnabled={realtimeEnabled}
+                  cmsReadEnabled={crudOperations.read?.enabled === true}
+                  authorizationEnabled={authEnabled}
+                />
               </CardContent>
             </Card>
           )}

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
   parseDatabaseChangeEvent,
+  rememberResumeToken,
   shouldCountChange,
 } from './change-events.ts';
 
@@ -40,5 +41,17 @@ describe('shouldCountChange', () => {
     const event = parseDatabaseChangeEvent(validEvent)!;
     assert.equal(shouldCountChange(event, 'Order'), true);
     assert.equal(shouldCountChange(event, 'User'), false);
+  });
+});
+
+describe('rememberResumeToken', () => {
+  it('counts a token once and evicts the oldest past the limit', () => {
+    const seen = new Set<string>();
+    assert.equal(rememberResumeToken(seen, 'a', 2), true);
+    assert.equal(rememberResumeToken(seen, 'a', 2), false);
+    assert.equal(rememberResumeToken(seen, 'b', 2), true);
+    assert.equal(rememberResumeToken(seen, 'c', 2), true);
+    assert.equal(seen.has('a'), false);
+    assert.equal(rememberResumeToken(seen, 'a', 2), true);
   });
 });

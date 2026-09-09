@@ -63,6 +63,23 @@ export function shouldCountChange(
   return event.schema === schemaName;
 }
 
+const DEFAULT_SEEN_TOKEN_LIMIT = 500;
+
+/** Returns true the first time `token` is seen. Oldest entries are dropped past `limit`. */
+export function rememberResumeToken(
+  seen: Set<string>,
+  token: string,
+  limit: number = DEFAULT_SEEN_TOKEN_LIMIT
+): boolean {
+  if (seen.has(token)) return false;
+  seen.add(token);
+  if (seen.size > limit) {
+    const oldest = seen.values().next().value;
+    if (oldest !== undefined) seen.delete(oldest);
+  }
+  return true;
+}
+
 function safeParseJson(value: string): unknown {
   try {
     return JSON.parse(value);
