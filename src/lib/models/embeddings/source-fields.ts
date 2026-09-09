@@ -115,7 +115,7 @@ export function parseDatabaseSystemSchemaNames(payload: unknown): string[] {
   return names;
 }
 
-export function toSystemSchemaNameSet(
+function toSystemSchemaNameSet(
   names: Iterable<string> | null | undefined
 ): Set<string> | null {
   if (names == null) return null;
