@@ -21,8 +21,32 @@ services:
       MONGO_INITDB_DATABASE: 'conduit'
       MONGO_INITDB_ROOT_USERNAME: 'conduit'
       MONGO_INITDB_ROOT_PASSWORD: 'pass'
+    entrypoint:
+      - bash
+      - -c
+      - |
+        cp /mongo-keyfile /tmp/keyfile
+        chmod 400 /tmp/keyfile
+        chown mongodb:mongodb /tmp/keyfile
+        exec docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --keyFile /tmp/keyfile
     volumes:
       - mongo:/data/db
+      - ./mongo/keyfile:/mongo-keyfile:ro
+
+  mongo-init-replica:
+    container_name: 'conduit-mongo-init'
+    image: 'docker.io/library/mongo:4.4.15'
+    restart: on-failure
+    network_mode: 'host'
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_HOST: '127.0.0.1'
+      MONGO_INITDB_ROOT_USERNAME: 'conduit'
+      MONGO_INITDB_ROOT_PASSWORD: 'pass'
+    volumes:
+      - ./mongo/init-replica.sh:/init-replica.sh:ro
+    command: ['bash', '/init-replica.sh']
 
   redis:
     container_name: 'conduit-redis'
@@ -47,7 +71,7 @@ services:
       CLIENT_HTTP_PORT: '3000'
       CLIENT_SOCKET_PORT: '3001'
       __DEFAULT_HOST_URL: '${ADMIN_DEFAULT_HOST_URL:-http://localhost:3030}'
-      DB_CONN_URI: 'mongodb://conduit:pass@127.0.0.1:27017/conduit?authSource=admin'
+      DB_CONN_URI: 'mongodb://conduit:pass@127.0.0.1:27017/conduit?authSource=admin&replicaSet=rs0'
 
 volumes:
   mongo:

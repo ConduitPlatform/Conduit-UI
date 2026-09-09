@@ -4,6 +4,7 @@ import { getApiClient } from '@/lib/api';
 import {
   CreateSchemaRequest,
   DatabaseConfig,
+  DatabaseRealtimeStatus,
   DeclaredSchema,
   PatchSchemaRequest,
   PendingSchemas,
@@ -363,6 +364,13 @@ export const getDatabaseSettings = async () => {
   const res = await (
     await getApiClient()
   ).get<{ config: DatabaseConfig }>('/config/database');
+  return res.data;
+};
+
+export const getDatabaseRealtimeStatus = async () => {
+  const res = await (
+    await getApiClient()
+  ).get<DatabaseRealtimeStatus>('/database/realtime/status');
   return res.data;
 };
 

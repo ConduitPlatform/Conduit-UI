@@ -16,4 +16,9 @@ export const DatabaseSettingsSchema = z.object({
     'linearizable',
     'snapshot',
   ]),
+  realtime: z
+    .object({
+      enabled: z.boolean(),
+    })
+    .default({ enabled: false }),
 });
