@@ -11,7 +11,7 @@ import {
   OPENAI_COMPATIBLE_PROVIDER,
 } from '@/lib/models/embeddings/settings';
 import {
-  normalizeHost,
+  isCatalogueModelValid,
   parseHttpsEndpoint,
 } from '@/lib/models/embeddings/settings-form';
 
@@ -69,11 +69,14 @@ export function isProviderConfigured(
     settings.providers[name] ?? settings.providers[OPENAI_COMPATIBLE_PROVIDER];
   if (!provider) return false;
   if (!provider.apiKeyConfigured) return false;
-  const parsed = parseHttpsEndpoint(provider.endpoint);
-  if (!parsed) return false;
-  const hostname = normalizeHost(parsed.hostname);
-  const hosts = provider.allowedHosts.map(normalizeHost).filter(Boolean);
-  return hosts.length > 0 && hosts.includes(hostname);
+  if (!parseHttpsEndpoint(provider.endpoint)) return false;
+  const validModels = provider.models.filter(isCatalogueModelValid);
+  if (validModels.length === 0) return false;
+  const selected = provider.defaultModel.trim();
+  if (selected && !validModels.some(model => model.name === selected)) {
+    return false;
+  }
+  return true;
 }
 
 function configHref(config?: EmbeddingConfig): string {
@@ -208,11 +211,11 @@ export function deriveEmbeddingsReadiness(
     providerRow.detail = input.settingsError;
   } else if (providerReady === true) {
     providerRow.state = 'ready';
-    providerRow.detail = 'Endpoint and API key are set';
+    providerRow.detail = 'Endpoint, API key, and at least one model are set';
   } else if (providerReady === false) {
     providerRow.state = 'blocked';
     providerRow.detail =
-      'Set an endpoint, API key, and allowed hosts that include the endpoint hostname';
+      'Set an HTTPS endpoint, API key, and at least one model';
     providerRow.href = '/embeddings/settings';
     providerRow.actionLabel = 'Configure provider';
   }

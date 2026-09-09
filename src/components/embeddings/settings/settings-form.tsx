@@ -10,18 +10,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { AdvancedSettings } from '@/components/embeddings/settings/advanced-settings';
-import { HostsField } from '@/components/embeddings/settings/hosts-field';
+import { ModelCatalogueField } from '@/components/embeddings/settings/model-catalogue-field';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
-import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
 import { EmbeddingsSettingsFormValues } from '@/lib/models/embeddings/settings-form';
 
 type SettingsFormProps = {
@@ -53,7 +46,7 @@ export function SettingsForm({
             OpenAI-compatible provider
           </h2>
           <p className="mt-1 text-sm text-muted-foreground text-pretty">
-            Endpoint, API key, hosts, and default model.
+            HTTPS endpoint, API key, and the models this provider can generate.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -62,34 +55,24 @@ export function SettingsForm({
             name="defaultProvider"
             render={({ field }) => (
               <FormItem className="space-y-1.5">
-                <FormLabel>Default provider</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  disabled={!edit}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a provider" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value={OPENAI_COMPATIBLE_PROVIDER}>
-                      OpenAI-compatible
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel>Provider</FormLabel>
+                <FormControl>
+                  <Input
+                    value={field.value}
+                    name={field.name}
+                    ref={field.ref}
+                    readOnly
+                    disabled
+                    autoComplete="off"
+                    aria-label="Provider"
+                  />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  OpenAI-compatible. This ID cannot be changed here.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <InputField
-            fieldName="model"
-            label="Default model"
-            placeholder="text-embedding-3-small"
-            disabled={!edit}
-            autoComplete="off"
-            description="Used when a config does not set its own model."
           />
           <div className="md:col-span-2">
             <InputField
@@ -99,18 +82,11 @@ export function SettingsForm({
               disabled={!edit}
               autoComplete="off"
               inputMode="url"
-              description="HTTPS OpenAI-compatible embeddings URL with a public DNS hostname. Credentials in the URL are rejected."
+              description="HTTPS OpenAI-compatible embeddings URL. Credentials in the URL are rejected."
             />
           </div>
           <ApiKeyField disabled={!edit} />
-          <div className="md:col-span-2">
-            <HostsField
-              name="allowedHosts"
-              label="Allowed hosts"
-              disabled={!edit}
-              description="Public DNS hostnames this provider may call. Include the endpoint hostname. Private, loopback, and metadata hosts are rejected."
-            />
-          </div>
+          <ModelCatalogueField disabled={!edit} />
         </div>
       </section>
       <AdvancedSettings disabled={!edit} />

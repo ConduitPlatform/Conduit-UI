@@ -2,15 +2,10 @@ import { z } from 'zod';
 import { formApiKeyValue } from '../../../lib/models/embeddings/secrets.ts';
 import { OPENAI_COMPATIBLE_PROVIDER } from '../../../lib/models/embeddings/settings.ts';
 import {
-  isValidHost,
-  normalizeHosts,
   parseHttpsEndpoint,
   SETTINGS_LIMITS,
+  uniqueCatalogueNames,
 } from '../../../lib/models/embeddings/settings-form.ts';
-import {
-  isValidSourceFieldName,
-  normalizeSourceFieldAllowlist,
-} from '../../../lib/models/embeddings/source-fields.ts';
 
 function boundedInt(limits: { min: number; max: number }, message: string) {
   return z.coerce
@@ -20,17 +15,13 @@ function boundedInt(limits: { min: number; max: number }, message: string) {
     .max(limits.max, message);
 }
 
-const hostListSchema = z
-  .array(z.string())
-  .transform(normalizeHosts)
-  .superRefine((hosts, ctx) => {
-    if (hosts.some(host => !isValidHost(host))) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Use a public DNS hostname such as api.openai.com',
-      });
-    }
-  });
+const catalogueModelSchema = z.object({
+  name: z.string().trim().min(1, 'Model name is required'),
+  dimensions: z.coerce
+    .number({ error: 'Dimensions must be a positive integer' })
+    .int('Dimensions must be a positive integer')
+    .positive('Dimensions must be a positive integer'),
+});
 
 export const embeddingsSettingsFormSchema = z
   .object({
@@ -51,8 +42,8 @@ export const embeddingsSettingsFormSchema = z
       ),
     apiKey: z.string().transform(formApiKeyValue),
     apiKeyConfigured: z.boolean(),
-    model: z.string().trim().min(1, 'Model is required'),
-    allowedHosts: hostListSchema,
+    models: z.array(catalogueModelSchema).min(1, 'Add at least one model'),
+    defaultModel: z.string(),
     queue: z.object({
       concurrency: boundedInt(
         SETTINGS_LIMITS.concurrency,
@@ -72,19 +63,6 @@ export const embeddingsSettingsFormSchema = z
       ),
     }),
     security: z.object({
-      requireGrpcKey: z.boolean(),
-      sourceFieldAllowlist: z
-        .array(z.string())
-        .transform(normalizeSourceFieldAllowlist)
-        .superRefine((fields, ctx) => {
-          if (fields.some(field => !isValidSourceFieldName(field))) {
-            ctx.addIssue({
-              code: 'custom',
-              message:
-                'Use a letter or underscore first, then letters, numbers, or underscores',
-            });
-          }
-        }),
       maxMutationEventIds: boundedInt(
         SETTINGS_LIMITS.maxMutationEventIds,
         `Max mutation event ids must be ${SETTINGS_LIMITS.maxMutationEventIds.min}–${SETTINGS_LIMITS.maxMutationEventIds.max}`
@@ -111,21 +89,28 @@ export const embeddingsSettingsFormSchema = z
         message: 'API key is required',
       });
     }
-    const url = parseHttpsEndpoint(value.endpoint);
-    if (!url) return;
-    const hostname = url.hostname.toLowerCase();
-    if (!value.allowedHosts.includes(hostname)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['allowedHosts'],
-        message: `Allowlist must include ${hostname}`,
+    const names = uniqueCatalogueNames(value.models);
+    if (names.length !== value.models.length) {
+      const seen = new Set<string>();
+      value.models.forEach((model, index) => {
+        const name = model.name.trim();
+        if (!name) return;
+        if (seen.has(name)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['models', index, 'name'],
+            message: `Model '${name}' is duplicated`,
+          });
+        }
+        seen.add(name);
       });
     }
-    if (value.allowedHosts.length === 0) {
+    const defaultModel = value.defaultModel.trim();
+    if (defaultModel && !names.includes(defaultModel)) {
       ctx.addIssue({
         code: 'custom',
-        path: ['allowedHosts'],
-        message: 'Add at least one allowed host',
+        path: ['defaultModel'],
+        message: 'Default model must match a listed model',
       });
     }
   });

@@ -46,8 +46,10 @@ function settings(ready: boolean): EmbeddingsSettings {
       [OPENAI_COMPATIBLE_PROVIDER]: {
         endpoint: ready ? 'https://api.openai.com/v1/embeddings' : '',
         apiKeyConfigured: ready,
-        model: 'text-embedding-3-small',
-        allowedHosts: ['api.openai.com'],
+        models: ready
+          ? [{ name: 'text-embedding-3-small', dimensions: 1536 }]
+          : [],
+        defaultModel: ready ? 'text-embedding-3-small' : '',
       },
     },
     queue: {
@@ -57,7 +59,6 @@ function settings(ready: boolean): EmbeddingsSettings {
       drainTimeoutMs: 15 * 60 * 1000,
     },
     security: {
-      requireGrpcKey: false,
       sourceFieldAllowlist: [],
       maxMutationEventIds: 500,
       embedTimeoutMs: 10_000,
@@ -76,27 +77,26 @@ const queryableIndex: VectorIndexDefinition = {
 };
 
 describe('provider and capability readiness', () => {
-  it('treats a redacted key plus endpoint as configured only with matching hosts', () => {
+  it('treats a redacted key plus endpoint as configured only with a valid model', () => {
     expect(isProviderConfigured(undefined)).toBeUndefined();
     expect(isProviderConfigured(settings(true))).toBe(true);
     expect(isProviderConfigured(settings(false))).toBe(false);
-    const missingHosts = settings(true);
-    missingHosts.providers[OPENAI_COMPATIBLE_PROVIDER] = {
-      ...missingHosts.providers[OPENAI_COMPATIBLE_PROVIDER],
-      allowedHosts: [],
+    const missingModels = settings(true);
+    missingModels.providers[OPENAI_COMPATIBLE_PROVIDER] = {
+      ...missingModels.providers[OPENAI_COMPATIBLE_PROVIDER],
+      models: [],
     };
-    expect(isProviderConfigured(missingHosts)).toBe(false);
-    const wrongHost = settings(true);
-    wrongHost.providers[OPENAI_COMPATIBLE_PROVIDER] = {
-      ...wrongHost.providers[OPENAI_COMPATIBLE_PROVIDER],
-      allowedHosts: ['example.com'],
+    expect(isProviderConfigured(missingModels)).toBe(false);
+    const invalidDefault = settings(true);
+    invalidDefault.providers[OPENAI_COMPATIBLE_PROVIDER] = {
+      ...invalidDefault.providers[OPENAI_COMPATIBLE_PROVIDER],
+      defaultModel: 'missing',
     };
-    expect(isProviderConfigured(wrongHost)).toBe(false);
+    expect(isProviderConfigured(invalidDefault)).toBe(false);
     const privateHost = settings(true);
     privateHost.providers[OPENAI_COMPATIBLE_PROVIDER] = {
       ...privateHost.providers[OPENAI_COMPATIBLE_PROVIDER],
       endpoint: 'https://127.0.0.1/v1/embeddings',
-      allowedHosts: ['127.0.0.1'],
     };
     expect(isProviderConfigured(privateHost)).toBe(false);
   });

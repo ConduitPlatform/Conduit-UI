@@ -9,6 +9,7 @@ import {
   PRODUCT_SCHEMA_NAME,
   PROVIDER_ENDPOINT,
   PROVIDER_MODEL,
+  PROVIDER_DIMENSIONS,
   READY_CONFIG_ID,
   READY_INDEX_NAME,
   STORED_API_KEY,
@@ -108,8 +109,8 @@ function defaultSettings(args: {
       [OPENAI_COMPATIBLE_PROVIDER]: {
         endpoint: PROVIDER_ENDPOINT,
         apiKey: args.apiKey,
-        model: PROVIDER_MODEL,
-        allowedHosts: ['api.openai.com'],
+        models: [{ name: PROVIDER_MODEL, dimensions: PROVIDER_DIMENSIONS }],
+        defaultModel: PROVIDER_MODEL,
       },
     },
     queue: {
@@ -119,7 +120,6 @@ function defaultSettings(args: {
       drainTimeoutMs: 15 * 60 * 1000,
     },
     security: {
-      requireGrpcKey: false,
       sourceFieldAllowlist: [],
       maxMutationEventIds: 500,
       embedTimeoutMs: 10_000,

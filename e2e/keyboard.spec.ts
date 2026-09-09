@@ -26,7 +26,7 @@ test.describe('keyboard', () => {
     await resetMock('ready');
     await page.goto('/embeddings/settings');
     await page.getByRole('button', { name: 'Edit' }).click();
-    await page.getByLabel('Default model').fill('text-embedding-3-large');
+    await page.getByLabel('Dimensions').fill('3072');
     await page.keyboard.press('ControlOrMeta+s');
     await expect(page.getByText('Embeddings settings saved')).toBeVisible();
   });

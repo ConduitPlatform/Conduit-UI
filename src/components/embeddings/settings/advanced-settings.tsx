@@ -2,13 +2,11 @@
 
 import { ChevronDown } from 'lucide-react';
 import { InputField } from '@/components/ui/form-inputs/InputField';
-import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { HostsField } from '@/components/embeddings/settings/hosts-field';
 import { SETTINGS_LIMITS } from '@/lib/models/embeddings/settings-form';
 
 type AdvancedSettingsProps = {
@@ -83,29 +81,6 @@ export function AdvancedSettings({ disabled }: AdvancedSettingsProps) {
           </section>
           <section className="space-y-3">
             <h3 className="text-[13px] font-medium tracking-wide text-muted-foreground">
-              Security
-            </h3>
-            <div className="space-y-1.5">
-              <SwitchField
-                fieldName="security.requireGrpcKey"
-                label="Require gRPC key"
-                disabled={disabled}
-              />
-              <p className="text-xs text-muted-foreground">
-                Always enforced when the server runs in production.
-              </p>
-            </div>
-            <HostsField
-              name="security.sourceFieldAllowlist"
-              label="Source field allowlist"
-              disabled={disabled}
-              placeholder="Add a field name and press Enter"
-              normalizeItem={value => value.trim()}
-              description="Operator-approved source fields, including names that would otherwise be rejected. Case is preserved."
-            />
-          </section>
-          <section className="space-y-3">
-            <h3 className="text-[13px] font-medium tracking-wide text-muted-foreground">
               Input and event limits
             </h3>
             <div className="grid gap-4 md:grid-cols-2">
@@ -155,6 +130,10 @@ export function AdvancedSettings({ disabled }: AdvancedSettingsProps) {
               />
             </div>
           </section>
+          <p className="text-xs text-muted-foreground text-pretty">
+            Production gRPC access uses the deployment GRPC_KEY. It is not
+            configured here.
+          </p>
         </div>
       </CollapsibleContent>
     </Collapsible>

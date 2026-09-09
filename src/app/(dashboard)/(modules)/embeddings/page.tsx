@@ -163,7 +163,7 @@ export default async function EmbeddingsDashboard() {
   const quickActions: QuickAction[] = [
     {
       title: 'Configure provider',
-      description: 'Set endpoint, API key, and worker toggle',
+      description: 'Set endpoint, API key, and models',
       icon: <Settings className="h-4 w-4" />,
       href: '/embeddings/settings',
     },

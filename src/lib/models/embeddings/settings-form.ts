@@ -1,5 +1,6 @@
 import { isRedactedSecret, omitRedactedApiKey } from './secrets.ts';
 import type {
+  EmbeddingProviderModel,
   EmbeddingsProviderSettings,
   EmbeddingsSettings,
   EmbeddingsSettingsPatch,
@@ -18,13 +19,25 @@ export const SETTINGS_LIMITS = {
   maxEmbedResponseBytes: { min: 1, max: 50 * 1024 * 1024 },
 };
 
+export const NEW_CATALOGUE_MODEL: EmbeddingProviderModel = {
+  name: '',
+  dimensions: 1536,
+};
+
+export const EMPTY_PROVIDER_SETTINGS: EmbeddingsProviderSettings = {
+  endpoint: '',
+  apiKeyConfigured: false,
+  models: [],
+  defaultModel: '',
+};
+
 export type EmbeddingsSettingsFormValues = {
   defaultProvider: typeof OPENAI_COMPATIBLE_PROVIDER;
   endpoint: string;
   apiKey: string;
   apiKeyConfigured: boolean;
-  model: string;
-  allowedHosts: string[];
+  models: EmbeddingProviderModel[];
+  defaultModel: string;
   queue: {
     concurrency: number;
     attempts: number;
@@ -32,8 +45,6 @@ export type EmbeddingsSettingsFormValues = {
     drainTimeoutMs: number;
   };
   security: {
-    requireGrpcKey: boolean;
-    sourceFieldAllowlist: string[];
     maxMutationEventIds: number;
     embedTimeoutMs: number;
     maxEmbedInputBytes: number;
@@ -51,6 +62,109 @@ const BLOCKED_HOST_LABELS = new Set([
   '::1',
 ]);
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function trimName(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function parseDimensions(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isInteger(value) && value > 0) {
+    return value;
+  }
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    if (Number.isInteger(parsed) && parsed > 0) return parsed;
+  }
+  return undefined;
+}
+
+function parseCatalogueEntry(
+  value: unknown
+): EmbeddingProviderModel | undefined {
+  if (!isRecord(value)) return undefined;
+  const name = trimName(value.name);
+  const dimensions = parseDimensions(value.dimensions);
+  if (!name || dimensions == null) return undefined;
+  return { name, dimensions };
+}
+
+export function isCatalogueModelValid(model: {
+  name?: string;
+  dimensions?: number;
+}): boolean {
+  return (
+    typeof model.name === 'string' &&
+    model.name.trim().length > 0 &&
+    typeof model.dimensions === 'number' &&
+    Number.isInteger(model.dimensions) &&
+    model.dimensions > 0
+  );
+}
+
+export function uniqueCatalogueNames(
+  models: Array<{ name?: string }>
+): string[] {
+  const names: string[] = [];
+  const seen = new Set<string>();
+  for (const model of models) {
+    const name = trimName(model.name);
+    if (!name || seen.has(name)) continue;
+    seen.add(name);
+    names.push(name);
+  }
+  return names;
+}
+
+export function normalizeProviderCatalogue(raw: unknown): {
+  models: EmbeddingProviderModel[];
+  defaultModel: string;
+} {
+  const source = isRecord(raw) ? raw : {};
+  const listed = Array.isArray(source.models)
+    ? source.models
+        .map(parseCatalogueEntry)
+        .filter((model): model is EmbeddingProviderModel => model != null)
+    : [];
+  const seen = new Set<string>();
+  const models: EmbeddingProviderModel[] = [];
+  for (const model of listed) {
+    if (seen.has(model.name)) continue;
+    seen.add(model.name);
+    models.push(model);
+  }
+  let migratedFromSingular = false;
+  if (models.length === 0) {
+    const name = trimName(source.model);
+    const dimensions = parseDimensions(source.dimensions);
+    if (name && dimensions != null) {
+      models.push({ name, dimensions });
+      migratedFromSingular = true;
+    }
+  }
+  const names = new Set(models.map(model => model.name));
+  const configuredDefault = trimName(source.defaultModel);
+  const defaultModel = names.has(configuredDefault)
+    ? configuredDefault
+    : migratedFromSingular
+      ? (models[0]?.name ?? '')
+      : '';
+  return { models, defaultModel };
+}
+
+export function resolveProviderDefaultModel(
+  provider?: EmbeddingsProviderSettings
+): string {
+  if (!provider) return '';
+  const selected = provider.defaultModel.trim();
+  if (selected && provider.models.some(model => model.name === selected)) {
+    return selected;
+  }
+  return provider.models.find(isCatalogueModelValid)?.name ?? '';
+}
+
 function parseIpv4(host: string): [number, number, number, number] | undefined {
   const match = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
   if (!match) return undefined;
@@ -67,6 +181,10 @@ function isPrivateOrLoopbackIpv4(octets: [number, number, number, number]) {
   if (a === 172 && b >= 16 && b <= 31) return true;
   if (a === 100 && b >= 64 && b <= 127) return true;
   return false;
+}
+
+export function normalizeHost(value: string): string {
+  return value.trim().toLowerCase().replace(/\.+$/, '');
 }
 
 export function isBlockedProviderHost(value: string): boolean {
@@ -94,49 +212,13 @@ export function parseHttpsEndpoint(value: string): URL | undefined {
   }
 }
 
-export function normalizeHost(value: string): string {
-  return value.trim().toLowerCase().replace(/\.+$/, '');
-}
-
-export function isValidHost(value: string): boolean {
-  const host = normalizeHost(value);
-  if (!host) return false;
-  if (isBlockedProviderHost(host)) return false;
-  if (host.includes('/') || host.includes(' ') || host.includes(':')) {
-    return false;
-  }
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
-    const ipv4 = parseIpv4(host);
-    return ipv4 != null;
-  }
-  return /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/.test(
-    host
-  );
-}
-
-export function normalizeHosts(values: string[]): string[] {
-  const seen = new Set<string>();
-  const hosts: string[] = [];
-  for (const value of values) {
-    const host = normalizeHost(value);
-    if (!host || seen.has(host)) continue;
-    seen.add(host);
-    hosts.push(host);
-  }
-  return hosts;
-}
-
 export function openaiCompatibleProvider(
   settings: EmbeddingsSettings
 ): EmbeddingsProviderSettings {
   return (
     settings.providers[settings.defaultProvider] ??
-    settings.providers[OPENAI_COMPATIBLE_PROVIDER] ?? {
-      endpoint: '',
-      apiKeyConfigured: false,
-      model: '',
-      allowedHosts: [],
-    }
+    settings.providers[OPENAI_COMPATIBLE_PROVIDER] ??
+    EMPTY_PROVIDER_SETTINGS
   );
 }
 
@@ -149,14 +231,17 @@ export function toSettingsFormValues(
     endpoint: provider.endpoint,
     apiKey: '',
     apiKeyConfigured: provider.apiKeyConfigured,
-    model: provider.model,
-    allowedHosts: normalizeHosts(provider.allowedHosts),
+    models:
+      provider.models.length > 0
+        ? provider.models.map(model => ({ ...model }))
+        : [{ ...NEW_CATALOGUE_MODEL }],
+    defaultModel: provider.defaultModel,
     queue: { ...settings.queue },
     security: {
-      ...settings.security,
-      sourceFieldAllowlist: normalizeSourceFieldAllowlist(
-        settings.security.sourceFieldAllowlist
-      ),
+      maxMutationEventIds: settings.security.maxMutationEventIds,
+      embedTimeoutMs: settings.security.embedTimeoutMs,
+      maxEmbedInputBytes: settings.security.maxEmbedInputBytes,
+      maxEmbedResponseBytes: settings.security.maxEmbedResponseBytes,
     },
   };
 }
@@ -168,18 +253,22 @@ export function toSettingsPatch(
 ): EmbeddingsSettingsPatch {
   const apiKey = isRedactedSecret(values.apiKey) ? '' : values.apiKey.trim();
   const providerName = OPENAI_COMPATIBLE_PROVIDER;
+  const defaultModel = values.defaultModel.trim();
   const nextProvider = omitRedactedApiKey({
     endpoint: values.endpoint.trim(),
-    model: values.model.trim(),
-    allowedHosts: normalizeHosts(values.allowedHosts),
+    models: values.models.map(model => ({
+      name: model.name.trim(),
+      dimensions: model.dimensions,
+    })),
+    defaultModel,
     apiKey,
   });
   const previousProviders: EmbeddingsSettingsPatch['providers'] = {};
   for (const [name, provider] of Object.entries(previous.providers)) {
     previousProviders[name] = {
       endpoint: provider.endpoint,
-      model: provider.model,
-      allowedHosts: provider.allowedHosts,
+      models: provider.models,
+      defaultModel: provider.defaultModel,
     };
   }
   return {
@@ -191,10 +280,13 @@ export function toSettingsPatch(
     },
     queue: values.queue,
     security: {
-      ...values.security,
       sourceFieldAllowlist: normalizeSourceFieldAllowlist(
-        values.security.sourceFieldAllowlist
+        previous.security.sourceFieldAllowlist
       ),
+      maxMutationEventIds: values.security.maxMutationEventIds,
+      embedTimeoutMs: values.security.embedTimeoutMs,
+      maxEmbedInputBytes: values.security.maxEmbedInputBytes,
+      maxEmbedResponseBytes: values.security.maxEmbedResponseBytes,
     },
   };
 }

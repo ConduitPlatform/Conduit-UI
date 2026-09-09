@@ -21,11 +21,16 @@ export type MockModule = {
   serving: boolean;
 };
 
+export type MockProviderModel = {
+  name: string;
+  dimensions: number;
+};
+
 export type MockProviderSettings = {
   endpoint: string;
   apiKey: string;
-  model: string;
-  allowedHosts: string[];
+  models: MockProviderModel[];
+  defaultModel: string;
 };
 
 export type MockEmbeddingsSettings = {
@@ -39,7 +44,6 @@ export type MockEmbeddingsSettings = {
     drainTimeoutMs: number;
   };
   security: {
-    requireGrpcKey: boolean;
     sourceFieldAllowlist: string[];
     maxMutationEventIds: number;
     embedTimeoutMs: number;

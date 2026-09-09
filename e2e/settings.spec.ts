@@ -19,12 +19,12 @@ test.describe('embeddings settings', () => {
         'A key is already stored. Leave blank to keep it, or enter a replacement.'
       )
     ).toBeVisible();
+    await expect(page.getByLabel('Provider')).toHaveValue('openai-compatible');
+    await expect(page.getByText('Allowed hosts')).toHaveCount(0);
+    await expect(page.getByText('Require gRPC key')).toHaveCount(0);
     await page.getByRole('button', { name: 'Edit' }).click();
-    await expect(
-      page.getByRole('textbox', { name: 'Add allowed hosts' })
-    ).toBeVisible();
-    const model = page.getByLabel('Default model');
-    await model.fill('text-embedding-3-large');
+    await expect(page.getByLabel('Model name')).toBeVisible();
+    await page.getByLabel('Dimensions').fill('3072');
     await expect(page.getByLabel('API key')).toHaveValue('');
     expect(await page.content()).not.toContain(STORED_API_KEY);
     await page.getByRole('button', { name: 'Save' }).click();
@@ -32,6 +32,36 @@ test.describe('embeddings settings', () => {
     const inspect = await inspectMock();
     expect(inspect.storedApiKeyConfigured).toBe(true);
     expect(inspect.lastSettingsPatchHadApiKey).toBe(false);
+  });
+
+  test('adds a model and keeps the selected default until it is cleared', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/settings');
+    await page.getByRole('button', { name: 'Edit' }).click();
+    await expect(
+      page.getByRole('button', {
+        name: 'Clear or change the default model before removing this row',
+      })
+    ).toBeDisabled();
+    await page.getByRole('button', { name: 'Add model' }).click();
+    const names = page.getByLabel('Model name');
+    const dimensions = page.getByLabel('Dimensions');
+    await expect(names).toHaveCount(2);
+    await names.nth(1).fill('text-embedding-3-large');
+    await dimensions.nth(1).fill('3072');
+    await expect(
+      page.getByRole('button', { name: 'Remove text-embedding-3-large' })
+    ).toBeEnabled();
+    await page.getByRole('button', { name: 'Advanced limits' }).click();
+    await expect(
+      page.getByText(
+        'Production gRPC access uses the deployment GRPC_KEY. It is not configured here.'
+      )
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(exactText(page, 'Embeddings settings saved')).toBeVisible();
   });
 
   test('toggles workers from module config without waiting for serving', async ({
