@@ -28,7 +28,13 @@ test.describe('test search', () => {
     await page.getByRole('button', { name: 'Search' }).click();
     await expect(page.getByText('Search failed')).toBeVisible();
     await expect(
-      page.getByText('Request failed with status code 503')
+      page.getByText(
+        'The embeddings service is temporarily unavailable. Check that workers are enabled and the provider is reachable, then retry.'
+      )
     ).toBeVisible();
+    await expect(page.getByText('No matches')).toHaveCount(0);
+    await expect(
+      page.getByRole('cell', { name: 'Published guide' })
+    ).toHaveCount(0);
   });
 });

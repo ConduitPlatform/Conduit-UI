@@ -2,6 +2,7 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
+import { BackfillActions } from '@/components/embeddings/backfills/backfill-actions';
 import { BackfillStateBadge } from '@/components/embeddings/backfills/backfill-state-badge';
 import { BackfillRun } from '@/lib/models/embeddings/backfill';
 import {
@@ -21,6 +22,15 @@ export function getBackfillColumns(): ColumnDef<BackfillRun>[] {
         >
           <span className="block truncate">{row.original.schemaName}</span>
         </Link>
+      ),
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <div className="flex flex-wrap items-center gap-2">
+          <BackfillActions run={row.original} compact />
+        </div>
       ),
     },
     {

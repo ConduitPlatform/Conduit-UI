@@ -150,7 +150,7 @@ export function SearchForm({
           id="search-target"
           value={targetField}
           disabled
-          className="font-mono"
+          className="font-mono disabled:bg-muted disabled:text-foreground disabled:opacity-100"
         />
       </div>
       <div className="space-y-1.5">
@@ -189,7 +189,7 @@ export function SearchForm({
           <p className="text-sm text-destructive">{limitError}</p>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Maximum {MAX_SEARCH_LIMIT}.
+            {`Maximum ${MAX_SEARCH_LIMIT} results.`}
           </p>
         )}
       </div>

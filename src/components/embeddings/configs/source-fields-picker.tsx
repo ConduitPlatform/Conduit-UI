@@ -15,9 +15,13 @@ import { cn } from '@/lib/utils';
 
 type SourceFieldsPickerProps = {
   choices: SourceFieldChoice[];
+  hasSchema?: boolean;
 };
 
-export function SourceFieldsPicker({ choices }: SourceFieldsPickerProps) {
+export function SourceFieldsPicker({
+  choices,
+  hasSchema = true,
+}: SourceFieldsPickerProps) {
   const { control } = useFormContext();
 
   return (
@@ -38,7 +42,9 @@ export function SourceFieldsPicker({ choices }: SourceFieldsPickerProps) {
             </FormDescription>
             {choices.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No eligible string fields on this schema.
+                {hasSchema
+                  ? 'No eligible string fields on this schema.'
+                  : 'Select a schema to see eligible fields.'}
               </p>
             ) : (
               <div className="rounded-md border border-border/60 divide-y divide-border/60">

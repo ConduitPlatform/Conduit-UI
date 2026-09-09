@@ -222,7 +222,7 @@ export function StartBackfillDialog({
               }}
             />
             <p className="text-xs text-muted-foreground">
-              Default 100. Maximum {allowedMax.toLocaleString()}.
+              {`Default 100. Maximum ${allowedMax.toLocaleString()}.`}
             </p>
             {batchError ? (
               <p className="text-sm text-destructive">{batchError}</p>

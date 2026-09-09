@@ -35,7 +35,25 @@ export function isEmbeddingsNotFound(err: unknown): boolean {
   return err.response?.status === 404;
 }
 
+export const EMBEDDINGS_SERVICE_UNAVAILABLE =
+  'The embeddings service is temporarily unavailable. Check that workers are enabled and the provider is reachable, then retry.';
+
+function readErrorMessage(err: unknown): string | undefined {
+  if (isAxiosLikeError(err) && typeof err.message === 'string') {
+    return err.message;
+  }
+  if (err instanceof Error) return err.message;
+  return undefined;
+}
+
+function isServiceUnavailable(err: unknown): boolean {
+  if (isAxiosLikeError(err) && err.response?.status === 503) return true;
+  const message = readErrorMessage(err);
+  return typeof message === 'string' && /status code 503/.test(message);
+}
+
 export function formatEmbeddingsApiError(err: unknown): string {
+  if (isServiceUnavailable(err)) return EMBEDDINGS_SERVICE_UNAVAILABLE;
   if (isAxiosLikeError(err)) {
     return (
       readBackendMessage(err.response?.data) ?? err.message ?? 'Request failed'

@@ -34,4 +34,19 @@ test.describe('viewport and theme smoke', () => {
     await page.keyboard.press('ControlOrMeta+b');
     await openEmbeddingsNav(page);
   });
+
+  test('keeps configs readable on a narrow viewport', async ({ page }) => {
+    await resetMock('ready');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/embeddings/configs');
+    await expect(page.getByRole('heading', { name: 'Configs' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('definition')
+        .filter({ hasText: 'openai-compatible/text-embedding-3-small' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('term').filter({ hasText: 'Index' })
+    ).toBeVisible();
+  });
 });

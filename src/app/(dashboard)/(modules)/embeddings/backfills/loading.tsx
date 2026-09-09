@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function EmbeddingBackfillsLoading() {
   return (
     <div className="flex flex-col space-y-4">
-      <div className="flex items-center justify-between gap-4 mb-2">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
           <Skeleton className="h-8 w-40" />
           <Skeleton className="h-4 w-72" />

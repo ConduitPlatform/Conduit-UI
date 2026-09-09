@@ -116,6 +116,7 @@ export function HostsField({
                   disabled={disabled}
                   placeholder={hosts.length === 0 ? placeholder : undefined}
                   autoComplete="off"
+                  aria-label={`Add ${label.toLowerCase()}`}
                   className="h-8 min-w-40 flex-1 border-0 bg-transparent px-1 shadow-none focus-visible:ring-0"
                 />
               </div>

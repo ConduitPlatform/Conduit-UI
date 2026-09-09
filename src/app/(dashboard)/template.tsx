@@ -2,7 +2,8 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { formatBreadcrumbSegment } from '@/lib/utils/breadcrumbs';
 import { getRouterSettings } from '@/lib/api/router';
 import { getAdminSettings } from '@/lib/api/settings';
 import { ScalarIcon, SocketIcon } from '@/icons';
@@ -49,37 +50,6 @@ const MODULE_NAMES: { [key: string]: string } = {
   payments: 'Payments',
 };
 
-const SEGMENT_LABELS: Record<string, string> = {
-  templates: 'Templates',
-  logs: 'Logs & Devices',
-  settings: 'Settings',
-};
-
-const MODULE_SEGMENT_LABELS: Record<string, Record<string, string>> = {
-  communications: {
-    test: 'Test Send',
-  },
-  embeddings: {
-    configs: 'Configs',
-    backfills: 'Backfills',
-    test: 'Test Search',
-    new: 'New config',
-  },
-};
-
-function formatBreadcrumbSegment(segment: string, moduleSlug?: string): string {
-  const moduleLabels = moduleSlug
-    ? MODULE_SEGMENT_LABELS[moduleSlug]
-    : undefined;
-  return (
-    moduleLabels?.[segment] ??
-    SEGMENT_LABELS[segment] ??
-    segment
-      .split('-')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ')
-  );
-}
 export default function ModuleHeader({
   children,
 }: {
@@ -274,19 +244,48 @@ export default function ModuleHeader({
                           </BreadcrumbLink>
                         )}
                       </BreadcrumbItem>
-                      {pathSegments.length > 1 && (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <BreadcrumbPage>
-                              {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1],
-                                whichModule
-                              )}
-                            </BreadcrumbPage>
-                          </BreadcrumbItem>
-                        </>
-                      )}
+                      {pathSegments.length > 1 &&
+                        (whichModule === 'embeddings' ? (
+                          pathSegments.slice(1).map((segment, index) => {
+                            const segmentIndex = index + 1;
+                            const href = `/${pathSegments
+                              .slice(0, segmentIndex + 1)
+                              .join('/')}`;
+                            const isLast =
+                              segmentIndex === pathSegments.length - 1;
+                            const label = formatBreadcrumbSegment(
+                              segment,
+                              whichModule,
+                              pathSegments[segmentIndex - 1]
+                            );
+                            return (
+                              <Fragment key={href}>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                  {isLast ? (
+                                    <BreadcrumbPage>{label}</BreadcrumbPage>
+                                  ) : (
+                                    <BreadcrumbLink asChild>
+                                      <Link href={href}>{label}</Link>
+                                    </BreadcrumbLink>
+                                  )}
+                                </BreadcrumbItem>
+                              </Fragment>
+                            );
+                          })
+                        ) : (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <BreadcrumbPage>
+                                {formatBreadcrumbSegment(
+                                  pathSegments[pathSegments.length - 1],
+                                  whichModule
+                                )}
+                              </BreadcrumbPage>
+                            </BreadcrumbItem>
+                          </>
+                        ))}
                     </>
                   )}
                 </>

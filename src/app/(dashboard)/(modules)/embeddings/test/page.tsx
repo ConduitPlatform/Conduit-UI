@@ -68,7 +68,7 @@ export default async function EmbeddingsTestSearchPage(props: {
 
   return (
     <div className="flex flex-col space-y-4">
-      <PageHeader>
+      <PageHeader className="flex-col items-start gap-3 lg:flex-row lg:items-center">
         <div>
           <PageTitle>Test Search</PageTitle>
           <PageDescription>

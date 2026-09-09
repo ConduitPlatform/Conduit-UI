@@ -98,14 +98,14 @@ export default async function EmbeddingBackfillsPage(props: {
 
   return (
     <div className="flex flex-col space-y-4">
-      <PageHeader className="flex-col items-start gap-3 sm:flex-row sm:items-center">
+      <PageHeader className="flex-col items-start gap-3 lg:flex-row lg:items-center">
         <div>
           <PageTitle>Backfills</PageTitle>
           <PageDescription>
             Filterable run history. Active runs appear first.
           </PageDescription>
         </div>
-        <PageActions>
+        <PageActions className="flex-wrap">
           <StartBackfillDialog
             configs={configs}
             schemas={schemas}

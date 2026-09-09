@@ -27,4 +27,41 @@ test.describe('embedding configs', () => {
       page.getByText('Not queryable', { exact: true })
     ).toBeVisible();
   });
+
+  test('asks for a schema before listing source fields', async ({ page }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs/new');
+    await expect(
+      page.getByText('Select a schema to see eligible fields.')
+    ).toBeVisible();
+  });
+
+  test('uses route labels instead of raw config ids in breadcrumbs', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/configs/cfg_product');
+    const crumbs = page.getByRole('navigation', { name: 'breadcrumb' });
+    await expect(crumbs.getByText('Configs', { exact: true })).toBeVisible();
+    await expect(crumbs.getByText('Config', { exact: true })).toBeVisible();
+    await expect(crumbs.getByText('Cfg_product')).toHaveCount(0);
+  });
+
+  test('shows stacked config cards on a narrow viewport', async ({ page }) => {
+    await resetMock('ready');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/embeddings/configs');
+    await expect(page.getByRole('heading', { name: 'Configs' })).toBeVisible();
+    await expect(
+      page.getByRole('term').filter({ hasText: 'Index' })
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole('definition')
+        .filter({ hasText: 'openai-compatible/text-embedding-3-small' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('definition').filter({ hasText: 'Ready' })
+    ).toBeVisible();
+  });
 });
