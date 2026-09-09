@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { navGroups } from '@/components/navigation/navList.config';
 import type { Module } from '@/lib/models/Module';
@@ -74,5 +76,49 @@ describe('module path maps', () => {
     const without = filterNavigationByModules(items, modules('database'));
     expect(without.some(item => item.url === '/embeddings')).toBe(false);
     expect(without.some(item => item.url === '/')).toBe(true);
+  });
+});
+
+const EMBEDDINGS_SHARED_WORKFLOW_PATHS = [
+  'src/app/(dashboard)/template.tsx',
+  'src/components/dashboard/ActiveModuleGrid.tsx',
+  'src/components/dashboard/ModuleDashboard.tsx',
+  'src/components/navigation/navList.config.ts',
+  'src/lib/utils/module-utils.ts',
+  'src/lib/utils/module-utils.test.ts',
+  'src/lib/utils/breadcrumbs.ts',
+  'src/lib/utils/breadcrumbs.test.ts',
+];
+
+function workflowPathFilters(source: string): string[] {
+  const pathsBlock = source.match(/\n {4}paths:\n([\s\S]*?)(?:\n\n|\njobs:)/);
+  expect(pathsBlock).toBeTruthy();
+  return [...pathsBlock![1].matchAll(/^\s+-\s+'([^']+)'\s*$/gm)].map(
+    match => match[1]
+  );
+}
+
+function workflowPathCovers(pattern: string, filePath: string): boolean {
+  if (pattern === filePath) return true;
+  if (pattern.endsWith('/**')) {
+    const prefix = pattern.slice(0, -3);
+    return filePath === prefix || filePath.startsWith(`${prefix}/`);
+  }
+  return false;
+}
+
+describe('embeddings UI workflow paths', () => {
+  it('covers embeddings-related shared navigation, maps, breadcrumbs, and dashboard files', () => {
+    const workflowPath = path.join(
+      process.cwd(),
+      '.github/workflows/embeddings-ui.yml'
+    );
+    const filters = workflowPathFilters(readFileSync(workflowPath, 'utf8'));
+    for (const filePath of EMBEDDINGS_SHARED_WORKFLOW_PATHS) {
+      expect(
+        filters.some(pattern => workflowPathCovers(pattern, filePath)),
+        `${filePath} should match embeddings-ui.yml path filters`
+      ).toBe(true);
+    }
   });
 });

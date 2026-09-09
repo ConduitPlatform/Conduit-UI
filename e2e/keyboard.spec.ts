@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { resetMock } from './helpers/mock.ts';
+import { exactText } from './helpers/ui.ts';
 
 test.describe('keyboard', () => {
   test('closes the start-backfill dialog with Escape', async ({ page }) => {
@@ -28,7 +29,7 @@ test.describe('keyboard', () => {
     await page.getByRole('button', { name: 'Edit' }).click();
     await page.getByLabel('Dimensions').fill('3072');
     await page.keyboard.press('ControlOrMeta+s');
-    await expect(page.getByText('Embeddings settings saved')).toBeVisible();
+    await expect(exactText(page, 'Embeddings settings saved')).toBeVisible();
   });
 
   test('searches schemas and models with arrows and enter', async ({
