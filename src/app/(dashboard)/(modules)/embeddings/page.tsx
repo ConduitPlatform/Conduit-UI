@@ -91,7 +91,7 @@ export default async function EmbeddingsDashboard() {
   const indexesBySchema = configs
     ? await resolveIndexesBySchema(
         configs.map(config => config.schemaName),
-        settledValue(schemasResult)?.schemas
+        settledValue(schemasResult)
       )
     : undefined;
 

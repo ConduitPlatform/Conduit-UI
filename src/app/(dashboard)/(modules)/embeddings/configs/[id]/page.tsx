@@ -54,14 +54,15 @@ export default async function EmbeddingConfigDetailPage(props: {
   }
 
   const config: EmbeddingConfig = configResult.value;
-  const schemas = settledValue(schemasResult)?.schemas;
+  const declared = settledValue(schemasResult);
+  const schemas = declared?.schemas;
   const settings = settledValue(settingsResult)?.config;
 
   const [capabilitiesResult, statusResult, indexesResult] =
     await Promise.allSettled([
       getEmbeddingsCapabilities(config.schemaName),
       getEmbeddingsStatus(config.schemaName),
-      resolveIndexesBySchema([config.schemaName], schemas),
+      resolveIndexesBySchema([config.schemaName], declared),
     ]);
   const indexesBySchema = settledValue(indexesResult) ?? {
     [config.schemaName]: 'unknown' as const,
@@ -72,7 +73,7 @@ export default async function EmbeddingConfigDetailPage(props: {
   const capabilities =
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
   const formSchemas = toEmbeddingSchemaFormChoices(
-    listEligibleSchemas(schemas ?? []),
+    listEligibleSchemas(schemas, declared?.systemSchemaNames),
     { [config.schemaName]: config.sourceFields }
   );
 

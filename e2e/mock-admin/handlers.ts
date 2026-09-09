@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import {
+  DATABASE_SYSTEM_SCHEMAS,
   E2E_MASTER_KEY,
   E2E_PASSWORD,
   E2E_TEST_CONTROL_HEADER,
@@ -381,7 +382,21 @@ function isMockSchemaExtendable(schema: MockSchema): boolean {
   return permissions?.extendable === true;
 }
 
+function isMockDeniedEmbeddingSchema(schema: MockSchema): boolean {
+  if (schema.ownerModule === 'embeddings') return true;
+  if (schema.name.startsWith('_')) return true;
+  if (schema.ownerModule === 'core' || schema.ownerModule === 'router') {
+    return true;
+  }
+  return DATABASE_SYSTEM_SCHEMAS.some(
+    name => name.toLowerCase() === schema.name.toLowerCase()
+  );
+}
+
 function canReceiveEmbeddings(schema: MockSchema): string | undefined {
+  if (isMockDeniedEmbeddingSchema(schema)) {
+    return `Schema '${schema.name}' cannot be used as an embedding source`;
+  }
   if (!isMockSchemaEnabled(schema)) {
     return `Schema '${schema.name}' is not enabled`;
   }
@@ -1095,6 +1110,13 @@ export async function handleMockRequest(
           provider: 'mongodb',
         },
       ],
+    });
+    return;
+  }
+
+  if (pathname === '/database/schemas/system' && method === 'GET') {
+    sendJson(response, 200, {
+      databaseSystemSchemas: [...DATABASE_SYSTEM_SCHEMAS],
     });
     return;
   }

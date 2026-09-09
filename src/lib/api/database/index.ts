@@ -50,6 +50,12 @@ export const getSchemas = async (args: {
     .then(res => res.data);
 };
 
+export const getDatabaseSystemSchemas = async () => {
+  return await (await getApiClient())
+    .get<unknown>('/database/schemas/system')
+    .then(res => res.data);
+};
+
 export const getSchemaOwnerModules = async (args: { sort?: string }) => {
   return await (await getApiClient())
     .get<{ modules: string[] }>('/database/schemas/owners', { params: args })

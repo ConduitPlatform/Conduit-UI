@@ -28,18 +28,32 @@ test.describe('embedding configs', () => {
     ).toBeVisible();
   });
 
-  test('omits disabled and non-extendable schemas from create choices', async ({
+  test('omits disabled, non-extendable, and internal schemas from create choices', async ({
     page,
   }) => {
     await resetMock('blank');
     await page.goto('/embeddings/configs/new');
     await page.getByRole('combobox', { name: 'Schema' }).click();
     await expect(page.getByRole('option', { name: 'Product' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'User' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Team' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Note' })).toBeVisible();
     await expect(
       page.getByRole('option', { name: 'ArchivedProduct' })
     ).toHaveCount(0);
     await expect(page.getByRole('option', { name: 'CmsOnly' })).toHaveCount(0);
-    await expect(page.getByRole('option', { name: 'Note' })).toBeVisible();
+    await expect(
+      page.getByRole('option', { name: 'Admin', exact: true })
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole('option', { name: 'AdminMiddleware' })
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole('option', { name: 'AppMiddleware' })
+    ).toHaveCount(0);
+    await expect(page.getByRole('option', { name: 'Client' })).toHaveCount(0);
+    await expect(page.getByRole('option', { name: 'Config' })).toHaveCount(0);
+    await expect(page.getByRole('option', { name: 'Views' })).toHaveCount(0);
     await page.getByPlaceholder('Search schemas').fill('cms');
     await expect(page.getByText('No matching schemas')).toBeVisible();
     await page.keyboard.press('Escape');
