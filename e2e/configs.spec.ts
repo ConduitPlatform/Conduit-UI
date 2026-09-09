@@ -28,6 +28,16 @@ test.describe('embedding configs', () => {
     ).toBeVisible();
   });
 
+  test('omits disabled schemas from create choices', async ({ page }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs/new');
+    await page.getByRole('combobox').first().click();
+    await expect(page.getByRole('option', { name: 'Product' })).toBeVisible();
+    await expect(
+      page.getByRole('option', { name: 'ArchivedProduct' })
+    ).toHaveCount(0);
+  });
+
   test('asks for a schema before listing source fields', async ({ page }) => {
     await resetMock('blank');
     await page.goto('/embeddings/configs/new');

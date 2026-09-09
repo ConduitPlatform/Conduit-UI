@@ -17,6 +17,7 @@ import {
   getEmbeddingsSettings,
   getEmbeddingsStatus,
 } from '@/lib/api/embeddings';
+import { getDeclaredSchemas } from '@/lib/api/embeddings/indexes';
 import { toEmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import {
   mergeActiveBackfillRuns,
@@ -26,6 +27,7 @@ import {
   toBackfillListQuery,
   uniqueSchemaNames,
   workersEnabledFromStatus,
+  filterByEligibleSchemas,
 } from '@/lib/models/embeddings';
 
 export default async function EmbeddingBackfillsPage(props: {
@@ -42,6 +44,7 @@ export default async function EmbeddingBackfillsPage(props: {
     configsResult,
     settingsResult,
     statusResult,
+    schemasResult,
   ] = await Promise.allSettled([
     getBackfills(listQuery),
     query.state
@@ -53,6 +56,7 @@ export default async function EmbeddingBackfillsPage(props: {
     getEmbeddingConfigs(),
     getEmbeddingsSettings(),
     getEmbeddingsStatus(),
+    getDeclaredSchemas(),
   ]);
 
   const listError = settledError(listResult);
@@ -79,7 +83,11 @@ export default async function EmbeddingBackfillsPage(props: {
     state: query.state,
   });
   const configs = settledValue(configsResult) ?? [];
-  const configOptions = configs.map(toEmbeddingConfigOption);
+  const startableConfigs = filterByEligibleSchemas(
+    configs,
+    settledValue(schemasResult)?.schemas
+  );
+  const configOptions = startableConfigs.map(toEmbeddingConfigOption);
   const schemas = uniqueSchemaNames(configs, runs);
   if (query.schema && !schemas.includes(query.schema)) {
     schemas.push(query.schema);

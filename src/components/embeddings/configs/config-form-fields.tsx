@@ -62,7 +62,7 @@ export function ConfigFormFields({
             ? 'Schema cannot change after create.'
             : schemas.length === 0
               ? 'No eligible Database schemas are available.'
-              : 'Hidden, system, and embeddings-owned schemas are omitted.'
+              : 'Disabled, system, and embeddings-owned schemas are omitted.'
         }
       />
       <InputField

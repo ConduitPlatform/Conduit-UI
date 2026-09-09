@@ -18,6 +18,8 @@ export const PROVIDER_MODEL = 'text-embedding-3-small';
 
 export const PRODUCT_SCHEMA_ID = 'schema_product';
 export const PRODUCT_SCHEMA_NAME = 'Product';
+export const ARCHIVED_SCHEMA_ID = 'schema_archived';
+export const ARCHIVED_SCHEMA_NAME = 'ArchivedProduct';
 export const READY_CONFIG_ID = 'cfg_product';
 export const READY_INDEX_NAME = 'Product_embedding_v2';
 export const PENDING_INDEX_NAME = 'Product_embedding_v1';

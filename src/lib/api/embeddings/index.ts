@@ -25,6 +25,7 @@ import {
   unwrapStartBackfill,
   unwrapUpsertEmbeddingConfig,
   SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
+  requireEligibleDeclaredSchema,
   validateEmbeddingConfigInput,
 } from '@/lib/models/embeddings';
 
@@ -44,13 +45,16 @@ export const getEmbeddingConfig = cache(async (id: string) => {
   return unwrapEmbeddingConfig(res.data);
 });
 
-export const upsertEmbeddingConfig = async (data: EmbeddingConfigInput) => {
-  let schemas;
+async function loadDeclaredSchemasOrThrow() {
   try {
-    schemas = (await getDeclaredSchemas()).schemas;
+    return (await getDeclaredSchemas()).schemas;
   } catch {
     throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
   }
+}
+
+export const upsertEmbeddingConfig = async (data: EmbeddingConfigInput) => {
+  const schemas = await loadDeclaredSchemasOrThrow();
   const body = validateEmbeddingConfigInput(data, schemas);
   const res = await (
     await getApiClient()
@@ -100,6 +104,10 @@ export const getBackfill = async (id: string) => {
 };
 
 export const startBackfill = async (data: StartBackfillInput) => {
+  requireEligibleDeclaredSchema(
+    data.schemaName,
+    await loadDeclaredSchemasOrThrow()
+  );
   const filter = serializeBackfillFilter(data.filter);
   const res = await (
     await getApiClient()
@@ -128,6 +136,10 @@ export const resumeBackfill = async (id: string) => {
 };
 
 export const searchEmbeddings = async (data: SemanticSearchInput) => {
+  requireEligibleDeclaredSchema(
+    data.schemaName,
+    await loadDeclaredSchemasOrThrow()
+  );
   const filter = serializeBackfillFilter(data.filter);
   const res = await (
     await getApiClient()

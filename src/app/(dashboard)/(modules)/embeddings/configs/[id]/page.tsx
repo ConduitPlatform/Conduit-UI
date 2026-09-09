@@ -26,7 +26,6 @@ import { workersEnabledFromStatus } from '@/lib/models/embeddings/overview-view'
 import { deriveEmbeddingsReadiness } from '@/lib/models/embeddings/readiness';
 import {
   listEligibleSchemas,
-  toEmbeddingSchemaChoice,
   toEmbeddingSchemaFormChoices,
 } from '@/lib/models/embeddings/source-fields';
 
@@ -65,29 +64,10 @@ export default async function EmbeddingConfigDetailPage(props: {
   const status = settledValue(statusResult);
   const capabilities =
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
-  const rawSchemas = schemas ?? [];
-  const eligibleSchemas = listEligibleSchemas(rawSchemas);
-  const currentSchema = rawSchemas.find(
-    schema => schema.name === config.schemaName
+  const formSchemas = toEmbeddingSchemaFormChoices(
+    listEligibleSchemas(schemas ?? []),
+    { [config.schemaName]: config.sourceFields }
   );
-  const schemaChoices = currentSchema
-    ? [
-        toEmbeddingSchemaChoice(currentSchema),
-        ...eligibleSchemas.filter(schema => schema.name !== currentSchema.name),
-      ]
-    : [
-        toEmbeddingSchemaChoice({
-          name: config.schemaName,
-          ownerModule: 'database',
-          fields: Object.fromEntries(
-            config.sourceFields.map(name => [name, { type: 'String' }])
-          ),
-        }),
-        ...eligibleSchemas,
-      ];
-  const formSchemas = toEmbeddingSchemaFormChoices(schemaChoices, {
-    [config.schemaName]: config.sourceFields,
-  });
 
   const workersEnabled = workersEnabledFromStatus({
     status,
