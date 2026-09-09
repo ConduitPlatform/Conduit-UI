@@ -20,6 +20,17 @@ export const PROVIDER_NOT_CONFIGURED_MESSAGE =
 export const MODEL_NOT_IN_CATALOGUE_MESSAGE =
   'This model is not in the selected provider catalogue.';
 
+export const DIMENSIONS_POSITIVE_INTEGER_MESSAGE =
+  'Dimensions must be a positive integer';
+
+export function catalogueDimensionsMismatchMessage(
+  requested: number,
+  catalogue: number,
+  modelName: string
+): string {
+  return `Requested dimensions ${requested} do not match catalogue dimensions ${catalogue} for model '${modelName}'`;
+}
+
 export const MODEL_ABSENT_DETAIL =
   'This model is not in the provider catalogue.';
 
@@ -120,4 +131,24 @@ export function catalogueDimensionsForInput(
     throw new Error(MODEL_NOT_IN_CATALOGUE_MESSAGE);
   }
   return model;
+}
+
+export function resolveRequestedCatalogueDimensions(
+  model: EmbeddingProviderModel,
+  requested?: number
+): number {
+  if (requested == null || requested === 0) return model.dimensions;
+  if (!Number.isInteger(requested) || requested <= 0) {
+    throw new Error(DIMENSIONS_POSITIVE_INTEGER_MESSAGE);
+  }
+  if (requested !== model.dimensions) {
+    throw new Error(
+      catalogueDimensionsMismatchMessage(
+        requested,
+        model.dimensions,
+        model.name
+      )
+    );
+  }
+  return model.dimensions;
 }

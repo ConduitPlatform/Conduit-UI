@@ -82,19 +82,19 @@ export function SearchableCombobox({
         <Command
           filter={(itemValue, search) => {
             if (!search.trim()) return 1;
-            return itemValue.toLowerCase().includes(search.trim().toLowerCase())
-              ? 1
-              : 0;
+            const query = search.trim().toLowerCase();
+            return itemValue.toLowerCase().includes(query) ? 1 : 0;
           }}
         >
-          <CommandInput placeholder={searchPlaceholder} />
+          <CommandInput placeholder={searchPlaceholder} autoFocus />
           <CommandList className="max-h-[min(50vh,280px)] overflow-y-auto">
             <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>
               {options.map(option => (
                 <CommandItem
                   key={option.value}
-                  value={option.label}
+                  value={`${option.label} ${option.value}`}
+                  keywords={[option.label, option.value]}
                   className="min-h-8 focus-visible:ring-2 focus-visible:ring-ring"
                   onSelect={() => {
                     onValueChange(option.value);

@@ -39,6 +39,7 @@ test.describe('embedding configs', () => {
       page.getByRole('option', { name: 'ArchivedProduct' })
     ).toHaveCount(0);
     await expect(page.getByRole('option', { name: 'CmsOnly' })).toHaveCount(0);
+    await expect(page.getByRole('option', { name: 'Note' })).toBeVisible();
     await page.getByPlaceholder('Search schemas').fill('cms');
     await expect(page.getByText('No matching schemas')).toBeVisible();
     await page.keyboard.press('Escape');
@@ -135,6 +136,23 @@ test.describe('embedding configs', () => {
     await expect(provider).toBeVisible();
     await expect(provider).toBeDisabled();
     await expect(provider).toContainText('openai-compatible');
+  });
+
+  test('rejects an incompatible target field collision', async ({ page }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs/new');
+    await page.getByRole('combobox', { name: 'Schema' }).click();
+    await page.getByRole('option', { name: 'Note' }).click();
+    await page.getByRole('checkbox', { name: 'title' }).click();
+    await page.getByLabel('Target field').fill('embedding');
+    await page.getByRole('button', { name: 'Create config' }).click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText(
+          "Field 'embedding' already exists on schema 'Note' and is not a compatible embeddings extension"
+        )
+    ).toBeVisible();
   });
 
   test('blocks a config whose model is absent from the catalogue', async ({

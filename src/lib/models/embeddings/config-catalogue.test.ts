@@ -5,6 +5,7 @@ import {
   isConfigModelInCatalogue,
   listConfiguredProviders,
   resolveCreateDefaults,
+  resolveRequestedCatalogueDimensions,
   similarityHelp,
 } from './config-catalogue';
 import {
@@ -80,6 +81,20 @@ describe('config catalogue', () => {
         providers
       ).dimensions
     ).toBe(3072);
+    expect(
+      resolveRequestedCatalogueDimensions(
+        { name: 'text-embedding-3-large', dimensions: 3072 },
+        0
+      )
+    ).toBe(3072);
+    expect(() =>
+      resolveRequestedCatalogueDimensions(
+        { name: 'text-embedding-3-small', dimensions: 1536 },
+        768
+      )
+    ).toThrow(
+      "Requested dimensions 768 do not match catalogue dimensions 1536 for model 'text-embedding-3-small'"
+    );
   });
 
   it('does not invent a model when the configured default is absent', () => {

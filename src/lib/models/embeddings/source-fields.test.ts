@@ -91,7 +91,7 @@ describe('source field eligibility', () => {
   it('requires an enabled schema and extendable permissions', () => {
     expect(isDeclaredSchemaEnabled({ enabled: true })).toBe(true);
     expect(isDeclaredSchemaEnabled({ enabled: false })).toBe(false);
-    expect(isDeclaredSchemaEnabled({})).toBe(false);
+    expect(isDeclaredSchemaEnabled({})).toBe(true);
     expect(
       isDeclaredSchemaEnabled({
         modelOptions: { conduit: { cms: { enabled: true } } },
@@ -232,6 +232,9 @@ describe('source field eligibility', () => {
     };
     expect(toEmbeddingConfigRequest(input)).toEqual(input);
     expect(
+      toEmbeddingConfigRequest({ ...input, dimensions: undefined })
+    ).not.toHaveProperty('dimensions');
+    expect(
       validateEmbeddingConfigInput(
         input,
         [extendableArticle()],
@@ -245,6 +248,18 @@ describe('source field eligibility', () => {
     ).toEqual(['title']);
     expect(
       validateEmbeddingConfigInput(
+        { ...input, dimensions: undefined },
+        [extendableArticle()],
+        [
+          {
+            key: 'openai-compatible',
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+          },
+        ]
+      )
+    ).not.toHaveProperty('dimensions');
+    expect(() =>
+      validateEmbeddingConfigInput(
         { ...input, dimensions: 8 },
         [extendableArticle()],
         [
@@ -253,8 +268,10 @@ describe('source field eligibility', () => {
             models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
           },
         ]
-      ).dimensions
-    ).toBe(1536);
+      )
+    ).toThrow(
+      "Requested dimensions 8 do not match catalogue dimensions 1536 for model 'text-embedding-3-small'"
+    );
     expect(() =>
       validateEmbeddingConfigInput({ ...input, sourceFields: ['password'] }, [
         extendableArticle({
@@ -299,6 +316,75 @@ describe('source field eligibility', () => {
     expect(() => validateEmbeddingConfigInput(input, null)).toThrow(
       SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE
     );
+    expect(() =>
+      validateEmbeddingConfigInput(
+        input,
+        [
+          extendableArticle({
+            fields: {
+              title: { type: 'String' },
+              embedding: { type: 'String' },
+            },
+          }),
+        ],
+        [
+          {
+            key: 'openai-compatible',
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+          },
+        ]
+      )
+    ).toThrow(
+      "Field 'embedding' already exists on schema 'Article' and is not a compatible embeddings extension"
+    );
+    expect(
+      validateEmbeddingConfigInput(
+        input,
+        [
+          extendableArticle({
+            fields: { title: { type: 'String' } },
+            compiledFields: {
+              title: { type: 'String' },
+              embedding: {
+                type: 'Vector',
+                dimensions: 1536,
+                similarity: 'cosine',
+                select: false,
+              },
+              embeddingSourceHash: {
+                type: 'String',
+                required: false,
+                select: false,
+              },
+            },
+            extensions: [
+              {
+                ownerModule: 'embeddings',
+                fields: {
+                  embedding: {
+                    type: 'Vector',
+                    dimensions: 1536,
+                    similarity: 'cosine',
+                    select: false,
+                  },
+                  embeddingSourceHash: {
+                    type: 'String',
+                    required: false,
+                    select: false,
+                  },
+                },
+              },
+            ],
+          }),
+        ],
+        [
+          {
+            key: 'openai-compatible',
+            models: [{ name: 'text-embedding-3-small', dimensions: 1536 }],
+          },
+        ]
+      ).model
+    ).toBe('text-embedding-3-small');
   });
 
   it('preserves source field allowlist case and rejects invalid names', () => {

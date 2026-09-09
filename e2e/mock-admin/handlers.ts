@@ -90,14 +90,23 @@ function toApiSettings(
 ): MockEmbeddingsSettings {
   const providers: Record<string, MockProviderSettings> = {};
   for (const [name, provider] of Object.entries(settings.providers)) {
+    const storedKey = provider.apiKey;
+    const normalized = normalizeMockProvider(provider);
     providers[name] = {
-      endpoint: provider.endpoint,
-      apiKey: provider.apiKey ? REDACTED_SECRET : '',
-      models: provider.models.map(model => ({ ...model })),
-      defaultModel: provider.defaultModel,
+      endpoint: normalized.endpoint,
+      apiKey: storedKey ? REDACTED_SECRET : '',
+      models: normalized.models.map(model => ({ ...model })),
+      defaultModel: normalized.defaultModel,
     };
   }
-  return { ...settings, providers };
+  const security = { ...settings.security };
+  return {
+    enabled: settings.enabled,
+    defaultProvider: settings.defaultProvider,
+    providers,
+    queue: { ...settings.queue },
+    security,
+  };
 }
 
 function isRecordOfProviders(value: unknown): value is Record<string, unknown> {
@@ -110,16 +119,83 @@ function parseMockModels(
   if (!Array.isArray(value)) return undefined;
   const models: MockProviderSettings['models'] = [];
   const names = new Set<string>();
-  for (const item of value) {
-    if (!isRecord(item)) continue;
+  for (const [index, item] of value.entries()) {
+    if (!isRecord(item)) {
+      throw new Error(`Provider model at index ${index} is invalid`);
+    }
     const name = readString(item.name)?.trim();
     const dimensions = readNumber(item.dimensions);
-    if (!name || dimensions == null || dimensions <= 0) continue;
-    if (names.has(name)) continue;
+    if (!name) {
+      throw new Error(
+        `Provider model at index ${index} must have a non-empty name`
+      );
+    }
+    if (dimensions == null || dimensions <= 0) {
+      throw new Error(
+        `Provider model '${name}' dimensions must be a positive integer`
+      );
+    }
+    if (names.has(name)) {
+      throw new Error(`Provider model '${name}' is duplicated`);
+    }
     names.add(name);
     models.push({ name, dimensions });
   }
   return models;
+}
+
+function migrateLegacyModels(patch: Record<string, unknown>):
+  | {
+      models: MockProviderSettings['models'];
+      defaultModel: string;
+    }
+  | undefined {
+  if (Array.isArray(patch.models) && patch.models.length > 0) return undefined;
+  const name = typeof patch.model === 'string' ? patch.model.trim() : '';
+  if (!name) return undefined;
+  const dimensions = readNumber(patch.dimensions);
+  if (dimensions == null || dimensions <= 0) {
+    throw new Error(
+      `Provider model '${name}' dimensions must be a positive integer`
+    );
+  }
+  return { models: [{ name, dimensions }], defaultModel: name };
+}
+
+function normalizeMockProvider(
+  provider: MockProviderSettings
+): MockProviderSettings {
+  const names = new Set(provider.models.map(model => model.name));
+  const defaultModel = provider.defaultModel.trim();
+  return {
+    endpoint: provider.endpoint,
+    apiKey: provider.apiKey,
+    models: provider.models.map(model => ({ ...model })),
+    defaultModel: defaultModel && names.has(defaultModel) ? defaultModel : '',
+  };
+}
+
+function providerCatalogueError(
+  provider: MockProviderSettings
+): string | undefined {
+  const names = new Set<string>();
+  for (const model of provider.models) {
+    if (!model.name.trim()) {
+      return 'Provider model must have a non-empty name';
+    }
+    if (!Number.isInteger(model.dimensions) || model.dimensions <= 0) {
+      return `Provider model '${model.name}' dimensions must be a positive integer`;
+    }
+    if (names.has(model.name)) {
+      return `Provider model '${model.name}' is duplicated`;
+    }
+    names.add(model.name);
+  }
+  const defaultModel = provider.defaultModel.trim();
+  if (defaultModel && !names.has(defaultModel)) {
+    return `Provider default model '${defaultModel}' is not in the catalogue`;
+  }
+  return undefined;
 }
 
 function mergeProvider(
@@ -132,10 +208,18 @@ function mergeProvider(
     models: current.models.map(model => ({ ...model })),
   };
   if (typeof patch.endpoint === 'string') next.endpoint = patch.endpoint;
+  const migrated = migrateLegacyModels(patch);
   const models = parseMockModels(patch.models);
-  if (models) next.models = models;
+  if (models && models.length > 0) {
+    next.models = models;
+  } else if (migrated) {
+    next.models = migrated.models;
+    if (!next.defaultModel) next.defaultModel = migrated.defaultModel;
+  }
   if (typeof patch.defaultModel === 'string') {
     next.defaultModel = patch.defaultModel.trim();
+  } else if (migrated && !next.defaultModel) {
+    next.defaultModel = migrated.defaultModel;
   }
   const apiKey = patch.apiKey;
   if (
@@ -223,6 +307,8 @@ function applySettingsPatch(
         defaultModel: '',
       };
       next.providers[name] = mergeProvider(existing, providerPatch);
+      const catalogueError = providerCatalogueError(next.providers[name]);
+      if (catalogueError) throw new Error(catalogueError);
     }
   }
   return { settings: next, hadApiKey };
@@ -279,10 +365,168 @@ function isMockSchemaEnabled(schema: MockSchema): boolean {
   const conduit = isRecord(schema.modelOptions.conduit)
     ? schema.modelOptions.conduit
     : undefined;
-  if (!conduit) return false;
+  if (!conduit) return true;
   const cms = isRecord(conduit.cms) ? conduit.cms : undefined;
   if (cms == null) return true;
   return cms.enabled === true;
+}
+
+function isMockSchemaExtendable(schema: MockSchema): boolean {
+  const conduit = isRecord(schema.modelOptions.conduit)
+    ? schema.modelOptions.conduit
+    : undefined;
+  const permissions = isRecord(conduit?.permissions)
+    ? conduit.permissions
+    : undefined;
+  return permissions?.extendable === true;
+}
+
+function canReceiveEmbeddings(schema: MockSchema): string | undefined {
+  if (!isMockSchemaEnabled(schema)) {
+    return `Schema '${schema.name}' is not enabled`;
+  }
+  if (!isMockSchemaExtendable(schema)) {
+    return `Schema '${schema.name}' is not extendable`;
+  }
+  return undefined;
+}
+
+function fieldType(field: unknown): string | undefined {
+  if (typeof field === 'string') return field;
+  if (isRecord(field) && typeof field.type === 'string') return field.type;
+  return undefined;
+}
+
+function isCompatibleEmbeddingField(
+  existing: unknown,
+  proposed: { type: string; dimensions?: number; similarity?: string }
+): boolean {
+  if (fieldType(existing) !== proposed.type) return false;
+  if (proposed.type === 'Vector') {
+    if (!isRecord(existing)) return false;
+    if (existing.dimensions !== proposed.dimensions) return false;
+    if (
+      typeof existing.similarity === 'string' &&
+      existing.similarity !== proposed.similarity
+    ) {
+      return false;
+    }
+    return true;
+  }
+  if (proposed.type === 'String') {
+    if (isRecord(existing) && existing.required === true) return false;
+    return fieldType(existing) === 'String';
+  }
+  return false;
+}
+
+function embeddingExtensionCollision(
+  schema: MockSchema,
+  targetField: string,
+  dimensions: number,
+  similarity: string
+): string | undefined {
+  const hashField = `${targetField}SourceHash`;
+  const proposed: Record<
+    string,
+    {
+      type: string;
+      dimensions?: number;
+      similarity?: string;
+      required?: boolean;
+    }
+  > = {
+    [targetField]: { type: 'Vector', dimensions, similarity },
+    [hashField]: { type: 'String', required: false },
+  };
+  const extensions = Array.isArray(schema.extensions)
+    ? schema.extensions.filter(isRecord)
+    : [];
+  for (const [fieldName, definition] of Object.entries(proposed)) {
+    const owned = extensions.find(
+      extension => isRecord(extension.fields) && fieldName in extension.fields
+    );
+    if (owned && owned.ownerModule !== 'embeddings') {
+      return `Field '${fieldName}' already exists on schema '${schema.name}' and is not a compatible embeddings extension`;
+    }
+    if (owned?.ownerModule === 'embeddings') {
+      if (
+        !isCompatibleEmbeddingField(
+          isRecord(owned.fields) ? owned.fields[fieldName] : undefined,
+          definition
+        )
+      ) {
+        return `Field '${fieldName}' already exists on schema '${schema.name}' and is not a compatible embeddings extension`;
+      }
+      continue;
+    }
+    if (fieldName in schema.fields) {
+      return `Field '${fieldName}' already exists on schema '${schema.name}' and is not a compatible embeddings extension`;
+    }
+    if (fieldName in schema.compiledFields) {
+      if (
+        !isCompatibleEmbeddingField(
+          schema.compiledFields[fieldName],
+          definition
+        )
+      ) {
+        return `Field '${fieldName}' already exists on schema '${schema.name}' and is not a compatible embeddings extension`;
+      }
+    }
+  }
+  return undefined;
+}
+
+function resolveCatalogueModel(
+  settings: MockEmbeddingsSettings,
+  requestedProvider?: string,
+  requestedModel?: string,
+  requestedDimensions?: number
+):
+  | {
+      provider: string;
+      model: string;
+      dimensions: number;
+    }
+  | { error: string } {
+  const providerName =
+    requestedProvider || settings.defaultProvider || OPENAI_COMPATIBLE_PROVIDER;
+  const provider = settings.providers[providerName];
+  if (!provider) {
+    return {
+      error: `Embedding provider '${providerName}' is not a configured provider`,
+    };
+  }
+  const selected =
+    requestedModel ||
+    provider.defaultModel.trim() ||
+    provider.models[0]?.name ||
+    '';
+  const model = provider.models.find(item => item.name === selected);
+  if (!model) {
+    return {
+      error: selected
+        ? `Model '${selected}' is not in the catalogue for this provider`
+        : 'Provider model catalogue has no selectable model',
+    };
+  }
+  if (requestedDimensions == null || requestedDimensions === 0) {
+    return {
+      provider: providerName,
+      model: model.name,
+      dimensions: model.dimensions,
+    };
+  }
+  if (requestedDimensions !== model.dimensions) {
+    return {
+      error: `Requested dimensions ${requestedDimensions} do not match catalogue dimensions ${model.dimensions} for model '${model.name}'`,
+    };
+  }
+  return {
+    provider: providerName,
+    model: model.name,
+    dimensions: requestedDimensions,
+  };
 }
 
 function schemaIdForName(name: string): string | undefined {
@@ -515,10 +759,16 @@ export async function handleMockRequest(
   if (pathname === '/config/embeddings' && method === 'PATCH') {
     const body = await readJsonBody(request);
     const patch = isRecord(body) ? body.config : undefined;
-    const applied = applySettingsPatch(getState().settings, patch);
-    getState().settings = applied.settings;
-    getState().lastSettingsPatchHadApiKey = applied.hadApiKey;
-    sendJson(response, 200, { config: toApiSettings(applied.settings) });
+    try {
+      const applied = applySettingsPatch(getState().settings, patch);
+      getState().settings = applied.settings;
+      getState().lastSettingsPatchHadApiKey = applied.hadApiKey;
+      sendJson(response, 200, { config: toApiSettings(applied.settings) });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Invalid embeddings settings';
+      badRequest(response, message);
+    }
     return;
   }
 
@@ -575,21 +825,45 @@ export async function handleMockRequest(
     const schemaName = readString(body.schemaName);
     const targetField = readString(body.targetField);
     const sourceFields = readStringArray(body.sourceFields);
-    const dimensions = readNumber(body.dimensions);
-    if (
-      !schemaName ||
-      !targetField ||
-      !dimensions ||
-      sourceFields.length === 0
-    ) {
+    if (!schemaName || !targetField || sourceFields.length === 0) {
       badRequest(response, 'Invalid config payload');
       return;
     }
     const state = getState();
+    const schema = state.schemas.find(item => item.name === schemaName);
+    if (!schema) {
+      badRequest(response, `Schema '${schemaName}' is not enabled`);
+      return;
+    }
+    const eligibilityError = canReceiveEmbeddings(schema);
+    if (eligibilityError) {
+      sendJson(response, 412, { status: 412, message: eligibilityError });
+      return;
+    }
+    const resolved = resolveCatalogueModel(
+      state.settings,
+      readString(body.provider),
+      readString(body.model),
+      readNumber(body.dimensions)
+    );
+    if ('error' in resolved) {
+      badRequest(response, resolved.error);
+      return;
+    }
     const similarity =
       body.similarity === 'euclidean' || body.similarity === 'dotProduct'
         ? body.similarity
         : 'cosine';
+    const collision = embeddingExtensionCollision(
+      schema,
+      targetField,
+      resolved.dimensions,
+      similarity
+    );
+    if (collision) {
+      sendJson(response, 409, { status: 409, message: collision });
+      return;
+    }
     const existing = state.configs.find(
       config =>
         config.schemaName === schemaName && config.targetField === targetField
@@ -599,9 +873,9 @@ export async function handleMockRequest(
       schemaName,
       sourceFields,
       targetField,
-      provider: readString(body.provider) ?? OPENAI_COMPATIBLE_PROVIDER,
-      model: readString(body.model) ?? '',
-      dimensions,
+      provider: resolved.provider,
+      model: resolved.model,
+      dimensions: resolved.dimensions,
       similarity,
       enabled: false,
       createdAt: existing?.createdAt ?? FIXED_NOW,
