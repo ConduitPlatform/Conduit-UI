@@ -3,6 +3,7 @@ export * from './backfill';
 export * from './backfill-view';
 export * from './capabilities';
 export * from './search';
+export * from './search-view';
 export * from './settings';
 export * from './errors';
 export * from './secrets';
