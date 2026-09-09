@@ -16,7 +16,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
 
 export type SearchableOption = {
   value: string;
@@ -27,12 +26,12 @@ type SearchableComboboxProps = {
   id?: string;
   value: string;
   options: SearchableOption[];
-  onValueChange: (value: string) => void;
   disabled?: boolean;
   placeholder: string;
   searchPlaceholder: string;
   emptyLabel: string;
   ariaLabel: string;
+  onValueChange?: (value: string) => void;
 };
 
 export function SearchableCombobox({
@@ -60,9 +59,7 @@ export function SearchableCombobox({
           aria-expanded={open}
           aria-label={ariaLabel}
           disabled={disabled}
-          className={cn(
-            'h-8 min-h-8 w-full justify-between px-3 text-left text-[13px] font-normal focus-visible:ring-2 focus-visible:ring-ring'
-          )}
+          className="h-8 min-h-8 w-full justify-between px-3 text-left text-[13px] font-normal focus-visible:ring-2 focus-visible:ring-ring"
         >
           <span className="min-w-0 flex-1 truncate">
             {selected ? (
@@ -97,7 +94,7 @@ export function SearchableCombobox({
                   keywords={[option.label, option.value]}
                   className="min-h-8 focus-visible:ring-2 focus-visible:ring-ring"
                   onSelect={() => {
-                    onValueChange(option.value);
+                    onValueChange?.(option.value);
                     setOpen(false);
                   }}
                 >

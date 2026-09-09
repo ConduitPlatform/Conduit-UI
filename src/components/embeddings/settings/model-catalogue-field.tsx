@@ -25,9 +25,21 @@ import {
   NEW_CATALOGUE_MODEL,
   uniqueCatalogueNames,
 } from '@/lib/models/embeddings/settings-form';
-import { cn } from '@/lib/utils';
 
 const NONE_DEFAULT_MODEL = '__none__';
+
+function catalogueRemoveLabel(args: {
+  isSelectedDefault: boolean;
+  isLastRow: boolean;
+  rowName: string;
+  index: number;
+}) {
+  if (args.isSelectedDefault) {
+    return 'Clear or change the default model before removing this row';
+  }
+  if (args.isLastRow) return 'At least one model is required';
+  return `Remove ${args.rowName || `model ${args.index + 1}`}`;
+}
 
 type ModelCatalogueFieldProps = {
   disabled: boolean;
@@ -57,8 +69,7 @@ export function ModelCatalogueField({ disabled }: ModelCatalogueFieldProps) {
         <div>
           <h3 className="text-sm font-medium">Models</h3>
           <p className="mt-1 text-xs text-muted-foreground text-pretty">
-            Each model needs a unique name and the number of dimensions it
-            produces. Configs choose from this list.
+            Unique names and the dimensions each model produces.
           </p>
         </div>
         <ul className="space-y-3">
@@ -68,11 +79,12 @@ export function ModelCatalogueField({ disabled }: ModelCatalogueFieldProps) {
               Boolean(selectedDefault) && rowName === selectedDefault;
             const isLastRow = fields.length <= 1;
             const removeBlocked = isSelectedDefault || isLastRow;
-            const removeLabel = isSelectedDefault
-              ? 'Clear or change the default model before removing this row'
-              : isLastRow
-                ? 'At least one model is required'
-                : `Remove ${rowName || `model ${index + 1}`}`;
+            const removeLabel = catalogueRemoveLabel({
+              isSelectedDefault,
+              isLastRow,
+              rowName,
+              index,
+            });
 
             return (
               <li
@@ -169,7 +181,7 @@ export function ModelCatalogueField({ disabled }: ModelCatalogueFieldProps) {
             >
               <FormControl>
                 <SelectTrigger
-                  className={cn('h-8 min-h-8 text-[13px]')}
+                  className="h-8 min-h-8 text-[13px]"
                   aria-label="Default model"
                 >
                   <SelectValue placeholder="None" />
@@ -185,7 +197,7 @@ export function ModelCatalogueField({ disabled }: ModelCatalogueFieldProps) {
               </SelectContent>
             </Select>
             <FormDescription className="text-xs">
-              Optional. Used when a config does not set its own model.
+              Used when a config omits its own model.
             </FormDescription>
             <FormMessage />
           </FormItem>

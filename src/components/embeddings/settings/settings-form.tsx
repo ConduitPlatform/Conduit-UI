@@ -46,7 +46,7 @@ export function SettingsForm({
             OpenAI-compatible provider
           </h2>
           <p className="mt-1 text-sm text-muted-foreground text-pretty">
-            HTTPS endpoint, API key, and the models this provider can generate.
+            HTTPS endpoint, API key, and the models configs can use.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -68,7 +68,7 @@ export function SettingsForm({
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
-                  OpenAI-compatible. This ID cannot be changed here.
+                  Fixed to openai-compatible.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -123,7 +123,7 @@ function ApiKeyField({ disabled }: { disabled: boolean }) {
                 configured ? 'Enter a replacement key' : 'Provider API key'
               }
               name={field.name}
-              value={typeof field.value === 'string' ? field.value : ''}
+              value={field.value}
               onBlur={field.onBlur}
               onChange={field.onChange}
               ref={field.ref}

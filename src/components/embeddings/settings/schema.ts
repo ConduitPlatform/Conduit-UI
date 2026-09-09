@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { formApiKeyValue } from '../../../lib/models/embeddings/secrets.ts';
-import { OPENAI_COMPATIBLE_PROVIDER } from '../../../lib/models/embeddings/settings.ts';
+import { formApiKeyValue } from '@/lib/models/embeddings/secrets';
+import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
 import {
   parseHttpsEndpoint,
   SETTINGS_LIMITS,
   uniqueCatalogueNames,
-} from '../../../lib/models/embeddings/settings-form.ts';
+} from '@/lib/models/embeddings/settings-form';
 
 function boundedInt(limits: { min: number; max: number }, message: string) {
   return z.coerce

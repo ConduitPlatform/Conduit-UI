@@ -186,7 +186,7 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
         </p>
       </section>
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit, () => undefined)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <SettingsForm
             edit={edit}
             isSaving={isSaving}
