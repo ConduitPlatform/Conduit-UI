@@ -91,7 +91,6 @@ export function SearchableCombobox({
                 <CommandItem
                   key={option.value}
                   value={`${option.label} ${option.value}`}
-                  keywords={[option.label, option.value]}
                   className="min-h-8 focus-visible:ring-2 focus-visible:ring-ring"
                   onSelect={() => {
                     onValueChange?.(option.value);

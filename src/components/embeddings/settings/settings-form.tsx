@@ -46,7 +46,7 @@ export function SettingsForm({
             OpenAI-compatible provider
           </h2>
           <p className="mt-1 text-sm text-muted-foreground text-pretty">
-            HTTPS endpoint, API key, and the models configs can use.
+            HTTPS endpoint, API key, and the model catalogue.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">

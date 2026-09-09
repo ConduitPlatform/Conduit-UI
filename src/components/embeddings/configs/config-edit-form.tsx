@@ -90,13 +90,7 @@ export function ConfigEditForm({
 
   useEffect(() => {
     const incomingSignature = configFormSignature(toConfigFormValues(config));
-    const nextAppliedSignature = configFormSignature(
-      toConfigFormValues(applied)
-    );
-    if (
-      incomingSignature === nextAppliedSignature &&
-      config._id === applied._id
-    ) {
+    if (incomingSignature === appliedSignature && config._id === applied._id) {
       ignoredIncomingSignatureRef.current = null;
       return;
     }
@@ -105,7 +99,7 @@ export function ConfigEditForm({
         incomingId: config._id,
         incomingSignature,
         appliedId: applied._id,
-        appliedSignature: nextAppliedSignature,
+        appliedSignature,
         dirty: dirtyRef.current,
         ignoredIncomingSignature: ignoredIncomingSignatureRef.current,
       })
@@ -114,7 +108,7 @@ export function ConfigEditForm({
     }
     ignoredIncomingSignatureRef.current = null;
     applyPersistedConfig(config);
-  }, [applied, applyPersistedConfig, config]);
+  }, [applied._id, appliedSignature, applyPersistedConfig, config]);
 
   const existing = toMaterialEmbeddingConfig(applied);
 

@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
+import { Input } from '@/components/ui/input';
 import { SearchableCombobox } from '@/components/embeddings/configs/searchable-combobox';
 import { SourceFieldsPicker } from '@/components/embeddings/configs/source-fields-picker';
 import { EmbeddingConfigFormValues } from '@/components/embeddings/configs/schema';
@@ -32,7 +33,7 @@ import {
 function schemaHint(schemaLocked: boolean, schemaCount: number) {
   if (schemaLocked) return 'Schema cannot change after create.';
   if (schemaCount === 0) return 'No eligible Database schemas are available.';
-  return 'Disabled, system, and embeddings-owned schemas are omitted.';
+  return 'Disabled, internal, and embeddings-owned schemas are omitted.';
 }
 
 function providerHint(providerCount: number) {
@@ -181,14 +182,13 @@ export function ConfigFormFields({
           <FormItem className="space-y-1.5">
             <FormLabel>Provider</FormLabel>
             <FormControl>
-              <SearchableCombobox
+              <Input
                 value=""
+                readOnly
                 disabled
                 placeholder="Select a provider"
-                searchPlaceholder="Search providers"
-                emptyLabel="No providers"
-                ariaLabel="Provider"
-                options={[]}
+                autoComplete="off"
+                aria-label="Provider"
               />
             </FormControl>
           </FormItem>

@@ -104,90 +104,42 @@ function namedSchema(args: {
   };
 }
 
-function productSchema(): MockSchema {
-  const fields = {
-    title: { type: 'String' },
-    description: { type: 'String' },
-  };
-  return {
-    _id: PRODUCT_SCHEMA_ID,
-    name: PRODUCT_SCHEMA_NAME,
-    parentSchema: null,
-    fields,
-    compiledFields: fields,
-    extensions: [],
-    modelOptions: schemaModelOptions({ enabled: true, extendable: true }),
-    ownerModule: 'database',
-    collectionName: 'products',
-    createdAt: FIXED_NOW,
-    updatedAt: FIXED_NOW,
-  };
-}
-
-function cmsOnlySchema(): MockSchema {
-  const fields = {
-    title: { type: 'String' },
-  };
-  return {
-    _id: CMS_ONLY_SCHEMA_ID,
-    name: CMS_ONLY_SCHEMA_NAME,
-    parentSchema: null,
-    fields,
-    compiledFields: fields,
-    extensions: [],
-    modelOptions: schemaModelOptions({ enabled: true, extendable: false }),
-    ownerModule: 'database',
-    collectionName: 'cms_only',
-    createdAt: FIXED_NOW,
-    updatedAt: FIXED_NOW,
-  };
-}
-
-function archivedSchema(): MockSchema {
-  const fields = {
-    title: { type: 'String' },
-  };
-  return {
-    _id: ARCHIVED_SCHEMA_ID,
-    name: ARCHIVED_SCHEMA_NAME,
-    parentSchema: null,
-    fields,
-    compiledFields: fields,
-    extensions: [],
-    modelOptions: schemaModelOptions({ enabled: false, extendable: true }),
-    ownerModule: 'database',
-    collectionName: 'archived_products',
-    createdAt: FIXED_NOW,
-    updatedAt: FIXED_NOW,
-  };
-}
-
-function collisionSchema(): MockSchema {
-  const fields = {
-    title: { type: 'String' },
-    embedding: { type: 'String' },
-  };
-  return {
-    _id: COLLISION_SCHEMA_ID,
-    name: COLLISION_SCHEMA_NAME,
-    parentSchema: null,
-    fields,
-    compiledFields: fields,
-    extensions: [],
-    modelOptions: schemaModelOptions({ enabled: true, extendable: true }),
-    ownerModule: 'database',
-    collectionName: 'notes',
-    createdAt: FIXED_NOW,
-    updatedAt: FIXED_NOW,
-  };
-}
-
 function declaredSchemas(): MockSchema[] {
   return [
-    productSchema(),
-    archivedSchema(),
-    cmsOnlySchema(),
-    collisionSchema(),
+    namedSchema({
+      id: PRODUCT_SCHEMA_ID,
+      name: PRODUCT_SCHEMA_NAME,
+      ownerModule: 'database',
+      collectionName: 'products',
+      fields: {
+        title: { type: 'String' },
+        description: { type: 'String' },
+      },
+    }),
+    namedSchema({
+      id: ARCHIVED_SCHEMA_ID,
+      name: ARCHIVED_SCHEMA_NAME,
+      ownerModule: 'database',
+      collectionName: 'archived_products',
+      enabled: false,
+    }),
+    namedSchema({
+      id: CMS_ONLY_SCHEMA_ID,
+      name: CMS_ONLY_SCHEMA_NAME,
+      ownerModule: 'database',
+      collectionName: 'cms_only',
+      extendable: false,
+    }),
+    namedSchema({
+      id: COLLISION_SCHEMA_ID,
+      name: COLLISION_SCHEMA_NAME,
+      ownerModule: 'database',
+      collectionName: 'notes',
+      fields: {
+        title: { type: 'String' },
+        embedding: { type: 'String' },
+      },
+    }),
     namedSchema({
       id: USER_SCHEMA_ID,
       name: USER_SCHEMA_NAME,
