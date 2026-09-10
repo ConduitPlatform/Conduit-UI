@@ -57,6 +57,20 @@ function readErrorMessage(err: unknown): string | undefined {
   return undefined;
 }
 
+function readResponseMessage(data: unknown): string | undefined {
+  if (!isRecord(data)) return undefined;
+  if (typeof data.message === 'string') return data.message;
+  if (typeof data.error === 'string') return data.error;
+  if (isRecord(data.error) && typeof data.error.message === 'string') {
+    return data.error.message;
+  }
+  return undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
 function isServiceUnavailable(err: unknown): boolean {
   if (isAxiosLikeError(err) && err.response?.status === 503) return true;
   const message = readErrorMessage(err);
@@ -79,6 +93,10 @@ function isOperatorSafeMessage(message: string): boolean {
 export function formatEmbeddingsApiError(err: unknown): string {
   if (isServiceUnavailable(err)) return EMBEDDINGS_SERVICE_UNAVAILABLE;
   if (isAxiosLikeError(err)) {
+    const dataMessage = readResponseMessage(err.response?.data);
+    if (dataMessage && isOperatorSafeMessage(dataMessage)) {
+      return dataMessage;
+    }
     return operatorErrorForStatus(err.response?.status);
   }
   if (err instanceof Error && isOperatorSafeMessage(err.message)) {

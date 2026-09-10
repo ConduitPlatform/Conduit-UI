@@ -28,6 +28,7 @@ import {
   canEnableEmbeddingSource,
   canReconcileEmbeddingSource,
   canRevokeEmbeddingSource,
+  enableSourceFeedback,
   sourceDisplayName,
   sourceKindLabel,
   storageLimitExplanations,
@@ -94,10 +95,11 @@ export function SourceDetail({
           await disableEmbeddingSource(source._id);
           toast({ title: 'Source disabled' });
           break;
-        case 'enable':
-          await enableEmbeddingSource(source._id);
-          toast({ title: 'Source enabled' });
+        case 'enable': {
+          const result = await enableEmbeddingSource(source._id);
+          toast(enableSourceFeedback(result));
           break;
+        }
         case 'revoke':
           await revokeEmbeddingSource(source._id);
           toast({ title: 'Source revoked' });

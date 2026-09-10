@@ -49,6 +49,27 @@ export type MockInspectState = {
   lastUploadCompleteFailed: boolean;
 };
 
+export async function configureMock(flags: {
+  failNextSourcesList?: boolean;
+  failNextSourceCreate?: string;
+  sourceWarnings?: string[];
+  seedContainers?: number;
+  nextEnable?: {
+    state: 'pending' | 'ready' | 'failed';
+    warnings: string[];
+    chunkIndexStatus?: 'pending' | 'ready' | 'failed';
+  };
+}): Promise<void> {
+  const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/flags`, {
+    method: 'POST',
+    headers: testControlHeaders({ 'content-type': 'application/json' }),
+    body: JSON.stringify(flags),
+  });
+  if (!response.ok) {
+    throw new Error(`Mock flags failed: ${response.status}`);
+  }
+}
+
 export async function failNextStorageComplete(): Promise<void> {
   const response = await fetch(
     `${MOCK_ADMIN_ORIGIN}/__test__/fail-next-complete`,

@@ -2,6 +2,29 @@ import { expect, test } from '@playwright/test';
 import { resetMock } from './helpers/mock.ts';
 
 test.describe('embedding configs', () => {
+  test('offers all three source types from the empty catalog', async ({
+    page,
+  }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/configs');
+    await expect(
+      page.getByText('No embedding sources').filter({ visible: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Database schema' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Conduit Storage' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'External / custom' })
+    ).toBeVisible();
+    await page.getByRole('link', { name: 'Conduit Storage' }).click();
+    await expect(page).toHaveURL(
+      /\/embeddings\/sources\/new\?kind=conduit-storage/
+    );
+  });
+
   test('creates a config and shows a pending matching index', async ({
     page,
   }) => {

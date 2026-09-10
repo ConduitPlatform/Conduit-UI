@@ -463,7 +463,27 @@ function catalogFields(sources: MockEmbeddingSource[] = []) {
     failNextComplete: false,
     completedUploadIds: [],
     lastUploadCompleteFailed: false,
+    failNextSourcesList: false,
+    sourceWarnings: [],
   };
+}
+
+export function seedExtraContainers(count: number): void {
+  const state = getState();
+  for (let index = 0; index < count; index += 1) {
+    const name =
+      index === count - 1
+        ? 'archive-late'
+        : `bin-${String(index + 1).padStart(3, '0')}`;
+    if (state.containers.some(container => container.name === name)) continue;
+    state.containers.push({
+      _id: `ctr_${name}`,
+      name,
+      isPublic: false,
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+    });
+  }
 }
 
 function readyState(enabled: boolean): MockAdminState {

@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { resetMock } from './helpers/mock.ts';
+import { configureMock, resetMock } from './helpers/mock.ts';
+
+const STORAGE_AUTHORIZATION_WARNING =
+  'Storage authorization is not configured.';
 
 test.describe('generic embedding sources', () => {
   test('creates a storage source with selectors and MIME controls', async ({
@@ -140,6 +143,108 @@ test.describe('generic embedding sources', () => {
     await expect(page.getByRole('button', { name: 'Reconcile' })).toHaveCount(
       0
     );
+  });
+
+  test('selects a container beyond the first hundred', async ({ page }) => {
+    await resetMock('blank');
+    await configureMock({ seedContainers: 104 });
+    await page.goto('/embeddings/sources/new?kind=conduit-storage');
+    await page.getByLabel('Label').fill('Late archive');
+    await page.getByRole('combobox', { name: 'Access scope' }).click();
+    await page.getByRole('option', { name: 'Acme' }).click();
+    await page.getByRole('combobox', { name: 'Container' }).click();
+    await expect(page.getByText(/Search to find others/)).toHaveCount(0);
+    await page.getByPlaceholder('Search containers').fill('archive-late');
+    await page.getByRole('option', { name: 'archive-late' }).click();
+    await page.getByRole('button', { name: /Create source/ }).click();
+    await expect(page).toHaveURL(/\/embeddings\/sources\/src_/);
+    await expect(
+      page.getByRole('heading', { name: 'Late archive' })
+    ).toBeVisible();
+  });
+
+  test('does not claim enable success when the source stays pending', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/sources/src_storage');
+    await page.getByRole('button', { name: 'Disable' }).click();
+    await page.getByRole('button', { name: 'Disable source' }).click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText('Source disabled')
+    ).toBeVisible();
+    await configureMock({
+      nextEnable: {
+        state: 'pending',
+        chunkIndexStatus: 'pending',
+        warnings: [STORAGE_AUTHORIZATION_WARNING],
+      },
+    });
+    await page.getByRole('button', { name: 'Enable' }).click();
+    await page.getByRole('button', { name: 'Enable source' }).click();
+    const toast = page.getByRole('region', { name: 'Notifications (F8)' });
+    await expect(
+      toast.getByText('Enable finished with warnings')
+    ).toBeVisible();
+    await expect(toast.getByText(STORAGE_AUTHORIZATION_WARNING)).toBeVisible();
+    await expect(toast.getByText('Source enabled')).toHaveCount(0);
+    await expect(page.getByText('Pending · not searchable')).toBeVisible();
+  });
+
+  test('surfaces a Storage authorization create error as-is', async ({
+    page,
+  }) => {
+    await resetMock('blank');
+    await configureMock({
+      failNextSourceCreate: STORAGE_AUTHORIZATION_WARNING,
+    });
+    await page.goto('/embeddings/sources/new?kind=conduit-storage');
+    await page.getByLabel('Label').fill('Blocked docs');
+    await page.getByRole('combobox', { name: 'Access scope' }).click();
+    await page.getByRole('option', { name: 'Acme' }).click();
+    await page.getByRole('combobox', { name: 'Container' }).click();
+    await page.getByRole('option', { name: 'docs' }).click();
+    await page.getByRole('button', { name: /Create source/ }).click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText(STORAGE_AUTHORIZATION_WARNING)
+    ).toBeVisible();
+    await expect(page).toHaveURL(/\/embeddings\/sources\/new/);
+  });
+
+  test('shows a Storage authorization warning without claiming selector tenancy', async ({
+    page,
+  }) => {
+    await resetMock('blank');
+    await configureMock({
+      sourceWarnings: [STORAGE_AUTHORIZATION_WARNING],
+    });
+    await page.goto('/embeddings/sources/new?kind=conduit-storage');
+    await expect(page.getByText(/do not provide tenancy/)).toBeVisible();
+    await expect(
+      page.getByText(/This is a storage filter, not tenancy/)
+    ).toBeVisible();
+    await page.getByLabel('Label').fill('Authz docs');
+    await page.getByRole('combobox', { name: 'Access scope' }).click();
+    await page.getByRole('option', { name: 'Acme' }).click();
+    await page.getByRole('combobox', { name: 'Container' }).click();
+    await page.getByRole('option', { name: 'docs' }).click();
+    await page.getByRole('button', { name: /Create source/ }).click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText(STORAGE_AUTHORIZATION_WARNING)
+    ).toBeVisible();
+    await expect(page).toHaveURL(/\/embeddings\/sources\/src_/);
+    await expect(page.getByText('Warnings')).toBeVisible();
+    await expect(
+      page.getByText(/Embedding source .* is pending/).filter({
+        hasText: STORAGE_AUTHORIZATION_WARNING,
+      })
+    ).toBeVisible();
   });
 
   test('keeps database schema create on the existing config route', async ({

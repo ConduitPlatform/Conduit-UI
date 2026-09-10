@@ -275,6 +275,45 @@ describe('hit rendering helpers', () => {
     expect(model.targets).toHaveLength(2);
   });
 
+  it('treats a ready source with a missing chunk index as non-queryable', () => {
+    const ready = config({ _id: 'ready', schemaName: 'Article' });
+    const indexes = {
+      Article: [
+        {
+          field: 'embedding',
+          dimensions: 1536,
+          similarity: 'cosine' as const,
+          status: 'ready' as const,
+          queryable: true,
+        },
+      ],
+    };
+    const model = buildSearchPageModel({
+      configs: [ready],
+      indexesBySchema: indexes,
+      sources: [
+        {
+          _id: 'src_missing',
+          label: 'Missing index',
+          kind: 'external',
+          state: 'ready',
+          partitionSubject: 'Team:acme',
+          provider: 'openai-compatible',
+          model: 'text-embedding-3-small',
+          dimensions: 1536,
+          similarity: 'cosine',
+          metadataAllowlist: [],
+        },
+      ],
+      workersEnabled: true,
+      sourceId: 'src_missing',
+    });
+    const target = model.targets.find(
+      item => item.type === 'source' && item.sourceId === 'src_missing'
+    );
+    expect(target?.type === 'source' && target.ready).toBe(false);
+  });
+
   it('removes secret-like keys and prefers configured source fields', () => {
     const document = {
       _id: 'doc_1',

@@ -32,6 +32,7 @@ import {
   registerIssuedToken,
   resetState,
   revokeActiveTokens,
+  seedExtraContainers,
   toApiConfig,
   toApiRun,
 } from './state.ts';
@@ -695,6 +696,55 @@ function handleTestControl(
     getState().failNextComplete = true;
     sendJson(response, 200, { ok: true });
     return true;
+  }
+  if (pathname === '/__test__/flags' && method === 'POST') {
+    return readJsonBody(request).then(body => {
+      if (!isRecord(body)) {
+        sendJson(response, 400, { status: 400, message: 'Invalid flags' });
+        return true;
+      }
+      const state = getState();
+      if (body.failNextSourcesList === true) {
+        state.failNextSourcesList = true;
+      }
+      if (typeof body.failNextSourceCreate === 'string') {
+        state.failNextSourceCreate = body.failNextSourceCreate;
+      }
+      if (Array.isArray(body.sourceWarnings)) {
+        state.sourceWarnings = body.sourceWarnings.filter(
+          (item): item is string =>
+            typeof item === 'string' && item.trim().length > 0
+        );
+      }
+      if (isRecord(body.nextEnable)) {
+        const nextState = body.nextEnable.state;
+        if (
+          nextState === 'pending' ||
+          nextState === 'ready' ||
+          nextState === 'failed'
+        ) {
+          const chunkIndexStatus = body.nextEnable.chunkIndexStatus;
+          state.nextEnable = {
+            state: nextState,
+            warnings: Array.isArray(body.nextEnable.warnings)
+              ? body.nextEnable.warnings.filter(
+                  (item): item is string => typeof item === 'string'
+                )
+              : [],
+            ...(chunkIndexStatus === 'pending' ||
+            chunkIndexStatus === 'ready' ||
+            chunkIndexStatus === 'failed'
+              ? { chunkIndexStatus }
+              : {}),
+          };
+        }
+      }
+      if (typeof body.seedContainers === 'number' && body.seedContainers > 0) {
+        seedExtraContainers(Math.min(Math.floor(body.seedContainers), 2000));
+      }
+      sendJson(response, 200, { ok: true });
+      return true;
+    });
   }
   if (pathname === '/__test__/revoke' && method === 'POST') {
     revokeActiveTokens();

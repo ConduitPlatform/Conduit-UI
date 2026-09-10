@@ -47,6 +47,20 @@ describe('source status and ingest instructions', () => {
     expect(screen.getByText('Queued')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
     expect(screen.getByText(/failed or retrying/)).toBeInTheDocument();
+    expect(
+      screen.getByText('Chunk index status is pending')
+    ).toBeInTheDocument();
+    rerender(
+      <SourceStatusCard
+        status={{
+          ...status,
+          warnings: ['Storage authorization is not configured.'],
+        }}
+      />
+    );
+    expect(
+      screen.getByText('Storage authorization is not configured.')
+    ).toBeInTheDocument();
     rerender(<SourceStatusCard error="Status unavailable" />);
     expect(screen.getByRole('alert')).toHaveTextContent('Status unavailable');
     rerender(<SourceStatusCard />);

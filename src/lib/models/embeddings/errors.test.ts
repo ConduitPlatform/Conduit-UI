@@ -13,6 +13,24 @@ describe('formatEmbeddingsApiError', () => {
         response: { status: 400, data: { message: 'Index is not queryable' } },
         message: 'Request failed with status code 400',
       })
+    ).toBe('Index is not queryable');
+    expect(
+      formatEmbeddingsApiError({
+        response: {
+          status: 400,
+          data: { message: 'Storage authorization is not configured.' },
+        },
+        message: 'Request failed with status code 400',
+      })
+    ).toBe('Storage authorization is not configured.');
+    expect(
+      formatEmbeddingsApiError({
+        response: {
+          status: 400,
+          data: { message: 'ECONNREFUSED 127.0.0.1:5512' },
+        },
+        message: 'Request failed with status code 400',
+      })
     ).toBe('The request was rejected. Check the values and try again.');
     expect(
       formatEmbeddingsApiError({
@@ -20,6 +38,11 @@ describe('formatEmbeddingsApiError', () => {
           status: 412,
           data: { message: 'Schema is not extendable' },
         },
+      })
+    ).toBe('Schema is not extendable');
+    expect(
+      formatEmbeddingsApiError({
+        response: { status: 412, data: {} },
       })
     ).toBe('The request was rejected. Check the values and try again.');
     expect(

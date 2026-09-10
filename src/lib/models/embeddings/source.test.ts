@@ -15,6 +15,7 @@ import {
   canEnableEmbeddingSource,
   canReconcileEmbeddingSource,
   canRevokeEmbeddingSource,
+  enableSourceFeedback,
   isSourceSearchable,
   validateEmbeddingSourceUpdate,
   parseTeamPartitionSubject,
@@ -190,6 +191,9 @@ describe('metadata allowlist and index state', () => {
         source({ _id: 's', kind: 'external', state: 'disabled' })
       )
     ).toBe(false);
+    expect(
+      isSourceSearchable(source({ _id: 's', kind: 'external', state: 'ready' }))
+    ).toBe(false);
     expect(canDisableEmbeddingSource('ready')).toBe(true);
     expect(canDisableEmbeddingSource('pending')).toBe(false);
     expect(canEnableEmbeddingSource('disabled')).toBe(true);
@@ -207,6 +211,31 @@ describe('metadata allowlist and index state', () => {
         source({ _id: 's', kind: 'external', state: 'ready' })
       )
     ).toBe(false);
+  });
+
+  it('does not toast enable success when the source stays pending or failed', () => {
+    expect(
+      enableSourceFeedback({
+        source: { state: 'ready' },
+        warnings: [],
+      })
+    ).toEqual({ title: 'Source enabled' });
+    expect(
+      enableSourceFeedback({
+        source: { state: 'pending' },
+        warnings: ['Storage authorization is not configured.'],
+      })
+    ).toEqual({
+      title: 'Enable finished with warnings',
+      description:
+        'Storage authorization is not configured. Source is pending.',
+    });
+    expect(
+      enableSourceFeedback({
+        source: { state: 'failed' },
+        warnings: ['Chunk vector index is not queryable yet'],
+      }).title
+    ).toBe('Source not ready');
   });
 });
 

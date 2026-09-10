@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { getContainers, getFolders } from '@/lib/api/storage';
+import { getFolders } from '@/lib/api/storage';
 import { normalizeFolderPrefix } from '@/lib/models/embeddings/source';
 import type { ContainerOption } from '@/lib/api/embeddings/source-options';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -39,22 +39,10 @@ export function StorageSelectorFields({
   const { control, setValue } = useFormContext<EmbeddingSourceFormValues>();
   const container = useWatch({ control, name: 'container' }) ?? '';
   const folderPrefix = useWatch({ control, name: 'folderPrefix' }) ?? '';
-  const [extraContainers, setExtraContainers] = useState<ContainerOption[]>([]);
   const [folders, setFolders] = useState<{ name: string }[]>([]);
   const [folderError, setFolderError] = useState<string>();
   const [folderTruncated, setFolderTruncated] = useState(false);
   const [folderQuery, setFolderQuery] = useState('');
-
-  const mergedContainers = useMemo(() => {
-    const seen = new Set<string>();
-    const next: ContainerOption[] = [];
-    for (const item of [...containers, ...extraContainers]) {
-      if (seen.has(item.name)) continue;
-      seen.add(item.name);
-      next.push(item);
-    }
-    return next;
-  }, [containers, extraContainers]);
 
   useEffect(() => {
     if (!container || disabled) {
@@ -90,11 +78,11 @@ export function StorageSelectorFields({
 
   const containerOptions = useMemo(
     () =>
-      mergedContainers.map(item => ({
+      containers.map(item => ({
         value: item.name,
         label: item.name,
       })),
-    [mergedContainers]
+    [containers]
   );
 
   const folderOptions = useMemo(() => {
@@ -125,7 +113,8 @@ export function StorageSelectorFields({
           <FormItem className="space-y-1.5">
             <FormLabel>Container</FormLabel>
             <FormDescription>
-              Only files in this container are indexed.
+              Indexes files in this container. This is a storage filter, not
+              tenancy.
             </FormDescription>
             <FormControl>
               <SearchableCombobox
@@ -143,22 +132,6 @@ export function StorageSelectorFields({
                   field.onChange(next);
                   setValue('folderPrefix', '', { shouldDirty: true });
                 }}
-                onSearchChange={query => {
-                  if (disabled) return;
-                  const search = query.trim().toLowerCase();
-                  if (!search || truncated === false) return;
-                  void getContainers({ skip: 0, limit: 100 })
-                    .then(result => {
-                      setExtraContainers(
-                        result.containers
-                          .filter(item =>
-                            item.name.toLowerCase().includes(search)
-                          )
-                          .map(item => ({ id: item._id, name: item.name }))
-                      );
-                    })
-                    .catch(() => undefined);
-                }}
               />
             </FormControl>
             {error ? (
@@ -167,8 +140,8 @@ export function StorageSelectorFields({
               </p>
             ) : truncated ? (
               <p className="text-xs text-muted-foreground">
-                Showing {mergedContainers.length} of {total?.toLocaleString()}{' '}
-                containers. Search to find others.
+                Showing {containers.length} of {total?.toLocaleString()}{' '}
+                containers.
               </p>
             ) : null}
             <FormMessage />

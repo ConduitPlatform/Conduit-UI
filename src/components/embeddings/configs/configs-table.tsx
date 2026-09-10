@@ -36,7 +36,7 @@ type ConfigsTableProps = {
   rows: EmbeddingCatalogRow[];
 };
 
-function ConfigsEmpty() {
+export function ConfigsEmpty() {
   return (
     <div className="flex flex-col items-center gap-2 py-6">
       <p className="text-sm font-medium">No embedding sources</p>
@@ -45,12 +45,24 @@ function ConfigsEmpty() {
         External source. Schema configs stay disabled until their index is
         queryable.
       </p>
-      <Button asChild className="mt-2">
-        <Link href="/embeddings/configs/new">
-          <Plus className="size-4" />
-          Database schema
-        </Link>
-      </Button>
+      <div className="mt-2 flex flex-wrap justify-center gap-2">
+        <Button asChild>
+          <Link href="/embeddings/configs/new">
+            <Plus className="size-4" />
+            Database schema
+          </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/embeddings/sources/new?kind=conduit-storage">
+            Conduit Storage
+          </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/embeddings/sources/new?kind=external">
+            External / custom
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

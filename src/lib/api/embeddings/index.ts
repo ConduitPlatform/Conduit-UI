@@ -32,6 +32,7 @@ import {
   unwrapStartBackfill,
   unwrapUpsertEmbeddingConfig,
   unwrapUpsertEmbeddingSource,
+  formatEmbeddingsApiError,
   SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
   requireEligibleDeclaredSchema,
   validateEmbeddingConfigInput,
@@ -217,6 +218,10 @@ export const getEmbeddingSource = cache(async (id: string) => {
   return unwrapEmbeddingSource(res.data);
 });
 
+function throwFormattedEmbeddingsError(error: unknown): never {
+  throw new Error(formatEmbeddingsApiError(error));
+}
+
 export const createEmbeddingSource = async (
   data: EmbeddingSourceCreateInput
 ) => {
@@ -227,10 +232,14 @@ export const createEmbeddingSource = async (
     throw new Error(CATALOGUE_UNAVAILABLE_MESSAGE);
   }
   const body = validateEmbeddingSourceInput(data, settings.config);
-  const res = await (
-    await getApiClient()
-  ).post<unknown>('/embeddings/sources', body);
-  return unwrapUpsertEmbeddingSource(res.data);
+  try {
+    const res = await (
+      await getApiClient()
+    ).post<unknown>('/embeddings/sources', body);
+    return unwrapUpsertEmbeddingSource(res.data);
+  } catch (error) {
+    throwFormattedEmbeddingsError(error);
+  }
 };
 
 export const updateEmbeddingSource = async (
@@ -267,10 +276,14 @@ export const disableEmbeddingSource = async (id: string) => {
 };
 
 export const enableEmbeddingSource = async (id: string) => {
-  const res = await (
-    await getApiClient()
-  ).post<unknown>(`/embeddings/sources/${id}/enable`);
-  return unwrapEmbeddingSource(res.data);
+  try {
+    const res = await (
+      await getApiClient()
+    ).post<unknown>(`/embeddings/sources/${id}/enable`);
+    return unwrapUpsertEmbeddingSource(res.data);
+  } catch (error) {
+    throwFormattedEmbeddingsError(error);
+  }
 };
 
 const SOURCE_PAGE_SIZE = 100;

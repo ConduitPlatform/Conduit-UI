@@ -58,7 +58,8 @@ export function ScopePicker({
         <FormItem className="space-y-1.5">
           <FormLabel>Access scope</FormLabel>
           <FormDescription>
-            Documents inherit this team. The scope cannot change after create.
+            Team partition for document access. Storage selectors do not provide
+            tenancy. The scope cannot change after create.
           </FormDescription>
           <FormControl>
             <SearchableCombobox

@@ -1,5 +1,10 @@
 import { getTeam, getTeams } from '@/lib/api/authentication';
 import { getContainers } from '@/lib/api/storage';
+import {
+  CONTAINER_PAGE_SIZE,
+  collectPagedItems,
+  withLockedContainer,
+} from '@/lib/models/embeddings/selector-pages';
 import { parseTeamPartitionSubject } from '@/lib/models/embeddings/source';
 
 export type TeamOption = {
@@ -19,13 +24,11 @@ export type SelectorLoadResult<T> = {
   error?: string;
 };
 
-const PAGE_SIZE = 100;
-
 export async function loadTeamOptions(
   lockedPartition?: string
 ): Promise<SelectorLoadResult<TeamOption>> {
   try {
-    const first = await getTeams(0, PAGE_SIZE);
+    const first = await getTeams(0, CONTAINER_PAGE_SIZE);
     const items = first.teams.map(team => ({
       id: team._id,
       name: team.name,
@@ -61,18 +64,22 @@ export async function loadContainerOptions(
   lockedName?: string
 ): Promise<SelectorLoadResult<ContainerOption>> {
   try {
-    const first = await getContainers({ skip: 0, limit: PAGE_SIZE });
-    const items = first.containers.map(container => ({
-      id: container._id,
-      name: container.name,
-    }));
-    if (lockedName && !items.some(item => item.name === lockedName)) {
-      items.unshift({ id: lockedName, name: lockedName });
-    }
+    const collected = await collectPagedItems({
+      fetchPage: async (skip, limit) => {
+        const page = await getContainers({ skip, limit });
+        return {
+          items: page.containers.map(container => ({
+            id: container._id,
+            name: container.name,
+          })),
+          total: page.containersCount,
+        };
+      },
+    });
     return {
-      items,
-      total: first.containersCount,
-      truncated: items.length < first.containersCount,
+      items: withLockedContainer(collected.items, lockedName),
+      total: collected.total,
+      truncated: collected.truncated,
     };
   } catch {
     return {

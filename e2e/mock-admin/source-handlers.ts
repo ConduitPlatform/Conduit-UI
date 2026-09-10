@@ -116,6 +116,7 @@ function sourceStatusPayload(source: MockEmbeddingSource) {
   if (source.chunkIndexStatus && source.chunkIndexStatus !== 'ready') {
     warnings.push(`Chunk index status is ${source.chunkIndexStatus}`);
   }
+  warnings.push(...getState().sourceWarnings);
   return {
     source: toApiSource(source),
     ready: source.state === 'ready',
@@ -283,6 +284,11 @@ export async function handleSourceCatalogRoutes(
   }
 
   if (pathname === '/embeddings/sources' && method === 'GET') {
+    if (getState().failNextSourcesList) {
+      getState().failNextSourcesList = false;
+      sendJson(response, 500, { status: 500, message: 'Sources unavailable' });
+      return true;
+    }
     const kind = search.get('kind') ?? undefined;
     const stateFilter = search.get('state') ?? undefined;
     const skip = Number(search.get('skip') ?? '0') || 0;
@@ -312,6 +318,12 @@ export async function handleSourceCatalogRoutes(
       return true;
     }
     const state = getState();
+    if (state.failNextSourceCreate) {
+      const message = state.failNextSourceCreate;
+      state.failNextSourceCreate = undefined;
+      badRequest(response, message);
+      return true;
+    }
     const resolved = resolveProfile(
       readString(body.provider),
       readString(body.model),
@@ -361,6 +373,7 @@ export async function handleSourceCatalogRoutes(
       source: toApiSource(next),
       warnings: [
         'The source stays pending until its chunk index is queryable.',
+        ...state.sourceWarnings,
       ],
     });
     return true;
@@ -399,9 +412,17 @@ export async function handleSourceCatalogRoutes(
         );
         return true;
       }
-      source.state = 'ready';
+      const override = getState().nextEnable;
+      getState().nextEnable = undefined;
+      source.state = override?.state ?? 'ready';
+      if (override?.chunkIndexStatus) {
+        source.chunkIndexStatus = override.chunkIndexStatus;
+      }
       source.updatedAt = FIXED_NOW;
-      sendJson(response, 200, toApiSource(source));
+      sendJson(response, 200, {
+        source: toApiSource(source),
+        warnings: override?.warnings ?? [],
+      });
       return true;
     }
     if (action === 'revoke' && method === 'POST') {

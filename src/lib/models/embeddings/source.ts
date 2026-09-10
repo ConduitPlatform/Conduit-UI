@@ -400,14 +400,40 @@ export function validateMetadataAllowlist(value: unknown): string[] {
 }
 
 export function isSourceSearchable(source: EmbeddingSource): boolean {
-  if (source.state !== 'ready') return false;
-  if (
-    source.chunkIndexStatus === 'failed' ||
-    source.chunkIndexStatus === 'pending'
-  ) {
-    return false;
+  return source.state === 'ready' && source.chunkIndexStatus === 'ready';
+}
+
+export function enableSourceFeedback(result: {
+  source: Pick<EmbeddingSource, 'state'>;
+  warnings: string[];
+}): { title: string; description?: string; variant?: 'destructive' } {
+  const warnings = result.warnings
+    .map(warning => warning.trim())
+    .filter(Boolean);
+  const { state } = result.source;
+  if (state === 'ready' && warnings.length === 0) {
+    return { title: 'Source enabled' };
   }
-  return true;
+  const description = [
+    ...warnings,
+    state === 'ready' ? undefined : `Source is ${state}.`,
+  ]
+    .filter((part): part is string => Boolean(part))
+    .join(' ');
+  if (state === 'failed') {
+    return {
+      title: 'Source not ready',
+      ...(description ? { description } : {}),
+      variant: 'destructive',
+    };
+  }
+  return {
+    title:
+      warnings.length > 0
+        ? 'Enable finished with warnings'
+        : 'Source not ready',
+    ...(description ? { description } : {}),
+  };
 }
 
 export function canDisableEmbeddingSource(

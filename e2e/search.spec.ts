@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { resetMock } from './helpers/mock.ts';
+import { configureMock, resetMock } from './helpers/mock.ts';
 
 test.describe('test search', () => {
   test('returns hits, an empty result, and a provider error', async ({
@@ -84,6 +84,21 @@ test.describe('test search', () => {
     await expect(page.getByRole('columnheader', { name: 'text' })).toHaveCount(
       0
     );
+  });
+
+  test('surfaces a generic-source list load failure', async ({ page }) => {
+    await resetMock('ready');
+    await configureMock({ failNextSourcesList: true });
+    await page.goto('/embeddings/test');
+    await expect(
+      page.getByRole('heading', { name: 'Test Search' })
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        'Generic sources could not be loaded. Schema configs are still shown.'
+      )
+    ).toBeVisible();
+    await expect(page.getByLabel('Query')).toBeVisible();
   });
 
   test('searches when workers are off', async ({ page }) => {

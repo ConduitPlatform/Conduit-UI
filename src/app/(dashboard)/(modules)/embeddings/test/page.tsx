@@ -106,7 +106,11 @@ export default async function EmbeddingsTestSearchPage(props: {
           </PageDescription>
         </div>
       </PageHeader>
-      {settledValue(sourcesResult)?.truncated ? (
+      {settledError(sourcesResult) ? (
+        <p className="text-sm text-muted-foreground">
+          Generic sources could not be loaded. Schema configs are still shown.
+        </p>
+      ) : settledValue(sourcesResult)?.truncated ? (
         <p className="text-sm text-muted-foreground">
           Showing {settledValue(sourcesResult)?.sources.length.toLocaleString()}{' '}
           of {settledValue(sourcesResult)?.count.toLocaleString()} generic

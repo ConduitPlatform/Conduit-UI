@@ -236,4 +236,12 @@ export type MockAdminState = {
   failNextComplete: boolean;
   completedUploadIds: string[];
   lastUploadCompleteFailed: boolean;
+  failNextSourcesList: boolean;
+  sourceWarnings: string[];
+  failNextSourceCreate?: string;
+  nextEnable?: {
+    state: MockSourceState;
+    warnings: string[];
+    chunkIndexStatus?: 'pending' | 'ready' | 'failed';
+  };
 };
