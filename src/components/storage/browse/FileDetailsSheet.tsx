@@ -51,10 +51,20 @@ export function FileDetailsSheet({
       return;
     }
     setLoading(true);
-    Promise.all([getFileById(fileId), getFileUrl(fileId)])
-      .then(([fileData, urlData]) => {
-        setFile(fileData);
-        setUrl(urlData.result);
+    setFile(null);
+    setUrl(null);
+    Promise.allSettled([getFileById(fileId), getFileUrl(fileId)])
+      .then(([fileResult, urlResult]) => {
+        if (fileResult.status === 'fulfilled') {
+          setFile(fileResult.value);
+        } else {
+          setFile(null);
+        }
+        if (urlResult.status === 'fulfilled') {
+          setUrl(urlResult.value.result);
+        } else {
+          setUrl(null);
+        }
       })
       .finally(() => setLoading(false));
   }, [fileId, open]);
