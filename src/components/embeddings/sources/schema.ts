@@ -3,6 +3,7 @@ import { VECTOR_SIMILARITIES } from '@/lib/models/embeddings/config';
 import {
   AUTOMATIC_STORAGE_MIME_TYPES,
   PARTITION_SUBJECT_PATTERN,
+  normalizeFolderPrefix,
   type EmbeddingSource,
   type EmbeddingSourceKind,
   parseStorageSelectors,
@@ -109,6 +110,7 @@ export function sourceFormToCreateInput(values: EmbeddingSourceFormValues) {
     values.mimeTypes.length === AUTOMATIC_STORAGE_MIME_TYPES.length
       ? undefined
       : values.mimeTypes;
+  const folderPrefix = normalizeFolderPrefix(values.folderPrefix);
   return {
     label: values.label?.trim() || undefined,
     kind: values.kind,
@@ -122,9 +124,7 @@ export function sourceFormToCreateInput(values: EmbeddingSourceFormValues) {
       values.kind === 'conduit-storage'
         ? {
             container: values.container?.trim() ?? '',
-            ...(values.folderPrefix?.trim()
-              ? { folderPrefix: values.folderPrefix.trim() }
-              : {}),
+            ...(folderPrefix ? { folderPrefix } : {}),
             ...(mimeTypes ? { mimeTypes } : {}),
           }
         : undefined,

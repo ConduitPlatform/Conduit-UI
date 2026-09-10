@@ -18,11 +18,16 @@ import { toast } from '@/lib/hooks/use-toast';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
 import {
   disableEmbeddingSource,
+  enableEmbeddingSource,
   purgeEmbeddingSource,
   reconcileEmbeddingSource,
   revokeEmbeddingSource,
 } from '@/lib/api/embeddings';
 import {
+  canDisableEmbeddingSource,
+  canEnableEmbeddingSource,
+  canReconcileEmbeddingSource,
+  canRevokeEmbeddingSource,
   sourceDisplayName,
   sourceKindLabel,
   storageLimitExplanations,
@@ -32,10 +37,12 @@ import {
   type StorageExtractionLimits,
 } from '@/lib/models/embeddings/source';
 import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
-import type { TeamOption } from './scope-picker';
-import type { ContainerOption } from './storage-selector-fields';
+import type {
+  ContainerOption,
+  TeamOption,
+} from '@/lib/api/embeddings/source-options';
 
-type SourceAction = 'disable' | 'revoke' | 'purge' | 'reconcile';
+type SourceAction = 'disable' | 'enable' | 'revoke' | 'purge' | 'reconcile';
 
 type SourceDetailProps = {
   source: EmbeddingSource;
@@ -46,6 +53,12 @@ type SourceDetailProps = {
   teams: TeamOption[];
   containers: ContainerOption[];
   limits: StorageExtractionLimits;
+  teamsError?: string;
+  containersError?: string;
+  teamsTruncated?: boolean;
+  containersTruncated?: boolean;
+  teamsTotal?: number;
+  containersTotal?: number;
 };
 
 export function SourceDetail({
@@ -57,13 +70,20 @@ export function SourceDetail({
   teams,
   containers,
   limits,
+  teamsError,
+  containersError,
+  teamsTruncated,
+  containersTruncated,
+  teamsTotal,
+  containersTotal,
 }: SourceDetailProps) {
   const router = useRouter();
   const [action, setAction] = useState<SourceAction | null>(null);
   const [pending, setPending] = useState(false);
-  const canReconcile =
-    source.kind === 'conduit-storage' && source.state === 'ready';
-  const canDisable = source.state === 'ready' || source.state === 'pending';
+  const canReconcile = canReconcileEmbeddingSource(source);
+  const canDisable = canDisableEmbeddingSource(source.state);
+  const canEnable = canEnableEmbeddingSource(source.state);
+  const canRevoke = canRevokeEmbeddingSource(source.state);
 
   const runAction = async () => {
     if (!action) return;
@@ -73,6 +93,10 @@ export function SourceDetail({
         case 'disable':
           await disableEmbeddingSource(source._id);
           toast({ title: 'Source disabled' });
+          break;
+        case 'enable':
+          await enableEmbeddingSource(source._id);
+          toast({ title: 'Source enabled' });
           break;
         case 'revoke':
           await revokeEmbeddingSource(source._id);
@@ -147,7 +171,16 @@ export function SourceDetail({
               Disable
             </Button>
           ) : null}
-          {source.state !== 'revoked' ? (
+          {canEnable ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setAction('enable')}
+            >
+              Enable
+            </Button>
+          ) : null}
+          {canRevoke ? (
             <Button
               type="button"
               variant="outline"
@@ -184,6 +217,12 @@ export function SourceDetail({
         modelBlocked={modelBlocked}
         teams={teams}
         containers={containers}
+        teamsError={teamsError}
+        containersError={containersError}
+        teamsTruncated={teamsTruncated}
+        containersTruncated={containersTruncated}
+        teamsTotal={teamsTotal}
+        containersTotal={containersTotal}
       />
       <SourceActionDialog
         action={action}

@@ -31,7 +31,6 @@ export type SearchFormValues = {
   text: string;
   limit: number;
   filter?: Record<string, unknown>;
-  scope?: string;
 };
 
 type SearchFormProps = {
@@ -62,7 +61,6 @@ export function SearchForm({
   const [text, setText] = useState('');
   const [limit, setLimit] = useState(String(DEFAULT_SEARCH_LIMIT));
   const [filterText, setFilterText] = useState('');
-  const [scope, setScope] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [limitError, setLimitError] = useState<string>();
   const [filterError, setFilterError] = useState<string>();
@@ -102,7 +100,6 @@ export function SearchForm({
       text: trimmed,
       limit: parsedLimit.limit,
       filter: parsedFilter.filter,
-      scope: selected.type === 'source' ? scope.trim() || undefined : undefined,
     });
   };
 
@@ -200,19 +197,10 @@ export function SearchForm({
           }}
         />
       ) : (
-        <div className="space-y-1.5">
-          <Label htmlFor="search-scope">Scope</Label>
-          <Input
-            id="search-scope"
-            value={scope}
-            placeholder="Team:id (optional)"
-            autoComplete="off"
-            onChange={event => setScope(event.target.value)}
-          />
-          <p className="text-xs text-muted-foreground">
-            Optional. Must match the source partition when set.
-          </p>
-        </div>
+        <p className="text-xs text-muted-foreground text-pretty">
+          Admin Test Search is operator-wide. It does not send a Client scope
+          and does not exercise Client ReBAC.
+        </p>
       )}
       <div className="flex min-h-8 flex-wrap items-center gap-3">
         <Button

@@ -18,6 +18,9 @@ test.describe('embeddings overview', () => {
     await expect(page.getByText('Matching index queryable')).toBeVisible();
     await expect(page.getByText('Config enabled')).toBeVisible();
     await expect(page.getByText('Workers enabled')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Storage extraction queue' })
+    ).toBeVisible();
     await expect(page.getByText('Ready').first()).toBeVisible();
     await expect(page.getByText('Module Information')).toHaveCount(0);
     const readiness = page.getByRole('heading', { name: 'Readiness' });

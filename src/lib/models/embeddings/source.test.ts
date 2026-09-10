@@ -7,8 +7,16 @@ import {
   isEmbeddingSourceKind,
   isPartitionSubject,
   mimeAllowlistErrorMessage,
+  normalizeFolderPrefix,
   normalizeMimeAllowlist,
+  parseMimeTypesForDisplay,
   parseStorageSelectors,
+  canDisableEmbeddingSource,
+  canEnableEmbeddingSource,
+  canReconcileEmbeddingSource,
+  canRevokeEmbeddingSource,
+  isSourceSearchable,
+  validateEmbeddingSourceUpdate,
   parseTeamPartitionSubject,
   sourceDisplayName,
   sourceIndexState,
@@ -101,10 +109,34 @@ describe('storage selectors and MIME allowlist', () => {
     expect(() => normalizeMimeAllowlist(['application/zip'])).toThrow(
       mimeAllowlistErrorMessage()
     );
+    expect(
+      parseStorageSelectors({
+        container: 'docs',
+        mimeTypes: ['application/zip', 'text/plain'],
+      })
+    ).toEqual({ container: 'docs', mimeTypes: ['text/plain'] });
+    expect(parseMimeTypesForDisplay(['application/zip'])).toBeUndefined();
+    expect(normalizeFolderPrefix('invoices')).toBe('invoices/');
+    expect(normalizeFolderPrefix('/invoices/2024')).toBe('invoices/2024/');
     expect(normalizeMimeAllowlist([...AUTOMATIC_STORAGE_MIME_TYPES])).toEqual([
       ...AUTOMATIC_STORAGE_MIME_TYPES,
     ]);
     expect(storageSelectorSummary({ container: 'docs' })).toBe('docs');
+  });
+
+  it('rejects selectors on external updates and keeps storage updates strict', () => {
+    expect(() =>
+      validateEmbeddingSourceUpdate(
+        { selectors: { container: 'docs' } },
+        'external'
+      )
+    ).toThrow('External sources do not use storage selectors.');
+    expect(
+      validateEmbeddingSourceUpdate(
+        { selectors: { container: 'docs', folderPrefix: 'invoices' } },
+        'conduit-storage'
+      ).selectors
+    ).toEqual({ container: 'docs', folderPrefix: 'invoices/' });
   });
 });
 
@@ -133,6 +165,48 @@ describe('metadata allowlist and index state', () => {
     expect(
       sourceIndexState(source({ _id: 's', kind: 'external', state: 'failed' }))
     ).toBe('failed');
+    expect(
+      isSourceSearchable(
+        source({
+          _id: 's',
+          kind: 'external',
+          state: 'ready',
+          chunkIndexStatus: 'ready',
+        })
+      )
+    ).toBe(true);
+    expect(
+      isSourceSearchable(
+        source({
+          _id: 's',
+          kind: 'external',
+          state: 'ready',
+          chunkIndexStatus: 'pending',
+        })
+      )
+    ).toBe(false);
+    expect(
+      isSourceSearchable(
+        source({ _id: 's', kind: 'external', state: 'disabled' })
+      )
+    ).toBe(false);
+    expect(canDisableEmbeddingSource('ready')).toBe(true);
+    expect(canDisableEmbeddingSource('pending')).toBe(false);
+    expect(canEnableEmbeddingSource('disabled')).toBe(true);
+    expect(canEnableEmbeddingSource('revoked')).toBe(false);
+    expect(canEnableEmbeddingSource('failed')).toBe(false);
+    expect(canRevokeEmbeddingSource('ready')).toBe(true);
+    expect(canRevokeEmbeddingSource('revoked')).toBe(false);
+    expect(
+      canReconcileEmbeddingSource(
+        source({ _id: 's', kind: 'conduit-storage', state: 'ready' })
+      )
+    ).toBe(true);
+    expect(
+      canReconcileEmbeddingSource(
+        source({ _id: 's', kind: 'external', state: 'ready' })
+      )
+    ).toBe(false);
   });
 });
 

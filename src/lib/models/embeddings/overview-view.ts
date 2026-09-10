@@ -119,5 +119,14 @@ export function collectOverviewWarnings(args: {
     });
   }
 
+  const storageFailed = args.status?.storageQueue?.failed ?? 0;
+  if (storageFailed > 0) {
+    warnings.push({
+      title: 'Storage extraction queue',
+      description: `${storageFailed.toLocaleString()} storage extraction job${storageFailed === 1 ? '' : 's'} failed.`,
+      variant: 'warning',
+    });
+  }
+
   return warnings;
 }

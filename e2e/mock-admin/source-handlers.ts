@@ -6,6 +6,7 @@ import {
   readNumber,
   readString,
   readStringArray,
+  sendEmpty,
   sendJson,
 } from './http.ts';
 import {
@@ -88,10 +89,15 @@ function validateStorageSelectors(
   }
   const mimeTypes = validateMimeTypes(selectors?.mimeTypes);
   if (!Array.isArray(mimeTypes)) return { ok: false, error: mimeTypes.error };
-  const folderPrefix =
-    typeof selectors?.folderPrefix === 'string' && selectors.folderPrefix.trim()
-      ? selectors.folderPrefix.trim()
-      : undefined;
+  const rawPrefix =
+    typeof selectors?.folderPrefix === 'string'
+      ? selectors.folderPrefix.trim().replace(/^\/+/, '')
+      : '';
+  const folderPrefix = rawPrefix
+    ? rawPrefix.endsWith('/')
+      ? rawPrefix
+      : `${rawPrefix}/`
+    : undefined;
   return {
     ok: true,
     selectors: {
@@ -127,9 +133,11 @@ export async function handleSourceCatalogRoutes(
   search: URLSearchParams
 ): Promise<boolean> {
   if (pathname === '/storage/containers' && method === 'GET') {
+    const skip = Number(search.get('skip') ?? '0') || 0;
+    const limit = Number(search.get('limit') ?? '100') || 100;
     const containers = getState().containers;
     sendJson(response, 200, {
-      containers,
+      containers: containers.slice(skip, skip + limit),
       containersCount: containers.length,
     });
     return true;
@@ -137,17 +145,140 @@ export async function handleSourceCatalogRoutes(
 
   if (pathname === '/storage/folders' && method === 'GET') {
     const container = search.get('container') ?? undefined;
+    const query = (search.get('search') ?? '').trim().toLowerCase();
+    const skip = Number(search.get('skip') ?? '0') || 0;
+    const limit = Number(search.get('limit') ?? '100') || 100;
     let folders = getState().folders;
     if (container) {
       folders = folders.filter(folder => folder.container === container);
     }
-    sendJson(response, 200, { folders, folderCount: folders.length });
+    if (query) {
+      folders = folders.filter(folder =>
+        folder.name.toLowerCase().includes(query)
+      );
+    }
+    sendJson(response, 200, {
+      folders: folders.slice(skip, skip + limit),
+      folderCount: folders.length,
+    });
+    return true;
+  }
+
+  if (pathname === '/storage/files' && method === 'GET') {
+    const container = search.get('container') ?? undefined;
+    const skip = Number(search.get('skip') ?? '0') || 0;
+    const limit = Number(search.get('limit') ?? '25') || 25;
+    let files = getState().files;
+    if (container) {
+      files = files.filter(file => file.container === container);
+    }
+    sendJson(response, 200, {
+      files: files.slice(skip, skip + limit),
+      filesCount: files.length,
+    });
+    return true;
+  }
+
+  if (pathname === '/storage/files/upload' && method === 'POST') {
+    const body = await readJsonBody(request);
+    if (!isRecord(body)) {
+      badRequest(response, 'Invalid upload payload');
+      return true;
+    }
+    const state = getState();
+    const file = {
+      _id: `file_${++state.fileSeq}`,
+      name: readString(body.name) ?? readString(body.alias) ?? 'upload.bin',
+      alias: readString(body.alias) ?? readString(body.name) ?? 'upload.bin',
+      folder: readString(body.folder) ?? '',
+      container: readString(body.container) ?? '',
+      size: readNumber(body.size, 0) ?? 0,
+      isPublic: false,
+      url: '',
+      mimeType: readString(body.mimeType) ?? 'application/octet-stream',
+      uploadStatus: 'pending' as const,
+      bytesUploaded: false,
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+    };
+    state.files.push(file);
+    sendJson(response, 200, {
+      file,
+      url: `http://127.0.0.1:4010/storage/upload-target/${file._id}`,
+    });
+    return true;
+  }
+
+  const uploadTarget = /^\/storage\/upload-target\/([^/]+)$/.exec(pathname);
+  if (uploadTarget && method === 'PUT') {
+    for await (const _chunk of request) {
+      void _chunk;
+    }
+    const file = getState().files.find(item => item._id === uploadTarget[1]);
+    if (!file) {
+      notFound(response, 'Upload target not found');
+      return true;
+    }
+    file.bytesUploaded = true;
+    sendEmpty(response, 200);
+    return true;
+  }
+
+  const complete = /^\/storage\/files\/([^/]+)\/complete$/.exec(pathname);
+  if (complete && method === 'POST') {
+    const state = getState();
+    const file = state.files.find(item => item._id === complete[1]);
+    if (!file) {
+      notFound(response, 'File not found');
+      return true;
+    }
+    if (state.failNextComplete) {
+      state.failNextComplete = false;
+      state.lastUploadCompleteFailed = true;
+      sendJson(response, 400, {
+        status: 400,
+        message: 'File bytes are not ready',
+      });
+      return true;
+    }
+    if (!file.bytesUploaded) {
+      sendJson(response, 400, {
+        status: 400,
+        message: 'File bytes are not ready',
+      });
+      return true;
+    }
+    file.uploadStatus = 'ready';
+    file.updatedAt = FIXED_NOW;
+    state.completedUploadIds.push(file._id);
+    state.lastUploadCompleteFailed = false;
+    sendJson(response, 200, file);
     return true;
   }
 
   if (pathname === '/authentication/teams' && method === 'GET') {
-    const teams = getState().teams;
-    sendJson(response, 200, { teams, count: teams.length });
+    const query = (search.get('search') ?? '').trim().toLowerCase();
+    const skip = Number(search.get('skip') ?? '0') || 0;
+    const limit = Number(search.get('limit') ?? '100') || 100;
+    let teams = getState().teams;
+    if (query) {
+      teams = teams.filter(team => team.name.toLowerCase().includes(query));
+    }
+    sendJson(response, 200, {
+      teams: teams.slice(skip, skip + limit),
+      count: teams.length,
+    });
+    return true;
+  }
+
+  const teamOne = /^\/authentication\/teams\/([^/]+)$/.exec(pathname);
+  if (teamOne && method === 'GET') {
+    const team = getState().teams.find(item => item._id === teamOne[1]);
+    if (!team) {
+      notFound(response, 'Team not found');
+      return true;
+    }
+    sendJson(response, 200, team);
     return true;
   }
 
@@ -236,7 +367,7 @@ export async function handleSourceCatalogRoutes(
   }
 
   const lifecycle =
-    /^\/embeddings\/sources\/([^/]+)\/(status|disable|revoke|reconcile)$/.exec(
+    /^\/embeddings\/sources\/([^/]+)\/(status|disable|enable|revoke|reconcile)$/.exec(
       pathname
     );
   if (lifecycle) {
@@ -251,7 +382,24 @@ export async function handleSourceCatalogRoutes(
       return true;
     }
     if (action === 'disable' && method === 'POST') {
+      if (source.state === 'pending') {
+        badRequest(response, 'Pending sources cannot be disabled.');
+        return true;
+      }
       source.state = 'disabled';
+      source.updatedAt = FIXED_NOW;
+      sendJson(response, 200, toApiSource(source));
+      return true;
+    }
+    if (action === 'enable' && method === 'POST') {
+      if (source.state !== 'disabled') {
+        badRequest(
+          response,
+          `Embedding source '${source._id}' cannot be enabled`
+        );
+        return true;
+      }
+      source.state = 'ready';
       source.updatedAt = FIXED_NOW;
       sendJson(response, 200, toApiSource(source));
       return true;

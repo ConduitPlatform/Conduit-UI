@@ -112,14 +112,17 @@ export default async function EmbeddingsDashboard() {
 
   const queueUnavailable = !status;
   const queues = status
-    ? addEmbeddingsQueues(status.generationQueue, status.backfillQueue)
+    ? addEmbeddingsQueues(
+        addEmbeddingsQueues(status.generationQueue, status.backfillQueue),
+        status.storageQueue ?? emptyEmbeddingsQueue()
+      )
     : emptyEmbeddingsQueue();
 
   const metricCards: MetricCardProps[] = [
     {
       title: 'Queue waiting',
       ...metricValue(queues.waiting, queueUnavailable),
-      description: 'Generation and backfill jobs waiting',
+      description: 'Generation, backfill, and storage extraction jobs waiting',
       status: queueUnavailable
         ? 'unknown'
         : queues.waiting > 0
@@ -134,7 +137,7 @@ export default async function EmbeddingsDashboard() {
     {
       title: 'Queue failed',
       ...metricValue(queues.failed, queueUnavailable),
-      description: 'Failed generation and backfill jobs',
+      description: 'Failed generation, backfill, and storage extraction jobs',
       status: queueUnavailable
         ? 'unknown'
         : queues.failed > 0

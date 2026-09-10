@@ -9,10 +9,10 @@ import {
 } from '@/components/ui/page-header';
 import {
   getEmbeddingConfigs,
-  getEmbeddingSources,
   getEmbeddingsCapabilities,
   getEmbeddingsSettings,
   getEmbeddingsStatus,
+  listEmbeddingSources,
 } from '@/lib/api/embeddings';
 import {
   getDeclaredSchemas,
@@ -37,7 +37,7 @@ export default async function EmbeddingsTestSearchPage(props: {
     schemasResult,
   ] = await Promise.allSettled([
     getEmbeddingConfigs(),
-    getEmbeddingSources({ limit: 100 }),
+    listEmbeddingSources(),
     getEmbeddingsStatus(),
     getEmbeddingsCapabilities(),
     getEmbeddingsSettings(),
@@ -102,10 +102,17 @@ export default async function EmbeddingsTestSearchPage(props: {
         <div>
           <PageTitle>Test Search</PageTitle>
           <PageDescription>
-            Run semantic search against a ready schema config or generic source.
+            Operator-wide Admin search. It does not exercise Client ReBAC.
           </PageDescription>
         </div>
       </PageHeader>
+      {settledValue(sourcesResult)?.truncated ? (
+        <p className="text-sm text-muted-foreground">
+          Showing {settledValue(sourcesResult)?.sources.length.toLocaleString()}{' '}
+          of {settledValue(sourcesResult)?.count.toLocaleString()} generic
+          sources.
+        </p>
+      ) : null}
       <TestSearch
         configs={model.configs}
         targets={model.targets}

@@ -34,11 +34,12 @@ import {
   sourceFormToCreateInput,
 } from './schema';
 import { SourceProfileFields } from './source-profile-fields';
-import { ScopePicker, type TeamOption } from './scope-picker';
-import {
-  StorageSelectorFields,
-  type ContainerOption,
-} from './storage-selector-fields';
+import { ScopePicker } from './scope-picker';
+import { StorageSelectorFields } from './storage-selector-fields';
+import type {
+  ContainerOption,
+  TeamOption,
+} from '@/lib/api/embeddings/source-options';
 import { MimeAllowlistField } from './mime-allowlist';
 import { MetadataAllowlistField } from './metadata-allowlist-field';
 
@@ -51,6 +52,12 @@ type CreateSourceFormProps = {
   teams: TeamOption[];
   containers: ContainerOption[];
   limits: StorageExtractionLimits;
+  teamsError?: string;
+  containersError?: string;
+  teamsTruncated?: boolean;
+  containersTruncated?: boolean;
+  teamsTotal?: number;
+  containersTotal?: number;
 };
 
 export function CreateSourceForm({
@@ -62,7 +69,16 @@ export function CreateSourceForm({
   teams,
   containers,
   limits,
+  teamsError,
+  containersError,
+  teamsTruncated,
+  containersTruncated,
+  teamsTotal,
+  containersTotal,
 }: CreateSourceFormProps) {
+  const selectorBlocked = Boolean(
+    teamsError || (kind === 'conduit-storage' && containersError)
+  );
   const router = useRouter();
   const shortcut = useSaveShortcutHint();
   const form = useForm<EmbeddingSourceFormValues>({
@@ -117,11 +133,21 @@ export function CreateSourceForm({
         className="max-w-3xl space-y-6"
       >
         <InputField fieldName="label" label="Label" placeholder="Invoices" />
-        <ScopePicker teams={teams} />
+        <ScopePicker
+          teams={teams}
+          error={teamsError}
+          truncated={teamsTruncated}
+          total={teamsTotal}
+        />
         <SourceProfileFields providers={providers} />
         {kind === 'conduit-storage' ? (
           <>
-            <StorageSelectorFields containers={containers} />
+            <StorageSelectorFields
+              containers={containers}
+              error={containersError}
+              truncated={containersTruncated}
+              total={containersTotal}
+            />
             <MimeAllowlistField />
             <Collapsible>
               <CollapsibleTrigger asChild>
@@ -152,7 +178,7 @@ export function CreateSourceForm({
           <SaveConfigButton
             dirty={dirty}
             submitting={submitting}
-            blocked={!form.formState.isValid}
+            blocked={!form.formState.isValid || selectorBlocked}
             label="Create source"
             shortcutLabel={shortcut.label}
             shortcutAria={shortcut.aria}

@@ -47,7 +47,7 @@ export function SourceProfileFields({
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {modelBlocked && !locked ? (
+      {modelBlocked ? (
         <div className="rounded-md border border-border/60 bg-surface-1 p-3 sm:col-span-2">
           <p className="text-sm text-pretty">{MODEL_ABSENT_EDIT_DETAIL}</p>
           <Link

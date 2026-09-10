@@ -152,6 +152,12 @@ export const fileUpload = async (data: {
     .then(res => res.data);
 };
 
+export const completeFileUpload = async (id: string) => {
+  return await (await getApiClient())
+    .post<ConduitFile>(`/storage/files/${id}/complete`)
+    .then(res => res.data);
+};
+
 export const patchFileUpload = async (
   id: string,
   data: {

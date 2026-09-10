@@ -60,6 +60,7 @@ export default defineConfig({
         /overview\.spec\.ts/,
         /configs\.spec\.ts/,
         /sources\.spec\.ts/,
+        /storage-upload\.spec\.ts/,
         /backfills\.spec\.ts/,
         /search\.spec\.ts/,
         /settings\.spec\.ts/,

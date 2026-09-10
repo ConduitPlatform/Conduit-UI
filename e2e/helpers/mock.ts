@@ -45,7 +45,22 @@ export type MockInspectState = {
   lastSettingsPatchHadApiKey: boolean;
   workersEnabled: boolean;
   modules: string[];
+  completedUploadIds: string[];
+  lastUploadCompleteFailed: boolean;
 };
+
+export async function failNextStorageComplete(): Promise<void> {
+  const response = await fetch(
+    `${MOCK_ADMIN_ORIGIN}/__test__/fail-next-complete`,
+    {
+      method: 'POST',
+      headers: testControlHeaders(),
+    }
+  );
+  if (!response.ok) {
+    throw new Error(`Mock fail-next-complete failed: ${response.status}`);
+  }
+}
 
 export async function inspectMock(): Promise<MockInspectState> {
   const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/state`, {

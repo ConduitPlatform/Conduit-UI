@@ -53,7 +53,7 @@ describe('embedding catalog rows', () => {
     expect(catalogRowIndex(schema)).toBe('ready');
     expect(catalogRowIndex(source)).toBe('ready');
     expect(catalogRowTarget(schema)).toBe('embedding');
-    expect(catalogRowTarget(source)).toBe('docs / invoices');
+    expect(catalogRowTarget(source)).toBe('docs / invoices/');
     expect(catalogRowProfile(source)).toBe(
       'openai-compatible/text-embedding-3-small'
     );

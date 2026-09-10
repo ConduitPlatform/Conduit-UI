@@ -60,6 +60,12 @@ test.describe('test search', () => {
     await expect(
       page.getByRole('combobox', { name: 'Search source' })
     ).toContainText('Invoices');
+    await expect(
+      page.getByText(
+        'Operator-wide Admin search. It does not exercise Client ReBAC.'
+      )
+    ).toBeVisible();
+    await expect(page.getByLabel('Scope')).toHaveCount(0);
     await page.getByLabel('Query').fill('invoice');
     await page.getByRole('button', { name: 'Search' }).click();
     await expect(page.getByText('src_storage')).toBeVisible();

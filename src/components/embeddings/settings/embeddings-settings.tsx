@@ -188,6 +188,7 @@ export function EmbeddingsSettings({ data, serving }: EmbeddingsSettingsProps) {
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <SettingsForm
+            settings={data}
             edit={edit}
             isSaving={isSaving}
             dirty={dirty}

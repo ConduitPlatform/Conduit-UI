@@ -197,6 +197,22 @@ export type MockFolder = {
   updatedAt: string;
 };
 
+export type MockStorageFile = {
+  _id: string;
+  name: string;
+  alias: string;
+  folder: string;
+  container: string;
+  size: number;
+  isPublic: boolean;
+  url: string;
+  mimeType: string;
+  uploadStatus: 'pending' | 'ready';
+  bytesUploaded: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type MockAdminState = {
   scenario: MockScenario;
   modules: MockModule[];
@@ -210,9 +226,14 @@ export type MockAdminState = {
   teams: MockTeam[];
   containers: MockContainer[];
   folders: MockFolder[];
+  files: MockStorageFile[];
   tokens: Set<string>;
   lastSettingsPatchHadApiKey: boolean;
   configSeq: number;
   backfillSeq: number;
   sourceSeq: number;
+  fileSeq: number;
+  failNextComplete: boolean;
+  completedUploadIds: string[];
+  lastUploadCompleteFailed: boolean;
 };

@@ -438,6 +438,9 @@ export function unwrapEmbeddingsStatus(payload: unknown): EmbeddingsStatus {
     capabilities: unwrapDatabaseVectorCapabilities(payload.capabilities),
     generationQueue: unwrapQueueCounts(payload.generationQueue),
     backfillQueue: unwrapQueueCounts(payload.backfillQueue),
+    storageQueue: isRecord(payload.storageQueue)
+      ? unwrapQueueCounts(payload.storageQueue)
+      : undefined,
     warnings: readStringArray(payload.warnings),
   };
 }

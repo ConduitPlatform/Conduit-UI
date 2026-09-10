@@ -217,6 +217,7 @@ function coreModules(
   const modules: MockModule[] = [
     { moduleName: 'database', url: '0.0.0.0:5510', serving: true },
     { moduleName: 'router', url: '0.0.0.0:5511', serving: true },
+    { moduleName: 'storage', url: '0.0.0.0:5513', serving: true },
   ];
   if (includeEmbeddings) {
     modules.push({
@@ -456,7 +457,12 @@ function catalogFields(sources: MockEmbeddingSource[] = []) {
     teams: defaultTeams(),
     containers: defaultContainers(),
     folders: defaultFolders(),
+    files: [],
     sourceSeq: sources.length,
+    fileSeq: 0,
+    failNextComplete: false,
+    completedUploadIds: [],
+    lastUploadCompleteFailed: false,
   };
 }
 

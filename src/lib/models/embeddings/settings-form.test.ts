@@ -122,6 +122,29 @@ describe('embeddings settings form mapping', () => {
     expect(patch.security?.sourceFieldAllowlist).toEqual(['Title', 'bodyText']);
   });
 
+  it('preserves deployment-managed extraction and ingest limits on PATCH', () => {
+    const withLimits: EmbeddingsSettings = {
+      ...settings,
+      security: {
+        ...settings.security,
+        maxChunksPerDocument: 12,
+        maxChunkTextBytes: 2048,
+      },
+      storageExtraction: { maxFileBytes: 1024, maxPdfPages: 4 },
+    };
+    const patch = toSettingsPatch(
+      toSettingsFormValues(withLimits),
+      withLimits,
+      true
+    );
+    expect(patch.storageExtraction).toEqual({
+      maxFileBytes: 1024,
+      maxPdfPages: 4,
+    });
+    expect(patch.security?.maxChunksPerDocument).toBe(12);
+    expect(patch.security?.maxChunkTextBytes).toBe(2048);
+  });
+
   it('submits a replacement key and keeps numeric bounds defined', () => {
     const values = toSettingsFormValues(settings);
     values.apiKey = 'sk-replacement';

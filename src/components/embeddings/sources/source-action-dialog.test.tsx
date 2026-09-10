@@ -26,6 +26,30 @@ describe('SourceActionDialog', () => {
     expect(onConfirm).not.toHaveBeenCalled();
   });
 
+  it('treats disable as a reversible pause and enable as resume', () => {
+    const { rerender } = render(
+      <SourceActionDialog
+        action="disable"
+        onOpenChange={() => undefined}
+        onConfirm={() => undefined}
+      />
+    );
+    expect(
+      screen.getByText(/You can enable the source again later/)
+    ).toBeInTheDocument();
+    rerender(
+      <SourceActionDialog
+        action="enable"
+        onOpenChange={() => undefined}
+        onConfirm={() => undefined}
+      />
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Enable this source?' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Enable source' })).toBeTruthy();
+  });
+
   it('uses reconcile copy that mentions backfill', () => {
     render(
       <SourceActionDialog

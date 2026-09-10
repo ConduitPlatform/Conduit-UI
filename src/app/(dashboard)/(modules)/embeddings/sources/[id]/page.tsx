@@ -5,8 +5,10 @@ import {
   getEmbeddingSourceStatus,
   getEmbeddingsSettings,
 } from '@/lib/api/embeddings';
-import { getTeams } from '@/lib/api/authentication';
-import { getContainers } from '@/lib/api/storage';
+import {
+  loadContainerOptions,
+  loadTeamOptions,
+} from '@/lib/api/embeddings/source-options';
 import {
   isEmbeddingsNotFound,
   settledError,
@@ -16,19 +18,19 @@ import {
   isConfigModelInCatalogue,
   listConfiguredProviders,
 } from '@/lib/models/embeddings/config-catalogue';
-import { storageExtractionLimitsFromSettings } from '@/lib/models/embeddings/source';
+import {
+  parseStorageSelectors,
+  storageExtractionLimitsFromSettings,
+} from '@/lib/models/embeddings/source';
 
 export default async function EmbeddingSourceDetailPage(props: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await props.params;
-  const [sourceResult, settingsResult, teamsResult, containersResult] =
-    await Promise.allSettled([
-      getEmbeddingSource(id),
-      getEmbeddingsSettings(),
-      getTeams(0, 100),
-      getContainers({ skip: 0, limit: 100 }),
-    ]);
+  const [sourceResult, settingsResult] = await Promise.allSettled([
+    getEmbeddingSource(id),
+    getEmbeddingsSettings(),
+  ]);
 
   if (sourceResult.status === 'rejected') {
     if (isEmbeddingsNotFound(sourceResult.reason)) notFound();
@@ -36,23 +38,18 @@ export default async function EmbeddingSourceDetailPage(props: {
   }
 
   const source = sourceResult.value;
-  const statusResult = await Promise.allSettled([
-    getEmbeddingSourceStatus(id),
-  ]).then(results => results[0]);
+  const selectors = parseStorageSelectors(source.selectors);
+  const [statusResult, teams, containers] = await Promise.all([
+    Promise.allSettled([getEmbeddingSourceStatus(id)]).then(
+      results => results[0]
+    ),
+    loadTeamOptions(source.partitionSubject),
+    loadContainerOptions(selectors?.container),
+  ]);
   const settings = settledValue(settingsResult)?.config;
   const providers = listConfiguredProviders(settings);
   const modelBlocked =
     settings != null && !isConfigModelInCatalogue(source, providers);
-  const teams = (settledValue(teamsResult)?.teams ?? []).map(team => ({
-    id: team._id,
-    name: team.name,
-  }));
-  const containers = (settledValue(containersResult)?.containers ?? []).map(
-    container => ({
-      id: container._id,
-      name: container.name,
-    })
-  );
 
   return (
     <SourceDetail
@@ -61,9 +58,15 @@ export default async function EmbeddingSourceDetailPage(props: {
       statusError={settledError(statusResult)}
       providers={providers}
       modelBlocked={modelBlocked}
-      teams={teams}
-      containers={containers}
+      teams={teams.items}
+      containers={containers.items}
       limits={storageExtractionLimitsFromSettings(settings)}
+      teamsError={teams.error}
+      containersError={containers.error}
+      teamsTruncated={teams.truncated}
+      containersTruncated={containers.truncated}
+      teamsTotal={teams.total}
+      containersTotal={containers.total}
     />
   );
 }

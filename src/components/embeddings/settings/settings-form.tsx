@@ -16,8 +16,10 @@ import { AdvancedSettings } from '@/components/embeddings/settings/advanced-sett
 import { ModelCatalogueField } from '@/components/embeddings/settings/model-catalogue-field';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { EmbeddingsSettingsFormValues } from '@/lib/models/embeddings/settings-form';
+import type { EmbeddingsSettings } from '@/lib/models/embeddings/settings';
 
 type SettingsFormProps = {
+  settings: EmbeddingsSettings;
   edit: boolean;
   isSaving: boolean;
   dirty: boolean;
@@ -28,6 +30,7 @@ type SettingsFormProps = {
 };
 
 export function SettingsForm({
+  settings,
   edit,
   isSaving,
   dirty,
@@ -89,7 +92,7 @@ export function SettingsForm({
           <ModelCatalogueField disabled={!edit} />
         </div>
       </section>
-      <AdvancedSettings disabled={!edit} />
+      <AdvancedSettings disabled={!edit} settings={settings} />
       <SettingsFormActions
         edit={edit}
         isSaving={isSaving}

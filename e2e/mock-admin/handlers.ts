@@ -59,6 +59,10 @@ function badRequest(response: ServerResponse, message: string): void {
 
 function isPublicPath(pathname: string, method: string): boolean {
   if (pathname === '/ready') return true;
+  if (method === 'OPTIONS') return true;
+  if (method === 'PUT' && pathname.startsWith('/storage/upload-target/')) {
+    return true;
+  }
   return method === 'POST' && pathname === '/login';
 }
 
@@ -74,11 +78,11 @@ function requireAuth(
   pathname: string,
   method: string
 ): boolean {
+  if (isPublicPath(pathname, method)) return true;
   if (masterKey(request) !== E2E_MASTER_KEY) {
     unauthorized(response);
     return false;
   }
-  if (isPublicPath(pathname, method)) return true;
   const token = bearerToken(request);
   if (!token || !getState().tokens.has(token)) {
     unauthorized(response);
@@ -687,6 +691,11 @@ function handleTestControl(
       return true;
     });
   }
+  if (pathname === '/__test__/fail-next-complete' && method === 'POST') {
+    getState().failNextComplete = true;
+    sendJson(response, 200, { ok: true });
+    return true;
+  }
   if (pathname === '/__test__/revoke' && method === 'POST') {
     revokeActiveTokens();
     sendJson(response, 200, { ok: true });
@@ -705,6 +714,8 @@ function handleTestControl(
       lastSettingsPatchHadApiKey: state.lastSettingsPatchHadApiKey,
       workersEnabled: state.settings.enabled,
       modules: state.modules.map(module => module.moduleName),
+      completedUploadIds: [...state.completedUploadIds],
+      lastUploadCompleteFailed: state.lastUploadCompleteFailed,
     });
     return true;
   }
@@ -718,6 +729,11 @@ export async function handleMockRequest(
 ): Promise<void> {
   const method = (request.method ?? 'GET').toUpperCase();
   const { pathname, search } = requestPath(request);
+
+  if (method === 'OPTIONS') {
+    sendEmpty(response, 204);
+    return;
+  }
 
   if (pathname === '/ready' && method === 'GET') {
     sendJson(response, 200, { ready: true });
@@ -815,6 +831,11 @@ export async function handleMockRequest(
       capabilities: state.capabilities,
       generationQueue: emptyQueueCounts(),
       backfillQueue: emptyQueueCounts(),
+      storageQueue: {
+        ...emptyQueueCounts(),
+        waiting: 1,
+        failed: 2,
+      },
       warnings: [],
     });
     return;

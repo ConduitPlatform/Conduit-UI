@@ -65,6 +65,7 @@ export type EmbeddingsSettingsPatch = {
   providers?: Record<string, EmbeddingsProviderPatch>;
   queue?: EmbeddingsQueueSettings;
   security?: EmbeddingsSecuritySettings;
+  storageExtraction?: EmbeddingsStorageExtractionSettings;
 };
 
 export type EmbeddingsConfigResponse = {

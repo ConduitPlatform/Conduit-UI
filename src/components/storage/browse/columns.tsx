@@ -13,6 +13,7 @@ import {
   File as FileIcon,
 } from 'lucide-react';
 import { mimeTypeMapper } from '@/components/storage/units/file/utils';
+import { fileUploadStatusLabel, isFileUploadReady } from '@/lib/models/storage';
 import Decimal from 'decimal.js';
 
 function formatFileSize(bytes: number): string {
@@ -112,6 +113,27 @@ export const columns: ColumnDef<BrowseItem>[] = [
     cell: ({ row }) => (
       <span className="text-sm">{formatDate(row.original.data.updatedAt)}</span>
     ),
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      if (row.original.kind === 'folder') {
+        return <span className="text-sm text-muted-foreground">—</span>;
+      }
+      const ready = isFileUploadReady(row.original.data);
+      return (
+        <span
+          className={
+            ready
+              ? 'text-sm text-status-healthy'
+              : 'text-sm text-status-warning'
+          }
+        >
+          {fileUploadStatusLabel(row.original.data.uploadStatus)}
+        </span>
+      );
+    },
   },
   {
     id: 'visibility',

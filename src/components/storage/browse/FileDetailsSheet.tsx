@@ -22,7 +22,11 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Copy, Download, Trash2, ExternalLink } from 'lucide-react';
-import { ConduitFile } from '@/lib/models/storage';
+import {
+  ConduitFile,
+  fileUploadStatusLabel,
+  isFileUploadReady,
+} from '@/lib/models/storage';
 import { getFileById, getFileUrl } from '@/lib/api/storage';
 import { useStorageBrowse } from './StorageBrowseProvider';
 import { formatFileSize, formatDate } from './columns';
@@ -119,6 +123,16 @@ export function FileDetailsSheet({
               <div>
                 <span className="text-muted-foreground">Modified</span>
                 <p className="font-medium">{formatDate(file.updatedAt)}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Status</span>
+                <p>
+                  <Badge
+                    variant={isFileUploadReady(file) ? 'default' : 'secondary'}
+                  >
+                    {fileUploadStatusLabel(file.uploadStatus)}
+                  </Badge>
+                </p>
               </div>
               <div>
                 <span className="text-muted-foreground">Visibility</span>

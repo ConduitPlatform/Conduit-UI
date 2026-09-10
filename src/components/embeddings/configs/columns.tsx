@@ -3,7 +3,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { configIndexStateLabel } from '@/lib/models/embeddings/index-state';
 import { cn } from '@/lib/utils';
 import {
   SETTINGS_CTA_LABEL,
@@ -11,13 +10,14 @@ import {
 } from '@/lib/models/embeddings/config-catalogue';
 import {
   catalogRowIndex,
+  catalogRowIndexLabel,
+  catalogRowModelBlocked,
   catalogRowProfile,
   catalogRowStatus,
   catalogRowTarget,
   catalogRowTypeLabel,
   type EmbeddingCatalogRow,
 } from '@/lib/models/embeddings/catalog';
-import { sourceIndexState } from '@/lib/models/embeddings/source';
 
 const INDEX_STATE_CLASS: Record<string, string> = {
   ready: 'text-status-healthy',
@@ -26,27 +26,6 @@ const INDEX_STATE_CLASS: Record<string, string> = {
   missing: 'text-status-critical',
   unknown: 'text-status-unknown',
 };
-
-function indexLabel(row: EmbeddingCatalogRow): string {
-  if (row.type === 'schema') {
-    return configIndexStateLabel(row.schema.indexState);
-  }
-  const state = sourceIndexState(row.source);
-  switch (state) {
-    case 'ready':
-      return 'Ready';
-    case 'pending':
-      return 'Pending';
-    case 'failed':
-      return 'Failed';
-    case 'unknown':
-      return 'Unknown';
-    default: {
-      const exhaustive: never = state;
-      return exhaustive;
-    }
-  }
-}
 
 export const CONFIG_COLUMNS: ColumnDef<EmbeddingCatalogRow>[] = [
   {
@@ -79,8 +58,7 @@ export const CONFIG_COLUMNS: ColumnDef<EmbeddingCatalogRow>[] = [
     id: 'provider',
     header: 'Provider / model',
     cell: ({ row }) => {
-      const blocked =
-        row.original.type === 'schema' && row.original.schema.modelBlocked;
+      const blocked = catalogRowModelBlocked(row.original);
       return (
         <div className="min-w-0">
           <div className="truncate">{catalogRowProfile(row.original)}</div>
@@ -121,7 +99,7 @@ export const CONFIG_COLUMNS: ColumnDef<EmbeddingCatalogRow>[] = [
           INDEX_STATE_CLASS[catalogRowIndex(row.original)]
         )}
       >
-        {indexLabel(row.original)}
+        {catalogRowIndexLabel(row.original)}
       </span>
     ),
   },

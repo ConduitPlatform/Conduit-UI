@@ -11,18 +11,22 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, Upload, X, AlertCircle } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
-import { fileUpload } from '@/lib/api/storage';
+import { completeFileUpload, fileUpload } from '@/lib/api/storage';
+import { fileUploadStatusLabel, isFileUploadReady } from '@/lib/models/storage';
 import { useStorageBrowse } from './StorageBrowseProvider';
-import { useToast } from '@/lib/hooks/use-toast';
 import axios from 'axios';
 import { cn } from '@/lib/utils';
 
 type UploadItem = {
   file: File;
   progress: number;
-  status: 'pending' | 'uploading' | 'done' | 'error';
+  status: 'pending' | 'uploading' | 'completing' | 'done' | 'error';
   error?: string;
+  uploadStatus?: 'pending' | 'ready';
 };
+
+export const COMPLETE_UPLOAD_FAILED_MESSAGE =
+  'Bytes reached storage, but completion failed. The file is not ready or indexable.';
 
 export function UploadDialog({
   open,
@@ -32,7 +36,6 @@ export function UploadDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { container, path, addFileToList } = useStorageBrowse();
-  const { toast } = useToast();
   const [uploads, setUploads] = useState<UploadItem[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -66,8 +69,25 @@ export function UploadDialog({
           updateUpload(index, { progress: percent });
         },
       });
-      updateUpload(index, { status: 'done', progress: 100 });
-      addFileToList(response.file);
+      updateUpload(index, { status: 'completing', progress: 100 });
+      try {
+        const completed = await completeFileUpload(response.file._id);
+        if (!isFileUploadReady(completed)) {
+          throw new Error(COMPLETE_UPLOAD_FAILED_MESSAGE);
+        }
+        updateUpload(index, {
+          status: 'done',
+          progress: 100,
+          uploadStatus: completed.uploadStatus ?? 'ready',
+        });
+        addFileToList(completed);
+      } catch {
+        updateUpload(index, {
+          status: 'error',
+          error: COMPLETE_UPLOAD_FAILED_MESSAGE,
+          uploadStatus: 'pending',
+        });
+      }
     } catch {
       updateUpload(index, { status: 'error', error: 'Upload failed' });
     }
@@ -83,15 +103,6 @@ export function UploadDialog({
       })
     );
     setUploading(false);
-    const allDone = uploads.every(
-      u => u.status === 'done' || u.status === 'error'
-    );
-    if (allDone) {
-      toast({
-        title: 'Storage',
-        description: `Upload complete`,
-      });
-    }
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -122,6 +133,7 @@ export function UploadDialog({
   const hasPending = uploads.some(u => u.status === 'pending');
   const allComplete =
     uploads.length > 0 && uploads.every(u => u.status === 'done');
+  const hasErrors = uploads.some(u => u.status === 'error');
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -151,7 +163,7 @@ export function UploadDialog({
                   Drop files here or click to browse
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Any file type supported
+                  Files stay pending until completion succeeds.
                 </p>
               </>
             )}
@@ -171,10 +183,25 @@ export function UploadDialog({
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {(item.file.size / 1024).toFixed(1)} KB
+                    {item.status === 'done'
+                      ? ` · ${fileUploadStatusLabel(item.uploadStatus)}`
+                      : item.status === 'completing'
+                        ? ' · Completing'
+                        : item.status === 'uploading'
+                          ? ' · Uploading'
+                          : item.status === 'error'
+                            ? ''
+                            : ' · Pending'}
                   </p>
-                  {item.status === 'uploading' && (
+                  {item.status === 'uploading' ||
+                  item.status === 'completing' ? (
                     <Progress value={item.progress} className="h-1.5 mt-1" />
-                  )}
+                  ) : null}
+                  {item.error ? (
+                    <p className="text-xs text-destructive mt-1">
+                      {item.error}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="shrink-0">
                   {item.status === 'done' && (
@@ -224,6 +251,11 @@ export function UploadDialog({
             </>
           )}
         </div>
+        {hasErrors ? (
+          <p className="text-xs text-destructive">
+            Failed uploads are not ready or indexable.
+          </p>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

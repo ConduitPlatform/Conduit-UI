@@ -10,19 +10,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CONFIG_COLUMNS } from '@/components/embeddings/configs/columns';
 import {
   catalogRowIndex,
+  catalogRowIndexLabel,
+  catalogRowModelBlocked,
   catalogRowProfile,
   catalogRowStatus,
   catalogRowTarget,
   catalogRowTypeLabel,
   type EmbeddingCatalogRow,
 } from '@/lib/models/embeddings/catalog';
-import { configIndexStateLabel } from '@/lib/models/embeddings/index-state';
 import { cn } from '@/lib/utils';
 import {
   SETTINGS_CTA_LABEL,
   SETTINGS_HREF,
 } from '@/lib/models/embeddings/config-catalogue';
-import { sourceIndexState } from '@/lib/models/embeddings/source';
 
 const INDEX_STATE_CLASS: Record<string, string> = {
   ready: 'text-status-healthy',
@@ -55,29 +55,8 @@ function ConfigsEmpty() {
   );
 }
 
-function indexLabel(row: EmbeddingCatalogRow): string {
-  if (row.type === 'schema') {
-    return configIndexStateLabel(row.schema.indexState);
-  }
-  const state = sourceIndexState(row.source);
-  switch (state) {
-    case 'ready':
-      return 'Ready';
-    case 'pending':
-      return 'Pending';
-    case 'failed':
-      return 'Failed';
-    case 'unknown':
-      return 'Unknown';
-    default: {
-      const exhaustive: never = state;
-      return exhaustive;
-    }
-  }
-}
-
 function ConfigListCard({ row }: { row: EmbeddingCatalogRow }) {
-  const blocked = row.type === 'schema' && row.schema.modelBlocked;
+  const blocked = catalogRowModelBlocked(row);
   const run = row.type === 'schema' ? row.schema.latestBackfill : undefined;
   const enabled =
     row.type === 'schema'
@@ -130,7 +109,7 @@ function ConfigListCard({ row }: { row: EmbeddingCatalogRow }) {
                 INDEX_STATE_CLASS[catalogRowIndex(row)]
               )}
             >
-              {indexLabel(row)}
+              {catalogRowIndexLabel(row)}
             </dd>
           </div>
           {run ? (

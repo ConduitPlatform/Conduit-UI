@@ -54,6 +54,12 @@ describe('source form mapping', () => {
     expect(sourceFormToCreateInput(allMimes).selectors).toEqual({
       container: 'docs',
     });
+    expect(
+      sourceFormToCreateInput({
+        ...values,
+        folderPrefix: 'invoices',
+      }).selectors
+    ).toMatchObject({ folderPrefix: 'invoices/' });
     expect(AUTOMATIC_STORAGE_MIME_TYPES).toHaveLength(5);
   });
 

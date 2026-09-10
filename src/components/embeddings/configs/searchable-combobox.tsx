@@ -32,6 +32,7 @@ type SearchableComboboxProps = {
   emptyLabel: string;
   ariaLabel: string;
   onValueChange?: (value: string) => void;
+  onSearchChange?: (query: string) => void;
 };
 
 export function SearchableCombobox({
@@ -44,9 +45,11 @@ export function SearchableCombobox({
   searchPlaceholder,
   emptyLabel,
   ariaLabel,
+  onSearchChange,
 }: SearchableComboboxProps) {
   const [open, setOpen] = useState(false);
   const selected = options.find(option => option.value === value);
+  const displayLabel = selected?.label ?? (value ? value : undefined);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,8 +65,8 @@ export function SearchableCombobox({
           className="h-8 min-h-8 w-full justify-between px-3 text-left text-[13px] font-normal focus-visible:ring-2 focus-visible:ring-ring"
         >
           <span className="min-w-0 flex-1 truncate">
-            {selected ? (
-              selected.label
+            {displayLabel ? (
+              displayLabel
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
@@ -83,7 +86,11 @@ export function SearchableCombobox({
             return itemValue.toLowerCase().includes(query) ? 1 : 0;
           }}
         >
-          <CommandInput placeholder={searchPlaceholder} autoFocus />
+          <CommandInput
+            placeholder={searchPlaceholder}
+            autoFocus
+            onValueChange={onSearchChange}
+          />
           <CommandList className="max-h-[min(50vh,280px)] overflow-y-auto">
             <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>

@@ -37,6 +37,32 @@ function status(partial: Partial<EmbeddingsStatus> = {}): EmbeddingsStatus {
   };
 }
 
+describe('storage queue health', () => {
+  it('warns when storage extraction jobs have failed', () => {
+    const warnings = collectOverviewWarnings({
+      status: status({
+        storageQueue: {
+          waiting: 1,
+          active: 0,
+          completed: 0,
+          failed: 2,
+          delayed: 0,
+          paused: 0,
+        },
+      }),
+    });
+    expect(warnings).toEqual(
+      expect.arrayContaining([
+        {
+          title: 'Storage extraction queue',
+          description: '2 storage extraction jobs failed.',
+          variant: 'warning',
+        },
+      ])
+    );
+  });
+});
+
 describe('status readiness', () => {
   it('uses status.enabled for workers, not status.ready', () => {
     expect(

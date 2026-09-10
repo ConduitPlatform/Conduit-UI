@@ -280,6 +280,7 @@ export function toSettingsPatch(
     },
     queue: values.queue,
     security: {
+      ...previous.security,
       sourceFieldAllowlist: normalizeSourceFieldAllowlist(
         previous.security.sourceFieldAllowlist
       ),
@@ -288,5 +289,8 @@ export function toSettingsPatch(
       maxEmbedInputBytes: values.security.maxEmbedInputBytes,
       maxEmbedResponseBytes: values.security.maxEmbedResponseBytes,
     },
+    ...(previous.storageExtraction
+      ? { storageExtraction: previous.storageExtraction }
+      : {}),
   };
 }

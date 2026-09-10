@@ -56,6 +56,7 @@ test.describe('embeddings settings', () => {
       page.getByRole('button', { name: 'Remove text-embedding-3-large' })
     ).toBeEnabled();
     await page.getByRole('button', { name: 'Advanced limits' }).click();
+    await expect(page.getByText(/Deployment-managed/)).toBeVisible();
     await expect(
       page.getByText(
         'Production gRPC access uses the deployment GRPC_KEY. It is not configured here.'

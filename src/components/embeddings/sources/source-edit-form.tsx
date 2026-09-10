@@ -24,11 +24,12 @@ import {
   toSourceFormValues,
 } from './schema';
 import { SourceProfileFields } from './source-profile-fields';
-import { ScopePicker, type TeamOption } from './scope-picker';
-import {
-  StorageSelectorFields,
-  type ContainerOption,
-} from './storage-selector-fields';
+import { ScopePicker } from './scope-picker';
+import { StorageSelectorFields } from './storage-selector-fields';
+import type {
+  ContainerOption,
+  TeamOption,
+} from '@/lib/api/embeddings/source-options';
 import { MimeAllowlistField } from './mime-allowlist';
 import { MetadataAllowlistField } from './metadata-allowlist-field';
 
@@ -38,6 +39,12 @@ type SourceEditFormProps = {
   modelBlocked: boolean;
   teams: TeamOption[];
   containers: ContainerOption[];
+  teamsError?: string;
+  containersError?: string;
+  teamsTruncated?: boolean;
+  containersTruncated?: boolean;
+  teamsTotal?: number;
+  containersTotal?: number;
 };
 
 export function SourceEditForm({
@@ -46,6 +53,12 @@ export function SourceEditForm({
   modelBlocked,
   teams,
   containers,
+  teamsError,
+  containersError,
+  teamsTruncated,
+  containersTruncated,
+  teamsTotal,
+  containersTotal,
 }: SourceEditFormProps) {
   const router = useRouter();
   const shortcut = useSaveShortcutHint();
@@ -99,7 +112,13 @@ export function SourceEditForm({
         className="max-w-3xl space-y-6"
       >
         <InputField fieldName="label" label="Label" placeholder="Invoices" />
-        <ScopePicker teams={teams} disabled />
+        <ScopePicker
+          teams={teams}
+          disabled
+          error={teamsError}
+          truncated={teamsTruncated}
+          total={teamsTotal}
+        />
         <SourceProfileFields
           providers={providers}
           locked
@@ -107,7 +126,12 @@ export function SourceEditForm({
         />
         {source.kind === 'conduit-storage' ? (
           <>
-            <StorageSelectorFields containers={containers} />
+            <StorageSelectorFields
+              containers={containers}
+              error={containersError}
+              truncated={containersTruncated}
+              total={containersTotal}
+            />
             <MimeAllowlistField />
           </>
         ) : null}
@@ -116,6 +140,7 @@ export function SourceEditForm({
           <SaveConfigButton
             dirty={dirty}
             submitting={submitting}
+            blocked={!form.formState.isValid}
             label="Save source"
             shortcutLabel={shortcut.label}
             shortcutAria={shortcut.aria}

@@ -17,6 +17,13 @@ export async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(raw) as unknown;
 }
 
+const CORS_HEADERS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+  'access-control-allow-headers':
+    'content-type,x-ms-blob-type,authorization,masterkey',
+};
+
 export function sendJson(
   response: ServerResponse,
   status: number,
@@ -26,12 +33,13 @@ export function sendJson(
   response.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
     'content-length': Buffer.byteLength(payload),
+    ...CORS_HEADERS,
   });
   response.end(payload);
 }
 
 export function sendEmpty(response: ServerResponse, status: number): void {
-  response.writeHead(status);
+  response.writeHead(status, CORS_HEADERS);
   response.end();
 }
 

@@ -299,16 +299,40 @@ export function parseStorageSelectors(
   const container =
     typeof record.container === 'string' ? record.container.trim() : '';
   if (!container) return undefined;
-  const folderPrefix =
-    typeof record.folderPrefix === 'string' && record.folderPrefix.trim()
-      ? record.folderPrefix.trim()
-      : undefined;
-  const mimeTypes = normalizeMimeAllowlist(record.mimeTypes);
+  const folderPrefix = normalizeFolderPrefix(
+    typeof record.folderPrefix === 'string' ? record.folderPrefix : undefined
+  );
+  const mimeTypes = parseMimeTypesForDisplay(record.mimeTypes);
   return {
     container,
     ...(folderPrefix ? { folderPrefix } : {}),
     ...(mimeTypes ? { mimeTypes } : {}),
   };
+}
+
+export function normalizeFolderPrefix(
+  value: string | undefined
+): string | undefined {
+  const trimmed = value?.trim() ?? '';
+  if (!trimmed) return undefined;
+  const withoutLeading = trimmed.replace(/^\/+/, '');
+  if (!withoutLeading) return undefined;
+  return withoutLeading.endsWith('/') ? withoutLeading : `${withoutLeading}/`;
+}
+
+export function parseMimeTypesForDisplay(
+  value: unknown
+): AutomaticStorageMimeType[] | undefined {
+  if (!Array.isArray(value) || value.length === 0) return undefined;
+  const mimeTypes = [
+    ...new Set(
+      value
+        .filter((item): item is string => typeof item === 'string')
+        .map(item => item.trim().toLowerCase())
+        .filter(isAutomaticStorageMimeType)
+    ),
+  ];
+  return mimeTypes.length > 0 ? mimeTypes : undefined;
 }
 
 export function normalizeMimeAllowlist(
@@ -335,11 +359,21 @@ export function mimeAllowlistErrorMessage(): string {
 export function validateStorageSelectors(
   selectors: Record<string, unknown> | undefined
 ): StorageSourceSelectors {
-  const parsed = parseStorageSelectors(selectors);
-  if (!parsed) {
+  const record = selectors && isRecord(selectors) ? selectors : undefined;
+  const container =
+    typeof record?.container === 'string' ? record.container.trim() : '';
+  if (!container) {
     throw new Error('Storage sources require a container.');
   }
-  return parsed;
+  const folderPrefix = normalizeFolderPrefix(
+    typeof record?.folderPrefix === 'string' ? record.folderPrefix : undefined
+  );
+  const mimeTypes = normalizeMimeAllowlist(record?.mimeTypes);
+  return {
+    container,
+    ...(folderPrefix ? { folderPrefix } : {}),
+    ...(mimeTypes ? { mimeTypes } : {}),
+  };
 }
 
 export function validatePartitionSubject(value: string): string {
@@ -366,7 +400,51 @@ export function validateMetadataAllowlist(value: unknown): string[] {
 }
 
 export function isSourceSearchable(source: EmbeddingSource): boolean {
-  return source.state === 'ready' && source.chunkIndexStatus !== 'failed';
+  if (source.state !== 'ready') return false;
+  if (
+    source.chunkIndexStatus === 'failed' ||
+    source.chunkIndexStatus === 'pending'
+  ) {
+    return false;
+  }
+  return true;
+}
+
+export function canDisableEmbeddingSource(
+  state: EmbeddingSourceState
+): boolean {
+  return state === 'ready';
+}
+
+export function canEnableEmbeddingSource(state: EmbeddingSourceState): boolean {
+  return state === 'disabled';
+}
+
+export function canRevokeEmbeddingSource(state: EmbeddingSourceState): boolean {
+  return state !== 'revoked';
+}
+
+export function canReconcileEmbeddingSource(source: EmbeddingSource): boolean {
+  return source.kind === 'conduit-storage' && source.state === 'ready';
+}
+
+export function sourceIndexStateLabel(
+  state: ReturnType<typeof sourceIndexState>
+): string {
+  switch (state) {
+    case 'ready':
+      return 'Ready';
+    case 'pending':
+      return 'Pending';
+    case 'failed':
+      return 'Failed';
+    case 'unknown':
+      return 'Unknown';
+    default: {
+      const exhaustive: never = state;
+      return exhaustive;
+    }
+  }
 }
 
 export function sourceIndexState(
@@ -560,10 +638,10 @@ export function validateEmbeddingSourceUpdate(
   const patch: EmbeddingSourceUpdateInput = {};
   if (data.label !== undefined) patch.label = data.label.trim();
   if (data.selectors !== undefined) {
-    patch.selectors =
-      kind === 'conduit-storage'
-        ? validateStorageSelectors(data.selectors)
-        : data.selectors;
+    if (kind !== 'conduit-storage') {
+      throw new Error('External sources do not use storage selectors.');
+    }
+    patch.selectors = validateStorageSelectors(data.selectors);
   }
   if (data.metadataAllowlist !== undefined) {
     patch.metadataAllowlist = validateMetadataAllowlist(data.metadataAllowlist);

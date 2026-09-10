@@ -53,6 +53,49 @@ test.describe('keyboard', () => {
     await expect(page.getByLabel('Dimensions')).toHaveValue('3072');
   });
 
+  test('navigates source comboboxes and confirms disable with the keyboard', async ({
+    page,
+  }) => {
+    await resetMock('blank');
+    await page.goto('/embeddings/sources/new?kind=conduit-storage');
+    const scope = page.getByRole('combobox', { name: 'Access scope' });
+    await scope.click();
+    await page.getByPlaceholder('Search teams').fill('ac');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(scope).toContainText('Acme');
+
+    const container = page.getByRole('combobox', { name: 'Container' });
+    await container.click();
+    await page.getByPlaceholder('Search containers').fill('do');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(container).toContainText('docs');
+
+    const folder = page.getByRole('combobox', { name: 'Folder prefix' });
+    await folder.click();
+    await page.getByPlaceholder('Search folders').fill('invoices');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(folder).toContainText('invoices/');
+
+    await resetMock('ready');
+    await page.goto('/embeddings/sources/src_storage');
+    await page.getByRole('button', { name: 'Disable' }).click();
+    const dialog = page.getByRole('alertdialog');
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await page.getByRole('button', { name: 'Disable' }).click();
+    await page.getByRole('button', { name: 'Disable source' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText('Source disabled')
+    ).toBeVisible();
+  });
+
   test('keeps a visible focus ring on the Test Search submit control', async ({
     page,
   }) => {

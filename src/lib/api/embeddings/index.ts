@@ -266,6 +266,47 @@ export const disableEmbeddingSource = async (id: string) => {
   return unwrapEmbeddingSource(res.data);
 };
 
+export const enableEmbeddingSource = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).post<unknown>(`/embeddings/sources/${id}/enable`);
+  return unwrapEmbeddingSource(res.data);
+};
+
+const SOURCE_PAGE_SIZE = 100;
+const SOURCE_PAGE_CAP = 1000;
+
+export async function listEmbeddingSources(args?: {
+  kind?: string;
+  state?: string;
+}): Promise<{
+  sources: Awaited<ReturnType<typeof getEmbeddingSources>>['sources'];
+  count: number;
+  truncated: boolean;
+}> {
+  const first = await getEmbeddingSources({
+    ...args,
+    skip: 0,
+    limit: SOURCE_PAGE_SIZE,
+  });
+  const sources = [...first.sources];
+  const total = first.count;
+  while (sources.length < total && sources.length < SOURCE_PAGE_CAP) {
+    const page = await getEmbeddingSources({
+      ...args,
+      skip: sources.length,
+      limit: SOURCE_PAGE_SIZE,
+    });
+    if (page.sources.length === 0) break;
+    sources.push(...page.sources);
+  }
+  return {
+    sources,
+    count: total,
+    truncated: sources.length < total,
+  };
+}
+
 export const revokeEmbeddingSource = async (id: string) => {
   const res = await (
     await getApiClient()

@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-type SourceAction = 'disable' | 'revoke' | 'purge' | 'reconcile';
+type SourceAction = 'disable' | 'enable' | 'revoke' | 'purge' | 'reconcile';
 
 const COPY: Record<
   SourceAction,
@@ -20,9 +20,16 @@ const COPY: Record<
   disable: {
     title: 'Disable this source?',
     description:
-      'Ingest and search fail closed until the source is ready again.',
+      'Pauses ingest and search. You can enable the source again later. Access relations stay in place.',
     confirm: 'Disable source',
     pending: 'Disabling…',
+  },
+  enable: {
+    title: 'Enable this source?',
+    description:
+      'Resumes ingest and search for this paused source. Revoked or failed sources cannot be enabled here.',
+    confirm: 'Enable source',
+    pending: 'Enabling…',
   },
   revoke: {
     title: 'Revoke this source?',

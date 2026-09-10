@@ -61,6 +61,7 @@ export type EmbeddingsStatus = {
   capabilities: VectorCapabilities;
   generationQueue: EmbeddingsQueueCounts;
   backfillQueue: EmbeddingsQueueCounts;
+  storageQueue?: EmbeddingsQueueCounts;
   warnings: string[];
 };
 

@@ -8,12 +8,21 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { SETTINGS_LIMITS } from '@/lib/models/embeddings/settings-form';
+import type { EmbeddingsSettings } from '@/lib/models/embeddings/settings';
+import {
+  formatByteLimit,
+  storageExtractionLimitsFromSettings,
+} from '@/lib/models/embeddings/source';
 
 type AdvancedSettingsProps = {
   disabled: boolean;
+  settings: EmbeddingsSettings;
 };
 
-export function AdvancedSettings({ disabled }: AdvancedSettingsProps) {
+export function AdvancedSettings({
+  disabled,
+  settings,
+}: AdvancedSettingsProps) {
   return (
     <Collapsible className="rounded-lg border border-border/60 bg-card">
       <CollapsibleTrigger
@@ -130,6 +139,7 @@ export function AdvancedSettings({ disabled }: AdvancedSettingsProps) {
               />
             </div>
           </section>
+          <DeploymentManagedLimits settings={settings} />
           <p className="text-xs text-muted-foreground text-pretty">
             Production gRPC access uses the deployment GRPC_KEY. It is not
             configured here.
@@ -137,5 +147,60 @@ export function AdvancedSettings({ disabled }: AdvancedSettingsProps) {
         </div>
       </CollapsibleContent>
     </Collapsible>
+  );
+}
+
+function DeploymentManagedLimits({
+  settings,
+}: {
+  settings: EmbeddingsSettings;
+}) {
+  const extraction = storageExtractionLimitsFromSettings(settings);
+  const ingest = settings.security;
+  const rows = [
+    {
+      label: 'Storage file size',
+      value: formatByteLimit(extraction.maxFileBytes),
+    },
+    {
+      label: 'Extracted text',
+      value: formatByteLimit(extraction.maxExtractedBytes),
+    },
+    { label: 'PDF pages', value: String(extraction.maxPdfPages) },
+    {
+      label: 'Chunks per file',
+      value: String(extraction.maxChunksPerFile),
+    },
+    {
+      label: 'Ingest batch',
+      value: ingest.maxChunksPerDocument
+        ? String(ingest.maxChunksPerDocument)
+        : 'Deployment default',
+    },
+    {
+      label: 'Chunk text',
+      value: ingest.maxChunkTextBytes
+        ? formatByteLimit(ingest.maxChunkTextBytes)
+        : 'Deployment default',
+    },
+  ];
+  return (
+    <section className="space-y-3">
+      <h3 className="text-[13px] font-medium tracking-wide text-muted-foreground">
+        Storage extraction and ingest limits
+      </h3>
+      <p className="text-xs text-muted-foreground text-pretty">
+        Deployment-managed. These values are preserved on save and are not
+        edited here.
+      </p>
+      <dl className="grid gap-3 md:grid-cols-2">
+        {rows.map(row => (
+          <div key={row.label} className="min-w-0">
+            <dt className="text-xs text-muted-foreground">{row.label}</dt>
+            <dd className="text-sm font-medium tabular-nums">{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }

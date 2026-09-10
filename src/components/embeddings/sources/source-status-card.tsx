@@ -11,6 +11,7 @@ import {
 const COUNT_ROWS: {
   key: keyof Pick<
     EmbeddingSourceStatus,
+    | 'pendingCount'
     | 'queuedCount'
     | 'extractingCount'
     | 'indexedCount'
@@ -21,6 +22,7 @@ const COUNT_ROWS: {
   >;
   label: string;
 }[] = [
+  { key: 'pendingCount', label: 'Pending' },
   { key: 'queuedCount', label: 'Queued' },
   { key: 'extractingCount', label: 'Extracting' },
   { key: 'indexedCount', label: 'Indexed' },

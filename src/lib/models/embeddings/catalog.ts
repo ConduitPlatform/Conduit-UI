@@ -2,11 +2,13 @@ import type { EmbeddingConfigListRow } from '@/lib/models/embeddings/index-state
 import {
   sourceDisplayName,
   sourceIndexState,
+  sourceIndexStateLabel,
   sourceKindLabel,
   sourceStateLabel,
   storageSelectorSummary,
   type EmbeddingSource,
 } from '@/lib/models/embeddings/source';
+import { configIndexStateLabel } from '@/lib/models/embeddings/index-state';
 
 export type EmbeddingCatalogRow =
   | {
@@ -22,6 +24,7 @@ export type EmbeddingCatalogRow =
       href: string;
       title: string;
       source: EmbeddingSource;
+      modelBlocked?: boolean;
     };
 
 export function schemaCatalogRow(
@@ -36,13 +39,17 @@ export function schemaCatalogRow(
   };
 }
 
-export function sourceCatalogRow(source: EmbeddingSource): EmbeddingCatalogRow {
+export function sourceCatalogRow(
+  source: EmbeddingSource,
+  modelBlocked = false
+): EmbeddingCatalogRow {
   return {
     type: 'source',
     id: source._id,
     href: `/embeddings/sources/${source._id}`,
     title: sourceDisplayName(source),
     source,
+    modelBlocked,
   };
 }
 
@@ -64,6 +71,19 @@ export function catalogRowIndex(row: EmbeddingCatalogRow): string {
     return row.schema.indexState;
   }
   return sourceIndexState(row.source);
+}
+
+export function catalogRowIndexLabel(row: EmbeddingCatalogRow): string {
+  if (row.type === 'schema') {
+    return configIndexStateLabel(row.schema.indexState);
+  }
+  return sourceIndexStateLabel(sourceIndexState(row.source));
+}
+
+export function catalogRowModelBlocked(row: EmbeddingCatalogRow): boolean {
+  return row.type === 'schema'
+    ? row.schema.modelBlocked
+    : Boolean(row.modelBlocked);
 }
 
 export function catalogRowTarget(row: EmbeddingCatalogRow): string {

@@ -23,7 +23,10 @@ test.describe('generic embedding sources', () => {
     await page.getByPlaceholder('Search containers').fill('do');
     await page.getByRole('option', { name: 'docs' }).click();
     await page.getByRole('combobox', { name: 'Folder prefix' }).click();
-    await page.getByRole('option', { name: 'invoices' }).click();
+    await expect(
+      page.getByRole('option', { name: 'All folders' })
+    ).toBeVisible();
+    await page.getByRole('option', { name: 'invoices/' }).click();
     await page.getByRole('checkbox', { name: /Plain text/ }).click();
     await page.getByRole('button', { name: 'Extraction limits' }).click();
     await expect(page.getByText(/at most 8 MiB per file/)).toBeVisible();
@@ -32,7 +35,8 @@ test.describe('generic embedding sources', () => {
     await expect(
       page.getByRole('heading', { name: 'Contracts' })
     ).toBeVisible();
-    await expect(page.getByText(/Pending/)).toBeVisible();
+    await expect(page.getByText('Pending · not searchable')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Disable' })).toHaveCount(0);
     const crumbs = page.getByRole('navigation', { name: 'breadcrumb' });
     await expect(crumbs.getByText('Source', { exact: true })).toBeVisible();
   });
@@ -91,6 +95,17 @@ test.describe('generic embedding sources', () => {
       page
         .getByRole('region', { name: 'Notifications (F8)' })
         .getByText('Source disabled')
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: 'Enable' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Enable this source?' })
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Enable source' }).click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText('Source enabled')
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Purge' }).click();

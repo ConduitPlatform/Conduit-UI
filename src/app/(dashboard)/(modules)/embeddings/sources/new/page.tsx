@@ -6,8 +6,10 @@ import {
   PageTitle,
 } from '@/components/ui/page-header';
 import { getEmbeddingsSettings } from '@/lib/api/embeddings';
-import { getTeams } from '@/lib/api/authentication';
-import { getContainers } from '@/lib/api/storage';
+import {
+  loadContainerOptions,
+  loadTeamOptions,
+} from '@/lib/api/embeddings/source-options';
 import { settledValue } from '@/lib/models/embeddings/errors';
 import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
 import {
@@ -29,12 +31,11 @@ export default async function NewEmbeddingSourcePage(props: {
     : searchParams.kind;
   if (!isEmbeddingSourceKind(kindParam)) notFound();
 
-  const [settingsResult, teamsResult, containersResult] =
-    await Promise.allSettled([
-      getEmbeddingsSettings(),
-      getTeams(0, 100),
-      getContainers({ skip: 0, limit: 100 }),
-    ]);
+  const [settingsResult, teams, containers] = await Promise.all([
+    Promise.allSettled([getEmbeddingsSettings()]).then(results => results[0]),
+    loadTeamOptions(),
+    loadContainerOptions(),
+  ]);
 
   const settings = settledValue(settingsResult)?.config;
   const providers = listConfiguredProviders(settings);
@@ -45,16 +46,6 @@ export default async function NewEmbeddingSourcePage(props: {
       ? (settings.providers[settings.defaultProvider]?.defaultModel ?? '')
       : '',
   });
-  const teams = (settledValue(teamsResult)?.teams ?? []).map(team => ({
-    id: team._id,
-    name: team.name,
-  }));
-  const containers = (settledValue(containersResult)?.containers ?? []).map(
-    container => ({
-      id: container._id,
-      name: container.name,
-    })
-  );
 
   return (
     <div className="flex flex-col space-y-4">
@@ -74,9 +65,15 @@ export default async function NewEmbeddingSourcePage(props: {
         defaultProvider={defaults.provider}
         defaultModel={defaults.model}
         defaultDimensions={defaults.dimensions}
-        teams={teams}
-        containers={containers}
+        teams={teams.items}
+        containers={containers.items}
         limits={storageExtractionLimitsFromSettings(settings)}
+        teamsError={teams.error}
+        containersError={containers.error}
+        teamsTruncated={teams.truncated}
+        containersTruncated={containers.truncated}
+        teamsTotal={teams.total}
+        containersTotal={containers.total}
       />
     </div>
   );

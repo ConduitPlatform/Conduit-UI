@@ -12,8 +12,8 @@ import {
 import {
   getBackfills,
   getEmbeddingConfigs,
-  getEmbeddingSources,
   getEmbeddingsSettings,
+  listEmbeddingSources,
 } from '@/lib/api/embeddings';
 import {
   getDeclaredSchemas,
@@ -39,7 +39,7 @@ export default async function EmbeddingConfigsPage() {
     settingsResult,
   ] = await Promise.allSettled([
     getEmbeddingConfigs(),
-    getEmbeddingSources({ limit: 100 }),
+    listEmbeddingSources(),
     getBackfills({ skip: 0, limit: 100 }),
     getDeclaredSchemas(),
     getEmbeddingsSettings(),
@@ -61,7 +61,8 @@ export default async function EmbeddingConfigsPage() {
   }
 
   const configs = settledValue(configsResult) ?? [];
-  const sources = settledValue(sourcesResult)?.sources ?? [];
+  const sourceList = settledValue(sourcesResult);
+  const sources = sourceList?.sources ?? [];
   const runs = settledValue(backfillsResult)?.runs ?? [];
   const settings = settledValue(settingsResult)?.config;
   const providers = listConfiguredProviders(settings);
@@ -82,7 +83,15 @@ export default async function EmbeddingConfigsPage() {
     runs,
     modelBlockedIds
   ).map(schemaCatalogRow);
-  const rows = [...schemaRows, ...sources.map(sourceCatalogRow)];
+  const rows = [
+    ...schemaRows,
+    ...sources.map(source =>
+      sourceCatalogRow(
+        source,
+        settings != null && !isConfigModelInCatalogue(source, providers)
+      )
+    ),
+  ];
 
   return (
     <div className="flex flex-col space-y-4">
@@ -100,6 +109,11 @@ export default async function EmbeddingConfigsPage() {
       {settledError(sourcesResult) ? (
         <p className="text-sm text-muted-foreground">
           Generic sources could not be loaded. Schema configs are still shown.
+        </p>
+      ) : sourceList?.truncated ? (
+        <p className="text-sm text-muted-foreground">
+          Showing {sources.length.toLocaleString()} of{' '}
+          {sourceList.count.toLocaleString()} generic sources.
         </p>
       ) : null}
       <ConfigsTable rows={rows} />

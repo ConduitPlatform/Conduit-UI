@@ -61,7 +61,6 @@ export function TestSearch({
         targetField: values.targetField,
         limit: clampSearchLimit(values.limit),
         filter: values.filter,
-        scope: values.scope,
       });
       setHits(result.hits);
     } catch (reason) {

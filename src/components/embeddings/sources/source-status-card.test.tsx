@@ -43,6 +43,7 @@ const status: EmbeddingSourceStatus = {
 describe('source status and ingest instructions', () => {
   it('renders counts, failures, and empty/error states', () => {
     const { rerender } = render(<SourceStatusCard status={status} />);
+    expect(screen.getByText('Pending')).toBeInTheDocument();
     expect(screen.getByText('Queued')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
     expect(screen.getByText(/failed or retrying/)).toBeInTheDocument();
