@@ -30,6 +30,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { FieldType } from './type-picker';
 import { normalizeFieldDefault } from '@/lib/database/format-display-value';
+import { normalizeSchemaFieldDefinition } from '@/lib/database/schema-field-definition';
 
 type SchemaEditorProps = {
   schema: DeclaredSchema | null;
@@ -105,67 +106,48 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
   return Object.entries(schemaFields).map(
     ([name, definition]: [string, any]) => {
       const id = generateId();
+      const field = normalizeSchemaFieldDefinition(definition);
 
-      // Handle array definitions [{ type: 'String' }] or ['String']
-      let isArray = false;
-      let fieldDef = definition;
-
-      if (Array.isArray(definition)) {
-        isArray = true;
-        fieldDef = definition[0];
-        if (typeof fieldDef === 'string') {
-          fieldDef = { type: fieldDef };
-        }
-      }
-
-      // Handle shorthand 'String' definitions
-      if (typeof fieldDef === 'string') {
-        return {
-          id,
-          name,
-          type: normalizeFieldType(fieldDef),
-          isArray,
-        };
-      }
-
-      // Handle nested objects (Group)
-      if (typeof fieldDef === 'object' && fieldDef && !fieldDef.type) {
+      if (field.isGroup) {
         return {
           id,
           name,
           type: 'Group' as FieldType,
-          isArray,
-          fields: extractFieldsFromSchema(fieldDef),
+          isArray: field.isArray,
+          required: field.required,
+          unique: field.unique,
+          select: field.select,
+          default: normalizeFieldDefault(field.default),
+          description: field.description,
+          fields: extractFieldsFromSchema(field.groupFields),
         };
       }
 
-      // Handle Relation type
-      if (fieldDef.type === 'Relation') {
+      if (field.type === 'Relation') {
         return {
           id,
           name,
           type: 'Relation' as FieldType,
-          required: fieldDef.required,
-          unique: fieldDef.unique,
-          select: fieldDef.select,
-          default: normalizeFieldDefault(fieldDef.default),
-          description: fieldDef.description,
-          isArray,
-          relatedModel: fieldDef.model,
+          required: field.required,
+          unique: field.unique,
+          select: field.select,
+          default: normalizeFieldDefault(field.default),
+          description: field.description,
+          isArray: field.isArray,
+          relatedModel: field.relatedModel,
         };
       }
 
-      // Standard field
       return {
         id,
         name,
-        type: normalizeFieldType(fieldDef.type),
-        required: fieldDef.required,
-        unique: fieldDef.unique,
-        select: fieldDef.select,
-        default: normalizeFieldDefault(fieldDef.default),
-        description: fieldDef.description,
-        isArray,
+        type: normalizeFieldType(field.type),
+        required: field.required,
+        unique: field.unique,
+        select: field.select,
+        default: normalizeFieldDefault(field.default),
+        description: field.description,
+        isArray: field.isArray,
       };
     }
   );

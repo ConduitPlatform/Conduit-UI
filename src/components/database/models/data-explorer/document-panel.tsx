@@ -25,6 +25,7 @@ import { toast } from '@/lib/hooks/use-toast';
 import moment from 'moment';
 import { RelationFieldInput } from './relation-field-input';
 import type { ModelDataPermissions } from './permissions';
+import { normalizeSchemaFieldDefinition } from '@/lib/database/schema-field-definition';
 
 type DocumentPanelProps = {
   schema: DeclaredSchema;
@@ -61,43 +62,20 @@ function extractFieldDefinitions(schema: DeclaredSchema): FieldDefinition[] {
   if (Object.keys(schemaFields).length === 0) return [];
 
   return Object.entries(schemaFields).map(
-    ([name, definition]: [string, any]) => {
-      let isArray = false;
-      let fieldDef = definition;
-
-      if (Array.isArray(definition)) {
-        isArray = true;
-        fieldDef = definition[0];
-        if (typeof fieldDef === 'string') {
-          fieldDef = { type: fieldDef };
-        }
-      }
-
-      if (typeof fieldDef === 'string') {
-        return {
-          name,
-          type: fieldDef,
-          isArray,
-          isExtensionField: extensionFields.has(name),
-        };
-      }
-
-      if (typeof fieldDef === 'object' && !fieldDef.type) {
-        return {
-          name,
-          type: 'Group',
-          isArray,
-          isExtensionField: extensionFields.has(name),
-        };
-      }
+    ([name, definition]: [string, unknown]) => {
+      const field = normalizeSchemaFieldDefinition(definition);
 
       return {
         name,
-        type: fieldDef.type || 'String',
-        required: fieldDef.required,
-        isArray,
-        enumValues: fieldDef.enumValues,
-        model: fieldDef.model,
+        type: field.type,
+        required: field.required,
+        isArray: field.isArray,
+        enumValues: Array.isArray(field.enumValues)
+          ? field.enumValues.filter(
+              (value): value is string => typeof value === 'string'
+            )
+          : undefined,
+        model: field.relatedModel,
         isExtensionField: extensionFields.has(name),
       };
     }

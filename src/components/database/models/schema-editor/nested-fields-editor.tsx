@@ -21,7 +21,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { FieldsTable, FormField } from './fields-table';
 import { AlertCircle, Boxes } from 'lucide-react';
 
@@ -29,6 +28,7 @@ type NestedFieldsEditorProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   fieldName: string;
+  fieldPath?: string;
   fields: FormField[];
   onSave: (fields: FormField[]) => void;
   availableModels: string[];
@@ -36,27 +36,27 @@ type NestedFieldsEditorProps = {
   maxDepth?: number;
 };
 
-function generateId() {
-  return Math.random().toString(36).substring(2, 9);
-}
-
 function validateNestedFields(fieldsToValidate: FormField[]): string | null {
+  if (fieldsToValidate.length === 0) {
+    return 'Add at least one nested field.';
+  }
+
   const names = new Set<string>();
 
   for (const field of fieldsToValidate) {
-    const fieldName = field.name.trim();
-    const fieldLabel = fieldName || 'Nested field';
+    const nestedName = field.name.trim();
+    const fieldLabel = nestedName || 'Nested field';
 
-    if (!fieldName) return 'Every nested field needs a name.';
+    if (!nestedName) return 'Every nested field needs a name.';
 
-    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(fieldName)) {
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(nestedName)) {
       return `${fieldLabel} must start with a letter or underscore and only use letters, numbers, or underscores.`;
     }
 
-    if (names.has(fieldName)) {
+    if (names.has(nestedName)) {
       return `${fieldLabel} is duplicated. Nested field names must be unique.`;
     }
-    names.add(fieldName);
+    names.add(nestedName);
 
     if (field.type === 'Relation' && !field.relatedModel) {
       return `${fieldLabel} is a relation and needs a related model.`;
@@ -70,21 +70,60 @@ function validateNestedFields(fieldsToValidate: FormField[]): string | null {
   return null;
 }
 
+function NestedFieldBreadcrumb({ path }: { path: string }) {
+  const segments = path.split('.').filter(Boolean);
+  const current = segments[segments.length - 1] || path;
+  const ancestors = segments.slice(0, -1);
+  const prefix = ancestors.length > 0 ? ancestors : ['Fields'];
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      {prefix.map((segment, index) => (
+        <React.Fragment key={`${segment}-${index}`}>
+          {index > 0 && (
+            <span className="text-muted-foreground/60" aria-hidden>
+              /
+            </span>
+          )}
+          <span
+            className={
+              segment === 'Fields'
+                ? undefined
+                : 'font-mono text-xs slashed-zero'
+            }
+          >
+            {segment}
+          </span>
+        </React.Fragment>
+      ))}
+      <span className="text-muted-foreground/60" aria-hidden>
+        /
+      </span>
+      <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs slashed-zero">
+        {current}
+      </code>
+    </span>
+  );
+}
+
 export function NestedFieldsEditor({
   open,
   onOpenChange,
   fieldName,
+  fieldPath,
   fields: initialFields,
   onSave,
   availableModels,
   depth = 1,
   maxDepth = 1,
 }: NestedFieldsEditorProps) {
+  const resolvedPath = fieldPath || fieldName;
   const [fields, setFields] = React.useState<FormField[]>(initialFields);
   const [validationError, setValidationError] = React.useState<string | null>(
     null
   );
   const [showDiscardConfirm, setShowDiscardConfirm] = React.useState(false);
+  const [saveShortcutLabel, setSaveShortcutLabel] = React.useState('Ctrl+S');
 
   const initialSignature = React.useMemo(
     () => JSON.stringify(initialFields),
@@ -96,24 +135,20 @@ export function NestedFieldsEditor({
   );
   const hasLocalChanges = currentSignature !== initialSignature;
 
-  // Reset fields when dialog opens with new data
   React.useEffect(() => {
     if (open) {
       setValidationError(null);
       setShowDiscardConfirm(false);
-      setFields(
-        initialFields.length > 0
-          ? initialFields
-          : [
-              {
-                id: generateId(),
-                name: 'field1',
-                type: 'String',
-              },
-            ]
-      );
+      setFields(initialFields);
     }
   }, [open, initialFields]);
+
+  React.useEffect(() => {
+    const platform = navigator.platform || navigator.userAgent;
+    setSaveShortcutLabel(
+      /Mac|iPhone|iPad|iPod/i.test(platform) ? '⌘S' : 'Ctrl+S'
+    );
+  }, []);
 
   const requestClose = () => {
     if (hasLocalChanges) {
@@ -124,14 +159,31 @@ export function NestedFieldsEditor({
     onOpenChange(false);
   };
 
-  const handleSave = () => {
+  const handleSave = React.useCallback(() => {
     const error = validateNestedFields(fields);
     setValidationError(error);
     if (error) return;
 
     onSave(fields);
     onOpenChange(false);
-  };
+  }, [fields, onOpenChange, onSave]);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isSaveShortcut =
+        (event.metaKey || event.ctrlKey) && event.key === 's';
+      if (!isSaveShortcut) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      handleSave();
+    };
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [handleSave, open]);
 
   return (
     <>
@@ -145,8 +197,8 @@ export function NestedFieldsEditor({
           requestClose();
         }}
       >
-        <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0">
-          <DialogHeader className="px-6 pt-6 pb-4">
+        <DialogContent className="flex max-h-[80vh] w-[min(96vw,72rem)] max-w-[min(96vw,72rem)] flex-col gap-0 overflow-hidden p-0">
+          <DialogHeader className="shrink-0 px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-muted">
                 <Boxes className="h-5 w-5 text-primary-muted-foreground" />
@@ -154,17 +206,19 @@ export function NestedFieldsEditor({
               <div>
                 <DialogTitle>Edit Nested Fields</DialogTitle>
                 <DialogDescription>
-                  Define the structure for{' '}
-                  <code className="px-1 py-0.5 bg-muted rounded">
-                    {fieldName}
-                  </code>
+                  <span className="sr-only">
+                    Define the structure for {resolvedPath}
+                  </span>
+                  <span aria-hidden="true">
+                    <NestedFieldBreadcrumb path={resolvedPath} />
+                  </span>
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
 
           {validationError && (
-            <div className="px-6 pb-4">
+            <div className="shrink-0 px-6 pb-4">
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{validationError}</AlertDescription>
@@ -172,27 +226,33 @@ export function NestedFieldsEditor({
             </div>
           )}
 
-          <ScrollArea className="flex-1 px-6">
-            <div className="pb-4">
-              <FieldsTable
-                fields={fields}
-                onFieldsChange={nextFields => {
-                  setFields(nextFields);
-                  setValidationError(null);
-                }}
-                availableModels={availableModels}
-                depth={depth}
-                maxDepth={maxDepth}
-                committedFieldNames={initialFields.map(field => field.name)}
-              />
-            </div>
-          </ScrollArea>
+          <div className="min-h-0 flex-1 overflow-auto px-6 pb-4">
+            <FieldsTable
+              fields={fields}
+              onFieldsChange={nextFields => {
+                setFields(nextFields);
+                setValidationError(null);
+              }}
+              availableModels={availableModels}
+              depth={depth}
+              maxDepth={maxDepth}
+              parentPath={resolvedPath}
+              committedFieldNames={initialFields.map(field => field.name)}
+              emptyTitle="No nested fields yet"
+              emptyDescription={`Add fields to define the structure of ${fieldName}.`}
+            />
+          </div>
 
-          <DialogFooter className="px-6 py-4 border-t">
+          <DialogFooter className="shrink-0 border-t px-6 py-4">
             <Button variant="outline" onClick={requestClose}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save Nested Fields</Button>
+            <Button onClick={handleSave}>
+              Save Nested Fields
+              <kbd className="ml-1.5 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
+                {saveShortcutLabel}
+              </kbd>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
