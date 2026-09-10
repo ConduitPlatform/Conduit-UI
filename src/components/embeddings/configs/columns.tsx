@@ -3,39 +3,67 @@
 import { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import {
-  configIndexStateLabel,
-  EmbeddingConfigListRow,
-  similarityLabel,
-} from '@/lib/models/embeddings/index-state';
+import { configIndexStateLabel } from '@/lib/models/embeddings/index-state';
 import { cn } from '@/lib/utils';
 import {
   SETTINGS_CTA_LABEL,
   SETTINGS_HREF,
 } from '@/lib/models/embeddings/config-catalogue';
+import {
+  catalogRowIndex,
+  catalogRowProfile,
+  catalogRowStatus,
+  catalogRowTarget,
+  catalogRowTypeLabel,
+  type EmbeddingCatalogRow,
+} from '@/lib/models/embeddings/catalog';
+import { sourceIndexState } from '@/lib/models/embeddings/source';
 
-const INDEX_STATE_CLASS: Record<EmbeddingConfigListRow['indexState'], string> =
-  {
-    ready: 'text-status-healthy',
-    pending: 'text-status-warning',
-    failed: 'text-status-critical',
-    missing: 'text-status-critical',
-    unknown: 'text-status-unknown',
-  };
+const INDEX_STATE_CLASS: Record<string, string> = {
+  ready: 'text-status-healthy',
+  pending: 'text-status-warning',
+  failed: 'text-status-critical',
+  missing: 'text-status-critical',
+  unknown: 'text-status-unknown',
+};
 
-export const CONFIG_COLUMNS: ColumnDef<EmbeddingConfigListRow>[] = [
+function indexLabel(row: EmbeddingCatalogRow): string {
+  if (row.type === 'schema') {
+    return configIndexStateLabel(row.schema.indexState);
+  }
+  const state = sourceIndexState(row.source);
+  switch (state) {
+    case 'ready':
+      return 'Ready';
+    case 'pending':
+      return 'Pending';
+    case 'failed':
+      return 'Failed';
+    case 'unknown':
+      return 'Unknown';
+    default: {
+      const exhaustive: never = state;
+      return exhaustive;
+    }
+  }
+}
+
+export const CONFIG_COLUMNS: ColumnDef<EmbeddingCatalogRow>[] = [
   {
-    id: 'schema',
-    header: 'Schema',
+    id: 'type',
+    header: 'Type',
+    cell: ({ row }) => catalogRowTypeLabel(row.original),
+  },
+  {
+    id: 'name',
+    header: 'Name',
     cell: ({ row }) => (
       <div className="min-w-0">
         <Link
-          href={`/embeddings/configs/${row.original.config._id}`}
+          href={row.original.href}
           className="font-medium text-primary underline-offset-4 hover:underline"
         >
-          <span className="block truncate">
-            {row.original.config.schemaName}
-          </span>
+          <span className="block truncate">{row.original.title}</span>
         </Link>
       </div>
     ),
@@ -44,62 +72,42 @@ export const CONFIG_COLUMNS: ColumnDef<EmbeddingConfigListRow>[] = [
     id: 'target',
     header: 'Target',
     cell: ({ row }) => (
-      <div className="truncate">{row.original.config.targetField}</div>
+      <div className="truncate">{catalogRowTarget(row.original)}</div>
     ),
   },
   {
     id: 'provider',
     header: 'Provider / model',
-    cell: ({ row }) => (
-      <div className="min-w-0">
-        <div className="truncate">
-          {row.original.config.provider}/{row.original.config.model}
-        </div>
-        {row.original.modelBlocked ? (
-          <Link
-            href={SETTINGS_HREF}
-            className="text-xs font-medium text-primary underline-offset-4 hover:underline"
-          >
-            {SETTINGS_CTA_LABEL}
-          </Link>
-        ) : null}
-      </div>
-    ),
-  },
-  {
-    id: 'dimensions',
-    header: 'Dimensions',
-    cell: ({ row }) => (
-      <span className="tabular-nums">{row.original.config.dimensions}</span>
-    ),
-  },
-  {
-    id: 'similarity',
-    header: 'Similarity',
-    cell: ({ row }) => similarityLabel(row.original.config.similarity),
-  },
-  {
-    id: 'enabled',
-    header: 'Enabled',
-    cell: ({ row }) => (
-      <Badge variant={row.original.config.enabled ? 'default' : 'secondary'}>
-        {row.original.config.enabled ? 'Enabled' : 'Disabled'}
-      </Badge>
-    ),
-  },
-  {
-    id: 'backfill',
-    header: 'Latest backfill',
     cell: ({ row }) => {
-      const run = row.original.latestBackfill;
-      if (!run) return <span className="text-muted-foreground">—</span>;
+      const blocked =
+        row.original.type === 'schema' && row.original.schema.modelBlocked;
       return (
-        <Link
-          href={`/embeddings/backfills/${run._id}`}
-          className="text-primary underline-offset-4 hover:underline"
-        >
-          {run.state.charAt(0).toUpperCase() + run.state.slice(1)}
-        </Link>
+        <div className="min-w-0">
+          <div className="truncate">{catalogRowProfile(row.original)}</div>
+          {blocked ? (
+            <Link
+              href={SETTINGS_HREF}
+              className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+            >
+              {SETTINGS_CTA_LABEL}
+            </Link>
+          ) : null}
+        </div>
+      );
+    },
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      const enabled =
+        row.original.type === 'schema'
+          ? row.original.schema.config.enabled
+          : row.original.source.state === 'ready';
+      return (
+        <Badge variant={enabled ? 'default' : 'secondary'}>
+          {catalogRowStatus(row.original)}
+        </Badge>
       );
     },
   },
@@ -110,10 +118,10 @@ export const CONFIG_COLUMNS: ColumnDef<EmbeddingConfigListRow>[] = [
       <span
         className={cn(
           'text-sm font-medium',
-          INDEX_STATE_CLASS[row.original.indexState]
+          INDEX_STATE_CLASS[catalogRowIndex(row.original)]
         )}
       >
-        {configIndexStateLabel(row.original.indexState)}
+        {indexLabel(row.original)}
       </span>
     ),
   },

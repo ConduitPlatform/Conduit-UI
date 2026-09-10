@@ -18,34 +18,34 @@ import { ReadinessRow } from '@/lib/models/embeddings/readiness';
 import { SemanticSearchHit } from '@/lib/models/embeddings/search';
 import {
   clampSearchLimit,
-  isSearchReady,
+  type SearchTarget,
 } from '@/lib/models/embeddings/search-view';
 
 type TestSearchProps = {
   configs: EmbeddingConfigOption[];
-  schemas: string[];
+  targets: SearchTarget[];
   fallbackRows: ReadinessRow[];
   readinessByConfigId: Record<string, ReadinessRow[]>;
   workersEnabled?: boolean;
-  initialConfigId?: string;
-  initialSchema?: string;
+  initialTargetId?: string;
 };
 
 export function TestSearch({
   configs,
-  schemas,
+  targets,
   fallbackRows,
   readinessByConfigId,
   workersEnabled,
-  initialConfigId,
-  initialSchema,
+  initialTargetId,
 }: TestSearchProps) {
-  const [schemaName, setSchemaName] = useState(initialSchema ?? '');
-  const [configId, setConfigId] = useState(initialConfigId ?? '');
+  const [targetId, setTargetId] = useState(initialTargetId ?? '');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [hits, setHits] = useState<SemanticSearchHit[]>();
-  const selected = configs.find(config => config._id === configId);
+  const selected = targets.find(target => target.id === targetId);
+  const configId = selected?.type === 'schema' ? selected.configId : '';
+  const schemaName = selected?.type === 'schema' ? selected.schemaName : '';
+  const config = configs.find(item => item._id === configId);
   const rows = configId
     ? (readinessByConfigId[configId] ?? fallbackRows)
     : fallbackRows;
@@ -56,10 +56,12 @@ export function TestSearch({
     try {
       const result = await searchEmbeddings({
         schemaName: values.schemaName,
+        sourceId: values.sourceId,
         text: values.text,
         targetField: values.targetField,
         limit: clampSearchLimit(values.limit),
         filter: values.filter,
+        scope: values.scope,
       });
       setHits(result.hits);
     } catch (reason) {
@@ -72,7 +74,7 @@ export function TestSearch({
 
   return (
     <div className="flex flex-col space-y-4">
-      <EmbeddingsReadiness rows={rows} />
+      {selected?.type === 'schema' ? <EmbeddingsReadiness rows={rows} /> : null}
       {workersEnabled === false ? (
         <Alert variant="warning">
           <Info className="size-4" />
@@ -89,6 +91,16 @@ export function TestSearch({
           </AlertDescription>
         </Alert>
       ) : null}
+      {selected?.type === 'source' && !selected.ready ? (
+        <Alert variant="warning">
+          <Info className="size-4" />
+          <AlertTitle>Source is not searchable</AlertTitle>
+          <AlertDescription>
+            Ready sources can be queried. Disable, revoke, or pending index
+            states fail closed.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       <Card>
         <CardHeader>
           <CardTitle>Query</CardTitle>
@@ -96,25 +108,14 @@ export function TestSearch({
         <CardContent>
           <SearchForm
             configs={configs}
-            schemas={schemas}
+            targets={targets}
+            targetId={targetId}
             schemaName={schemaName}
             configId={configId}
-            targetField={selected?.targetField ?? ''}
+            targetField={config?.targetField ?? ''}
             rows={rows}
             pending={pending}
-            onSchemaChange={next => {
-              setSchemaName(next);
-              const pool = configs.filter(config => config.schemaName === next);
-              const ready = pool.find(config =>
-                isSearchReady(readinessByConfigId[config._id] ?? [])
-              );
-              setConfigId(ready?._id ?? pool[0]?._id ?? '');
-            }}
-            onConfigChange={next => {
-              setConfigId(next);
-              const matched = configs.find(config => config._id === next);
-              if (matched) setSchemaName(matched.schemaName);
-            }}
+            onTargetChange={setTargetId}
             onSubmit={runSearch}
           />
         </CardContent>
@@ -132,7 +133,12 @@ export function TestSearch({
             <CardTitle>Results</CardTitle>
           </CardHeader>
           <CardContent>
-            <SearchResults hits={hits} sourceFields={selected?.sourceFields} />
+            <SearchResults
+              hits={hits}
+              sourceFields={
+                selected?.type === 'schema' ? config?.sourceFields : undefined
+              }
+            />
           </CardContent>
         </Card>
       ) : null}

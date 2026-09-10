@@ -14,3 +14,5 @@ export * from './source-fields';
 export * from './config-change';
 export * from './index-state';
 export * from './config-catalogue';
+export * from './source';
+export * from './catalog';

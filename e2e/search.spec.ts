@@ -52,6 +52,34 @@ test.describe('test search', () => {
     ).toHaveCount(0);
   });
 
+  test('searches a generic source without leaking text, hashes, or links', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings/test?sourceId=src_storage');
+    await expect(
+      page.getByRole('combobox', { name: 'Search source' })
+    ).toContainText('Invoices');
+    await page.getByLabel('Query').fill('invoice');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await expect(page.getByText('src_storage')).toBeVisible();
+    await expect(page.getByText('doc_9')).toBeVisible();
+    await expect(page.getByText('{"tag":"invoice"}')).toBeVisible();
+    await expect(page.getByText('https://files.example/item')).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /files\.example/ })
+    ).toHaveCount(0);
+    await expect(page.getByText('secret excerpt')).toHaveCount(0);
+    await expect(page.getByText('super-secret')).toHaveCount(0);
+    await expect(page.getByText('abc')).toHaveCount(0);
+    await expect(
+      page.getByRole('columnheader', { name: 'embedding' })
+    ).toHaveCount(0);
+    await expect(page.getByRole('columnheader', { name: 'text' })).toHaveCount(
+      0
+    );
+  });
+
   test('searches when workers are off', async ({ page }) => {
     await resetMock('workers-off');
     await page.goto('/embeddings/test');

@@ -132,6 +132,71 @@ export type MockBackfillRun = {
   createdMs: number;
 };
 
+export type MockSourceKind = 'conduit-storage' | 'external';
+export type MockSourceState =
+  | 'pending'
+  | 'ready'
+  | 'disabled'
+  | 'revoked'
+  | 'failed';
+
+export type MockSourceCounts = {
+  pendingCount: number;
+  queuedCount: number;
+  extractingCount: number;
+  indexedCount: number;
+  skippedCount: number;
+  failedCount: number;
+  staleCount: number;
+  deletedCount: number;
+};
+
+export type MockEmbeddingSource = {
+  _id: string;
+  label?: string;
+  kind: MockSourceKind;
+  state: MockSourceState;
+  partitionSubject: string;
+  provider: string;
+  model: string;
+  dimensions: number;
+  similarity: 'cosine' | 'euclidean' | 'dotProduct';
+  selectors?: Record<string, unknown>;
+  metadataAllowlist: string[];
+  chunkIndexStatus?: 'pending' | 'ready' | 'failed';
+  createdAt: string;
+  updatedAt: string;
+  counts: MockSourceCounts;
+  extractionQueue?: MockQueueCounts;
+};
+
+export type MockTeam = {
+  _id: string;
+  name: string;
+  parentTeam: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MockContainer = {
+  _id: string;
+  name: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MockFolder = {
+  _id: string;
+  name: string;
+  container: string;
+  isPublic: boolean;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type MockAdminState = {
   scenario: MockScenario;
   modules: MockModule[];
@@ -141,8 +206,13 @@ export type MockAdminState = {
   configs: MockEmbeddingConfig[];
   indexesBySchemaId: Record<string, MockVectorIndex[]>;
   backfills: MockBackfillRun[];
+  sources: MockEmbeddingSource[];
+  teams: MockTeam[];
+  containers: MockContainer[];
+  folders: MockFolder[];
   tokens: Set<string>;
   lastSettingsPatchHadApiKey: boolean;
   configSeq: number;
   backfillSeq: number;
+  sourceSeq: number;
 };

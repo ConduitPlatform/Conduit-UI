@@ -11,6 +11,13 @@ describe('formatBreadcrumbSegment', () => {
     expect(formatBreadcrumbSegment('new', 'embeddings', 'configs')).toBe(
       'New config'
     );
+    expect(formatBreadcrumbSegment('sources', 'embeddings')).toBe('Sources');
+    expect(formatBreadcrumbSegment('new', 'embeddings', 'sources')).toBe(
+      'New source'
+    );
+    expect(
+      formatBreadcrumbSegment('src_storage', 'embeddings', 'sources')
+    ).toBe('Source');
     expect(
       formatBreadcrumbSegment('cfg_product', 'embeddings', 'configs')
     ).toBe('Config');

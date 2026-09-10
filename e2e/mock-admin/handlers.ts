@@ -35,6 +35,7 @@ import {
   toApiConfig,
   toApiRun,
 } from './state.ts';
+import { handleSourceCatalogRoutes } from './source-handlers.ts';
 import { isMockScenario } from './types.ts';
 import type {
   MockBackfillRun,
@@ -1057,6 +1058,12 @@ export async function handleMockRequest(
     return;
   }
 
+  if (
+    await handleSourceCatalogRoutes(request, response, method, pathname, search)
+  ) {
+    return;
+  }
+
   if (pathname === '/embeddings/search' && method === 'POST') {
     const body = await readJsonBody(request);
     if (!isRecord(body)) {
@@ -1065,8 +1072,12 @@ export async function handleMockRequest(
     }
     const text = readString(body.text);
     const schemaName = readString(body.schemaName);
-    if (!text || !schemaName) {
-      badRequest(response, 'schemaName and text are required');
+    const sourceId = readString(body.sourceId);
+    if (!text || Boolean(schemaName) === Boolean(sourceId)) {
+      badRequest(
+        response,
+        'Search requires exactly one of schemaName or sourceId.'
+      );
       return;
     }
     if (text === 'fail') {
@@ -1078,6 +1089,38 @@ export async function handleMockRequest(
     }
     if (text === 'nomatch') {
       sendJson(response, 200, { hits: [] });
+      return;
+    }
+    if (sourceId) {
+      const source = getState().sources.find(item => item._id === sourceId);
+      if (!source) {
+        notFound(response, 'Embedding source not found');
+        return;
+      }
+      sendJson(response, 200, {
+        hits: [
+          {
+            document: {
+              sourceId,
+              documentId: 'doc_9',
+              externalDocumentId: 'ext-9',
+              chunkKey: 'c0',
+              ordinal: 0,
+              mimeType: 'application/pdf',
+              storageFileId: 'file_1',
+              connectorReference: 'https://files.example/item',
+              metadata: { tag: 'invoice', password: 'super-secret' },
+              text: 'secret excerpt',
+              contentHash: 'abc',
+              embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            },
+            score: 0.88,
+            distance: 0.12,
+            metric: 'cosine',
+            provider: 'mongodb',
+          },
+        ],
+      });
       return;
     }
     sendJson(response, 200, {

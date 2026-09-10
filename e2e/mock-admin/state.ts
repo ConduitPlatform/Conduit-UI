@@ -17,6 +17,10 @@ import {
   CONFIG_SCHEMA_NAME,
   E2E_ENV_NAME,
   FIXED_NOW,
+  ACME_TEAM_ID,
+  DOCS_CONTAINER_ID,
+  DOCS_CONTAINER_NAME,
+  INVOICES_FOLDER_NAME,
   LEGACY_CONFIG_ID,
   LEGACY_MODEL,
   OPENAI_COMPATIBLE_PROVIDER,
@@ -27,7 +31,9 @@ import {
   PROVIDER_MODEL,
   PROVIDER_DIMENSIONS,
   READY_CONFIG_ID,
+  READY_EXTERNAL_SOURCE_ID,
   READY_INDEX_NAME,
+  READY_STORAGE_SOURCE_ID,
   SECOND_PROVIDER,
   SECOND_PROVIDER_DIMENSIONS,
   SECOND_PROVIDER_MODEL,
@@ -43,12 +49,17 @@ import type {
   MockAdminState,
   MockBackfillRun,
   MockCapabilities,
+  MockContainer,
   MockEmbeddingConfig,
+  MockEmbeddingSource,
   MockEmbeddingsSettings,
+  MockFolder,
   MockModule,
   MockQueueCounts,
   MockScenario,
   MockSchema,
+  MockSourceCounts,
+  MockTeam,
 } from './types.ts';
 
 function emptyQueue(): MockQueueCounts {
@@ -328,6 +339,127 @@ function readyIndexes() {
   ];
 }
 
+function emptySourceCounts(): MockSourceCounts {
+  return {
+    pendingCount: 0,
+    queuedCount: 0,
+    extractingCount: 0,
+    indexedCount: 0,
+    skippedCount: 0,
+    failedCount: 0,
+    staleCount: 0,
+    deletedCount: 0,
+  };
+}
+
+function defaultTeams(): MockTeam[] {
+  return [
+    {
+      _id: ACME_TEAM_ID,
+      name: 'Acme',
+      parentTeam: '',
+      isDefault: true,
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+    },
+  ];
+}
+
+function defaultContainers(): MockContainer[] {
+  return [
+    {
+      _id: DOCS_CONTAINER_ID,
+      name: DOCS_CONTAINER_NAME,
+      isPublic: false,
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+    },
+  ];
+}
+
+function defaultFolders(): MockFolder[] {
+  return [
+    {
+      _id: 'fld_invoices',
+      name: INVOICES_FOLDER_NAME,
+      container: DOCS_CONTAINER_NAME,
+      isPublic: false,
+      url: '',
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+    },
+  ];
+}
+
+function readySources(): MockEmbeddingSource[] {
+  return [
+    {
+      _id: READY_STORAGE_SOURCE_ID,
+      label: 'Invoices',
+      kind: 'conduit-storage',
+      state: 'ready',
+      partitionSubject: `Team:${ACME_TEAM_ID}`,
+      provider: OPENAI_COMPATIBLE_PROVIDER,
+      model: PROVIDER_MODEL,
+      dimensions: PROVIDER_DIMENSIONS,
+      similarity: 'cosine',
+      selectors: {
+        container: DOCS_CONTAINER_NAME,
+        folderPrefix: INVOICES_FOLDER_NAME,
+        mimeTypes: ['application/pdf'],
+      },
+      metadataAllowlist: ['tag'],
+      chunkIndexStatus: 'ready',
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+      counts: {
+        ...emptySourceCounts(),
+        queuedCount: 2,
+        extractingCount: 1,
+        indexedCount: 4,
+        failedCount: 1,
+      },
+      extractionQueue: {
+        waiting: 1,
+        active: 0,
+        completed: 3,
+        failed: 2,
+        delayed: 1,
+        paused: 0,
+      },
+    },
+    {
+      _id: READY_EXTERNAL_SOURCE_ID,
+      label: 'Knowledge base',
+      kind: 'external',
+      state: 'ready',
+      partitionSubject: `Team:${ACME_TEAM_ID}`,
+      provider: OPENAI_COMPATIBLE_PROVIDER,
+      model: PROVIDER_MODEL,
+      dimensions: PROVIDER_DIMENSIONS,
+      similarity: 'cosine',
+      metadataAllowlist: ['tag'],
+      chunkIndexStatus: 'ready',
+      createdAt: FIXED_NOW,
+      updatedAt: FIXED_NOW,
+      counts: {
+        ...emptySourceCounts(),
+        indexedCount: 3,
+      },
+    },
+  ];
+}
+
+function catalogFields(sources: MockEmbeddingSource[] = []) {
+  return {
+    sources,
+    teams: defaultTeams(),
+    containers: defaultContainers(),
+    folders: defaultFolders(),
+    sourceSeq: sources.length,
+  };
+}
+
 function readyState(enabled: boolean): MockAdminState {
   return {
     scenario: enabled ? 'ready' : 'workers-off',
@@ -344,6 +476,7 @@ function readyState(enabled: boolean): MockAdminState {
     lastSettingsPatchHadApiKey: false,
     configSeq: 1,
     backfillSeq: 0,
+    ...catalogFields(readySources()),
   };
 }
 
@@ -367,6 +500,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         lastSettingsPatchHadApiKey: false,
         configSeq: 0,
         backfillSeq: 0,
+        ...catalogFields(),
       };
     case 'blank':
       return {
@@ -413,6 +547,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         lastSettingsPatchHadApiKey: false,
         configSeq: 0,
         backfillSeq: 0,
+        ...catalogFields(),
       };
     case 'no-embeddings':
       return {
@@ -428,6 +563,7 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         lastSettingsPatchHadApiKey: false,
         configSeq: 0,
         backfillSeq: 0,
+        ...catalogFields(),
       };
     default: {
       const exhaustive: never = scenario;
@@ -508,5 +644,32 @@ export function toApiRun(run: MockBackfillRun) {
     error: run.error,
     createdAt: run.createdAt,
     updatedAt: run.updatedAt,
+  };
+}
+
+export function emptySourceDocumentCounts(): MockSourceCounts {
+  return emptySourceCounts();
+}
+
+export function toApiSource(source: MockEmbeddingSource) {
+  return {
+    id: source._id,
+    ...(source.label ? { label: source.label } : {}),
+    kind: source.kind,
+    state: source.state,
+    partitionSubject: source.partitionSubject,
+    provider: source.provider,
+    model: source.model,
+    dimensions: source.dimensions,
+    similarity: source.similarity,
+    ...(source.selectors
+      ? { selectors: JSON.stringify(source.selectors) }
+      : {}),
+    metadataAllowlist: [...source.metadataAllowlist],
+    ...(source.chunkIndexStatus
+      ? { chunkIndexStatus: source.chunkIndexStatus }
+      : {}),
+    createdAt: source.createdAt,
+    updatedAt: source.updatedAt,
   };
 }

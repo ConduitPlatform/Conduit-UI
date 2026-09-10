@@ -2,17 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { SearchableCombobox } from '@/components/embeddings/configs/searchable-combobox';
 import { SearchFilterFields } from '@/components/embeddings/search/search-filter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { EmbeddingConfigOption } from '@/lib/models/embeddings/config';
@@ -25,74 +19,90 @@ import {
   parseSearchFilter,
   parseSearchLimit,
   searchBlockAction,
+  type SearchTarget,
 } from '@/lib/models/embeddings/search-view';
+import { sourceKindLabel } from '@/lib/models/embeddings/source';
 
 export type SearchFormValues = {
-  schemaName: string;
+  schemaName?: string;
+  sourceId?: string;
   configId: string;
   targetField: string;
   text: string;
   limit: number;
   filter?: Record<string, unknown>;
+  scope?: string;
 };
 
 type SearchFormProps = {
   configs: EmbeddingConfigOption[];
-  schemas: string[];
+  targets: SearchTarget[];
+  targetId: string;
   schemaName: string;
   configId: string;
   targetField: string;
   rows: ReadinessRow[];
   pending: boolean;
-  onSchemaChange: (schemaName: string) => void;
-  onConfigChange: (configId: string) => void;
+  onTargetChange: (targetId: string) => void;
   onSubmit: (values: SearchFormValues) => void;
 };
 
 export function SearchForm({
   configs,
-  schemas,
+  targets,
+  targetId,
   schemaName,
   configId,
   targetField,
   rows,
   pending,
-  onSchemaChange,
-  onConfigChange,
+  onTargetChange,
   onSubmit,
 }: SearchFormProps) {
   const [text, setText] = useState('');
   const [limit, setLimit] = useState(String(DEFAULT_SEARCH_LIMIT));
   const [filterText, setFilterText] = useState('');
+  const [scope, setScope] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [limitError, setLimitError] = useState<string>();
   const [filterError, setFilterError] = useState<string>();
-  const block = searchBlockAction(rows);
-  const blocked = !isSearchReady(rows);
-  const schemaConfigs = useMemo(
+  const selected = targets.find(target => target.id === targetId);
+  const schemaTarget = selected?.type === 'schema';
+  const sourceReady = selected?.type === 'source' ? selected.ready : false;
+  const block = schemaTarget ? searchBlockAction(rows) : undefined;
+  const blocked = schemaTarget ? !isSearchReady(rows) : !sourceReady;
+  const options = useMemo(
     () =>
-      schemaName
-        ? configs.filter(config => config.schemaName === schemaName)
-        : configs,
-    [configs, schemaName]
+      targets.map(target => ({
+        value: target.id,
+        label:
+          target.type === 'schema'
+            ? `Schema · ${target.label}`
+            : `${sourceKindLabel(target.kind)} · ${target.label}`,
+      })),
+    [targets]
   );
 
   const submit = () => {
     const parsedLimit = parseSearchLimit(limit);
-    const parsedFilter = parseSearchFilter(filterText);
+    const parsedFilter = schemaTarget
+      ? parseSearchFilter(filterText)
+      : { ok: true as const, filter: undefined };
     setLimitError(parsedLimit.ok ? undefined : parsedLimit.error);
     setFilterError(parsedFilter.ok ? undefined : parsedFilter.error);
     if (!parsedLimit.ok || !parsedFilter.ok) return;
-    if (blocked || pending || !schemaName || !configId) return;
+    if (blocked || pending || !selected) return;
     const trimmed = text.trim();
     if (!trimmed) return;
     onSubmit({
-      schemaName,
-      configId,
+      schemaName: selected.type === 'schema' ? selected.schemaName : undefined,
+      sourceId: selected.type === 'source' ? selected.sourceId : undefined,
+      configId: selected.type === 'schema' ? selected.configId : '',
       targetField,
       text: trimmed,
       limit: parsedLimit.limit,
       filter: parsedFilter.filter,
+      scope: selected.type === 'source' ? scope.trim() || undefined : undefined,
     });
   };
 
@@ -104,55 +114,31 @@ export function SearchForm({
       }}
       className="grid gap-4"
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="search-schema">Schema</Label>
-          <Select
-            value={schemaName || undefined}
-            onValueChange={onSchemaChange}
-            disabled={schemas.length === 0}
-          >
-            <SelectTrigger id="search-schema" className="h-8 min-h-8">
-              <SelectValue placeholder="Select a schema" />
-            </SelectTrigger>
-            <SelectContent>
-              {schemas.map(schema => (
-                <SelectItem key={schema} value={schema}>
-                  {schema}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="search-config">Config</Label>
-          <Select
-            value={configId || undefined}
-            onValueChange={onConfigChange}
-            disabled={schemaConfigs.length === 0}
-          >
-            <SelectTrigger id="search-config" className="h-8 min-h-8">
-              <SelectValue placeholder="Select a config" />
-            </SelectTrigger>
-            <SelectContent>
-              {schemaConfigs.map(item => (
-                <SelectItem key={item._id} value={item._id}>
-                  {item.schemaName} · {item.targetField}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
       <div className="space-y-1.5">
-        <Label htmlFor="search-target">Target field</Label>
-        <Input
-          id="search-target"
-          value={targetField}
-          disabled
-          className="font-mono disabled:bg-muted disabled:text-foreground disabled:opacity-100"
+        <Label htmlFor="search-target-source">Source</Label>
+        <SearchableCombobox
+          id="search-target-source"
+          value={targetId}
+          options={options}
+          disabled={options.length === 0}
+          placeholder="Select a config or source"
+          searchPlaceholder="Search configs and sources"
+          emptyLabel="No matching sources"
+          ariaLabel="Search source"
+          onValueChange={onTargetChange}
         />
       </div>
+      {schemaTarget ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="search-target">Target field</Label>
+          <Input
+            id="search-target"
+            value={targetField}
+            disabled
+            className="font-mono disabled:bg-muted disabled:text-foreground disabled:opacity-100"
+          />
+        </div>
+      ) : null}
       <div className="space-y-1.5">
         <Label htmlFor="search-text">Query</Label>
         <Textarea
@@ -202,21 +188,41 @@ export function SearchForm({
           </p>
         )}
       </div>
-      <SearchFilterFields
-        open={filterOpen}
-        onOpenChange={setFilterOpen}
-        value={filterText}
-        error={filterError}
-        onChange={next => {
-          setFilterText(next);
-          setFilterError(undefined);
-        }}
-      />
+      {schemaTarget ? (
+        <SearchFilterFields
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          value={filterText}
+          error={filterError}
+          onChange={next => {
+            setFilterText(next);
+            setFilterError(undefined);
+          }}
+        />
+      ) : (
+        <div className="space-y-1.5">
+          <Label htmlFor="search-scope">Scope</Label>
+          <Input
+            id="search-scope"
+            value={scope}
+            placeholder="Team:id (optional)"
+            autoComplete="off"
+            onChange={event => setScope(event.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Optional. Must match the source partition when set.
+          </p>
+        </div>
+      )}
       <div className="flex min-h-8 flex-wrap items-center gap-3">
         <Button
           type="submit"
           disabled={
-            blocked || pending || !schemaName || !configId || !text.trim()
+            blocked ||
+            pending ||
+            !selected ||
+            !text.trim() ||
+            (schemaTarget && (!schemaName || !configId))
           }
         >
           {pending ? 'Searching…' : 'Search'}

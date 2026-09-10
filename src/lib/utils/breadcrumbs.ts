@@ -12,7 +12,7 @@ const MODULE_SEGMENT_LABELS: Record<string, Record<string, string>> = {
     configs: 'Configs',
     backfills: 'Backfills',
     test: 'Test Search',
-    new: 'New config',
+    sources: 'Sources',
     settings: 'Settings',
   },
 };
@@ -36,8 +36,12 @@ export function formatBreadcrumbSegment(
   if (known) return known;
 
   if (moduleSlug === 'embeddings') {
+    if (segment === 'new') {
+      return previousSegment === 'sources' ? 'New source' : 'New config';
+    }
     if (previousSegment === 'configs') return 'Config';
     if (previousSegment === 'backfills') return 'Backfill';
+    if (previousSegment === 'sources') return 'Source';
   }
 
   return titleCaseSegment(segment);

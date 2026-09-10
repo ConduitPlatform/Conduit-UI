@@ -16,12 +16,14 @@ import { SemanticSearchHit } from '@/lib/models/embeddings/search';
 import {
   documentColumnKeys,
   formatSearchScore,
+  isGenericSearchDocument,
   isSearchViewMode,
   sanitizeSearchHits,
   searchHitKey,
   searchHitLabel,
   SearchViewMode,
 } from '@/lib/models/embeddings/search-view';
+import { GENERIC_SEARCH_SAFE_FIELDS } from '@/lib/models/embeddings/source';
 
 const SearchJsonView = lazy(() =>
   import('./search-json-view').then(module => ({
@@ -40,10 +42,16 @@ export function SearchResults({ hits, sourceFields }: SearchResultsProps) {
     () => sanitizeSearchHits(hits, sourceFields),
     [hits, sourceFields]
   );
-  const columns = useMemo(
-    () => documentColumnKeys(displayHits, undefined, sourceFields),
-    [displayHits, sourceFields]
-  );
+  const columns = useMemo(() => {
+    const generic = displayHits.some(hit =>
+      isGenericSearchDocument(hit.document)
+    );
+    return documentColumnKeys(
+      displayHits,
+      generic ? GENERIC_SEARCH_SAFE_FIELDS.length : undefined,
+      sourceFields
+    );
+  }, [displayHits, sourceFields]);
 
   return (
     <section aria-live="polite" className="space-y-3">

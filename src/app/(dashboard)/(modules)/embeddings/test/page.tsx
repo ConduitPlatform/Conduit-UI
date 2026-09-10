@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/page-header';
 import {
   getEmbeddingConfigs,
+  getEmbeddingSources,
   getEmbeddingsCapabilities,
   getEmbeddingsSettings,
   getEmbeddingsStatus,
@@ -29,12 +30,14 @@ export default async function EmbeddingsTestSearchPage(props: {
   const searchParams = await props.searchParams;
   const [
     configsResult,
+    sourcesResult,
     statusResult,
     capabilitiesResult,
     settingsResult,
     schemasResult,
   ] = await Promise.allSettled([
     getEmbeddingConfigs(),
+    getEmbeddingSources({ limit: 100 }),
     getEmbeddingsStatus(),
     getEmbeddingsCapabilities(),
     getEmbeddingsSettings(),
@@ -77,6 +80,7 @@ export default async function EmbeddingsTestSearchPage(props: {
   });
   const model = buildSearchPageModel({
     configs: searchableConfigs,
+    sources: settledValue(sourcesResult)?.sources,
     indexesBySchema,
     capabilities,
     capabilitiesError: settledError(capabilitiesResult),
@@ -89,6 +93,7 @@ export default async function EmbeddingsTestSearchPage(props: {
     schemaName:
       readSearchParam(searchParams.schema) ??
       readSearchParam(searchParams.schemaName),
+    sourceId: readSearchParam(searchParams.sourceId),
   });
 
   return (
@@ -97,18 +102,17 @@ export default async function EmbeddingsTestSearchPage(props: {
         <div>
           <PageTitle>Test Search</PageTitle>
           <PageDescription>
-            Run semantic search against a ready config.
+            Run semantic search against a ready schema config or generic source.
           </PageDescription>
         </div>
       </PageHeader>
       <TestSearch
         configs={model.configs}
-        schemas={model.schemas}
+        targets={model.targets}
         fallbackRows={model.fallbackRows}
         readinessByConfigId={model.readinessByConfigId}
         workersEnabled={workersEnabled}
-        initialConfigId={model.initialConfigId}
-        initialSchema={model.initialSchema}
+        initialTargetId={model.initialTargetId}
       />
     </div>
   );

@@ -67,4 +67,29 @@ describe('SearchResults', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.queryByText('super-secret')).toBeNull();
   });
+
+  it('renders generic identifiers without source text or clickable URIs', async () => {
+    render(
+      <SearchResults
+        hits={[
+          {
+            score: 0.42,
+            document: {
+              sourceId: 'src_1',
+              documentId: 'doc_9',
+              chunkKey: 'c0',
+              ordinal: 0,
+              connectorReference: 'https://files.example/item',
+              text: 'secret excerpt',
+              embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            },
+          },
+        ]}
+      />
+    );
+    expect(screen.getByText('src_1')).toBeInTheDocument();
+    expect(screen.getByText('doc_9')).toBeInTheDocument();
+    expect(screen.queryByText('secret excerpt')).toBeNull();
+    expect(screen.queryByRole('link')).toBeNull();
+  });
 });

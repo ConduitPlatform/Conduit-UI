@@ -7,6 +7,8 @@ import {
   BackfillListQuery,
   EmbeddingConfig,
   EmbeddingConfigInput,
+  EmbeddingSourceCreateInput,
+  EmbeddingSourceUpdateInput,
   EmbeddingsConfigResponse,
   EmbeddingsSettingsPatch,
   sanitizeEmbeddingsSettingsPatch,
@@ -18,17 +20,26 @@ import {
   unwrapDeletedEmbeddingConfig,
   unwrapEmbeddingConfig,
   unwrapEmbeddingConfigList,
+  unwrapEmbeddingSource,
+  unwrapEmbeddingSourceList,
+  unwrapEmbeddingSourceStatus,
   unwrapEmbeddingsCapabilities,
   unwrapEmbeddingsSettings,
   unwrapEmbeddingsStatus,
+  unwrapPurgeSource,
+  unwrapReconcileSource,
   unwrapSemanticSearch,
   unwrapStartBackfill,
   unwrapUpsertEmbeddingConfig,
+  unwrapUpsertEmbeddingSource,
   SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE,
   requireEligibleDeclaredSchema,
   validateEmbeddingConfigInput,
+  validateEmbeddingSourceInput,
+  validateEmbeddingSourceUpdate,
   listConfiguredProviders,
   CATALOGUE_UNAVAILABLE_MESSAGE,
+  assertSemanticSearchInput,
 } from '@/lib/models/embeddings';
 
 export const getEmbeddingConfigs = cache(
@@ -157,23 +168,116 @@ export const resumeBackfill = async (id: string) => {
 };
 
 export const searchEmbeddings = async (data: SemanticSearchInput) => {
-  const declared = await loadDeclaredSchemasOrThrow();
-  requireEligibleDeclaredSchema(
-    data.schemaName,
-    declared.schemas,
-    declared.systemSchemaNames
-  );
+  const target = assertSemanticSearchInput(data);
+  if (target.schemaName) {
+    const declared = await loadDeclaredSchemasOrThrow();
+    requireEligibleDeclaredSchema(
+      target.schemaName,
+      declared.schemas,
+      declared.systemSchemaNames
+    );
+  }
   const filter = serializeBackfillFilter(data.filter);
+  const scope = data.scope?.trim();
   const res = await (
     await getApiClient()
   ).post<unknown>('/embeddings/search', {
-    schemaName: data.schemaName,
-    text: data.text,
-    targetField: data.targetField,
+    text: target.text,
     limit: data.limit,
+    ...(target.schemaName
+      ? {
+          schemaName: target.schemaName,
+          targetField: data.targetField,
+        }
+      : { sourceId: target.sourceId }),
     ...(filter ? { filter } : {}),
+    ...(scope ? { scope } : {}),
   });
   return unwrapSemanticSearch(res.data);
+};
+
+export const getEmbeddingSources = cache(
+  async (args?: {
+    kind?: string;
+    state?: string;
+    skip?: number;
+    limit?: number;
+  }) => {
+    const res = await (
+      await getApiClient()
+    ).get<unknown>('/embeddings/sources', { params: args });
+    return unwrapEmbeddingSourceList(res.data);
+  }
+);
+
+export const getEmbeddingSource = cache(async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<unknown>(`/embeddings/sources/${id}`);
+  return unwrapEmbeddingSource(res.data);
+});
+
+export const createEmbeddingSource = async (
+  data: EmbeddingSourceCreateInput
+) => {
+  let settings;
+  try {
+    settings = await getEmbeddingsSettings();
+  } catch {
+    throw new Error(CATALOGUE_UNAVAILABLE_MESSAGE);
+  }
+  const body = validateEmbeddingSourceInput(data, settings.config);
+  const res = await (
+    await getApiClient()
+  ).post<unknown>('/embeddings/sources', body);
+  return unwrapUpsertEmbeddingSource(res.data);
+};
+
+export const updateEmbeddingSource = async (
+  id: string,
+  data: EmbeddingSourceUpdateInput
+) => {
+  const existing = await getEmbeddingSource(id);
+  const body = validateEmbeddingSourceUpdate(data, existing.kind);
+  const res = await (
+    await getApiClient()
+  ).patch<unknown>(`/embeddings/sources/${id}`, body);
+  return unwrapUpsertEmbeddingSource(res.data);
+};
+
+export const getEmbeddingSourceStatus = cache(async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<unknown>(`/embeddings/sources/${id}/status`);
+  return unwrapEmbeddingSourceStatus(res.data);
+});
+
+export const reconcileEmbeddingSource = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).post<unknown>(`/embeddings/sources/${id}/reconcile`);
+  return unwrapReconcileSource(res.data);
+};
+
+export const disableEmbeddingSource = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).post<unknown>(`/embeddings/sources/${id}/disable`);
+  return unwrapEmbeddingSource(res.data);
+};
+
+export const revokeEmbeddingSource = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).post<unknown>(`/embeddings/sources/${id}/revoke`);
+  return unwrapEmbeddingSource(res.data);
+};
+
+export const purgeEmbeddingSource = async (id: string) => {
+  const res = await (
+    await getApiClient()
+  ).delete<unknown>(`/embeddings/sources/${id}`);
+  return unwrapPurgeSource(res.data);
 };
 
 export const getEmbeddingsSettings = cache(

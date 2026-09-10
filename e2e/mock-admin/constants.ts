@@ -53,6 +53,12 @@ export const DATABASE_SYSTEM_SCHEMAS = [
 ] as const;
 export const READY_CONFIG_ID = 'cfg_product';
 export const LEGACY_CONFIG_ID = 'cfg_legacy';
+export const ACME_TEAM_ID = 'team_acme';
+export const DOCS_CONTAINER_ID = 'ctr_docs';
+export const DOCS_CONTAINER_NAME = 'docs';
+export const INVOICES_FOLDER_NAME = 'invoices';
+export const READY_STORAGE_SOURCE_ID = 'src_storage';
+export const READY_EXTERNAL_SOURCE_ID = 'src_external';
 export const LEGACY_MODEL = 'text-embedding-ada-002';
 export const READY_INDEX_NAME = 'Product_embedding_v2';
 export const PENDING_INDEX_NAME = 'Product_embedding_v1';

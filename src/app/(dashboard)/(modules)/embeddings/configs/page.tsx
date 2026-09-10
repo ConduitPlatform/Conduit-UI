@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
 import { ConfigsTable } from '@/components/embeddings/configs/configs-table';
+import { NewSourceMenu } from '@/components/embeddings/sources/new-source-menu';
 import { ErrorCard } from '@/components/error/ErrorCard';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +12,7 @@ import {
 import {
   getBackfills,
   getEmbeddingConfigs,
+  getEmbeddingSources,
   getEmbeddingsSettings,
 } from '@/lib/api/embeddings';
 import {
@@ -24,15 +25,25 @@ import {
   listConfiguredProviders,
 } from '@/lib/models/embeddings/config-catalogue';
 import { settledError, settledValue } from '@/lib/models/embeddings/errors';
+import {
+  schemaCatalogRow,
+  sourceCatalogRow,
+} from '@/lib/models/embeddings/catalog';
 
 export default async function EmbeddingConfigsPage() {
-  const [configsResult, backfillsResult, schemasResult, settingsResult] =
-    await Promise.allSettled([
-      getEmbeddingConfigs(),
-      getBackfills({ skip: 0, limit: 100 }),
-      getDeclaredSchemas(),
-      getEmbeddingsSettings(),
-    ]);
+  const [
+    configsResult,
+    sourcesResult,
+    backfillsResult,
+    schemasResult,
+    settingsResult,
+  ] = await Promise.allSettled([
+    getEmbeddingConfigs(),
+    getEmbeddingSources({ limit: 100 }),
+    getBackfills({ skip: 0, limit: 100 }),
+    getDeclaredSchemas(),
+    getEmbeddingsSettings(),
+  ]);
 
   const configsError = settledError(configsResult);
   if (configsError) {
@@ -50,6 +61,7 @@ export default async function EmbeddingConfigsPage() {
   }
 
   const configs = settledValue(configsResult) ?? [];
+  const sources = settledValue(sourcesResult)?.sources ?? [];
   const runs = settledValue(backfillsResult)?.runs ?? [];
   const settings = settledValue(settingsResult)?.config;
   const providers = listConfiguredProviders(settings);
@@ -64,12 +76,13 @@ export default async function EmbeddingConfigsPage() {
     configs.map(config => config.schemaName),
     settledValue(schemasResult)
   );
-  const rows = buildConfigListRows(
+  const schemaRows = buildConfigListRows(
     configs,
     indexesBySchema,
     runs,
     modelBlockedIds
-  );
+  ).map(schemaCatalogRow);
+  const rows = [...schemaRows, ...sources.map(sourceCatalogRow)];
 
   return (
     <div className="flex flex-col space-y-4">
@@ -77,18 +90,18 @@ export default async function EmbeddingConfigsPage() {
         <div>
           <PageTitle>Configs</PageTitle>
           <PageDescription>
-            Source fields, target field, and matching index.
+            Database schemas, Conduit Storage, and External sources.
           </PageDescription>
         </div>
         <PageActions className="flex-wrap">
-          <Button asChild>
-            <Link href="/embeddings/configs/new">
-              <Plus className="size-4" />
-              New config
-            </Link>
-          </Button>
+          <NewSourceMenu />
         </PageActions>
       </PageHeader>
+      {settledError(sourcesResult) ? (
+        <p className="text-sm text-muted-foreground">
+          Generic sources could not be loaded. Schema configs are still shown.
+        </p>
+      ) : null}
       <ConfigsTable rows={rows} />
     </div>
   );

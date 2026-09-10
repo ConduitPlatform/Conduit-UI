@@ -59,6 +59,7 @@ export default defineConfig({
         /navigation\.spec\.ts/,
         /overview\.spec\.ts/,
         /configs\.spec\.ts/,
+        /sources\.spec\.ts/,
         /backfills\.spec\.ts/,
         /search\.spec\.ts/,
         /settings\.spec\.ts/,

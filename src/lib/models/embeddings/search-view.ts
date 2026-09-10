@@ -15,6 +15,13 @@ import {
 import { parseOperatorFilterJson } from './operator-filter.ts';
 import type { SemanticSearchHit } from './search.ts';
 import { isSensitiveFieldName } from './source-fields.ts';
+import {
+  GENERIC_SEARCH_FORBIDDEN_FIELDS,
+  GENERIC_SEARCH_SAFE_FIELDS,
+  isSourceSearchable,
+  sourceDisplayName,
+  type EmbeddingSource,
+} from './source.ts';
 
 export const DEFAULT_SEARCH_LIMIT = 10;
 export const MIN_SEARCH_LIMIT = 1;
@@ -102,18 +109,108 @@ export function pickInitialSearchConfig<T extends EmbeddingConfig>(args: {
   );
 }
 
+export type SearchTarget =
+  | {
+      type: 'schema';
+      id: string;
+      configId: string;
+      schemaName: string;
+      label: string;
+    }
+  | {
+      type: 'source';
+      id: string;
+      sourceId: string;
+      kind: EmbeddingSource['kind'];
+      label: string;
+      ready: boolean;
+    };
+
 export type SearchPageModel = {
   configs: EmbeddingConfigOption[];
   schemas: string[];
+  sources: EmbeddingSource[];
+  targets: SearchTarget[];
+  initialTargetId: string;
   initialConfigId: string;
   initialSchema: string;
   fallbackRows: ReadinessRow[];
   readinessByConfigId: Record<string, ReadinessRow[]>;
 };
 
+export function toSchemaSearchTarget(config: EmbeddingConfig): SearchTarget {
+  return {
+    type: 'schema',
+    id: `schema:${config._id}`,
+    configId: config._id,
+    schemaName: config.schemaName,
+    label: `${config.schemaName} · ${config.targetField}`,
+  };
+}
+
+export function toSourceSearchTarget(source: EmbeddingSource): SearchTarget {
+  return {
+    type: 'source',
+    id: `source:${source._id}`,
+    sourceId: source._id,
+    kind: source.kind,
+    label: `${sourceDisplayName(source)} · ${source.kind === 'conduit-storage' ? 'Storage' : 'External'}`,
+    ready: isSourceSearchable(source),
+  };
+}
+
+export function buildSearchTargets(args: {
+  configs: EmbeddingConfig[];
+  sources?: EmbeddingSource[];
+}): SearchTarget[] {
+  return [
+    ...args.configs.map(toSchemaSearchTarget),
+    ...(args.sources ?? []).map(toSourceSearchTarget),
+  ];
+}
+
+export function pickInitialSearchTarget(args: {
+  targets: SearchTarget[];
+  targetId?: string;
+  configId?: string;
+  sourceId?: string;
+  schemaName?: string;
+}): SearchTarget | undefined {
+  const { targets, targetId, configId, sourceId, schemaName } = args;
+  if (targets.length === 0) return undefined;
+  if (targetId) {
+    const matched = targets.find(target => target.id === targetId);
+    if (matched) return matched;
+  }
+  if (sourceId) {
+    const matched = targets.find(
+      target => target.type === 'source' && target.sourceId === sourceId
+    );
+    if (matched) return matched;
+  }
+  if (configId) {
+    const matched = targets.find(
+      target => target.type === 'schema' && target.configId === configId
+    );
+    if (matched) return matched;
+  }
+  if (schemaName) {
+    const matched = targets.find(
+      target => target.type === 'schema' && target.schemaName === schemaName
+    );
+    if (matched) return matched;
+  }
+  return (
+    targets.find(target => target.type === 'schema') ??
+    targets.find(target => target.type === 'source' && target.ready) ??
+    targets[0]
+  );
+}
+
 export function buildSearchPageModel(args: {
   configs: EmbeddingConfig[];
   indexesBySchema: Record<string, SchemaIndexLookup>;
+  sources?: EmbeddingSource[];
   capabilities?: EmbeddingsReadinessInput['capabilities'];
   capabilitiesError?: string;
   settings?: EmbeddingsReadinessInput['settings'];
@@ -121,6 +218,8 @@ export function buildSearchPageModel(args: {
   workersEnabled?: boolean;
   configId?: string;
   schemaName?: string;
+  sourceId?: string;
+  targetId?: string;
 }): SearchPageModel {
   const initial = pickInitialSearchConfig({
     configs: args.configs,
@@ -144,18 +243,44 @@ export function buildSearchPageModel(args: {
       selectedConfigId: config._id,
     });
   }
+  const targets = buildSearchTargets({
+    configs: args.configs,
+    sources: args.sources,
+  });
+  const initialTarget = pickInitialSearchTarget({
+    targets,
+    targetId: args.targetId,
+    configId: args.configId ?? initial?._id,
+    sourceId: args.sourceId,
+    schemaName: args.schemaName ?? initial?.schemaName,
+  });
   return {
     configs: args.configs.map(toEmbeddingConfigOption),
     schemas: uniqueSearchSchemas(args.configs),
-    initialConfigId: initial?._id ?? '',
-    initialSchema: initial?.schemaName ?? args.schemaName ?? '',
+    sources: args.sources ?? [],
+    targets,
+    initialTargetId: initialTarget?.id ?? '',
+    initialConfigId:
+      initialTarget?.type === 'schema'
+        ? initialTarget.configId
+        : (initial?._id ?? ''),
+    initialSchema:
+      initialTarget?.type === 'schema'
+        ? initialTarget.schemaName
+        : (initial?.schemaName ?? args.schemaName ?? ''),
     fallbackRows: deriveEmbeddingsReadiness(shared),
     readinessByConfigId,
   };
 }
 
 export function searchHitKey(hit: SemanticSearchHit, index: number): string {
-  const documentId = hit.document._id;
+  const chunkKey = hit.document.chunkKey;
+  const documentId = hit.document.documentId ?? hit.document._id;
+  if (typeof chunkKey === 'string' && chunkKey.length > 0) {
+    return typeof documentId === 'string' && documentId.length > 0
+      ? `${documentId}:${chunkKey}`
+      : chunkKey;
+  }
   if (typeof documentId === 'string' && documentId.length > 0) {
     return documentId;
   }
@@ -255,13 +380,49 @@ export function sanitizeSearchDocument(
   return picked;
 }
 
+export function isGenericSearchDocument(
+  document: Record<string, unknown>
+): boolean {
+  return (
+    typeof document.sourceId === 'string' &&
+    (typeof document.chunkKey === 'string' ||
+      typeof document.documentId === 'string')
+  );
+}
+
+export function sanitizeGenericSearchDocument(
+  document: Record<string, unknown>
+): Record<string, unknown> {
+  const sanitized = sanitizeSearchValue(document);
+  if (!isRecord(sanitized)) return {};
+  const picked: Record<string, unknown> = {};
+  for (const field of GENERIC_SEARCH_SAFE_FIELDS) {
+    if (field in sanitized) picked[field] = sanitized[field];
+  }
+  for (const field of GENERIC_SEARCH_FORBIDDEN_FIELDS) {
+    delete picked[field];
+  }
+  if (isRecord(picked.metadata)) {
+    const metadata: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(picked.metadata)) {
+      if (isSecretLikeKey(key)) continue;
+      metadata[key] = value;
+    }
+    if (Object.keys(metadata).length > 0) picked.metadata = metadata;
+    else delete picked.metadata;
+  }
+  return picked;
+}
+
 export function sanitizeSearchHits(
   hits: SemanticSearchHit[],
   sourceFields?: readonly string[]
 ): SemanticSearchHit[] {
   return hits.map(hit => ({
     ...hit,
-    document: sanitizeSearchDocument(hit.document, sourceFields),
+    document: isGenericSearchDocument(hit.document)
+      ? sanitizeGenericSearchDocument(hit.document)
+      : sanitizeSearchDocument(hit.document, sourceFields),
   }));
 }
 
@@ -270,7 +431,10 @@ export function documentColumnKeys(
   maxColumns = MAX_SEARCH_DOCUMENT_COLUMNS,
   sourceFields?: readonly string[]
 ): string[] {
-  const preferred = ['_id', ...(sourceFields ?? [])];
+  const generic = hits.some(hit => isGenericSearchDocument(hit.document));
+  const preferred = generic
+    ? [...GENERIC_SEARCH_SAFE_FIELDS]
+    : ['_id', ...(sourceFields ?? [])];
   const seen = new Set<string>();
   const keys: string[] = [];
   const add = (key: string) => {
@@ -283,9 +447,11 @@ export function documentColumnKeys(
   for (const key of preferred) {
     if (hits.some(hit => key in hit.document)) add(key);
   }
-  for (const hit of hits) {
-    for (const key of Object.keys(hit.document)) {
-      add(key);
+  if (!generic) {
+    for (const hit of hits) {
+      for (const key of Object.keys(hit.document)) {
+        add(key);
+      }
     }
   }
   return keys;

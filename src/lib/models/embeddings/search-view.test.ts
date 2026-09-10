@@ -214,7 +214,8 @@ describe('hit rendering helpers', () => {
       workersEnabled: true,
       schemaName: 'Article',
     });
-    expect(model.initialConfigId).toBe('ready');
+    expect(model.initialTargetId).toBe('schema:ready');
+    expect(model.targets).toHaveLength(2);
     expect(model.schemas).toEqual(['Article']);
     expect(model.configs).toEqual([
       {
@@ -235,6 +236,43 @@ describe('hit rendering helpers', () => {
     expect(
       model.readinessByConfigId.ready?.some(row => row.id === 'index')
     ).toBe(true);
+  });
+
+  it('prefers a schema config over a ready generic source without sourceId', () => {
+    const ready = config({ _id: 'ready', schemaName: 'Article' });
+    const indexes = {
+      Article: [
+        {
+          field: 'embedding',
+          dimensions: 1536,
+          similarity: 'cosine' as const,
+          status: 'ready' as const,
+          queryable: true,
+        },
+      ],
+    };
+    const model = buildSearchPageModel({
+      configs: [ready],
+      indexesBySchema: indexes,
+      sources: [
+        {
+          _id: 'src_storage',
+          label: 'Invoices',
+          kind: 'conduit-storage',
+          state: 'ready',
+          partitionSubject: 'Team:acme',
+          provider: 'openai-compatible',
+          model: 'text-embedding-3-small',
+          dimensions: 1536,
+          similarity: 'cosine',
+          metadataAllowlist: [],
+          chunkIndexStatus: 'ready',
+        },
+      ],
+      workersEnabled: true,
+    });
+    expect(model.initialTargetId).toBe('schema:ready');
+    expect(model.targets).toHaveLength(2);
   });
 
   it('removes secret-like keys and prefers configured source fields', () => {
@@ -259,5 +297,54 @@ describe('hit rendering helpers', () => {
     expect(documentColumnKeys(hits, 6, ['title'])).toEqual(['_id', 'title']);
     expect(hits[0]?.document).not.toHaveProperty('password');
     expect(hits[0]?.document).not.toHaveProperty('embedding');
+  });
+
+  it('keeps only safe generic source identifiers and metadata', () => {
+    const document = {
+      sourceId: 'src_1',
+      documentId: 'doc_9',
+      externalDocumentId: 'ext-9',
+      chunkKey: 'c0',
+      ordinal: 0,
+      mimeType: 'text/plain',
+      storageFileId: 'file_1',
+      connectorReference: 'https://files.example/item',
+      metadata: { tag: 'invoice', password: 'nope' },
+      text: 'secret excerpt',
+      contentHash: 'abc',
+      embedding: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    };
+    const hits = sanitizeSearchHits([{ document, score: 0.88 }]);
+    expect(hits[0]?.document).toEqual({
+      sourceId: 'src_1',
+      documentId: 'doc_9',
+      externalDocumentId: 'ext-9',
+      chunkKey: 'c0',
+      ordinal: 0,
+      mimeType: 'text/plain',
+      storageFileId: 'file_1',
+      connectorReference: 'https://files.example/item',
+      metadata: { tag: 'invoice' },
+    });
+    expect(documentColumnKeys(hits)).toEqual([
+      'sourceId',
+      'documentId',
+      'externalDocumentId',
+      'chunkKey',
+      'ordinal',
+      'mimeType',
+    ]);
+    expect(documentColumnKeys(hits, 9)).toEqual([
+      'sourceId',
+      'documentId',
+      'externalDocumentId',
+      'chunkKey',
+      'ordinal',
+      'mimeType',
+      'storageFileId',
+      'connectorReference',
+      'metadata',
+    ]);
+    expect(searchHitKey(hits[0]!, 0)).toBe('doc_9:c0');
   });
 });

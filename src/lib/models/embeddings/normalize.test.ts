@@ -6,10 +6,15 @@ import {
   unwrapDatabaseVectorCapabilities,
   unwrapEmbeddingConfig,
   unwrapEmbeddingConfigList,
+  unwrapEmbeddingSource,
+  unwrapEmbeddingSourceList,
+  unwrapEmbeddingSourceStatus,
   unwrapEmbeddingsCapabilities,
   unwrapEmbeddingsSettings,
+  unwrapReconcileSource,
   unwrapSemanticSearch,
   unwrapUpsertEmbeddingConfig,
+  unwrapUpsertEmbeddingSource,
 } from './normalize';
 import { OPENAI_COMPATIBLE_PROVIDER } from './settings';
 
@@ -253,5 +258,84 @@ describe('settings unwrapping', () => {
       { name: 'text-embedding-3-small', dimensions: 1536 },
     ]);
     expect(provider?.defaultModel).toBe('text-embedding-3-small');
+  });
+
+  it('keeps storage extraction and extra security limits when present', () => {
+    const parsed = unwrapEmbeddingsSettings({
+      config: {
+        enabled: true,
+        providers: {},
+        security: {
+          maxChunkTextBytes: 2048,
+          maxChunksPerDocument: 12,
+        },
+        storageExtraction: {
+          maxFileBytes: 1024,
+          maxPdfPages: 4,
+        },
+      },
+    });
+    expect(parsed.config.security.maxChunkTextBytes).toBe(2048);
+    expect(parsed.config.storageExtraction?.maxFileBytes).toBe(1024);
+    expect(parsed.config.storageExtraction?.maxPdfPages).toBe(4);
+  });
+});
+
+describe('embedding source unwrapping', () => {
+  it('maps modelName, JSON selectors, and wrapped payloads', () => {
+    const doc = {
+      id: 'src_1',
+      kind: 'conduit-storage',
+      state: 'ready',
+      partitionSubject: 'Team:org',
+      provider: OPENAI_COMPATIBLE_PROVIDER,
+      modelName: 'text-embedding-3-small',
+      dimensions: '1536',
+      selectors: JSON.stringify({
+        container: 'docs',
+        mimeTypes: ['text/plain'],
+      }),
+      metadataAllowlist: ['tag'],
+      chunkIndexStatus: 'ready',
+    };
+    const source = unwrapEmbeddingSource(doc);
+    expect(source).toMatchObject({
+      _id: 'src_1',
+      kind: 'conduit-storage',
+      model: 'text-embedding-3-small',
+      dimensions: 1536,
+      selectors: { container: 'docs', mimeTypes: ['text/plain'] },
+      metadataAllowlist: ['tag'],
+      chunkIndexStatus: 'ready',
+    });
+    expect(unwrapEmbeddingSourceList({ sources: [doc], count: 1 }).count).toBe(
+      1
+    );
+    expect(
+      unwrapUpsertEmbeddingSource({ source: doc, warnings: ['pending'] })
+        .warnings
+    ).toEqual(['pending']);
+    const status = unwrapEmbeddingSourceStatus({
+      source: doc,
+      ready: true,
+      queuedCount: 2,
+      failedCount: 1,
+      extractionQueue: { failed: 3, delayed: 1 },
+      warnings: ['retry'],
+    });
+    expect(status.queuedCount).toBe(2);
+    expect(status.extractionQueue?.failed).toBe(3);
+    expect(unwrapReconcileSource({ queued: 4, scanned: 10 }).queued).toBe(4);
+  });
+
+  it('rejects unknown source kinds', () => {
+    expect(() =>
+      unwrapEmbeddingSource({
+        id: 'src_bad',
+        kind: 'onedrive',
+        state: 'ready',
+        partitionSubject: 'Team:org',
+      })
+    ).toThrow('Invalid embedding source response');
   });
 });

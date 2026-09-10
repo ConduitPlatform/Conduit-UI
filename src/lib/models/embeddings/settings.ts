@@ -32,6 +32,22 @@ export type EmbeddingsSecuritySettings = {
   embedTimeoutMs: number;
   maxEmbedInputBytes: number;
   maxEmbedResponseBytes: number;
+  maxChunksPerDocument?: number;
+  maxChunkTextBytes?: number;
+  maxMetadataBytes?: number;
+  maxReferenceBytes?: number;
+  sourceSearchMaxLimit?: number;
+};
+
+export type EmbeddingsStorageExtractionSettings = {
+  maxFileBytes?: number;
+  maxExtractedBytes?: number;
+  maxPdfPages?: number;
+  extractTimeoutMs?: number;
+  maxChunksPerFile?: number;
+  chunkOverlapBytes?: number;
+  queueConcurrency?: number;
+  queueAttempts?: number;
 };
 
 export type EmbeddingsSettings = {
@@ -40,6 +56,7 @@ export type EmbeddingsSettings = {
   providers: Record<string, EmbeddingsProviderSettings>;
   queue: EmbeddingsQueueSettings;
   security: EmbeddingsSecuritySettings;
+  storageExtraction?: EmbeddingsStorageExtractionSettings;
 };
 
 export type EmbeddingsSettingsPatch = {
