@@ -34,6 +34,10 @@ import { TypePicker, FieldType } from './type-picker';
 import { ExtraOptionsPopover } from './extra-options-popover';
 import { RelationPicker } from './relation-picker';
 import { NestedFieldsEditor } from './nested-fields-editor';
+import {
+  canAssignSchemaFieldName,
+  isLockedMongoSchemaField,
+} from '@/lib/database/system-schema-fields';
 
 export type FormField = {
   id: string;
@@ -68,6 +72,8 @@ type PendingTypeChange = {
 
 const FIELD_GRID =
   'grid grid-cols-[32px_minmax(10rem,14rem)_10rem_minmax(11rem,1fr)_3.25rem_3.25rem_3.25rem_3.25rem_2rem_2rem] gap-2';
+
+const SYSTEM_FIELD_HINT = 'MongoDB default field — not editable';
 
 function generateId() {
   return Math.random().toString(36).substring(2, 9);
@@ -221,9 +227,13 @@ export function FieldsTable({
     () => new Set(committedFieldNames ?? []),
     [committedFieldNames]
   );
+  const tableDepth = depth ?? 0;
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
+
+    const moved = fields[result.source.index];
+    if (moved && isLockedMongoSchemaField(moved.name, tableDepth)) return;
 
     const newFields = Array.from(fields);
     const [removed] = newFields.splice(result.source.index, 1);
@@ -243,7 +253,21 @@ export function FieldsTable({
 
   const handleUpdateField = (fieldId: string, updates: Partial<FormField>) => {
     onFieldsChange(
-      fields.map(f => (f.id === fieldId ? { ...f, ...updates } : f))
+      fields.map(f => {
+        if (f.id !== fieldId) return f;
+        if (isLockedMongoSchemaField(f.name, tableDepth)) return f;
+
+        let nextUpdates = updates;
+        if (
+          updates.name !== undefined &&
+          !canAssignSchemaFieldName(f.name, updates.name, tableDepth)
+        ) {
+          const { name: _ignored, ...rest } = updates;
+          nextUpdates = rest;
+        }
+
+        return { ...f, ...nextUpdates };
+      })
     );
   };
 
@@ -266,7 +290,12 @@ export function FieldsTable({
   };
 
   const handleDeleteField = (fieldId: string) => {
-    onFieldsChange(fields.filter(f => f.id !== fieldId));
+    onFieldsChange(
+      fields.filter(f => {
+        if (f.id !== fieldId) return true;
+        return !isLockedMongoSchemaField(f.name, tableDepth);
+      })
+    );
   };
 
   const fieldLabel = fieldToRemove?.name.trim() || 'this field';
@@ -338,13 +367,18 @@ export function FieldsTable({
                     {fields.map((field, index) => {
                       const isGroup = field.type === 'Group';
                       const displayName = field.name.trim() || 'field';
+                      const isSystemField = isLockedMongoSchemaField(
+                        field.name,
+                        tableDepth
+                      );
+                      const rowDisabled = disabled || isSystemField;
 
                       return (
                         <Draggable
                           key={field.id}
                           draggableId={field.id}
                           index={index}
-                          isDragDisabled={disabled}
+                          isDragDisabled={rowDisabled}
                         >
                           {(provided, snapshot) => (
                             <div
@@ -354,16 +388,26 @@ export function FieldsTable({
                                 FIELD_GRID,
                                 'items-center bg-background px-3 py-2 transition-colors hover:bg-muted/30',
                                 snapshot.isDragging && 'bg-muted shadow-2',
-                                disabled && 'opacity-75'
+                                rowDisabled && 'opacity-75'
                               )}
                             >
-                              <ControlHint content="Drag to reorder">
+                              <ControlHint
+                                content={
+                                  isSystemField
+                                    ? SYSTEM_FIELD_HINT
+                                    : 'Drag to reorder'
+                                }
+                              >
                                 <div
                                   {...provided.dragHandleProps}
-                                  aria-label={`Reorder ${displayName}`}
+                                  aria-label={
+                                    isSystemField
+                                      ? `${displayName} cannot be reordered`
+                                      : `Reorder ${displayName}`
+                                  }
                                   className={cn(
                                     'flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground',
-                                    disabled
+                                    rowDisabled
                                       ? 'cursor-not-allowed opacity-50'
                                       : 'cursor-grab'
                                   )}
@@ -383,8 +427,18 @@ export function FieldsTable({
                                   placeholder="field_name"
                                   aria-label={`Field name for ${displayName}`}
                                   className="h-8 font-mono text-sm slashed-zero"
-                                  disabled={disabled}
+                                  disabled={rowDisabled}
                                 />
+                                {isSystemField && (
+                                  <ControlHint content={SYSTEM_FIELD_HINT}>
+                                    <Badge
+                                      variant="secondary"
+                                      className="shrink-0 font-medium tracking-wide text-[10px]"
+                                    >
+                                      System
+                                    </Badge>
+                                  </ControlHint>
+                                )}
                                 {field.type === 'Relation' &&
                                   field.relatedModel && (
                                     <Badge
@@ -402,7 +456,7 @@ export function FieldsTable({
                                   onChange={type =>
                                     handleTypeChange(field, type)
                                   }
-                                  disabled={disabled}
+                                  disabled={rowDisabled}
                                   disableGroup={
                                     depth !== undefined &&
                                     maxDepth !== undefined &&
@@ -421,7 +475,7 @@ export function FieldsTable({
                                       })
                                     }
                                     availableModels={availableModels}
-                                    disabled={disabled}
+                                    disabled={rowDisabled}
                                     open={openRelationFieldId === field.id}
                                     onOpenChange={open => {
                                       if (open) {
@@ -442,7 +496,7 @@ export function FieldsTable({
                                       onClick={() =>
                                         setEditingGroupId(field.id)
                                       }
-                                      disabled={disabled}
+                                      disabled={rowDisabled}
                                     >
                                       <div className="flex min-w-0 items-center gap-1.5 truncate">
                                         <Boxes className="h-3.5 w-3.5 shrink-0 text-primary-muted-foreground" />
@@ -497,7 +551,7 @@ export function FieldsTable({
                                     }
                                     aria-label={`Default value for ${displayName}`}
                                     className="h-8 font-mono text-sm slashed-zero"
-                                    disabled={disabled}
+                                    disabled={rowDisabled}
                                   />
                                 )}
                               </div>
@@ -505,16 +559,20 @@ export function FieldsTable({
                               <div className="flex justify-center border-l border-border/70">
                                 <ControlHint
                                   content={
-                                    isGroup
-                                      ? 'Group fields use nested field rules, so Required is disabled.'
-                                      : 'Documents must include a value for this field.'
+                                    isSystemField
+                                      ? SYSTEM_FIELD_HINT
+                                      : isGroup
+                                        ? 'Group fields use nested field rules, so Required is disabled.'
+                                        : 'Documents must include a value for this field.'
                                   }
                                 >
                                   <Checkbox
                                     aria-label={
-                                      isGroup
-                                        ? `Required is disabled for ${displayName} because group fields use nested field rules`
-                                        : `Mark ${displayName} as required`
+                                      isSystemField
+                                        ? `Required is locked for ${displayName} because it is a MongoDB default field`
+                                        : isGroup
+                                          ? `Required is disabled for ${displayName} because group fields use nested field rules`
+                                          : `Mark ${displayName} as required`
                                     }
                                     checked={field.required ?? false}
                                     onCheckedChange={checked =>
@@ -523,7 +581,7 @@ export function FieldsTable({
                                         ...(checked ? {} : { unique: false }),
                                       })
                                     }
-                                    disabled={disabled || isGroup}
+                                    disabled={rowDisabled || isGroup}
                                   />
                                 </ControlHint>
                               </div>
@@ -531,16 +589,20 @@ export function FieldsTable({
                               <div className="flex justify-center">
                                 <ControlHint
                                   content={
-                                    isGroup
-                                      ? 'Group fields cannot be unique. Add unique constraints to nested fields instead.'
-                                      : 'Values must be unique. Enabling Unique also marks the field required.'
+                                    isSystemField
+                                      ? SYSTEM_FIELD_HINT
+                                      : isGroup
+                                        ? 'Group fields cannot be unique. Add unique constraints to nested fields instead.'
+                                        : 'Values must be unique. Enabling Unique also marks the field required.'
                                   }
                                 >
                                   <Checkbox
                                     aria-label={
-                                      isGroup
-                                        ? `Unique is disabled for ${displayName} because group fields cannot be unique`
-                                        : `Mark ${displayName} as unique`
+                                      isSystemField
+                                        ? `Unique is locked for ${displayName} because it is a MongoDB default field`
+                                        : isGroup
+                                          ? `Unique is disabled for ${displayName} because group fields cannot be unique`
+                                          : `Mark ${displayName} as unique`
                                     }
                                     checked={field.unique ?? false}
                                     onCheckedChange={checked =>
@@ -549,7 +611,7 @@ export function FieldsTable({
                                         ...(checked ? { required: true } : {}),
                                       })
                                     }
-                                    disabled={disabled || isGroup}
+                                    disabled={rowDisabled || isGroup}
                                   />
                                 </ControlHint>
                               </div>
@@ -557,16 +619,20 @@ export function FieldsTable({
                               <div className="flex justify-center">
                                 <ControlHint
                                   content={
-                                    isGroup
-                                      ? 'Nested groups cannot be arrays in this editor.'
-                                      : 'Store multiple values of this type.'
+                                    isSystemField
+                                      ? SYSTEM_FIELD_HINT
+                                      : isGroup
+                                        ? 'Nested groups cannot be arrays in this editor.'
+                                        : 'Store multiple values of this type.'
                                   }
                                 >
                                   <Checkbox
                                     aria-label={
-                                      isGroup
-                                        ? `Array is disabled for ${displayName} because nested groups cannot be arrays`
-                                        : `Make ${displayName} an array`
+                                      isSystemField
+                                        ? `Array is locked for ${displayName} because it is a MongoDB default field`
+                                        : isGroup
+                                          ? `Array is disabled for ${displayName} because nested groups cannot be arrays`
+                                          : `Make ${displayName} an array`
                                     }
                                     checked={field.isArray ?? false}
                                     onCheckedChange={checked =>
@@ -574,15 +640,25 @@ export function FieldsTable({
                                         isArray: Boolean(checked),
                                       })
                                     }
-                                    disabled={disabled || isGroup}
+                                    disabled={rowDisabled || isGroup}
                                   />
                                 </ControlHint>
                               </div>
 
                               <div className="flex justify-center">
-                                <ControlHint content="Sets type to ObjectId, required, and unique. Unchecking clears required and unique, but leaves the type unchanged.">
+                                <ControlHint
+                                  content={
+                                    isSystemField
+                                      ? SYSTEM_FIELD_HINT
+                                      : 'Sets type to ObjectId, required, and unique. Unchecking clears required and unique, but leaves the type unchanged.'
+                                  }
+                                >
                                   <Checkbox
-                                    aria-label={`Use ${displayName} as primary identifier`}
+                                    aria-label={
+                                      isSystemField
+                                        ? `Primary identifier is locked for ${displayName} because it is a MongoDB default field`
+                                        : `Use ${displayName} as primary identifier`
+                                    }
                                     checked={
                                       field.type === 'ObjectId' &&
                                       Boolean(field.unique) &&
@@ -602,7 +678,7 @@ export function FieldsTable({
                                         });
                                       }
                                     }}
-                                    disabled={disabled}
+                                    disabled={rowDisabled}
                                   />
                                 </ControlHint>
                               </div>
@@ -613,19 +689,29 @@ export function FieldsTable({
                                   onUpdate={updates =>
                                     handleUpdateField(field.id, updates)
                                   }
-                                  disabled={disabled || isGroup}
+                                  disabled={rowDisabled || isGroup}
                                 />
                               </div>
 
                               <div className="flex justify-center">
-                                <ControlHint content={`Remove ${displayName}`}>
+                                <ControlHint
+                                  content={
+                                    isSystemField
+                                      ? SYSTEM_FIELD_HINT
+                                      : `Remove ${displayName}`
+                                  }
+                                >
                                   <Button
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                     onClick={() => setFieldToRemove(field)}
-                                    disabled={disabled}
-                                    aria-label={`Remove ${displayName}`}
+                                    disabled={rowDisabled}
+                                    aria-label={
+                                      isSystemField
+                                        ? `${displayName} cannot be removed`
+                                        : `Remove ${displayName}`
+                                    }
                                   >
                                     <X className="h-4 w-4" />
                                   </Button>
