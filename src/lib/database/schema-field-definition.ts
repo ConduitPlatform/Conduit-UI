@@ -12,6 +12,16 @@ export type NormalizedSchemaFieldDefinition = {
   groupFields?: Record<string, unknown>;
 };
 
+const FIELD_OPTION_KEYS = new Set([
+  'required',
+  'unique',
+  'select',
+  'default',
+  'description',
+  'enum',
+  'enumValues',
+]);
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -25,6 +35,48 @@ function coerceFieldType(type: unknown, relatedModel?: string): string {
     return 'Relation';
   }
   return typeof type === 'string' && type.length > 0 ? type : 'String';
+}
+
+function looksLikeFieldDefinition(value: unknown): boolean {
+  if (typeof value === 'string' && value.length > 0) return true;
+  if (Array.isArray(value)) return true;
+  return isPlainObject(value);
+}
+
+function extractFieldOptions(fieldDef: Record<string, unknown>) {
+  return {
+    required: fieldDef.required as boolean | undefined,
+    unique: fieldDef.unique as boolean | undefined,
+    select: fieldDef.select as boolean | undefined,
+    default: fieldDef.default,
+    description: fieldDef.description as string | undefined,
+    enumValues: fieldDef.enumValues ?? fieldDef.enum,
+  };
+}
+
+function partitionGroupFields(fieldDef: Record<string, unknown>): {
+  groupFields: Record<string, unknown>;
+  options: ReturnType<typeof extractFieldOptions>;
+} {
+  const groupFields: Record<string, unknown> = {};
+  const optionSource: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(fieldDef)) {
+    if (key === 'type') continue;
+    const isOptionKey = FIELD_OPTION_KEYS.has(key);
+    if (isOptionKey && !looksLikeFieldDefinition(value)) {
+      optionSource[key] = value;
+      continue;
+    }
+    if (looksLikeFieldDefinition(value)) {
+      groupFields[key] = value;
+    }
+  }
+
+  return {
+    groupFields,
+    options: extractFieldOptions(optionSource),
+  };
 }
 
 function unwrapDefinition(definition: unknown): {
@@ -53,6 +105,9 @@ function unwrapDefinition(definition: unknown): {
     } else {
       fieldDef = { ...fieldDef, type: 'String' };
     }
+  } else if (isPlainObject(fieldDef) && isPlainObject(fieldDef.type)) {
+    const { type: nested, ...parentRest } = fieldDef;
+    fieldDef = { ...parentRest, ...nested };
   }
 
   return { isArray, fieldDef };
@@ -83,11 +138,13 @@ export function normalizeSchemaFieldDefinition(
   const relatedModel = relatedModelFrom(fieldDef.model);
 
   if (!fieldDef.type && !relatedModel) {
+    const { groupFields, options } = partitionGroupFields(fieldDef);
     return {
       isArray,
       isGroup: true,
       type: 'Group',
-      groupFields: fieldDef,
+      groupFields,
+      ...options,
     };
   }
 
@@ -98,11 +155,6 @@ export function normalizeSchemaFieldDefinition(
     isGroup: false,
     type,
     ...(relatedModel ? { relatedModel } : {}),
-    required: fieldDef.required as boolean | undefined,
-    unique: fieldDef.unique as boolean | undefined,
-    select: fieldDef.select as boolean | undefined,
-    default: fieldDef.default,
-    description: fieldDef.description as string | undefined,
-    enumValues: fieldDef.enumValues ?? fieldDef.enum,
+    ...extractFieldOptions(fieldDef),
   };
 }
