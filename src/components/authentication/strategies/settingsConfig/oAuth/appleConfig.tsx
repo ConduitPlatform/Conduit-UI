@@ -281,7 +281,7 @@ export const AppleConfigForm: React.FC<
                 <div className="space-y-4 p-4">
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <InputField fieldName="teamId" label="Team ID" />
-                    <InputField fieldName="clientId" label="Client ID" />
+                    <InputField fieldName="clientId" label="Apple app ID" />
                   </div>
                   <InputField fieldName="keyId" label="Private key ID" />
                   <FormField

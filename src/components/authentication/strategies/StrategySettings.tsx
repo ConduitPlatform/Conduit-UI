@@ -79,7 +79,11 @@ export const StrategySettings: React.FC<StrategySettingsProps> = ({
       <DialogTrigger asChild>
         <Button variant="outline">Settings</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[90vh]">
+      <DialogContent
+        className={
+          strategy.key === 'apple' ? 'max-w-3xl max-h-[90vh]' : undefined
+        }
+      >
         <DialogHeader>
           <DialogTitle className={'flex flex-row justify-between mt-5'}>
             {strategy.name} settings configuration
@@ -94,20 +98,33 @@ export const StrategySettings: React.FC<StrategySettingsProps> = ({
           <DialogDescription asChild>
             <div>
               <hr className={'my-2'} />
-              <ScrollArea className="max-h-[calc(90vh-8rem)] pr-4">
-                {strategy.form ? (
-                  <strategy.form
-                    name={strategy.name}
-                    data={strategy.data}
-                    onSubmit={onSubmit}
-                    onCancel={() => {
-                      setOpen(false);
-                    }}
-                  />
-                ) : (
-                  'No settings available'
-                )}
-              </ScrollArea>
+              {strategy.key === 'apple' ? (
+                <ScrollArea className="max-h-[calc(90vh-8rem)] pr-4">
+                  {strategy.form ? (
+                    <strategy.form
+                      name={strategy.name}
+                      data={strategy.data}
+                      onSubmit={onSubmit}
+                      onCancel={() => {
+                        setOpen(false);
+                      }}
+                    />
+                  ) : (
+                    'No settings available'
+                  )}
+                </ScrollArea>
+              ) : strategy.form ? (
+                <strategy.form
+                  name={strategy.name}
+                  data={strategy.data}
+                  onSubmit={onSubmit}
+                  onCancel={() => {
+                    setOpen(false);
+                  }}
+                />
+              ) : (
+                'No settings available'
+              )}
             </div>
           </DialogDescription>
         </DialogHeader>
