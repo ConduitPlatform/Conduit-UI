@@ -187,22 +187,6 @@ export function unwrapDeletedEmbeddingConfig(
   return unwrapEmbeddingConfig(payload);
 }
 
-function parseJsonObjectField(
-  value: unknown
-): Record<string, unknown> | undefined {
-  if (value == null || value === '') return undefined;
-  if (typeof value === 'string') {
-    try {
-      const parsed: unknown = JSON.parse(value);
-      return isRecord(parsed) ? parsed : undefined;
-    } catch {
-      return undefined;
-    }
-  }
-  if (isRecord(value)) return { ...value };
-  return undefined;
-}
-
 export function unwrapEmbeddingSource(payload: unknown): EmbeddingSource {
   const raw =
     isRecord(payload) && isRecord(payload.source) ? payload.source : payload;
@@ -231,9 +215,9 @@ export function unwrapEmbeddingSource(payload: unknown): EmbeddingSource {
     model: readString(raw.model) ?? readString(raw.modelName) ?? '',
     dimensions: readNumber(raw.dimensions),
     similarity: isVectorSimilarity(raw.similarity) ? raw.similarity : 'cosine',
-    selectors: parseJsonObjectField(raw.selectors),
+    selectors: parseBackfillFilter(raw.selectors),
     metadataAllowlist: readStringArray(raw.metadataAllowlist),
-    syncCheckpoint: parseJsonObjectField(raw.syncCheckpoint),
+    syncCheckpoint: parseBackfillFilter(raw.syncCheckpoint),
     chunkSchemaName: readString(raw.chunkSchemaName),
     chunkIndexName: readString(raw.chunkIndexName),
     chunkIndexStatus: isVectorIndexStatus(raw.chunkIndexStatus)

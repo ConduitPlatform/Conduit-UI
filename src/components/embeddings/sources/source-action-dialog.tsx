@@ -11,7 +11,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-type SourceAction = 'disable' | 'enable' | 'revoke' | 'purge' | 'reconcile';
+export type SourceAction =
+  | 'disable'
+  | 'enable'
+  | 'revoke'
+  | 'purge'
+  | 'reconcile';
 
 const COPY: Record<
   SourceAction,

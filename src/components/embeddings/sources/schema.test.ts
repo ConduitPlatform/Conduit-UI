@@ -4,7 +4,7 @@ import {
   defaultSourceFormValues,
   embeddingSourceFormSchema,
   parseMetadataAllowlistInput,
-  sourceFormToCreateInput,
+  sourceFormToInput,
   toSourceFormValues,
 } from './schema';
 import type { EmbeddingSource } from '@/lib/models/embeddings/source';
@@ -35,7 +35,7 @@ describe('source form mapping', () => {
     expect(values.folderPrefix).toBe('invoices/');
     expect(values.mimeTypes).toEqual(['application/pdf']);
     expect(values.metadataAllowlist).toBe('tag');
-    expect(sourceFormToCreateInput(values)).toMatchObject({
+    expect(sourceFormToInput(values)).toMatchObject({
       kind: 'conduit-storage',
       selectors: {
         container: 'docs',
@@ -51,11 +51,11 @@ describe('source form mapping', () => {
     });
     allMimes.partitionSubject = 'Team:acme';
     allMimes.container = 'docs';
-    expect(sourceFormToCreateInput(allMimes).selectors).toEqual({
+    expect(sourceFormToInput(allMimes).selectors).toEqual({
       container: 'docs',
     });
     expect(
-      sourceFormToCreateInput({
+      sourceFormToInput({
         ...values,
         folderPrefix: 'invoices',
       }).selectors
@@ -88,6 +88,6 @@ describe('source form mapping', () => {
       kind: 'external',
       selectors: undefined,
     });
-    expect(sourceFormToCreateInput(values).selectors).toBeUndefined();
+    expect(sourceFormToInput(values).selectors).toBeUndefined();
   });
 });

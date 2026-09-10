@@ -117,3 +117,10 @@ export function settledError(
   if (result.status !== 'rejected') return undefined;
   return formatEmbeddingsApiError(result.reason);
 }
+
+export async function settle<T>(
+  promise: Promise<T>
+): Promise<PromiseSettledResult<T>> {
+  const [result] = await Promise.allSettled([promise]);
+  return result;
+}

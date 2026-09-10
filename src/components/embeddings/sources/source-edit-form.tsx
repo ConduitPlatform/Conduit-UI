@@ -15,12 +15,12 @@ import { updateEmbeddingSource } from '@/lib/api/embeddings';
 import { toast } from '@/lib/hooks/use-toast';
 import { formatEmbeddingsApiError } from '@/lib/models/embeddings/errors';
 import type { EmbeddingSource } from '@/lib/models/embeddings/source';
-import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
+import type { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
 import { rhfZodResolver } from '@/lib/zod-form';
 import {
   embeddingSourceFormSchema,
   EmbeddingSourceFormValues,
-  sourceFormToCreateInput,
+  sourceFormToInput,
   toSourceFormValues,
 } from './schema';
 import { SourceProfileFields } from './source-profile-fields';
@@ -70,7 +70,7 @@ export function SourceEditForm({
 
   const submit = useCallback(
     async (values: EmbeddingSourceFormValues) => {
-      const input = sourceFormToCreateInput(values);
+      const input = sourceFormToInput(values);
       try {
         const result = await updateEmbeddingSource(source._id, {
           label: input.label ?? '',

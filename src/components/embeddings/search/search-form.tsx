@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { EmbeddingConfigOption } from '@/lib/models/embeddings/config';
 import { ReadinessRow } from '@/lib/models/embeddings/readiness';
 import {
   DEFAULT_SEARCH_LIMIT,
@@ -34,7 +33,6 @@ export type SearchFormValues = {
 };
 
 type SearchFormProps = {
-  configs: EmbeddingConfigOption[];
   targets: SearchTarget[];
   targetId: string;
   schemaName: string;
@@ -47,7 +45,6 @@ type SearchFormProps = {
 };
 
 export function SearchForm({
-  configs,
   targets,
   targetId,
   schemaName,

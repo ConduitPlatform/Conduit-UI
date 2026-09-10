@@ -20,18 +20,6 @@ export const EMBEDDING_SOURCE_STATES = [
 ] as const;
 export type EmbeddingSourceState = (typeof EMBEDDING_SOURCE_STATES)[number];
 
-export const EMBEDDING_DOCUMENT_STATES = [
-  'pending',
-  'queued',
-  'extracting',
-  'indexed',
-  'skipped',
-  'failed',
-  'stale',
-  'deleted',
-] as const;
-export type EmbeddingDocumentState = (typeof EMBEDDING_DOCUMENT_STATES)[number];
-
 export const AUTOMATIC_STORAGE_MIME_TYPES = [
   'text/plain',
   'text/markdown',
@@ -41,13 +29,6 @@ export const AUTOMATIC_STORAGE_MIME_TYPES = [
 ] as const;
 export type AutomaticStorageMimeType =
   (typeof AUTOMATIC_STORAGE_MIME_TYPES)[number];
-
-export const USER_FACING_SOURCE_TYPES = [
-  'schema',
-  'conduit-storage',
-  'external',
-] as const;
-export type UserFacingSourceType = (typeof USER_FACING_SOURCE_TYPES)[number];
 
 export const PARTITION_SUBJECT_PATTERN =
   /^[A-Za-z][A-Za-z0-9_]*:[A-Za-z0-9._:-]{1,128}$/;
@@ -62,18 +43,6 @@ export const GENERIC_SEARCH_SAFE_FIELDS = [
   'storageFileId',
   'connectorReference',
   'metadata',
-] as const;
-
-export const GENERIC_SEARCH_FORBIDDEN_FIELDS = [
-  'text',
-  'content',
-  'excerpt',
-  'body',
-  'embedding',
-  'vector',
-  'contentHash',
-  'hash',
-  'partitionSubject',
 ] as const;
 
 export type StorageSourceSelectors = {
@@ -211,15 +180,6 @@ export function isAutomaticStorageMimeType(
   );
 }
 
-export function isUserFacingSourceType(
-  value: unknown
-): value is UserFacingSourceType {
-  return (
-    typeof value === 'string' &&
-    (USER_FACING_SOURCE_TYPES as readonly string[]).includes(value)
-  );
-}
-
 export function sourceKindLabel(kind: EmbeddingSourceKind): string {
   switch (kind) {
     case 'conduit-storage':
@@ -228,21 +188,6 @@ export function sourceKindLabel(kind: EmbeddingSourceKind): string {
       return 'External / custom';
     default: {
       const exhaustive: never = kind;
-      return exhaustive;
-    }
-  }
-}
-
-export function userFacingSourceTypeLabel(type: UserFacingSourceType): string {
-  switch (type) {
-    case 'schema':
-      return 'Database schema';
-    case 'conduit-storage':
-      return sourceKindLabel(type);
-    case 'external':
-      return sourceKindLabel(type);
-    default: {
-      const exhaustive: never = type;
       return exhaustive;
     }
   }
@@ -320,18 +265,23 @@ export function normalizeFolderPrefix(
   return withoutLeading.endsWith('/') ? withoutLeading : `${withoutLeading}/`;
 }
 
-export function parseMimeTypesForDisplay(
-  value: unknown
-): AutomaticStorageMimeType[] | undefined {
-  if (!Array.isArray(value) || value.length === 0) return undefined;
-  const mimeTypes = [
+function uniqueLowercaseStrings(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [
     ...new Set(
       value
         .filter((item): item is string => typeof item === 'string')
         .map(item => item.trim().toLowerCase())
-        .filter(isAutomaticStorageMimeType)
     ),
   ];
+}
+
+export function parseMimeTypesForDisplay(
+  value: unknown
+): AutomaticStorageMimeType[] | undefined {
+  const mimeTypes = uniqueLowercaseStrings(value).filter(
+    isAutomaticStorageMimeType
+  );
   return mimeTypes.length > 0 ? mimeTypes : undefined;
 }
 
@@ -339,17 +289,11 @@ export function normalizeMimeAllowlist(
   value: unknown
 ): AutomaticStorageMimeType[] | undefined {
   if (!Array.isArray(value) || value.length === 0) return undefined;
-  const mimeTypes = [
-    ...new Set(
-      value
-        .filter((item): item is string => typeof item === 'string')
-        .map(item => item.trim().toLowerCase())
-    ),
-  ];
-  if (mimeTypes.some(item => !isAutomaticStorageMimeType(item))) {
+  const mimeTypes = uniqueLowercaseStrings(value);
+  if (!mimeTypes.every(isAutomaticStorageMimeType)) {
     throw new Error(mimeAllowlistErrorMessage());
   }
-  return mimeTypes as AutomaticStorageMimeType[];
+  return mimeTypes;
 }
 
 export function mimeAllowlistErrorMessage(): string {
@@ -359,7 +303,7 @@ export function mimeAllowlistErrorMessage(): string {
 export function validateStorageSelectors(
   selectors: Record<string, unknown> | undefined
 ): StorageSourceSelectors {
-  const record = selectors && isRecord(selectors) ? selectors : undefined;
+  const record = isRecord(selectors) ? selectors : undefined;
   const container =
     typeof record?.container === 'string' ? record.container.trim() : '';
   if (!container) {

@@ -16,8 +16,6 @@ import type { TeamOption } from '@/lib/api/embeddings/source-options';
 import { useFormContext } from 'react-hook-form';
 import type { EmbeddingSourceFormValues } from './schema';
 
-export type { TeamOption };
-
 type ScopePickerProps = {
   teams: TeamOption[];
   disabled?: boolean;

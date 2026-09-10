@@ -11,6 +11,7 @@ import {
 } from '@/lib/api/embeddings/source-options';
 import {
   isEmbeddingsNotFound,
+  settle,
   settledError,
   settledValue,
 } from '@/lib/models/embeddings/errors';
@@ -40,9 +41,7 @@ export default async function EmbeddingSourceDetailPage(props: {
   const source = sourceResult.value;
   const selectors = parseStorageSelectors(source.selectors);
   const [statusResult, teams, containers] = await Promise.all([
-    Promise.allSettled([getEmbeddingSourceStatus(id)]).then(
-      results => results[0]
-    ),
+    settle(getEmbeddingSourceStatus(id)),
     loadTeamOptions(source.partitionSubject),
     loadContainerOptions(selectors?.container),
   ]);

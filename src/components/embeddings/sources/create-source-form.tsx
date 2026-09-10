@@ -25,13 +25,13 @@ import {
   type EmbeddingSourceKind,
   type StorageExtractionLimits,
 } from '@/lib/models/embeddings/source';
-import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
+import type { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
 import { rhfZodResolver } from '@/lib/zod-form';
 import {
   defaultSourceFormValues,
   embeddingSourceFormSchema,
   EmbeddingSourceFormValues,
-  sourceFormToCreateInput,
+  sourceFormToInput,
 } from './schema';
 import { SourceProfileFields } from './source-profile-fields';
 import { ScopePicker } from './scope-picker';
@@ -96,7 +96,7 @@ export function CreateSourceForm({
     async (values: EmbeddingSourceFormValues) => {
       try {
         const result = await createEmbeddingSource(
-          sourceFormToCreateInput({ ...values, kind })
+          sourceFormToInput({ ...values, kind })
         );
         toast({
           title: `${sourceKindLabel(kind)} source created`,

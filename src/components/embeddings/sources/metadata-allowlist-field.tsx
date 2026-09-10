@@ -12,13 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useFormContext } from 'react-hook-form';
 import type { EmbeddingSourceFormValues } from './schema';
 
-type MetadataAllowlistFieldProps = {
-  disabled?: boolean;
-};
-
-export function MetadataAllowlistField({
-  disabled,
-}: MetadataAllowlistFieldProps) {
+export function MetadataAllowlistField() {
   const { control } = useFormContext<EmbeddingSourceFormValues>();
   return (
     <FormField
@@ -35,7 +29,6 @@ export function MetadataAllowlistField({
             <Textarea
               id="source-metadata-allowlist"
               value={field.value ?? ''}
-              disabled={disabled}
               className="min-h-20 font-mono text-sm"
               placeholder="tag"
               onChange={field.onChange}

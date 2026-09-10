@@ -26,7 +26,6 @@ import {
   storageLimitExplanations,
   storageSelectorSummary,
   teamPartitionSubject,
-  userFacingSourceTypeLabel,
   validateMetadataAllowlist,
   validatePartitionSubject,
   validateStorageSelectors,
@@ -53,7 +52,6 @@ describe('source kinds and labels', () => {
   it('labels user-facing source types without hybrid language', () => {
     expect(isEmbeddingSourceKind('conduit-storage')).toBe(true);
     expect(isEmbeddingSourceKind('database')).toBe(false);
-    expect(userFacingSourceTypeLabel('schema')).toBe('Database schema');
     expect(sourceKindLabel('conduit-storage')).toBe('Conduit Storage');
     expect(sourceKindLabel('external')).toBe('External / custom');
   });

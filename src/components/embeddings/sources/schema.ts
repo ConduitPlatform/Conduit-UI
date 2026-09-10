@@ -102,7 +102,7 @@ export function parseMetadataAllowlistInput(value: string): string[] {
   ];
 }
 
-export function sourceFormToCreateInput(values: EmbeddingSourceFormValues) {
+export function sourceFormToInput(values: EmbeddingSourceFormValues) {
   const metadataAllowlist = parseMetadataAllowlistInput(
     values.metadataAllowlist ?? ''
   );

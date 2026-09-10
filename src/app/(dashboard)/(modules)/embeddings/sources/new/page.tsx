@@ -10,7 +10,7 @@ import {
   loadContainerOptions,
   loadTeamOptions,
 } from '@/lib/api/embeddings/source-options';
-import { settledValue } from '@/lib/models/embeddings/errors';
+import { settle, settledValue } from '@/lib/models/embeddings/errors';
 import { OPENAI_COMPATIBLE_PROVIDER } from '@/lib/models/embeddings/settings';
 import {
   listConfiguredProviders,
@@ -32,7 +32,7 @@ export default async function NewEmbeddingSourcePage(props: {
   if (!isEmbeddingSourceKind(kindParam)) notFound();
 
   const [settingsResult, teams, containers] = await Promise.all([
-    Promise.allSettled([getEmbeddingsSettings()]).then(results => results[0]),
+    settle(getEmbeddingsSettings()),
     loadTeamOptions(),
     loadContainerOptions(),
   ]);

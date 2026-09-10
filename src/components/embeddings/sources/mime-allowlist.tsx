@@ -24,11 +24,7 @@ const MIME_LABELS: Record<
   'application/pdf': 'PDF',
 };
 
-type MimeAllowlistFieldProps = {
-  disabled?: boolean;
-};
-
-export function MimeAllowlistField({ disabled }: MimeAllowlistFieldProps) {
+export function MimeAllowlistField() {
   const { control } = useFormContext<EmbeddingSourceFormValues>();
 
   return (
@@ -36,7 +32,7 @@ export function MimeAllowlistField({ disabled }: MimeAllowlistFieldProps) {
       control={control}
       name="mimeTypes"
       render={({ field }) => {
-        const selected = Array.isArray(field.value) ? field.value : [];
+        const selected = field.value ?? [];
         return (
           <FormItem className="space-y-1.5">
             <FormLabel>Supported types</FormLabel>
@@ -55,7 +51,6 @@ export function MimeAllowlistField({ disabled }: MimeAllowlistFieldProps) {
                     <FormControl>
                       <Checkbox
                         checked={checked}
-                        disabled={disabled}
                         onCheckedChange={value => {
                           if (value === true) {
                             field.onChange([...selected, mime]);

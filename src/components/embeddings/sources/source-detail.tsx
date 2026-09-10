@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SourceEditForm } from '@/components/embeddings/sources/source-edit-form';
 import { SourceStatusCard } from '@/components/embeddings/sources/source-status-card';
-import { SourceActionDialog } from '@/components/embeddings/sources/source-action-dialog';
+import {
+  SourceActionDialog,
+  type SourceAction,
+} from '@/components/embeddings/sources/source-action-dialog';
 import { IngestInstructions } from '@/components/embeddings/sources/ingest-instructions';
 import {
   PageActions,
@@ -37,13 +40,11 @@ import {
   type EmbeddingSourceStatus,
   type StorageExtractionLimits,
 } from '@/lib/models/embeddings/source';
-import { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
+import type { ConfigProviderChoice } from '@/lib/models/embeddings/config-catalogue';
 import type {
   ContainerOption,
   TeamOption,
 } from '@/lib/api/embeddings/source-options';
-
-type SourceAction = 'disable' | 'enable' | 'revoke' | 'purge' | 'reconcile';
 
 type SourceDetailProps = {
   source: EmbeddingSource;

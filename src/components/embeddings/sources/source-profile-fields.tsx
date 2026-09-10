@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { VECTOR_SIMILARITIES } from '@/lib/models/embeddings/config';
 import {
-  ConfigProviderChoice,
+  type ConfigProviderChoice,
   DIMENSIONS_HELP,
   findCatalogueModel,
   MODEL_ABSENT_EDIT_DETAIL,

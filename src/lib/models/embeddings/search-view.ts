@@ -16,7 +16,6 @@ import { parseOperatorFilterJson } from './operator-filter.ts';
 import type { SemanticSearchHit } from './search.ts';
 import { isSensitiveFieldName } from './source-fields.ts';
 import {
-  GENERIC_SEARCH_FORBIDDEN_FIELDS,
   GENERIC_SEARCH_SAFE_FIELDS,
   isSourceSearchable,
   sourceDisplayName,
@@ -398,9 +397,6 @@ export function sanitizeGenericSearchDocument(
   const picked: Record<string, unknown> = {};
   for (const field of GENERIC_SEARCH_SAFE_FIELDS) {
     if (field in sanitized) picked[field] = sanitized[field];
-  }
-  for (const field of GENERIC_SEARCH_FORBIDDEN_FIELDS) {
-    delete picked[field];
   }
   if (isRecord(picked.metadata)) {
     const metadata: Record<string, unknown> = {};

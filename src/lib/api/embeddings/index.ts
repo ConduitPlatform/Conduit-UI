@@ -7,6 +7,7 @@ import {
   BackfillListQuery,
   EmbeddingConfig,
   EmbeddingConfigInput,
+  EmbeddingSource,
   EmbeddingSourceCreateInput,
   EmbeddingSourceUpdateInput,
   EmbeddingsConfigResponse,
@@ -42,6 +43,7 @@ import {
   CATALOGUE_UNAVAILABLE_MESSAGE,
   assertSemanticSearchInput,
 } from '@/lib/models/embeddings';
+import { collectPagedItems } from '@/lib/models/embeddings/selector-pages';
 
 export const getEmbeddingConfigs = cache(
   async (args?: { schemaName?: string; id?: string }) => {
@@ -286,37 +288,28 @@ export const enableEmbeddingSource = async (id: string) => {
   }
 };
 
-const SOURCE_PAGE_SIZE = 100;
-const SOURCE_PAGE_CAP = 1000;
-
 export async function listEmbeddingSources(args?: {
   kind?: string;
   state?: string;
 }): Promise<{
-  sources: Awaited<ReturnType<typeof getEmbeddingSources>>['sources'];
+  sources: EmbeddingSource[];
   count: number;
   truncated: boolean;
 }> {
-  const first = await getEmbeddingSources({
-    ...args,
-    skip: 0,
-    limit: SOURCE_PAGE_SIZE,
+  const collected = await collectPagedItems({
+    fetchPage: async (skip, limit) => {
+      const page = await getEmbeddingSources({
+        ...args,
+        skip,
+        limit,
+      });
+      return { items: page.sources, total: page.count };
+    },
   });
-  const sources = [...first.sources];
-  const total = first.count;
-  while (sources.length < total && sources.length < SOURCE_PAGE_CAP) {
-    const page = await getEmbeddingSources({
-      ...args,
-      skip: sources.length,
-      limit: SOURCE_PAGE_SIZE,
-    });
-    if (page.sources.length === 0) break;
-    sources.push(...page.sources);
-  }
   return {
-    sources,
-    count: total,
-    truncated: sources.length < total,
+    sources: collected.items,
+    count: collected.total,
+    truncated: collected.truncated,
   };
 }
 

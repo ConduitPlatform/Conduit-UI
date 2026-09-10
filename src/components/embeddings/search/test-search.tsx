@@ -106,7 +106,6 @@ export function TestSearch({
         </CardHeader>
         <CardContent>
           <SearchForm
-            configs={configs}
             targets={targets}
             targetId={targetId}
             schemaName={schemaName}

@@ -78,9 +78,10 @@ export default async function EmbeddingsTestSearchPage(props: {
     status,
     settingsEnabled: settings?.enabled,
   });
+  const sourceList = settledValue(sourcesResult);
   const model = buildSearchPageModel({
     configs: searchableConfigs,
-    sources: settledValue(sourcesResult)?.sources,
+    sources: sourceList?.sources,
     indexesBySchema,
     capabilities,
     capabilitiesError: settledError(capabilitiesResult),
@@ -110,11 +111,10 @@ export default async function EmbeddingsTestSearchPage(props: {
         <p className="text-sm text-muted-foreground">
           Generic sources could not be loaded. Schema configs are still shown.
         </p>
-      ) : settledValue(sourcesResult)?.truncated ? (
+      ) : sourceList?.truncated ? (
         <p className="text-sm text-muted-foreground">
-          Showing {settledValue(sourcesResult)?.sources.length.toLocaleString()}{' '}
-          of {settledValue(sourcesResult)?.count.toLocaleString()} generic
-          sources.
+          Showing {sourceList.sources.length.toLocaleString()} of{' '}
+          {sourceList.count.toLocaleString()} generic sources.
         </p>
       ) : null}
       <TestSearch

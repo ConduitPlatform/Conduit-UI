@@ -16,14 +16,11 @@ import type { ContainerOption } from '@/lib/api/embeddings/source-options';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { EmbeddingSourceFormValues } from './schema';
 
-export type { ContainerOption };
-
 const ALL_FOLDERS_VALUE = '';
 const ALL_FOLDERS_LABEL = 'All folders';
 
 type StorageSelectorFieldsProps = {
   containers: ContainerOption[];
-  disabled?: boolean;
   error?: string;
   truncated?: boolean;
   total?: number;
@@ -31,7 +28,6 @@ type StorageSelectorFieldsProps = {
 
 export function StorageSelectorFields({
   containers,
-  disabled,
   error,
   truncated,
   total,
@@ -45,7 +41,7 @@ export function StorageSelectorFields({
   const [folderQuery, setFolderQuery] = useState('');
 
   useEffect(() => {
-    if (!container || disabled) {
+    if (!container) {
       setFolders([]);
       setFolderTruncated(false);
       return;
@@ -74,7 +70,7 @@ export function StorageSelectorFields({
     return () => {
       cancelled = true;
     };
-  }, [container, disabled, folderQuery]);
+  }, [container, folderQuery]);
 
   const containerOptions = useMemo(
     () =>
@@ -121,7 +117,7 @@ export function StorageSelectorFields({
                 id="source-container"
                 value={field.value ?? ''}
                 options={containerOptions}
-                disabled={disabled || Boolean(error)}
+                disabled={Boolean(error)}
                 placeholder={
                   error ? 'Containers unavailable' : 'Select a container'
                 }
@@ -163,7 +159,7 @@ export function StorageSelectorFields({
                 id="source-folder"
                 value={field.value ?? ALL_FOLDERS_VALUE}
                 options={folderOptions}
-                disabled={disabled || !container}
+                disabled={!container}
                 placeholder={ALL_FOLDERS_LABEL}
                 searchPlaceholder="Search folders"
                 emptyLabel="No matching folders"
