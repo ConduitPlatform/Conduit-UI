@@ -63,6 +63,9 @@ type FieldsTableProps = {
   className?: string;
   committedFieldNames?: string[];
   fillHeight?: boolean;
+  parentPath?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
 };
 
 type PendingTypeChange = {
@@ -209,6 +212,9 @@ export function FieldsTable({
   className,
   committedFieldNames,
   fillHeight = false,
+  parentPath,
+  emptyTitle = 'No fields yet',
+  emptyDescription = 'Add a field to define this schema. Names must start with a letter or underscore.',
 }: FieldsTableProps) {
   const [openRelationFieldId, setOpenRelationFieldId] = React.useState<
     string | null
@@ -489,28 +495,43 @@ export function FieldsTable({
                                   />
                                 ) : field.type === 'Group' ? (
                                   <>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-8 w-full justify-between px-2 text-xs font-normal"
-                                      onClick={() =>
-                                        setEditingGroupId(field.id)
-                                      }
-                                      disabled={rowDisabled}
-                                    >
-                                      <div className="flex min-w-0 items-center gap-1.5 truncate">
-                                        <Boxes className="h-3.5 w-3.5 shrink-0 text-primary-muted-foreground" />
-                                        <span className="truncate">
-                                          Edit fields
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span className="inline-flex w-full min-w-0">
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-8 w-full justify-between gap-2 px-2.5 text-xs font-normal"
+                                            onClick={() =>
+                                              setEditingGroupId(field.id)
+                                            }
+                                            disabled={rowDisabled}
+                                            aria-label={`Edit nested fields for ${displayName} (${field.fields?.length || 0})`}
+                                          >
+                                            <div className="flex min-w-0 items-center gap-1.5 truncate">
+                                              <Boxes className="h-3.5 w-3.5 shrink-0 text-primary-muted-foreground" />
+                                              <span className="truncate">
+                                                Edit fields
+                                              </span>
+                                            </div>
+                                            <Badge
+                                              variant="secondary"
+                                              className="h-5 px-1.5 font-medium tabular-nums text-[10px]"
+                                            >
+                                              {field.fields?.length || 0}
+                                            </Badge>
+                                          </Button>
                                         </span>
-                                      </div>
-                                      <Badge
-                                        variant="secondary"
-                                        className="h-5 px-1.5 font-medium tabular-nums text-[10px]"
+                                      </TooltipTrigger>
+                                      <TooltipContent
+                                        side="top"
+                                        className="max-w-xs text-pretty"
                                       >
-                                        {field.fields?.length || 0}
-                                      </Badge>
-                                    </Button>
+                                        <p>
+                                          Edit nested fields for {displayName}
+                                        </p>
+                                      </TooltipContent>
+                                    </Tooltip>
                                     <NestedFieldsEditor
                                       open={
                                         autoOpenGroup === field.id ||
@@ -527,6 +548,11 @@ export function FieldsTable({
                                         }
                                       }}
                                       fieldName={field.name}
+                                      fieldPath={
+                                        parentPath
+                                          ? `${parentPath}.${field.name}`
+                                          : field.name
+                                      }
                                       fields={field.fields || []}
                                       onSave={nestedFields =>
                                         handleUpdateField(field.id, {
@@ -725,8 +751,8 @@ export function FieldsTable({
                     {fields.length === 0 && (
                       <EmptyState
                         icon={Table2}
-                        title="No fields yet"
-                        description="Add a field to define this schema. Names must start with a letter or underscore."
+                        title={emptyTitle}
+                        description={emptyDescription}
                         className="py-12"
                       />
                     )}
