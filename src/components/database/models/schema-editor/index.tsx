@@ -114,6 +114,11 @@ export function extractFieldsFromSchema(schemaFields: any): FormField[] {
           name,
           type: 'Group' as FieldType,
           isArray: field.isArray,
+          required: field.required,
+          unique: field.unique,
+          select: field.select,
+          default: normalizeFieldDefault(field.default),
+          description: field.description,
           fields: extractFieldsFromSchema(field.groupFields),
         };
       }
