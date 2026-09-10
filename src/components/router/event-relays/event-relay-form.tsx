@@ -111,7 +111,7 @@ export function EventRelayForm({
           <InputField
             fieldName="busEvent"
             label="Bus event"
-            placeholder="database:update:Order"
+            placeholder="database:change:Order"
             description="Exact Redis channel. Wildcards are not supported."
             classNames={{ input: 'font-mono slashed-zero' }}
           />

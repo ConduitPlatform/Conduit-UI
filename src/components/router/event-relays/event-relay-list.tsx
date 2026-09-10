@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Plus, Radio, Zap } from 'lucide-react';
+import { BookOpen, Plus, Radio, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/ui/data-table';
@@ -16,6 +16,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   PageActions,
   PageDescription,
   PageHeader,
@@ -23,6 +29,7 @@ import {
 } from '@/components/ui/page-header';
 import { SearchInput } from '@/components/ui/form-inputs/SearchInput';
 import { DeleteAlert } from '@/components/helpers/delete';
+import { EventRelayDocs } from '@/components/router/event-relays/event-relay-docs';
 import { EventRelayForm } from '@/components/router/event-relays/event-relay-form';
 import { EventRelay, EventRelayWriteRequest } from '@/lib/models/Router';
 import {
@@ -47,7 +54,22 @@ export function EventRelayList({
   const router = useRouter();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editing, setEditing] = useState<EventRelay | null>(null);
+  const [docsOpen, setDocsOpen] = useState(count === 0);
   const { save, isSaving } = useSettingsSave('Event Relay');
+
+  const toggleDocs = useCallback(() => {
+    setDocsOpen(open => {
+      const next = !open;
+      if (next) {
+        requestAnimationFrame(() => {
+          document
+            .getElementById('event-relay-docs')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+      return next;
+    });
+  }, []);
 
   const refresh = useCallback(() => {
     router.refresh();
@@ -166,7 +188,7 @@ export function EventRelayList({
 
   return (
     <div className="space-y-6">
-      <PageHeader>
+      <PageHeader className="flex-wrap">
         <div>
           <PageTitle>Event Relays</PageTitle>
           <PageDescription>
@@ -175,6 +197,27 @@ export function EventRelayList({
           </PageDescription>
         </div>
         <PageActions>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={toggleDocs}
+                  aria-expanded={docsOpen}
+                  aria-controls="event-relay-docs"
+                >
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  How it works
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {docsOpen
+                  ? 'Hide how Event Relays work'
+                  : 'Show how Event Relays work'}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <Button type="button" onClick={() => setIsCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New relay
@@ -193,6 +236,8 @@ export function EventRelayList({
         </Alert>
       ) : null}
 
+      <EventRelayDocs open={docsOpen} onOpenChange={setDocsOpen} />
+
       <div className="flex items-center justify-between">
         <SearchInput placeholder="Search relays" className="w-56" />
       </div>
@@ -201,7 +246,7 @@ export function EventRelayList({
         <EmptyState
           icon={Radio}
           title="No event relays"
-          description="Create a relay to forward an exact bus event to clients subscribed on /events/."
+          description="Read how relays work above, then create one."
           action={
             <Button type="button" onClick={() => setIsCreateOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
