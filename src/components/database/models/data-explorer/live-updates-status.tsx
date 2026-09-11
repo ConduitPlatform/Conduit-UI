@@ -33,12 +33,13 @@ export function LiveUpdatesStatus({
 }: LiveUpdatesStatusProps) {
   if (connectionState === 'idle') return null;
 
-  const statusHint =
-    connectionState === 'error'
-      ? errorMessage || 'Live updates are unavailable'
-      : connectionState === 'live'
-        ? 'Listening for document changes. The table does not refresh until you apply updates.'
-        : 'Connecting to live updates.';
+  let statusHint = 'Connecting to live updates.';
+  if (connectionState === 'error') {
+    statusHint = errorMessage || 'Live updates are unavailable';
+  } else if (connectionState === 'live') {
+    statusHint =
+      'Listening for document changes. The table does not refresh until you apply updates.';
+  }
 
   return (
     <TooltipProvider>

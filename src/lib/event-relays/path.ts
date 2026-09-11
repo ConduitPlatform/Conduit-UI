@@ -12,13 +12,13 @@ export const RESERVED_SOCKET_EVENTS = new Set([
   'pong',
 ]);
 
-export const FORBIDDEN_PATH_SEGMENTS = new Set([
+const FORBIDDEN_PATH_SEGMENTS = new Set([
   '__proto__',
   'constructor',
   'prototype',
 ]);
 
-export const MAX_PATH_SEGMENTS = 8;
+const MAX_PATH_SEGMENTS = 8;
 export const MAX_TEMPLATE_BYTES = 16 * 1024;
 
 const PATH_SEGMENT = /^[A-Za-z_][A-Za-z0-9_]*$/;

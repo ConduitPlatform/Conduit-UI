@@ -1,10 +1,10 @@
 'use server';
 import { getApiClient } from '@/lib/api';
-import { RouterSettings } from '@/lib/models/Router';
-import type {
+import {
   EventRelay,
   EventRelaysResponse,
   EventRelayWriteRequest,
+  RouterSettings,
 } from '@/lib/models/Router';
 import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
 import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
@@ -108,13 +108,6 @@ export const getEventRelays = async (params?: {
   const res = await (
     await getApiClient()
   ).get<EventRelaysResponse>('/router/event-relays', { params });
-  return res.data;
-};
-
-export const getEventRelay = async (id: string) => {
-  const res = await (
-    await getApiClient()
-  ).get<EventRelay>(`/router/event-relays/${id}`);
   return res.data;
 };
 

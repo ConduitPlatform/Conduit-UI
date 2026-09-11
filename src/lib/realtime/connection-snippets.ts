@@ -1,4 +1,4 @@
-export const DATABASE_SOCKET_NAMESPACE = '/database/';
+const DATABASE_SOCKET_NAMESPACE = '/database/';
 export const DATABASE_SOCKET_PATH = '/realtime';
 export const DATABASE_SOCKET_LISTEN_EVENTS = [
   'change',
@@ -6,7 +6,7 @@ export const DATABASE_SOCKET_LISTEN_EVENTS = [
   'conduit_error',
 ] as const;
 
-export type SubscribePayload = {
+type SubscribePayload = {
   schema: string;
   documentId?: string;
 };
@@ -83,7 +83,7 @@ socket.on('conduit_error', (error) => {
 `;
 }
 
-export type PostmanConnection = {
+type PostmanConnection = {
   serverUrl: string;
   path: string;
   clientVersion: 'v4';

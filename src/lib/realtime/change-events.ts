@@ -1,6 +1,6 @@
-export const DATABASE_CHANGE_EVENT_VERSION = 1;
+const DATABASE_CHANGE_EVENT_VERSION = 1;
 
-export const DATABASE_CHANGE_OPERATIONS = [
+const DATABASE_CHANGE_OPERATIONS = [
   'insert',
   'update',
   'replace',

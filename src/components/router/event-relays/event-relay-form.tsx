@@ -60,9 +60,7 @@ export function EventRelayForm({
         'Message template'
       );
       const sample = parseJsonField(
-        watched.samplePayload && watched.samplePayload.trim() !== ''
-          ? watched.samplePayload
-          : '{}',
+        watched.samplePayload?.trim() || '{}',
         'Sample payload'
       );
       return previewEventRelay({
@@ -82,9 +80,10 @@ export function EventRelayForm({
       values.messageTemplate,
       'Message template'
     );
+    const notes = values.notes?.trim();
     await onSubmit({
       name: values.name,
-      notes: values.notes?.trim() ? values.notes.trim() : undefined,
+      notes: notes || undefined,
       active: values.active,
       busEvent: values.busEvent,
       socketEvent: values.socketEvent,

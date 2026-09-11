@@ -1,5 +1,4 @@
-import { lookupOwnPath, parseDotPath } from './path.ts';
-import { MAX_TEMPLATE_BYTES } from './path.ts';
+import { lookupOwnPath, MAX_TEMPLATE_BYTES } from './path.ts';
 
 const PLACEHOLDER = /\{\{\s*payload\.([A-Za-z_][A-Za-z0-9_.]*)\s*\}\}/g;
 const EXACT_PLACEHOLDER = /^\{\{\s*payload\.([A-Za-z_][A-Za-z0-9_.]*)\s*\}\}$/;
@@ -27,13 +26,10 @@ function renderValue(value: unknown, payload: unknown, depth: number): unknown {
     return value.map(item => renderValue(item, payload, depth + 1));
   }
   if (value !== null && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
     const output: Record<string, unknown> = {};
-    for (const key of Object.keys(value as Record<string, unknown>)) {
-      output[key] = renderValue(
-        (value as Record<string, unknown>)[key],
-        payload,
-        depth + 1
-      );
+    for (const key of Object.keys(record)) {
+      output[key] = renderValue(record[key], payload, depth + 1);
     }
     return output;
   }
@@ -43,7 +39,6 @@ function renderValue(value: unknown, payload: unknown, depth: number): unknown {
 function interpolateString(value: string, payload: unknown): unknown {
   const exact = value.trim().match(EXACT_PLACEHOLDER);
   if (exact) {
-    parseDotPath(exact[1]);
     const resolved = lookupOwnPath(payload, exact[1]);
     if (resolved === undefined) {
       throw new Error(`Placeholder payload.${exact[1]} was not found`);
@@ -52,7 +47,6 @@ function interpolateString(value: string, payload: unknown): unknown {
   }
 
   return value.replace(PLACEHOLDER, (_match, path: string) => {
-    parseDotPath(path);
     const resolved = lookupOwnPath(payload, path);
     if (resolved === undefined) {
       throw new Error(`Placeholder payload.${path} was not found`);
