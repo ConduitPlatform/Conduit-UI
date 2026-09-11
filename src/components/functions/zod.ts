@@ -1,9 +1,18 @@
 import { z } from 'zod';
 import { parseExpression } from 'cron-parser';
 
-function validateCronString(value: string): boolean {
+function validateIanaTimezone(value: string): boolean {
   try {
-    parseExpression(value.trim(), { tz: 'UTC' });
+    Intl.DateTimeFormat('en-US', { timeZone: value.trim() });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function validateCronString(value: string, timezone = 'UTC'): boolean {
+  try {
+    parseExpression(value.trim(), { tz: timezone.trim() || 'UTC' });
     return true;
   } catch {
     return false;
@@ -134,16 +143,28 @@ export const EventOptions = z.object({
   functionType: z.literal('event'),
   eventName: z.string(),
 });
-export const CronOptions = z.object({
-  functionType: z.literal('cron'),
-  cronString: z
-    .string()
-    .min(1, 'Cron schedule is required')
-    .refine(validateCronString, {
-      message:
-        'Invalid cron pattern. Use 5 fields: minute hour day month weekday (UTC). Example: */5 * * * *',
-    }),
-});
+export const CronOptions = z
+  .object({
+    functionType: z.literal('cron'),
+    cronString: z.string().min(1, 'Cron schedule is required'),
+    timezone: z
+      .string()
+      .trim()
+      .default('UTC')
+      .refine(v => v.length > 0 && validateIanaTimezone(v), {
+        message:
+          'Invalid timezone. Use an IANA name (e.g. UTC, Europe/Athens).',
+      }),
+  })
+  .superRefine((data, ctx) => {
+    if (!validateCronString(data.cronString, data.timezone)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['cronString'],
+        message: `Invalid cron pattern. Use 5 fields: minute hour day month weekday (${data.timezone}). Example: */5 * * * *`,
+      });
+    }
+  });
 export const SocketOptions = z.object({
   functionType: z.literal('socket'),
 });
