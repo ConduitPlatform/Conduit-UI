@@ -55,6 +55,18 @@ export type EmbeddingsQueueCounts = {
   paused: number;
 };
 
+export type EmbeddingWorkloadCounts = {
+  configCount: number;
+  enabledConfigCount: number;
+  sourceCount: number;
+  readySourceCount: number;
+  pendingSourceCount: number;
+  failedSourceCount: number;
+  disabledSourceCount: number;
+  revokedSourceCount: number;
+  queryableSourceCount: number;
+};
+
 export type EmbeddingsStatus = {
   enabled: boolean;
   ready: boolean;
@@ -63,7 +75,7 @@ export type EmbeddingsStatus = {
   backfillQueue: EmbeddingsQueueCounts;
   storageQueue?: EmbeddingsQueueCounts;
   warnings: string[];
-};
+} & Partial<EmbeddingWorkloadCounts>;
 
 export function isVectorIndexStatus(
   value: unknown

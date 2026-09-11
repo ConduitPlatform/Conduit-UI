@@ -9,6 +9,7 @@ import {
   isVectorStorageSearchReady,
 } from './readiness';
 import { EmbeddingsSettings, OPENAI_COMPATIBLE_PROVIDER } from './settings';
+import type { EmbeddingSource } from './source';
 
 function config(
   partial: Partial<EmbeddingConfig> & { _id: string; schemaName: string }
@@ -65,6 +66,23 @@ function settings(ready: boolean): EmbeddingsSettings {
       maxEmbedInputBytes: 32 * 1024,
       maxEmbedResponseBytes: 1024 * 1024,
     },
+  };
+}
+
+function source(
+  partial: Partial<EmbeddingSource> & Pick<EmbeddingSource, '_id'>
+): EmbeddingSource {
+  return {
+    kind: 'conduit-storage',
+    state: 'ready',
+    partitionSubject: 'Team:org',
+    provider: 'openai-compatible',
+    model: 'text-embedding-3-small',
+    dimensions: 1536,
+    similarity: 'cosine',
+    metadataAllowlist: [],
+    chunkIndexStatus: 'ready',
+    ...partial,
   };
 }
 
@@ -220,12 +238,12 @@ describe('deriveEmbeddingsReadiness', () => {
       href: '/embeddings/settings',
     });
     expect(rows.find(row => row.id === 'index')).toMatchObject({
-      state: 'blocked',
-      href: '/embeddings/configs/new',
+      state: 'ready',
+      detail: 'No configured workload',
     });
     expect(rows.find(row => row.id === 'config')).toMatchObject({
-      state: 'blocked',
-      href: '/embeddings/configs/new',
+      state: 'ready',
+      detail: 'No configured workload',
     });
     expect(rows.find(row => row.id === 'workers')).toMatchObject({
       state: 'blocked',
@@ -327,6 +345,108 @@ describe('deriveEmbeddingsReadiness', () => {
       detail: 'This model is not in the provider catalogue.',
       href: '/embeddings/settings',
       actionLabel: 'Open settings',
+    });
+  });
+
+  it('treats ready generic sources as a queryable catalogue', () => {
+    const rows = deriveEmbeddingsReadiness({
+      capabilities: capabilities(),
+      settings: settings(true),
+      configs: [],
+      sources: [
+        source({ _id: 'src_a' }),
+        source({ _id: 'src_b', kind: 'external' }),
+      ],
+      indexesBySchema: {},
+      workersEnabled: true,
+    });
+    expect(rows.find(row => row.id === 'index')).toMatchObject({
+      state: 'ready',
+      detail: 'Matching index is queryable',
+    });
+    expect(rows.find(row => row.id === 'config')).toMatchObject({
+      state: 'ready',
+      detail: 'At least one generic source is ready',
+    });
+    expect(rows.find(row => row.id === 'workers')?.state).toBe('ready');
+  });
+
+  it('keeps mixed schema and generic catalogues ready', () => {
+    const article = config({ _id: 'cfg_1', schemaName: 'Article' });
+    const rows = deriveEmbeddingsReadiness({
+      configs: [article],
+      sources: [source({ _id: 'src_a' })],
+      indexesBySchema: { Article: [queryableIndex] },
+    });
+    expect(rows.find(row => row.id === 'index')?.state).toBe('ready');
+    expect(rows.find(row => row.id === 'config')?.state).toBe('ready');
+  });
+
+  it('does not mark pending or unknown generic indexes ready', () => {
+    const pending = deriveEmbeddingsReadiness({
+      configs: [],
+      sources: [
+        source({
+          _id: 'src_pending',
+          state: 'pending',
+          chunkIndexStatus: 'pending',
+        }),
+      ],
+    });
+    expect(pending.find(row => row.id === 'index')).toMatchObject({
+      state: 'waiting',
+      detail: 'Matching index is not queryable yet',
+    });
+    expect(pending.find(row => row.id === 'config')?.state).toBe('waiting');
+
+    const unknown = deriveEmbeddingsReadiness({
+      configs: [],
+      sources: [
+        source({
+          _id: 'src_unknown',
+          state: 'ready',
+          chunkIndexStatus: undefined,
+        }),
+      ],
+    });
+    expect(unknown.find(row => row.id === 'index')?.state).toBe('ready');
+    expect(unknown.find(row => row.id === 'config')?.state).toBe('ready');
+  });
+
+  it('treats disabled or revoked-only sources as no configured workload', () => {
+    const rows = deriveEmbeddingsReadiness({
+      configs: [],
+      sources: [
+        source({ _id: 'src_off', state: 'disabled' }),
+        source({ _id: 'src_rev', state: 'revoked' }),
+      ],
+    });
+    expect(rows.find(row => row.id === 'index')).toMatchObject({
+      state: 'ready',
+      detail: 'No configured workload',
+    });
+    expect(rows.find(row => row.id === 'config')).toMatchObject({
+      state: 'ready',
+      detail: 'No configured workload',
+    });
+  });
+
+  it('ignores generic sources when a schema config is selected', () => {
+    const article = config({
+      _id: 'cfg_off',
+      schemaName: 'Article',
+      enabled: false,
+    });
+    const rows = deriveEmbeddingsReadiness({
+      configs: [article],
+      sources: [source({ _id: 'src_ready' })],
+      indexesBySchema: { Article: 'unknown' },
+      selectedConfigId: 'cfg_off',
+    });
+    expect(rows.find(row => row.id === 'index')?.state).toBe('unknown');
+    expect(rows.find(row => row.id === 'config')).toMatchObject({
+      state: 'blocked',
+      href: '/embeddings/configs/cfg_off',
     });
   });
 });

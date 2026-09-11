@@ -51,7 +51,8 @@ test.describe('generic embedding sources', () => {
     await page.goto('/embeddings/sources/src_storage');
     await expect(page.getByRole('heading', { name: 'Invoices' })).toBeVisible();
     await expect(page.getByText('Queued')).toBeVisible();
-    await expect(page.getByText(/failed or retrying/)).toBeVisible();
+    await expect(page.getByText(/currently failed/)).toBeVisible();
+    await expect(page.getByText(/Failed documents stay listed/)).toBeVisible();
     await expect(
       page.getByRole('combobox', { name: 'Provider' })
     ).toBeDisabled();
@@ -78,11 +79,9 @@ test.describe('generic embedding sources', () => {
     ).toBeVisible();
     await expect(dialog.getByText(/also covers backfill/)).toBeVisible();
     await dialog.getByRole('button', { name: 'Reconcile' }).click();
-    await expect(
-      page
-        .getByRole('region', { name: 'Notifications (F8)' })
-        .getByText('Reconcile queued')
-    ).toBeVisible();
+    const toast = page.getByRole('region', { name: 'Notifications (F8)' });
+    await expect(toast.getByText('Reconcile queued')).toBeVisible();
+    await expect(toast.getByText(/Recovered 2 failed jobs/)).toBeVisible();
 
     await page.getByRole('button', { name: 'Disable' }).click();
     await expect(
@@ -115,6 +114,34 @@ test.describe('generic embedding sources', () => {
     await page.getByRole('button', { name: 'Purge source' }).click();
     await expect(page).toHaveURL(/\/embeddings\/configs/);
     await expect(page.getByRole('link', { name: 'Invoices' })).toHaveCount(0);
+  });
+
+  test('clears stale failed extraction jobs after reconcile', async ({
+    page,
+  }) => {
+    await resetMock('ready');
+    await page.goto('/embeddings');
+    await expect(
+      page.getByRole('heading', { name: 'Failed extraction jobs' })
+    ).toBeVisible();
+    await page.goto('/embeddings/sources/src_storage');
+    await expect(page.getByText(/currently failed/)).toBeVisible();
+    await page.getByRole('button', { name: 'Reconcile' }).click();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Reconcile' })
+      .click();
+    await expect(
+      page
+        .getByRole('region', { name: 'Notifications (F8)' })
+        .getByText(/Recovered 2 failed jobs/)
+    ).toBeVisible();
+    await expect(page.getByText(/currently failed/)).toHaveCount(0);
+    await expect(page.getByText(/Failed documents stay listed/)).toBeVisible();
+    await page.goto('/embeddings');
+    await expect(
+      page.getByRole('heading', { name: 'Failed extraction jobs' })
+    ).toHaveCount(0);
   });
 
   test('shows trusted ingest instructions for external sources', async ({

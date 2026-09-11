@@ -14,8 +14,10 @@ import {
   canDisableEmbeddingSource,
   canEnableEmbeddingSource,
   canReconcileEmbeddingSource,
+  reconcileSuccessDescription,
   canRevokeEmbeddingSource,
   enableSourceFeedback,
+  isSourceOperationallyQueryable,
   isSourceSearchable,
   validateEmbeddingSourceUpdate,
   parseTeamPartitionSubject,
@@ -192,6 +194,21 @@ describe('metadata allowlist and index state', () => {
     expect(
       isSourceSearchable(source({ _id: 's', kind: 'external', state: 'ready' }))
     ).toBe(false);
+    expect(
+      isSourceOperationallyQueryable(
+        source({ _id: 's', kind: 'external', state: 'ready' })
+      )
+    ).toBe(true);
+    expect(
+      isSourceOperationallyQueryable(
+        source({
+          _id: 's',
+          kind: 'external',
+          state: 'ready',
+          chunkIndexStatus: 'pending',
+        })
+      )
+    ).toBe(false);
     expect(canDisableEmbeddingSource('ready')).toBe(true);
     expect(canDisableEmbeddingSource('pending')).toBe(false);
     expect(canEnableEmbeddingSource('disabled')).toBe(true);
@@ -209,6 +226,20 @@ describe('metadata allowlist and index state', () => {
         source({ _id: 's', kind: 'external', state: 'ready' })
       )
     ).toBe(false);
+    expect(
+      reconcileSuccessDescription({ queued: 2, scanned: 5, warnings: [] })
+    ).toBe('2 jobs from 5 scanned files.');
+    expect(
+      reconcileSuccessDescription({
+        queued: 2,
+        scanned: 5,
+        warnings: [],
+        recovered: 3,
+        discarded: 1,
+      })
+    ).toBe(
+      '2 jobs from 5 scanned files. Recovered 3 failed jobs. Discarded 1 obsolete jobs.'
+    );
   });
 
   it('does not toast enable success when the source stays pending or failed', () => {

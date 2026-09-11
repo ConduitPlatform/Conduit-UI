@@ -46,7 +46,10 @@ describe('source status and ingest instructions', () => {
     expect(screen.getByText('Pending')).toBeInTheDocument();
     expect(screen.getByText('Queued')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText(/failed or retrying/)).toBeInTheDocument();
+    expect(screen.getByText(/currently failed/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Failed documents stay listed/)
+    ).toBeInTheDocument();
     expect(
       screen.getByText('Chunk index status is pending')
     ).toBeInTheDocument();

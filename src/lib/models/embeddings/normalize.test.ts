@@ -12,6 +12,7 @@ import {
   unwrapEmbeddingsCapabilities,
   unwrapEmbeddingsSettings,
   unwrapReconcileSource,
+  unwrapEmbeddingsStatus,
   unwrapSemanticSearch,
   unwrapUpsertEmbeddingConfig,
   unwrapUpsertEmbeddingSource,
@@ -325,7 +326,48 @@ describe('embedding source unwrapping', () => {
     });
     expect(status.queuedCount).toBe(2);
     expect(status.extractionQueue?.failed).toBe(3);
-    expect(unwrapReconcileSource({ queued: 4, scanned: 10 }).queued).toBe(4);
+    expect(unwrapReconcileSource({ queued: 4, scanned: 10 })).toEqual({
+      queued: 4,
+      scanned: 10,
+      warnings: [],
+    });
+    expect(
+      unwrapReconcileSource({
+        queued: 2,
+        scanned: 5,
+        recovered: 3,
+        discarded: 1,
+      })
+    ).toMatchObject({ recovered: 3, discarded: 1 });
+  });
+
+  it('keeps status workload counts optional for older backends', () => {
+    const payload = {
+      enabled: true,
+      ready: true,
+      capabilities: {
+        supported: true,
+        storage: true,
+        indexing: true,
+        search: true,
+        provider: 'postgres',
+      },
+      generationQueue: {},
+      backfillQueue: {},
+      warnings: [],
+    };
+    const legacy = unwrapEmbeddingsStatus(payload);
+    expect(legacy.queryableSourceCount).toBeUndefined();
+    expect(legacy.configCount).toBeUndefined();
+    const current = unwrapEmbeddingsStatus({
+      ...payload,
+      configCount: 0,
+      sourceCount: 2,
+      readySourceCount: 2,
+      queryableSourceCount: 2,
+    });
+    expect(current.sourceCount).toBe(2);
+    expect(current.queryableSourceCount).toBe(2);
   });
 
   it('rejects unknown source kinds', () => {

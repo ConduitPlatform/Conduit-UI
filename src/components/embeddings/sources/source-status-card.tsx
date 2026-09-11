@@ -61,7 +61,8 @@ export function SourceStatusCard({ status, error }: SourceStatusCardProps) {
   }
 
   const queue = status.extractionQueue;
-  const failedQueue = (queue?.failed ?? 0) + (queue?.delayed ?? 0);
+  const queueFailed = queue?.failed ?? 0;
+  const queueDelayed = queue?.delayed ?? 0;
 
   return (
     <Card>
@@ -81,10 +82,16 @@ export function SourceStatusCard({ status, error }: SourceStatusCardProps) {
             </div>
           ))}
         </dl>
+        {status.failedCount > 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Failed documents stay listed until extraction succeeds.
+          </p>
+        ) : null}
         {queue ? (
           <p className="text-sm text-muted-foreground">
             Extraction queue: {queue.active} active, {queue.waiting} waiting
-            {failedQueue > 0 ? `, ${failedQueue} failed or retrying` : ''}.
+            {queueFailed > 0 ? `, ${queueFailed} currently failed` : ''}
+            {queueDelayed > 0 ? `, ${queueDelayed} delayed` : ''}.
           </p>
         ) : null}
         {status.warnings.length > 0 ? (

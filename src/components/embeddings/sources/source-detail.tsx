@@ -32,6 +32,7 @@ import {
   canReconcileEmbeddingSource,
   canRevokeEmbeddingSource,
   enableSourceFeedback,
+  reconcileSuccessDescription,
   sourceDisplayName,
   sourceKindLabel,
   storageLimitExplanations,
@@ -114,7 +115,7 @@ export function SourceDetail({
           const result = await reconcileEmbeddingSource(source._id);
           toast({
             title: 'Reconcile queued',
-            description: `${result.queued} jobs from ${result.scanned} scanned files.`,
+            description: reconcileSuccessDescription(result),
           });
           break;
         }

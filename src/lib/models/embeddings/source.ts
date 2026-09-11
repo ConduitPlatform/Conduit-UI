@@ -121,6 +121,8 @@ export type ReconcileSourceResult = {
   queued: number;
   scanned: number;
   warnings: string[];
+  recovered?: number;
+  discarded?: number;
 };
 
 export type PurgeSourceResult = {
@@ -394,8 +396,29 @@ export function canRevokeEmbeddingSource(state: EmbeddingSourceState): boolean {
   return state !== 'revoked';
 }
 
+export function isSourceOperationallyQueryable(
+  source: EmbeddingSource
+): boolean {
+  if (source.state !== 'ready') return false;
+  if (!source.chunkIndexStatus) return true;
+  return source.chunkIndexStatus === 'ready';
+}
+
 export function canReconcileEmbeddingSource(source: EmbeddingSource): boolean {
   return source.kind === 'conduit-storage' && source.state === 'ready';
+}
+
+export function reconcileSuccessDescription(
+  result: ReconcileSourceResult
+): string {
+  const parts = [`${result.queued} jobs from ${result.scanned} scanned files.`];
+  if ((result.recovered ?? 0) > 0) {
+    parts.push(`Recovered ${result.recovered} failed jobs.`);
+  }
+  if ((result.discarded ?? 0) > 0) {
+    parts.push(`Discarded ${result.discarded} obsolete jobs.`);
+  }
+  return parts.join(' ');
 }
 
 export function sourceIndexStateLabel(

@@ -440,10 +440,31 @@ export async function handleSourceCatalogRoutes(
         return true;
       }
       source.counts.queuedCount += 2;
+      const failed = source.extractionQueue?.failed ?? 0;
+      const recovered = failed;
+      const discarded = 0;
+      if (source.extractionQueue && failed > 0) {
+        source.extractionQueue = {
+          ...source.extractionQueue,
+          waiting: source.extractionQueue.waiting + failed,
+          failed: 0,
+        };
+      }
+      const state = getState();
+      if (failed > 0 && state.storageQueue.failed > 0) {
+        const remediated = Math.min(failed, state.storageQueue.failed);
+        state.storageQueue = {
+          ...state.storageQueue,
+          waiting: state.storageQueue.waiting + remediated,
+          failed: state.storageQueue.failed - remediated,
+        };
+      }
       sendJson(response, 200, {
         queued: 2,
         scanned: 5,
         warnings: [],
+        ...(recovered > 0 ? { recovered } : {}),
+        ...(discarded > 0 ? { discarded } : {}),
       });
       return true;
     }

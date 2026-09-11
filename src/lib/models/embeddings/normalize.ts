@@ -72,6 +72,12 @@ function readNumber(value: unknown, fallback = 0): number {
   return fallback;
 }
 
+function optionalCount(value: unknown): number | undefined {
+  if (value == null || value === '') return undefined;
+  const parsed = readNumber(value, Number.NaN);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function readBoolean(value: unknown, fallback = false): boolean {
   return typeof value === 'boolean' ? value : fallback;
 }
@@ -294,10 +300,14 @@ export function unwrapReconcileSource(payload: unknown): ReconcileSourceResult {
   if (!isRecord(payload)) {
     throw new Error('Invalid reconcile response');
   }
+  const recovered = optionalCount(payload.recovered);
+  const discarded = optionalCount(payload.discarded);
   return {
     queued: readNumber(payload.queued),
     scanned: readNumber(payload.scanned),
     warnings: readStringArray(payload.warnings),
+    ...(recovered != null ? { recovered } : {}),
+    ...(discarded != null ? { discarded } : {}),
   };
 }
 
@@ -426,7 +436,30 @@ export function unwrapEmbeddingsStatus(payload: unknown): EmbeddingsStatus {
       ? unwrapQueueCounts(payload.storageQueue)
       : undefined,
     warnings: readStringArray(payload.warnings),
+    ...optionalWorkloadCounts(payload),
   };
+}
+
+function optionalWorkloadCounts(
+  payload: Record<string, unknown>
+): Partial<EmbeddingsStatus> {
+  const keys = [
+    'configCount',
+    'enabledConfigCount',
+    'sourceCount',
+    'readySourceCount',
+    'pendingSourceCount',
+    'failedSourceCount',
+    'disabledSourceCount',
+    'revokedSourceCount',
+    'queryableSourceCount',
+  ] as const;
+  const counts: Partial<EmbeddingsStatus> = {};
+  for (const key of keys) {
+    const value = optionalCount(payload[key]);
+    if (value != null) counts[key] = value;
+  }
+  return counts;
 }
 
 export function unwrapVectorIndexes(

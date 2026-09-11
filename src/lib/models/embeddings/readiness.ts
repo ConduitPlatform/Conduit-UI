@@ -18,6 +18,11 @@ import {
   OPENAI_COMPATIBLE_PROVIDER,
 } from '@/lib/models/embeddings/settings';
 import {
+  isSourceOperationallyQueryable,
+  sourceIndexState,
+  type EmbeddingSource,
+} from '@/lib/models/embeddings/source';
+import {
   isCatalogueModelValid,
   parseHttpsEndpoint,
 } from '@/lib/models/embeddings/settings-form';
@@ -62,6 +67,8 @@ export type EmbeddingsReadinessInput = {
   settingsError?: string;
   configs?: EmbeddingConfig[];
   configsError?: string;
+  sources?: EmbeddingSource[];
+  sourcesError?: string;
   indexesBySchema?: Record<string, SchemaIndexLookup>;
   selectedConfigId?: string;
   workersEnabled?: boolean;
@@ -90,36 +97,28 @@ function configHref(config?: EmbeddingConfig): string {
   return config ? `/embeddings/configs/${config._id}` : '/embeddings/configs';
 }
 
-function evaluateIndexRow(
-  configs: EmbeddingConfig[] | undefined,
-  configsError: string | undefined,
+function idleCatalogueIndex(): Pick<
+  ReadinessRow,
+  'state' | 'detail' | 'href' | 'actionLabel'
+> {
+  return {
+    state: 'ready',
+    detail: 'No configured workload',
+  };
+}
+
+function evaluateSchemaIndexRow(
+  configs: EmbeddingConfig[],
   indexesBySchema: Record<string, SchemaIndexLookup> | undefined,
   selectedConfig?: EmbeddingConfig
 ): Pick<ReadinessRow, 'state' | 'detail' | 'href' | 'actionLabel'> {
-  if (configsError) {
-    return { state: 'unknown', detail: 'Config list unavailable' };
-  }
-  if (!configs) {
-    return { state: 'unknown', detail: 'Index status unavailable' };
-  }
-
-  const scoped = selectedConfig ? [selectedConfig] : configs;
-  if (scoped.length === 0) {
-    return {
-      state: 'blocked',
-      detail: 'Create a config before an index can match',
-      href: '/embeddings/configs/new',
-      actionLabel: 'New config',
-    };
-  }
-
   let sawUnknown = false;
   let pending: EmbeddingConfig | undefined;
   let failed: EmbeddingConfig | undefined;
   let missing: EmbeddingConfig | undefined;
   let readyConfig: EmbeddingConfig | undefined;
 
-  for (const config of scoped) {
+  for (const config of configs) {
     const lookup = indexesBySchema?.[config.schemaName];
     if (lookup == null || lookup === 'unknown') {
       sawUnknown = true;
@@ -175,8 +174,228 @@ function evaluateIndexRow(
     state: 'blocked',
     detail: 'No index matches field, dimensions, similarity, and method',
     href: configHref(selectedConfig),
-    actionLabel: selectedConfig ? 'Open config' : 'Open configs',
+    actionLabel: selectedConfig ? 'Open config' : 'Open Configs',
   };
+}
+
+function evaluateSourceIndexRow(
+  sources: EmbeddingSource[]
+): Pick<ReadinessRow, 'state' | 'detail' | 'href' | 'actionLabel'> {
+  if (sources.some(isSourceOperationallyQueryable)) {
+    return { state: 'ready', detail: 'Matching index is queryable' };
+  }
+  const active = sources.filter(
+    source =>
+      source.state === 'ready' ||
+      source.state === 'pending' ||
+      source.state === 'failed'
+  );
+  if (active.length === 0) {
+    return idleCatalogueIndex();
+  }
+  if (sources.some(source => sourceIndexState(source) === 'failed')) {
+    return {
+      state: 'blocked',
+      detail: 'Matching index failed',
+      href: '/embeddings/configs',
+      actionLabel: 'Open Configs',
+    };
+  }
+  if (sources.some(source => sourceIndexState(source) === 'pending')) {
+    return {
+      state: 'waiting',
+      detail: 'Matching index is not queryable yet',
+      href: '/embeddings/configs',
+      actionLabel: 'Open Configs',
+    };
+  }
+  return {
+    state: 'blocked',
+    detail: 'Chunk index status is unknown',
+    href: '/embeddings/configs',
+    actionLabel: 'Open Configs',
+  };
+}
+
+function preferIndexEval(
+  left?: Pick<ReadinessRow, 'state' | 'detail' | 'href' | 'actionLabel'>,
+  right?: Pick<ReadinessRow, 'state' | 'detail' | 'href' | 'actionLabel'>
+): Pick<ReadinessRow, 'state' | 'detail' | 'href' | 'actionLabel'> | undefined {
+  if (left?.state === 'ready') return left;
+  if (right?.state === 'ready') return right;
+  if (left?.state === 'waiting') return left;
+  if (right?.state === 'waiting') return right;
+  if (left?.state === 'blocked') return left;
+  if (right?.state === 'blocked') return right;
+  return left ?? right;
+}
+
+function evaluateIndexRow(
+  configs: EmbeddingConfig[] | undefined,
+  configsError: string | undefined,
+  sources: EmbeddingSource[] | undefined,
+  sourcesError: string | undefined,
+  indexesBySchema: Record<string, SchemaIndexLookup> | undefined,
+  selectedConfig?: EmbeddingConfig
+): Pick<ReadinessRow, 'state' | 'detail' | 'href' | 'actionLabel'> {
+  if (selectedConfig) {
+    if (configsError) {
+      return { state: 'unknown', detail: 'Config list unavailable' };
+    }
+    if (!configs) {
+      return { state: 'unknown', detail: 'Index status unavailable' };
+    }
+    return evaluateSchemaIndexRow(
+      [selectedConfig],
+      indexesBySchema,
+      selectedConfig
+    );
+  }
+
+  if (configsError && sourcesError) {
+    return { state: 'unknown', detail: 'Config list unavailable' };
+  }
+
+  const schemaEval =
+    !configsError && configs && configs.length > 0
+      ? evaluateSchemaIndexRow(configs, indexesBySchema)
+      : undefined;
+  const sourceEval =
+    !sourcesError && sources && sources.length > 0
+      ? evaluateSourceIndexRow(sources)
+      : undefined;
+  const merged = preferIndexEval(schemaEval, sourceEval);
+  if (merged) return merged;
+
+  if (configsError) {
+    return { state: 'unknown', detail: 'Config list unavailable' };
+  }
+  if (sourcesError && (!configs || configs.length === 0)) {
+    return { state: 'unknown', detail: 'Generic sources could not be loaded' };
+  }
+  if (configs && sources) {
+    return idleCatalogueIndex();
+  }
+  if (!configs && !sources) {
+    return { state: 'unknown', detail: 'Index status unavailable' };
+  }
+  return idleCatalogueIndex();
+}
+
+function evaluateConfigRow(
+  input: EmbeddingsReadinessInput,
+  selectedConfig?: EmbeddingConfig
+): ReadinessRow {
+  const configRow: ReadinessRow = {
+    id: 'config',
+    label: 'Config enabled',
+    state: 'unknown',
+    detail: 'Config list unavailable',
+  };
+
+  if (selectedConfig) {
+    if (input.configsError) {
+      configRow.detail = input.configsError;
+      return configRow;
+    }
+    if (!input.configs) return configRow;
+    const providers = listConfiguredProviders(input.settings);
+    const missingModel =
+      input.settings != null &&
+      !isConfigModelInCatalogue(selectedConfig, providers);
+    if (missingModel) {
+      configRow.state = 'blocked';
+      configRow.detail = MODEL_ABSENT_DETAIL;
+      configRow.href = SETTINGS_HREF;
+      configRow.actionLabel = SETTINGS_CTA_LABEL;
+      return configRow;
+    }
+    if (selectedConfig.enabled) {
+      configRow.state = 'ready';
+      configRow.detail = 'This config is enabled';
+      return configRow;
+    }
+    configRow.state = 'blocked';
+    configRow.detail = 'Enable this config after the index is ready';
+    configRow.href = configHref(selectedConfig);
+    configRow.actionLabel = 'Open config';
+    return configRow;
+  }
+
+  if (input.configsError && input.sourcesError) {
+    configRow.detail = input.configsError;
+    return configRow;
+  }
+
+  const hasEnabledSchema =
+    !input.configsError &&
+    (input.configs?.some(config => config.enabled) ?? false);
+  const hasReadySource =
+    !input.sourcesError &&
+    (input.sources?.some(source => source.state === 'ready') ?? false);
+
+  if (hasEnabledSchema || hasReadySource) {
+    configRow.state = 'ready';
+    configRow.detail = hasEnabledSchema
+      ? hasReadySource
+        ? 'At least one schema config or generic source is enabled'
+        : 'At least one config is enabled'
+      : 'At least one generic source is ready';
+    return configRow;
+  }
+
+  const configsKnown = !input.configsError && input.configs != null;
+  const sourcesKnown = !input.sourcesError && input.sources != null;
+  const activeSources = (input.sources ?? []).filter(
+    source =>
+      source.state === 'ready' ||
+      source.state === 'pending' ||
+      source.state === 'failed'
+  );
+  if (
+    configsKnown &&
+    input.configs?.length === 0 &&
+    (!sourcesKnown || activeSources.length === 0)
+  ) {
+    configRow.state = 'ready';
+    configRow.detail = 'No configured workload';
+    return configRow;
+  }
+  if (
+    !input.sourcesError &&
+    (input.sources?.some(source => source.state === 'pending') ?? false)
+  ) {
+    configRow.state = 'waiting';
+    configRow.detail = 'Generic sources are pending';
+    configRow.href = '/embeddings/configs';
+    configRow.actionLabel = 'Open Configs';
+    return configRow;
+  }
+  if (input.configsError && !sourcesKnown) {
+    configRow.detail = input.configsError;
+    return configRow;
+  }
+  if (input.sourcesError && !configsKnown) {
+    configRow.detail = 'Generic sources could not be loaded';
+    return configRow;
+  }
+  if (!configsKnown && !sourcesKnown) {
+    return configRow;
+  }
+
+  configRow.state = 'blocked';
+  configRow.detail =
+    'Enable a schema config or generic source after the index is ready';
+  configRow.href = configHref(input.configs?.[0]);
+  configRow.actionLabel = 'Open Configs';
+  return configRow;
+}
+
+export function isCatalogueSearchReady(rows: ReadinessRow[]): boolean {
+  return (
+    rows.find(row => row.id === 'index')?.state === 'ready' &&
+    rows.find(row => row.id === 'config')?.state === 'ready'
+  );
 }
 
 export function deriveEmbeddingsReadiness(
@@ -230,6 +449,8 @@ export function deriveEmbeddingsReadiness(
   const indexEval = evaluateIndexRow(
     input.configs,
     input.configsError,
+    input.sources,
+    input.sourcesError,
     input.indexesBySchema,
     selectedConfig
   );
@@ -239,45 +460,7 @@ export function deriveEmbeddingsReadiness(
     ...indexEval,
   };
 
-  const configRow: ReadinessRow = {
-    id: 'config',
-    label: 'Config enabled',
-    state: 'unknown',
-    detail: 'Config list unavailable',
-  };
-  if (input.configsError) {
-    configRow.detail = input.configsError;
-  } else if (input.configs) {
-    const scoped = selectedConfig ? [selectedConfig] : input.configs;
-    const providers = listConfiguredProviders(input.settings);
-    const missingModel =
-      selectedConfig && input.settings != null
-        ? scoped.find(config => !isConfigModelInCatalogue(config, providers))
-        : undefined;
-    if (scoped.length === 0) {
-      configRow.state = 'blocked';
-      configRow.detail = 'Create a config to start embedding';
-      configRow.href = '/embeddings/configs/new';
-      configRow.actionLabel = 'New config';
-    } else if (missingModel) {
-      configRow.state = 'blocked';
-      configRow.detail = MODEL_ABSENT_DETAIL;
-      configRow.href = SETTINGS_HREF;
-      configRow.actionLabel = SETTINGS_CTA_LABEL;
-    } else if (scoped.some(config => config.enabled)) {
-      configRow.state = 'ready';
-      configRow.detail = selectedConfig
-        ? 'This config is enabled'
-        : 'At least one config is enabled';
-    } else {
-      configRow.state = 'blocked';
-      configRow.detail = selectedConfig
-        ? 'Enable this config after the index is ready'
-        : 'Enable a config after the index is ready';
-      configRow.href = configHref(selectedConfig ?? scoped[0]);
-      configRow.actionLabel = selectedConfig ? 'Open config' : 'Open configs';
-    }
-  }
+  const configRow = evaluateConfigRow(input, selectedConfig);
 
   const workersRow: ReadinessRow = {
     id: 'workers',

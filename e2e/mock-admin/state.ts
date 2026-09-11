@@ -465,6 +465,8 @@ function catalogFields(sources: MockEmbeddingSource[] = []) {
     lastUploadCompleteFailed: false,
     failNextSourcesList: false,
     sourceWarnings: [],
+    storageQueue: emptyQueue(),
+    omitWorkloadCounts: false,
   };
 }
 
@@ -503,6 +505,53 @@ function readyState(enabled: boolean): MockAdminState {
     configSeq: 1,
     backfillSeq: 0,
     ...catalogFields(readySources()),
+    storageQueue: {
+      ...emptyQueue(),
+      waiting: 1,
+      failed: 2,
+    },
+  };
+}
+
+function genericReadyState(): MockAdminState {
+  const sources = readySources().map(item => ({
+    ...item,
+    extractionQueue: emptyQueue(),
+    counts: {
+      ...item.counts,
+      failedCount: 0,
+    },
+  }));
+  return {
+    ...readyState(true),
+    scenario: 'generic-ready',
+    configs: [],
+    indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
+    configSeq: 0,
+    ...catalogFields(sources),
+    storageQueue: emptyQueue(),
+  };
+}
+
+function pendingSources(): MockEmbeddingSource[] {
+  return readySources().map(source => ({
+    ...source,
+    state: 'pending',
+    chunkIndexStatus: 'pending',
+    extractionQueue: emptyQueue(),
+    counts: emptySourceCounts(),
+  }));
+}
+
+function pendingSourcesState(): MockAdminState {
+  return {
+    ...readyState(true),
+    scenario: 'pending-sources',
+    configs: [],
+    indexesBySchemaId: { [PRODUCT_SCHEMA_ID]: [] },
+    configSeq: 0,
+    ...catalogFields(pendingSources()),
+    storageQueue: emptyQueue(),
   };
 }
 
@@ -591,6 +640,32 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
         backfillSeq: 0,
         ...catalogFields(),
       };
+    case 'generic-ready':
+      return genericReadyState();
+    case 'pending-sources':
+      return pendingSourcesState();
+    case 'failed-sources':
+      return {
+        ...pendingSourcesState(),
+        scenario: 'failed-sources',
+        sources: pendingSources().map(source => ({
+          ...source,
+          state: 'failed',
+          chunkIndexStatus: 'failed',
+        })),
+      };
+    case 'disabled-sources':
+      return {
+        ...pendingSourcesState(),
+        scenario: 'disabled-sources',
+        sources: readySources().map((source, index) => ({
+          ...source,
+          state: index === 0 ? 'disabled' : 'revoked',
+          chunkIndexStatus: 'ready',
+          extractionQueue: emptyQueue(),
+          counts: emptySourceCounts(),
+        })),
+      };
     default: {
       const exhaustive: never = scenario;
       return exhaustive;
@@ -675,6 +750,49 @@ export function toApiRun(run: MockBackfillRun) {
 
 export function emptySourceDocumentCounts(): MockSourceCounts {
   return emptySourceCounts();
+}
+
+export function countWorkload(
+  state: Pick<MockAdminState, 'configs' | 'sources'>
+) {
+  const counts = {
+    configCount: state.configs.length,
+    enabledConfigCount: state.configs.filter(config => config.enabled).length,
+    sourceCount: state.sources.length,
+    readySourceCount: 0,
+    pendingSourceCount: 0,
+    failedSourceCount: 0,
+    disabledSourceCount: 0,
+    revokedSourceCount: 0,
+    queryableSourceCount: 0,
+  };
+  for (const source of state.sources) {
+    switch (source.state) {
+      case 'ready':
+        counts.readySourceCount += 1;
+        if (!source.chunkIndexStatus || source.chunkIndexStatus === 'ready') {
+          counts.queryableSourceCount += 1;
+        }
+        break;
+      case 'pending':
+        counts.pendingSourceCount += 1;
+        break;
+      case 'failed':
+        counts.failedSourceCount += 1;
+        break;
+      case 'disabled':
+        counts.disabledSourceCount += 1;
+        break;
+      case 'revoked':
+        counts.revokedSourceCount += 1;
+        break;
+      default: {
+        const exhaustive: never = source.state;
+        return exhaustive;
+      }
+    }
+  }
+  return counts;
 }
 
 export function toApiSource(source: MockEmbeddingSource) {

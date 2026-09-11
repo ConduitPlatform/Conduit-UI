@@ -27,6 +27,7 @@ import {
 } from './http.ts';
 import {
   cloneRun,
+  countWorkload,
   emptyQueueCounts,
   getState,
   registerIssuedToken,
@@ -742,6 +743,18 @@ function handleTestControl(
       if (typeof body.seedContainers === 'number' && body.seedContainers > 0) {
         seedExtraContainers(Math.min(Math.floor(body.seedContainers), 2000));
       }
+      if (typeof body.storageQueueFailed === 'number') {
+        state.storageQueue = {
+          ...state.storageQueue,
+          failed: Math.max(0, Math.floor(body.storageQueueFailed)),
+        };
+      }
+      if (body.omitWorkloadCounts === true) {
+        state.omitWorkloadCounts = true;
+      }
+      if (body.clearSources === true) {
+        state.sources = [];
+      }
       sendJson(response, 200, { ok: true });
       return true;
     });
@@ -881,12 +894,13 @@ export async function handleMockRequest(
       capabilities: state.capabilities,
       generationQueue: emptyQueueCounts(),
       backfillQueue: emptyQueueCounts(),
-      storageQueue: {
+      storageQueue: state.storageQueue ?? {
         ...emptyQueueCounts(),
         waiting: 1,
         failed: 2,
       },
       warnings: [],
+      ...(state.omitWorkloadCounts ? {} : countWorkload(state)),
     });
     return;
   }

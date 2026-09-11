@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   AlertTriangle,
   Info,
@@ -18,6 +19,7 @@ import {
   getEmbeddingsCapabilities,
   getEmbeddingsSettings,
   getEmbeddingsStatus,
+  listEmbeddingSources,
 } from '@/lib/api/embeddings';
 import {
   getDeclaredSchemas,
@@ -28,6 +30,7 @@ import {
   collectOverviewWarnings,
   deriveEmbeddingsReadiness,
   emptyEmbeddingsQueue,
+  isCatalogueSearchReady,
   settledError,
   settledValue,
   workersEnabledFromStatus,
@@ -60,6 +63,7 @@ export default async function EmbeddingsDashboard() {
     statusResult,
     capabilitiesResult,
     configsResult,
+    sourcesResult,
     settingsResult,
     backfillsResult,
     promAvailabilityResult,
@@ -71,6 +75,7 @@ export default async function EmbeddingsDashboard() {
     getEmbeddingsStatus(),
     getEmbeddingsCapabilities(),
     getEmbeddingConfigs(),
+    listEmbeddingSources(),
     getEmbeddingsSettings(),
     getBackfills({ skip: 0, limit: 1 }),
     getPrometheusAvailability(),
@@ -84,6 +89,8 @@ export default async function EmbeddingsDashboard() {
   const capabilities =
     settledValue(capabilitiesResult)?.capabilities ?? status?.capabilities;
   const configs = settledValue(configsResult);
+  const sourcesPage = settledValue(sourcesResult);
+  const sources = sourcesPage?.sources;
   const settings = settledValue(settingsResult)?.config;
   const backfills = settledValue(backfillsResult);
   const promAvailability = settledValue(promAvailabilityResult);
@@ -106,6 +113,8 @@ export default async function EmbeddingsDashboard() {
     settingsError: settledError(settingsResult),
     configs,
     configsError: settledError(configsResult),
+    sources,
+    sourcesError: settledError(sourcesResult),
     indexesBySchema,
     workersEnabled,
   });
@@ -146,11 +155,22 @@ export default async function EmbeddingsDashboard() {
     },
     {
       title: 'Configs',
-      ...metricValue(configs?.length, configs == null),
+      ...metricValue(
+        status?.configCount ?? configs?.length,
+        status?.configCount == null && configs == null
+      ),
       description:
-        backfills == null
-          ? 'Embedding configurations'
-          : `${backfills.count.toLocaleString()} backfill runs`,
+        backfills != null && backfills.count > 0
+          ? `${backfills.count.toLocaleString()} backfill runs`
+          : 'Schema embedding configurations',
+    },
+    {
+      title: 'Sources',
+      ...metricValue(
+        status?.sourceCount ?? sources?.length,
+        status?.sourceCount == null && sources == null
+      ),
+      description: 'Storage and external embedding sources',
     },
   ];
 
@@ -189,11 +209,14 @@ export default async function EmbeddingsDashboard() {
     capabilitiesError: settledError(capabilitiesResult),
     statusError: settledError(statusResult),
     configsError: settledError(configsResult),
+    sourcesError: settledError(sourcesResult),
     settingsError: settledError(settingsResult),
     backfillsError: settledError(backfillsResult),
     workersEnabled,
     capabilitiesSupported: capabilities?.supported,
     capabilitiesReason: capabilities?.reason,
+    catalogueQueryable: isCatalogueSearchReady(rows),
+    sources,
   });
 
   return (
@@ -223,7 +246,19 @@ export default async function EmbeddingsDashboard() {
                   <Info className="size-4" />
                 )}
                 <AlertTitle>{warning.title}</AlertTitle>
-                <AlertDescription>{warning.description}</AlertDescription>
+                <AlertDescription>
+                  <p>{warning.description}</p>
+                  {warning.href && warning.actionLabel ? (
+                    <p className="mt-2">
+                      <Link
+                        href={warning.href}
+                        className="font-medium text-foreground underline-offset-4 hover:underline"
+                      >
+                        {warning.actionLabel}
+                      </Link>
+                    </p>
+                  ) : null}
+                </AlertDescription>
               </Alert>
             ))}
           </div>

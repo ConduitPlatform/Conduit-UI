@@ -4,6 +4,10 @@ export const MOCK_SCENARIOS = [
   'gated',
   'blank',
   'no-embeddings',
+  'generic-ready',
+  'pending-sources',
+  'failed-sources',
+  'disabled-sources',
 ] as const;
 
 export type MockScenario = (typeof MOCK_SCENARIOS)[number];
@@ -236,9 +240,11 @@ export type MockAdminState = {
   failNextComplete: boolean;
   completedUploadIds: string[];
   lastUploadCompleteFailed: boolean;
+  storageQueue: MockQueueCounts;
   failNextSourcesList: boolean;
   sourceWarnings: string[];
   failNextSourceCreate?: string;
+  omitWorkloadCounts?: boolean;
   nextEnable?: {
     state: MockSourceState;
     warnings: string[];

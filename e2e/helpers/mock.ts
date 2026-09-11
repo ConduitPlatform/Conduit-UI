@@ -59,6 +59,9 @@ export async function configureMock(flags: {
     warnings: string[];
     chunkIndexStatus?: 'pending' | 'ready' | 'failed';
   };
+  storageQueueFailed?: number;
+  omitWorkloadCounts?: boolean;
+  clearSources?: boolean;
 }): Promise<void> {
   const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/flags`, {
     method: 'POST',

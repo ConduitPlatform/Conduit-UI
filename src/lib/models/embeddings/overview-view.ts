@@ -2,11 +2,14 @@ import type {
   EmbeddingsQueueCounts,
   EmbeddingsStatus,
 } from './capabilities.ts';
+import { sourceDisplayName, type EmbeddingSource } from './source.ts';
 
 export type OverviewWarning = {
   title: string;
   description: string;
   variant: 'warning' | 'destructive';
+  href?: string;
+  actionLabel?: string;
 };
 
 export function emptyEmbeddingsQueue(): EmbeddingsQueueCounts {
@@ -42,16 +45,38 @@ export function workersEnabledFromStatus(args: {
   return args.settingsEnabled;
 }
 
+export function storageQueueSourceLink(sources?: EmbeddingSource[]): {
+  href: string;
+  actionLabel: string;
+} {
+  const storage = (sources ?? []).filter(
+    source => source.kind === 'conduit-storage'
+  );
+  if (storage.length === 1) {
+    return {
+      href: `/embeddings/sources/${storage[0]._id}`,
+      actionLabel: `Open ${sourceDisplayName(storage[0])}`,
+    };
+  }
+  return {
+    href: '/embeddings/configs',
+    actionLabel: 'Open Configs',
+  };
+}
+
 export function collectOverviewWarnings(args: {
   status?: EmbeddingsStatus;
   capabilitiesError?: string;
   statusError?: string;
   configsError?: string;
+  sourcesError?: string;
   settingsError?: string;
   backfillsError?: string;
   workersEnabled?: boolean;
   capabilitiesSupported?: boolean;
   capabilitiesReason?: string;
+  catalogueQueryable?: boolean;
+  sources?: EmbeddingSource[];
 }): OverviewWarning[] {
   const warnings: OverviewWarning[] = [];
 
@@ -78,7 +103,11 @@ export function collectOverviewWarnings(args: {
         'Overview stays available. Enable workers in Settings to process jobs.',
       variant: 'warning',
     });
-  } else if (args.status?.enabled === true && args.status.ready === false) {
+  } else if (
+    args.status?.enabled === true &&
+    args.status.ready === false &&
+    !args.catalogueQueryable
+  ) {
     warnings.push({
       title: 'Embeddings not ready',
       description:
@@ -111,6 +140,14 @@ export function collectOverviewWarnings(args: {
     });
   }
 
+  if (args.sourcesError) {
+    warnings.push({
+      title: 'Generic sources unavailable',
+      description: args.sourcesError,
+      variant: 'warning',
+    });
+  }
+
   if (args.backfillsError) {
     warnings.push({
       title: 'Backfill count unavailable',
@@ -121,10 +158,13 @@ export function collectOverviewWarnings(args: {
 
   const storageFailed = args.status?.storageQueue?.failed ?? 0;
   if (storageFailed > 0) {
+    const link = storageQueueSourceLink(args.sources);
     warnings.push({
-      title: 'Storage extraction queue',
-      description: `${storageFailed.toLocaleString()} storage extraction job${storageFailed === 1 ? '' : 's'} failed.`,
+      title: 'Failed extraction jobs',
+      description: `${storageFailed.toLocaleString()} failed storage extraction job${storageFailed === 1 ? '' : 's'} remain until they succeed or are retried.`,
       variant: 'warning',
+      href: link.href,
+      actionLabel: link.actionLabel,
     });
   }
 
