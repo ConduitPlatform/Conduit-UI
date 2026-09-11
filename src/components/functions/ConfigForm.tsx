@@ -50,8 +50,30 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
                       cronString: form.getValues('options.cronString') || '',
                       timezone: form.getValues('options.timezone') || 'UTC',
                     });
+                  } else if (value === 'event') {
+                    form.setValue('options', {
+                      functionType: 'event',
+                      eventName: form.getValues('options.eventName') || '',
+                    });
+                  } else if (value === 'request' || value === 'webhook') {
+                    const verb =
+                      form.getValues('options.verb') ||
+                      form.getValues('options.http.verb') ||
+                      'GET';
+                    form.setValue('options', {
+                      functionType: value,
+                      verb,
+                      middlewares: form.getValues('options.middlewares') || [],
+                      http: {
+                        verb,
+                        queryParams: form.getValues('options.http.queryParams'),
+                        urlParams: form.getValues('options.http.urlParams'),
+                        bodyParams: form.getValues('options.http.bodyParams'),
+                        returnTypes: form.getValues('options.http.returnTypes'),
+                      },
+                    });
                   } else {
-                    form.setValue('options.functionType', value);
+                    form.setValue('options', { functionType: value });
                   }
                 }}
                 value={field.value}
