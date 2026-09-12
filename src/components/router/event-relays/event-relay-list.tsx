@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { BookOpen, Plus, Radio, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { DataTable } from '@/components/ui/data-table';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -55,6 +56,7 @@ export function EventRelayList({
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editing, setEditing] = useState<EventRelay | null>(null);
   const [docsOpen, setDocsOpen] = useState(count === 0);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const { save, isSaving } = useSettingsSave('Event Relay');
 
   const toggleDocs = useCallback(() => {
@@ -87,6 +89,23 @@ export function EventRelayList({
       setIsCreateOpen(false);
     }
   };
+
+  const handleActiveToggle = useCallback(
+    async (relay: EventRelay, active: boolean) => {
+      setTogglingId(relay._id);
+      await save({
+        action: async () => {
+          await patchEventRelay(relay._id, { active });
+          await refresh();
+        },
+        successMessage: active
+          ? 'Event relay enabled'
+          : 'Event relay disabled',
+      });
+      setTogglingId(null);
+    },
+    [refresh, save]
+  );
 
   const handleUpdate = async (data: EventRelayWriteRequest) => {
     if (!editing) return;
@@ -147,12 +166,28 @@ export function EventRelayList({
       },
       {
         accessorKey: 'active',
-        header: 'Status',
-        cell: ({ row }) => (
-          <Badge variant={row.original.active ? 'default' : 'outline'}>
-            {row.original.active ? 'Active' : 'Disabled'}
-          </Badge>
-        ),
+        header: 'Active',
+        cell: ({ row }) => {
+          const relay = row.original;
+          const busy = togglingId === relay._id || isSaving;
+          return (
+            <div className="flex items-center gap-2">
+              <Switch
+                id={`relay-active-${relay._id}`}
+                checked={relay.active}
+                disabled={busy}
+                onCheckedChange={checked => handleActiveToggle(relay, checked)}
+                aria-label={`${relay.active ? 'Disable' : 'Enable'} ${relay.name}`}
+              />
+              <Label
+                htmlFor={`relay-active-${relay._id}`}
+                className="text-xs text-muted-foreground"
+              >
+                {relay.active ? 'On' : 'Off'}
+              </Label>
+            </div>
+          );
+        },
       },
       {
         id: 'actions',
@@ -183,7 +218,7 @@ export function EventRelayList({
         ),
       },
     ],
-    [save, refresh]
+    [handleActiveToggle, isSaving, save, refresh, togglingId]
   );
 
   return (

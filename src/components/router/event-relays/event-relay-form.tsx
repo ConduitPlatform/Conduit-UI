@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
@@ -12,14 +11,15 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   EventRelayFormSchema,
   EventRelayFormValues,
-  parseJsonField,
+  parseMessageTemplateField,
 } from '@/components/router/event-relays/zod';
-import { previewEventRelay } from '@/lib/event-relays/preview';
+import { buildEventRelayClientSnippet } from '@/lib/event-relays/client-snippet';
+import { useEventRelayPreview } from '@/components/router/event-relays/use-event-relay-preview';
 import { EventRelay, EventRelayWriteRequest } from '@/lib/models/Router';
 
-const DEFAULT_TEMPLATE = '{\n  "id": "{{payload._id}}"\n}';
+const DEFAULT_TEMPLATE = '{\n  "id": "{{payload.documentId}}"\n}';
 const DEFAULT_SAMPLE =
-  '{\n  "_id": "64f1c0a2b4d0e1f2a3b4c5d6",\n  "status": "paid"\n}';
+  '{\n  "documentId": "64f1c0a2b4d0e1f2a3b4c5d6",\n  "status": "paid"\n}';
 
 interface EventRelayFormProps {
   relay?: EventRelay | null;
@@ -34,6 +34,8 @@ export function EventRelayForm({
   onCancel,
   isSaving,
 }: EventRelayFormProps) {
+  const isEditing = Boolean(relay);
+
   const form = useForm<EventRelayFormValues>({
     resolver: rhfZodResolver(EventRelayFormSchema),
     defaultValues: {
@@ -43,7 +45,7 @@ export function EventRelayForm({
       busEvent: relay?.busEvent ?? '',
       socketEvent: relay?.socketEvent ?? '',
       resourceType: relay?.resourceType ?? '',
-      resourceIdPath: relay?.resourceIdPath ?? '_id',
+      resourceIdPath: relay?.resourceIdPath ?? 'documentId',
       permission: relay?.permission ?? 'read',
       messageTemplate: relay
         ? JSON.stringify(relay.messageTemplate, null, 2)
@@ -53,38 +55,19 @@ export function EventRelayForm({
   });
 
   const watched = useWatch({ control: form.control });
-  const preview = useMemo(() => {
-    try {
-      const template = parseJsonField(
-        watched.messageTemplate ?? '',
-        'Message template'
-      );
-      const sample = parseJsonField(
-        watched.samplePayload?.trim() || '{}',
-        'Sample payload'
-      );
-      return previewEventRelay({
-        resourceIdPath: watched.resourceIdPath || '_id',
-        messageTemplate: template,
-        samplePayload: sample,
-      });
-    } catch (err) {
-      return {
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
-  }, [watched.messageTemplate, watched.samplePayload, watched.resourceIdPath]);
+  const preview = useEventRelayPreview({
+    messageTemplate: watched.messageTemplate ?? '',
+    samplePayload: watched.samplePayload ?? '',
+    resourceIdPath: watched.resourceIdPath ?? 'documentId',
+  });
 
   const handleSubmit = form.handleSubmit(async values => {
-    const messageTemplate = parseJsonField(
-      values.messageTemplate,
-      'Message template'
-    );
+    const messageTemplate = parseMessageTemplateField(values.messageTemplate);
     const notes = values.notes?.trim();
     await onSubmit({
       name: values.name,
       notes: notes || undefined,
-      active: values.active,
+      active: isEditing ? relay?.active : values.active,
       busEvent: values.busEvent,
       socketEvent: values.socketEvent,
       resourceType: values.resourceType,
@@ -94,12 +77,16 @@ export function EventRelayForm({
     });
   });
 
+  const clientSnippet = buildEventRelayClientSnippet(
+    watched.socketEvent ?? 'your-event'
+  );
+
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <InputField fieldName="name" label="Name" placeholder="Order paid" />
-          <SwitchField fieldName="active" label="Active" />
+          {isEditing ? null : <SwitchField fieldName="active" label="Active" />}
         </div>
         <InputField
           fieldName="notes"
@@ -130,7 +117,7 @@ export function EventRelayForm({
           <InputField
             fieldName="resourceIdPath"
             label="Resource ID path"
-            placeholder="_id"
+            placeholder="documentId"
             description="Dot path on the bus payload"
           />
           <InputField
@@ -155,41 +142,61 @@ export function EventRelayForm({
         <div className="rounded-lg border bg-card p-4">
           <h3 className="text-sm font-medium text-foreground">Preview</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Local only. Nothing is published to the bus.
+            Rendered by the Router Admin API. Nothing is published to the bus.
           </p>
-          {preview.error ? (
-            <p className="mt-3 text-sm text-destructive">{preview.error}</p>
-          ) : (
+          {preview.kind === 'unavailable' ? (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Preview is not available on this Router build yet. Upgrade to a
+              version that includes{' '}
+              <code className="font-mono text-xs">POST /router/event-relays/preview</code>{' '}
+              (see{' '}
+              <a
+                href="https://github.com/ConduitPlatform/Conduit/pull/1600"
+                className="text-primary underline-offset-4 hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Conduit #1600
+              </a>
+              ).
+            </p>
+          ) : preview.kind === 'loading' ? (
+            <p className="mt-3 text-sm text-muted-foreground">Rendering…</p>
+          ) : preview.kind === 'error' ? (
+            <p className="mt-3 text-sm text-destructive">{preview.message}</p>
+          ) : preview.kind === 'ready' ? (
             <div className="mt-3 space-y-2">
               <p className="text-xs text-muted-foreground">
                 Resource{' '}
                 <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs slashed-zero">
-                  {watched.resourceType || 'Type'}:{preview.resourceId}
+                  {watched.resourceType || 'Type'}:
+                  {preview.resourceId ?? '…'}
                 </code>
               </p>
               <pre className="max-h-40 overflow-auto rounded-md bg-muted p-3 font-mono text-xs slashed-zero text-foreground">
                 {JSON.stringify(preview.payload, null, 2)}
               </pre>
             </div>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Enter valid JSON in the message template and sample payload to
+              preview.
+            </p>
           )}
         </div>
         <Alert>
           <AlertTitle>Client contract</AlertTitle>
           <AlertDescription className="space-y-2 text-xs">
             <p>
-              Connect to <code className="font-mono">/events/</code> with{' '}
-              <code className="font-mono">path: /realtime</code> and a bearer
-              token. Then emit{' '}
-              <code className="font-mono">subscribe(relayId, resourceId)</code>.
+              Subscribe-only: clients listen on <code className="font-mono">/events/</code>{' '}
+              with <code className="font-mono">path: /realtime</code> and{' '}
+              <code className="font-mono">auth.token</code> (browsers ignore{' '}
+              <code className="font-mono">extraHeaders</code>). The Authorization
+              module must be available — subscribe fails closed without a
+              matching ReBAC grant. Events are ephemeral with no replay.
             </p>
             <pre className="overflow-auto rounded-md bg-muted p-3 font-mono text-[11px] leading-5 text-foreground slashed-zero">
-              {`const socket = io(\`\${SOCKET_URL}/events/\`, {
-  path: '/realtime',
-  extraHeaders: { authorization: \`Bearer \${accessToken}\` },
-});
-socket.emit('subscribe', relayId, resourceId);
-socket.on('${watched.socketEvent || 'your-event'}', payload => {});
-socket.emit('unsubscribe', relayId, resourceId);`}
+              {clientSnippet}
             </pre>
           </AlertDescription>
         </Alert>

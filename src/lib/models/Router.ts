@@ -118,3 +118,13 @@ export type EventRelayWriteRequest = {
   permission: string;
   messageTemplate: unknown;
 };
+
+export type EventRelayPreviewRequest = {
+  template: unknown;
+  sample: unknown;
+};
+
+export type EventRelayPreviewRemoteResult =
+  | { status: 'ok'; payload: unknown }
+  | { status: 'error'; message: string }
+  | { status: 'unavailable' };

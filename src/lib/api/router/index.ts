@@ -2,10 +2,16 @@
 import { getApiClient } from '@/lib/api';
 import {
   EventRelay,
+  EventRelayPreviewRemoteResult,
+  EventRelayPreviewRequest,
   EventRelaysResponse,
   EventRelayWriteRequest,
   RouterSettings,
 } from '@/lib/models/Router';
+import {
+  formatAdminApiError,
+  isAxiosNotFoundError,
+} from '@/lib/logic/api-error';
 import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
 import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 
@@ -130,4 +136,20 @@ export const patchEventRelay = async (
 
 export const deleteEventRelay = async (id: string) => {
   await (await getApiClient()).delete(`/router/event-relays/${id}`);
+};
+
+export const previewEventRelayRemote = async (
+  body: EventRelayPreviewRequest
+): Promise<EventRelayPreviewRemoteResult> => {
+  try {
+    const res = await (
+      await getApiClient()
+    ).post<unknown>('/router/event-relays/preview', body);
+    return { status: 'ok', payload: res.data };
+  } catch (err) {
+    if (isAxiosNotFoundError(err)) {
+      return { status: 'unavailable' };
+    }
+    return { status: 'error', message: formatAdminApiError(err) };
+  }
 };
