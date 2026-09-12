@@ -44,7 +44,6 @@ import { useRouter } from 'next/navigation';
 interface EventRelayListProps {
   relays: EventRelay[];
   count: number;
-  /** Undefined when Router settings could not be loaded. */
   socketsEnabled?: boolean;
 }
 

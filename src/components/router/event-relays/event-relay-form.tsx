@@ -16,10 +16,12 @@ import {
 import { buildEventRelayClientSnippet } from '@/lib/event-relays/client-snippet';
 import { useEventRelayPreview } from '@/components/router/event-relays/use-event-relay-preview';
 import { EventRelay, EventRelayWriteRequest } from '@/lib/models/Router';
+import {
+  buildDefaultSamplePayload,
+  DEFAULT_CREATE_SAMPLE_PAYLOAD,
+} from '@/lib/event-relays/sample-payload';
 
 const DEFAULT_TEMPLATE = '{\n  "id": "{{payload.documentId}}"\n}';
-const DEFAULT_SAMPLE =
-  '{\n  "documentId": "64f1c0a2b4d0e1f2a3b4c5d6",\n  "status": "paid"\n}';
 
 interface EventRelayFormProps {
   relay?: EventRelay | null;
@@ -50,7 +52,9 @@ export function EventRelayForm({
       messageTemplate: relay
         ? JSON.stringify(relay.messageTemplate, null, 2)
         : DEFAULT_TEMPLATE,
-      samplePayload: DEFAULT_SAMPLE,
+      samplePayload: relay
+        ? buildDefaultSamplePayload(relay.resourceIdPath)
+        : DEFAULT_CREATE_SAMPLE_PAYLOAD,
     },
   });
 
@@ -140,7 +144,7 @@ export function EventRelayForm({
           fieldName="samplePayload"
           label="Sample payload"
           language="json"
-          placeholder={DEFAULT_SAMPLE}
+          placeholder={DEFAULT_CREATE_SAMPLE_PAYLOAD}
         />
         <div className="rounded-lg border bg-card p-4">
           <h3 className="text-sm font-medium text-foreground">Preview</h3>
