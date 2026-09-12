@@ -9,11 +9,8 @@ import {
   RouterSettings,
 } from '@/lib/models/Router';
 import {
-  formatAdminApiError,
-  isAxiosNotFoundError,
-} from '@/lib/logic/api-error';
-import {
   buildEventRelayPreviewRequestBody,
+  coerceEventRelayPreviewRemoteError,
   parseEventRelayPreviewResponse,
 } from '@/lib/event-relays/preview-remote';
 import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
@@ -155,12 +152,6 @@ export const previewEventRelayRemote = async (
     const payload = parseEventRelayPreviewResponse(res.data);
     return { status: 'ok', payload };
   } catch (err) {
-    if (isAxiosNotFoundError(err)) {
-      return { status: 'unavailable' };
-    }
-    if (err instanceof Error && err.message.startsWith('Preview response')) {
-      return { status: 'error', message: err.message };
-    }
-    return { status: 'error', message: formatAdminApiError(err) };
+    return coerceEventRelayPreviewRemoteError(err);
   }
 };

@@ -1,3 +1,10 @@
+import {
+  formatAdminApiError,
+  isAxiosNotFoundError,
+  isNextNavigationError,
+} from '../logic/api-error.ts';
+import type { EventRelayPreviewRemoteResult } from '../models/Router.ts';
+
 export type EventRelayPreviewInput = {
   messageTemplate: unknown;
   samplePayload: unknown;
@@ -32,4 +39,19 @@ export function parseEventRelayPreviewResponse(
     throw new Error('Preview response is missing rendered');
   }
   return record.rendered;
+}
+
+export function coerceEventRelayPreviewRemoteError(
+  err: unknown
+): EventRelayPreviewRemoteResult {
+  if (isNextNavigationError(err)) {
+    throw err;
+  }
+  if (isAxiosNotFoundError(err)) {
+    return { status: 'unavailable' };
+  }
+  if (err instanceof Error && err.message.startsWith('Preview response')) {
+    return { status: 'error', message: err.message };
+  }
+  return { status: 'error', message: formatAdminApiError(err) };
 }
