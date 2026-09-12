@@ -64,17 +64,20 @@ export function EventRelayForm({
   const handleSubmit = form.handleSubmit(async values => {
     const messageTemplate = parseMessageTemplateField(values.messageTemplate);
     const notes = values.notes?.trim();
-    await onSubmit({
+    const payload: EventRelayWriteRequest = {
       name: values.name,
       notes: notes || undefined,
-      active: isEditing ? relay?.active : values.active,
       busEvent: values.busEvent,
       socketEvent: values.socketEvent,
       resourceType: values.resourceType,
       resourceIdPath: values.resourceIdPath,
       permission: values.permission,
       messageTemplate,
-    });
+    };
+    if (!isEditing) {
+      payload.active = values.active;
+    }
+    await onSubmit(payload);
   });
 
   const clientSnippet = buildEventRelayClientSnippet(
@@ -151,12 +154,12 @@ export function EventRelayForm({
               <code className="font-mono text-xs">POST /router/event-relays/preview</code>{' '}
               (see{' '}
               <a
-                href="https://github.com/ConduitPlatform/Conduit/pull/1600"
+                href="https://github.com/ConduitPlatform/Conduit/pull/1604"
                 className="text-primary underline-offset-4 hover:underline"
                 target="_blank"
                 rel="noreferrer"
               >
-                Conduit #1600
+                Conduit #1604
               </a>
               ).
             </p>

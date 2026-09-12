@@ -7,8 +7,7 @@ export function buildEventRelayClientSnippet(socketEvent: string): string {
 socket.on('connect', () => {
   socket.emit('subscribe', relayId, resourceId);
 });
-socket.on('${eventHandler}', payload => {});
-socket.emit('unsubscribe', relayId, resourceId);`;
+socket.on('${eventHandler}', payload => {});`;
 }
 
 export const EVENT_RELAY_DOCS_SNIPPET = buildEventRelayClientSnippet(

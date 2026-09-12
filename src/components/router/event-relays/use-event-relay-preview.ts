@@ -25,17 +25,20 @@ export function useEventRelayPreview(options: {
   samplePayload: string;
   resourceIdPath: string;
 }): EventRelayPreviewState {
-  const debounced = useDebounce(options, 400);
+  const debouncedMessageTemplate = useDebounce(options.messageTemplate, 400);
+  const debouncedSamplePayload = useDebounce(options.samplePayload, 400);
+  const debouncedResourceIdPath = useDebounce(options.resourceIdPath, 400);
+
   const [state, setState] = useState<EventRelayPreviewState>({ kind: 'idle' });
 
   useEffect(() => {
-    const template = tryParseJson(debounced.messageTemplate);
+    const template = tryParseJson(debouncedMessageTemplate);
     if (template === null) {
       setState({ kind: 'idle' });
       return;
     }
 
-    const sample = tryParseJson(debounced.samplePayload?.trim() || '{}');
+    const sample = tryParseJson(debouncedSamplePayload?.trim() || '{}');
     if (sample === null) {
       setState({ kind: 'idle' });
       return;
@@ -45,8 +48,8 @@ export function useEventRelayPreview(options: {
     void (async () => {
       setState({ kind: 'loading' });
       const result = await previewEventRelayRemote({
-        template,
-        sample,
+        messageTemplate: template,
+        samplePayload: sample,
       });
       if (cancelled) return;
 
@@ -63,7 +66,7 @@ export function useEventRelayPreview(options: {
       try {
         const resolved = lookupOwnPath(
           sample,
-          debounced.resourceIdPath.trim() || 'documentId'
+          debouncedResourceIdPath.trim() || 'documentId'
         );
         if (resolved !== undefined) {
           resourceId = String(resolved);
@@ -82,7 +85,7 @@ export function useEventRelayPreview(options: {
     return () => {
       cancelled = true;
     };
-  }, [debounced]);
+  }, [debouncedMessageTemplate, debouncedSamplePayload, debouncedResourceIdPath]);
 
   return state;
 }

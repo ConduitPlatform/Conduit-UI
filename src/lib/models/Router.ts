@@ -119,9 +119,9 @@ export type EventRelayWriteRequest = {
   messageTemplate: unknown;
 };
 
-export type EventRelayPreviewRequest = {
-  template: unknown;
-  sample: unknown;
+export type EventRelayPreviewInput = {
+  messageTemplate: unknown;
+  samplePayload: unknown;
 };
 
 export type EventRelayPreviewRemoteResult =

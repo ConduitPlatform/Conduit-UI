@@ -62,7 +62,7 @@ export default async function EventRelaysPage(props: {
   const socketsEnabled =
     settingsResult.status === 'fulfilled'
       ? settingsResult.value.config.transports.sockets
-      : false;
+      : undefined;
 
   return (
     <div className="p-6">

@@ -44,7 +44,8 @@ import { useRouter } from 'next/navigation';
 interface EventRelayListProps {
   relays: EventRelay[];
   count: number;
-  socketsEnabled: boolean;
+  /** Undefined when Router settings could not be loaded. */
+  socketsEnabled?: boolean;
 }
 
 export function EventRelayList({
@@ -197,6 +198,7 @@ export function EventRelayList({
               type="button"
               variant="outline"
               size="sm"
+              disabled={togglingId === row.original._id}
               onClick={() => setEditing(row.original)}
             >
               Edit
@@ -260,7 +262,7 @@ export function EventRelayList({
         </PageActions>
       </PageHeader>
 
-      {!socketsEnabled ? (
+      {socketsEnabled === false ? (
         <Alert variant="warning">
           <Zap className="h-4 w-4" />
           <AlertTitle>WebSockets are disabled</AlertTitle>
