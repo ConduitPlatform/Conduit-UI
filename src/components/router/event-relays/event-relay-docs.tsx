@@ -8,14 +8,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-
-const CLIENT_SNIPPET = `const socket = io(\`\${SOCKET_URL}/events/\`, {
-  path: '/realtime',
-  extraHeaders: { authorization: \`Bearer \${accessToken}\` },
-});
-socket.emit('subscribe', relayId, resourceId);
-socket.on('order-updated', payload => {});
-socket.emit('unsubscribe', relayId, resourceId);`;
+import { EVENT_RELAY_DOCS_SNIPPET } from '@/lib/event-relays/client-snippet';
 
 const STEPS = [
   {
@@ -73,7 +66,8 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
             </span>
             <span className="mt-0.5 block text-sm text-pretty text-muted-foreground">
               Forward an exact bus event to permission-scoped socket
-              subscribers. Not a queue, and not a generic websocket broadcast.
+              subscribers. Subscribe-only, ephemeral, and not a generic
+              websocket broadcast.
             </span>
           </span>
           <ChevronDown
@@ -127,10 +121,13 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
 
             <section>
               <h3 className="text-sm font-medium text-foreground">
-                Configure a relay
+                Database realtime example
               </h3>
               <p className="mt-1 text-sm text-pretty text-muted-foreground">
-                Example: notify clients when an Order document changes.
+                Notify clients when an Order document changes via{' '}
+                <Code>database:change:Order</Code>. Database realtime payloads
+                expose <Code>documentId</Code> (not Mongo <Code>_id</Code> on
+                the wire).
               </p>
               <dl className="mt-3 divide-y divide-border/60 rounded-md border border-border/60">
                 <Field
@@ -150,13 +147,44 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
                 />
                 <Field
                   name="resourceIdPath"
-                  value="_id or documentId"
-                  hint="Dot path into the bus JSON. Match the publisher’s payload."
+                  value="documentId"
+                  hint="Dot path into the bus JSON from Database realtime."
+                />
+                <Field
+                  name="messageTemplate"
+                  value={'{ "id": "{{payload.documentId}}" }'}
+                  hint="JSON with {{payload.path}} placeholders against the bus payload."
+                />
+              </dl>
+            </section>
+
+            <section>
+              <h3 className="text-sm font-medium text-foreground">
+                CRUD bus channel (advanced)
+              </h3>
+              <p className="mt-1 text-sm text-pretty text-muted-foreground">
+                You can relay <Code>database:update:Order</Code> instead, but
+                the payload is the full document (including{' '}
+                <Code>_id</Code>). That duplicates what clients already get on{' '}
+                <Code>/database/</Code> <Code>change</Code> — prefer the
+                database realtime channel unless you only consume{' '}
+                <Code>/events/</Code>.
+              </p>
+              <dl className="mt-3 divide-y divide-border/60 rounded-md border border-border/60">
+                <Field
+                  name="busEvent"
+                  value="database:update:Order"
+                  hint="Exact CRUD bus channel; large payloads."
+                />
+                <Field
+                  name="resourceIdPath"
+                  value="_id"
+                  hint="Mongo id on the full document payload."
                 />
                 <Field
                   name="messageTemplate"
                   value={'{ "id": "{{payload._id}}" }'}
-                  hint="JSON with {{payload.path}} placeholders against the bus payload."
+                  hint="Same template language; mind payload size and duplication."
                 />
               </dl>
             </section>
@@ -167,11 +195,13 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
               </h3>
               <p className="mt-1 text-sm text-pretty text-muted-foreground">
                 Connect to <Code>{'/events/'}</Code> with{' '}
-                <Code>{'path: /realtime'}</Code> and a user bearer token. Then
-                subscribe with the relay id and resource id.
+                <Code>{'path: /realtime'}</Code> and{' '}
+                <Code>{'auth: { token: accessToken }'}</Code>. Re-subscribe
+                inside <Code>connect</Code> so reconnects re-join the room.
+                There is no replay — missed events are lost.
               </p>
               <pre className="mt-3 overflow-x-auto rounded-md bg-muted p-3 font-mono text-[11px] leading-5 text-foreground slashed-zero">
-                {CLIENT_SNIPPET}
+                {EVENT_RELAY_DOCS_SNIPPET}
               </pre>
             </section>
 
@@ -183,12 +213,19 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
                   <Code>{'database:change:*'}</Code> are not supported.
                 </li>
                 <li>
+                  Subscribe-only: clients do not publish on{' '}
+                  <Code>/events/</Code>. Modules write to the bus.
+                </li>
+                <li>
                   Subscribe fails closed if Authorization is unavailable or the
                   user lacks permission.
                 </li>
                 <li>
-                  Turn a relay off with Active to stop forwarding without
-                  deleting it. Deleting drops current subscribers immediately.
+                  No replay or ordering guarantee. Delivery is ephemeral.
+                </li>
+                <li>
+                  Turn a relay off with Active to stop forwarding and evict
+                  subscribers without deleting the relay.
                 </li>
               </ul>
             </section>

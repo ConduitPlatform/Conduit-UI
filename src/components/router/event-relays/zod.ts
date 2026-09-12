@@ -1,6 +1,44 @@
 import { z } from 'zod';
 import { parseDotPath, RESERVED_SOCKET_EVENTS } from '@/lib/event-relays/path';
 
+function jsonObjectString(label: string) {
+  return z
+    .string()
+    .trim()
+    .min(1, `${label} is required`)
+    .superRefine((value, ctx) => {
+      try {
+        const parsed = JSON.parse(value);
+        if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          ctx.addIssue({
+            code: 'custom',
+            message: `${label} must be a JSON object`,
+          });
+        }
+      } catch {
+        ctx.addIssue({
+          code: 'custom',
+          message: `${label} must be valid JSON`,
+        });
+      }
+    });
+}
+
+const optionalJsonObjectString = z
+  .string()
+  .optional()
+  .superRefine((value, ctx) => {
+    if (!value?.trim()) return;
+    try {
+      JSON.parse(value);
+    } catch {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Sample payload must be valid JSON',
+      });
+    }
+  });
+
 export const EventRelayFormSchema = z.object({
   name: z
     .string()
@@ -57,8 +95,8 @@ export const EventRelayFormSchema = z.object({
     .trim()
     .min(1, 'Permission is required')
     .regex(/^[A-Za-z][A-Za-z0-9_]{0,63}$/, 'Permission is invalid'),
-  messageTemplate: z.string().trim().min(1, 'Message template is required'),
-  samplePayload: z.string().optional(),
+  messageTemplate: jsonObjectString('Message template'),
+  samplePayload: optionalJsonObjectString,
 });
 
 export type EventRelayFormValues = z.infer<typeof EventRelayFormSchema>;
@@ -69,4 +107,16 @@ export function parseJsonField(value: string, label: string): unknown {
   } catch {
     throw new Error(`${label} must be valid JSON`);
   }
+}
+
+export function parseMessageTemplateField(value: string): Record<string, unknown> {
+  const parsed = parseJsonField(value, 'Message template');
+  if (
+    parsed === null ||
+    typeof parsed !== 'object' ||
+    Array.isArray(parsed)
+  ) {
+    throw new Error('Message template must be a JSON object');
+  }
+  return parsed as Record<string, unknown>;
 }

@@ -2,10 +2,17 @@
 import { getApiClient } from '@/lib/api';
 import {
   EventRelay,
+  EventRelayPreviewInput,
+  EventRelayPreviewRemoteResult,
   EventRelaysResponse,
   EventRelayWriteRequest,
   RouterSettings,
 } from '@/lib/models/Router';
+import {
+  buildEventRelayPreviewRequestBody,
+  coerceEventRelayPreviewRemoteError,
+  parseEventRelayPreviewResponse,
+} from '@/lib/event-relays/preview-remote';
 import { afterPatchServing } from '@/lib/api/modules/afterPatchServing';
 import { PatchSettingsOptions } from '@/lib/api/modules/patch-settings-options';
 
@@ -130,4 +137,21 @@ export const patchEventRelay = async (
 
 export const deleteEventRelay = async (id: string) => {
   await (await getApiClient()).delete(`/router/event-relays/${id}`);
+};
+
+export const previewEventRelayRemote = async (
+  body: EventRelayPreviewInput
+): Promise<EventRelayPreviewRemoteResult> => {
+  try {
+    const res = await (
+      await getApiClient()
+    ).post<unknown>(
+      '/router/event-relays/preview',
+      buildEventRelayPreviewRequestBody(body)
+    );
+    const payload = parseEventRelayPreviewResponse(res.data);
+    return { status: 'ok', payload };
+  } catch (err) {
+    return coerceEventRelayPreviewRemoteError(err);
+  }
 };
