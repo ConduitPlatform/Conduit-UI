@@ -33,6 +33,9 @@ export type SchemaOptions = {
     authorization?: {
       enabled: boolean;
     };
+    realtime?: {
+      enabled: boolean;
+    };
     /** MongoDB only: overrides module default read preference for this schema's reads */
     readPreference?: string;
   };
@@ -65,6 +68,9 @@ export type PatchSchemaRequest = Partial<Pick<DeclaredSchema, 'fields'>> & {
     cms?: Record<string, unknown>;
     authorization?: Record<string, unknown>;
     permissions?: Record<string, unknown>;
+    realtime?: {
+      enabled?: boolean;
+    };
     /** MongoDB only; empty string clears schema-level override */
     readPreference?: string;
   };

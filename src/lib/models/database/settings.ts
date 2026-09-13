@@ -12,8 +12,27 @@ export type ReadConcern =
   | 'linearizable'
   | 'snapshot';
 
+export type DatabaseRealtimeStatusCode =
+  | 'unsupported'
+  | 'disabled'
+  | 'idle'
+  | 'starting'
+  | 'live'
+  | 'degraded';
+
+export type DatabaseRealtimeStatus = {
+  status: DatabaseRealtimeStatusCode;
+  engine: string;
+  activeSchemaCount: number;
+  lastEventAt?: string;
+  message?: string;
+};
+
 export type DatabaseConfig = {
   readPreference: ReadPreference;
   writeConcern: WriteConcern;
   readConcern: ReadConcern;
+  realtime?: {
+    enabled: boolean;
+  };
 };
