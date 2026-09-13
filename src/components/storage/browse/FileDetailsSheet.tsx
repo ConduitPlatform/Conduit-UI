@@ -51,10 +51,20 @@ export function FileDetailsSheet({
       return;
     }
     setLoading(true);
-    Promise.all([getFileById(fileId), getFileUrl(fileId)])
-      .then(([fileData, urlData]) => {
-        setFile(fileData);
-        setUrl(urlData.result);
+    setFile(null);
+    setUrl(null);
+    Promise.allSettled([getFileById(fileId), getFileUrl(fileId)])
+      .then(([fileResult, urlResult]) => {
+        if (fileResult.status === 'fulfilled') {
+          setFile(fileResult.value);
+        } else {
+          setFile(null);
+        }
+        if (urlResult.status === 'fulfilled') {
+          setUrl(urlResult.value.result);
+        } else {
+          setUrl(null);
+        }
       })
       .finally(() => setLoading(false));
   }, [fileId, open]);
@@ -65,6 +75,12 @@ export function FileDetailsSheet({
     if (!url) return;
     await navigator.clipboard.writeText(url);
     toast({ title: 'Storage', description: 'URL copied to clipboard' });
+  };
+
+  const copyUri = async () => {
+    if (!file?.uri) return;
+    await navigator.clipboard.writeText(file.uri);
+    toast({ title: 'Storage', description: 'URI copied to clipboard' });
   };
 
   return (
@@ -140,6 +156,27 @@ export function FileDetailsSheet({
                 {file.container}/{file.folder.replace(/^\/|\/$/g, '') || '/'}
               </p>
             </div>
+
+            {file.uri && (
+              <div>
+                <span className="text-sm text-muted-foreground">
+                  Conduit URI
+                </span>
+                <div className="flex items-start gap-2 mt-0.5">
+                  <p className="text-sm font-mono break-all flex-1">
+                    {file.uri}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 h-7 w-7"
+                    onClick={copyUri}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {url && (
               <div>
