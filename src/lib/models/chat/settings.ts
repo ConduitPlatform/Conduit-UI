@@ -8,5 +8,10 @@ export type ChatSettings = {
     enabled: boolean;
     send_email: boolean;
     send_notification: boolean;
+    redirect: {
+      login_uri: string;
+      accept_uri: string;
+      decline_uri: string;
+    };
   };
 };
