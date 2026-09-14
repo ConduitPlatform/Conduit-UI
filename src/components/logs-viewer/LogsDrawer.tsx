@@ -1,7 +1,9 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerTitle,
   DrawerTrigger,
@@ -10,9 +12,9 @@ import { Logs, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LogsAccordionList } from './LogsAccordionList';
-import LogsFiltersPanel from './LogsFiltersPanel';
-import { LogsData } from '@/lib/models/logs-viewer';
+import { LogsWorkspace } from './LogsWorkspace';
+import { EmptyState } from '@/components/ui/empty-state';
+import { LogsData, LogsQueryParams } from '@/lib/models/logs-viewer';
 import {
   getLogsLevels,
   getLogsQueryRange,
@@ -21,22 +23,21 @@ import {
 import { getLokiAvailability } from '@/lib/observability/lokiAvailability.actions';
 import type { LokiAvailability } from '@/lib/observability/types';
 import { knownModuleNames } from '@/lib/models/logs-viewer/constants';
-import { getLokiModuleFilterForPath } from '@/lib/utils/module-utils';
+import {
+  getLokiModuleFilterForPath,
+  getModuleDisplayName,
+} from '@/lib/utils/module-utils';
 
 const snapPoints = [0.5, 0.75, 1];
 
-type LogsDrawerProps = {
-  isSidebarOpen?: boolean;
-};
-
-export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
+export function LogsDrawer() {
   const [lokiAvailability, setLokiAvailability] =
     useState<LokiAvailability | null>(null);
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [levels, setLevels] = useState<string[]>([]);
   const [modules, setModules] = useState<string[]>([]);
   const [logs, setLogs] = useState<LogsData[]>([]);
-  const [drawerHeight, setDrawerHeight] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   const drawerModuleLabel = useMemo(
     () =>
@@ -59,19 +60,17 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     () => drawerModuleLabel === 'core',
     [drawerModuleLabel]
   );
+  const moduleDisplayName =
+    drawerModuleLabel === 'core'
+      ? 'Core'
+      : getModuleDisplayName(drawerModuleLabel);
 
   useEffect(() => {
     getLokiAvailability().then(setLokiAvailability);
   }, [drawerModuleLabel]);
 
   const refreshDrawerLogs = useCallback(
-    async (data: {
-      modules: string[] | string;
-      levels?: string[];
-      startDate?: number;
-      endDate?: number;
-      limit?: string;
-    }) => {
+    async (data: LogsQueryParams) => {
       return await getLogsQueryRange({
         ...data,
         modules: lokiModuleFilter,
@@ -80,6 +79,7 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     },
     [lokiModuleFilter]
   );
+
   const lokiReady = lokiAvailability?.state === 'ready';
   const showLogsUi =
     !isLogsViewerPage &&
@@ -87,16 +87,20 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
     lokiAvailability.state !== 'not_configured';
 
   useEffect(() => {
-    if (!lokiReady) return;
+    if (!lokiReady) {
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
     getLogsLevels()
       .then(res => {
-        'use client';
         setLevels(res);
       })
-      .catch();
+      .catch(() => {
+        setLevels([]);
+      });
     getModules()
       .then(res => {
-        'use client';
         let validModules = knownModuleNames;
         if (res.length > 0) {
           validModules = knownModuleNames.concat(
@@ -105,24 +109,10 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
         }
         setModules(validModules);
       })
-      .catch();
-    refreshDrawerLogs({ modules: lokiModuleFilter })
-      .then(res => {
-        'use client';
-        setLogs(res);
-      })
-      .catch();
-  }, [lokiReady, lokiModuleFilter, pathname, refreshDrawerLogs]);
-
-  useEffect(() => {
-    const height = calculateDrawerHeight() - 124; // subtract height for drawer header & drawer vertical padding
-    setDrawerHeight(height);
-  }, [snap]);
-
-  const calculateDrawerHeight = () => {
-    const windowHeight = window.innerHeight;
-    return (snap as number) ? windowHeight * (snap as number) : windowHeight;
-  };
+      .catch(() => {
+        setModules([...knownModuleNames]);
+      });
+  }, [lokiReady, lokiModuleFilter, pathname]);
 
   return showLogsUi ? (
     <Drawer
@@ -135,49 +125,63 @@ export function LogsDrawer({ isSidebarOpen = true }: LogsDrawerProps) {
       <DrawerTrigger asChild>
         <Button
           variant="outline"
-          className="absolute bottom-0 right-0 justify-start h-8 gap-1.5 border-l-0 rounded-b-none left-0 rounded-t-md border-r-none"
+          className="absolute bottom-0 left-4 z-40 h-8 gap-1.5 rounded-t-md rounded-b-none border-b-0 px-3"
         >
-          <Logs className="w-5 h-5" />
+          <Logs className="size-4" />
           Logs
         </Button>
       </DrawerTrigger>
       <DrawerContent
+        showOverlay={false}
         className={cn(
-          'absolute  right-0 rounded-t-md rounded-b-none h-full max-h-[94%]',
-          isCoreModulePage && 'max-h-[99%]',
-          isSidebarOpen ? 'left-56' : 'left-0'
+          'fixed right-0 bottom-0 left-0 mt-0 max-h-[94%] min-h-0',
+          isCoreModulePage && 'max-h-[99%]'
         )}
       >
-        <DrawerTitle className="sr-only">List of logs with filters</DrawerTitle>
-        <DrawerTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute w-8 h-8 rounded-md outline-hidden top-2 right-2 ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <X className="shrink-0 w-4 h-4" />
-            <span className="sr-only">Close</span>
-          </Button>
-        </DrawerTrigger>
-        {lokiReady ? (
-          <>
-            <LogsFiltersPanel
-              levels={levels}
-              setLogs={setLogs}
-              modules={modules}
-              drawerModule={drawerModuleLabel}
-              refreshLogs={refreshDrawerLogs}
-            />
-            <div style={{ maxHeight: `${drawerHeight}px` }}>
-              <LogsAccordionList logs={logs} />
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="flex shrink-0 items-start justify-between gap-3 px-4 pb-2">
+            <div className="min-w-0">
+              <DrawerTitle className="text-sm font-medium tracking-tight">
+                Logs
+              </DrawerTitle>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {moduleDisplayName}
+              </p>
             </div>
-          </>
-        ) : (
-          <div className="p-6 text-center text-sm text-foreground-muted">
-            Cannot reach Loki at the configured URL. Check that Loki is running
-            and that LOKI_URL is correct.
+            <DrawerClose asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                aria-label="Close logs"
+              >
+                <X className="size-4" />
+              </Button>
+            </DrawerClose>
           </div>
-        )}
+          {lokiReady ? (
+            <LogsWorkspace
+              levels={levels}
+              logs={logs}
+              setLogs={value => {
+                setLogs(value);
+                setIsLoading(false);
+              }}
+              modules={modules}
+              refreshLogs={refreshDrawerLogs}
+              drawerModule={drawerModuleLabel}
+              type="drawer"
+              isLoading={isLoading}
+            />
+          ) : (
+            <EmptyState
+              title="Cannot reach Loki"
+              description="Check that Loki is running and that LOKI_URL is correct."
+              className="min-h-0 flex-1"
+            />
+          )}
+        </div>
       </DrawerContent>
     </Drawer>
   ) : null;
