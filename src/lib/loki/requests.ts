@@ -120,7 +120,7 @@ export const getLogsQueryRange = async (data: {
         });
       })
     );
-    logs.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
   }
   return logs;
 };

@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import JsonViewer from './JsonViewer';
 import {
   AlertCircle,
-  ArrowDown,
+  ArrowUp,
   CheckCheck,
   Files,
   ScrollText,
@@ -31,7 +31,7 @@ import {
 } from '@/lib/models/logs-viewer/utils';
 import { useToast } from '@/lib/hooks/use-toast';
 
-const NEAR_BOTTOM_PX = 80;
+const NEAR_TOP_PX = 80;
 
 const badgeBackgroundColorVariants: Record<string, string> = {
   critical:
@@ -89,15 +89,13 @@ export function LogsAccordionList({
   const updateFollowLatest = useCallback(() => {
     const container = logsContainerRef.current;
     if (!container) return;
-    const distanceFromBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight;
-    setFollowLatest(distanceFromBottom <= NEAR_BOTTOM_PX);
+    setFollowLatest(container.scrollTop <= NEAR_TOP_PX);
   }, []);
 
   const scrollToLatest = useCallback(() => {
     const container = logsContainerRef.current;
     if (!container) return;
-    container.scrollTop = container.scrollHeight;
+    container.scrollTop = 0;
     setFollowLatest(true);
   }, []);
 
@@ -291,7 +289,7 @@ export function LogsAccordionList({
           }}
           onClick={scrollToLatest}
         >
-          <ArrowDown className="size-4" />
+          <ArrowUp className="size-4" />
           Jump to latest
         </Button>
       ) : null}
