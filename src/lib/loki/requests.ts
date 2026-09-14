@@ -1,5 +1,6 @@
 'use server';
 import { LogsData, LokiLogsData } from '@/lib/models/logs-viewer';
+import { escapeLogqlString } from '@/lib/models/logs-viewer/utils';
 import { getLokiClient } from '@/lib/loki/index';
 import { _getEnv } from '@/lib/logic/EnvManager';
 import { getLokiAvailabilityCore } from '@/lib/observability/lokiAvailabilityCore';
@@ -90,8 +91,9 @@ export const getLogsQueryRange = async (data: {
 
   query += queryParts.join(',') + '}';
 
-  if (searchTerm) {
-    query += ` |~ "${searchTerm}"`;
+  const trimmedSearch = searchTerm?.trim();
+  if (trimmedSearch) {
+    query += ` |= "${escapeLogqlString(trimmedSearch)}"`;
   }
   const res = await (
     await getLokiClient()

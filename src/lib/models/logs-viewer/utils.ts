@@ -1,22 +1,50 @@
 import { LogsData, ModuleNames } from '@/lib/models/logs-viewer';
 import { format, isValid } from 'date-fns';
 
-export const getFormattedMessage = (message: LogsData['message']) =>
-  message.slice(0, message?.indexOf('{"'));
+export const getFormattedMessage = (message: LogsData['message']) => {
+  const metadataStartIndex = message?.indexOf('{"');
+  if (metadataStartIndex === undefined || metadataStartIndex === -1) {
+    return message ?? '';
+  }
+  return message.slice(0, metadataStartIndex).trim();
+};
 
-export const getFormattedMetadata = (message: LogsData['message']) => {
+export const getFormattedMetadata = (
+  message: LogsData['message']
+): Record<string, unknown> | string => {
   const metadataStartIndex = message?.indexOf('{"');
   if (metadataStartIndex === -1 || metadataStartIndex === undefined) {
     return 'No metadata';
   }
 
   const metadata = message.slice(metadataStartIndex);
-  return JSON.parse(metadata);
+  try {
+    return JSON.parse(metadata) as Record<string, unknown>;
+  } catch {
+    return { raw: metadata };
+  }
+};
+
+export const formatLogModule = (module: LogsData['module']): string => {
+  if (!module) return 'unknown';
+  if (Array.isArray(module)) {
+    const label = module.filter(Boolean).join(', ');
+    return label || 'unknown';
+  }
+  return module;
+};
+
+export const escapeLogqlString = (value: string): string =>
+  value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+export const getLogDate = (timestamp: LogsData['timestamp']): Date | null => {
+  const date = new Date(Number(timestamp) / 1_000_000);
+  return isValid(date) ? date : null;
 };
 
 export const getFormattedDate = (timestamp: LogsData['timestamp']) => {
-  const date = new Date(Number(timestamp) / 1_000_000);
-  if (!isValid(date)) {
+  const date = getLogDate(timestamp);
+  if (!date) {
     return 'Invalid date';
   }
   return format(date, 'MMM dd, yyyy, hh:mm:ss a');
@@ -53,20 +81,19 @@ export const generateMultiSelectOptions = (options?: string[]) => {
 export const getTimestamp = (value: string) => {
   const now = new Date();
   if (value === '0') {
-    // Special case for 'Today'
     const startTime = new Date(now.setHours(0, 0, 0, 0));
     const endTime = new Date();
     return {
-      startDate: startTime.valueOf() * 1000000,
-      endDate: endTime.valueOf() * 1000000,
-    };
-  } else {
-    const minutes = parseInt(value, 10);
-    const endDate = now;
-    const startDate = new Date(now.getTime() - minutes * 60000);
-    return {
-      startTime: startDate.valueOf() * 1000000,
-      endTime: endDate.valueOf() * 1000000,
+      startTime: startTime.valueOf() * 1_000_000,
+      endTime: endTime.valueOf() * 1_000_000,
     };
   }
+
+  const minutes = parseInt(value, 10);
+  const endDate = now;
+  const startDate = new Date(now.getTime() - minutes * 60000);
+  return {
+    startTime: startDate.valueOf() * 1_000_000,
+    endTime: endDate.valueOf() * 1_000_000,
+  };
 };
