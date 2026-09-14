@@ -102,10 +102,12 @@ export default function ModuleHeader({
 
   if (!moduleName)
     return (
-      <>
-        <LogsDrawer isSidebarOpen={false} />
-        <div className="page-enter-children h-full min-h-0">{children}</div>
-      </>
+      <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+        <LogsDrawer />
+        <div className="page-enter-children min-h-0 flex-1 overflow-hidden">
+          {children}
+        </div>
+      </div>
     );
 
   const RESTDocs: {
@@ -170,7 +172,7 @@ export default function ModuleHeader({
     isCommunicationsSubRoute && pathSegments[1] === 'templates';
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
       <div className="flex min-h-10 w-full shrink-0 flex-row items-center justify-between border-b bg-background px-4 py-2">
         <div className="flex items-center gap-3 min-w-0">
           <Breadcrumb>
@@ -366,7 +368,7 @@ export default function ModuleHeader({
           {children}
         </div>
       </div>
-      <LogsDrawer isSidebarOpen={false} />
+      <LogsDrawer />
     </div>
   );
 }
