@@ -10,9 +10,28 @@ export function isAxiosLikeError(err: unknown): err is AxiosLikeError {
   return Boolean(err && typeof err === 'object' && 'response' in err);
 }
 
+function collectErrorChain(err: unknown): unknown[] {
+  const chain: unknown[] = [];
+  const seen = new Set<unknown>();
+  let current: unknown = err;
+  while (current !== undefined && current !== null && !seen.has(current)) {
+    seen.add(current);
+    chain.push(current);
+    if (typeof current !== 'object' || !('cause' in current)) {
+      break;
+    }
+    current = (current as { cause?: unknown }).cause;
+  }
+  return chain;
+}
+
 export function getAxiosResponseStatus(err: unknown): number | undefined {
-  if (!isAxiosLikeError(err)) return undefined;
-  return err.response?.status;
+  for (const candidate of collectErrorChain(err)) {
+    if (!isAxiosLikeError(candidate)) continue;
+    const status = candidate.response?.status;
+    if (status !== undefined) return status;
+  }
+  return undefined;
 }
 
 export function isAxiosNotFoundError(err: unknown): boolean {

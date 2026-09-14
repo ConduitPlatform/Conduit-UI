@@ -133,6 +133,7 @@ export const navGroups: NavGroup[] = [
         items: [
           { title: 'Visualize', url: '/router/vizualize' },
           { title: 'Security', url: '/router/security' },
+          { title: 'Event Relays', url: '/router/event-relays' },
           { title: 'Settings', url: '/router/settings' },
         ],
       },
