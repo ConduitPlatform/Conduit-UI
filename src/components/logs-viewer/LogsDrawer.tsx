@@ -117,6 +117,7 @@ export function LogsDrawer() {
   return showLogsUi ? (
     <Drawer
       modal={false}
+      handleOnly
       snapPoints={snapPoints}
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
@@ -134,11 +135,11 @@ export function LogsDrawer() {
       <DrawerContent
         showOverlay={false}
         className={cn(
-          'fixed right-0 bottom-0 left-0 mt-0 max-h-[94%] min-h-0',
+          'right-0 bottom-0 left-0 mt-0 h-full max-h-[94%] min-h-0 overflow-hidden',
           isCoreModulePage && 'max-h-[99%]'
         )}
       >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
           <div className="flex shrink-0 items-start justify-between gap-3 px-4 pb-2">
             <div className="min-w-0">
               <DrawerTitle className="text-sm font-medium tracking-tight">

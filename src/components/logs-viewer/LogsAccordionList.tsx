@@ -131,8 +131,10 @@ export function LogsAccordionList({
     <div className={cn('relative min-h-0 flex-1 overflow-hidden', className)}>
       <div
         ref={logsContainerRef}
+        data-vaul-no-drag=""
         onScroll={updateFollowLatest}
-        className="h-full min-h-0 overflow-x-hidden overflow-y-scroll overscroll-contain main-scrollbar"
+        onWheel={event => event.stopPropagation()}
+        className="absolute inset-0 overflow-x-hidden overflow-y-scroll overscroll-contain touch-pan-y main-scrollbar"
       >
         {isLoading ? (
           <LogsListSkeleton />
