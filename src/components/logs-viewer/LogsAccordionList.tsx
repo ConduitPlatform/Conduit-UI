@@ -1,51 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
-import JsonViewer from './JsonViewer';
-import {
-  AlertCircle,
-  ArrowUp,
-  CheckCheck,
-  Files,
-  ScrollText,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { EmptyState } from '@/components/ui/empty-state';
+import { AlertCircle, ArrowUp, ScrollText } from 'lucide-react';
+
+import { Accordion } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { LogsData } from '@/lib/models/logs-viewer';
-import {
-  formatLogModule,
-  getFormattedDate,
-  getFormattedMessage,
-  getFormattedMetadata,
-  getLogDate,
-} from '@/lib/models/logs-viewer/utils';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/lib/hooks/use-toast';
+import type { LogsData } from '@/lib/models/logs-viewer';
+import { cn } from '@/lib/utils';
+
+import { LogAccordionItem } from './LogAccordionItem';
 
 const NEAR_TOP_PX = 80;
-
-const badgeBackgroundColorVariants: Record<string, string> = {
-  critical:
-    'border-log-critical/40 bg-log-critical/10 text-log-critical hover:bg-log-critical/15',
-  warning:
-    'border-log-warning/40 bg-log-warning/10 text-log-warning hover:bg-log-warning/15',
-  error:
-    'border-log-critical/40 bg-log-critical/10 text-log-critical hover:bg-log-critical/15',
-  info: 'border-log-info/40 bg-log-info/10 text-log-info hover:bg-log-info/15',
-  debug:
-    'border-log-debug/40 bg-log-debug/10 text-log-debug hover:bg-log-debug/15',
-  unknown:
-    'border-log-unknown/40 bg-log-unknown/10 text-log-unknown hover:bg-log-unknown/15',
-};
 
 type LogsAccordionListProps = {
   className?: string;
@@ -61,11 +30,11 @@ function LogsListSkeleton() {
       {Array.from({ length: 8 }).map((_, index) => (
         <div
           key={`log-skeleton-${index}`}
-          className="flex items-center gap-2 rounded-md border border-border bg-surface-1 px-3 py-2"
+          className="relative grid min-h-10 grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-2 overflow-hidden rounded-md border border-border bg-surface-1 px-3 before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-border-strong lg:grid-cols-[10.75rem_auto_auto_minmax(0,1fr)]"
         >
-          <Skeleton className="h-4 w-28 shrink-0" />
+          <Skeleton className="hidden h-4 w-36 shrink-0 lg:block" />
           <Skeleton className="h-5 w-12 shrink-0 rounded-full" />
-          <Skeleton className="h-5 w-24 shrink-0 rounded-full" />
+          <Skeleton className="h-5 w-20 shrink-0 rounded-full" />
           <Skeleton className="h-4 min-w-0 flex-1" />
         </div>
       ))}
@@ -99,25 +68,28 @@ export function LogsAccordionList({
     setFollowLatest(true);
   }, []);
 
-  const handleCopyToClipboard = async (id: string, json: object) => {
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
-      setCopiedId(id);
-      toast({
-        title: 'Copied',
-        description: 'Log metadata copied to clipboard.',
-      });
-      window.setTimeout(() => {
-        setCopiedId(current => (current === id ? null : current));
-      }, 2000);
-    } catch {
-      toast({
-        variant: 'destructive',
-        title: 'Copy failed',
-        description: 'Could not copy log metadata.',
-      });
-    }
-  };
+  const handleCopyToClipboard = useCallback(
+    async (id: string, json: Record<string, unknown>) => {
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+        setCopiedId(id);
+        toast({
+          title: 'Copied',
+          description: 'Log metadata copied to clipboard.',
+        });
+        window.setTimeout(() => {
+          setCopiedId(current => (current === id ? null : current));
+        }, 2000);
+      } catch {
+        toast({
+          variant: 'destructive',
+          title: 'Copy failed',
+          description: 'Could not copy log metadata.',
+        });
+      }
+    },
+    [toast]
+  );
 
   useEffect(() => {
     if (followLatest && !value) {
@@ -177,100 +149,16 @@ export function LogsAccordionList({
                 className="flex w-full min-w-0 flex-col gap-2 px-4 py-3"
               >
                 {logs.map((log, index) => {
-                  const { level, message, timestamp, module } = log;
-                  const itemId = `item-${timestamp}-${index}`;
-                  const metadata = getFormattedMetadata(message);
-                  const levelKey = (level || 'unknown').toLowerCase();
-                  const levelClass =
-                    badgeBackgroundColorVariants[levelKey] ??
-                    badgeBackgroundColorVariants.unknown;
-                  const logDate = getLogDate(timestamp);
-                  const formattedDate = getFormattedDate(timestamp);
+                  const itemId = `item-${log.timestamp}-${index}`;
 
                   return (
-                    <AccordionItem
+                    <LogAccordionItem
                       key={itemId}
-                      value={itemId}
-                      className="min-w-0 overflow-hidden rounded-md border border-border bg-surface-1"
-                    >
-                      <AccordionTrigger
-                        className={cn(
-                          'min-h-8 min-w-0 px-3 py-2 text-left text-sm font-normal hover:no-underline focus-visible:ring-2 focus-visible:ring-ring',
-                          value === itemId
-                            ? 'rounded-t-md border-b border-border bg-surface-2'
-                            : 'rounded-md hover:bg-surface-2'
-                        )}
-                      >
-                        <div className="flex min-w-0 flex-1 items-center gap-2">
-                          <time
-                            dateTime={logDate?.toISOString()}
-                            className="hidden w-[11.5rem] shrink-0 tabular-nums text-xs text-muted-foreground sm:block"
-                          >
-                            {formattedDate}
-                          </time>
-                          <Badge
-                            className={cn(
-                              'shrink-0 font-normal capitalize',
-                              levelClass
-                            )}
-                          >
-                            {level || 'unknown'}
-                          </Badge>
-                          <Badge
-                            variant="secondary"
-                            className="min-w-0 max-w-28 shrink-0 truncate font-normal"
-                          >
-                            {formatLogModule(module)}
-                          </Badge>
-                          <span className="min-w-0 flex-1 truncate text-[13px] text-foreground">
-                            {getFormattedMessage(message) || message}
-                          </span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="relative min-w-0 pb-0">
-                        <div className="flex items-center justify-between gap-2 px-3 pt-3 sm:hidden">
-                          <time
-                            dateTime={logDate?.toISOString()}
-                            className="tabular-nums text-xs text-muted-foreground"
-                          >
-                            {formattedDate}
-                          </time>
-                        </div>
-                        {typeof metadata === 'string' ? (
-                          <p className="px-3 py-3 text-sm text-muted-foreground">
-                            {metadata}
-                          </p>
-                        ) : (
-                          <div className="min-w-0 max-w-full overflow-x-auto overscroll-contain main-scrollbar">
-                            <JsonViewer json={metadata} />
-                          </div>
-                        )}
-                        {copiedId === itemId ? (
-                          <span className="absolute top-3 right-6 text-foreground">
-                            <CheckCheck className="size-4" />
-                            <span className="sr-only">Copied</span>
-                          </span>
-                        ) : (
-                          <Button
-                            onClick={() =>
-                              handleCopyToClipboard(
-                                itemId,
-                                typeof metadata === 'string'
-                                  ? { message: metadata }
-                                  : metadata
-                              )
-                            }
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute top-1 right-3 text-muted-foreground hover:text-primary"
-                          >
-                            <Files className="size-4" />
-                            <span className="sr-only">Copy log metadata</span>
-                          </Button>
-                        )}
-                      </AccordionContent>
-                    </AccordionItem>
+                      itemId={itemId}
+                      log={log}
+                      isCopied={copiedId === itemId}
+                      onCopy={handleCopyToClipboard}
+                    />
                   );
                 })}
               </Accordion>

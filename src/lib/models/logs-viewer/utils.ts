@@ -1,5 +1,51 @@
-import { LogsData, ModuleNames } from '@/lib/models/logs-viewer';
 import { format, isValid } from 'date-fns';
+
+import type { LogsData, ModuleNames } from './index';
+
+export const HTTP_METHODS = [
+  'GET',
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+  'HEAD',
+  'OPTIONS',
+] as const;
+
+const HTTP_SUMMARY_PATTERN = new RegExp(
+  `^(${HTTP_METHODS.join('|')})\\s+(\\S+)\\s+([1-5]\\d{2})\\s+(\\d+(?:\\.\\d+)?(?:ns|µs|us|ms|s))$`
+);
+
+export type HttpMethod = (typeof HTTP_METHODS)[number];
+
+export type LogSummary =
+  | {
+      type: 'http';
+      method: HttpMethod;
+      path: string;
+      statusCode: number;
+      duration: string;
+    }
+  | {
+      type: 'text';
+      text: string;
+    };
+
+export const parseLogSummary = (message: string): LogSummary => {
+  const match = HTTP_SUMMARY_PATTERN.exec(message);
+  if (!match) {
+    return { type: 'text', text: message };
+  }
+
+  const [, method, path, statusCode, duration] = match;
+  return {
+    type: 'http',
+    method: method as HttpMethod,
+    path,
+    statusCode: Number(statusCode),
+    duration,
+  };
+};
 
 export const getFormattedMessage = (message: LogsData['message']) => {
   const metadataStartIndex = message?.indexOf('{"');
@@ -42,13 +88,15 @@ export const getLogDate = (timestamp: LogsData['timestamp']): Date | null => {
   return isValid(date) ? date : null;
 };
 
-export const getFormattedDate = (timestamp: LogsData['timestamp']) => {
-  const date = getLogDate(timestamp);
+export const formatLogDate = (date: Date | null) => {
   if (!date) {
     return 'Invalid date';
   }
   return format(date, 'MMM dd, yyyy, hh:mm:ss a');
 };
+
+export const getFormattedDate = (timestamp: LogsData['timestamp']) =>
+  formatLogDate(getLogDate(timestamp));
 
 export const checkUnknownModuleNames = (
   knownModuleNames: ModuleNames[],
