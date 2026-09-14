@@ -133,8 +133,8 @@ export function LogsAccordionList({
         ref={logsContainerRef}
         data-vaul-no-drag=""
         onScroll={updateFollowLatest}
-        onWheel={event => event.stopPropagation()}
-        className="absolute inset-0 overflow-x-hidden overflow-y-scroll overscroll-contain touch-pan-y main-scrollbar"
+        className="absolute inset-x-0 top-0 overflow-x-hidden overflow-y-auto overscroll-contain touch-pan-y main-scrollbar"
+        style={{ bottom: 'var(--snap-point-height, 0px)' }}
       >
         {isLoading ? (
           <LogsListSkeleton />
@@ -286,6 +286,9 @@ export function LogsAccordionList({
           size="sm"
           variant="secondary"
           className="absolute right-4 bottom-3 shadow-2"
+          style={{
+            transform: 'translateY(calc(var(--snap-point-height, 0px) * -1))',
+          }}
           onClick={scrollToLatest}
         >
           <ArrowDown className="size-4" />
