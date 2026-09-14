@@ -2,7 +2,8 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { formatBreadcrumbSegment } from '@/lib/utils/breadcrumbs';
 import { getRouterSettings } from '@/lib/api/router';
 import { getAdminSettings } from '@/lib/api/settings';
 import { ScalarIcon, SocketIcon } from '@/icons';
@@ -36,6 +37,7 @@ const MODULE_NAMES: { [key: string]: string } = {
   authentication: 'Authentication',
   authorization: 'Authorization',
   database: 'Database',
+  embeddings: 'Embeddings',
   storage: 'Storage',
   chat: 'Chat',
   forms: 'Forms',
@@ -48,22 +50,55 @@ const MODULE_NAMES: { [key: string]: string } = {
   payments: 'Payments',
 };
 
-const SEGMENT_LABELS: Record<string, string> = {
-  templates: 'Templates',
-  logs: 'Logs & Devices',
-  settings: 'Settings',
-  test: 'Test Send',
-};
+function ModuleSubpathCrumbs({
+  pathSegments,
+  moduleSlug,
+}: {
+  pathSegments: string[];
+  moduleSlug?: string;
+}) {
+  if (moduleSlug === 'embeddings') {
+    return pathSegments.slice(1).map((segment, index) => {
+      const segmentIndex = index + 1;
+      const href = `/${pathSegments.slice(0, segmentIndex + 1).join('/')}`;
+      const isLast = segmentIndex === pathSegments.length - 1;
+      const label = formatBreadcrumbSegment(
+        segment,
+        moduleSlug,
+        pathSegments[segmentIndex - 1]
+      );
+      return (
+        <Fragment key={href}>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            {isLast ? (
+              <BreadcrumbPage>{label}</BreadcrumbPage>
+            ) : (
+              <BreadcrumbLink asChild>
+                <Link href={href}>{label}</Link>
+              </BreadcrumbLink>
+            )}
+          </BreadcrumbItem>
+        </Fragment>
+      );
+    });
+  }
 
-function formatBreadcrumbSegment(segment: string): string {
   return (
-    SEGMENT_LABELS[segment] ??
-    segment
-      .split('-')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ')
+    <>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>
+          {formatBreadcrumbSegment(
+            pathSegments[pathSegments.length - 1],
+            moduleSlug
+          )}
+        </BreadcrumbPage>
+      </BreadcrumbItem>
+    </>
   );
 }
+
 export default function ModuleHeader({
   children,
 }: {
@@ -208,7 +243,8 @@ export default function ModuleHeader({
                           <BreadcrumbItem>
                             <BreadcrumbPage>
                               {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1]
+                                pathSegments[pathSegments.length - 1],
+                                whichModule
                               )}
                             </BreadcrumbPage>
                           </BreadcrumbItem>
@@ -225,7 +261,10 @@ export default function ModuleHeader({
                       <BreadcrumbSeparator />
                       <BreadcrumbItem>
                         <BreadcrumbPage>
-                          {formatBreadcrumbSegment(pathSegments[1])}
+                          {formatBreadcrumbSegment(
+                            pathSegments[1],
+                            whichModule
+                          )}
                         </BreadcrumbPage>
                       </BreadcrumbItem>
                     </>
@@ -255,16 +294,10 @@ export default function ModuleHeader({
                         )}
                       </BreadcrumbItem>
                       {pathSegments.length > 1 && (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <BreadcrumbPage>
-                              {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1]
-                              )}
-                            </BreadcrumbPage>
-                          </BreadcrumbItem>
-                        </>
+                        <ModuleSubpathCrumbs
+                          pathSegments={pathSegments}
+                          moduleSlug={whichModule}
+                        />
                       )}
                     </>
                   )}
