@@ -1,0 +1,520 @@
+import type { EmbeddingConfigInput, EmbeddingConfigRequest } from './config.ts';
+import {
+  catalogueDimensionsForInput,
+  resolveRequestedCatalogueDimensions,
+  type ConfigProviderChoice,
+} from './config-catalogue.ts';
+
+export const AUTH_SECRET_SCHEMA_NAMES = new Set([
+  'AccessToken',
+  'RefreshToken',
+  'Token',
+  'TwoFactorSecret',
+  'TwoFactorBackUpCodes',
+  'BiometricToken',
+  'AdminTwoFactorSecret',
+  'AdminApiToken',
+]);
+
+export const PLATFORM_INTERNAL_OWNER_MODULES = new Set(['core', 'router']);
+
+export const EMBEDDINGS_OWNER_MODULE = 'embeddings';
+
+export const EMBEDDING_OWNED_SCHEMA_NAMES = new Set([
+  'EmbeddingConfig',
+  'BackfillRun',
+]);
+
+export const INELIGIBLE_SOURCE_FIELDS_MESSAGE =
+  'One or more source fields are not eligible.';
+
+export const UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE =
+  'This schema cannot be used for embeddings.';
+
+export const SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE =
+  'Schema eligibility could not be verified. Retry.';
+
+const SENSITIVE_FIELD_NAME =
+  /(password|secret|token|credential|apikey|api_key|private[_-]?key|authorization|refresh[_-]?token|access[_-]?token)/i;
+
+const SOURCE_FIELD_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const SCHEMA_OR_TARGET_NAME = /^[A-Za-z_][A-Za-z0-9_]{0,127}$/;
+
+export type EmbeddingSchemaChoice = {
+  name: string;
+  ownerModule: string;
+  fields: Record<string, unknown>;
+};
+
+export type SourceFieldChoice = {
+  name: string;
+  eligible: boolean;
+};
+
+export type EmbeddingSchemaFormChoice = {
+  name: string;
+  fields: SourceFieldChoice[];
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function isSensitiveFieldName(field: string): boolean {
+  return SENSITIVE_FIELD_NAME.test(field);
+}
+
+export function isStringLikeField(field: unknown): boolean {
+  if (field === 'String') return true;
+  if (Array.isArray(field) && field.length === 1) {
+    return isStringLikeField(field[0]);
+  }
+  if (!isRecord(field)) return false;
+  if (field.type === 'String') return true;
+  return Array.isArray(field.type) && isStringLikeField(field.type);
+}
+
+export function isHiddenField(field: unknown): boolean {
+  return isRecord(field) && field.select === false;
+}
+
+export function isValidSourceFieldName(field: string): boolean {
+  return SOURCE_FIELD_NAME.test(field);
+}
+
+export function isValidSchemaOrTargetName(value: string): boolean {
+  return SCHEMA_OR_TARGET_NAME.test(value);
+}
+
+export type SchemaExtensionInfo = {
+  ownerModule?: string;
+  fields?: Record<string, unknown>;
+};
+
+export type EmbeddingSchemaEligibilityInput = {
+  name: string;
+  ownerModule?: string;
+  enabled?: unknown;
+  modelOptions?: unknown;
+  fields?: unknown;
+  compiledFields?: unknown;
+  extensions?: SchemaExtensionInfo[];
+};
+
+export function parseDatabaseSystemSchemaNames(payload: unknown): string[] {
+  if (!isRecord(payload) || !Array.isArray(payload.databaseSystemSchemas)) {
+    throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
+  }
+  const names: string[] = [];
+  for (const name of payload.databaseSystemSchemas) {
+    if (typeof name !== 'string' || name.length === 0) {
+      throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
+    }
+    names.push(name);
+  }
+  return names;
+}
+
+function toSystemSchemaNameSet(
+  names: Iterable<string> | null | undefined
+): Set<string> | null {
+  if (names == null) return null;
+  return new Set(
+    [...names]
+      .map(name => name.trim().toLowerCase())
+      .filter(name => name.length > 0)
+  );
+}
+
+export function isDeniedEmbeddingSchema(
+  schema: {
+    name: string;
+    ownerModule?: string;
+  },
+  systemSchemaNames?: Iterable<string> | null
+): boolean {
+  if (!schema.name) return true;
+  if (schema.ownerModule === EMBEDDINGS_OWNER_MODULE) return true;
+  if (EMBEDDING_OWNED_SCHEMA_NAMES.has(schema.name)) return true;
+  if (schema.name.startsWith('_')) return true;
+  if (
+    schema.ownerModule != null &&
+    PLATFORM_INTERNAL_OWNER_MODULES.has(schema.ownerModule)
+  ) {
+    return true;
+  }
+  const systemNames = toSystemSchemaNameSet(systemSchemaNames);
+  if (systemNames?.has(schema.name.toLowerCase())) return true;
+  return AUTH_SECRET_SCHEMA_NAMES.has(schema.name);
+}
+
+export function isSchemaExtendable(modelOptions?: unknown): boolean {
+  if (!isRecord(modelOptions)) return false;
+  const conduit = modelOptions.conduit;
+  if (!isRecord(conduit)) return false;
+  const permissions = conduit.permissions;
+  return isRecord(permissions) && permissions.extendable === true;
+}
+
+export function isDeclaredSchemaEnabled(schema: {
+  enabled?: unknown;
+  modelOptions?: unknown;
+}): boolean {
+  if (schema.enabled === false) return false;
+  if (schema.enabled === true) return true;
+  if (!isRecord(schema.modelOptions)) return true;
+  const conduit = schema.modelOptions.conduit;
+  if (!isRecord(conduit)) return true;
+  const cms = conduit.cms;
+  if (cms == null) return true;
+  return isRecord(cms) && cms.enabled === true;
+}
+
+export function isEligibleEmbeddingSchema(
+  schema: EmbeddingSchemaEligibilityInput,
+  systemSchemaNames?: Iterable<string> | null
+): boolean {
+  return (
+    !isDeniedEmbeddingSchema(schema, systemSchemaNames) &&
+    isDeclaredSchemaEnabled(schema) &&
+    isSchemaExtendable(schema.modelOptions)
+  );
+}
+
+export function toSchemaFieldMap(schema: {
+  fields?: unknown;
+  compiledFields?: unknown;
+}): Record<string, unknown> {
+  if (
+    isRecord(schema.compiledFields) &&
+    Object.keys(schema.compiledFields).length > 0
+  ) {
+    return schema.compiledFields;
+  }
+  if (isRecord(schema.fields)) return schema.fields;
+  return {};
+}
+
+export function isEligibleSourceField(
+  name: string,
+  definition: unknown
+): boolean {
+  if (!isValidSourceFieldName(name)) return false;
+  if (!isStringLikeField(definition)) return false;
+  if (isHiddenField(definition)) return false;
+  return !isSensitiveFieldName(name);
+}
+
+export function listEligibleSourceFields(
+  fields: Record<string, unknown>
+): string[] {
+  return Object.keys(fields)
+    .filter(name => isEligibleSourceField(name, fields[name]))
+    .sort();
+}
+
+export function listSourceFieldChoices(
+  fields: Record<string, unknown>,
+  current: readonly string[]
+): SourceFieldChoice[] {
+  const names = new Set([
+    ...listEligibleSourceFields(fields),
+    ...current.filter(name => name.length > 0),
+  ]);
+  return [...names].sort().map(name => ({
+    name,
+    eligible: isEligibleSourceField(name, fields[name]),
+  }));
+}
+
+export function toEmbeddingSchemaChoice(schema: {
+  name: string;
+  ownerModule: string;
+  fields?: unknown;
+  compiledFields?: unknown;
+}): EmbeddingSchemaChoice {
+  return {
+    name: schema.name,
+    ownerModule: schema.ownerModule,
+    fields: toSchemaFieldMap(schema),
+  };
+}
+
+export function listEligibleSchemas(
+  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined,
+  systemSchemaNames?: Iterable<string> | null
+): EmbeddingSchemaChoice[] {
+  if (schemas == null || systemSchemaNames == null) return [];
+  return schemas
+    .filter(schema => isEligibleEmbeddingSchema(schema, systemSchemaNames))
+    .map(schema =>
+      toEmbeddingSchemaChoice({
+        ...schema,
+        ownerModule: schema.ownerModule ?? 'database',
+      })
+    )
+    .sort((left, right) => left.name.localeCompare(right.name));
+}
+
+export function eligibleSchemaNames(
+  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined,
+  systemSchemaNames?: Iterable<string> | null
+): Set<string> {
+  return new Set(
+    listEligibleSchemas(schemas, systemSchemaNames).map(schema => schema.name)
+  );
+}
+
+export function filterByEligibleSchemas<T extends { schemaName: string }>(
+  items: T[],
+  schemas: EmbeddingSchemaEligibilityInput[] | null | undefined,
+  systemSchemaNames?: Iterable<string> | null
+): T[] {
+  const names = eligibleSchemaNames(schemas, systemSchemaNames);
+  return items.filter(item => names.has(item.schemaName));
+}
+
+export function eligibleSchemaIdsByName(
+  schemas: Array<
+    EmbeddingSchemaEligibilityInput & {
+      _id: string;
+    }
+  >,
+  systemSchemaNames?: Iterable<string> | null
+): Map<string, string> {
+  if (systemSchemaNames == null) return new Map();
+  return new Map(
+    schemas
+      .filter(schema => isEligibleEmbeddingSchema(schema, systemSchemaNames))
+      .map(schema => [schema.name, schema._id])
+  );
+}
+
+export function normalizeSourceFieldAllowlist(values: string[]): string[] {
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const value of values) {
+    const name = value.trim();
+    if (!name || seen.has(name)) continue;
+    seen.add(name);
+    names.push(name);
+  }
+  return names;
+}
+
+export function embeddingSourceHashField(targetField: string): string {
+  return `${targetField}SourceHash`;
+}
+
+export function embeddingExtensionCollisionMessage(
+  fieldName: string,
+  schemaName: string
+): string {
+  return `Field '${fieldName}' already exists on schema '${schemaName}' and is not a compatible embeddings extension`;
+}
+
+type EmbeddingExtensionField = {
+  type: string;
+  dimensions?: number;
+  similarity?: string;
+  required?: boolean;
+};
+
+function fieldType(field: unknown): string | undefined {
+  if (typeof field === 'string') return field;
+  if (!isRecord(field)) return undefined;
+  if (typeof field.type === 'string') return field.type;
+  return undefined;
+}
+
+function isCompatibleEmbeddingField(
+  existing: unknown,
+  proposed: EmbeddingExtensionField
+): boolean {
+  const type = fieldType(existing);
+  if (type !== proposed.type) return false;
+  if (proposed.type === 'Vector') {
+    if (!isRecord(existing)) return false;
+    if (existing.dimensions !== proposed.dimensions) return false;
+    if (
+      typeof existing.similarity === 'string' &&
+      existing.similarity !== proposed.similarity
+    ) {
+      return false;
+    }
+    return true;
+  }
+  if (proposed.type === 'String') {
+    if (isRecord(existing) && existing.required === true) return false;
+    return isStringLikeField(existing);
+  }
+  return false;
+}
+
+function extensionOwner(
+  fieldName: string,
+  extensions: SchemaExtensionInfo[]
+): SchemaExtensionInfo | undefined {
+  return extensions.find(extension => fieldName in (extension.fields ?? {}));
+}
+
+export function assertEmbeddingExtensionAvailability(args: {
+  schemaName: string;
+  targetField: string;
+  dimensions: number;
+  similarity: string;
+  baseFields?: Record<string, unknown>;
+  compiledFields: Record<string, unknown>;
+  extensions?: SchemaExtensionInfo[];
+}): void {
+  const hashField = embeddingSourceHashField(args.targetField);
+  const proposed: Record<string, EmbeddingExtensionField> = {
+    [args.targetField]: {
+      type: 'Vector',
+      dimensions: args.dimensions,
+      similarity: args.similarity,
+    },
+    [hashField]: {
+      type: 'String',
+      required: false,
+    },
+  };
+  const extensions = args.extensions ?? [];
+  for (const [fieldName, definition] of Object.entries(proposed)) {
+    const owned = extensionOwner(fieldName, extensions);
+    if (owned && owned.ownerModule !== EMBEDDINGS_OWNER_MODULE) {
+      throw new Error(
+        embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+      );
+    }
+    if (owned?.ownerModule === EMBEDDINGS_OWNER_MODULE) {
+      if (!isCompatibleEmbeddingField(owned.fields?.[fieldName], definition)) {
+        throw new Error(
+          embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+        );
+      }
+      continue;
+    }
+    if (args.baseFields && fieldName in args.baseFields) {
+      throw new Error(
+        embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+      );
+    }
+    if (fieldName in args.compiledFields) {
+      if (
+        !isCompatibleEmbeddingField(args.compiledFields[fieldName], definition)
+      ) {
+        throw new Error(
+          embeddingExtensionCollisionMessage(fieldName, args.schemaName)
+        );
+      }
+    }
+  }
+}
+
+export function toEmbeddingSchemaFormChoice(
+  schema: EmbeddingSchemaChoice,
+  current: readonly string[] = []
+): EmbeddingSchemaFormChoice {
+  return {
+    name: schema.name,
+    fields: listSourceFieldChoices(schema.fields, current),
+  };
+}
+
+export function toEmbeddingSchemaFormChoices(
+  schemas: EmbeddingSchemaChoice[],
+  currentBySchema: Readonly<Record<string, readonly string[]>> = {}
+): EmbeddingSchemaFormChoice[] {
+  return schemas.map(schema =>
+    toEmbeddingSchemaFormChoice(schema, currentBySchema[schema.name] ?? [])
+  );
+}
+
+export function toEmbeddingConfigRequest(
+  data: EmbeddingConfigInput
+): EmbeddingConfigRequest {
+  return {
+    schemaName: data.schemaName,
+    sourceFields: [...data.sourceFields],
+    targetField: data.targetField,
+    ...(data.provider ? { provider: data.provider } : {}),
+    ...(data.model ? { model: data.model } : {}),
+    ...(typeof data.dimensions === 'number' && data.dimensions > 0
+      ? { dimensions: data.dimensions }
+      : {}),
+    ...(data.similarity ? { similarity: data.similarity } : {}),
+    ...(typeof data.enabled === 'boolean' ? { enabled: data.enabled } : {}),
+  };
+}
+
+export function requireEligibleDeclaredSchema(
+  schemaName: string,
+  schemas?: EmbeddingSchemaEligibilityInput[] | null,
+  systemSchemaNames?: Iterable<string> | null
+): EmbeddingSchemaEligibilityInput {
+  if (schemas == null || systemSchemaNames == null) {
+    throw new Error(SCHEMA_ELIGIBILITY_UNAVAILABLE_MESSAGE);
+  }
+  const schema = schemas.find(item => item.name === schemaName);
+  if (!schema || !isEligibleEmbeddingSchema(schema, systemSchemaNames)) {
+    throw new Error(UNAVAILABLE_EMBEDDING_SCHEMA_MESSAGE);
+  }
+  return schema;
+}
+
+export function validateEmbeddingConfigInput(
+  data: EmbeddingConfigInput,
+  schemas?: EmbeddingSchemaEligibilityInput[] | null,
+  providers?: readonly ConfigProviderChoice[] | null,
+  systemSchemaNames?: Iterable<string> | null
+): EmbeddingConfigRequest {
+  if (!isValidSchemaOrTargetName(data.schemaName)) {
+    throw new Error('Schema name is not valid.');
+  }
+  if (!isValidSchemaOrTargetName(data.targetField)) {
+    throw new Error('Target field is not valid.');
+  }
+  if (data.sourceFields.length === 0) {
+    throw new Error('Select at least one source field.');
+  }
+  for (const field of data.sourceFields) {
+    if (!isValidSourceFieldName(field)) {
+      throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
+    }
+  }
+  const schema = requireEligibleDeclaredSchema(
+    data.schemaName,
+    schemas,
+    systemSchemaNames
+  );
+  const fields = toSchemaFieldMap(schema);
+  const ineligible = data.sourceFields.some(
+    name => !isEligibleSourceField(name, fields[name])
+  );
+  if (ineligible) {
+    throw new Error(INELIGIBLE_SOURCE_FIELDS_MESSAGE);
+  }
+  const catalogue = catalogueDimensionsForInput(data, providers);
+  const dimensions = resolveRequestedCatalogueDimensions(
+    catalogue,
+    data.dimensions
+  );
+  assertEmbeddingExtensionAvailability({
+    schemaName: data.schemaName,
+    targetField: data.targetField,
+    dimensions,
+    similarity: data.similarity ?? 'cosine',
+    baseFields: isRecord(schema.fields) ? schema.fields : undefined,
+    compiledFields: fields,
+    extensions: schema.extensions,
+  });
+  const provider = data.provider?.trim() ?? '';
+  const request = toEmbeddingConfigRequest(data);
+  return {
+    ...request,
+    provider,
+    model: catalogue.name,
+    ...(data.dimensions == null || data.dimensions === 0 ? {} : { dimensions }),
+  };
+}
