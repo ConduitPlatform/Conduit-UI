@@ -1,20 +1,14 @@
 'use client';
-import { LogsData } from '@/lib/models/logs-viewer';
-import { LogsAccordionList } from './LogsAccordionList';
-import LogsFiltersPanel from './LogsFiltersPanel';
+
+import { LogsData, RefreshLogsFn } from '@/lib/models/logs-viewer';
+import { LogsWorkspace } from './LogsWorkspace';
 import { useState } from 'react';
 
 type LogsViewerProps = {
   levelsData: string[];
   logsData: LogsData[];
   modules: string[];
-  refreshLogs: (data: {
-    modules: string[];
-    levels: string[];
-    startDate: number | undefined;
-    endDate: number | undefined;
-    limit: string | undefined;
-  }) => Promise<LogsData[]>;
+  refreshLogs: RefreshLogsFn;
 };
 
 export default function LogsViewer({
@@ -26,19 +20,19 @@ export default function LogsViewer({
   const [logs, setLogs] = useState(logsData);
 
   return (
-    <div className="flex flex-col">
-      <div className="sticky top-0 z-40 flex w-full items-center gap-3 border-b border-border bg-surface-1 p-4">
-        <h1 className="text-xl font-light">Logs Viewer</h1>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex shrink-0 items-center gap-3 border-b border-border bg-surface-1 px-4 py-3">
+        <h1 className="text-xl font-light text-balance">Logs Viewer</h1>
       </div>
-      <LogsFiltersPanel
-        refreshLogs={refreshLogs}
-        setLogs={setLogs}
+      <LogsWorkspace
         levels={levelsData}
+        logs={logs}
+        setLogs={setLogs}
         modules={modules}
-        open
+        refreshLogs={refreshLogs}
+        openFilters
         type="viewer"
       />
-      <LogsAccordionList logs={logs} className="h-[calc(100vh-22rem)]" />
     </div>
   );
 }
