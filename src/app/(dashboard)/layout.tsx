@@ -11,7 +11,8 @@ export default function Layout({
     <ModuleAvailabilityProvider>
       <div className="flex h-dvh min-h-0 w-full overflow-hidden">
         <AppSidebar />
-        <main className="relative flex h-dvh min-h-0 flex-1 flex-col overflow-hidden bg-background md:ml-[52px]">
+        {/* isolate keeps in-page stacking (logs tab) from covering sidebar flyouts */}
+        <main className="relative isolate flex h-dvh min-h-0 flex-1 flex-col overflow-hidden bg-background md:ml-[52px]">
           <ModuleGuard>{children}</ModuleGuard>
         </main>
         <CommandPalette />
