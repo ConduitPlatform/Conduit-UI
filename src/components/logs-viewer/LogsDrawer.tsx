@@ -126,7 +126,7 @@ export function LogsDrawer() {
       <DrawerTrigger asChild>
         <Button
           variant="outline"
-          className="absolute bottom-0 left-4 z-40 h-8 gap-1.5 rounded-t-md rounded-b-none border-b-0 px-3"
+          className="absolute bottom-0 left-4 z-20 h-8 gap-1.5 rounded-t-md rounded-b-none border-b-0 px-3"
         >
           <Logs className="size-4" />
           Logs
