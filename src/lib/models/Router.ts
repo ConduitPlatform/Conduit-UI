@@ -86,3 +86,45 @@ export type UpdateSecurityClientRequest = {
   alias?: string;
   notes?: string;
 };
+
+export type EventRelay = {
+  _id: string;
+  name: string;
+  notes?: string;
+  active: boolean;
+  busEvent: string;
+  socketEvent: string;
+  resourceType: string;
+  resourceIdPath: string;
+  permission: string;
+  messageTemplate: unknown;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EventRelaysResponse = {
+  relays: EventRelay[];
+  count: number;
+};
+
+export type EventRelayWriteRequest = {
+  name: string;
+  notes?: string;
+  active?: boolean;
+  busEvent: string;
+  socketEvent: string;
+  resourceType: string;
+  resourceIdPath: string;
+  permission: string;
+  messageTemplate: unknown;
+};
+
+export type EventRelayPreviewInput = {
+  messageTemplate: unknown;
+  samplePayload: unknown;
+};
+
+export type EventRelayPreviewRemoteResult =
+  | { status: 'ok'; payload: unknown }
+  | { status: 'error'; message: string }
+  | { status: 'unavailable' };
