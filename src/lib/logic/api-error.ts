@@ -41,6 +41,15 @@ export function formatAdminApiError(err: unknown): string {
   return err instanceof Error ? err.message : 'Request failed';
 }
 
+export async function withAdminApiError<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    if (isNextNavigationError(err)) throw err;
+    throw new Error(formatAdminApiError(err));
+  }
+}
+
 export function formatCommunicationsApiError(err: unknown): string {
   if (isAxiosLikeError(err)) {
     if (err.response?.status === 404) {

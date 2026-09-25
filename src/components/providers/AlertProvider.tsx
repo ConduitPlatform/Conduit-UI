@@ -42,7 +42,7 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
   };
   useEffect(() => {
     if (!isOpen) setAlert(undefined);
-  }, [open]);
+  }, [isOpen]);
 
   return (
     <AlertContext.Provider

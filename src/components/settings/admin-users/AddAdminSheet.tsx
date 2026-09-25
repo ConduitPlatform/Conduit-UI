@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Sheet,
   SheetContent,
@@ -29,11 +31,17 @@ import { LucideX } from 'lucide-react';
 import { ErrorPre } from '@/components/ui/error-pre';
 import { useRouter } from 'next/navigation';
 
+const emptyValues = {
+  username: '',
+  password: '',
+  confirmPassword: '',
+};
+
 const FormSchema = z
   .object({
-    username: z.string(),
-    password: z.string(),
-    confirmPassword: z.string(),
+    username: z.string().min(1, 'Username is required'),
+    password: z.string().min(1, 'Password is required'),
+    confirmPassword: z.string().min(1, 'Confirm your password'),
   })
   .refine(
     schema => {
@@ -66,29 +74,32 @@ export const AddAdminSheet = ({
   );
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
-  const setOpen = (next: boolean) => {
+  const setOpenState = (next: boolean) => {
     if (!isControlled) setUncontrolledOpen(next);
     controlledOnOpenChange?.(next);
   };
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
+    defaultValues: emptyValues,
   });
   const router = useRouter();
 
   const { formState, reset, control, handleSubmit } = form;
+  const { isDirty, isSubmitted } = formState;
 
-  useEffect(() => {
-    if (defaultOpen !== undefined && !isControlled)
-      setUncontrolledOpen(defaultOpen);
-  }, [defaultOpen, isControlled]);
+  const discardAndClose = () => {
+    reset(emptyValues);
+    setOpenState(false);
+    onClose?.();
+  };
 
-  useEffect(() => {
-    if (!open && formState.isSubmitted) {
-      onClose?.();
-      return reset();
+  const requestOpenChange = (next: boolean) => {
+    if (next) {
+      setOpenState(true);
+      return;
     }
-    if (!open && formState.isDirty) {
+    if (isDirty && !isSubmitted) {
       addAlert({
         title: 'Add Admin',
         description:
@@ -96,22 +107,24 @@ export const AddAdminSheet = ({
         cancelText: 'Cancel',
         actionText: 'Close',
         onDecision: cancel => {
-          if (!cancel) {
-            onClose?.();
-            return reset();
-          }
-          setOpen(true);
+          if (!cancel) discardAndClose();
         },
       });
-    } else if (!open) {
-      onClose?.();
+      return;
     }
-  }, [open, setOpen]);
+    discardAndClose();
+  };
+
+  useEffect(() => {
+    if (defaultOpen !== undefined && !isControlled)
+      setUncontrolledOpen(defaultOpen);
+  }, [defaultOpen, isControlled]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     postNewAdminUser(data.username, data.password)
-      .then(res => {
-        setOpen(false);
+      .then(() => {
+        reset(emptyValues);
+        setOpenState(false);
         toast({
           title: 'New Admin',
           description: (
@@ -139,7 +152,7 @@ export const AddAdminSheet = ({
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={requestOpenChange}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent side="right">
         <Form {...form}>
