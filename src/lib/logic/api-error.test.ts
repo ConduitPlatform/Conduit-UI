@@ -35,6 +35,32 @@ describe('withAdminApiError', () => {
     expect(isNextNavigationError(redirect)).toBe(true);
   });
 
+  it('rethrows static-generation bailouts so next build can mark the route dynamic', async () => {
+    const dynamic = Object.assign(
+      new Error(
+        "Dynamic server usage: Route /settings/user-settings couldn't be rendered statically because it used `cookies`."
+      ),
+      { digest: 'DYNAMIC_SERVER_USAGE' }
+    );
+    await expect(
+      withAdminApiError(async () => {
+        throw dynamic;
+      })
+    ).rejects.toBe(dynamic);
+  });
+
+  it('rethrows a static-generation bailout nested as an error cause', async () => {
+    const dynamic = Object.assign(new Error('Dynamic server usage: cookies'), {
+      digest: 'DYNAMIC_SERVER_USAGE',
+    });
+    const wrapped = new Error('wrapper', { cause: dynamic });
+    await expect(
+      withAdminApiError(async () => {
+        throw wrapped;
+      })
+    ).rejects.toBe(dynamic);
+  });
+
   it('converts axios-like failures into a plain Error so Server Actions can serialize them', async () => {
     const axiosLike = {
       message: 'Request failed with status code 500',
