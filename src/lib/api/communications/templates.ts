@@ -8,14 +8,14 @@ import {
 import { MigrationResponse } from '@/lib/models/communications/template-row';
 import {
   formatCommunicationsApiError,
-  isNextNavigationError,
+  rethrowNextControlFlowError,
 } from '@/lib/logic/api-error';
 
 async function withCommunicationsError<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (err) {
-    if (isNextNavigationError(err)) throw err;
+    rethrowNextControlFlowError(err);
     throw new Error(formatCommunicationsApiError(err));
   }
 }
