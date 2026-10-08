@@ -1,144 +1,186 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
-import JsonViewer from './JsonViewer';
-import { Files, CheckCheck } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { LogsData } from '@/lib/models/logs-viewer';
-import {
-  getFormattedDate,
-  getFormattedMessage,
-  getFormattedMetadata,
-} from '@/lib/models/logs-viewer/utils';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AlertCircle, ArrowUp, ScrollText } from 'lucide-react';
 
-const badgeBackgroundColorVariants = {
-  critical:
-    'border-log-critical/40 bg-log-critical/10 text-log-critical hover:bg-log-critical/15',
-  warning:
-    'border-log-warning/40 bg-log-warning/10 text-log-warning hover:bg-log-warning/15',
-  info: 'border-log-info/40 bg-log-info/10 text-log-info hover:bg-log-info/15',
-  debug:
-    'border-log-debug/40 bg-log-debug/10 text-log-debug hover:bg-log-debug/15',
-  unknown:
-    'border-log-unknown/40 bg-log-unknown/10 text-log-unknown hover:bg-log-unknown/15',
-};
+import { Accordion } from '@/components/ui/accordion';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/lib/hooks/use-toast';
+import type { LogsData } from '@/lib/models/logs-viewer';
+import { cn } from '@/lib/utils';
+
+import { LogAccordionItem } from './LogAccordionItem';
+
+const NEAR_TOP_PX = 80;
 
 type LogsAccordionListProps = {
   className?: string;
   logs: LogsData[];
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 };
+
+function LogsListSkeleton() {
+  return (
+    <div className="flex flex-col gap-2 p-4" aria-hidden>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div
+          key={`log-skeleton-${index}`}
+          className="relative grid min-h-10 grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-2 overflow-hidden rounded-md border border-border bg-surface-1 px-3 before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-border-strong lg:grid-cols-[10.75rem_auto_auto_minmax(0,1fr)]"
+        >
+          <Skeleton className="hidden h-4 w-36 shrink-0 lg:block" />
+          <Skeleton className="h-5 w-12 shrink-0 rounded-full" />
+          <Skeleton className="h-5 w-20 shrink-0 rounded-full" />
+          <Skeleton className="h-4 min-w-0 flex-1" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function LogsAccordionList({
   className,
   logs,
+  isLoading = false,
+  error = null,
+  onRetry,
 }: Readonly<LogsAccordionListProps>) {
   const [value, setValue] = useState<string>('');
-  const [copied, setCopied] = useState<boolean>(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [followLatest, setFollowLatest] = useState(true);
   const logsContainerRef = useRef<HTMLDivElement>(null);
-  const iconClass = 'w-4 h-4 shrink-0 text-current';
+  const { toast } = useToast();
 
-  const handleCopyToClipboard = async (json: object) => {
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy: ', error);
-    }
-  };
+  const updateFollowLatest = useCallback(() => {
+    const container = logsContainerRef.current;
+    if (!container) return;
+    setFollowLatest(container.scrollTop <= NEAR_TOP_PX);
+  }, []);
+
+  const scrollToLatest = useCallback(() => {
+    const container = logsContainerRef.current;
+    if (!container) return;
+    container.scrollTop = 0;
+    setFollowLatest(true);
+  }, []);
+
+  const handleCopyToClipboard = useCallback(
+    async (id: string, json: Record<string, unknown>) => {
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+        setCopiedId(id);
+        toast({
+          title: 'Copied',
+          description: 'Log metadata copied to clipboard.',
+        });
+        window.setTimeout(() => {
+          setCopiedId(current => (current === id ? null : current));
+        }, 2000);
+      } catch {
+        toast({
+          variant: 'destructive',
+          title: 'Copy failed',
+          description: 'Could not copy log metadata.',
+        });
+      }
+    },
+    [toast]
+  );
 
   useEffect(() => {
-    if (logsContainerRef.current && !value) {
-      logsContainerRef.current.scrollTop =
-        logsContainerRef.current.scrollHeight;
+    if (followLatest && !value) {
+      scrollToLatest();
     }
-  }, [logs]);
-
-  if (logs.length === 0) {
-    return (
-      <p className="mt-5 text-center text-foreground-muted">
-        {' '}
-        There no available logs
-      </p>
-    );
-  }
+  }, [followLatest, logs, scrollToLatest, value]);
 
   return (
-    <Accordion
-      ref={logsContainerRef}
-      type="single"
-      collapsible
-      value={value}
-      onValueChange={setValue}
-      className={cn(
-        'w-full px-5 pt-5 pb-1 overflow-y-auto main-scrollbar h-full',
-        className
-      )}
-    >
-      {logs.map(({ level, message, timestamp, module }, index) => {
-        return (
-          <AccordionItem
-            key={index}
-            value={`item-${index}`}
-            className="my-2 rounded-md border border-border bg-surface-1 transition-opacity duration-200"
-          >
-            <AccordionTrigger
-              className={cn(
-                'px-3 py-2 hover:no-underline text-medium justify-start',
-                value === `item-${index}`
-                  ? 'rounded-t-md border-b border-b-border bg-surface-2'
-                  : 'rounded-md hover:bg-surface-2'
-              )}
-            >
-              <div className="flex items-start w-full gap-3">
-                {getFormattedDate(timestamp)}
-                <Badge
-                  className={cn(
-                    badgeBackgroundColorVariants[
-                      level as keyof typeof badgeBackgroundColorVariants
-                    ]
-                  )}
-                >
-                  {level}
-                </Badge>
-                <Badge className="bg-surface-3 text-foreground-muted hover:bg-surface-3">
-                  {module}
-                </Badge>{' '}
-                {getFormattedMessage(message)}
+    <div className={cn('relative min-h-0 flex-1 overflow-hidden', className)}>
+      <div
+        ref={logsContainerRef}
+        data-vaul-no-drag=""
+        onScroll={updateFollowLatest}
+        className="absolute inset-x-0 top-0 overflow-x-hidden overflow-y-auto overscroll-contain touch-pan-y main-scrollbar"
+        style={{ bottom: 'var(--snap-point-height, 0px)' }}
+      >
+        {isLoading ? (
+          <LogsListSkeleton />
+        ) : (
+          <>
+            {error ? (
+              <div className="p-4">
+                <Alert variant="destructive">
+                  <AlertCircle className="size-4" />
+                  <AlertTitle>Could not load logs</AlertTitle>
+                  <AlertDescription className="flex flex-col gap-2">
+                    <p>{error}</p>
+                    {onRetry ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-fit"
+                        onClick={onRetry}
+                      >
+                        Retry
+                      </Button>
+                    ) : null}
+                  </AlertDescription>
+                </Alert>
               </div>
-            </AccordionTrigger>
-            <AccordionContent className="relative pb-0">
-              <JsonViewer json={getFormattedMetadata(message)} />
-              {copied ? (
-                <span className="absolute text-sm font-normal top-3 right-6 text-foreground">
-                  <CheckCheck className={iconClass} />
-                </span>
-              ) : (
-                <Button
-                  onClick={() =>
-                    handleCopyToClipboard(getFormattedMetadata(message))
-                  }
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute top-1 right-3 text-foreground-muted hover:text-primary"
-                >
-                  <Files className={iconClass} />
-                  <span className="sr-only">Copy log&apos;s metadata</span>
-                </Button>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        );
-      })}
-    </Accordion>
+            ) : null}
+            {!error && logs.length === 0 ? (
+              <EmptyState
+                icon={ScrollText}
+                title="No logs for this query"
+                description="Adjust the time range, filters, or search and try again."
+                className="py-12"
+              />
+            ) : null}
+            {logs.length > 0 ? (
+              <Accordion
+                type="single"
+                collapsible
+                value={value}
+                onValueChange={setValue}
+                className="flex w-full min-w-0 flex-col gap-2 px-4 py-3"
+              >
+                {logs.map((log, index) => {
+                  const itemId = `item-${log.timestamp}-${index}`;
+
+                  return (
+                    <LogAccordionItem
+                      key={itemId}
+                      itemId={itemId}
+                      log={log}
+                      isCopied={copiedId === itemId}
+                      onCopy={handleCopyToClipboard}
+                    />
+                  );
+                })}
+              </Accordion>
+            ) : null}
+          </>
+        )}
+      </div>
+      {!followLatest && logs.length > 0 && !isLoading ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          className="absolute right-4 bottom-3 shadow-2"
+          style={{
+            transform: 'translateY(calc(var(--snap-point-height, 0px) * -1))',
+          }}
+          onClick={scrollToLatest}
+        >
+          <ArrowUp className="size-4" />
+          Jump to latest
+        </Button>
+      ) : null}
+    </div>
   );
 }

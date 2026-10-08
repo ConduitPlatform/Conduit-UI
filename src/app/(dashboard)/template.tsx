@@ -2,7 +2,8 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { formatBreadcrumbSegment } from '@/lib/utils/breadcrumbs';
 import { getRouterSettings } from '@/lib/api/router';
 import { getAdminSettings } from '@/lib/api/settings';
 import { ScalarIcon, SocketIcon } from '@/icons';
@@ -36,6 +37,7 @@ const MODULE_NAMES: { [key: string]: string } = {
   authentication: 'Authentication',
   authorization: 'Authorization',
   database: 'Database',
+  embeddings: 'Embeddings',
   storage: 'Storage',
   chat: 'Chat',
   forms: 'Forms',
@@ -48,22 +50,55 @@ const MODULE_NAMES: { [key: string]: string } = {
   payments: 'Payments',
 };
 
-const SEGMENT_LABELS: Record<string, string> = {
-  templates: 'Templates',
-  logs: 'Logs & Devices',
-  settings: 'Settings',
-  test: 'Test Send',
-};
+function ModuleSubpathCrumbs({
+  pathSegments,
+  moduleSlug,
+}: {
+  pathSegments: string[];
+  moduleSlug?: string;
+}) {
+  if (moduleSlug === 'embeddings') {
+    return pathSegments.slice(1).map((segment, index) => {
+      const segmentIndex = index + 1;
+      const href = `/${pathSegments.slice(0, segmentIndex + 1).join('/')}`;
+      const isLast = segmentIndex === pathSegments.length - 1;
+      const label = formatBreadcrumbSegment(
+        segment,
+        moduleSlug,
+        pathSegments[segmentIndex - 1]
+      );
+      return (
+        <Fragment key={href}>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            {isLast ? (
+              <BreadcrumbPage>{label}</BreadcrumbPage>
+            ) : (
+              <BreadcrumbLink asChild>
+                <Link href={href}>{label}</Link>
+              </BreadcrumbLink>
+            )}
+          </BreadcrumbItem>
+        </Fragment>
+      );
+    });
+  }
 
-function formatBreadcrumbSegment(segment: string): string {
   return (
-    SEGMENT_LABELS[segment] ??
-    segment
-      .split('-')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ')
+    <>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>
+          {formatBreadcrumbSegment(
+            pathSegments[pathSegments.length - 1],
+            moduleSlug
+          )}
+        </BreadcrumbPage>
+      </BreadcrumbItem>
+    </>
   );
 }
+
 export default function ModuleHeader({
   children,
 }: {
@@ -102,10 +137,12 @@ export default function ModuleHeader({
 
   if (!moduleName)
     return (
-      <>
-        <LogsDrawer isSidebarOpen={false} />
-        <div className="page-enter-children h-full min-h-0">{children}</div>
-      </>
+      <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+        <LogsDrawer />
+        <div className="page-enter-children min-h-0 flex-1 overflow-hidden">
+          {children}
+        </div>
+      </div>
     );
 
   const RESTDocs: {
@@ -170,7 +207,7 @@ export default function ModuleHeader({
     isCommunicationsSubRoute && pathSegments[1] === 'templates';
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
       <div className="flex min-h-10 w-full shrink-0 flex-row items-center justify-between border-b bg-background px-4 py-2">
         <div className="flex items-center gap-3 min-w-0">
           <Breadcrumb>
@@ -208,7 +245,8 @@ export default function ModuleHeader({
                           <BreadcrumbItem>
                             <BreadcrumbPage>
                               {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1]
+                                pathSegments[pathSegments.length - 1],
+                                whichModule
                               )}
                             </BreadcrumbPage>
                           </BreadcrumbItem>
@@ -225,7 +263,10 @@ export default function ModuleHeader({
                       <BreadcrumbSeparator />
                       <BreadcrumbItem>
                         <BreadcrumbPage>
-                          {formatBreadcrumbSegment(pathSegments[1])}
+                          {formatBreadcrumbSegment(
+                            pathSegments[1],
+                            whichModule
+                          )}
                         </BreadcrumbPage>
                       </BreadcrumbItem>
                     </>
@@ -255,16 +296,10 @@ export default function ModuleHeader({
                         )}
                       </BreadcrumbItem>
                       {pathSegments.length > 1 && (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <BreadcrumbPage>
-                              {formatBreadcrumbSegment(
-                                pathSegments[pathSegments.length - 1]
-                              )}
-                            </BreadcrumbPage>
-                          </BreadcrumbItem>
-                        </>
+                        <ModuleSubpathCrumbs
+                          pathSegments={pathSegments}
+                          moduleSlug={whichModule}
+                        />
                       )}
                     </>
                   )}
@@ -366,7 +401,7 @@ export default function ModuleHeader({
           {children}
         </div>
       </div>
-      <LogsDrawer isSidebarOpen={false} />
+      <LogsDrawer />
     </div>
   );
 }

@@ -145,7 +145,7 @@ export const CreateFunctionForm = ({
         timeout: data.timeout,
         inputs: {
           cronPattern: options.cronString,
-          event: options.cronString,
+          timezone: options.timezone?.trim() || 'UTC',
         },
       })
         .then(() => {

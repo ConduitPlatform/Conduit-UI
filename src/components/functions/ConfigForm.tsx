@@ -44,7 +44,37 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
               <Select
                 onValueChange={value => {
                   field.onChange(value);
-                  form.setValue('options.functionType', value);
+                  if (value === 'cron') {
+                    form.setValue('options', {
+                      functionType: 'cron',
+                      cronString: form.getValues('options.cronString') || '',
+                      timezone: form.getValues('options.timezone') || 'UTC',
+                    });
+                  } else if (value === 'event') {
+                    form.setValue('options', {
+                      functionType: 'event',
+                      eventName: form.getValues('options.eventName') || '',
+                    });
+                  } else if (value === 'request' || value === 'webhook') {
+                    const verb =
+                      form.getValues('options.verb') ||
+                      form.getValues('options.http.verb') ||
+                      'GET';
+                    form.setValue('options', {
+                      functionType: value,
+                      verb,
+                      middlewares: form.getValues('options.middlewares') || [],
+                      http: {
+                        verb,
+                        queryParams: form.getValues('options.http.queryParams'),
+                        urlParams: form.getValues('options.http.urlParams'),
+                        bodyParams: form.getValues('options.http.bodyParams'),
+                        returnTypes: form.getValues('options.http.returnTypes'),
+                      },
+                    });
+                  } else {
+                    form.setValue('options', { functionType: value });
+                  }
                 }}
                 value={field.value}
               >
@@ -132,12 +162,22 @@ export const ConfigForm = ({ middlewares, data }: ConfigFormProps) => {
         <InputField fieldName={'options.eventName'} label={'Event Name'} />
       )}
       {form.watch('functionType') === 'cron' && (
-        <InputField
-          fieldName={'options.cronString'}
-          label={'Cron schedule'}
-          placeholder={'*/5 * * * *'}
-          description={'minute hour day month weekday (UTC)'}
-        />
+        <>
+          <InputField
+            fieldName={'options.cronString'}
+            label={'Cron schedule'}
+            placeholder={'*/5 * * * *'}
+            description={'minute hour day month weekday'}
+          />
+          <InputField
+            fieldName={'options.timezone'}
+            label={'Timezone'}
+            placeholder={'UTC'}
+            description={
+              'IANA timezone for the schedule (e.g. UTC, Europe/Athens)'
+            }
+          />
+        </>
       )}
       {(form.watch('functionType') === 'webhook' ||
         form.watch('functionType') === 'request') && (

@@ -1,4 +1,5 @@
 import { Module } from '@/lib/models/Module';
+import type { NavItem } from '@/components/navigation/navList.config';
 
 // Modules that the Communications module provides (for backward compatibility)
 export const COMMUNICATIONS_PROVIDED_MODULES = [
@@ -54,6 +55,7 @@ export const MODULE_DISPLAY_NAMES: Record<string, string> = {
   authentication: 'Authentication',
   authorization: 'Authorization',
   database: 'Database',
+  embeddings: 'Embeddings',
   storage: 'Storage',
   chat: 'Chat',
   email: 'Email',
@@ -71,6 +73,7 @@ export const MODULE_URL_TO_NAME: Record<string, string> = {
   '/authentication': 'authentication',
   '/authorization': 'authorization',
   '/database': 'database',
+  '/embeddings': 'embeddings',
   '/storage': 'storage',
   '/chat': 'chat',
   '/email': 'email',
@@ -88,6 +91,7 @@ export const MODULE_NAME_TO_URL: Record<string, string> = {
   authentication: 'authentication',
   authorization: 'authorization',
   database: 'database',
+  embeddings: 'embeddings',
   storage: 'storage',
   chat: 'chat',
   email: 'email',
@@ -172,9 +176,9 @@ export function isModuleServing(
 
 // Filter navigation items based on available modules
 export function filterNavigationByModules(
-  navigationItems: any[],
+  navigationItems: NavItem[],
   modules: Module[]
-): any[] {
+): NavItem[] {
   return navigationItems.filter(item => {
     // Always include core routes and other non-module items
     if (CORE_ROUTES.includes(item.url) || !MODULE_URL_TO_NAME[item.url]) {

@@ -1,3 +1,5 @@
+'use client';
+
 import { generateMultiSelectOptions } from '@/lib/models/logs-viewer/utils';
 import MultiSelectField from '@/components/ui/form-inputs/MultiSelectField';
 import SelectField from '@/components/ui/form-inputs/SelectField';
@@ -6,30 +8,15 @@ import { limitOptions, timeOptions } from '@/lib/models/logs-viewer/constants';
 import { cn } from '@/lib/utils';
 import { DatePickerField } from '@/components/ui/form-inputs/DatePickerField';
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { LogsFiltersState } from '@/lib/models/logs-viewer';
 
-interface LogsFiltersOptionsProps extends React.FormHTMLAttributes<HTMLDivElement> {
+interface LogsFiltersOptionsProps {
   levels: string[];
   modules: string[];
   type?: 'drawer' | 'viewer';
-  logsFilters: {
-    selectedLevels: string[];
-    selectedLimit: string | undefined;
-    selectedModules: string[] | undefined;
-    selectedTime: string | undefined;
-    selectedStartDate: Date | undefined;
-    selectedEndDate: Date | undefined;
-  };
-  setLogsFilters: Dispatch<
-    SetStateAction<{
-      selectedLevels: string[];
-      selectedLimit: string | undefined;
-      selectedModules: string[];
-      selectedTime: string | undefined;
-      selectedStartDate: Date | undefined;
-      selectedEndDate: Date | undefined;
-    }>
-  >;
+  logsFilters: LogsFiltersState;
+  setLogsFilters: Dispatch<SetStateAction<LogsFiltersState>>;
   className?: string;
   disabledPopover?: boolean;
 }
@@ -42,11 +29,9 @@ export default function LogsFiltersOptions({
   setLogsFilters,
   disabledPopover = false,
   className,
-  ...restProps
 }: LogsFiltersOptionsProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const {
     selectedLevels,
     selectedLimit,
@@ -54,44 +39,59 @@ export default function LogsFiltersOptions({
     selectedTime,
     selectedStartDate,
     selectedEndDate,
+    searchTerm,
   } = logsFilters;
 
   const wrapperClass =
-    'mx-5 mb-5 flex flex-col rounded-md border border-border bg-surface-2 px-3 pt-3 pb-4';
+    'mx-4 mb-3 flex flex-col rounded-md border border-border bg-surface-2 px-3 pt-3 pb-4';
   const selectTriggerClass = 'mt-0 bg-surface-1';
-  const formItemClass = 'space-y-1';
+  const formItemClass = 'flex flex-col gap-1';
 
   const levelOptions = generateMultiSelectOptions(levels);
   const moduleOptions = generateMultiSelectOptions(modules);
 
-  const updateURLParams = () => {
+  const moreFiltersParams = new URLSearchParams();
+  if (selectedTime) moreFiltersParams.set('time', selectedTime);
+  if (selectedLimit) moreFiltersParams.set('limit', selectedLimit);
+  if (selectedLevels.length > 0)
+    moreFiltersParams.set('levels', selectedLevels.join(','));
+  if (searchTerm) moreFiltersParams.set('search', searchTerm);
+  const moreFiltersQuery = moreFiltersParams.toString();
+  const moreFiltersHref = moreFiltersQuery
+    ? `/logs-viewer?${moreFiltersQuery}`
+    : '/logs-viewer';
+
+  useEffect(() => {
+    if (type !== 'viewer') return;
     const params = new URLSearchParams();
     if (selectedTime) params.set('time', selectedTime);
     if (selectedLimit) params.set('limit', selectedLimit);
-    if (selectedLevels && selectedLevels.length > 0)
+    if (selectedLevels.length > 0)
       params.set('levels', selectedLevels.join(','));
-    if (selectedModules && selectedModules.length > 0)
+    if (selectedModules.length > 0)
       params.set('modules', selectedModules.join(','));
     if (selectedStartDate)
       params.set('startDate', selectedStartDate.toISOString());
     if (selectedEndDate) params.set('endDate', selectedEndDate.toISOString());
-    router.replace(`${pathname}?${params.toString()}`);
-  };
-
-  useEffect(() => {
-    updateURLParams();
+    if (searchTerm) params.set('search', searchTerm);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
   }, [
-    selectedTime,
-    selectedLimit,
+    pathname,
+    router,
+    searchTerm,
+    selectedEndDate,
     selectedLevels,
+    selectedLimit,
     selectedModules,
     selectedStartDate,
-    selectedEndDate,
+    selectedTime,
+    type,
   ]);
 
   const renderDrawerFilters = (
-    <div className={cn(wrapperClass, className)} {...restProps}>
-      <div className="grid grid-cols-3 gap-4">
+    <div className={cn(wrapperClass, className)}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <SelectField
           label="Time"
           value={selectedTime}
@@ -135,8 +135,8 @@ export default function LogsFiltersOptions({
         />
       </div>
       <Link
-        href={`logs-viewer/?${searchParams}`}
-        className="mt-2 self-end text-sm text-foreground-muted hover:text-primary hover:underline"
+        href={moreFiltersHref}
+        className="mt-2 self-end text-sm text-muted-foreground underline-offset-3 hover:text-primary hover:underline"
       >
         More filters
       </Link>
@@ -144,8 +144,8 @@ export default function LogsFiltersOptions({
   );
 
   const renderViewerFilters = (
-    <div className={cn(wrapperClass, className)} {...restProps}>
-      <div className="grid grid-cols-2 gap-3 mb-2">
+    <div className={cn(wrapperClass, className)}>
+      <div className="mb-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <MultiSelectField
           label="Level"
           options={levelOptions}
@@ -175,12 +175,11 @@ export default function LogsFiltersOptions({
           classNames={{ selectTrigger: selectTriggerClass }}
         />
       </div>
-      <div className={cn('grid grid-cols-2 gap-4')}>
-        <div className="flex gap-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <DatePickerField
             label="Start date"
             disabledPopover={disabledPopover}
-            disabled
             selectedDate={selectedStartDate}
             setSelectedDate={(newValue: Date | undefined) =>
               setLogsFilters(prevState => ({
@@ -193,7 +192,7 @@ export default function LogsFiltersOptions({
           />
           <DatePickerField
             label="End date"
-            disabledDates={{ after: new Date(), before: new Date() }}
+            disabledDates={{ after: new Date() }}
             disabledPopover={disabledPopover}
             selectedDate={selectedEndDate}
             setSelectedDate={(newValue: Date | undefined) =>

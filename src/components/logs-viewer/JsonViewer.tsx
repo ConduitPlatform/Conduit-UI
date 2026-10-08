@@ -1,3 +1,5 @@
+'use client';
+
 import { useTheme } from 'next-themes';
 import {
   JsonView,
@@ -8,12 +10,12 @@ import {
 import 'react-json-view-lite/dist/index.css';
 
 type JsonViewerProps = {
-  json: Record<string, any>;
+  json: Record<string, unknown>;
 };
 
 const customLightStyles = {
   ...defaultStyles,
-  container: `${defaultStyles.container} semantic-json-view m-3 rounded-lg p-3`,
+  container: `${defaultStyles.container} semantic-json-view m-3 min-w-0 max-w-full rounded-lg p-3`,
   label: `${defaultStyles.label} semantic-json-view__property`,
   clickableLabel: `${defaultStyles.clickableLabel} semantic-json-view__property`,
   nullValue: `${defaultStyles.nullValue} semantic-json-view__null`,
@@ -30,7 +32,7 @@ const customLightStyles = {
 
 const customDarkStyles = {
   ...darkStyles,
-  container: `${darkStyles.container} semantic-json-view m-3 rounded-lg p-3`,
+  container: `${darkStyles.container} semantic-json-view m-3 min-w-0 max-w-full rounded-lg p-3`,
   label: `${darkStyles.label} semantic-json-view__property`,
   clickableLabel: `${darkStyles.clickableLabel} semantic-json-view__property`,
   nullValue: `${darkStyles.nullValue} semantic-json-view__null`,
@@ -49,5 +51,11 @@ export default function JsonViewer({ json }: JsonViewerProps) {
   const { resolvedTheme } = useTheme();
   const styles =
     resolvedTheme === 'dark' ? customDarkStyles : customLightStyles;
-  return <JsonView data={json} shouldExpandNode={allExpanded} style={styles} />;
+  return (
+    <JsonView
+      data={json as object}
+      shouldExpandNode={allExpanded}
+      style={styles}
+    />
+  );
 }

@@ -2,6 +2,7 @@ interface IWebInputsInterface {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   event?: string;
   cronPattern?: string;
+  timezone?: string;
   bodyParams?: { [key: string]: any }[];
   urlParams?: { [key: string]: any }[];
   queryParams?: { [key: string]: any }[];
