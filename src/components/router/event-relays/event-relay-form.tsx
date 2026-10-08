@@ -155,7 +155,9 @@ export function EventRelayForm({
             <p className="mt-3 text-sm text-muted-foreground">
               Preview is not available on this Router build yet. Upgrade to a
               version that includes{' '}
-              <code className="font-mono text-xs">POST /router/event-relays/preview</code>{' '}
+              <code className="font-mono text-xs">
+                POST /router/event-relays/preview
+              </code>{' '}
               (see{' '}
               <a
                 href="https://github.com/ConduitPlatform/Conduit/pull/1604"
@@ -176,8 +178,7 @@ export function EventRelayForm({
               <p className="text-xs text-muted-foreground">
                 Resource{' '}
                 <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs slashed-zero">
-                  {watched.resourceType || 'Type'}:
-                  {preview.resourceId ?? '…'}
+                  {watched.resourceType || 'Type'}:{preview.resourceId ?? '…'}
                 </code>
               </p>
               <pre className="max-h-40 overflow-auto rounded-md bg-muted p-3 font-mono text-xs slashed-zero text-foreground">
@@ -195,12 +196,14 @@ export function EventRelayForm({
           <AlertTitle>Client contract</AlertTitle>
           <AlertDescription className="space-y-2 text-xs">
             <p>
-              Subscribe-only: clients listen on <code className="font-mono">/events/</code>{' '}
-              with <code className="font-mono">path: /realtime</code> and{' '}
+              Subscribe-only: clients listen on{' '}
+              <code className="font-mono">/events/</code> with{' '}
+              <code className="font-mono">path: /realtime</code> and{' '}
               <code className="font-mono">auth.token</code> (browsers ignore{' '}
-              <code className="font-mono">extraHeaders</code>). The Authorization
-              module must be available — subscribe fails closed without a
-              matching ReBAC grant. Events are ephemeral with no replay.
+              <code className="font-mono">extraHeaders</code>). The
+              Authorization module must be available — subscribe fails closed
+              without a matching ReBAC grant. Events are ephemeral with no
+              replay.
             </p>
             <pre className="overflow-auto rounded-md bg-muted p-3 font-mono text-[11px] leading-5 text-foreground slashed-zero">
               {clientSnippet}

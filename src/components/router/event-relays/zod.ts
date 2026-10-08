@@ -9,7 +9,11 @@ function jsonObjectString(label: string) {
     .superRefine((value, ctx) => {
       try {
         const parsed = JSON.parse(value);
-        if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        if (
+          parsed === null ||
+          typeof parsed !== 'object' ||
+          Array.isArray(parsed)
+        ) {
           ctx.addIssue({
             code: 'custom',
             message: `${label} must be a JSON object`,
@@ -109,13 +113,11 @@ export function parseJsonField(value: string, label: string): unknown {
   }
 }
 
-export function parseMessageTemplateField(value: string): Record<string, unknown> {
+export function parseMessageTemplateField(
+  value: string
+): Record<string, unknown> {
   const parsed = parseJsonField(value, 'Message template');
-  if (
-    parsed === null ||
-    typeof parsed !== 'object' ||
-    Array.isArray(parsed)
-  ) {
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
     throw new Error('Message template must be a JSON object');
   }
   return parsed as Record<string, unknown>;

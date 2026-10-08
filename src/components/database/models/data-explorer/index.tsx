@@ -31,6 +31,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/lib/hooks/use-toast';
 import { deleteSchemaDocument } from '@/lib/api/database';
+import { useDatabaseLiveUpdates } from '@/lib/hooks/use-database-live-updates';
+import { LiveUpdatesStatus } from './live-updates-status';
 import {
   analyzeModelDataPermissions,
   getExtensionFieldNames,
@@ -74,6 +76,11 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
     () => analyzeModelDataPermissions(schema),
     [schema]
   );
+  const liveEnabled = schema.modelOptions?.conduit?.realtime?.enabled === true;
+  const liveUpdates = useDatabaseLiveUpdates({
+    schemaName: schema.name,
+    enabled: liveEnabled,
+  });
 
   // Get schema fields for column definitions
   const schemaFields = React.useMemo(() => {
@@ -160,6 +167,7 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
   };
 
   const handleRefresh = () => {
+    liveUpdates.consumePendingUpdates();
     router.refresh();
     toast({ title: 'Data refreshed' });
   };
@@ -185,6 +193,7 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
   const handleDocumentSaved = () => {
     setSelectedDocument(null);
     setIsCreatingNew(false);
+    liveUpdates.consumePendingUpdates();
     router.refresh();
   };
 
@@ -372,9 +381,22 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
               </TabsList>
             </Tabs>
 
+            <LiveUpdatesStatus
+              connectionState={liveUpdates.connectionState}
+              pendingUpdates={liveUpdates.pendingUpdates}
+              errorMessage={liveUpdates.errorMessage}
+              onApplyUpdates={handleRefresh}
+            />
+
             {/* Refresh */}
-            <Button variant="outline" size="sm" onClick={handleRefresh}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="min-h-8"
+            >
               <RefreshCw className="w-4 h-4" />
+              <span className="sr-only">Refresh</span>
             </Button>
 
             {/* Create New */}

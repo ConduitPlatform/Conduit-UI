@@ -7,6 +7,7 @@ export interface Environment {
   name: string;
   baseUrl: string;
   masterKey: string;
+  socketUrl?: string;
   lokiUrl?: string;
   promUrl?: string;
   namespace?: string;
@@ -43,13 +44,14 @@ function getConfigFingerprint(): string {
       mode,
       defaultEnvironment: process.env.DEFAULT_ENVIRONMENT,
       apiBaseUrl: process.env.API_BASE_URL,
+      adminSocketUrl: process.env.ADMIN_SOCKET_URL,
       masterKeyHash: hashSecret(process.env.MASTER_KEY),
     });
   }
 
   const environments: Record<
     string,
-    { baseUrl?: string; masterKeyHash: string }
+    { baseUrl?: string; socketUrl?: string; masterKeyHash: string }
   > = {};
   Object.keys(envVars)
     .filter(key => key.endsWith('_API_BASE_URL'))
@@ -58,6 +60,7 @@ function getConfigFingerprint(): string {
       const prefix = key.replace('_API_BASE_URL', '').toUpperCase();
       environments[prefix] = {
         baseUrl: envVars[`${prefix}_API_BASE_URL`],
+        socketUrl: envVars[`${prefix}_ADMIN_SOCKET_URL`],
         masterKeyHash: hashSecret(envVars[`${prefix}_MASTER_KEY`]),
       };
     });
@@ -110,6 +113,7 @@ async function getSingleEnvironmentConfig(
     name: envName,
     baseUrl: process.env.API_BASE_URL!,
     masterKey: process.env.MASTER_KEY!,
+    socketUrl: process.env.ADMIN_SOCKET_URL,
     lokiUrl: process.env.LOKI_URL,
     promUrl: process.env.PROMETHEUS_URL,
     namespace: process.env.NAMESPACE,
@@ -158,6 +162,7 @@ async function getMultiEnvironmentConfig(
       name: envName,
       baseUrl: envVars[`${prefix}_API_BASE_URL`]!,
       masterKey: envVars[`${prefix}_MASTER_KEY`]!,
+      socketUrl: envVars[`${prefix}_ADMIN_SOCKET_URL`],
       lokiUrl: envVars[`${prefix}_LOKI_URL`],
       promUrl: envVars[`${prefix}_PROMETHEUS_URL`],
       namespace: envVars[`${prefix}_NAMESPACE`],

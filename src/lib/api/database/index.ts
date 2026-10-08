@@ -4,6 +4,7 @@ import { getApiClient } from '@/lib/api';
 import {
   CreateSchemaRequest,
   DatabaseConfig,
+  DatabaseRealtimeStatus,
   DeclaredSchema,
   PatchSchemaRequest,
   PendingSchemas,
@@ -11,6 +12,7 @@ import {
   SchemaOptions,
 } from '@/lib/models/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
+import { normalizeSchemaIndexResponse } from '@/lib/database/schema-indexes';
 import { unwrapVectorIndexes } from '@/lib/models/embeddings';
 
 export const getPendingSchemas = async (args: {
@@ -355,9 +357,10 @@ export const createSchemaIndexes = async (
 };
 
 export const getSchemaIndexes = async (schemaId: string) => {
-  return await (await getApiClient())
-    .get<{ indexes: unknown[] }>(`/database/schemas/${schemaId}/indexes`)
+  const data = await (await getApiClient())
+    .get<unknown>(`/database/schemas/${schemaId}/indexes`)
     .then(res => res.data);
+  return { indexes: normalizeSchemaIndexResponse(data) };
 };
 
 export const getSchemaVectorIndexes = async (schemaId: string) => {
@@ -384,6 +387,13 @@ export const getDatabaseSettings = async () => {
   const res = await (
     await getApiClient()
   ).get<{ config: DatabaseConfig }>('/config/database');
+  return res.data;
+};
+
+export const getDatabaseRealtimeStatus = async () => {
+  const res = await (
+    await getApiClient()
+  ).get<DatabaseRealtimeStatus>('/database/realtime/status');
   return res.data;
 };
 

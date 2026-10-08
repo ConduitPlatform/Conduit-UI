@@ -98,9 +98,7 @@ export function EventRelayList({
           await patchEventRelay(relay._id, { active });
           await refresh();
         },
-        successMessage: active
-          ? 'Event relay enabled'
-          : 'Event relay disabled',
+        successMessage: active ? 'Event relay enabled' : 'Event relay disabled',
       });
       setTogglingId(null);
     },

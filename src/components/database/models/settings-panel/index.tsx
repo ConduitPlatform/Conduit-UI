@@ -15,6 +15,7 @@ import { CrudPermissions } from './crud-permissions';
 import { deriveCrudOperationsFromSchema } from './crud-state';
 import { AuthSettings } from './auth-settings';
 import { IndicesConfig } from './indices-config';
+import { LiveUpdateSnippets } from './live-update-snippets';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -25,6 +26,7 @@ import {
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -45,7 +47,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Save, Trash2, AlertTriangle, Info } from 'lucide-react';
+import { Save, Trash2, AlertTriangle, Info, Radio } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 
 /** Radix Select rejects empty string values */
@@ -98,7 +100,7 @@ function getIndexSignature(index: SchemaIndex) {
 }
 
 function isPrimaryIndex(index: SchemaIndex) {
-  return index.fields.length === 1 && index.fields[0] === '_id';
+  return index.fields?.length === 1 && index.fields[0] === '_id';
 }
 
 function getSchemaReadPreference(schema: DeclaredSchema) {
@@ -141,6 +143,12 @@ export function SettingsPanel({
   const [initialReadPreference, setInitialReadPreference] = React.useState(() =>
     getSchemaReadPreference(schema)
   );
+  const [realtimeEnabled, setRealtimeEnabled] = React.useState(
+    schema.modelOptions?.conduit?.realtime?.enabled ?? false
+  );
+  const [initialRealtimeEnabled, setInitialRealtimeEnabled] = React.useState(
+    schema.modelOptions?.conduit?.realtime?.enabled ?? false
+  );
 
   const isOwnedByDatabase =
     !schema.ownerModule || schema.ownerModule === 'database';
@@ -150,6 +158,8 @@ export function SettingsPanel({
     const nextAuthEnabled =
       schema.modelOptions?.conduit?.authorization?.enabled ?? false;
     const nextReadPreference = getSchemaReadPreference(schema);
+    const nextRealtimeEnabled =
+      schema.modelOptions?.conduit?.realtime?.enabled ?? false;
 
     setCrudOperations(nextCrudOperations);
     setInitialCrudOperations(nextCrudOperations);
@@ -157,13 +167,15 @@ export function SettingsPanel({
     setInitialAuthEnabled(nextAuthEnabled);
     setMongoReadPreference(nextReadPreference);
     setInitialReadPreference(nextReadPreference);
+    setRealtimeEnabled(nextRealtimeEnabled);
+    setInitialRealtimeEnabled(nextRealtimeEnabled);
   }, [schema]);
 
   const loadIndexes = React.useCallback(async () => {
     setIsLoadingIndices(true);
     try {
       const result = await getSchemaIndexes(schema._id);
-      const customIndexes = (result.indexes as SchemaIndex[]).filter(
+      const customIndexes = result.indexes.filter(
         index => !isPrimaryIndex(index)
       );
       setIndices(customIndexes);
@@ -199,6 +211,7 @@ export function SettingsPanel({
     JSON.stringify(crudOperations) !== JSON.stringify(initialCrudOperations) ||
     authEnabled !== initialAuthEnabled ||
     mongoReadPreference !== initialReadPreference ||
+    realtimeEnabled !== initialRealtimeEnabled ||
     JSON.stringify(indices.map(getIndexSignature)) !==
       JSON.stringify(initialIndices.map(getIndexSignature));
 
@@ -243,6 +256,9 @@ export function SettingsPanel({
           },
           ...(databaseType === 'MongoDB'
             ? {
+                realtime: {
+                  enabled: realtimeEnabled,
+                },
                 readPreference:
                   mongoReadPreference !== MONGO_READ_PREF_DEFAULT
                     ? mongoReadPreference
@@ -256,6 +272,7 @@ export function SettingsPanel({
       setInitialCrudOperations(crudOperations);
       setInitialAuthEnabled(authEnabled);
       setInitialReadPreference(mongoReadPreference);
+      setInitialRealtimeEnabled(realtimeEnabled);
       toast({ title: 'Settings saved' });
       onSave();
     } catch (error: any) {
@@ -273,6 +290,7 @@ export function SettingsPanel({
     loadIndexes,
     mongoReadPreference,
     onSave,
+    realtimeEnabled,
     schema._id,
     syncIndexes,
   ]);
@@ -405,6 +423,55 @@ export function SettingsPanel({
               Tune storage-level behavior and custom indexes.
             </p>
           </div>
+
+          {databaseType === 'MongoDB' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Radio className="w-5 h-5" />
+                  Live updates
+                </CardTitle>
+                <CardDescription>
+                  Opt this schema into MongoDB change streams. The Data Explorer
+                  shows an updates-available badge instead of auto-refreshing.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex min-h-16 items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <Label
+                      htmlFor="schema-realtime-enabled"
+                      className="font-medium cursor-pointer"
+                    >
+                      Enable live updates
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Requires the module-level live updates switch and a
+                      replica set.
+                    </p>
+                  </div>
+                  <Switch
+                    id="schema-realtime-enabled"
+                    checked={realtimeEnabled}
+                    onCheckedChange={setRealtimeEnabled}
+                    disabled={!isOwnedByDatabase}
+                  />
+                </div>
+                {realtimeEnabled && crudOperations.read?.enabled !== true && (
+                  <p className="text-xs text-muted-foreground">
+                    CMS read is off, so client apps cannot subscribe. Admin Data
+                    Explorer can still listen.
+                  </p>
+                )}
+                <LiveUpdateSnippets
+                  schemaName={schema.name}
+                  realtimeEnabled={realtimeEnabled}
+                  cmsReadEnabled={crudOperations.read?.enabled === true}
+                  authorizationEnabled={authEnabled}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {databaseType === 'MongoDB' && (
             <Card>

@@ -1,14 +1,19 @@
 import { Settings } from '@/components/database/settings/settings';
-import { getDatabaseSettings, getDatabaseType } from '@/lib/api/database';
+import {
+  getDatabaseRealtimeStatus,
+  getDatabaseSettings,
+  getDatabaseType,
+} from '@/lib/api/database';
 
 export default async function DatabaseSettingsPage() {
-  const [settingsResult, typeResult] = await Promise.allSettled([
-    getDatabaseSettings(),
-    getDatabaseType(),
-  ]);
+  const [settingsResult, typeResult, realtimeResult] = await Promise.allSettled(
+    [getDatabaseSettings(), getDatabaseType(), getDatabaseRealtimeStatus()]
+  );
 
   const databaseType =
     typeResult.status === 'fulfilled' ? typeResult.value.result : 'Unknown';
+  const realtimeStatus =
+    realtimeResult.status === 'fulfilled' ? realtimeResult.value : null;
 
   if (settingsResult.status === 'rejected') {
     return (
@@ -25,6 +30,10 @@ export default async function DatabaseSettingsPage() {
   }
 
   return (
-    <Settings data={settingsResult.value.config} databaseType={databaseType} />
+    <Settings
+      data={settingsResult.value.config}
+      databaseType={databaseType}
+      realtimeStatus={realtimeStatus}
+    />
   );
 }

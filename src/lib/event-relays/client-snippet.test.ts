@@ -10,8 +10,14 @@ describe('event relay client snippet', () => {
     const snippet = buildEventRelayClientSnippet('order-updated');
     assert.match(snippet, /auth:\s*\{\s*token:\s*accessToken\s*\}/);
     assert.match(snippet, /socket\.on\('connect',\s*\(\)\s*=>\s*\{/);
-    assert.match(snippet, /socket\.emit\('subscribe',\s*relayId,\s*resourceId\)/);
-    assert.match(snippet, /socket\.on\('order-updated',\s*payload\s*=>\s*\{\}\)/);
+    assert.match(
+      snippet,
+      /socket\.emit\('subscribe',\s*relayId,\s*resourceId\)/
+    );
+    assert.match(
+      snippet,
+      /socket\.on\('order-updated',\s*payload\s*=>\s*\{\}\)/
+    );
   });
 
   it('does not use extraHeaders or a live-path unsubscribe', () => {

@@ -10,6 +10,5 @@ socket.on('connect', () => {
 socket.on('${eventHandler}', payload => {});`;
 }
 
-export const EVENT_RELAY_DOCS_SNIPPET = buildEventRelayClientSnippet(
-  'order-updated'
-);
+export const EVENT_RELAY_DOCS_SNIPPET =
+  buildEventRelayClientSnippet('order-updated');

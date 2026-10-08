@@ -85,7 +85,11 @@ export function useEventRelayPreview(options: {
     return () => {
       cancelled = true;
     };
-  }, [debouncedMessageTemplate, debouncedSamplePayload, debouncedResourceIdPath]);
+  }, [
+    debouncedMessageTemplate,
+    debouncedSamplePayload,
+    debouncedResourceIdPath,
+  ]);
 
   return state;
 }

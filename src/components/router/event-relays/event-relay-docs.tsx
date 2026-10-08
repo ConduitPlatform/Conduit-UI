@@ -164,8 +164,8 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
               </h3>
               <p className="mt-1 text-sm text-pretty text-muted-foreground">
                 You can relay <Code>database:update:Order</Code> instead, but
-                the payload is the full document (including{' '}
-                <Code>_id</Code>). That duplicates what clients already get on{' '}
+                the payload is the full document (including <Code>_id</Code>).
+                That duplicates what clients already get on{' '}
                 <Code>/database/</Code> <Code>change</Code> — prefer the
                 database realtime channel unless you only consume{' '}
                 <Code>/events/</Code>.
@@ -220,9 +220,7 @@ export function EventRelayDocs({ open, onOpenChange }: EventRelayDocsProps) {
                   Subscribe fails closed if Authorization is unavailable or the
                   user lacks permission.
                 </li>
-                <li>
-                  No replay or ordering guarantee. Delivery is ephemeral.
-                </li>
+                <li>No replay or ordering guarantee. Delivery is ephemeral.</li>
                 <li>
                   Turn a relay off with Active to stop forwarding and evict
                   subscribers without deleting the relay.

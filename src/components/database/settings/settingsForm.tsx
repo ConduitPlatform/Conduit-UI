@@ -14,7 +14,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
+import type { DatabaseRealtimeStatus } from '@/lib/models/database';
 
 interface Props {
   control: any;
@@ -23,6 +25,36 @@ interface Props {
   setEdit: (arg0: boolean) => void;
   reset: any;
   databaseType: string;
+  realtimeStatus?: DatabaseRealtimeStatus | null;
+}
+
+function realtimeStatusCopy(status: DatabaseRealtimeStatus | null | undefined) {
+  if (!status) {
+    return 'Runtime status is unavailable for this backend.';
+  }
+  switch (status.status) {
+    case 'live':
+      return `Live · ${status.activeSchemaCount} opted-in ${
+        status.activeSchemaCount === 1 ? 'schema' : 'schemas'
+      }`;
+    case 'starting':
+      return 'Starting the change-stream listener.';
+    case 'idle':
+      return (
+        status.message ??
+        'Waiting for a replica set and at least one opted-in schema.'
+      );
+    case 'disabled':
+      return 'Live updates are turned off for this module.';
+    case 'degraded':
+      return status.message ?? 'The change-stream listener is degraded.';
+    case 'unsupported':
+      return status.message ?? 'Live updates require MongoDB.';
+    default: {
+      const _exhaustive: never = status.status;
+      return _exhaustive;
+    }
+  }
 }
 
 export const SettingsForm = ({
@@ -32,13 +64,14 @@ export const SettingsForm = ({
   setEdit,
   reset,
   databaseType,
+  realtimeStatus,
 }: Props) => {
   if (databaseType !== 'MongoDB') {
     return (
       <Alert>
         <AlertDescription>
-          Replica set read preferences are only available for MongoDB
-          deployments. Your current database type is{' '}
+          Live updates and replica set read preferences are only available for
+          MongoDB deployments. Your current database type is{' '}
           <span className="font-medium">{databaseType}</span>.
         </AlertDescription>
       </Alert>
@@ -47,7 +80,37 @@ export const SettingsForm = ({
 
   return (
     <>
-      <div className={'flex flex-col gap-4'}>
+      <div className={'flex flex-col gap-6'}>
+        <FormField
+          control={control}
+          name="realtime.enabled"
+          render={({ field }) => (
+            <FormItem className="flex min-h-16 flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-1 pr-4">
+                <FormLabel htmlFor="realtime-enabled" className="text-base">
+                  Live updates
+                </FormLabel>
+                <FormDescription>
+                  Watch opted-in schemas through MongoDB change streams. Schemas
+                  must also enable live updates. Data Explorer never
+                  auto-refreshes.
+                </FormDescription>
+                <p className="text-xs text-muted-foreground">
+                  {realtimeStatusCopy(realtimeStatus)}
+                </p>
+              </div>
+              <FormControl>
+                <Switch
+                  id="realtime-enabled"
+                  disabled={!edit}
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className={'grid grid-cols-3 gap-4'}>
           <FormField
             control={control}
