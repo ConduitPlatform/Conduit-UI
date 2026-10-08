@@ -1,9 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatAdminApiError,
+  isAxiosNotFoundError,
   isNextNavigationError,
   withAdminApiError,
 } from '@/lib/logic/api-error';
+
+describe('isAxiosNotFoundError', () => {
+  it('detects 404 on the error or its cause chain', () => {
+    const axios404 = { response: { status: 404 } };
+    expect(isAxiosNotFoundError(axios404)).toBe(true);
+    expect(
+      isAxiosNotFoundError(
+        Object.assign(new Error('Server Components render'), {
+          cause: axios404,
+        })
+      )
+    ).toBe(true);
+    expect(isAxiosNotFoundError({ response: { status: 500 } })).toBe(false);
+  });
+});
 
 describe('formatAdminApiError', () => {
   it('prefers the API response message from axios-like errors', () => {
