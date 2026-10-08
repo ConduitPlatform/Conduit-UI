@@ -26,6 +26,7 @@ export default defineConfig({
       'src/lib/database/system-schema-fields.test.ts',
       'src/lib/models/logs-viewer/utils.test.ts',
       'src/lib/realtime/**/*.test.ts',
+      'src/lib/event-relays/**/*.test.ts',
     ],
     css: false,
   },
