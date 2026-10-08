@@ -82,15 +82,17 @@ export const LocalConfigForm: React.FC<
               />
             </>
           )}
-          <div className={'flex flex-row gap-x-1 items-center'}>
-            <InputField
-              fieldName={'forgot_password_redirect_uri'}
-              label={'Forgot password redirect URI'}
-              description={
-                'Specify where the user will be redirected to after clicking the forgot password link in their email'
-              }
-            />
-          </div>
+          <InputField
+            fieldName={'forgot_password_redirect_uri'}
+            label={'Forgot password redirect URI'}
+            description={
+              'Specify where the user will be redirected to after clicking the forgot password link in their email'
+            }
+            classNames={{
+              label: 'pl-0 text-sm font-normal text-text-dark-gray',
+              description: 'pl-0',
+            }}
+          />
           <div className={'flex flex-row gap-x-1 items-center'}>
             <SwitchField
               fieldName={'username_auth_enabled'}

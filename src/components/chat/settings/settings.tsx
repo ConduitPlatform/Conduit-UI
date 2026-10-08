@@ -33,6 +33,18 @@ const FormSchema = z.object({
     enabled: z.boolean(),
     send_email: z.boolean(),
     send_notification: z.boolean(),
+    redirect: z
+      .object({
+        login_uri: z.string().optional().default(''),
+        accept_uri: z.string().optional().default(''),
+        decline_uri: z.string().optional().default(''),
+      })
+      .optional()
+      .default({
+        login_uri: '',
+        accept_uri: '',
+        decline_uri: '',
+      }),
   }),
 });
 
@@ -52,7 +64,17 @@ export const Settings = ({
   const { save, isSaving } = useSettingsSave('Chat');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
-    defaultValues: data,
+    defaultValues: {
+      ...data,
+      explicit_room_joins: {
+        ...data.explicit_room_joins,
+        redirect: {
+          login_uri: data.explicit_room_joins?.redirect?.login_uri ?? '',
+          accept_uri: data.explicit_room_joins?.redirect?.accept_uri ?? '',
+          decline_uri: data.explicit_room_joins?.redirect?.decline_uri ?? '',
+        },
+      },
+    },
   });
 
   useEffect(() => {
@@ -73,7 +95,9 @@ export const Settings = ({
   const handleSwitchChange = () => {
     addAlert({
       title: 'Chat Module',
-      description: `Are you sure you want to ${chatModule ? 'disable' : 'enable'} Chat module?`,
+      description: `Are you sure you want to ${
+        chatModule ? 'disable' : 'enable'
+      } Chat module?`,
       cancelText: 'Cancel',
       actionText: 'Proceed',
       onDecision: cancel => {

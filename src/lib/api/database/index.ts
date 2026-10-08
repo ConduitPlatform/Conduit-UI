@@ -8,10 +8,12 @@ import {
   DeclaredSchema,
   PatchSchemaRequest,
   PendingSchemas,
+  PutSchemaRequest,
   SchemaOptions,
 } from '@/lib/models/database';
 import { CustomEndpoint } from '@/lib/models/database/custom-endpoints';
 import { normalizeSchemaIndexResponse } from '@/lib/database/schema-indexes';
+import { unwrapVectorIndexes } from '@/lib/models/embeddings';
 
 export const getPendingSchemas = async (args: {
   skip?: number;
@@ -51,6 +53,12 @@ export const getSchemas = async (args: {
     .then(res => res.data);
 };
 
+export const getDatabaseSystemSchemas = async () => {
+  return await (await getApiClient())
+    .get<unknown>('/database/schemas/system')
+    .then(res => res.data);
+};
+
 export const getSchemaOwnerModules = async (args: { sort?: string }) => {
   return await (await getApiClient())
     .get<{ modules: string[] }>('/database/schemas/owners', { params: args })
@@ -85,6 +93,12 @@ export const createSchema = async (schema: CreateSchemaRequest) => {
 export const patchSchema = async (id: string, schema: PatchSchemaRequest) => {
   return await (await getApiClient())
     .patch<DeclaredSchema>(`/database/schemas/${id}`, schema)
+    .then(res => res.data);
+};
+
+export const putSchema = async (id: string, schema: PutSchemaRequest) => {
+  return await (await getApiClient())
+    .put<DeclaredSchema>(`/database/schemas/${id}`, schema)
     .then(res => res.data);
 };
 
@@ -347,6 +361,13 @@ export const getSchemaIndexes = async (schemaId: string) => {
     .get<unknown>(`/database/schemas/${schemaId}/indexes`)
     .then(res => res.data);
   return { indexes: normalizeSchemaIndexResponse(data) };
+};
+
+export const getSchemaVectorIndexes = async (schemaId: string) => {
+  const res = await (
+    await getApiClient()
+  ).get<unknown>(`/database/schemas/${schemaId}/vector-indexes`);
+  return unwrapVectorIndexes(res.data);
 };
 
 export const deleteSchemaIndexes = async (

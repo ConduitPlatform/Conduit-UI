@@ -73,6 +73,7 @@ export const EditFunctionForm = ({
                 functionData.inputs?.cronPattern ??
                 functionData.inputs?.event ??
                 '',
+              timezone: functionData.inputs?.timezone?.trim() || 'UTC',
             },
           }
         : {}),
@@ -190,7 +191,7 @@ export const EditFunctionForm = ({
         timeout: data.timeout,
         inputs: {
           cronPattern: options.cronString,
-          event: options.cronString,
+          timezone: options.timezone?.trim() || 'UTC',
         },
       })
         .then(() => {

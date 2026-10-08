@@ -6,7 +6,10 @@ function PageHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex items-center justify-between gap-4 mb-6', className)}
+      className={cn(
+        'mb-6 flex flex-wrap items-center justify-between gap-4',
+        className
+      )}
       {...props}
     />
   );
@@ -42,7 +45,7 @@ function PageActions({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex items-center gap-2 shrink-0', className)}
+      className={cn('flex shrink-0 flex-wrap items-center gap-2', className)}
       {...props}
     />
   );

@@ -92,7 +92,8 @@ export const SettingsForm = ({
                       <div className={'flex items-center gap-2'}>
                         Google{' '}
                         {data.google &&
-                          data.google.serviceAccountKeyPath !== '' &&
+                          (data.google.serviceAccountKeyPath !== '' ||
+                            (data.google.serviceAccountKeyJson ?? '') !== '') &&
                           watch('provider') !== 'google' && <Cog />}
                       </div>
                     </SelectItem>
@@ -288,7 +289,13 @@ export const SettingsForm = ({
                 name="google.serviceAccountKeyPath"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Service Account Key Path</FormLabel>
+                    <FormLabel>
+                      Service Account Key Path
+                      <p className={'text-xs text-muted-foreground'}>
+                        Path to the service account JSON file. Leave both path
+                        and JSON empty to use Application Default Credentials.
+                      </p>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         disabled={!edit}
@@ -296,6 +303,33 @@ export const SettingsForm = ({
                         placeholder={'Enter a value'}
                         className={'text-accent-foreground'}
                         {...field}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="google.serviceAccountKeyJson"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Service Account Key JSON
+                      <p className={'text-xs text-muted-foreground'}>
+                        Inline service account JSON. Do not use if path is
+                        provided.
+                      </p>
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        disabled={!edit}
+                        title={'Service Account Key JSON'}
+                        placeholder={'Enter JSON'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                        value={field.value ?? ''}
                       />
                     </FormControl>
                     <FormMessage />

@@ -61,8 +61,8 @@ export type DeclaredSchema = {
   updatedAt: string;
 };
 
-/** PATCH /database/schemas/:id — matches Database admin route bodyParams */
-export type PatchSchemaRequest = Partial<Pick<DeclaredSchema, 'fields'>> & {
+/** PATCH /database/schemas/:id — conduitOptions only; field edits go through PUT */
+export type PatchSchemaRequest = {
   /** Nested shapes are permissive — callers build objects from forms */
   conduitOptions?: {
     cms?: Record<string, unknown>;
@@ -75,6 +75,12 @@ export type PatchSchemaRequest = Partial<Pick<DeclaredSchema, 'fields'>> & {
     readPreference?: string;
   };
 };
+
+/** PUT /database/schemas/:id — full field replacement */
+export type PutSchemaRequest = Pick<DeclaredSchema, 'fields'> & {
+  conduitOptions?: PatchSchemaRequest['conduitOptions'];
+};
+
 export type CreateSchemaRequest = {
   name: string;
   fields: any;

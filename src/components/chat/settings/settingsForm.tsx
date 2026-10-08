@@ -1,10 +1,12 @@
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { cn } from '@/lib/utils';
@@ -179,6 +181,98 @@ export const SettingsForm = ({
               )}
             />
           </>
+        </div>
+        <div className="flex flex-col gap-4 border-t pt-4">
+          <h3
+            className={cn(
+              'text-lg font-medium',
+              !explicitJoin && disabledStyling
+            )}
+          >
+            Invitation Redirects
+          </h3>
+          <div className="grid grid-cols-1 gap-4">
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.redirect.login_uri"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Login Redirect URI
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!explicitJoin || !edit}
+                      placeholder="https://example.com/login"
+                      {...field}
+                      value={field.value ?? ''}
+                    />
+                  </FormControl>
+                  <FormDescription
+                    className={cn(!explicitJoin && disabledStyling)}
+                  >
+                    Absolute login page URL for unauthenticated email-link
+                    clicks. Hook appends
+                    ?redirectUri=...&answer=...&invitationToken=... Empty means
+                    email clicks fail until configured.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.redirect.accept_uri"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Accept Redirect URI
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!explicitJoin || !edit}
+                      placeholder="https://example.com/chat/{roomId}"
+                      {...field}
+                      value={field.value ?? ''}
+                    />
+                  </FormControl>
+                  <FormDescription
+                    className={cn(!explicitJoin && disabledStyling)}
+                  >
+                    Post-accept destination. Supports {'{roomId}'} placeholder.
+                    If empty, returns a JSON result.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={formRef.control}
+              name="explicit_room_joins.redirect.decline_uri"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={cn(!explicitJoin && disabledStyling)}>
+                    Decline Redirect URI
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!explicitJoin || !edit}
+                      placeholder="https://example.com/dashboard"
+                      {...field}
+                      value={field.value ?? ''}
+                    />
+                  </FormControl>
+                  <FormDescription
+                    className={cn(!explicitJoin && disabledStyling)}
+                  >
+                    Post-decline destination. Supports {'{roomId}'} placeholder.
+                    If empty, returns a JSON result.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
       </div>
       <SettingsFormActions

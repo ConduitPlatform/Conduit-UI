@@ -7,8 +7,29 @@ export interface LogsData {
   message: string;
   level: string;
   instance?: string;
-  module?: string[];
+  module?: string[] | string;
 }
+
+export type LogsQueryParams = {
+  modules: string[];
+  levels: string[];
+  startDate: number | undefined;
+  endDate: number | undefined;
+  limit: string | undefined;
+  searchTerm?: string;
+};
+
+export type RefreshLogsFn = (data: LogsQueryParams) => Promise<LogsData[]>;
+
+export type LogsFiltersState = {
+  selectedLevels: string[];
+  selectedLimit: string | undefined;
+  selectedModules: string[];
+  selectedTime: string | undefined;
+  selectedStartDate: Date | undefined;
+  selectedEndDate: Date | undefined;
+  searchTerm: string;
+};
 
 export interface LokiLogsData {
   stream: {

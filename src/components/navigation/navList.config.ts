@@ -8,6 +8,7 @@ import {
   LucideMail,
   MessagesSquare,
   Router,
+  ScanSearch,
   Settings,
   User,
   CreditCard,
@@ -74,6 +75,17 @@ export const navGroups: NavGroup[] = [
           { title: 'Introspection', url: '/database/introspection' },
           { title: 'Custom Queries', url: '/database/queries' },
           { title: 'Settings', url: '/database/settings' },
+        ],
+      },
+      {
+        title: 'Embeddings',
+        url: '/embeddings',
+        icon: ScanSearch,
+        items: [
+          { title: 'Configs', url: '/embeddings/configs' },
+          { title: 'Backfills', url: '/embeddings/backfills' },
+          { title: 'Test Search', url: '/embeddings/test' },
+          { title: 'Settings', url: '/embeddings/settings' },
         ],
       },
       {
