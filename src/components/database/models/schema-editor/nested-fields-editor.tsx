@@ -21,8 +21,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { FieldsTable, FormField } from './fields-table';
+import { validateSchemaFields } from '@/lib/database/schema-field-validation';
 import { AlertCircle, Boxes } from 'lucide-react';
+import { FieldsTable, FormField } from './fields-table';
 
 type NestedFieldsEditorProps = {
   open: boolean;
@@ -35,40 +36,6 @@ type NestedFieldsEditorProps = {
   depth?: number;
   maxDepth?: number;
 };
-
-function validateNestedFields(fieldsToValidate: FormField[]): string | null {
-  if (fieldsToValidate.length === 0) {
-    return 'Add at least one nested field.';
-  }
-
-  const names = new Set<string>();
-
-  for (const field of fieldsToValidate) {
-    const nestedName = field.name.trim();
-    const fieldLabel = nestedName || 'Nested field';
-
-    if (!nestedName) return 'Every nested field needs a name.';
-
-    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(nestedName)) {
-      return `${fieldLabel} must start with a letter or underscore and only use letters, numbers, or underscores.`;
-    }
-
-    if (names.has(nestedName)) {
-      return `${fieldLabel} is duplicated. Nested field names must be unique.`;
-    }
-    names.add(nestedName);
-
-    if (field.type === 'Relation' && !field.relatedModel) {
-      return `${fieldLabel} is a relation and needs a related model.`;
-    }
-
-    if (field.type === 'Group') {
-      return 'Groups can only be nested 1 level deep. Remove the nested Group field.';
-    }
-  }
-
-  return null;
-}
 
 function NestedFieldBreadcrumb({ path }: { path: string }) {
   const segments = path.split('.').filter(Boolean);
@@ -115,7 +82,7 @@ export function NestedFieldsEditor({
   onSave,
   availableModels,
   depth = 1,
-  maxDepth = 1,
+  maxDepth,
 }: NestedFieldsEditorProps) {
   const resolvedPath = fieldPath || fieldName;
   const [fields, setFields] = React.useState<FormField[]>(initialFields);
@@ -160,13 +127,13 @@ export function NestedFieldsEditor({
   };
 
   const handleSave = React.useCallback(() => {
-    const error = validateNestedFields(fields);
+    const error = validateSchemaFields(fields, resolvedPath);
     setValidationError(error);
     if (error) return;
 
     onSave(fields);
     onOpenChange(false);
-  }, [fields, onOpenChange, onSave]);
+  }, [fields, onOpenChange, onSave, resolvedPath]);
 
   React.useEffect(() => {
     if (!open) return;

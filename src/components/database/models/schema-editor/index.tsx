@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { FieldType } from './type-picker';
 import { normalizeFieldDefault } from '@/lib/database/format-display-value';
 import { normalizeSchemaFieldDefinition } from '@/lib/database/schema-field-definition';
+import { validateSchemaFields } from '@/lib/database/schema-field-validation';
 
 type SchemaEditorProps = {
   schema: DeclaredSchema | null;
@@ -50,54 +51,6 @@ function normalizeFieldType(type: unknown): FieldType {
   return typeof type === 'string' && type.length > 0
     ? (type as FieldType)
     : 'String';
-}
-
-function validateFields(
-  fieldsToValidate: FormField[],
-  parentPath = '',
-  depth = 0
-): string | null {
-  const names = new Set<string>();
-
-  for (const field of fieldsToValidate) {
-    const fieldPath = parentPath ? `${parentPath}.${field.name}` : field.name;
-
-    if (!field.name.trim()) {
-      return parentPath
-        ? `Every nested field in ${parentPath} needs a name.`
-        : 'Every field needs a name.';
-    }
-
-    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(field.name.trim())) {
-      return `${fieldPath} must start with a letter or underscore and only use letters, numbers, or underscores.`;
-    }
-
-    if (names.has(field.name)) {
-      return `${fieldPath} is duplicated. Field names must be unique at each level.`;
-    }
-    names.add(field.name);
-
-    if (field.unique && !field.required) {
-      return `${fieldPath} is unique, so it must also be required.`;
-    }
-
-    if (field.type === 'Relation' && !field.relatedModel) {
-      return `${fieldPath} is a relation and needs a related model.`;
-    }
-
-    if (field.type === 'Group') {
-      if (depth >= 1) {
-        return `Nested groups are only supported up to 1 level deep. ${fieldPath} exceeds this limit.`;
-      }
-      if (!field.fields?.length) {
-        return `${fieldPath} is a nested group and needs at least one nested field.`;
-      }
-      const nestedError = validateFields(field.fields, fieldPath, depth + 1);
-      if (nestedError) return nestedError;
-    }
-  }
-
-  return null;
 }
 
 export function extractFieldsFromSchema(schemaFields: any): FormField[] {
@@ -233,7 +186,7 @@ export function SchemaEditor({
       return;
     }
 
-    const validationError = validateFields(fields);
+    const validationError = validateSchemaFields(fields);
     if (validationError) {
       toast({
         title: 'Fix schema fields before saving',
@@ -396,8 +349,8 @@ export function SchemaEditor({
                     {isSaving
                       ? 'Saving...'
                       : isNewSchema
-                        ? 'Create Schema'
-                        : 'Save Changes'}
+                      ? 'Create Schema'
+                      : 'Save Changes'}
                     {!isSaving && hasChanges && (
                       <kbd className="ml-1 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
                         {saveShortcutLabel}
@@ -457,7 +410,6 @@ export function SchemaEditor({
                 availableModels={availableModels}
                 disabled={isExtensionOnly}
                 depth={0}
-                maxDepth={1}
                 className="min-h-0 flex-1"
                 committedFieldNames={committedFieldNames}
                 fillHeight
