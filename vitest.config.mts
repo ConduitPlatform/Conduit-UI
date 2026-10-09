@@ -22,6 +22,7 @@ export default defineConfig({
       'src/lib/semantic-colors.test.ts',
       'src/lib/reactflow-edge-colors.test.ts',
       'src/lib/database/schema-field-definition.test.ts',
+      'src/lib/database/schema-field-validation.test.ts',
       'src/lib/database/schema-indexes.test.ts',
       'src/lib/database/system-schema-fields.test.ts',
       'src/lib/models/logs-viewer/utils.test.ts',
