@@ -7,7 +7,7 @@ import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { ConduitMark } from './ConduitMark';
 import { SidebarNavItem } from './SidebarNavItem';
 import { NavUser } from './navUser';
-import { navGroups, navFooter, type NavGroup } from './navList.config';
+import { navGroups, navList, type NavGroup } from './navList.config';
 import { useModuleAvailability } from '@/contexts/ModuleAvailabilityContext';
 import {
   filterNavigationByModules,
@@ -104,7 +104,9 @@ function SidebarRailContent({ className }: SidebarRailContentProps) {
       {/* Footer */}
       <div className="flex flex-col items-center gap-0.5 pb-3 shrink-0 w-full">
         <div className="sidebar-divider" />
-        <SidebarNavItem item={navFooter} />
+        {navList.navSecondary.map(item => (
+          <SidebarNavItem key={item.url} item={item} />
+        ))}
         <NavUser />
       </div>
     </nav>
