@@ -28,9 +28,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { FieldType } from './type-picker';
-import { normalizeFieldDefault } from '@/lib/database/format-display-value';
-import { normalizeSchemaFieldDefinition } from '@/lib/database/schema-field-definition';
+import { extractSchemaEditorFields } from '@/lib/database/schema-editor-fields';
 import { validateSchemaFields } from '@/lib/database/schema-field-validation';
 
 type SchemaEditorProps = {
@@ -43,67 +41,8 @@ type SchemaEditorProps = {
   onDirtyChange?: (dirty: boolean) => void;
 };
 
-function generateId() {
-  return Math.random().toString(36).substring(2, 9);
-}
-
-function normalizeFieldType(type: unknown): FieldType {
-  return typeof type === 'string' && type.length > 0
-    ? (type as FieldType)
-    : 'String';
-}
-
 export function extractFieldsFromSchema(schemaFields: any): FormField[] {
-  if (!schemaFields || typeof schemaFields !== 'object') return [];
-
-  return Object.entries(schemaFields).map(
-    ([name, definition]: [string, any]) => {
-      const id = generateId();
-      const field = normalizeSchemaFieldDefinition(definition);
-
-      if (field.isGroup) {
-        return {
-          id,
-          name,
-          type: 'Group' as FieldType,
-          isArray: field.isArray,
-          required: field.required,
-          unique: field.unique,
-          select: field.select,
-          default: normalizeFieldDefault(field.default),
-          description: field.description,
-          fields: extractFieldsFromSchema(field.groupFields),
-        };
-      }
-
-      if (field.type === 'Relation') {
-        return {
-          id,
-          name,
-          type: 'Relation' as FieldType,
-          required: field.required,
-          unique: field.unique,
-          select: field.select,
-          default: normalizeFieldDefault(field.default),
-          description: field.description,
-          isArray: field.isArray,
-          relatedModel: field.relatedModel,
-        };
-      }
-
-      return {
-        id,
-        name,
-        type: normalizeFieldType(field.type),
-        required: field.required,
-        unique: field.unique,
-        select: field.select,
-        default: normalizeFieldDefault(field.default),
-        description: field.description,
-        isArray: field.isArray,
-      };
-    }
-  );
+  return extractSchemaEditorFields(schemaFields) as FormField[];
 }
 
 export function SchemaEditor({
@@ -349,8 +288,8 @@ export function SchemaEditor({
                     {isSaving
                       ? 'Saving...'
                       : isNewSchema
-                      ? 'Create Schema'
-                      : 'Save Changes'}
+                        ? 'Create Schema'
+                        : 'Save Changes'}
                     {!isSaving && hasChanges && (
                       <kbd className="ml-1 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
                         {saveShortcutLabel}
