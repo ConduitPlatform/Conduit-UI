@@ -43,6 +43,21 @@ function looksLikeFieldDefinition(value: unknown): boolean {
   return isPlainObject(value);
 }
 
+/** Conduit enum lists are arrays of strings, numbers, or booleans. */
+export function isPrimitiveEnumList(
+  value: unknown
+): value is Array<string | number | boolean> {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      item =>
+        typeof item === 'string' ||
+        typeof item === 'number' ||
+        typeof item === 'boolean'
+    )
+  );
+}
+
 function extractFieldOptions(fieldDef: Record<string, unknown>) {
   return {
     required: fieldDef.required as boolean | undefined,
@@ -63,6 +78,10 @@ function partitionGroupFields(fieldDef: Record<string, unknown>): {
 
   for (const [key, value] of Object.entries(fieldDef)) {
     if (key === 'type') continue;
+    if (key === 'enum' && isPrimitiveEnumList(value)) {
+      optionSource.enum = value;
+      continue;
+    }
     const isOptionKey = FIELD_OPTION_KEYS.has(key);
     if (isOptionKey && !looksLikeFieldDefinition(value)) {
       optionSource[key] = value;
@@ -139,6 +158,17 @@ export function normalizeSchemaFieldDefinition(
 
   if (!fieldDef.type && !relatedModel) {
     const { groupFields, options } = partitionGroupFields(fieldDef);
+    if (
+      Object.keys(groupFields).length === 0 &&
+      isPrimitiveEnumList(options.enumValues)
+    ) {
+      return {
+        isArray,
+        isGroup: false,
+        type: 'String',
+        ...options,
+      };
+    }
     return {
       isArray,
       isGroup: true,

@@ -1121,6 +1121,15 @@ export async function handleMockRequest(
     return;
   }
 
+  if (pathname === '/database/schemas/owners' && method === 'GET') {
+    const schemas = getState().schemas;
+    const modules = [...new Set(schemas.map(s => s.ownerModule))].sort();
+    sendJson(response, 200, {
+      modules,
+    });
+    return;
+  }
+
   if (pathname === '/database/schemas' && method === 'GET') {
     const enabledParam = search.get('enabled');
     let schemas = getState().schemas;
@@ -1136,6 +1145,16 @@ export async function handleMockRequest(
     return;
   }
 
+  const schemaById = /^\/database\/schemas\/([^/]+)$/.exec(pathname);
+  if (schemaById && method === 'GET') {
+    const schema = getState().schemas.find(s => s._id === schemaById[1]);
+    if (!schema) {
+      sendEmpty(response, 404);
+      return;
+    }
+    sendJson(response, 200, schema);
+    return;
+  }
   const vectorIndexes = /^\/database\/schemas\/([^/]+)\/vector-indexes$/.exec(
     pathname
   );
@@ -1143,6 +1162,12 @@ export async function handleMockRequest(
     sendJson(response, 200, {
       indexes: getState().indexesBySchemaId[vectorIndexes[1]] ?? [],
     });
+    return;
+  }
+
+  const schemaQuery = /^\/database\/schemas\/([^/]+)\/query$/.exec(pathname);
+  if (schemaQuery && method === 'POST') {
+    sendJson(response, 200, { documents: [], count: 0 });
     return;
   }
 

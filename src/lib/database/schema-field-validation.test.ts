@@ -49,6 +49,38 @@ describe('validateSchemaFields', () => {
     );
   });
 
+  it('requires an enum field to list at least one value', () => {
+    const error = validateSchemaFields([
+      { name: 'status', type: 'Enum', enumValues: [] },
+    ]);
+    assert.equal(error, 'status is an enum and needs at least one value.');
+  });
+
+  it('rejects enum defaults that are not in the value list', () => {
+    const error = validateSchemaFields([
+      {
+        name: 'status',
+        type: 'Enum',
+        enumValueType: 'String',
+        enumValues: ['draft', 'published'],
+        default: 'archived',
+      },
+    ]);
+    assert.equal(error, 'status default must be one of the enum values.');
+  });
+
+  it('rejects non-numeric values on a number enum', () => {
+    const error = validateSchemaFields([
+      {
+        name: 'priority',
+        type: 'Enum',
+        enumValueType: 'Number',
+        enumValues: ['1', 'high'],
+      },
+    ]);
+    assert.equal(error, 'priority has an enum value that is not a number.');
+  });
+
   it('allows groups deeper than two levels', () => {
     const error = validateSchemaFields([
       {

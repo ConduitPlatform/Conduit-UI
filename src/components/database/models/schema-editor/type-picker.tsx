@@ -25,6 +25,7 @@ import {
   FileJson,
   Boxes,
   Database,
+  ListChecks,
   ChevronDown,
   Check,
 } from 'lucide-react';
@@ -38,7 +39,8 @@ export type FieldType =
   | 'ObjectId'
   | 'JSON'
   | 'Relation'
-  | 'Group';
+  | 'Group'
+  | 'Enum';
 
 type TypePickerProps = {
   value: FieldType;
@@ -85,6 +87,12 @@ const commonTypes: TypeOption[] = [
     description: 'Unique identifier',
     icon: <Database className="w-4 h-4" />,
   },
+  {
+    value: 'Enum',
+    label: 'Enum',
+    description: 'One of a fixed set of text or number values',
+    icon: <ListChecks className="w-4 h-4" />,
+  },
 ];
 
 const advancedTypes: TypeOption[] = [
@@ -120,6 +128,7 @@ const typeColors: Record<FieldType, string> = {
   ObjectId: 'text-foreground-muted',
   JSON: 'text-syntax-property',
   Group: 'text-primary-muted-foreground',
+  Enum: 'text-syntax-operator',
 };
 
 export function TypePicker({

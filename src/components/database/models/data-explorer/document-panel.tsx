@@ -26,6 +26,7 @@ import moment from 'moment';
 import { RelationFieldInput } from './relation-field-input';
 import type { ModelDataPermissions } from './permissions';
 import { normalizeSchemaFieldDefinition } from '@/lib/database/schema-field-definition';
+import { toEditorEnumValues } from '@/lib/database/schema-editor-fields';
 
 type DocumentPanelProps = {
   schema: DeclaredSchema;
@@ -64,17 +65,14 @@ function extractFieldDefinitions(schema: DeclaredSchema): FieldDefinition[] {
   return Object.entries(schemaFields).map(
     ([name, definition]: [string, unknown]) => {
       const field = normalizeSchemaFieldDefinition(definition);
+      const enumValues = toEditorEnumValues(field.enumValues);
 
       return {
         name,
         type: field.type,
         required: field.required,
         isArray: field.isArray,
-        enumValues: Array.isArray(field.enumValues)
-          ? field.enumValues.filter(
-              (value): value is string => typeof value === 'string'
-            )
-          : undefined,
+        enumValues: enumValues.length > 0 ? enumValues : undefined,
         model: field.relatedModel,
         isExtensionField: extensionFields.has(name),
       };

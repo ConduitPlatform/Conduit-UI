@@ -175,4 +175,54 @@ describe('normalizeSchemaFieldDefinition', () => {
     assert.equal(field.isArray, false);
     assert.equal(field.isGroup, false);
   });
+
+  it('keeps string enum values on the scalar field', () => {
+    const field = normalizeSchemaFieldDefinition({
+      type: 'String',
+      enum: ['draft', 'published'],
+      required: true,
+    });
+    assert.equal(field.type, 'String');
+    assert.equal(field.isGroup, false);
+    assert.equal(field.required, true);
+    assert.deepEqual(field.enumValues, ['draft', 'published']);
+  });
+
+  it('keeps numeric enum values', () => {
+    const field = normalizeSchemaFieldDefinition({
+      type: 'Number',
+      enum: [1, 2, 3],
+    });
+    assert.equal(field.type, 'Number');
+    assert.equal(field.isGroup, false);
+    assert.deepEqual(field.enumValues, [1, 2, 3]);
+  });
+
+  it('keeps enum values on array fields', () => {
+    const wrapped = normalizeSchemaFieldDefinition({
+      type: ['String'],
+      enum: ['open', 'closed'],
+    });
+    assert.equal(wrapped.type, 'String');
+    assert.equal(wrapped.isArray, true);
+    assert.deepEqual(wrapped.enumValues, ['open', 'closed']);
+
+    const listed = normalizeSchemaFieldDefinition([
+      { type: 'Number', enum: [0, 1] },
+    ]);
+    assert.equal(listed.type, 'Number');
+    assert.equal(listed.isArray, true);
+    assert.deepEqual(listed.enumValues, [0, 1]);
+  });
+
+  it('does not treat a primitive enum list as a nested group', () => {
+    const field = normalizeSchemaFieldDefinition({
+      required: true,
+      enum: ['a', 'b'],
+    });
+    assert.equal(field.isGroup, false);
+    assert.equal(field.type, 'String');
+    assert.equal(field.required, true);
+    assert.deepEqual(field.enumValues, ['a', 'b']);
+  });
 });

@@ -30,10 +30,12 @@ import {
 } from '@hello-pangea/dnd';
 import { GripVertical, Plus, X, Boxes, Table2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { schemaEditorFieldsToApi } from '@/lib/database/schema-editor-fields';
 import { TypePicker, FieldType } from './type-picker';
 import { ExtraOptionsPopover } from './extra-options-popover';
 import { RelationPicker } from './relation-picker';
 import { NestedFieldsEditor } from './nested-fields-editor';
+import { EnumValuesEditor } from './enum-values-editor';
 import {
   canAssignSchemaFieldName,
   isLockedMongoSchemaField,
@@ -50,6 +52,8 @@ export type FormField = {
   default?: string;
   description?: string;
   relatedModel?: string;
+  enumValues?: string[];
+  enumValueType?: string;
   fields?: FormField[];
 };
 
@@ -85,46 +89,7 @@ function generateId() {
 export function transformFieldsForApi(
   fields: FormField[]
 ): Record<string, any> {
-  const result: Record<string, any> = {};
-
-  fields.forEach(field => {
-    let fieldDef: any = {};
-
-    if (field.type === 'Group' && field.fields?.length) {
-      fieldDef = transformFieldsForApi(field.fields);
-    } else {
-      fieldDef = { type: field.type };
-
-      if (field.required) fieldDef.required = true;
-      if (field.unique) fieldDef.unique = true;
-      if (field.select !== undefined) fieldDef.select = field.select;
-      if (field.default) {
-        if (field.type === 'JSON') {
-          try {
-            fieldDef.default = JSON.parse(field.default);
-          } catch {
-            fieldDef.default = field.default;
-          }
-        } else if (field.type === 'Number') {
-          const asNumber = Number(field.default);
-          fieldDef.default = Number.isNaN(asNumber) ? field.default : asNumber;
-        } else if (field.type === 'Boolean') {
-          fieldDef.default = field.default === 'true';
-        } else {
-          fieldDef.default = field.default;
-        }
-      }
-      if (field.description) fieldDef.description = field.description;
-
-      if (field.type === 'Relation' && field.relatedModel) {
-        fieldDef.model = field.relatedModel;
-      }
-    }
-
-    result[field.name] = field.isArray ? [fieldDef] : fieldDef;
-  });
-
-  return result;
+  return schemaEditorFieldsToApi(fields);
 }
 
 function typeChangeDiscardsConfig(field: FormField, nextType: FieldType) {
@@ -143,14 +108,40 @@ function typeChangeDiscardsConfig(field: FormField, nextType: FieldType) {
   ) {
     return true;
   }
+  if (
+    field.type === 'Enum' &&
+    (field.enumValues?.length ?? 0) > 0 &&
+    nextType !== 'Enum'
+  ) {
+    return true;
+  }
   return false;
 }
 
-function getTypeChangeUpdates(type: FieldType): Partial<FormField> {
+function getTypeChangeUpdates(
+  type: FieldType,
+  field?: FormField
+): Partial<FormField> {
+  const enumValueType =
+    field?.type === 'Number' || field?.enumValueType === 'Number'
+      ? 'Number'
+      : 'String';
+  const seededValues =
+    (field?.type === 'String' || field?.type === 'Number') && field.default
+      ? [field.default]
+      : [];
+
   return {
     type,
     ...(type !== 'Relation' ? { relatedModel: undefined } : {}),
     ...(type !== 'Group' ? { fields: undefined } : { isArray: false }),
+    ...(type === 'Enum'
+      ? {
+          enumValues: seededValues,
+          enumValueType,
+          ...(seededValues.length === 0 ? { default: '' } : {}),
+        }
+      : { enumValues: undefined, enumValueType: undefined }),
   };
 }
 
@@ -228,6 +219,9 @@ export function FieldsTable({
   );
   const [pendingTypeChange, setPendingTypeChange] =
     React.useState<PendingTypeChange | null>(null);
+  const [openEnumFieldId, setOpenEnumFieldId] = React.useState<string | null>(
+    null
+  );
 
   const committedNames = React.useMemo(
     () => new Set(committedFieldNames ?? []),
@@ -284,7 +278,10 @@ export function FieldsTable({
     if (type === 'Relation' && field.type !== 'Relation') {
       setOpenRelationFieldId(field.id);
     }
-    handleUpdateField(field.id, getTypeChangeUpdates(type));
+    if (type === 'Enum' && field.type !== 'Enum') {
+      setOpenEnumFieldId(field.id);
+    }
+    handleUpdateField(field.id, getTypeChangeUpdates(type, field));
   };
 
   const handleTypeChange = (field: FormField, type: FieldType) => {
@@ -493,6 +490,20 @@ export function FieldsTable({
                                       }
                                     }}
                                   />
+                                ) : field.type === 'Enum' ? (
+                                  <EnumValuesEditor
+                                    field={field}
+                                    onUpdate={updates =>
+                                      handleUpdateField(field.id, updates)
+                                    }
+                                    disabled={rowDisabled}
+                                    open={openEnumFieldId === field.id}
+                                    onOpenChange={nextOpen => {
+                                      setOpenEnumFieldId(
+                                        nextOpen ? field.id : null
+                                      );
+                                    }}
+                                  />
                                 ) : field.type === 'Group' ? (
                                   <>
                                     <Tooltip>
@@ -696,6 +707,8 @@ export function FieldsTable({
                                           type: 'ObjectId',
                                           unique: true,
                                           required: true,
+                                          enumValues: undefined,
+                                          enumValueType: undefined,
                                         });
                                       } else {
                                         handleUpdateField(field.id, {
@@ -854,6 +867,15 @@ export function FieldsTable({
                       )
                     </>
                   ) : null}
+                  .
+                </>
+              ) : pendingTypeChange?.field.type === 'Enum' ? (
+                <>
+                  Changing from Enum to {pendingTypeChange.nextType} discards{' '}
+                  {pendingTypeChange.field.enumValues?.length ?? 0} allowed{' '}
+                  {(pendingTypeChange.field.enumValues?.length ?? 0) === 1
+                    ? 'value'
+                    : 'values'}
                   .
                 </>
               ) : (

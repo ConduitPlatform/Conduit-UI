@@ -114,6 +114,17 @@ function declaredSchemas(): MockSchema[] {
       fields: {
         title: { type: 'String' },
         description: { type: 'String' },
+        status: {
+          type: 'String',
+          enum: ['draft', 'published', 'archived'],
+          required: true,
+          default: 'draft',
+        },
+        priority: {
+          type: 'Number',
+          enum: [1, 2, 3],
+          default: 2,
+        },
       },
     }),
     namedSchema({
