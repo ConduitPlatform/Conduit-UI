@@ -8,6 +8,7 @@ import {
 } from '@/lib/api/authentication';
 import {
   globalAccountLinkingDefaults,
+  globalVerificationRequired,
   realmsEnabled,
 } from '@/lib/authentication/realms';
 import { toGuestPolicy } from '@/lib/authentication/realmMembers';
@@ -16,7 +17,6 @@ import RealmTab from '@/components/authentication/teams/manageTeam/realm/RealmTa
 import { RealmInheritedBanner } from '@/components/authentication/teams/manageTeam/realm/RealmInheritedBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
-import { MemberActionsProvider } from '@/components/authentication/teams/manageTeam/members/MemberActionsProvider';
 import MembersTable from '@/components/authentication/teams/manageTeam/members/members';
 import TeamProfile from '@/components/authentication/teams/manageTeam/teamProfile';
 import { TeamActionsProvider } from '@/components/authentication/teams/TeamActionsProvider';
@@ -177,17 +177,18 @@ export default async function Teams(
           )}
         </TabsList>
         <TabsContent value="members">
-          <MemberActionsProvider>
-            <MembersTable
-              data={userData.members}
-              count={userData.count}
-              teamId={team._id}
-              inRealm={inRealm}
-              isRealmTeam={isRealmTeam}
-              realmTeamId={memberRealmTeamId}
-              guestPolicy={guestPolicy}
-            />
-          </MemberActionsProvider>
+          <MembersTable
+            data={userData.members}
+            count={userData.count}
+            teamId={team._id}
+            inRealm={inRealm}
+            isRealmTeam={isRealmTeam}
+            realmTeamId={memberRealmTeamId}
+            realmSlug={
+              isRealmTeam ? team.realm?.slug : realmAncestor?.realm?.slug
+            }
+            guestPolicy={guestPolicy}
+          />
         </TabsContent>
         <TabsContent value="subteams">
           <TeamActionsProvider>
@@ -212,6 +213,9 @@ export default async function Teams(
               realm={realm}
               memberCount={userData.count}
               globalAccountLinking={globalAccountLinkingDefaults(
+                settings?.config
+              )}
+              globalVerificationRequired={globalVerificationRequired(
                 settings?.config
               )}
             />

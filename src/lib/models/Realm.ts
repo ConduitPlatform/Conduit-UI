@@ -137,8 +137,15 @@ export type RealmOAuthPatch = Partial<
 
 export type RealmStrategiesPatch = Omit<
   DeepPartial<RealmStrategies>,
-  'oauth'
-> & { oauth?: Partial<Record<OAuthProviderKey, RealmOAuthPatch>> };
+  'oauth' | 'local'
+> & {
+  local?: {
+    enabled?: boolean;
+    /** `null` drops the realm override: the global `local.verification.required` applies. */
+    verificationRequired?: boolean | null;
+  };
+  oauth?: Partial<Record<OAuthProviderKey, RealmOAuthPatch>>;
+};
 
 /** Settings fields shared by the promote (POST) and update (PATCH) request bodies. */
 export type RealmSettingsPayload = {

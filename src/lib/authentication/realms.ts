@@ -44,10 +44,6 @@ export const slugSchema = z
   .min(1, 'Slug is required')
   .regex(REALM_SLUG_PATTERN, REALM_SLUG_MESSAGE);
 
-export function isValidRealmSlug(value: string): boolean {
-  return REALM_SLUG_PATTERN.test(value);
-}
-
 /* -------------------------------------------------------------------------- */
 /* Schemas                                                                    */
 /* -------------------------------------------------------------------------- */
@@ -221,7 +217,12 @@ function normalizeStrategies(
     if (!isRecord(row)) continue;
     const next: UnknownRecord = {};
     if (typeof row.enabled === 'boolean') next.enabled = row.enabled;
-    if (key === 'local' && typeof row.verificationRequired === 'boolean') {
+    if (
+      key === 'local' &&
+      (typeof row.verificationRequired === 'boolean' ||
+        row.verificationRequired === null)
+    ) {
+      // `null` drops the override: the global setting applies again.
       next.verificationRequired = row.verificationRequired;
     }
     out[key] = next;
@@ -336,7 +337,8 @@ export function suggestRealmSlug(name: string): string {
 /* -------------------------------------------------------------------------- */
 
 export type RealmIdentityValues = {
-  local: { enabled: boolean; verificationRequired: boolean };
+  /** `verificationRequired` undefined = inherit the global `local.verification.required`. */
+  local: { enabled: boolean; verificationRequired: boolean | undefined };
   username: { enabled: boolean };
   magicLink: { enabled: boolean };
   phone: { enabled: boolean };
@@ -392,7 +394,10 @@ export function strategiesToIdentityValues(
   return {
     local: {
       enabled: strategies?.local?.enabled === true,
-      verificationRequired: strategies?.local?.verificationRequired === true,
+      verificationRequired:
+        typeof strategies?.local?.verificationRequired === 'boolean'
+          ? strategies.local.verificationRequired
+          : undefined,
     },
     username: { enabled: strategies?.username?.enabled === true },
     magicLink: { enabled: strategies?.magicLink?.enabled === true },
@@ -427,7 +432,8 @@ export function buildStrategiesPatch(
       key === 'local' &&
       before.local.verificationRequired !== next.local.verificationRequired
     ) {
-      row.verificationRequired = next.local.verificationRequired;
+      // Back to inherit (undefined) is sent as `null`, which clears the override.
+      row.verificationRequired = next.local.verificationRequired ?? null;
     }
     if (Object.keys(row).length > 0) patch[key] = row;
   }
@@ -523,6 +529,24 @@ export function globalAccountLinkingDefaults(
     out[provider] = source?.[provider]?.accountLinking ?? true;
   }
   return out;
+}
+
+/**
+ * The global `local.verification.required`: what a realm inherits while it has no
+ * `local.verificationRequired` of its own. The backend treats an absent value as off.
+ */
+export function globalVerificationRequired(
+  config: AuthenticationConfig | null | undefined
+): boolean {
+  return config?.local?.verification?.required === true;
+}
+
+/** The value in force for a realm: its own override, else the global setting. */
+export function effectiveVerificationRequired(
+  override: boolean | undefined,
+  global: boolean
+): boolean {
+  return override ?? global;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -5,9 +5,11 @@ import {
   buildPromoteBody,
   buildStrategiesPatch,
   countRealmsEnablingStrategy,
+  effectiveVerificationRequired,
   formatRealmCounts,
   formatRealmStrategyCount,
   globalAccountLinkingDefaults,
+  globalVerificationRequired,
   hasOwnCredentials,
   hasOwnOverrides,
   normalizeRealmSettingsForSave,
@@ -388,6 +390,83 @@ describe('identity helpers', () => {
         github: { enabled: true },
       },
     });
+  });
+});
+
+describe('local verification tri-state', () => {
+  const base: RealmStrategies = {
+    local: { enabled: true },
+    username: { enabled: false },
+    magicLink: { enabled: false },
+    phone: { enabled: false },
+    metamask: { enabled: false },
+    biometric: { enabled: false },
+    oauth: {},
+  };
+  const withVerification = (
+    verificationRequired?: boolean
+  ): RealmStrategies => ({
+    ...base,
+    local: { enabled: true, verificationRequired },
+  });
+
+  it('reads an absent value as inherit (undefined) and keeps explicit booleans', () => {
+    expect(
+      strategiesToIdentityValues(base).local.verificationRequired
+    ).toBeUndefined();
+    expect(
+      strategiesToIdentityValues(withVerification(false)).local
+        .verificationRequired
+    ).toBe(false);
+    expect(
+      strategiesToIdentityValues(withVerification(true)).local
+        .verificationRequired
+    ).toBe(true);
+  });
+
+  it('sends a boolean when toggled and null for "Use global"', () => {
+    const toggled = strategiesToIdentityValues(base);
+    toggled.local.verificationRequired = true;
+    expect(buildStrategiesPatch(base, toggled)).toEqual({
+      local: { verificationRequired: true },
+    });
+
+    const off = strategiesToIdentityValues(withVerification(true));
+    off.local.verificationRequired = false;
+    expect(buildStrategiesPatch(withVerification(true), off)).toEqual({
+      local: { verificationRequired: false },
+    });
+
+    const inherit = strategiesToIdentityValues(withVerification(false));
+    inherit.local.verificationRequired = undefined;
+    expect(buildStrategiesPatch(withVerification(false), inherit)).toEqual({
+      local: { verificationRequired: null },
+    });
+  });
+
+  it('sends nothing while it stays inherited', () => {
+    expect(
+      buildStrategiesPatch(base, strategiesToIdentityValues(base))
+    ).toEqual({});
+  });
+
+  it('keeps null through normalizeRealmSettingsForSave', () => {
+    expect(
+      normalizeRealmSettingsForSave({
+        strategies: { local: { verificationRequired: null } },
+      } as never).strategies?.local
+    ).toEqual({ verificationRequired: null });
+  });
+
+  it('reads the global setting and resolves the effective value', () => {
+    expect(globalVerificationRequired(undefined)).toBe(false);
+    expect(
+      globalVerificationRequired({
+        local: { verification: { required: true } },
+      } as never)
+    ).toBe(true);
+    expect(effectiveVerificationRequired(undefined, true)).toBe(true);
+    expect(effectiveVerificationRequired(false, true)).toBe(false);
   });
 });
 

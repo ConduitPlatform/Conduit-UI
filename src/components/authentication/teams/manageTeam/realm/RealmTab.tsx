@@ -17,6 +17,7 @@ export default function RealmTab({
   realm: initialRealm,
   memberCount,
   globalAccountLinking,
+  globalVerificationRequired,
 }: Readonly<{
   team: Team;
   /** Loaded by the page when the team is a realm; null if that read failed. */
@@ -24,6 +25,8 @@ export default function RealmTab({
   memberCount: number;
   /** Global `accountLinking` per OAuth provider: the baseline realms inherit. */
   globalAccountLinking?: Partial<Record<OAuthProviderKey, boolean>>;
+  /** Global `local.verification.required`: what a realm inherits for verification. */
+  globalVerificationRequired?: boolean;
 }>) {
   const [realm, setRealm] = useState<Realm | null>(initialRealm);
   useEffect(() => {
@@ -49,6 +52,7 @@ export default function RealmTab({
         <RealmIdentityCard
           realm={realm}
           globalAccountLinking={globalAccountLinking}
+          globalVerificationRequired={globalVerificationRequired}
           onChange={setRealm}
         />
         <RealmPoliciesCard realm={realm} onChange={setRealm} />
