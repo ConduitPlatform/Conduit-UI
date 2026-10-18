@@ -18,6 +18,7 @@ import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { unwrapActionResult } from '@/lib/api/action-result';
 import { getRealms, updateRealm } from '@/lib/api/authentication';
+import { MAX_REALMS_IN_FILTERS } from '@/lib/authentication/realmMembers';
 import {
   normalizeRealmSettingsForSave,
   realmPoliciesSchema,
@@ -64,7 +65,7 @@ export function RealmPoliciesCard({
 
   useEffect(() => {
     let cancelled = false;
-    getRealms(0, 100)
+    getRealms(0, MAX_REALMS_IN_FILTERS)
       .then(({ realms }) => {
         if (cancelled) return;
         setRealmOptions(

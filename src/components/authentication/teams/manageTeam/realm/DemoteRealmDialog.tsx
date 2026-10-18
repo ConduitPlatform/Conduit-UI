@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ErrorPre } from '@/components/ui/error-pre';
 import { toast } from '@/lib/hooks/use-toast';
-import { demoteRealm } from '@/lib/api/authentication';
+import { demoteRealm, getRealm } from '@/lib/api/authentication';
 import { formatRealmCounts } from '@/lib/authentication/realms';
 import type { RealmCounts } from '@/lib/models/Realm';
 
@@ -30,7 +30,7 @@ export function DemoteRealmDialog({
   onOpenChange,
   teamId,
   slug,
-  counts,
+  counts: initialCounts,
 }: Readonly<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,12 +42,16 @@ export function DemoteRealmDialog({
   const [stage, setStage] = useState<Stage>('confirm');
   const [typed, setTyped] = useState('');
   const [pending, setPending] = useState(false);
+  // Counts re-read when the force step opens: they may have changed since the page loaded.
+  const [freshCounts, setFreshCounts] = useState<RealmCounts | null>(null);
+  const counts = freshCounts ?? initialCounts;
 
   const handleOpenChange = (next: boolean) => {
     if (pending) return;
     if (!next) {
       setStage('confirm');
       setTyped('');
+      setFreshCounts(null);
     }
     onOpenChange(next);
   };
@@ -66,7 +70,13 @@ export function DemoteRealmDialog({
       if (!result.ok) {
         // Key on the code: 412 is shared with REALMS_DISABLED and others.
         if (result.code === 'REALM_HAS_HOME_USERS' && !force) {
-          // Home users exist: offer the force path instead of failing.
+          // Home users exist: offer the force path instead of failing. The number the
+          // admin confirms must be current, so re-read it (keep the old one on failure).
+          try {
+            setFreshCounts((await getRealm(teamId)).counts);
+          } catch {
+            // The counts shown so far still apply.
+          }
           setStage('force');
           return;
         }
