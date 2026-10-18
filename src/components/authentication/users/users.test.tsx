@@ -304,9 +304,7 @@ describe('EditUserSheet', () => {
 
     const dialog = await screen.findByRole('alertdialog');
     expect(dialog).toHaveTextContent('ann@acme.test will sign in at acme');
-    expect(dialog).toHaveTextContent(
-      'Existing access tokens keep working until they expire; they can no longer be refreshed at the old realm.'
-    );
+    expect(dialog).toHaveTextContent('Their global sessions end immediately.');
     expect(api.setUserHomeRealm).not.toHaveBeenCalled();
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Move' }));
@@ -331,7 +329,10 @@ describe('EditUserSheet', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Move home realm' }));
 
     const dialog = await screen.findByRole('alertdialog');
-    expect(dialog).toHaveTextContent(/sessions will be revoked/);
+    expect(dialog).toHaveTextContent(
+      'They are kept as a guest of acme if that realm accepts global users'
+    );
+    expect(dialog).toHaveTextContent('All sessions are revoked.');
     fireEvent.click(
       within(dialog).getByRole('button', { name: 'Move and sign out' })
     );
