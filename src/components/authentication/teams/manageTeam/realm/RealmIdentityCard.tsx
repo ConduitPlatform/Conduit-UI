@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm, type Resolver } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,22 +17,44 @@ import { rhfZodResolver } from '@/lib/zod-form';
 import { unwrapActionResult } from '@/lib/api/action-result';
 import { updateRealm } from '@/lib/api/authentication';
 import {
-  buildStrategiesPatch,
-  hasOwnCredentials,
   realmStrategiesSchema,
   strategiesToIdentityValues,
   type RealmIdentityValues,
 } from '@/lib/authentication/realms';
-import type { Realm, RealmOAuthStrategy } from '@/lib/models/Realm';
+import {
+  buildIdentityPatch,
+  credentialDraftsFromStrategies,
+  validateIdentityCredentials,
+  type OAuthCredentialDraft,
+  type OAuthCredentialDrafts,
+} from '@/lib/authentication/realmCredentials';
+import type {
+  OAuthProviderKey,
+  Realm,
+  RealmStrategies,
+} from '@/lib/models/Realm';
 import {
   HOME_STRATEGIES,
   OAUTH_PROVIDERS,
 } from '@/components/authentication/teams/manageTeam/realm/realmStrategies.config';
 import { RealmSwitchRow } from '@/components/authentication/teams/manageTeam/realm/RealmSwitchRow';
+import { OAuthCredentialsBlock } from '@/components/authentication/teams/manageTeam/realm/OAuthCredentialsBlock';
+
+/** Switch state plus the editable OAuth credential draft of every provider. */
+type IdentityFormValues = RealmIdentityValues & {
+  creds: OAuthCredentialDrafts;
+};
+
+const toFormValues = (
+  strategies: Partial<RealmStrategies> | undefined
+): IdentityFormValues => ({
+  ...strategiesToIdentityValues(strategies),
+  creds: credentialDraftsFromStrategies(strategies),
+});
 
 /**
- * Identity: how HOME users sign in to this realm. Switches only for now; per-realm
- * credentials are a follow-up (see `OAuthCredentialsSlot`).
+ * Identity: how HOME users sign in to this realm. Switches, plus per-realm OAuth
+ * credentials (Inherit global / Own credentials) under each enabled provider.
  */
 export function RealmIdentityCard({
   realm,
@@ -40,18 +63,18 @@ export function RealmIdentityCard({
   realm: Realm;
   onChange: (realm: Realm) => void;
 }>) {
+  const router = useRouter();
   const { save, isSaving } = useSettingsSave('Realm identity');
+  const [showErrors, setShowErrors] = useState(false);
   const strategies = realm.settings.strategies;
-  const saved = useMemo(
-    () => strategiesToIdentityValues(strategies),
-    [strategies]
-  );
+  const saved = useMemo(() => toFormValues(strategies), [strategies]);
 
-  const form = useForm<RealmIdentityValues>({
-    // Validates the switch-only slice against the shared strategies schema.
+  const form = useForm<IdentityFormValues>({
+    // Validates the switch slice against the shared strategies schema; credential
+    // drafts are validated by `validateIdentityCredentials`.
     resolver: rhfZodResolver(
       realmStrategiesSchema
-    ) as unknown as Resolver<RealmIdentityValues>,
+    ) as unknown as Resolver<IdentityFormValues>,
     defaultValues: saved,
   });
   const { watch, setValue, reset } = form;
@@ -60,14 +83,24 @@ export function RealmIdentityCard({
   // slice changed: a save from the policies card must not discard unsaved switches here.
   const savedKey = JSON.stringify(saved);
   useEffect(() => {
-    reset(JSON.parse(savedKey) as RealmIdentityValues);
+    reset(JSON.parse(savedKey) as IdentityFormValues);
+    setShowErrors(false);
   }, [savedKey, reset]);
 
   const values = watch();
-  const patch = buildStrategiesPatch(strategies, values);
+  const patch = buildIdentityPatch(strategies, values, values.creds);
   const isDirty = Object.keys(patch).length > 0;
+  const credentialErrors = validateIdentityCredentials(
+    strategies,
+    values,
+    values.creds
+  );
 
   const onSave = async () => {
+    if (Object.keys(credentialErrors).length > 0) {
+      setShowErrors(true);
+      return;
+    }
     const result = await save({
       successMessage: 'Realm identity saved',
       action: async () =>
@@ -75,7 +108,26 @@ export function RealmIdentityCard({
           await updateRealm(realm.team._id, { strategies: patch })
         ),
     });
-    if (result.ok) onChange(result.result);
+    if (result.ok) {
+      onChange(result.result);
+      // Re-derive the mode and clear typed secrets from the fresh masked read.
+      reset(toFormValues(result.result.settings.strategies));
+      setShowErrors(false);
+      router.refresh();
+    }
+  };
+
+  const updateCredentials = (
+    provider: OAuthProviderKey,
+    change: Partial<OAuthCredentialDraft>
+  ) => {
+    for (const [field, value] of Object.entries(change)) {
+      setValue(
+        `creds.${provider}.${field as keyof OAuthCredentialDraft}`,
+        value as never,
+        { shouldDirty: true }
+      );
+    }
   };
 
   const noMethodEnabled =
@@ -143,7 +195,17 @@ export function RealmIdentityCard({
               })
             }
           >
-            <OAuthCredentialsSlot strategy={strategies.oauth?.[provider.key]} />
+            {values.oauth[provider.key].enabled && (
+              <OAuthCredentialsBlock
+                provider={provider.key}
+                draft={values.creds[provider.key]}
+                server={strategies.oauth?.[provider.key]}
+                errors={credentialErrors[provider.key]}
+                showErrors={showErrors}
+                disabled={isSaving}
+                onChange={change => updateCredentials(provider.key, change)}
+              />
+            )}
           </RealmSwitchRow>
         ))}
         {noMethodEnabled && (
@@ -161,7 +223,10 @@ export function RealmIdentityCard({
           type="button"
           variant="ghost"
           disabled={!isDirty || isSaving}
-          onClick={() => reset(saved)}
+          onClick={() => {
+            reset(saved);
+            setShowErrors(false);
+          }}
         >
           Reset
         </Button>
@@ -170,21 +235,5 @@ export function RealmIdentityCard({
         </Button>
       </CardFooter>
     </Card>
-  );
-}
-
-/**
- * EXTENSION POINT (credentials UI, out of scope here).
- * Per-realm OAuth credentials (Inherit global / Own credentials, client id, secret with
- * a "set" badge, redirect URI, Apple key fields) will render in this slot, under the
- * provider's switch. Today it only reports what the masked server read says, and the
- * card patches `enabled` only, so credentials are never touched.
- */
-function OAuthCredentialsSlot({
-  strategy,
-}: Readonly<{ strategy: RealmOAuthStrategy | undefined }>) {
-  if (!hasOwnCredentials(strategy)) return null;
-  return (
-    <p className="text-xs text-muted-foreground">Uses its own credentials</p>
   );
 }
