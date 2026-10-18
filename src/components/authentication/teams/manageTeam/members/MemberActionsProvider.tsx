@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 import { useContext } from 'react';
-import { AddMemberSheet } from '@/components/authentication/teams/manageTeam/members/addMemberSheet/addMemberSheet';
 
 type MemberActionsProvider = {
   openMemberAdd: () => void;
@@ -12,7 +11,7 @@ const initialState: MemberActionsProvider = {
   openMemberAdd: () => {
     throw new Error('Not implemented');
   },
-  openMemberEdit: (userId: string) => {
+  openMemberEdit: () => {
     throw new Error('Not implemented');
   },
 };
@@ -20,35 +19,22 @@ const initialState: MemberActionsProvider = {
 const MemberActionsContext = React.createContext(initialState);
 export const useMemberActions = () => useContext(MemberActionsContext);
 
+/**
+ * The add-member sheet is owned by `MembersTable` (it needs to refresh the table when
+ * members were added), so these actions are intentionally inert.
+ */
 export function MemberActionsProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [memberAdd, setMemberAdd] = React.useState<boolean>(false);
-  const [memberEdit, setMemberEdit] = React.useState<string | undefined>(
-    undefined
-  );
-  const openMemberAdd = () => {
-    setMemberAdd(true);
-  };
-  const openMemberEdit = (userId: string) => {
-    setMemberEdit(userId);
-  };
-
   return (
     <MemberActionsContext.Provider
       value={{
-        openMemberAdd,
-        openMemberEdit,
+        openMemberAdd: () => undefined,
+        openMemberEdit: () => undefined,
       }}
     >
-      <AddMemberSheet
-        defaultOpen={memberAdd}
-        onClose={() => setMemberAdd(false)}
-      />
-      <AddMemberSheet defaultOpen={memberEdit !== undefined} />
-
       {children}
     </MemberActionsContext.Provider>
   );

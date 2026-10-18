@@ -73,6 +73,10 @@ export default async function Teams(
     if (top.realm?.enabled) realmAncestor = top;
   }
 
+  // Members carry a Home / Guest type when the team is a realm or sits inside one.
+  const isRealmTeam = showRealms && team.realm?.enabled === true;
+  const inRealm = isRealmTeam || realmAncestor !== undefined;
+
   const data = await getTeams(skip ?? 0, limit ?? 10, {
     ...queryParams,
     parentTeam: params._id,
@@ -164,6 +168,8 @@ export default async function Teams(
               data={userData.members}
               count={userData.count}
               teamId={team._id}
+              inRealm={inRealm}
+              isRealmTeam={isRealmTeam}
             />
           </MemberActionsProvider>
         </TabsContent>
