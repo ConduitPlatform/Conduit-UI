@@ -1,0 +1,33 @@
+'use client';
+import { Landmark } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
+import type { Team } from '@/lib/models/Team';
+import { PromoteRealmSheet } from '@/components/authentication/teams/manageTeam/realm/PromoteRealmSheet';
+
+/** Shown for a top-level team that is not (yet) a realm. */
+export function RealmEmptyState({
+  team,
+  memberCount,
+}: Readonly<{
+  team: Team;
+  memberCount: number;
+}>) {
+  return (
+    <Card>
+      <CardContent className="pt-3">
+        <EmptyState
+          icon={Landmark}
+          title="This team is not a realm"
+          description="A realm is a team that owns its users' identity: its own sign-in methods and policies, separate from the rest of the platform. Members become home users who sign in only here; other users can be added as guests."
+          action={
+            <PromoteRealmSheet team={team} memberCount={memberCount}>
+              <Button>Make this team a realm</Button>
+            </PromoteRealmSheet>
+          }
+        />
+      </CardContent>
+    </Card>
+  );
+}
