@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig';
+import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig.schema';
 import type { AuthenticationConfig } from '@/lib/models/authentication';
 import {
   OAUTH_PROVIDER_KEYS,
