@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import {
   buildStrategiesPatch,
-  hasOwnCredentials,
+  hasOwnOverrides,
   normalizeRealmSettingsForSave,
   type RealmIdentityValues,
 } from '@/lib/authentication/realms';
@@ -29,7 +29,8 @@ export type OAuthCredentialDraft = {
   /** Write-only. Empty means "keep the stored secret". */
   clientSecret: string;
   redirect_uri: string;
-  accountLinking: boolean;
+  /** `undefined` = inherit the global provider setting; a boolean overrides it. */
+  accountLinking?: boolean;
   /** Apple only. */
   teamId: string;
   /** Apple only. */
@@ -54,17 +55,26 @@ const SECRET_FIELDS = ['clientSecret', 'privateKey'] as const;
 
 const trimmed = (value: string | undefined) => (value ?? '').trim();
 
+/** Team ID and key ID both empty and no private key typed: the global Apple key applies. */
+const isAppleKeyCleared = (draft: OAuthCredentialDraft) =>
+  trimmed(draft.teamId) === '' &&
+  trimmed(draft.keyId) === '' &&
+  trimmed(draft.privateKey) === '';
+
 /** Draft for one row, from the masked server read (`undefined` = no row yet). */
 export function credentialDraftFromStrategy(
   strategy: RealmOAuthStrategy | undefined
 ): OAuthCredentialDraft {
   return {
-    mode: hasOwnCredentials(strategy) ? 'own' : 'inherit',
+    mode: hasOwnOverrides(strategy) ? 'own' : 'inherit',
     clientId: strategy?.clientId ?? '',
     clientSecret: '',
     redirect_uri: strategy?.redirect_uri ?? '',
-    // Absent means "inherit"; the global default is on.
-    accountLinking: strategy?.accountLinking ?? true,
+    // Absent means "inherit": the card shows the global value as the baseline.
+    accountLinking:
+      typeof strategy?.accountLinking === 'boolean'
+        ? strategy.accountLinking
+        : undefined,
     teamId: strategy?.teamId ?? '',
     keyId: strategy?.keyId ?? '',
     privateKey: '',
@@ -92,14 +102,23 @@ export const APPLE_KEY_FIELDS_MESSAGE =
 
 const urlSchema = z.url();
 
+/** What the masked server row says about its write-only secrets. */
+type ServerSecrets = Pick<
+  RealmOAuthStrategy,
+  'hasPrivateKey' | 'hasClientSecret'
+>;
+
 /**
  * Own mode requires a client ID; `redirect_uri` must be a URL when present; Apple's
  * team ID / key ID / private key are all set (a stored private key counts) or all empty
- * (the global Apple key is used). Inherit mode has nothing to validate.
+ * (the global Apple key is used). Emptying the team ID and key ID without typing a key
+ * drops back to the global Apple key, so a stored private key does not make that a
+ * partial set. Every other provider needs a client secret (typed, or already stored);
+ * Apple never uses one. Inherit mode has nothing to validate.
  */
 function credentialDraftSchema(
   provider: OAuthProviderKey,
-  server: Pick<RealmOAuthStrategy, 'hasPrivateKey'> | undefined
+  server: ServerSecrets | undefined
 ) {
   return z
     .object({
@@ -107,7 +126,7 @@ function credentialDraftSchema(
       clientId: z.string(),
       clientSecret: z.string(),
       redirect_uri: z.string(),
-      accountLinking: z.boolean(),
+      accountLinking: z.boolean().optional(),
       teamId: z.string(),
       keyId: z.string(),
       privateKey: z.string(),
@@ -125,7 +144,15 @@ function credentialDraftSchema(
         issue('redirect_uri', 'Must be a valid URL');
       }
 
-      if (provider === 'apple') {
+      if (provider !== 'apple') {
+        if (
+          trimmed(draft.clientSecret) === '' &&
+          server?.hasClientSecret !== true
+        ) {
+          issue('clientSecret', 'Client secret is required');
+        }
+      } else if (!isAppleKeyCleared(draft)) {
+        // (A cleared set means the global Apple key: nothing to check.)
         const present = {
           teamId: trimmed(draft.teamId) !== '',
           keyId: trimmed(draft.keyId) !== '',
@@ -151,7 +178,7 @@ function credentialDraftSchema(
 export function validateCredentialDraft(
   provider: OAuthProviderKey,
   draft: OAuthCredentialDraft,
-  server?: Pick<RealmOAuthStrategy, 'hasPrivateKey'>
+  server?: ServerSecrets
 ): OAuthCredentialErrors {
   const result = credentialDraftSchema(provider, server).safeParse(draft);
   if (result.success) return {};
@@ -163,16 +190,17 @@ export function validateCredentialDraft(
   return errors;
 }
 
-/** Own mode without a client ID, or with a partial Apple key set. */
+/** Own mode without a client ID or secret, or with a partial Apple key set. */
 export function isCredentialDraftIncomplete(
   provider: OAuthProviderKey,
   draft: OAuthCredentialDraft,
-  server?: Pick<RealmOAuthStrategy, 'hasPrivateKey'>
+  server?: ServerSecrets
 ): boolean {
   if (draft.mode !== 'own') return false;
   const errors = validateCredentialDraft(provider, draft, server);
   return (
     errors.clientId !== undefined ||
+    errors.clientSecret !== undefined ||
     errors.teamId !== undefined ||
     errors.keyId !== undefined ||
     errors.privateKey !== undefined
@@ -220,6 +248,7 @@ export function validateIdentityCredentials(
  * are only ever included when something was typed; an empty secret field means "keep".
  */
 function changedOwnFields(
+  provider: OAuthProviderKey,
   baseline: OAuthCredentialDraft,
   draft: OAuthCredentialDraft
 ): Record<string, unknown> {
@@ -232,15 +261,27 @@ function changedOwnFields(
   for (const field of SECRET_FIELDS) {
     if (trimmed(draft[field]) !== '') row[field] = draft[field];
   }
+  if (
+    provider === 'apple' &&
+    isAppleKeyCleared(draft) &&
+    (trimmed(baseline.teamId) !== '' || trimmed(baseline.keyId) !== '')
+  ) {
+    // The key set goes as a whole: the stored private key is cleared with its ids.
+    row.teamId = null;
+    row.keyId = null;
+    row.privateKey = null;
+  }
   if (baseline.accountLinking !== draft.accountLinking) {
-    row.accountLinking = draft.accountLinking;
+    // `null` drops the override ("Use global").
+    row.accountLinking = draft.accountLinking ?? null;
   }
   return row;
 }
 
 /**
  * The PATCH `strategies` fragment of the Identity card: enablement changes and the six
- * `null`s for rows switched to "inherit" (both from `buildStrategiesPatch`), plus the
+ * `null`s (and `accountLinking: null`) for rows switched to "inherit" (both from
+ * `buildStrategiesPatch`), plus the
  * credential fields an "own" row changed (through `normalizeRealmSettingsForSave`, so
  * values are trimmed and blanks are dropped). Rows that did not change contribute
  * nothing, and disabled providers' credentials are never touched.
@@ -271,6 +312,7 @@ export function buildIdentityPatch(
     const draft = drafts[provider];
     if (!values.oauth[provider].enabled || draft.mode !== 'own') continue;
     const row = changedOwnFields(
+      provider,
       credentialDraftFromStrategy(current?.oauth?.[provider]),
       draft
     );

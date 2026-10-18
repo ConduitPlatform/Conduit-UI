@@ -7,7 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Realm } from '@/lib/models/Realm';
+import type { OAuthProviderKey, Realm } from '@/lib/models/Realm';
 import type { Team } from '@/lib/models/Team';
 
 const refresh = vi.fn();
@@ -98,10 +98,18 @@ const realm = makeRealm({
   },
 });
 
-const renderTab = (value: Realm = realm) =>
+const renderTab = (
+  value: Realm = realm,
+  globalAccountLinking?: Partial<Record<OAuthProviderKey, boolean>>
+) =>
   render(
     <AlertProvider>
-      <RealmTab team={realmTeam} realm={value} memberCount={12} />
+      <RealmTab
+        team={realmTeam}
+        realm={value}
+        memberCount={12}
+        globalAccountLinking={globalAccountLinking}
+      />
     </AlertProvider>
   );
 
@@ -159,6 +167,14 @@ describe('OAuth credentials: mode derivation', () => {
         github: { enabled: true, redirect_uri: 'https://acme.test/cb' },
       })
     );
+    openCredentials('google');
+    expect(
+      screen.getByRole('radio', { name: 'Own credentials' })
+    ).toBeChecked();
+  });
+
+  it('shows a row with only an account linking override as own credentials', () => {
+    renderTab(makeRealm({ google: { enabled: true, accountLinking: false } }));
     openCredentials('google');
     expect(
       screen.getByRole('radio', { name: 'Own credentials' })
@@ -273,6 +289,26 @@ describe('OAuth credentials: saving', () => {
     });
   });
 
+  it('also resets the account linking override when switching own to inherit', async () => {
+    renderTab(
+      makeRealm({
+        google: {
+          enabled: true,
+          clientId: 'google-client',
+          hasClientSecret: true,
+          accountLinking: false,
+        },
+      })
+    );
+    openCredentials('google');
+    fireEvent.click(screen.getByRole('radio', { name: 'Inherit global' }));
+    await saveIdentity();
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(sentPatch()).toEqual({
+      strategies: { oauth: { google: { ...CLEARED, accountLinking: null } } },
+    });
+  });
+
   it('sends the typed credentials when switching inherit to own', async () => {
     renderTab();
     openCredentials('github');
@@ -318,6 +354,44 @@ describe('OAuth credentials: saving', () => {
     expect(secret).toHaveAttribute('placeholder', '•••••• (set)');
   });
 
+  it('drops a typed secret when switching to inherit and back', () => {
+    renderTab();
+    openCredentials('google');
+    typeInto('Client secret', 'typed-secret');
+    fireEvent.click(screen.getByRole('radio', { name: 'Inherit global' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Own credentials' }));
+    expect(screen.getByLabelText('Client secret')).toHaveValue('');
+    const [save] = screen.getAllByRole('button', { name: 'Save changes' });
+    expect(save).toBeDisabled();
+    expect(api.updateRealm).not.toHaveBeenCalled();
+  });
+
+  it('drops a typed secret when the provider is disabled and enabled again', () => {
+    renderTab();
+    openCredentials('google');
+    typeInto('Client secret', 'typed-secret');
+    fireEvent.click(screen.getByLabelText('Google'));
+    fireEvent.click(screen.getByLabelText('Google'));
+    openCredentials('google');
+    expect(screen.getByLabelText('Client secret')).toHaveValue('');
+    const [save] = screen.getAllByRole('button', { name: 'Save changes' });
+    expect(save).toBeDisabled();
+  });
+
+  it('disabling a provider leaves its credentials alone, even after choosing inherit', async () => {
+    // Credentials of a provider that is switched off are never touched: inherit + disable
+    // in one save only disables, and the own credentials stay stored for later.
+    renderTab();
+    openCredentials('google');
+    fireEvent.click(screen.getByRole('radio', { name: 'Inherit global' }));
+    fireEvent.click(screen.getByLabelText('Google'));
+    await saveIdentity();
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(sentPatch()).toEqual({
+      strategies: { oauth: { google: { enabled: false } } },
+    });
+  });
+
   it('sends nothing for an inherit row that was already inheriting', async () => {
     renderTab();
     fireEvent.click(screen.getByLabelText('Magic Link'));
@@ -349,6 +423,40 @@ describe('OAuth credentials: saving', () => {
     expect(api.updateRealm).not.toHaveBeenCalled();
   });
 
+  it('requires a client secret in own mode unless one is stored', async () => {
+    renderTab();
+    openCredentials('github');
+    fireEvent.click(screen.getByRole('radio', { name: 'Own credentials' }));
+    typeInto('Client ID', 'gh-client');
+    await saveIdentity();
+    expect(
+      await screen.findByText('Client secret is required')
+    ).toBeInTheDocument();
+    expect(api.updateRealm).not.toHaveBeenCalled();
+    typeInto('Client secret', 'gh-secret');
+    await saveIdentity();
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+  });
+
+  it('links each error message to its input with aria-describedby', async () => {
+    renderTab();
+    openCredentials('github');
+    fireEvent.click(screen.getByRole('radio', { name: 'Own credentials' }));
+    typeInto('Redirect URI', 'https://acme.test/cb');
+    await saveIdentity();
+    const input = await screen.findByLabelText('Client ID');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    const describedBy = input.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    expect(document.getElementById(describedBy!)).toHaveTextContent(
+      'Client ID is required'
+    );
+    const secret = screen.getByLabelText('Client secret');
+    expect(
+      document.getElementById(secret.getAttribute('aria-describedby')!)
+    ).toHaveTextContent('Client secret is required');
+  });
+
   it('rejects a redirect URI that is not a URL', async () => {
     renderTab();
     openCredentials('google');
@@ -373,7 +481,102 @@ describe('OAuth credentials: saving', () => {
   });
 });
 
+describe('OAuth credentials: account linking', () => {
+  const linkingRealm = (accountLinking?: boolean) =>
+    makeRealm({
+      google: {
+        enabled: true,
+        clientId: 'google-client',
+        hasClientSecret: true,
+        ...(accountLinking === undefined ? {} : { accountLinking }),
+      },
+    });
+
+  it('shows the global value as the baseline while the realm does not override', () => {
+    renderTab(linkingRealm(), { google: false });
+    openCredentials('google');
+    expect(screen.getByLabelText('Account linking')).not.toBeChecked();
+    expect(
+      screen.getByText(/Following the global setting \(off\)/)
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('button', { name: 'Use global' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('defaults the baseline to on without a global value', () => {
+    renderTab(linkingRealm());
+    openCredentials('google');
+    expect(screen.getByLabelText('Account linking')).toBeChecked();
+  });
+
+  it('shows the stored override instead of the global value', () => {
+    renderTab(linkingRealm(true), { google: false });
+    openCredentials('google');
+    expect(screen.getByLabelText('Account linking')).toBeChecked();
+    expect(screen.getByText(/The global setting is off/)).toBeVisible();
+  });
+
+  it('sends a boolean when the toggle is switched', async () => {
+    renderTab(linkingRealm(), { google: false });
+    openCredentials('google');
+    fireEvent.click(screen.getByLabelText('Account linking'));
+    await saveIdentity();
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(sentPatch()).toEqual({
+      strategies: { oauth: { google: { accountLinking: true } } },
+    });
+  });
+
+  it('sends null for "Use global" and nothing when it is undone', async () => {
+    renderTab(linkingRealm(false), { google: true });
+    openCredentials('google');
+    fireEvent.click(screen.getByRole('button', { name: 'Use global' }));
+    expect(screen.getByLabelText('Account linking')).toBeChecked();
+    await saveIdentity();
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(sentPatch()).toEqual({
+      strategies: { oauth: { google: { accountLinking: null } } },
+    });
+  });
+});
+
 describe('OAuth credentials: Apple key fields are all or nothing', () => {
+  it('does not offer a client secret for Apple', () => {
+    renderTab();
+    openCredentials('apple');
+    expect(screen.queryByLabelText('Client secret')).not.toBeInTheDocument();
+  });
+
+  it('drops back to the global Apple key when all three are cleared', async () => {
+    renderTab();
+    openCredentials('apple');
+    typeInto('Team ID', '');
+    typeInto('Private key ID', '');
+    await saveIdentity();
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(sentPatch()).toEqual({
+      strategies: {
+        oauth: { apple: { teamId: null, keyId: null, privateKey: null } },
+      },
+    });
+  });
+
+  it('blocks clearing only the team ID while a key is stored', async () => {
+    renderTab();
+    openCredentials('apple');
+    typeInto('Team ID', '');
+    await saveIdentity();
+    expect(
+      (
+        await screen.findAllByText(
+          /Provide the team ID, key ID and private key/
+        )
+      ).length
+    ).toBeGreaterThan(0);
+    expect(api.updateRealm).not.toHaveBeenCalled();
+  });
+
   it('blocks a partially filled Apple key set', async () => {
     renderTab(makeRealm({ apple: { enabled: true, clientId: 'apple-app' } }));
     openCredentials('apple');

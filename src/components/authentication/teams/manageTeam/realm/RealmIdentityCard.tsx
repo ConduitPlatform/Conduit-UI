@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, type Resolver } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,11 +13,9 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
-import { rhfZodResolver } from '@/lib/zod-form';
 import { unwrapActionResult } from '@/lib/api/action-result';
 import { updateRealm } from '@/lib/api/authentication';
 import {
-  realmStrategiesSchema,
   strategiesToIdentityValues,
   type RealmIdentityValues,
 } from '@/lib/authentication/realms';
@@ -58,9 +56,15 @@ const toFormValues = (
  */
 export function RealmIdentityCard({
   realm,
+  globalAccountLinking,
   onChange,
 }: Readonly<{
   realm: Realm;
+  /**
+   * The global `accountLinking` of each OAuth provider: the baseline a realm inherits
+   * until it overrides it. Missing providers default to on, as on the backend.
+   */
+  globalAccountLinking?: Partial<Record<OAuthProviderKey, boolean>>;
   onChange: (realm: Realm) => void;
 }>) {
   const router = useRouter();
@@ -69,14 +73,9 @@ export function RealmIdentityCard({
   const strategies = realm.settings.strategies;
   const saved = useMemo(() => toFormValues(strategies), [strategies]);
 
-  const form = useForm<IdentityFormValues>({
-    // Validates the switch slice against the shared strategies schema; credential
-    // drafts are validated by `validateIdentityCredentials`.
-    resolver: rhfZodResolver(
-      realmStrategiesSchema
-    ) as unknown as Resolver<IdentityFormValues>,
-    defaultValues: saved,
-  });
+  // No resolver: Save validates through `validateIdentityCredentials` and the switches
+  // cannot hold an invalid value.
+  const form = useForm<IdentityFormValues>({ defaultValues: saved });
   const { watch, setValue, reset } = form;
 
   // Follow the server state after a save or refresh, but only when this card's own
@@ -117,16 +116,24 @@ export function RealmIdentityCard({
     }
   };
 
+  // Typed secrets are write-only and never survive a change of mode or enablement:
+  // coming back to a row must not resurrect (or silently resend) a secret.
+  const clearTypedSecrets = (provider: OAuthProviderKey) => {
+    setValue(`creds.${provider}.clientSecret`, '', { shouldDirty: true });
+    setValue(`creds.${provider}.privateKey`, '', { shouldDirty: true });
+  };
+
   const updateCredentials = (
     provider: OAuthProviderKey,
     change: Partial<OAuthCredentialDraft>
   ) => {
-    for (const [field, value] of Object.entries(change)) {
-      setValue(
-        `creds.${provider}.${field as keyof OAuthCredentialDraft}`,
-        value as never,
-        { shouldDirty: true }
-      );
+    if ('mode' in change) clearTypedSecrets(provider);
+    for (const field of Object.keys(change) as Array<
+      keyof OAuthCredentialDraft
+    >) {
+      setValue(`creds.${provider}.${field}`, change[field] as never, {
+        shouldDirty: true,
+      });
     }
   };
 
@@ -189,11 +196,12 @@ export function RealmIdentityCard({
             label={provider.name}
             checked={values.oauth[provider.key].enabled}
             disabled={isSaving}
-            onCheckedChange={checked =>
+            onCheckedChange={checked => {
+              clearTypedSecrets(provider.key);
               setValue(`oauth.${provider.key}.enabled`, checked, {
                 shouldDirty: true,
-              })
-            }
+              });
+            }}
           >
             {values.oauth[provider.key].enabled && (
               <OAuthCredentialsBlock
@@ -203,6 +211,7 @@ export function RealmIdentityCard({
                 errors={credentialErrors[provider.key]}
                 showErrors={showErrors}
                 disabled={isSaving}
+                globalAccountLinking={globalAccountLinking?.[provider.key]}
                 onChange={change => updateCredentials(provider.key, change)}
               />
             )}

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import type { Realm } from '@/lib/models/Realm';
+import type { OAuthProviderKey, Realm } from '@/lib/models/Realm';
 import type { Team } from '@/lib/models/Team';
 import { RealmEmptyState } from '@/components/authentication/teams/manageTeam/realm/RealmEmptyState';
 import { RealmIdentityCard } from '@/components/authentication/teams/manageTeam/realm/RealmIdentityCard';
@@ -16,11 +16,14 @@ export default function RealmTab({
   team,
   realm: initialRealm,
   memberCount,
+  globalAccountLinking,
 }: Readonly<{
   team: Team;
   /** Loaded by the page when the team is a realm; null if that read failed. */
   realm: Realm | null;
   memberCount: number;
+  /** Global `accountLinking` per OAuth provider: the baseline realms inherit. */
+  globalAccountLinking?: Partial<Record<OAuthProviderKey, boolean>>;
 }>) {
   const [realm, setRealm] = useState<Realm | null>(initialRealm);
   useEffect(() => {
@@ -43,7 +46,11 @@ export default function RealmTab({
     <div className="flex flex-col gap-3">
       <RealmStatusStrip realm={realm} onChange={setRealm} />
       <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
-        <RealmIdentityCard realm={realm} onChange={setRealm} />
+        <RealmIdentityCard
+          realm={realm}
+          globalAccountLinking={globalAccountLinking}
+          onChange={setRealm}
+        />
         <RealmPoliciesCard realm={realm} onChange={setRealm} />
       </div>
     </div>

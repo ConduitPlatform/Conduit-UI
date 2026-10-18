@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils';
 import { CheckIcon } from 'lucide-react';
 import React from 'react';
+import { formatRealmStrategyCount } from '@/lib/authentication/realms';
 import { StrategyInterface } from '@/components/authentication/strategies/interface/Strategy.interface';
 import { StrategySettings } from '@/components/authentication/strategies/StrategySettings';
 
@@ -16,11 +17,14 @@ export interface StrategyCardProps {
   strategy: StrategyInterface;
   /** Number of realms that also enable this strategy; the footnote shows when > 0. */
   realmCount?: number;
+  /** More realms exist than were counted: the number is a lower bound ("100+"). */
+  realmCountCapped?: boolean;
 }
 
 export const StrategyCard = ({
   strategy,
   realmCount = 0,
+  realmCountCapped = false,
 }: StrategyCardProps) => {
   return (
     <Card className={'col-span-2 px-0 '} key={`${strategy.name}`}>
@@ -91,7 +95,7 @@ export const StrategyCard = ({
       >
         {realmCount > 0 && (
           <p className={'text-xs text-muted-foreground'}>
-            {`Also enabled by ${realmCount} ${realmCount === 1 ? 'realm' : 'realms'}`}
+            {`Also enabled by ${formatRealmStrategyCount(realmCount, realmCountCapped)}`}
           </p>
         )}
         <div className={'ml-auto'}>

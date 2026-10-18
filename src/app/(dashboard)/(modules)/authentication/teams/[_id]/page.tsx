@@ -6,7 +6,10 @@ import {
   getTeamMembers,
   getTeams,
 } from '@/lib/api/authentication';
-import { realmsEnabled } from '@/lib/authentication/realms';
+import {
+  globalAccountLinkingDefaults,
+  realmsEnabled,
+} from '@/lib/authentication/realms';
 import { toGuestPolicy } from '@/lib/authentication/realmMembers';
 import { Team } from '@/lib/models/Team';
 import RealmTab from '@/components/authentication/teams/manageTeam/realm/RealmTab';
@@ -204,7 +207,14 @@ export default async function Teams(
         </TabsContent>
         {showRealmTab && (
           <TabsContent value="realm">
-            <RealmTab team={team} realm={realm} memberCount={userData.count} />
+            <RealmTab
+              team={team}
+              realm={realm}
+              memberCount={userData.count}
+              globalAccountLinking={globalAccountLinkingDefaults(
+                settings?.config
+              )}
+            />
           </TabsContent>
         )}
       </Tabs>

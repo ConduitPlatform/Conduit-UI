@@ -181,6 +181,7 @@ function clearedCredentials(): UnknownRecord {
  * Credential semantics (PATCH deep-merges; see "Credential clearing semantics" in the
  * realms API contract):
  * - `credentials: 'inherit'` -> every credential field is sent as `null` (clears them);
+ *   `accountLinking: null` likewise drops that override;
  * - `credentials: 'own'`     -> only non-blank typed values, trimmed;
  * - no `credentials` key     -> non-blank strings are trimmed and sent, blank strings
  *   are dropped (keep stored), an explicit `null` is passed through (clear).
@@ -190,7 +191,8 @@ function normalizeOAuthRow(row: unknown): UnknownRecord | undefined {
   if (!isRecord(row)) return undefined;
   const out: UnknownRecord = {};
   if (typeof row.enabled === 'boolean') out.enabled = row.enabled;
-  if (typeof row.accountLinking === 'boolean') {
+  // A boolean overrides the global setting; `null` drops the override (inherit again).
+  if (typeof row.accountLinking === 'boolean' || row.accountLinking === null) {
     out.accountLinking = row.accountLinking;
   }
   if (row.credentials === 'inherit') {
@@ -366,6 +368,18 @@ export function hasOwnCredentials(
   );
 }
 
+/**
+ * True when the (masked) server row overrides anything of the global provider config:
+ * credentials, or an explicit `accountLinking`. Drives the Inherit/Own mode.
+ */
+export function hasOwnOverrides(
+  strategy: RealmOAuthStrategy | undefined
+): boolean {
+  return (
+    hasOwnCredentials(strategy) || typeof strategy?.accountLinking === 'boolean'
+  );
+}
+
 export function strategiesToIdentityValues(
   strategies: Partial<RealmStrategies> | undefined
 ): RealmIdentityValues {
@@ -393,8 +407,8 @@ export function strategiesToIdentityValues(
  * Builds the PATCH `strategies` fragment containing only what changed relative to the
  * current server state. OAuth rows carry `enabled` when it changed. Credentials stay
  * untouched (PATCH deep-merges) unless the row says `credentials: 'inherit'` while the
- * server row still has credentials of its own: then all six credential fields are sent
- * as `null`. Typed credential values for `'own'` are not handled here; callers merge
+ * server row still has overrides of its own: then all six credential fields are sent as
+ * `null` (when it has credentials) and `accountLinking: null` (when it has that override). Typed credential values for `'own'` are not handled here; callers merge
  * them in through `normalizeRealmSettingsForSave`.
  */
 export function buildStrategiesPatch(
@@ -424,11 +438,13 @@ export function buildStrategiesPatch(
     if (before.oauth[provider].enabled !== next.oauth[provider].enabled) {
       row.enabled = next.oauth[provider].enabled;
     }
-    if (
-      next.oauth[provider].credentials === 'inherit' &&
-      hasOwnCredentials(current?.oauth?.[provider])
-    ) {
-      Object.assign(row, clearedCredentials());
+    if (next.oauth[provider].credentials === 'inherit') {
+      const stored = current?.oauth?.[provider];
+      if (hasOwnCredentials(stored)) Object.assign(row, clearedCredentials());
+      // The account linking override goes with the credentials: back to the global value.
+      if (typeof stored?.accountLinking === 'boolean') {
+        row.accountLinking = null;
+      }
     }
     if (Object.keys(row).length > 0) oauth[provider] = row;
   }
@@ -449,9 +465,14 @@ const GLOBAL_TO_REALM_STRATEGY: Record<string, RealmSimpleStrategyKey> = {
   biometricAuthentication: 'biometric',
 };
 
+/** Realms the strategies page asks for; counts beyond it are shown as "N+". */
+export const REALM_COUNT_CAP = 100;
+
 /**
  * For each global strategy key, how many of the given realms enable it. OAuth providers
  * use the same key globally and per realm. Strategies no realm enables are left out.
+ * Inactive realms do not count: the backend only considers active realms when it
+ * decides whether a strategy is in use.
  */
 export function countRealmsEnablingStrategy(
   realms: ReadonlyArray<Pick<Realm, 'settings'>>
@@ -459,6 +480,7 @@ export function countRealmsEnablingStrategy(
   const counts = new Map<string, number>();
   const bump = (key: string) => counts.set(key, (counts.get(key) ?? 0) + 1);
   for (const { settings } of realms) {
+    if (settings?.active === false) continue;
     const strategies = settings?.strategies;
     if (!strategies) continue;
     for (const [globalKey, realmKey] of Object.entries(
@@ -471,6 +493,36 @@ export function countRealmsEnablingStrategy(
     }
   }
   return counts;
+}
+
+/**
+ * "3 realms" / "1 realm". `capped` means the count is a lower bound (more realms exist
+ * than were loaded), shown as "100+".
+ */
+export function formatRealmStrategyCount(
+  count: number,
+  capped = false
+): string {
+  if (capped) return `${count}+ realms`;
+  return `${count} ${count === 1 ? 'realm' : 'realms'}`;
+}
+
+/**
+ * The global `accountLinking` of each OAuth provider: what a realm inherits while it has
+ * no override. The backend defaults an absent value to on.
+ */
+export function globalAccountLinkingDefaults(
+  config: AuthenticationConfig | null | undefined
+): Partial<Record<OAuthProviderKey, boolean>> {
+  const out: Partial<Record<OAuthProviderKey, boolean>> = {};
+  const source = config as unknown as
+    | Record<string, { accountLinking?: boolean } | undefined>
+    | null
+    | undefined;
+  for (const provider of OAUTH_PROVIDER_KEYS) {
+    out[provider] = source?.[provider]?.accountLinking ?? true;
+  }
+  return out;
 }
 
 /* -------------------------------------------------------------------------- */

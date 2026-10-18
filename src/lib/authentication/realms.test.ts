@@ -6,7 +6,10 @@ import {
   buildStrategiesPatch,
   countRealmsEnablingStrategy,
   formatRealmCounts,
+  formatRealmStrategyCount,
+  globalAccountLinkingDefaults,
   hasOwnCredentials,
+  hasOwnOverrides,
   normalizeRealmSettingsForSave,
   promoteRealmSchema,
   realmSettingsSchema,
@@ -275,6 +278,77 @@ describe('credential clearing semantics', () => {
     expect(buildStrategiesPatch(current, next)).toEqual({});
   });
 
+  it('buildStrategiesPatch resets a stored accountLinking override with the credentials', () => {
+    const current: RealmStrategies = {
+      local: { enabled: true },
+      username: { enabled: false },
+      magicLink: { enabled: false },
+      phone: { enabled: false },
+      metamask: { enabled: false },
+      biometric: { enabled: false },
+      oauth: {
+        google: {
+          enabled: true,
+          clientId: 'abc',
+          hasClientSecret: true,
+          accountLinking: false,
+        },
+        github: { enabled: true, accountLinking: true },
+        gitlab: { enabled: true, clientId: 'x' },
+      },
+    };
+    const next = strategiesToIdentityValues(current);
+    next.oauth.google.credentials = 'inherit';
+    next.oauth.github.credentials = 'inherit';
+    next.oauth.gitlab.credentials = 'inherit';
+    expect(buildStrategiesPatch(current, next)).toEqual({
+      oauth: {
+        google: { ...CLEARED, accountLinking: null },
+        github: { accountLinking: null },
+        gitlab: CLEARED,
+      },
+    });
+  });
+
+  it('normalizeRealmSettingsForSave passes accountLinking null through', () => {
+    const body = normalizeRealmSettingsForSave({
+      strategies: {
+        oauth: {
+          google: { enabled: true, accountLinking: null },
+          github: { accountLinking: false },
+        },
+      },
+    } as never);
+    expect(body.strategies?.oauth?.google).toEqual({
+      enabled: true,
+      accountLinking: null,
+    });
+    expect(body.strategies?.oauth?.github).toEqual({ accountLinking: false });
+  });
+
+  it('hasOwnOverrides adds an explicit accountLinking to the credentials', () => {
+    expect(hasOwnOverrides(undefined)).toBe(false);
+    expect(hasOwnOverrides({ enabled: true })).toBe(false);
+    expect(hasOwnOverrides({ enabled: true, clientId: 'id' })).toBe(true);
+    expect(hasOwnOverrides({ enabled: true, accountLinking: false })).toBe(
+      true
+    );
+    expect(hasOwnCredentials({ enabled: true, accountLinking: false })).toBe(
+      false
+    );
+  });
+
+  it('globalAccountLinkingDefaults reads each provider, defaulting to on', () => {
+    const defaults = globalAccountLinkingDefaults({
+      google: { enabled: true, clientId: 'x', accountLinking: false },
+      github: { enabled: true, clientId: 'y' },
+    } as unknown as AuthenticationConfig);
+    expect(defaults.google).toBe(false);
+    expect(defaults.github).toBe(true);
+    expect(defaults.apple).toBe(true);
+    expect(globalAccountLinkingDefaults(undefined).google).toBe(true);
+  });
+
   it('hasOwnCredentials reads the masked server row', () => {
     expect(hasOwnCredentials(undefined)).toBe(false);
     expect(hasOwnCredentials({ enabled: true })).toBe(false);
@@ -399,6 +473,27 @@ describe('countRealmsEnablingStrategy', () => {
     });
   });
 
+  it('does not count inactive realms (the backend only looks at active ones)', () => {
+    const inactive = {
+      settings: {
+        ...realmWith({ local: { enabled: true } }).settings,
+        active: false,
+      },
+    };
+    const active = {
+      settings: {
+        ...realmWith({ local: { enabled: true } }).settings,
+        active: true,
+      },
+    };
+    expect(
+      Object.fromEntries(
+        countRealmsEnablingStrategy([inactive, active, inactive] as never)
+      )
+    ).toEqual({ local: 1 });
+    expect(countRealmsEnablingStrategy([inactive] as never).size).toBe(0);
+  });
+
   it('is empty without realms and ignores strategies with no global card', () => {
     expect(countRealmsEnablingStrategy([]).size).toBe(0);
     expect(
@@ -406,5 +501,13 @@ describe('countRealmsEnablingStrategy', () => {
         realmWith({ username: { enabled: true }, metamask: { enabled: true } }),
       ] as never).size
     ).toBe(0);
+  });
+});
+
+describe('formatRealmStrategyCount', () => {
+  it('pluralises and marks a capped count as a lower bound', () => {
+    expect(formatRealmStrategyCount(1)).toBe('1 realm');
+    expect(formatRealmStrategyCount(2)).toBe('2 realms');
+    expect(formatRealmStrategyCount(100, true)).toBe('100+ realms');
   });
 });

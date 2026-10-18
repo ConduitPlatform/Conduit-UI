@@ -124,12 +124,16 @@ export type DeepPartial<T> = T extends readonly unknown[]
     : T;
 
 /**
- * One OAuth row of a PATCH body. A credential field set to `null` clears the stored
- * value so the provider inherits the global config again; omitted keeps it.
+ * One OAuth row of a PATCH body. A credential field (and `accountLinking`) set to `null`
+ * clears the stored value so the provider inherits the global config again; omitted
+ * keeps it.
  */
 export type RealmOAuthPatch = Partial<
-  Omit<RealmOAuthStrategy, OAuthCredentialField>
-> & { [K in OAuthCredentialField]?: string | null };
+  Omit<RealmOAuthStrategy, OAuthCredentialField | 'accountLinking'>
+> & { [K in OAuthCredentialField]?: string | null } & {
+  /** `null` drops the realm override: the global provider setting applies again. */
+  accountLinking?: boolean | null;
+};
 
 export type RealmStrategiesPatch = Omit<
   DeepPartial<RealmStrategies>,
