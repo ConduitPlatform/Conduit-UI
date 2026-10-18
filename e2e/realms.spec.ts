@@ -311,6 +311,41 @@ test.describe('realm members', () => {
     ).toBe('guest');
   });
 
+  test('confirms before a global user becomes a home user of the realm', async ({
+    page,
+  }) => {
+    await resetMock('realms');
+    await page.goto(`/authentication/teams/${REALM_ACME_ID}`);
+    await expect(page.getByText('alice@acme.test')).toBeVisible();
+    await page.getByRole('button', { name: 'Add Member' }).click();
+
+    const sheet = page.getByRole('dialog');
+    const erin = sheet
+      .getByRole('listitem')
+      .filter({ hasText: 'erin@global.test' });
+    await expect(erin).toContainText('Becomes home user');
+    await erin.getByRole('checkbox').click();
+    await clearRecordedRequests();
+    await sheet.getByRole('button', { name: 'Add 1 member' }).click();
+
+    const confirm = page.getByRole('alertdialog');
+    await expect(confirm).toContainText(
+      '1 user becomes a home user of acme. Their global sessions end'
+    );
+    expect(
+      await recordedRequests({
+        method: 'POST',
+        path: `/authentication/teams/${REALM_ACME_ID}/members`,
+      })
+    ).toEqual([]);
+    await confirm.getByRole('button', { name: 'Add members' }).click();
+    await expect(page.getByText('Member added', { exact: true })).toBeVisible();
+    const erinRow = page
+      .getByRole('row')
+      .filter({ hasText: 'erin@global.test' });
+    await expect(erinRow).toContainText('Home');
+  });
+
   test('disables users from other realms when the realm does not accept guests', async ({
     page,
   }) => {

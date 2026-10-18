@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { Realm } from '@/lib/models/Realm';
 import {
+  becomesHomeUser,
   buildRealmSlugMap,
   candidateIneligibility,
   classifyCandidate,
+  describeHomeConversion,
   getPickerEligibility,
   homeRealmFilterToParam,
   homeRealmParamToFilter,
@@ -33,6 +35,25 @@ describe('classifyCandidate', () => {
 
   it('makes users homed elsewhere guests', () => {
     expect(classifyCandidate({ homeRealm: 'r2' }, 'r1')).toBe('guest');
+  });
+});
+
+describe('becomesHomeUser / describeHomeConversion', () => {
+  it('flags users without a home realm, inside a realm only', () => {
+    expect(becomesHomeUser({}, 'r1')).toBe(true);
+    expect(becomesHomeUser({ homeRealm: null }, 'r1')).toBe(true);
+    expect(becomesHomeUser({ homeRealm: 'r1' }, 'r1')).toBe(false);
+    expect(becomesHomeUser({ homeRealm: 'r2' }, 'r1')).toBe(false);
+    expect(becomesHomeUser({}, undefined)).toBe(false);
+  });
+
+  it('words the confirmation', () => {
+    expect(describeHomeConversion(1, 'acme')).toBe(
+      '1 user becomes a home user of acme. Their global sessions end and they can only sign in at this realm.'
+    );
+    expect(describeHomeConversion(3, 'acme')).toBe(
+      '3 users become home users of acme. Their global sessions end and they can only sign in at this realm.'
+    );
   });
 });
 
@@ -147,10 +168,20 @@ describe('getPickerEligibility', () => {
     ).toEqual({ selectable: false, reason: 'Already a member' });
   });
 
-  it('hints guest-classified candidates', () => {
+  it('hints home-classified global users and guest-classified candidates', () => {
     expect(getPickerEligibility({ _id: 'a' }, ctx)).toEqual({
       selectable: true,
+      hint: 'home',
     });
+    expect(getPickerEligibility({ _id: 'a', homeRealm: null }, ctx).hint).toBe(
+      'home'
+    );
+    // Already homed here: no change, so no hint.
+    expect(getPickerEligibility({ _id: 'a', homeRealm: 'r1' }, ctx)).toEqual({
+      selectable: true,
+    });
+    // Outside a realm there is nothing to become.
+    expect(getPickerEligibility({ _id: 'a' })).toEqual({ selectable: true });
     expect(getPickerEligibility({ _id: 'b', homeRealm: 'other' }, ctx)).toEqual(
       { selectable: true, hint: 'guest' }
     );
