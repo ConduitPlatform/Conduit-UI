@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,9 +12,13 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
+import { rhfZodResolver } from '@/lib/zod-form';
+import { unwrapActionResult } from '@/lib/api/action-result';
 import { updateRealm } from '@/lib/api/authentication';
 import {
   buildStrategiesPatch,
+  hasOwnCredentials,
+  realmStrategiesSchema,
   strategiesToIdentityValues,
   type RealmIdentityValues,
 } from '@/lib/authentication/realms';
@@ -43,7 +47,13 @@ export function RealmIdentityCard({
     [strategies]
   );
 
-  const form = useForm<RealmIdentityValues>({ defaultValues: saved });
+  const form = useForm<RealmIdentityValues>({
+    // Validates the switch-only slice against the shared strategies schema.
+    resolver: rhfZodResolver(
+      realmStrategiesSchema
+    ) as unknown as Resolver<RealmIdentityValues>,
+    defaultValues: saved,
+  });
   const { watch, setValue, reset } = form;
 
   // Follow the server state after a save or refresh, but only when this card's own
@@ -60,7 +70,10 @@ export function RealmIdentityCard({
   const onSave = async () => {
     const result = await save({
       successMessage: 'Realm identity saved',
-      action: () => updateRealm(realm.team._id, { strategies: patch }),
+      action: async () =>
+        unwrapActionResult(
+          await updateRealm(realm.team._id, { strategies: patch })
+        ),
     });
     if (result.ok) onChange(result.result);
   };
@@ -170,10 +183,7 @@ export function RealmIdentityCard({
 function OAuthCredentialsSlot({
   strategy,
 }: Readonly<{ strategy: RealmOAuthStrategy | undefined }>) {
-  const hasOwn = Boolean(
-    strategy?.clientId || strategy?.hasClientSecret || strategy?.hasPrivateKey
-  );
-  if (!hasOwn) return null;
+  if (!hasOwnCredentials(strategy)) return null;
   return (
     <p className="text-xs text-muted-foreground">Uses its own credentials</p>
   );

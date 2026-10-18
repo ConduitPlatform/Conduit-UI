@@ -45,6 +45,18 @@ export type RealmOAuthStrategy = {
   keyId?: string;
 };
 
+/** OAuth credential fields a realm can override. `null` in a PATCH clears the stored value. */
+export const OAUTH_CREDENTIAL_FIELDS = [
+  'clientId',
+  'clientSecret',
+  'redirect_uri',
+  'privateKey',
+  'teamId',
+  'keyId',
+] as const;
+
+export type OAuthCredentialField = (typeof OAUTH_CREDENTIAL_FIELDS)[number];
+
 export type RealmStrategies = {
   local: { enabled: boolean; verificationRequired?: boolean };
   username: { enabled: boolean };
@@ -111,11 +123,24 @@ export type DeepPartial<T> = T extends readonly unknown[]
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : T;
 
+/**
+ * One OAuth row of a PATCH body. A credential field set to `null` clears the stored
+ * value so the provider inherits the global config again; omitted keeps it.
+ */
+export type RealmOAuthPatch = Partial<
+  Omit<RealmOAuthStrategy, OAuthCredentialField>
+> & { [K in OAuthCredentialField]?: string | null };
+
+export type RealmStrategiesPatch = Omit<
+  DeepPartial<RealmStrategies>,
+  'oauth'
+> & { oauth?: Partial<Record<OAuthProviderKey, RealmOAuthPatch>> };
+
 /** Settings fields shared by the promote (POST) and update (PATCH) request bodies. */
 export type RealmSettingsPayload = {
   slug?: string;
   active?: boolean;
-  strategies?: DeepPartial<RealmStrategies>;
+  strategies?: RealmStrategiesPatch;
   policies?: DeepPartial<RealmPolicies>;
   registration?: Partial<RealmRegistration>;
 };
@@ -125,23 +150,17 @@ export type PromoteRealmBody = Omit<RealmSettingsPayload, 'slug'> & {
   slug: string;
 };
 
-/** Body of `PATCH /authentication/teams/:teamId/realm` (deep merge, arrays replace). */
-export type UpdateRealmBody = RealmSettingsPayload & {
-  /** Changing the slug requires `force: true`. */
-  force?: boolean;
-};
+/**
+ * Body of `PATCH /authentication/teams/:teamId/realm` (deep merge, arrays replace).
+ * Changing the slug requires `force: true`, so `slug` is only allowed together with it.
+ * A credential field sent as `null` clears the stored value (see `RealmOAuthPatch`).
+ */
+export type UpdateRealmBody =
+  | (Omit<RealmSettingsPayload, 'slug'> & { slug?: never; force?: boolean })
+  | (RealmSettingsPayload & { slug: string; force: true });
 
 /** Raw `DELETE /authentication/teams/:teamId/realm` response. */
 export type DemoteRealmResponse = {
   message: string;
   blockedUsers: number;
 };
-
-/**
- * Result of `demoteRealm`. The `REALM_HAS_HOME_USERS` (HTTP 412) refusal is returned
- * rather than thrown, because errors thrown from server actions lose their status and
- * body in production builds and the UI must react to this case specifically.
- */
-export type DemoteRealmResult =
-  | ({ ok: true } & DemoteRealmResponse)
-  | { ok: false; code: 'REALM_HAS_HOME_USERS'; message: string };
