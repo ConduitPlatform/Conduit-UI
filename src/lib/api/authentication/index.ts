@@ -1,5 +1,6 @@
 'use server';
 import merge from 'lodash/merge';
+import { isAxiosError } from 'axios';
 import { getApiClient } from '@/lib/api';
 import { TeamUser, User } from '@/lib/models/User';
 import {
@@ -8,6 +9,14 @@ import {
 } from '@/lib/models/authentication';
 import { Team } from '@/lib/models/Team';
 import { TeamInvite } from '@/lib/models/TeamInvite';
+import {
+  DemoteRealmResponse,
+  DemoteRealmResult,
+  PromoteRealmBody,
+  Realm,
+  RealmMembershipType,
+  UpdateRealmBody,
+} from '@/lib/models/Realm';
 
 export const getUsers = async (
   skip: number,
@@ -17,6 +26,10 @@ export const getUsers = async (
     search?: string;
     isActive?: boolean;
     provider?: string;
+    /** Realm team id, or `'global'` for users without a home realm. */
+    homeRealm?: string;
+    /** Realm team id the user is a member of (home or guest). */
+    realm?: string;
   }
 ): Promise<{ users: User[]; count: number }> => {
   const res = await (
@@ -33,13 +46,15 @@ export const getUsers = async (
 
 export const createUser = async (
   email: string,
-  password: string
+  password: string,
+  options?: { homeRealm?: string }
 ): Promise<User> => {
   const res = await (
     await getApiClient()
   ).post(`/authentication/users`, {
     email,
     password,
+    ...(options?.homeRealm ? { homeRealm: options.homeRealm } : {}),
   });
   return res.data;
 };
@@ -71,6 +86,8 @@ export const getTeams = async (
     sort?: string;
     search?: string;
     parentTeam?: string;
+    /** Only realm teams. */
+    realm?: boolean;
   }
 ): Promise<{ teams: Team[]; count: number }> => {
   const res = await (
@@ -277,4 +294,130 @@ export const deletePersistentInvite = async (
     }
   );
   return res.data.result;
+};
+
+export const getRealms = async (
+  skip: number,
+  limit: number,
+  params?: {
+    sort?: string;
+    search?: string;
+  }
+): Promise<{ realms: Realm[]; count: number }> => {
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/realms`, {
+    params: { skip, limit, ...params },
+  });
+  return res.data;
+};
+
+export const getRealm = async (teamId: string): Promise<Realm> => {
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/realms/${teamId}`);
+  return res.data;
+};
+
+export const promoteTeamToRealm = async (
+  teamId: string,
+  body: PromoteRealmBody
+): Promise<Realm> => {
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/teams/${teamId}/realm`, body);
+  return res.data;
+};
+
+export const updateRealm = async (
+  teamId: string,
+  body: UpdateRealmBody
+): Promise<Realm> => {
+  const res = await (
+    await getApiClient()
+  ).patch(`/authentication/teams/${teamId}/realm`, body);
+  return res.data;
+};
+
+/**
+ * Demotes a realm back to a regular team. Without `force` the backend refuses with
+ * `REALM_HAS_HOME_USERS` (412) while home users exist; that refusal is returned as
+ * `{ ok: false, code: 'REALM_HAS_HOME_USERS' }` so the caller can offer the force path.
+ * Any other failure throws.
+ */
+export const demoteRealm = async (
+  teamId: string,
+  force?: boolean
+): Promise<DemoteRealmResult> => {
+  const client = await getApiClient();
+  try {
+    const res = await client.delete<DemoteRealmResponse>(
+      `/authentication/teams/${teamId}/realm`,
+      { params: force ? { force: true } : undefined }
+    );
+    return { ok: true, ...res.data };
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 412 && !force) {
+      const message = (error.response.data as { message?: string } | undefined)
+        ?.message;
+      return {
+        ok: false,
+        code: 'REALM_HAS_HOME_USERS',
+        message: message ?? 'Realm still has home users',
+      };
+    }
+    throw error;
+  }
+};
+
+export const getRealmMembers = async (
+  teamId: string,
+  type: RealmMembershipType | undefined,
+  skip: number,
+  limit: number,
+  params?: {
+    sort?: string;
+    search?: string;
+  }
+): Promise<{ members: TeamUser[]; count: number }> => {
+  const res = await (
+    await getApiClient()
+  ).get(`/authentication/realms/${teamId}/members`, {
+    params: { skip, limit, ...(type ? { type } : {}), ...params },
+  });
+  return res.data;
+};
+
+export const addRealmGuests = async (
+  teamId: string,
+  userIds: string[]
+): Promise<{ added: number }> => {
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/realms/${teamId}/guests`, { userIds });
+  return res.data;
+};
+
+export const removeRealmGuest = async (
+  teamId: string,
+  userId: string
+): Promise<string> => {
+  const res = await (
+    await getApiClient()
+  ).delete(`/authentication/realms/${teamId}/guests/${userId}`);
+  return res.data;
+};
+
+export const setUserHomeRealm = async (
+  userId: string,
+  realmTeamId: string | null,
+  force?: boolean
+): Promise<User> => {
+  const res = await (
+    await getApiClient()
+  ).post(`/authentication/users/${userId}/home-realm`, {
+    realmTeamId,
+    ...(force ? { force } : {}),
+  });
+  return res.data;
 };
