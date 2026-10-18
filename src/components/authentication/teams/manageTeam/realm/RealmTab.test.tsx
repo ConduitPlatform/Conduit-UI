@@ -24,6 +24,7 @@ vi.mock('@/lib/hooks/use-toast', () => ({ toast: toastMock }));
 
 const api = vi.hoisted(() => ({
   updateRealm: vi.fn(),
+  getRealm: vi.fn(),
   getRealms: vi.fn(),
   demoteRealm: vi.fn(),
   promoteTeamToRealm: vi.fn(),
@@ -99,6 +100,7 @@ beforeEach(() => {
     }
   );
   api.getRealms.mockResolvedValue({ realms: [realm], count: 1 });
+  api.getRealm.mockResolvedValue(realm);
   api.updateRealm.mockImplementation(async () => ok(realm));
 });
 
@@ -155,6 +157,93 @@ describe('RealmTab', () => {
     expect(api.updateRealm).toHaveBeenCalledWith('t1', {
       strategies: { magicLink: { enabled: true } },
     });
+  });
+});
+
+describe('RealmTab verification (inherit, override, use global)', () => {
+  const withLocal = (verificationRequired?: boolean): Realm => ({
+    ...realm,
+    settings: {
+      ...realm.settings,
+      strategies: {
+        ...realm.settings.strategies,
+        local: { enabled: true, verificationRequired },
+      },
+    },
+  });
+  const renderTab = (r: Realm, globalOn: boolean) =>
+    render(
+      <RealmTab
+        team={realmTeam}
+        realm={r}
+        memberCount={12}
+        globalVerificationRequired={globalOn}
+      />
+    );
+  const toggle = () => screen.getByLabelText('Require verification');
+  const source = () => screen.getByTestId('realm-verification-source');
+
+  it('shows the effective global value while inheriting', () => {
+    renderTab(withLocal(undefined), true);
+    expect(toggle()).toBeChecked();
+    expect(source()).toHaveTextContent('Inherits the global setting (on).');
+    expect(
+      screen.queryByRole('button', { name: 'Use global' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('sends a boolean when toggled and shows it as an override', async () => {
+    renderTab(withLocal(undefined), true);
+    fireEvent.click(toggle());
+    expect(toggle()).not.toBeChecked();
+    expect(source()).toHaveTextContent('Overrides the global setting (on).');
+    const [save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(api.updateRealm).toHaveBeenCalledWith('t1', {
+      strategies: { local: { verificationRequired: false } },
+    });
+  });
+
+  it('"Use global" sends null and falls back to the global value', async () => {
+    renderTab(withLocal(false), true);
+    expect(toggle()).not.toBeChecked();
+    fireEvent.click(screen.getByRole('button', { name: 'Use global' }));
+    expect(toggle()).toBeChecked();
+    expect(source()).toHaveTextContent('Inherits the global setting (on).');
+    const [save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(api.updateRealm).toHaveBeenCalledWith('t1', {
+      strategies: { local: { verificationRequired: null } },
+    });
+  });
+
+  it('does not mark the card dirty while merely inheriting', () => {
+    renderTab(withLocal(undefined), false);
+    expect(toggle()).not.toBeChecked();
+    const [save] = screen.getAllByRole('button', { name: 'Save changes' });
+    expect(save).toBeDisabled();
+  });
+});
+
+describe('RealmEmptyState and the default team', () => {
+  it('disables promotion of the default team and says why', () => {
+    render(
+      <RealmTab
+        team={{ ...team, isDefault: true }}
+        realm={null}
+        memberCount={4}
+      />
+    );
+    expect(
+      screen.getByRole('button', { name: 'Make this team a realm' })
+    ).toBeDisabled();
+    expect(screen.getByRole('note')).toHaveTextContent(
+      'The default team cannot be a realm'
+    );
   });
 });
 
@@ -373,6 +462,39 @@ describe('DemoteRealmDialog', () => {
     await waitFor(() => expect(refresh).toHaveBeenCalled());
   });
 
+  it('re-reads the realm so the force step shows current counts', async () => {
+    api.getRealm.mockResolvedValueOnce({
+      ...realm,
+      counts: { home: 15, guest: 3 },
+    });
+    api.demoteRealm.mockResolvedValueOnce({
+      ok: false,
+      code: 'REALM_HAS_HOME_USERS',
+      message: 'home users exist',
+    });
+    renderDialog();
+    fireEvent.click(screen.getByRole('button', { name: 'Demote realm' }));
+    expect(
+      await screen.findByRole('button', { name: /Block 15 users and demote/ })
+    ).toBeInTheDocument();
+    expect(api.getRealm).toHaveBeenCalledWith('t1');
+    expect(screen.getByText(/Block 15 home users\?/)).toBeInTheDocument();
+  });
+
+  it('falls back to the known counts when the re-read fails', async () => {
+    api.getRealm.mockRejectedValueOnce(new Error('boom'));
+    api.demoteRealm.mockResolvedValueOnce({
+      ok: false,
+      code: 'REALM_HAS_HOME_USERS',
+      message: 'home users exist',
+    });
+    renderDialog();
+    fireEvent.click(screen.getByRole('button', { name: 'Demote realm' }));
+    expect(
+      await screen.findByRole('button', { name: /Block 12 users and demote/ })
+    ).toBeInTheDocument();
+  });
+
   it('demotes directly when nothing blocks it', async () => {
     api.demoteRealm.mockResolvedValueOnce(
       ok({ message: 'OK', blockedUsers: 0 })
@@ -399,6 +521,7 @@ describe('DemoteRealmDialog', () => {
   });
 
   it('keeps the force button disabled while the slug is empty', async () => {
+    api.getRealm.mockRejectedValueOnce(new Error('no re-read here'));
     api.demoteRealm.mockResolvedValueOnce({
       ok: false,
       code: 'REALM_HAS_HOME_USERS',
