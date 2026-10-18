@@ -6,9 +6,10 @@ import {
 import UsersTable from '@/components/authentication/users/users';
 import { UserActionsProvider } from '@/components/authentication/users/UserActionsProvider';
 import { realmsEnabled } from '@/lib/authentication/realms';
-import { buildRealmSlugMap } from '@/lib/authentication/realmMembers';
-
-const MAX_REALMS = 100;
+import {
+  buildRealmSlugMap,
+  MAX_REALMS_IN_FILTERS,
+} from '@/lib/authentication/realmMembers';
 
 export default async function UserPage(
   props: Readonly<{
@@ -29,11 +30,11 @@ export default async function UserPage(
   const settings = await getAuthenticationSettings().catch(() => null);
   const showRealms = realmsEnabled(settings?.config);
   // Slugs label the home realm ids that come back on users.
-  const realmSlugs = buildRealmSlugMap(
-    showRealms
-      ? ((await getRealms(0, MAX_REALMS).catch(() => null))?.realms ?? [])
-      : []
-  );
+  const realmList = showRealms
+    ? await getRealms(0, MAX_REALMS_IN_FILTERS).catch(() => null)
+    : null;
+  const realmSlugs = buildRealmSlugMap(realmList?.realms ?? []);
+  const realmsTruncated = (realmList?.count ?? 0) > MAX_REALMS_IN_FILTERS;
 
   const data = await getUsers(
     searchParams.skip ?? 0,
@@ -51,6 +52,7 @@ export default async function UserPage(
         count={data.count}
         realmsEnabled={showRealms}
         realmSlugs={realmSlugs}
+        realmsTruncated={realmsTruncated}
       />
     </UserActionsProvider>
   );

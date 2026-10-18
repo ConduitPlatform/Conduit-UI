@@ -45,7 +45,7 @@ export function describeHomeRealmMove({
 }): string {
   const sessions = force
     ? 'All of their sessions will be revoked and they will be signed out everywhere.'
-    : 'Their current sessions are not revoked and stay valid until they expire.';
+    : 'Existing access tokens keep working until they expire; they can no longer be refreshed at the old realm. Tick "Also sign the user out everywhere" to revoke them now.';
   return `${email} will sign in at ${to} instead of ${from}. ${sessions}`;
 }
 
@@ -71,19 +71,28 @@ export function EditUserSheet({
   );
   const [force, setForce] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [lookup, setLookup] = useState<'loading' | 'loaded' | 'error'>(
+    initialUser ? 'loaded' : 'loading'
+  );
 
   useEffect(() => {
     if (initialUser) return;
     let cancelled = false;
+    setLookup('loading');
     getUsers(0, 5, { search: userId })
       .then(data => {
+        if (cancelled) return;
         const found = data.users.find(u => u._id === userId);
-        if (cancelled || !found) return;
+        if (!found) {
+          setLookup('error');
+          return;
+        }
         setUser(found);
         setTarget(found.homeRealm ?? HOME_REALM_GLOBAL);
+        setLookup('loaded');
       })
       .catch(() => {
-        // The sheet stays usable with the id only.
+        if (!cancelled) setLookup('error');
       });
     return () => {
       cancelled = true;
@@ -174,10 +183,16 @@ export function EditUserSheet({
           </h3>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Home realm</span>
-            <HomeRealmCell
-              homeRealm={user?.homeRealm}
-              realmSlugs={realmSlugs}
-            />
+            {user ? (
+              <HomeRealmCell
+                homeRealm={user.homeRealm}
+                realmSlugs={realmSlugs}
+              />
+            ) : (
+              <span className="text-muted-foreground">
+                {lookup === 'loading' ? 'Loading…' : 'Unknown'}
+              </span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">
             Guest memberships are managed from each realm&apos;s Members tab.{' '}
@@ -197,9 +212,28 @@ export function EditUserSheet({
           <h3 id="user-move-realm" className="text-sm font-medium">
             Move home realm
           </h3>
+          {lookup === 'loading' && (
+            <p
+              role="status"
+              className="flex items-center gap-2 text-sm text-muted-foreground"
+            >
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              Loading user…
+            </p>
+          )}
+          {lookup === 'error' && (
+            <p role="alert" className="text-sm text-destructive">
+              Could not load this user, so their home realm cannot be moved from
+              here. Close the sheet and try again.
+            </p>
+          )}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="user-home-realm-target">New home realm</Label>
-            <Select value={target} onValueChange={setTarget} disabled={moving}>
+            <Select
+              value={target}
+              onValueChange={setTarget}
+              disabled={moving || !user}
+            >
               <SelectTrigger id="user-home-realm-target">
                 <SelectValue />
               </SelectTrigger>
@@ -217,7 +251,7 @@ export function EditUserSheet({
               id="user-home-realm-force"
               checked={force}
               onCheckedChange={checked => setForce(checked === true)}
-              disabled={moving}
+              disabled={moving || !user}
             />
             <Label htmlFor="user-home-realm-force" className="font-normal">
               Also sign the user out everywhere
@@ -227,7 +261,7 @@ export function EditUserSheet({
             type="button"
             className="self-start"
             onClick={confirmMove}
-            disabled={moving || target === current}
+            disabled={moving || !user || target === current}
           >
             {moving && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />

@@ -25,6 +25,7 @@ import {
   homeRealmFilterToParam,
   homeRealmParamToFilter,
   withHomeRealmFilter,
+  MAX_REALMS_IN_FILTERS,
 } from '@/lib/authentication/realmMembers';
 
 const NO_REALMS: ReadonlyMap<string, string> = new Map();
@@ -34,6 +35,7 @@ export default function UsersTable({
   count: initialCount,
   realmsEnabled = false,
   realmSlugs = NO_REALMS,
+  realmsTruncated = false,
 }: Readonly<{
   data: User[];
   count: number;
@@ -41,6 +43,8 @@ export default function UsersTable({
   realmsEnabled?: boolean;
   /** `teamId -> slug` of every realm. */
   realmSlugs?: ReadonlyMap<string, string>;
+  /** There are more realms than `realmSlugs` holds; the filter lists only the first ones. */
+  realmsTruncated?: boolean;
 }>) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -127,6 +131,11 @@ export default function UsersTable({
           <Button variant="outline">Add User</Button>
         </AddUserSheet>
       </div>
+      {realmsEnabled && realmsTruncated && (
+        <p className={'pb-2 text-xs text-muted-foreground'}>
+          Showing the first {MAX_REALMS_IN_FILTERS} realms in filters
+        </p>
+      )}
       <DataTable columns={columns} data={users} count={count}>
         <EmptyUsers userAdd={openUserAdd} />
       </DataTable>

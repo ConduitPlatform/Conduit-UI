@@ -93,15 +93,22 @@ export function EditTeamMemberRoleDialog({
     }
     setSaving(true);
     try {
-      await patchTeamMembersRoles(teamId, [user._id], role);
+      const result = await patchTeamMembersRoles(teamId, [user._id], role);
+      if (!result.ok) {
+        toast({
+          title: 'Failed to update role',
+          description: result.message,
+          variant: 'destructive',
+        });
+        return;
+      }
       toast({ title: 'Role updated' });
       onChanged();
       setOpen(false);
     } catch (e: unknown) {
-      const err = e as { message?: string };
       toast({
         title: 'Failed to update role',
-        description: err.message,
+        description: e instanceof Error ? e.message : undefined,
         variant: 'destructive',
       });
     } finally {

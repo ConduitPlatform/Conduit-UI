@@ -43,20 +43,22 @@ export const getUsers = async (
   return res.data;
 };
 
+/** Returns an `ActionResult`: branch on `result.code`. */
 export const createUser = async (
   email: string,
   password: string,
   options?: { homeRealm?: string }
-): Promise<User> => {
-  const res = await (
-    await getApiClient()
-  ).post(`/authentication/users`, {
-    email,
-    password,
-    ...(options?.homeRealm ? { homeRealm: options.homeRealm } : {}),
+): Promise<ActionResult<User>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<User>(`/authentication/users`, {
+      email,
+      password,
+      ...(options?.homeRealm ? { homeRealm: options.homeRealm } : {}),
+    });
+    return res.data;
   });
-  return res.data;
-};
 export const deleteUser = async (userId: string): Promise<string> => {
   const res = await (
     await getApiClient()
@@ -120,20 +122,22 @@ export const getTeamMembers = async (
   });
   return res.data;
 };
+/**
+ * Returns an `ActionResult`: branch on `result.code` (e.g. `GUESTS_NOT_ALLOWED`).
+ * Inside a realm the backend classifies each user as home or guest.
+ */
 export const addTeamMembers = async (
   teamId: string,
   members: User[]
-): Promise<{
-  members: TeamUser[];
-  count: number;
-}> => {
-  const res = await (
-    await getApiClient()
-  ).post(`/authentication/teams/${teamId}/members`, {
-    members: members.map(member => member._id),
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<string>(`/authentication/teams/${teamId}/members`, {
+      members: members.map(member => member._id),
+    });
+    return res.data;
   });
-  return res.data;
-};
 export const createTeam = async (
   name: string,
   params?: {
@@ -224,31 +228,35 @@ export const toggleUsersBlock = async (ids: string[], block: boolean) => {
   return res.data;
 };
 
+/** Returns an `ActionResult`: branch on `result.code` (e.g. `HOME_USER_REMOVAL`). */
 export const removeTeamMembers = async (
   teamId: string,
   memberIds: string[]
-) => {
-  const res = await (
-    await getApiClient()
-  ).delete<string>(`/authentication/teams/${teamId}/members`, {
-    params: { members: memberIds },
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).delete<string>(`/authentication/teams/${teamId}/members`, {
+      params: { members: memberIds },
+    });
+    return res.data;
   });
-  return res.data;
-};
 
+/** Returns an `ActionResult`: branch on `result.code`. */
 export const patchTeamMembersRoles = async (
   teamId: string,
   memberIds: string[],
   role: string
-) => {
-  const res = await (
-    await getApiClient()
-  ).patch<string>(`/authentication/teams/${teamId}/members`, {
-    members: memberIds,
-    role,
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).patch<string>(`/authentication/teams/${teamId}/members`, {
+      members: memberIds,
+      role,
+    });
+    return res.data;
   });
-  return res.data;
-};
 
 export const getTeamInvites = async (
   teamId: string,
@@ -402,7 +410,11 @@ export const removeRealmGuest = async (
     return res.data;
   });
 
-/** Returns an `ActionResult`: branch on `result.code` (e.g. `REALM_NOT_FOUND`, `GUESTS_NOT_ALLOWED`). */
+/**
+ * Returns an `ActionResult`: branch on `result.code` (e.g. `REALM_NOT_FOUND`, `GUESTS_NOT_ALLOWED`).
+ * `null` moves the user to global; the backend's param parser rejects JSON null for
+ * string params, so it travels as an empty string.
+ */
 export const setUserHomeRealm = async (
   userId: string,
   realmTeamId: string | null,
@@ -412,7 +424,7 @@ export const setUserHomeRealm = async (
     const res = await (
       await getApiClient()
     ).post<User>(`/authentication/users/${userId}/home-realm`, {
-      realmTeamId,
+      realmTeamId: realmTeamId ?? '',
       ...(force ? { force } : {}),
     });
     return res.data;

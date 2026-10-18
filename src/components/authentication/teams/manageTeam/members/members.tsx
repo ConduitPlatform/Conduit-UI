@@ -12,6 +12,7 @@ import { AddMemberSheet } from '@/components/authentication/teams/manageTeam/mem
 import { DataTable } from '@/components/ui/data-table';
 import EmptyTeamMembers from '@/components/authentication/teams/manageTeam/members/emptyTeamMembers';
 import { toast } from '@/lib/hooks/use-toast';
+import type { GuestPolicy } from '@/lib/authentication/realmMembers';
 
 export default function MembersTable({
   data,
@@ -19,14 +20,20 @@ export default function MembersTable({
   count: initialCount,
   inRealm = false,
   isRealmTeam = false,
+  realmTeamId,
+  guestPolicy,
 }: Readonly<{
   data: TeamUser[];
   count: number;
   teamId: string;
   /** The team is a realm or sits inside one: shows the membership Type column. */
   inRealm?: boolean;
-  /** The team is the realm itself: adding means "Add guest", home users stay put. */
+  /** The team is the realm itself: its home users cannot be removed. */
   isRealmTeam?: boolean;
+  /** The realm the team belongs to (the team itself or its top-most ancestor). */
+  realmTeamId?: string;
+  /** The realm's `policies.guests`, used to filter who the picker offers. */
+  guestPolicy?: GuestPolicy;
 }>) {
   const searchParams = useSearchParams();
   const [addOpen, setAddOpen] = useState(false);
@@ -116,7 +123,7 @@ export default function MembersTable({
           onChange={e => setSearch(e.target.value)}
         />
         <Button variant="outline" type={'button'} onClick={pickUser}>
-          {isRealmTeam ? 'Add guest' : 'Add Member'}
+          Add Member
         </Button>
       </div>
       <DataTable columns={columns} data={users} count={count}>
@@ -124,7 +131,8 @@ export default function MembersTable({
       </DataTable>
       <AddMemberSheet
         teamId={teamId}
-        isRealmTeam={isRealmTeam}
+        realmTeamId={realmTeamId}
+        guestPolicy={guestPolicy}
         open={addOpen}
         onOpenChange={setAddOpen}
         onAdded={refreshMembers}

@@ -110,11 +110,30 @@ export const AddUserSheet = ({
     const homeRealm = realmsEnabled
       ? homeRealmSelectionToTeamId(data.homeRealm ?? HOME_REALM_GLOBAL)
       : null;
+    const showError = (message: string | undefined) => {
+      dismiss();
+      toast({
+        title: 'Add User',
+        description: (
+          <div className={'flex flex-col'}>
+            <div className={'flex flex-row text-destructive items-center'}>
+              <LucideX className={'w-8 h-8'} />
+              <p className="text-sm">Failed to add with:</p>
+            </div>
+            <ErrorPre>{message}</ErrorPre>
+          </div>
+        ),
+      });
+    };
     createUser(data.email, data.password, homeRealm ? { homeRealm } : undefined)
-      .then(user => {
+      .then(result => {
+        if (!result.ok) {
+          showError(result.message);
+          return;
+        }
         setOpen(false);
         dismiss();
-        onSuccess?.(user);
+        onSuccess?.(result.data);
         toast({
           title: 'Add User',
           description: (
@@ -125,20 +144,8 @@ export const AddUserSheet = ({
           ),
         });
       })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Add User',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to add with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
+      .catch((error: unknown) => {
+        showError(error instanceof Error ? error.message : undefined);
       });
   }
 

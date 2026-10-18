@@ -30,67 +30,140 @@ export type GuestPolicy = {
   allowedHomeRealms: string[];
 };
 
-export type PickerContext = {
-  /** Set when the picker adds to a realm team (guest semantics). */
+/** Mirrors the backend's `normalizeIdList`: trimmed, non-empty strings only. */
+export function normalizeIdList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(entry => entry !== null && entry !== undefined)
+    .map(entry => String(entry).trim())
+    .filter(Boolean);
+}
+
+/** Realm `policies.guests` as the picker needs it. */
+export function toGuestPolicy(
+  guests: { allowed?: boolean; allowedHomeRealms?: unknown } | undefined | null
+): GuestPolicy | undefined {
+  if (!guests) return undefined;
+  return {
+    allowed: guests.allowed === true,
+    allowedHomeRealms: normalizeIdList(guests.allowedHomeRealms),
+  };
+}
+
+/**
+ * What the backend makes of a user added to a team of `realmTeamId`: no home realm or
+ * this realm as home -> a home user; a home realm elsewhere -> a guest.
+ */
+export function classifyCandidate(
+  user: Pick<User, 'homeRealm'>,
+  realmTeamId: string
+): RealmMembershipType {
+  const home = user.homeRealm ? String(user.homeRealm) : null;
+  if (!home || home === String(realmTeamId)) return 'home';
+  return 'guest';
+}
+
+export type CandidateContext = {
+  /** The realm the team belongs to (the team itself or its top-most ancestor). */
   realmTeamId?: string;
-  /** The realm's `policies.guests`. Unknown (not loaded) behaves as "allowed". */
-  guestPolicy?: GuestPolicy;
-  /** Users already in the team (so they cannot be picked twice). */
-  memberIds?: ReadonlySet<string>;
+  /** The realm's `policies.guests`. Unknown (not loaded) leaves the decision to the backend. */
+  guests?: GuestPolicy;
+  /** Users already in the team. */
+  existingMemberIds?: ReadonlySet<string> | readonly string[];
 };
+
+function hasId(
+  ids: ReadonlySet<string> | readonly string[] | undefined,
+  id: string
+): boolean {
+  if (!ids) return false;
+  return Array.isArray(ids)
+    ? ids.includes(id)
+    : (ids as ReadonlySet<string>).has(id);
+}
+
+/** Why a candidate cannot be added, or `undefined` when it can. */
+export function candidateIneligibility(
+  user: Pick<User, '_id' | 'homeRealm'>,
+  { realmTeamId, guests, existingMemberIds }: CandidateContext = {}
+): string | undefined {
+  if (hasId(existingMemberIds, user._id)) return 'Already a member';
+  if (!realmTeamId || !guests) return undefined;
+  if (classifyCandidate(user, realmTeamId) !== 'guest') return undefined;
+  if (!guests.allowed) return 'Guests are not allowed';
+  const trusted = normalizeIdList(guests.allowedHomeRealms);
+  if (trusted.length > 0 && !trusted.includes(String(user.homeRealm))) {
+    return 'Home realm is not trusted by this realm';
+  }
+  return undefined;
+}
+
+/**
+ * Whether the backend would accept `user` into the team: not a member yet and, when
+ * classified as a guest, allowed by `policies.guests`. Global users are always
+ * eligible (they become home users of the realm).
+ */
+export function isCandidateEligible(
+  user: Pick<User, '_id' | 'homeRealm'>,
+  context: CandidateContext = {}
+): boolean {
+  return candidateIneligibility(user, context) === undefined;
+}
 
 export type PickerEligibility = {
   selectable: boolean;
-  /** Shown as a badge next to the user. */
+  /** `guest`: shown as a "Will join as guest" badge. */
   hint?: 'guest';
   /** Why the row is disabled. */
   reason?: string;
 };
 
-/**
- * Whether `user` can be picked in the add-member sheet.
- *
- * Realm teams that disallow guests only accept users without a home realm. When guests
- * are allowed, everybody is selectable (unless the realm trusts specific home realms,
- * which the backend enforces too) and users homed elsewhere are hinted as guests.
- */
+/** Eligibility plus the picker hint for one row. */
 export function getPickerEligibility(
   user: Pick<User, '_id' | 'homeRealm'>,
-  { realmTeamId, guestPolicy, memberIds }: PickerContext = {}
+  context: CandidateContext = {}
 ): PickerEligibility {
-  if (memberIds?.has(user._id)) {
-    return { selectable: false, reason: 'Already a member' };
+  const reason = candidateIneligibility(user, context);
+  if (reason) return { selectable: false, reason };
+  if (
+    context.realmTeamId &&
+    classifyCandidate(user, context.realmTeamId) === 'guest'
+  ) {
+    return { selectable: true, hint: 'guest' };
   }
-  if (!realmTeamId) return { selectable: true };
+  return { selectable: true };
+}
 
-  const homeRealm = user.homeRealm || undefined;
-  if (homeRealm === realmTeamId) {
-    return { selectable: false, reason: 'Home user of this realm' };
-  }
-  if (!guestPolicy) {
-    return {
-      selectable: true,
-      ...(homeRealm ? { hint: 'guest' as const } : {}),
-    };
-  }
-  if (!guestPolicy.allowed) {
-    return homeRealm
-      ? { selectable: false, reason: 'Belongs to another realm' }
-      : { selectable: true };
-  }
-  const trusted = guestPolicy.allowedHomeRealms;
-  if (trusted.length > 0 && (!homeRealm || !trusted.includes(homeRealm))) {
-    return {
-      selectable: false,
-      reason: 'Home realm is not trusted by this realm',
-    };
-  }
-  return { selectable: true, ...(homeRealm ? { hint: 'guest' as const } : {}) };
+/** The members search matches users by id only for 24-hex ids (`AuthUtils.fetchMembers`). */
+const SEARCHABLE_MEMBER_ID = /^[a-fA-F0-9]{24}$/;
+
+export function isSearchableMemberId(id: string): boolean {
+  return SEARCHABLE_MEMBER_ID.test(id);
+}
+
+export type MembershipLookup = 'new' | 'existing' | 'unknown';
+
+/**
+ * Reads the result of a members search for `id` (`getTeamMembers(..., { search: id })`).
+ * A search that matched the user means they are a member already; an empty result only
+ * proves they are not when the backend can search that id (24-hex). Anything else
+ * (other id formats, a failed lookup) is `unknown` and never treated as new.
+ */
+export function interpretMembershipLookup(
+  id: string,
+  result: { members: readonly { _id: string }[] } | undefined
+): MembershipLookup {
+  if (!result) return 'unknown';
+  if (result.members.some(member => member._id === id)) return 'existing';
+  return isSearchableMemberId(id) ? 'new' : 'unknown';
 }
 
 /* -------------------------------------------------------------------------- */
 /* Users page                                                                 */
 /* -------------------------------------------------------------------------- */
+
+/** How many realms the Users page loads for its filter and selects. */
+export const MAX_REALMS_IN_FILTERS = 100;
 
 export const HOME_REALM_ALL = 'all';
 export const HOME_REALM_GLOBAL = 'global';
