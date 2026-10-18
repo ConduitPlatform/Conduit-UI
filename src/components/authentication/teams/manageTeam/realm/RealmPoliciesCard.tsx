@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { UrlTagInput } from '@/components/ui/form-inputs/TagInputField';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { rhfZodResolver } from '@/lib/zod-form';
+import { unwrapActionResult } from '@/lib/api/action-result';
 import { getRealms, updateRealm } from '@/lib/api/authentication';
 import {
   normalizeRealmSettingsForSave,
@@ -93,7 +94,8 @@ export function RealmPoliciesCard({
     const { policies } = normalizeRealmSettingsForSave({ policies: values });
     const result = await save({
       successMessage: 'Realm policies saved',
-      action: () => updateRealm(realm.team._id, { policies }),
+      action: async () =>
+        unwrapActionResult(await updateRealm(realm.team._id, { policies })),
     });
     if (result.ok) {
       onChange(result.result);

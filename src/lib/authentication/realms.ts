@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig.schema';
 import type { AuthenticationConfig } from '@/lib/models/authentication';
 import {
+  OAUTH_CREDENTIAL_FIELDS,
   OAUTH_PROVIDER_KEYS,
   type DeepPartial,
   type OAuthProviderKey,
@@ -9,8 +10,10 @@ import {
   type RealmPolicies,
   type RealmRegistration,
   type PromoteRealmBody,
+  type RealmOAuthStrategy,
   type RealmSettingsPayload,
   type RealmStrategies,
+  type RealmStrategiesPatch,
 } from '@/lib/models/Realm';
 
 /**
@@ -135,15 +138,6 @@ export type PromoteRealmFormValues = z.infer<typeof promoteRealmSchema>;
 /* Request body shaping                                                       */
 /* -------------------------------------------------------------------------- */
 
-const OAUTH_CREDENTIAL_FIELDS = [
-  'clientId',
-  'clientSecret',
-  'redirect_uri',
-  'privateKey',
-  'teamId',
-  'keyId',
-] as const;
-
 export const REALM_SIMPLE_STRATEGY_KEYS = [
   'local',
   'username',
@@ -175,6 +169,22 @@ function cleanStringList(value: unknown): string[] | undefined {
   return [...seen];
 }
 
+/** Every credential field set to `null`: the provider inherits the global config. */
+function clearedCredentials(): UnknownRecord {
+  return Object.fromEntries(
+    OAUTH_CREDENTIAL_FIELDS.map(field => [field, null])
+  );
+}
+
+/**
+ * Credential semantics (PATCH deep-merges; see "Credential clearing semantics" in the
+ * realms API contract):
+ * - `credentials: 'inherit'` -> every credential field is sent as `null` (clears them);
+ * - `credentials: 'own'`     -> only non-blank typed values, trimmed;
+ * - no `credentials` key     -> non-blank strings are trimmed and sent, blank strings
+ *   are dropped (keep stored), an explicit `null` is passed through (clear).
+ * Blank strings are never sent. Read-only `has*` flags and unknown keys never get through.
+ */
 function normalizeOAuthRow(row: unknown): UnknownRecord | undefined {
   if (!isRecord(row)) return undefined;
   const out: UnknownRecord = {};
@@ -182,18 +192,24 @@ function normalizeOAuthRow(row: unknown): UnknownRecord | undefined {
   if (typeof row.accountLinking === 'boolean') {
     out.accountLinking = row.accountLinking;
   }
-  // Empty credentials are omitted so the provider inherits the global config.
-  // Read-only `has*` flags are never copied: only whitelisted fields get through.
+  if (row.credentials === 'inherit') {
+    return { ...out, ...clearedCredentials() };
+  }
+  const keepNull = row.credentials !== 'own';
   for (const field of OAUTH_CREDENTIAL_FIELDS) {
     const value = row[field];
-    if (!isBlank(value)) out[field] = value;
+    if (value === null) {
+      if (keepNull) out[field] = null;
+    } else if (!isBlank(value)) {
+      out[field] = (value as string).trim();
+    }
   }
   return out;
 }
 
 function normalizeStrategies(
   strategies: unknown
-): DeepPartial<RealmStrategies> | undefined {
+): RealmStrategiesPatch | undefined {
   if (!isRecord(strategies)) return undefined;
   const out: UnknownRecord = {};
 
@@ -217,7 +233,7 @@ function normalizeStrategies(
     out.oauth = oauth;
   }
 
-  return out as DeepPartial<RealmStrategies>;
+  return out as RealmStrategiesPatch;
 }
 
 function normalizePolicies(
@@ -247,7 +263,8 @@ function normalizePolicies(
 
 /**
  * Shapes realm settings (form values or a masked server read) into a request body:
- * - empty-string credential fields are dropped so the provider inherits the global config;
+ * - blank credential strings are dropped (the stored value is kept); `null` clears a
+ *   credential and `credentials: 'inherit'` on an OAuth row clears all of them;
  * - read-only `has*` flags and any unknown keys are never sent;
  * - string lists are trimmed and de-duplicated (an empty list is kept: it means "any").
  * Sections that are absent from the input stay absent from the output, so callers can
@@ -322,8 +339,31 @@ export type RealmIdentityValues = {
   phone: { enabled: boolean };
   metamask: { enabled: boolean };
   biometric: { enabled: boolean };
-  oauth: Record<OAuthProviderKey, { enabled: boolean }>;
+  /**
+   * `credentials` is the Inherit/Own choice of a provider row. It is not derived from
+   * the server read; the Identity card leaves it unset (so only `enabled` is patched)
+   * until the credentials UI sets it. `'inherit'` clears the realm's own credentials.
+   */
+  oauth: Record<
+    OAuthProviderKey,
+    { enabled: boolean; credentials?: 'inherit' | 'own' }
+  >;
 };
+
+/** True when the (masked) server row carries credentials of its own. */
+export function hasOwnCredentials(
+  strategy: RealmOAuthStrategy | undefined
+): boolean {
+  if (!strategy) return false;
+  return Boolean(
+    strategy.clientId?.trim() ||
+    strategy.redirect_uri?.trim() ||
+    strategy.teamId?.trim() ||
+    strategy.keyId?.trim() ||
+    strategy.hasClientSecret ||
+    strategy.hasPrivateKey
+  );
+}
 
 export function strategiesToIdentityValues(
   strategies: Partial<RealmStrategies> | undefined
@@ -350,13 +390,16 @@ export function strategiesToIdentityValues(
 
 /**
  * Builds the PATCH `strategies` fragment containing only what changed relative to the
- * current server state. OAuth rows carry `enabled` only, so credentials stay untouched
- * (PATCH deep-merges).
+ * current server state. OAuth rows carry `enabled` when it changed. Credentials stay
+ * untouched (PATCH deep-merges) unless the row says `credentials: 'inherit'` while the
+ * server row still has credentials of its own: then all six credential fields are sent
+ * as `null`. Typed credential values for `'own'` are not handled here; callers merge
+ * them in through `normalizeRealmSettingsForSave`.
  */
 export function buildStrategiesPatch(
   current: Partial<RealmStrategies> | undefined,
   next: RealmIdentityValues
-): DeepPartial<RealmStrategies> {
+): RealmStrategiesPatch {
   const before = strategiesToIdentityValues(current);
   const patch: UnknownRecord = {};
 
@@ -376,13 +419,21 @@ export function buildStrategiesPatch(
 
   const oauth: UnknownRecord = {};
   for (const provider of OAUTH_PROVIDER_KEYS) {
+    const row: UnknownRecord = {};
     if (before.oauth[provider].enabled !== next.oauth[provider].enabled) {
-      oauth[provider] = { enabled: next.oauth[provider].enabled };
+      row.enabled = next.oauth[provider].enabled;
     }
+    if (
+      next.oauth[provider].credentials === 'inherit' &&
+      hasOwnCredentials(current?.oauth?.[provider])
+    ) {
+      Object.assign(row, clearedCredentials());
+    }
+    if (Object.keys(row).length > 0) oauth[provider] = row;
   }
   if (Object.keys(oauth).length > 0) patch.oauth = oauth;
 
-  return patch as DeepPartial<RealmStrategies>;
+  return patch as RealmStrategiesPatch;
 }
 
 /* -------------------------------------------------------------------------- */

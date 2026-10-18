@@ -28,7 +28,7 @@ export default function TeamProfile({
   parentTeam?: Team;
   memberCount: number;
   subTeamCount: number;
-  /** Shows realm info and protects realm teams from deletion. */
+  /** Shows the realm slug in the profile. Delete protection does not depend on it. */
   realmsEnabled?: boolean;
 }>) {
   const [team, setTeam] = useState<Team>(initialTeam);
@@ -36,7 +36,9 @@ export default function TeamProfile({
   useEffect(() => {
     setTeam(initialTeam);
   }, [initialTeam]);
-  const isRealm = realmsEnabled && team.realm?.enabled === true;
+  // Delete protection follows the data, not the feature flag: a realm team must stay
+  // protected even if the flag is switched off afterwards.
+  const isRealm = team.realm?.enabled === true;
   const router = useRouter();
   const { addAlert } = useAlerts();
   const deleteButton = (
@@ -129,7 +131,7 @@ export default function TeamProfile({
             <Label>SubTeams</Label>
             <div className="text-foreground-muted">{subTeamCount}</div>
           </div>
-          {isRealm && (
+          {realmsEnabled && isRealm && (
             <div className="grid gap-1">
               <Label>Realm</Label>
               <div className="flex flex-row items-center gap-2 text-foreground-muted">

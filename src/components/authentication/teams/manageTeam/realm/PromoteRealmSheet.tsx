@@ -67,7 +67,14 @@ export function PromoteRealmSheet({
     defaultValues: {
       slug: suggestRealmSlug(team.name),
       active: true,
-      strategies: DEFAULT_REALM_STRATEGIES,
+      // Every provider row needs a boolean up front: a checkbox registered with an
+      // undefined value fails the schema and silently blocks the submit.
+      strategies: {
+        ...DEFAULT_REALM_STRATEGIES,
+        oauth: Object.fromEntries(
+          OAUTH_PROVIDERS.map(provider => [provider.key, { enabled: false }])
+        ),
+      },
       registration: DEFAULT_REALM_REGISTRATION,
       policies: DEFAULT_REALM_POLICIES,
     },
@@ -78,10 +85,41 @@ export function PromoteRealmSheet({
     !HOME_STRATEGIES.some(s => strategies[s.key]?.enabled) &&
     !OAUTH_PROVIDERS.some(p => strategies.oauth?.[p.key]?.enabled);
 
+  const showError = (title: string, message: string) =>
+    toast({
+      title,
+      description: <ErrorPre>{message}</ErrorPre>,
+      variant: 'destructive',
+    });
+
   const promote = async (values: PromoteRealmFormValues) => {
     setPending(true);
     try {
-      await promoteTeamToRealm(team._id, buildPromoteBody(values));
+      const result = await promoteTeamToRealm(
+        team._id,
+        buildPromoteBody(values)
+      );
+      if (!result.ok) {
+        switch (result.code) {
+          case 'REALM_SLUG_TAKEN':
+            form.setError(
+              'slug',
+              { type: 'server', message: 'This slug is already taken.' },
+              { shouldFocus: true }
+            );
+            break;
+          case 'REALM_NESTED':
+            showError('A realm cannot be nested', result.message);
+            break;
+          case 'GUESTS_NOT_ALLOWED':
+            // The message lists the members that would become disallowed guests.
+            showError('Guests are not allowed', result.message);
+            break;
+          default:
+            showError('Failed to create realm', result.message);
+        }
+        return;
+      }
       toast({
         title: 'Realm created',
         description: `${team.name} is now the realm ${values.slug}.`,
@@ -89,15 +127,10 @@ export function PromoteRealmSheet({
       setOpen(false);
       router.refresh();
     } catch (error) {
-      toast({
-        title: 'Failed to create realm',
-        description: (
-          <ErrorPre>
-            {error instanceof Error ? error.message : String(error)}
-          </ErrorPre>
-        ),
-        variant: 'destructive',
-      });
+      showError(
+        'Failed to create realm',
+        error instanceof Error ? error.message : String(error)
+      );
     } finally {
       setPending(false);
     }

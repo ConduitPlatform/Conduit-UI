@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
+import { unwrapActionResult } from '@/lib/api/action-result';
 import { updateRealm } from '@/lib/api/authentication';
 import { formatRealmCounts } from '@/lib/authentication/realms';
 import type { Realm } from '@/lib/models/Realm';
@@ -41,7 +42,8 @@ export function RealmStatusStrip({
   const setActive = async (next: boolean) => {
     const result = await save({
       successMessage: next ? 'Realm activated' : 'Realm deactivated',
-      action: () => updateRealm(realm.team._id, { active: next }),
+      action: async () =>
+        unwrapActionResult(await updateRealm(realm.team._id, { active: next })),
     });
     if (result.ok) onChange(result.result);
   };

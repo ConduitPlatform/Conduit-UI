@@ -52,36 +52,41 @@ export function DemoteRealmDialog({
     onOpenChange(next);
   };
 
+  const showError = (message: string) =>
+    toast({
+      title: 'Failed to demote realm',
+      description: <ErrorPre>{message}</ErrorPre>,
+      variant: 'destructive',
+    });
+
   const run = async (force: boolean) => {
     setPending(true);
     try {
       const result = await demoteRealm(teamId, force);
       if (!result.ok) {
-        // Home users exist: offer the force path instead of failing.
-        setStage('force');
+        // Key on the code: 412 is shared with REALMS_DISABLED and others.
+        if (result.code === 'REALM_HAS_HOME_USERS' && !force) {
+          // Home users exist: offer the force path instead of failing.
+          setStage('force');
+          return;
+        }
+        showError(result.message);
         return;
       }
+      const { blockedUsers } = result.data;
       toast({
         title: 'Realm demoted',
         description:
-          result.blockedUsers > 0
-            ? `${slug} is a regular team again. ${result.blockedUsers} ${
-                result.blockedUsers === 1 ? 'user was' : 'users were'
+          blockedUsers > 0
+            ? `${slug} is a regular team again. ${blockedUsers} ${
+                blockedUsers === 1 ? 'user was' : 'users were'
               } blocked.`
             : `${slug} is a regular team again.`,
       });
       handleOpenChange(false);
       router.refresh();
     } catch (error) {
-      toast({
-        title: 'Failed to demote realm',
-        description: (
-          <ErrorPre>
-            {error instanceof Error ? error.message : String(error)}
-          </ErrorPre>
-        ),
-        variant: 'destructive',
-      });
+      showError(error instanceof Error ? error.message : String(error));
     } finally {
       setPending(false);
     }
@@ -162,7 +167,7 @@ export function DemoteRealmDialog({
               </Button>
               <Button
                 variant="destructive"
-                disabled={pending || typed !== slug}
+                disabled={pending || slug === '' || typed !== slug}
                 onClick={() => run(true)}
               >
                 Block {counts.home} {counts.home === 1 ? 'user' : 'users'} and

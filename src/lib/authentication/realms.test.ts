@@ -5,6 +5,7 @@ import {
   buildPromoteBody,
   buildStrategiesPatch,
   formatRealmCounts,
+  hasOwnCredentials,
   normalizeRealmSettingsForSave,
   promoteRealmSchema,
   realmSettingsSchema,
@@ -159,6 +160,127 @@ describe('normalizeRealmSettingsForSave', () => {
       active: false,
     });
     expect(normalizeRealmSettingsForSave({})).toEqual({});
+  });
+});
+
+describe('credential clearing semantics', () => {
+  const CLEARED = {
+    clientId: null,
+    clientSecret: null,
+    redirect_uri: null,
+    privateKey: null,
+    teamId: null,
+    keyId: null,
+  };
+
+  it("credentials: 'inherit' sends null for every credential field", () => {
+    const body = normalizeRealmSettingsForSave({
+      strategies: {
+        oauth: {
+          google: {
+            enabled: true,
+            credentials: 'inherit',
+            // Stale typed values must not leak through in inherit mode.
+            clientId: 'stale',
+            clientSecret: 'stale-secret',
+          },
+        },
+      },
+    });
+    expect(body.strategies?.oauth?.google).toEqual({
+      enabled: true,
+      ...CLEARED,
+    });
+  });
+
+  it("credentials: 'own' sends only non-blank typed values, trimmed", () => {
+    const body = normalizeRealmSettingsForSave({
+      strategies: {
+        oauth: {
+          apple: {
+            enabled: true,
+            credentials: 'own',
+            clientId: '  abc  ',
+            clientSecret: '',
+            redirect_uri: '   ',
+            privateKey: ' pk ',
+            teamId: 'T1',
+            keyId: null,
+          },
+        },
+      },
+    });
+    expect(body.strategies?.oauth?.apple).toEqual({
+      enabled: true,
+      clientId: 'abc',
+      privateKey: 'pk',
+      teamId: 'T1',
+    });
+  });
+
+  it('passes an explicit null through but still drops blank strings', () => {
+    const body = normalizeRealmSettingsForSave({
+      strategies: {
+        oauth: {
+          github: {
+            enabled: true,
+            clientId: null,
+            clientSecret: '',
+            redirect_uri: ' https://x.test/cb ',
+          },
+        },
+      },
+    });
+    expect(body.strategies?.oauth?.github).toEqual({
+      enabled: true,
+      clientId: null,
+      redirect_uri: 'https://x.test/cb',
+    });
+  });
+
+  it("buildStrategiesPatch clears credentials when a row with its own switches to 'inherit'", () => {
+    const current: RealmStrategies = {
+      local: { enabled: true },
+      username: { enabled: false },
+      magicLink: { enabled: false },
+      phone: { enabled: false },
+      metamask: { enabled: false },
+      biometric: { enabled: false },
+      oauth: {
+        google: { enabled: true, clientId: 'abc', hasClientSecret: true },
+        github: { enabled: true },
+      },
+    };
+    const next = strategiesToIdentityValues(current);
+    next.oauth.google.credentials = 'inherit';
+    next.oauth.github.credentials = 'inherit'; // nothing own to clear
+    expect(buildStrategiesPatch(current, next)).toEqual({
+      oauth: { google: CLEARED },
+    });
+  });
+
+  it("buildStrategiesPatch sends no credential fields for 'own' or unset", () => {
+    const current: RealmStrategies = {
+      local: { enabled: true },
+      username: { enabled: false },
+      magicLink: { enabled: false },
+      phone: { enabled: false },
+      metamask: { enabled: false },
+      biometric: { enabled: false },
+      oauth: { google: { enabled: true, hasClientSecret: true } },
+    };
+    const next = strategiesToIdentityValues(current);
+    next.oauth.google.credentials = 'own';
+    expect(buildStrategiesPatch(current, next)).toEqual({});
+  });
+
+  it('hasOwnCredentials reads the masked server row', () => {
+    expect(hasOwnCredentials(undefined)).toBe(false);
+    expect(hasOwnCredentials({ enabled: true })).toBe(false);
+    expect(hasOwnCredentials({ enabled: true, hasPrivateKey: true })).toBe(
+      true
+    );
+    expect(hasOwnCredentials({ enabled: true, clientId: ' ' })).toBe(false);
   });
 });
 

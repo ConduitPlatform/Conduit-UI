@@ -47,6 +47,8 @@ const clientsSchema = z.object({
   multipleUserSessions: z.boolean().default(false),
   multipleClientLogins: z.boolean().default(true),
 });
+const DEFAULT_REALM_CACHE_TTL_MS = 5000;
+
 const teamsSchema = z.object({
   enabled: z.boolean().default(false),
   enableDefaultTeam: z.boolean().default(false),
@@ -64,7 +66,7 @@ const teamsSchema = z.object({
     .object({
       enabled: z.boolean().default(false),
       allowEmailDiscovery: z.boolean().default(false),
-      cacheTtlMs: z.number().int().min(0).default(5000),
+      cacheTtlMs: z.number().int().min(0).default(DEFAULT_REALM_CACHE_TTL_MS),
     })
     .optional(),
 });
@@ -444,7 +446,13 @@ export const AuthenticationSettings = ({ data }: Props) => {
                               onChange={e => {
                                 form.setValue(
                                   'teams.realms.cacheTtlMs',
-                                  parseInt(e.target.value),
+                                  // A cleared field yields NaN: fall back to the default.
+                                  Number.isFinite(e.target.valueAsNumber)
+                                    ? Math.max(
+                                        0,
+                                        Math.trunc(e.target.valueAsNumber)
+                                      )
+                                    : DEFAULT_REALM_CACHE_TTL_MS,
                                   { shouldDirty: true }
                                 );
                               }}

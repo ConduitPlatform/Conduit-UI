@@ -1,7 +1,7 @@
 'use server';
 import merge from 'lodash/merge';
-import { isAxiosError } from 'axios';
 import { getApiClient } from '@/lib/api';
+import { type ActionResult, runAction } from '@/lib/api/action-result';
 import { TeamUser, User } from '@/lib/models/User';
 import {
   AuthenticationConfig,
@@ -11,7 +11,6 @@ import { Team } from '@/lib/models/Team';
 import { TeamInvite } from '@/lib/models/TeamInvite';
 import {
   DemoteRealmResponse,
-  DemoteRealmResult,
   PromoteRealmBody,
   Realm,
   RealmMembershipType,
@@ -322,53 +321,42 @@ export const getRealm = async (teamId: string): Promise<Realm> => {
 export const promoteTeamToRealm = async (
   teamId: string,
   body: PromoteRealmBody
-): Promise<Realm> => {
-  const res = await (
-    await getApiClient()
-  ).post(`/authentication/teams/${teamId}/realm`, body);
-  return res.data;
-};
+): Promise<ActionResult<Realm>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<Realm>(`/authentication/teams/${teamId}/realm`, body);
+    return res.data;
+  });
 
 export const updateRealm = async (
   teamId: string,
   body: UpdateRealmBody
-): Promise<Realm> => {
-  const res = await (
-    await getApiClient()
-  ).patch(`/authentication/teams/${teamId}/realm`, body);
-  return res.data;
-};
+): Promise<ActionResult<Realm>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).patch<Realm>(`/authentication/teams/${teamId}/realm`, body);
+    return res.data;
+  });
 
 /**
  * Demotes a realm back to a regular team. Without `force` the backend refuses with
- * `REALM_HAS_HOME_USERS` (412) while home users exist; that refusal is returned as
- * `{ ok: false, code: 'REALM_HAS_HOME_USERS' }` so the caller can offer the force path.
- * Any other failure throws.
+ * `conduitCode: 'REALM_HAS_HOME_USERS'` while home users exist; callers key on that
+ * code (HTTP 412 is shared with `REALMS_DISABLED`) to offer the force path.
  */
 export const demoteRealm = async (
   teamId: string,
   force?: boolean
-): Promise<DemoteRealmResult> => {
-  const client = await getApiClient();
-  try {
-    const res = await client.delete<DemoteRealmResponse>(
-      `/authentication/teams/${teamId}/realm`,
-      { params: force ? { force: true } : undefined }
-    );
-    return { ok: true, ...res.data };
-  } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 412 && !force) {
-      const message = (error.response.data as { message?: string } | undefined)
-        ?.message;
-      return {
-        ok: false,
-        code: 'REALM_HAS_HOME_USERS',
-        message: message ?? 'Realm still has home users',
-      };
-    }
-    throw error;
-  }
-};
+): Promise<ActionResult<DemoteRealmResponse>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).delete<DemoteRealmResponse>(`/authentication/teams/${teamId}/realm`, {
+      params: force ? { force: true } : undefined,
+    });
+    return res.data;
+  });
 
 export const getRealmMembers = async (
   teamId: string,
@@ -388,36 +376,44 @@ export const getRealmMembers = async (
   return res.data;
 };
 
+/** Returns an `ActionResult`: branch on `result.code` (e.g. `GUESTS_NOT_ALLOWED`). */
 export const addRealmGuests = async (
   teamId: string,
   userIds: string[]
-): Promise<{ added: number }> => {
-  const res = await (
-    await getApiClient()
-  ).post(`/authentication/realms/${teamId}/guests`, { userIds });
-  return res.data;
-};
+): Promise<ActionResult<{ added: number }>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<{ added: number }>(`/authentication/realms/${teamId}/guests`, {
+      userIds,
+    });
+    return res.data;
+  });
 
+/** Returns an `ActionResult`: branch on `result.code` (e.g. `HOME_USER_REMOVAL`). */
 export const removeRealmGuest = async (
   teamId: string,
   userId: string
-): Promise<string> => {
-  const res = await (
-    await getApiClient()
-  ).delete(`/authentication/realms/${teamId}/guests/${userId}`);
-  return res.data;
-};
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).delete<string>(`/authentication/realms/${teamId}/guests/${userId}`);
+    return res.data;
+  });
 
+/** Returns an `ActionResult`: branch on `result.code` (e.g. `REALM_NOT_FOUND`, `GUESTS_NOT_ALLOWED`). */
 export const setUserHomeRealm = async (
   userId: string,
   realmTeamId: string | null,
   force?: boolean
-): Promise<User> => {
-  const res = await (
-    await getApiClient()
-  ).post(`/authentication/users/${userId}/home-realm`, {
-    realmTeamId,
-    ...(force ? { force } : {}),
+): Promise<ActionResult<User>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<User>(`/authentication/users/${userId}/home-realm`, {
+      realmTeamId,
+      ...(force ? { force } : {}),
+    });
+    return res.data;
   });
-  return res.data;
-};
