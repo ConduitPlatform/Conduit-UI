@@ -43,6 +43,10 @@ import UsersTable from '@/components/authentication/users/users';
 import { EditUserSheet } from '@/components/authentication/users/editUserSheet/editUserSheet';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 import { AlertProvider } from '@/components/providers/AlertProvider';
+import {
+  UserActionsProvider,
+  useUserActions,
+} from '@/components/authentication/users/UserActionsProvider';
 
 const slugs = new Map([
   ['t1', 'acme'],
@@ -162,7 +166,7 @@ describe('UsersTable', () => {
 
 describe('AddUserSheet', () => {
   it('creates the user with the chosen home realm', async () => {
-    api.createUser.mockResolvedValue(user({ _id: 'new' }));
+    api.createUser.mockResolvedValue({ ok: true, data: user({ _id: 'new' }) });
     render(
       <AlertProvider>
         <AddUserSheet defaultOpen realmsEnabled realmSlugs={slugs} />
@@ -188,7 +192,7 @@ describe('AddUserSheet', () => {
   });
 
   it('creates global users without a home realm option', async () => {
-    api.createUser.mockResolvedValue(user({ _id: 'new' }));
+    api.createUser.mockResolvedValue({ ok: true, data: user({ _id: 'new' }) });
     render(
       <AlertProvider>
         <AddUserSheet defaultOpen realmsEnabled realmSlugs={slugs} />
@@ -208,6 +212,38 @@ describe('AddUserSheet', () => {
         undefined
       )
     );
+  });
+
+  it('shows the server message when creating the user fails', async () => {
+    api.createUser.mockResolvedValue({
+      ok: false,
+      code: 'ALREADY_EXISTS',
+      message: 'Email is taken',
+    });
+    const onSuccess = vi.fn();
+    render(
+      <AlertProvider>
+        <AddUserSheet defaultOpen onSuccess={onSuccess} />
+      </AlertProvider>
+    );
+    fireEvent.change(screen.getByPlaceholderText('mail@conduit.com'), {
+      target: { value: 'new@acme.test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('very secret'), {
+      target: { value: 'secret123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Add User' })
+      )
+    );
+    await waitFor(() => expect(api.createUser).toHaveBeenCalled());
+    expect(onSuccess).not.toHaveBeenCalled();
+    const failure = toastMock.mock.calls
+      .map(call => JSON.stringify(call))
+      .join('');
+    expect(failure).toContain('Email is taken');
   });
 
   it('has no home realm select when realms are disabled', () => {
@@ -268,7 +304,9 @@ describe('EditUserSheet', () => {
 
     const dialog = await screen.findByRole('alertdialog');
     expect(dialog).toHaveTextContent('ann@acme.test will sign in at acme');
-    expect(dialog).toHaveTextContent(/sessions/);
+    expect(dialog).toHaveTextContent(
+      'Existing access tokens keep working until they expire; they can no longer be refreshed at the old realm.'
+    );
     expect(api.setUserHomeRealm).not.toHaveBeenCalled();
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Move' }));
@@ -330,5 +368,128 @@ describe('EditUserSheet', () => {
         })
       )
     );
+  });
+});
+
+describe('EditUserSheet loading the user', () => {
+  const renderLookup = () =>
+    render(
+      <AlertProvider>
+        <EditUserSheet
+          userId="u1"
+          open
+          onOpenChange={vi.fn()}
+          realmSlugs={slugs}
+        />
+      </AlertProvider>
+    );
+
+  it('keeps Move disabled with a loading state until the user is loaded', async () => {
+    let resolve!: (value: { users: User[]; count: number }) => void;
+    api.getUsers.mockReturnValue(
+      new Promise(r => {
+        resolve = r;
+      })
+    );
+    renderLookup();
+    expect(screen.getByRole('status')).toHaveTextContent('Loading user');
+    expect(
+      screen.getByRole('button', { name: 'Move home realm' })
+    ).toBeDisabled();
+    expect(screen.getByRole('combobox')).toBeDisabled();
+
+    resolve({ users: [user({ homeRealm: 't1' })], count: 1 });
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    );
+    expect(screen.getByRole('combobox')).toBeEnabled();
+    chooseOption(screen.getByRole('combobox'), 'globex');
+    expect(
+      screen.getByRole('button', { name: 'Move home realm' })
+    ).toBeEnabled();
+  });
+
+  it('shows an error and keeps Move disabled when the lookup fails', async () => {
+    api.getUsers.mockRejectedValue(new Error('boom'));
+    renderLookup();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Could not load this user'
+    );
+    expect(
+      screen.getByRole('button', { name: 'Move home realm' })
+    ).toBeDisabled();
+    expect(screen.getByRole('combobox')).toBeDisabled();
+  });
+
+  it('treats a user missing from the lookup as an error', async () => {
+    api.getUsers.mockResolvedValue({ users: [], count: 0 });
+    renderLookup();
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Move home realm' })
+    ).toBeDisabled();
+  });
+});
+
+describe('UserActionsProvider', () => {
+  function EditTrigger() {
+    const { openUserEdit } = useUserActions();
+    return (
+      <button type="button" onClick={() => openUserEdit('u1', user({}))}>
+        edit
+      </button>
+    );
+  }
+
+  it('opens the Add User sheet for the edit action when realms are disabled', async () => {
+    render(
+      <AlertProvider>
+        <UserActionsProvider>
+          <EditTrigger />
+        </UserActionsProvider>
+      </AlertProvider>
+    );
+    expect(screen.queryByText('Add User')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'edit' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Add User' })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Edit user')).not.toBeInTheDocument();
+  });
+
+  it('opens the Edit user sheet when realms are enabled', async () => {
+    render(
+      <AlertProvider>
+        <UserActionsProvider realmsEnabled realmSlugs={slugs}>
+          <EditTrigger />
+        </UserActionsProvider>
+      </AlertProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'edit' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Edit user' })
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Users page realm filter note', () => {
+  it('notes that the filters list only the first 100 realms', () => {
+    render(
+      <UsersTable
+        data={[]}
+        count={0}
+        realmsEnabled
+        realmSlugs={slugs}
+        realmsTruncated
+      />
+    );
+    expect(
+      screen.getByText('Showing the first 100 realms in filters')
+    ).toBeInTheDocument();
+  });
+
+  it('shows no note otherwise', () => {
+    render(<UsersTable data={[]} count={0} realmsEnabled realmSlugs={slugs} />);
+    expect(screen.queryByText(/Showing the first/)).not.toBeInTheDocument();
   });
 });

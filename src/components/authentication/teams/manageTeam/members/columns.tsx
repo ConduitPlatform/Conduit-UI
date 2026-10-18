@@ -6,6 +6,7 @@ import { Clipboard, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { removeTeamMembers } from '@/lib/api/authentication';
 import { toast } from '@/lib/hooks/use-toast';
+import { useAlerts } from '@/components/providers/AlertProvider';
 import { EditTeamMemberRoleDialog } from '@/components/authentication/teams/manageTeam/members/edit-team-member-role-dialog';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -36,6 +37,57 @@ function RemovalBlockedTooltip({
         <TooltipContent>{HOME_USER_REMOVAL_TOOLTIP}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
+  );
+}
+
+function RemoveMemberButton({
+  teamId,
+  user,
+  blocked,
+  onChanged,
+}: Readonly<{
+  teamId: string;
+  user: TeamUser;
+  blocked: boolean;
+  onChanged: () => void;
+}>) {
+  const { addAlert } = useAlerts();
+  const remove = async () => {
+    const result = await removeTeamMembers(teamId, [user._id]);
+    if (!result.ok) {
+      toast({
+        title: 'Failed to remove member',
+        description: result.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+    toast({ title: 'Member removed' });
+    onChanged();
+  };
+  return (
+    <RemovalBlockedTooltip blocked={blocked}>
+      <Button
+        variant={'ghost'}
+        size={'sm'}
+        className={'text-destructive'}
+        aria-label="Remove from team"
+        disabled={blocked}
+        onClick={() =>
+          addAlert({
+            title: 'Remove member',
+            description: `Remove ${user.email ?? user._id} from this team?`,
+            cancelText: 'Cancel',
+            actionText: 'Remove',
+            onDecision: cancel => {
+              if (!cancel) void remove();
+            },
+          })
+        }
+      >
+        <Trash className={'w-4 h-4'} />
+      </Button>
+    </RemovalBlockedTooltip>
   );
 }
 
@@ -108,38 +160,12 @@ export function getTeamMemberColumns({
               user={user}
               onChanged={onChanged}
             />
-            <RemovalBlockedTooltip blocked={removalBlocked}>
-              <Button
-                variant={'ghost'}
-                size={'sm'}
-                className={'text-destructive'}
-                title="Remove from team"
-                disabled={removalBlocked}
-                onClick={async () => {
-                  if (
-                    !window.confirm(
-                      `Remove ${user.email ?? user._id} from this team?`
-                    )
-                  ) {
-                    return;
-                  }
-                  try {
-                    await removeTeamMembers(teamId, [user._id]);
-                    toast({ title: 'Member removed' });
-                    onChanged();
-                  } catch (e: unknown) {
-                    const err = e as { message?: string };
-                    toast({
-                      title: 'Failed to remove member',
-                      description: err.message,
-                      variant: 'destructive',
-                    });
-                  }
-                }}
-              >
-                <Trash className={'w-4 h-4'} />
-              </Button>
-            </RemovalBlockedTooltip>
+            <RemoveMemberButton
+              teamId={teamId}
+              user={user}
+              blocked={removalBlocked}
+              onChanged={onChanged}
+            />
           </div>
         );
       },

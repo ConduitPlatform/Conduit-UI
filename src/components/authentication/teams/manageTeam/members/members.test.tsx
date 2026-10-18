@@ -7,6 +7,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import type * as React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TeamUser, User } from '@/lib/models/User';
 
@@ -20,8 +21,7 @@ const api = vi.hoisted(() => ({
   removeTeamMembers: vi.fn(),
   patchTeamMembersRoles: vi.fn(),
   addTeamMembers: vi.fn(),
-  addRealmGuests: vi.fn(),
-  getRealm: vi.fn(),
+  getTeamMembers: vi.fn(),
   getUsers: vi.fn(),
 }));
 vi.mock('@/lib/api/authentication', () => api);
@@ -35,6 +35,7 @@ vi.mock('@/lib/hooks/use-toast', () => ({ toast: toastMock }));
 import { getTeamMemberColumns } from '@/components/authentication/teams/manageTeam/members/columns';
 import { AddMemberSheet } from '@/components/authentication/teams/manageTeam/members/addMemberSheet/addMemberSheet';
 import { DataTable } from '@/components/ui/data-table';
+import { AlertProvider } from '@/components/providers/AlertProvider';
 import { HOME_USER_REMOVAL_TOOLTIP } from '@/lib/authentication/realmMembers';
 
 const member = (over: Partial<TeamUser>): TeamUser =>
@@ -64,10 +65,20 @@ beforeEach(() => {
       disconnect() {}
     }
   );
+  Element.prototype.hasPointerCapture = () => false;
+  Element.prototype.releasePointerCapture = () => undefined;
+  Element.prototype.scrollIntoView = () => undefined;
   authz.getResourceDefinition.mockResolvedValue({
     relations: { member: ['User'], admin: ['User'] },
   });
+  api.getTeamMembers.mockResolvedValue({ members: [], count: 0 });
 });
+
+function chooseOption(trigger: HTMLElement, name: string) {
+  fireEvent.keyDown(trigger, { key: 'Enter' });
+  const option = screen.getByRole('option', { name });
+  fireEvent.keyDown(option, { key: 'Enter' });
+}
 
 afterEach(() => {
   cleanup();
@@ -82,16 +93,19 @@ describe('Members table', () => {
     member({ _id: 'n1', email: 'plain@acme.test', membershipType: undefined }),
   ];
 
+  const onChanged = vi.fn();
   const renderTable = (opts: { inRealm?: boolean; isRealmTeam?: boolean }) =>
     render(
-      <DataTable
-        columns={getTeamMemberColumns({
-          teamId: 't1',
-          onChanged: vi.fn(),
-          ...opts,
-        })}
-        data={members}
-      />
+      <AlertProvider>
+        <DataTable
+          columns={getTeamMemberColumns({
+            teamId: 't1',
+            onChanged: onChanged,
+            ...opts,
+          })}
+          data={members}
+        />
+      </AlertProvider>
     );
 
   it('hides the Type column outside realms', () => {
@@ -115,7 +129,9 @@ describe('Members table', () => {
 
   it('disables removing home users from the realm team and explains why', async () => {
     renderTable({ inRealm: true, isRealmTeam: true });
-    const removeButtons = screen.getAllByTitle('Remove from team');
+    const removeButtons = screen.getAllByRole('button', {
+      name: 'Remove from team',
+    });
     expect(removeButtons[0]).toBeDisabled();
     expect(removeButtons[1]).toBeEnabled();
     expect(removeButtons[2]).toBeEnabled();
@@ -127,38 +143,78 @@ describe('Members table', () => {
 
   it('allows removing home users from a sub-team of the realm', () => {
     renderTable({ inRealm: true, isRealmTeam: false });
-    for (const button of screen.getAllByTitle('Remove from team')) {
+    for (const button of screen.getAllByRole('button', {
+      name: 'Remove from team',
+    })) {
       expect(button).toBeEnabled();
     }
   });
 
-  it('toasts the server message when removal is refused', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
-    api.removeTeamMembers.mockRejectedValueOnce(
-      new Error('Home users cannot be removed')
-    );
+  it('has no title attribute on the blocked remove button', () => {
     renderTable({ inRealm: true, isRealmTeam: true });
-    fireEvent.click(screen.getAllByTitle('Remove from team')[1]!);
+    const [blocked] = screen.getAllByRole('button', {
+      name: 'Remove from team',
+    });
+    expect(blocked).not.toHaveAttribute('title');
+  });
+
+  it('confirms removal through the alert dialog, not window.confirm', async () => {
+    const confirm = vi.spyOn(window, 'confirm');
+    api.removeTeamMembers.mockResolvedValueOnce({ ok: true, data: 'done' });
+    renderTable({ inRealm: true, isRealmTeam: true });
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Remove from team' })[1]!
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toHaveTextContent('Remove guest@other.test from this team?');
+    expect(api.removeTeamMembers).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remove' }));
+    await waitFor(() =>
+      expect(api.removeTeamMembers).toHaveBeenCalledWith('t1', ['g1'])
+    );
+    await waitFor(() => expect(onChanged).toHaveBeenCalled());
+    expect(toastMock).toHaveBeenCalledWith({ title: 'Member removed' });
+    expect(confirm).not.toHaveBeenCalled();
+  });
+
+  it('does not remove when the dialog is cancelled', async () => {
+    renderTable({ inRealm: true, isRealmTeam: true });
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Remove from team' })[1]!
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(api.removeTeamMembers).not.toHaveBeenCalled();
+  });
+
+  it('toasts the server message when removal is refused', async () => {
+    api.removeTeamMembers.mockResolvedValueOnce({
+      ok: false,
+      code: 'HOME_USER_REMOVAL',
+      message: 'Home users cannot be removed',
+    });
+    renderTable({ inRealm: true, isRealmTeam: true });
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Remove from team' })[1]!
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remove' }));
     await waitFor(() =>
       expect(toastMock).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Failed to remove member',
           description: 'Home users cannot be removed',
+          variant: 'destructive',
         })
       )
     );
+    expect(onChanged).not.toHaveBeenCalled();
   });
 });
 
 describe('AddMemberSheet', () => {
-  const realmWithGuests = (
-    allowed: boolean,
-    allowedHomeRealms: string[] = []
-  ) => ({
-    team: { _id: 'realm-1' },
-    settings: { policies: { guests: { allowed, allowedHomeRealms } } },
-    counts: { home: 1, guest: 0 },
-  });
+  const HEX = (c: string) => c.repeat(24);
+  const open = { allowed: true, allowedHomeRealms: [] as string[] };
 
   const users = [
     user({ _id: 'global', email: 'global@test.dev', homeRealm: null }),
@@ -169,27 +225,31 @@ describe('AddMemberSheet', () => {
     }),
   ];
 
-  const renderSheet = (props: { isRealmTeam: boolean }) =>
-    render(
-      <AddMemberSheet
-        teamId="realm-1"
-        open
-        onOpenChange={vi.fn()}
-        onAdded={vi.fn()}
-        {...props}
-      />
-    );
+  type SheetProps = Partial<React.ComponentProps<typeof AddMemberSheet>>;
+  const sheet = (props: SheetProps = {}) => (
+    <AddMemberSheet
+      teamId="realm-1"
+      open
+      onOpenChange={vi.fn()}
+      onAdded={vi.fn()}
+      {...props}
+    />
+  );
+  const renderSheet = (props: SheetProps = {}) => render(sheet(props));
 
   beforeEach(() => {
     api.getUsers.mockResolvedValue({ users, count: users.length });
+    api.addTeamMembers.mockResolvedValue({ ok: true, data: 'added' });
+    api.patchTeamMembersRoles.mockResolvedValue({ ok: true, data: 'ok' });
   });
 
-  it('only offers users without a home realm when guests are not allowed', async () => {
-    api.getRealm.mockResolvedValue(realmWithGuests(false));
-    renderSheet({ isRealmTeam: true });
-
+  it('only offers global users when guests are not allowed', async () => {
+    renderSheet({
+      realmTeamId: 'realm-1',
+      guestPolicy: { allowed: false, allowedHomeRealms: [] },
+    });
     expect(
-      screen.getByRole('heading', { name: 'Add guest' })
+      screen.getByRole('heading', { name: 'Add members' })
     ).toBeInTheDocument();
     expect(await screen.findByRole('note')).toHaveTextContent(
       'does not accept guests'
@@ -197,22 +257,50 @@ describe('AddMemberSheet', () => {
     const global = await screen.findByLabelText(/global@test\.dev/);
     const elsewhere = await screen.findByLabelText(/elsewhere@test\.dev/);
     expect(global).toBeEnabled();
-    await waitFor(() => expect(elsewhere).toBeDisabled());
+    expect(elsewhere).toBeDisabled();
+    expect(screen.getByText('Guests are not allowed')).toBeInTheDocument();
   });
 
-  it('offers everybody and hints guests when guests are allowed', async () => {
-    api.getRealm.mockResolvedValue(realmWithGuests(true));
-    renderSheet({ isRealmTeam: true });
-
+  it('hints guest-classified candidates when guests are allowed', async () => {
+    renderSheet({ realmTeamId: 'realm-1', guestPolicy: open });
     const elsewhere = await screen.findByLabelText(/elsewhere@test\.dev/);
-    await waitFor(() => expect(screen.getByText('Guest')).toBeInTheDocument());
+    expect(screen.getAllByText('Will join as guest')).toHaveLength(1);
     expect(elsewhere).toBeEnabled();
     expect(screen.queryByRole('note')).not.toBeInTheDocument();
   });
 
+  it('filters guests by allowedHomeRealms but always offers global users', async () => {
+    api.getUsers.mockResolvedValue({
+      users: [
+        ...users,
+        user({
+          _id: 'trusted',
+          email: 'trusted@test.dev',
+          homeRealm: 'realm-3',
+        }),
+      ],
+      count: 3,
+    });
+    renderSheet({
+      realmTeamId: 'realm-1',
+      guestPolicy: { allowed: true, allowedHomeRealms: ['realm-3'] },
+    });
+    expect(await screen.findByLabelText(/global@test\.dev/)).toBeEnabled();
+    expect(await screen.findByLabelText(/trusted@test\.dev/)).toBeEnabled();
+    expect(await screen.findByLabelText(/elsewhere@test\.dev/)).toBeDisabled();
+    expect(
+      screen.getByText('Home realm is not trusted by this realm')
+    ).toBeInTheDocument();
+  });
+
+  it('disables users that are already members', async () => {
+    renderSheet({ existingMemberIds: ['global'] });
+    expect(await screen.findByLabelText(/global@test\.dev/)).toBeDisabled();
+    expect(screen.getByText('Already a member')).toBeInTheDocument();
+  });
+
   it('searches users after the debounce', async () => {
-    api.getRealm.mockResolvedValue(realmWithGuests(true));
-    renderSheet({ isRealmTeam: true });
+    renderSheet({ realmTeamId: 'realm-1', guestPolicy: open });
     await screen.findByLabelText(/global@test\.dev/);
     fireEvent.change(screen.getByLabelText('Search users'), {
       target: { value: 'ann' },
@@ -222,72 +310,246 @@ describe('AddMemberSheet', () => {
     );
   });
 
-  it('adds guests through the realm API', async () => {
-    api.getRealm.mockResolvedValue(realmWithGuests(true));
-    api.addRealmGuests.mockResolvedValue({ ok: true, data: { added: 1 } });
+  it('keeps selections across searches', async () => {
+    renderSheet();
+    fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+    expect(
+      screen.getByRole('button', { name: 'Add 1 member' })
+    ).toBeInTheDocument();
+
+    api.getUsers.mockResolvedValue({
+      users: [user({ _id: 'ann', email: 'ann@test.dev' })],
+      count: 1,
+    });
+    fireEvent.change(screen.getByLabelText('Search users'), {
+      target: { value: 'ann' },
+    });
+    fireEvent.click(await screen.findByLabelText(/ann@test\.dev/));
+    expect(
+      screen.getByRole('button', { name: 'Add 2 members' })
+    ).toBeInTheDocument();
+
+    api.getUsers.mockResolvedValue({ users, count: users.length });
+    fireEvent.change(screen.getByLabelText('Search users'), {
+      target: { value: '' },
+    });
+    expect(await screen.findByLabelText(/global@test\.dev/)).toBeChecked();
+  });
+
+  it('resets selection and search when the sheet closes', async () => {
+    const { rerender } = renderSheet();
+    fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+    fireEvent.change(screen.getByLabelText('Search users'), {
+      target: { value: 'gl' },
+    });
+    rerender(sheet({ open: false }));
+    rerender(sheet({ open: true }));
+    expect(screen.getByLabelText('Search users')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Add members' })).toBeDisabled();
+  });
+
+  it('adds through addTeamMembers on a realm team, guests included', async () => {
     const onAdded = vi.fn();
     const onOpenChange = vi.fn();
-    render(
-      <AddMemberSheet
-        teamId="realm-1"
-        isRealmTeam
-        open
-        onOpenChange={onOpenChange}
-        onAdded={onAdded}
-      />
-    );
+    renderSheet({
+      realmTeamId: 'realm-1',
+      guestPolicy: open,
+      onAdded,
+      onOpenChange,
+    });
     fireEvent.click(await screen.findByLabelText(/elsewhere@test\.dev/));
-    fireEvent.click(screen.getByRole('button', { name: 'Add 1 guest' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
     await waitFor(() =>
-      expect(api.addRealmGuests).toHaveBeenCalledWith('realm-1', ['elsewhere'])
+      expect(api.addTeamMembers).toHaveBeenCalledWith('realm-1', [users[1]])
     );
-    expect(api.addTeamMembers).not.toHaveBeenCalled();
     expect(api.patchTeamMembersRoles).not.toHaveBeenCalled();
     await waitFor(() => expect(onAdded).toHaveBeenCalled());
     expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(toastMock).toHaveBeenCalledWith({ title: 'Member added' });
   });
 
-  it('shows the server message when adding guests fails', async () => {
-    api.getRealm.mockResolvedValue(realmWithGuests(true));
-    api.addRealmGuests.mockResolvedValue({
+  it('adds to a sub-team of a realm with the realm hints', async () => {
+    renderSheet({
+      teamId: 'sub-1',
+      realmTeamId: 'realm-1',
+      guestPolicy: { allowed: false, allowedHomeRealms: [] },
+    });
+    const elsewhere = await screen.findByLabelText(/elsewhere@test\.dev/);
+    expect(elsewhere).toBeDisabled();
+    fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+    fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+    await waitFor(() =>
+      expect(api.addTeamMembers).toHaveBeenCalledWith('sub-1', [users[0]])
+    );
+  });
+
+  it('shows the server message when adding is refused', async () => {
+    api.addTeamMembers.mockResolvedValue({
       ok: false,
       code: 'GUESTS_NOT_ALLOWED',
       message: 'Guests are not allowed',
     });
     const onAdded = vi.fn();
-    render(
-      <AddMemberSheet
-        teamId="realm-1"
-        isRealmTeam
-        open
-        onOpenChange={vi.fn()}
-        onAdded={onAdded}
-      />
-    );
+    renderSheet({ realmTeamId: 'realm-1', guestPolicy: open, onAdded });
     fireEvent.click(await screen.findByLabelText(/elsewhere@test\.dev/));
-    fireEvent.click(screen.getByRole('button', { name: 'Add 1 guest' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
     await waitFor(() =>
       expect(toastMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: 'Failed to add guests',
+          title: 'Failed to add members',
           description: 'Guests are not allowed',
         })
       )
     );
     expect(onAdded).not.toHaveBeenCalled();
+    expect(api.patchTeamMembersRoles).not.toHaveBeenCalled();
   });
 
-  it('adds members to a plain team and skips the role patch for the default role', async () => {
-    api.addTeamMembers.mockResolvedValue({ members: [], count: 0 });
-    renderSheet({ isRealmTeam: false });
-    expect(
-      screen.getByRole('heading', { name: 'Add members' })
-    ).toBeInTheDocument();
+  it('drops candidates that stopped being eligible before submitting', async () => {
+    const { rerender } = renderSheet({
+      realmTeamId: 'realm-1',
+      guestPolicy: open,
+    });
+    fireEvent.click(await screen.findByLabelText(/elsewhere@test\.dev/));
+    rerender(
+      sheet({
+        realmTeamId: 'realm-1',
+        guestPolicy: { allowed: false, allowedHomeRealms: [] },
+      })
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Nobody to add' })
+      )
+    );
+    expect(api.addTeamMembers).not.toHaveBeenCalled();
+  });
+
+  it('skips the role patch for the default role', async () => {
+    renderSheet();
     fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
     fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
     await waitFor(() => expect(api.addTeamMembers).toHaveBeenCalledTimes(1));
     expect(api.addTeamMembers).toHaveBeenCalledWith('realm-1', [users[0]]);
-    expect(api.getRealm).not.toHaveBeenCalled();
     expect(api.patchTeamMembersRoles).not.toHaveBeenCalled();
+  });
+
+  describe('non-default role', () => {
+    const fresh = user({ _id: HEX('a'), email: 'fresh@test.dev' });
+    const onPage2 = user({ _id: HEX('b'), email: 'onpage2@test.dev' });
+    const odd = user({ _id: 'legacy-id', email: 'legacy@test.dev' });
+
+    beforeEach(() => {
+      api.getUsers.mockResolvedValue({
+        users: [fresh, onPage2, odd],
+        count: 3,
+      });
+      api.getTeamMembers.mockImplementation(
+        async (
+          _team: string,
+          _skip: number,
+          _limit: number,
+          p: { search: string }
+        ) =>
+          p.search === onPage2._id
+            ? { members: [{ _id: onPage2._id }], count: 1 }
+            : { members: [], count: 0 }
+      );
+    });
+
+    it('patches the role only for users confirmed as newly added', async () => {
+      renderSheet({ teamId: 't1' });
+      fireEvent.click(await screen.findByLabelText(/fresh@test\.dev/));
+      fireEvent.click(screen.getByLabelText(/onpage2@test\.dev/));
+      fireEvent.click(screen.getByLabelText(/legacy@test\.dev/));
+      await waitFor(() =>
+        expect(screen.getByRole('combobox')).toHaveTextContent('member')
+      );
+      chooseOption(screen.getByRole('combobox'), 'admin');
+      fireEvent.click(screen.getByRole('button', { name: 'Add 3 members' }));
+
+      await waitFor(() => expect(api.addTeamMembers).toHaveBeenCalled());
+      // the member from another page is neither re-added nor re-roled
+      expect(api.addTeamMembers).toHaveBeenCalledWith('t1', [fresh, odd]);
+      expect(api.getTeamMembers).toHaveBeenCalledWith('t1', 0, 1, {
+        search: onPage2._id,
+      });
+      await waitFor(() =>
+        expect(api.patchTeamMembersRoles).toHaveBeenCalledWith(
+          't1',
+          [fresh._id],
+          'admin'
+        )
+      );
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Role not changed for 2 existing members',
+        })
+      );
+      // only the users actually added are counted
+      expect(toastMock).toHaveBeenCalledWith({ title: '2 members added' });
+    });
+
+    it('never patches ids it cannot verify as new', async () => {
+      renderSheet({ teamId: 't1' });
+      fireEvent.click(await screen.findByLabelText(/legacy@test\.dev/));
+      await waitFor(() =>
+        expect(screen.getByRole('combobox')).toHaveTextContent('member')
+      );
+      chooseOption(screen.getByRole('combobox'), 'admin');
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      await waitFor(() => expect(api.addTeamMembers).toHaveBeenCalled());
+      expect(api.patchTeamMembersRoles).not.toHaveBeenCalled();
+    });
+
+    it('treats a failed lookup as unverified', async () => {
+      api.getTeamMembers.mockRejectedValue(new Error('boom'));
+      renderSheet({ teamId: 't1' });
+      fireEvent.click(await screen.findByLabelText(/fresh@test\.dev/));
+      await waitFor(() =>
+        expect(screen.getByRole('combobox')).toHaveTextContent('member')
+      );
+      chooseOption(screen.getByRole('combobox'), 'admin');
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      await waitFor(() => expect(api.addTeamMembers).toHaveBeenCalled());
+      expect(api.patchTeamMembersRoles).not.toHaveBeenCalled();
+    });
+
+    it('does not add anybody who turns out to be a member already', async () => {
+      renderSheet({ teamId: 't1' });
+      fireEvent.click(await screen.findByLabelText(/onpage2@test\.dev/));
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      await waitFor(() =>
+        expect(toastMock).toHaveBeenCalledWith({
+          title: 'Everybody selected is a member already',
+        })
+      );
+      expect(api.addTeamMembers).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when member is not an allowed role', () => {
+    beforeEach(() => {
+      authz.getResourceDefinition.mockResolvedValue({
+        relations: { admin: ['User'], editor: ['User'] },
+      });
+    });
+
+    it('requires an explicit role choice', async () => {
+      renderSheet({ teamId: 't1' });
+      fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+      const submit = screen.getByRole('button', { name: 'Add 1 member' });
+      await waitFor(() =>
+        expect(
+          screen.getByText('Choose a role for the new members.')
+        ).toBeInTheDocument()
+      );
+      expect(submit).toBeDisabled();
+      expect(screen.getByRole('combobox')).toHaveTextContent('Select a role');
+
+      chooseOption(screen.getByRole('combobox'), 'editor');
+      expect(submit).toBeEnabled();
+    });
   });
 });

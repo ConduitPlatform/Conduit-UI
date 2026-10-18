@@ -2,12 +2,16 @@ import { describe, expect, it } from 'vitest';
 import type { Realm } from '@/lib/models/Realm';
 import {
   buildRealmSlugMap,
+  candidateIneligibility,
+  classifyCandidate,
   getPickerEligibility,
   homeRealmFilterToParam,
   homeRealmParamToFilter,
   homeRealmSelectionToTeamId,
+  isCandidateEligible,
   isRemovalBlocked,
   realmLabel,
+  toGuestPolicy,
   withHomeRealmFilter,
 } from '@/lib/authentication/realmMembers';
 
@@ -20,43 +24,130 @@ describe('isRemovalBlocked', () => {
   });
 });
 
-describe('getPickerEligibility', () => {
-  const realmTeamId = 'realm-1';
-
-  it('offers everybody on a plain team', () => {
-    expect(getPickerEligibility({ _id: 'u', homeRealm: 'other' })).toEqual({
-      selectable: true,
-    });
+describe('classifyCandidate', () => {
+  it('makes users without a home realm, or homed here, home users', () => {
+    expect(classifyCandidate({}, 'r1')).toBe('home');
+    expect(classifyCandidate({ homeRealm: null }, 'r1')).toBe('home');
+    expect(classifyCandidate({ homeRealm: 'r1' }, 'r1')).toBe('home');
   });
 
-  it('never offers users that are already members', () => {
-    const result = getPickerEligibility(
-      { _id: 'u' },
-      { memberIds: new Set(['u']) }
-    );
-    expect(result.selectable).toBe(false);
-    expect(result.reason).toBe('Already a member');
+  it('makes users homed elsewhere guests', () => {
+    expect(classifyCandidate({ homeRealm: 'r2' }, 'r1')).toBe('guest');
   });
+});
 
-  it('only offers users without a home realm when guests are not allowed', () => {
-    const ctx = {
-      realmTeamId,
-      guestPolicy: { allowed: false, allowedHomeRealms: [] },
-    };
-    expect(getPickerEligibility({ _id: 'a' }, ctx).selectable).toBe(true);
+describe('isCandidateEligible', () => {
+  const realmTeamId = 'r1';
+  const open = { allowed: true, allowedHomeRealms: [] };
+
+  it('offers everybody on a plain team except members', () => {
+    expect(isCandidateEligible({ _id: 'u', homeRealm: 'other' })).toBe(true);
     expect(
-      getPickerEligibility({ _id: 'b', homeRealm: null }, ctx).selectable
-    ).toBe(true);
-    const other = getPickerEligibility({ _id: 'c', homeRealm: 'other' }, ctx);
-    expect(other.selectable).toBe(false);
-    expect(other.reason).toBeDefined();
+      isCandidateEligible({ _id: 'u' }, { existingMemberIds: new Set(['u']) })
+    ).toBe(false);
+    expect(
+      isCandidateEligible({ _id: 'u' }, { existingMemberIds: ['u'] })
+    ).toBe(false);
   });
 
-  it('hints users homed elsewhere as guests when guests are allowed', () => {
+  it('always offers global users, even when guests are not allowed', () => {
+    const guests = { allowed: false, allowedHomeRealms: ['x'] };
+    expect(isCandidateEligible({ _id: 'a' }, { realmTeamId, guests })).toBe(
+      true
+    );
+    expect(
+      isCandidateEligible(
+        { _id: 'b', homeRealm: null },
+        { realmTeamId, guests }
+      )
+    ).toBe(true);
+  });
+
+  it('offers users homed in this realm', () => {
+    expect(
+      isCandidateEligible(
+        { _id: 'a', homeRealm: realmTeamId },
+        { realmTeamId, guests: { allowed: false, allowedHomeRealms: [] } }
+      )
+    ).toBe(true);
+  });
+
+  it('rejects guests when guests are not allowed', () => {
     const ctx = {
       realmTeamId,
-      guestPolicy: { allowed: true, allowedHomeRealms: [] },
+      guests: { allowed: false, allowedHomeRealms: [] },
     };
+    expect(isCandidateEligible({ _id: 'c', homeRealm: 'other' }, ctx)).toBe(
+      false
+    );
+    expect(
+      candidateIneligibility({ _id: 'c', homeRealm: 'other' }, ctx)
+    ).toBeDefined();
+  });
+
+  it('accepts any guest when the trusted list is empty', () => {
+    expect(
+      isCandidateEligible(
+        { _id: 'a', homeRealm: 'other' },
+        { realmTeamId, guests: open }
+      )
+    ).toBe(true);
+  });
+
+  it('respects allowedHomeRealms for guests only', () => {
+    const ctx = {
+      realmTeamId,
+      guests: { allowed: true, allowedHomeRealms: ['trusted'] },
+    };
+    expect(isCandidateEligible({ _id: 'a', homeRealm: 'trusted' }, ctx)).toBe(
+      true
+    );
+    expect(isCandidateEligible({ _id: 'b', homeRealm: 'other' }, ctx)).toBe(
+      false
+    );
+    // global users become home users: the trusted list does not apply
+    expect(isCandidateEligible({ _id: 'c' }, ctx)).toBe(true);
+  });
+
+  it('ignores blank entries of a stored trusted list', () => {
+    const ctx = {
+      realmTeamId,
+      guests: { allowed: true, allowedHomeRealms: [''] },
+    };
+    expect(isCandidateEligible({ _id: 'b', homeRealm: 'other' }, ctx)).toBe(
+      true
+    );
+  });
+
+  it('leaves the decision to the backend while the policy is unknown', () => {
+    expect(
+      isCandidateEligible({ _id: 'a', homeRealm: 'other' }, { realmTeamId })
+    ).toBe(true);
+  });
+
+  it('never offers existing members, whatever their class', () => {
+    expect(
+      isCandidateEligible(
+        { _id: 'a', homeRealm: realmTeamId },
+        { realmTeamId, guests: open, existingMemberIds: new Set(['a']) }
+      )
+    ).toBe(false);
+  });
+});
+
+describe('getPickerEligibility', () => {
+  const ctx = {
+    realmTeamId: 'r1',
+    guests: { allowed: true, allowedHomeRealms: [] },
+  };
+
+  it('explains members', () => {
+    expect(
+      getPickerEligibility({ _id: 'u' }, { existingMemberIds: new Set(['u']) })
+    ).toEqual({ selectable: false, reason: 'Already a member' });
+  });
+
+  it('hints guest-classified candidates', () => {
     expect(getPickerEligibility({ _id: 'a' }, ctx)).toEqual({
       selectable: true,
     });
@@ -65,32 +156,31 @@ describe('getPickerEligibility', () => {
     );
   });
 
-  it('keeps home users of the realm out of the guest picker', () => {
-    const result = getPickerEligibility(
-      { _id: 'a', homeRealm: realmTeamId },
-      { realmTeamId }
-    );
-    expect(result.selectable).toBe(false);
+  it('gives a reason for rejected guests', () => {
+    expect(
+      getPickerEligibility(
+        { _id: 'b', homeRealm: 'other' },
+        { ...ctx, guests: { allowed: false, allowedHomeRealms: [] } }
+      )
+    ).toEqual({ selectable: false, reason: 'Guests are not allowed' });
+    expect(
+      getPickerEligibility(
+        { _id: 'b', homeRealm: 'other' },
+        { ...ctx, guests: { allowed: true, allowedHomeRealms: ['t'] } }
+      ).reason
+    ).toBe('Home realm is not trusted by this realm');
   });
+});
 
-  it('respects the trusted home realms list', () => {
-    const ctx = {
-      realmTeamId,
-      guestPolicy: { allowed: true, allowedHomeRealms: ['trusted'] },
-    };
+describe('toGuestPolicy', () => {
+  it('normalizes the stored policy', () => {
     expect(
-      getPickerEligibility({ _id: 'a', homeRealm: 'trusted' }, ctx).selectable
-    ).toBe(true);
-    expect(
-      getPickerEligibility({ _id: 'b', homeRealm: 'other' }, ctx).selectable
-    ).toBe(false);
-    expect(getPickerEligibility({ _id: 'c' }, ctx).selectable).toBe(false);
-  });
-
-  it('offers everybody while the policy is unknown', () => {
-    expect(
-      getPickerEligibility({ _id: 'a', homeRealm: 'other' }, { realmTeamId })
-    ).toEqual({ selectable: true, hint: 'guest' });
+      toGuestPolicy({ allowed: true, allowedHomeRealms: ['a', ''] })
+    ).toEqual({
+      allowed: true,
+      allowedHomeRealms: ['a'],
+    });
+    expect(toGuestPolicy(undefined)).toBeUndefined();
   });
 });
 

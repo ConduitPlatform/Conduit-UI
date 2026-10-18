@@ -22,9 +22,8 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import {
-  addRealmGuests,
   addTeamMembers,
-  getRealm,
+  getTeamMembers,
   getUsers,
   patchTeamMembersRoles,
 } from '@/lib/api/authentication';
@@ -32,7 +31,10 @@ import { getResourceDefinition } from '@/lib/api/authorization';
 import {
   DEFAULT_MEMBER_ROLE,
   getPickerEligibility,
+  interpretMembershipLookup,
+  isCandidateEligible,
   type GuestPolicy,
+  type MembershipLookup,
 } from '@/lib/authentication/realmMembers';
 import {
   TEAM_RESOURCE_NAME,
@@ -55,15 +57,21 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 
 export function AddMemberSheet({
   teamId,
-  isRealmTeam = false,
+  realmTeamId,
+  guestPolicy,
   open,
   onOpenChange,
   onAdded,
   existingMemberIds,
 }: Readonly<{
   teamId: string;
-  /** The team is a realm: users are added as guests through the realm API. */
-  isRealmTeam?: boolean;
+  /**
+   * The realm the team belongs to (the team itself or its top-most ancestor). The
+   * backend makes users without a home realm home users of it and the others guests.
+   */
+  realmTeamId?: string;
+  /** The realm's `policies.guests`; unknown leaves the decision to the backend. */
+  guestPolicy?: GuestPolicy;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAdded?: () => void;
@@ -75,10 +83,11 @@ export function AddMemberSheet({
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [selected, setSelected] = useState<Map<string, User>>(new Map());
-  const [guestPolicy, setGuestPolicy] = useState<GuestPolicy | undefined>();
   const [allowedRoles, setAllowedRoles] = useState<string[]>([]);
   const [rolesError, setRolesError] = useState<string | null>(null);
-  const [role, setRole] = useState(DEFAULT_MEMBER_ROLE);
+  const [rolesReady, setRolesReady] = useState(false);
+  // Empty until the roles are known; `member` is preselected only when it is allowed.
+  const [role, setRole] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const memberIds = useMemo(
@@ -87,11 +96,11 @@ export function AddMemberSheet({
   );
   const eligibilityContext = useMemo(
     () => ({
-      realmTeamId: isRealmTeam ? teamId : undefined,
-      guestPolicy,
-      memberIds,
+      realmTeamId,
+      guests: guestPolicy,
+      existingMemberIds: memberIds,
     }),
-    [isRealmTeam, teamId, guestPolicy, memberIds]
+    [realmTeamId, guestPolicy, memberIds]
   );
 
   // Reset whenever the sheet closes so the next open starts clean.
@@ -99,39 +108,19 @@ export function AddMemberSheet({
     if (open) return;
     setSearch('');
     setSelected(new Map());
-    setRole(DEFAULT_MEMBER_ROLE);
+    setRole('');
   }, [open]);
-
-  // The realm's guest policy decides who can be offered.
-  useEffect(() => {
-    if (!open || !isRealmTeam) return;
-    let cancelled = false;
-    getRealm(teamId)
-      .then(realm => {
-        if (cancelled) return;
-        const { guests } = realm.settings.policies;
-        setGuestPolicy({
-          allowed: guests.allowed,
-          allowedHomeRealms: guests.allowedHomeRealms ?? [],
-        });
-      })
-      .catch(() => {
-        // Unknown policy: offer everybody and let the backend validate.
-        if (!cancelled) setGuestPolicy(undefined);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [open, isRealmTeam, teamId]);
 
   // Roles come from the Team resource, the same source as the role dialog.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
     setRolesError(null);
+    setRolesReady(false);
     getResourceDefinition(TEAM_RESOURCE_NAME)
       .then(def => {
         if (cancelled) return;
+        setRolesReady(true);
         const allowed = teamMemberRolesAllowedForUser(def);
         setAllowedRoles(allowed);
         if (allowed.length === 0) {
@@ -140,10 +129,17 @@ export function AddMemberSheet({
           );
           return;
         }
-        setRole(r => (allowed.includes(r) ? r : (allowed[0] ?? r)));
+        setRole(r =>
+          allowed.includes(r)
+            ? r
+            : allowed.includes(DEFAULT_MEMBER_ROLE)
+              ? DEFAULT_MEMBER_ROLE
+              : ''
+        );
       })
       .catch(() => {
         if (!cancelled) {
+          setRolesReady(true);
           setRolesError('Could not load roles; members get the default role.');
         }
       });
@@ -186,72 +182,129 @@ export function AddMemberSheet({
     });
   };
 
-  const guestsDisallowed = isRealmTeam && guestPolicy?.allowed === false;
-  const noun = isRealmTeam ? 'guest' : 'member';
+  const guestsDisallowed =
+    realmTeamId !== undefined && guestPolicy?.allowed === false;
+  // Roles are known but none is chosen (`member` is not offered): ask explicitly.
+  const roleRequired = allowedRoles.length > 0 && role === '';
+
+  /**
+   * Which of `ids` are members already. Members on other pages are not in
+   * `existingMemberIds`, and re-granting them would reset their role, so each id is
+   * looked up through the members search (24-hex ids only; see `interpretMembershipLookup`).
+   */
+  const lookupMemberships = async (ids: string[]) => {
+    const entries = await Promise.all(
+      ids.map(async (id): Promise<[string, MembershipLookup]> => {
+        try {
+          const found = await getTeamMembers(teamId, 0, 1, { search: id });
+          return [id, interpretMembershipLookup(id, found)];
+        } catch {
+          return [id, 'unknown'];
+        }
+      })
+    );
+    return new Map(entries);
+  };
 
   const handleSubmit = async () => {
-    const picked = Array.from(selected.values());
-    if (picked.length === 0) return;
-    const ids = picked.map(user => user._id);
-    setSubmitting(true);
-    try {
-      if (isRealmTeam) {
-        const result = await addRealmGuests(teamId, ids);
-        if (!result.ok) {
-          toast({
-            title: `Failed to add ${noun}s`,
-            description: result.message,
-            variant: 'destructive',
-          });
-          setSubmitting(false);
-          return;
-        }
-      } else {
-        await addTeamMembers(teamId, picked);
-      }
-    } catch (e: unknown) {
-      toast({
-        title: `Failed to add ${noun}s`,
-        description: e instanceof Error ? e.message : undefined,
-        variant: 'destructive',
-      });
-      setSubmitting(false);
-      return;
-    }
-    let roleFailed = false;
-    if (role !== DEFAULT_MEMBER_ROLE && allowedRoles.includes(role)) {
-      try {
-        await patchTeamMembersRoles(teamId, ids, role);
-      } catch (e: unknown) {
-        roleFailed = true;
+    // Eligibility is judged again here: the team or the policy may have changed
+    // since the rows were ticked.
+    const picked = Array.from(selected.values()).filter(user =>
+      isCandidateEligible(user, eligibilityContext)
+    );
+    const dropped = selected.size - picked.length;
+    if (picked.length === 0) {
+      if (dropped > 0) {
         toast({
-          title: 'Added, but the role could not be set',
-          description: e instanceof Error ? e.message : undefined,
+          title: 'Nobody to add',
+          description: `${dropped} selected user${dropped === 1 ? ' is' : 's are'} no longer eligible.`,
           variant: 'destructive',
         });
       }
+      return;
     }
-    if (!roleFailed) {
+    setSubmitting(true);
+    try {
+      const wantsRole =
+        role !== '' &&
+        role !== DEFAULT_MEMBER_ROLE &&
+        allowedRoles.includes(role);
+      const lookups = await lookupMemberships(picked.map(user => user._id));
+      const toAdd = picked.filter(user => lookups.get(user._id) !== 'existing');
+      const existingCount = picked.length - toAdd.length;
+
+      if (toAdd.length > 0) {
+        const added = await addTeamMembers(teamId, toAdd);
+        if (!added.ok) {
+          toast({
+            title: 'Failed to add members',
+            description: added.message,
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
+      // Only users confirmed as new get the chosen role.
+      const newIds = toAdd
+        .map(user => user._id)
+        .filter(id => lookups.get(id) === 'new');
+      const unverified = toAdd.length - newIds.length;
+      let roleFailed = false;
+      if (wantsRole && newIds.length > 0) {
+        const patched = await patchTeamMembersRoles(teamId, newIds, role);
+        if (!patched.ok) {
+          roleFailed = true;
+          toast({
+            title: 'Added, but the role could not be set',
+            description: patched.message,
+            variant: 'destructive',
+          });
+        }
+      }
+      if (wantsRole && existingCount + unverified > 0) {
+        const skipped = existingCount + unverified;
+        toast({
+          title: `Role not changed for ${skipped} existing member${skipped === 1 ? '' : 's'}`,
+          description:
+            unverified > 0
+              ? `${unverified} could not be confirmed as new. Use the role editor to change their role.`
+              : 'Use the role editor to change their role.',
+        });
+      }
+      if (!roleFailed) {
+        if (toAdd.length === 0) {
+          toast({ title: 'Everybody selected is a member already' });
+        } else {
+          toast({
+            title:
+              toAdd.length === 1
+                ? 'Member added'
+                : `${toAdd.length} members added`,
+          });
+        }
+      }
+      onAdded?.();
+      onOpenChange(false);
+    } catch (e: unknown) {
       toast({
-        title:
-          ids.length === 1
-            ? `${isRealmTeam ? 'Guest' : 'Member'} added`
-            : `${ids.length} ${noun}s added`,
+        title: 'Failed to add members',
+        description: e instanceof Error ? e.message : undefined,
+        variant: 'destructive',
       });
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
-    onAdded?.();
-    onOpenChange(false);
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex flex-col gap-4 sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>{isRealmTeam ? 'Add guest' : 'Add members'}</SheetTitle>
+          <SheetTitle>Add members</SheetTitle>
           <SheetDescription>
-            {isRealmTeam
-              ? 'Give existing users guest access to this realm.'
+            {realmTeamId
+              ? 'Pick existing users to add to this team. Users without a home realm become home users of the realm; users from another realm join as guests.'
               : 'Pick existing users to add to this team.'}
           </SheetDescription>
         </SheetHeader>
@@ -261,8 +314,8 @@ export function AddMemberSheet({
             role="note"
             className="rounded-md border border-border bg-surface-1 px-3 py-2 text-sm text-muted-foreground"
           >
-            This realm does not accept guests. Only users without a home realm
-            can be added; users who belong to another realm are disabled.
+            This realm does not accept guests. Users without a home realm can be
+            added; users who belong to another realm are disabled.
           </p>
         )}
 
@@ -314,7 +367,7 @@ export function AddMemberSheet({
                       </span>
                     </Label>
                     {eligibility.hint === 'guest' && (
-                      <Badge variant="outline">Guest</Badge>
+                      <Badge variant="outline">Will join as guest</Badge>
                     )}
                     {eligibility.reason && (
                       <span className="text-xs text-muted-foreground">
@@ -336,7 +389,7 @@ export function AddMemberSheet({
             disabled={submitting || allowedRoles.length === 0}
           >
             <SelectTrigger id="add-member-role">
-              <SelectValue placeholder={DEFAULT_MEMBER_ROLE} />
+              <SelectValue placeholder="Select a role" />
             </SelectTrigger>
             <SelectContent>
               {allowedRoles.map(r => (
@@ -348,6 +401,11 @@ export function AddMemberSheet({
           </Select>
           {rolesError && (
             <p className="text-xs text-muted-foreground">{rolesError}</p>
+          )}
+          {roleRequired && (
+            <p className="text-xs text-muted-foreground">
+              Choose a role for the new members.
+            </p>
           )}
         </div>
 
@@ -363,15 +421,17 @@ export function AddMemberSheet({
           <Button
             type="button"
             onClick={() => void handleSubmit()}
-            disabled={selected.size === 0 || submitting}
+            disabled={
+              selected.size === 0 || submitting || !rolesReady || roleRequired
+            }
             className="inline-flex items-center gap-2"
           >
             {submitting && (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
             )}
             {selected.size > 0
-              ? `Add ${selected.size} ${noun}${selected.size === 1 ? '' : 's'}`
-              : `Add ${noun}s`}
+              ? `Add ${selected.size} member${selected.size === 1 ? '' : 's'}`
+              : 'Add members'}
           </Button>
         </SheetFooter>
       </SheetContent>

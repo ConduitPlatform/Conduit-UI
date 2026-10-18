@@ -7,6 +7,7 @@ import {
   getTeams,
 } from '@/lib/api/authentication';
 import { realmsEnabled } from '@/lib/authentication/realms';
+import { toGuestPolicy } from '@/lib/authentication/realmMembers';
 import { Team } from '@/lib/models/Team';
 import RealmTab from '@/components/authentication/teams/manageTeam/realm/RealmTab';
 import { RealmInheritedBanner } from '@/components/authentication/teams/manageTeam/realm/RealmInheritedBanner';
@@ -121,6 +122,16 @@ export default async function Teams(
       ? await getRealm(team._id).catch(() => null)
       : null;
 
+  // The member picker follows the realm the team belongs to: this team when it is the
+  // realm, the top-most ancestor for a sub-team. Its guest policy filters who is offered.
+  const memberRealmTeamId = isRealmTeam ? team._id : realmAncestor?._id;
+  const memberRealm =
+    realm ??
+    (realmAncestor
+      ? await getRealm(realmAncestor._id).catch(() => null)
+      : null);
+  const guestPolicy = toGuestPolicy(memberRealm?.settings?.policies?.guests);
+
   return (
     <div className={'flex flex-col w-full gap-y-2'}>
       <TeamProfile
@@ -170,6 +181,8 @@ export default async function Teams(
               teamId={team._id}
               inRealm={inRealm}
               isRealmTeam={isRealmTeam}
+              realmTeamId={memberRealmTeamId}
+              guestPolicy={guestPolicy}
             />
           </MemberActionsProvider>
         </TabsContent>
