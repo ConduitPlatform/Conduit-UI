@@ -29,6 +29,14 @@ import { updateTeam } from '@/lib/api/authentication';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { Team } from '@/lib/models/Team';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
+export const REALM_DEFAULT_TEAM_TOOLTIP = 'A realm cannot be the default team';
 
 const FormSchema = z.object({
   name: z.string().nonempty('Name is required'),
@@ -52,6 +60,7 @@ export const EditTeamSheet = ({
     defaultOpen !== undefined ? defaultOpen : false
   );
   const { addAlert } = useAlerts();
+  const isRealm = team.realm?.enabled === true;
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: {
@@ -97,11 +106,35 @@ export const EditTeamSheet = ({
         </div>
       ),
     });
-    updateTeam({ _id: team._id, name: data.name, isDefault: data.isDefault })
-      .then(team => {
+    const showFailure = (message: string) => {
+      dismiss();
+      toast({
+        title: 'Edit Team',
+        description: (
+          <div className={'flex flex-col'}>
+            <div className={'flex flex-row text-destructive items-center'}>
+              <LucideX className={'w-8 h-8'} />
+              <p className="text-sm">Failed to update with:</p>
+            </div>
+            <ErrorPre>{message}</ErrorPre>
+          </div>
+        ),
+      });
+    };
+    // A realm is never the default team: leave the flag out of the request.
+    updateTeam({
+      _id: team._id,
+      name: data.name,
+      ...(isRealm ? {} : { isDefault: data.isDefault }),
+    })
+      .then(result => {
+        if (!result.ok) {
+          showFailure(result.message);
+          return;
+        }
         setOpen(false);
         dismiss();
-        onSuccess?.(team);
+        onSuccess?.(result.data);
         toast({
           title: 'Edit Team',
           description: (
@@ -112,21 +145,9 @@ export const EditTeamSheet = ({
           ),
         });
       })
-      .catch(error => {
-        dismiss();
-        toast({
-          title: 'Edit Team',
-          description: (
-            <div className={'flex flex-col'}>
-              <div className={'flex flex-row text-destructive items-center'}>
-                <LucideX className={'w-8 h-8'} />
-                <p className="text-sm">Failed to update with:</p>
-              </div>
-              <ErrorPre>{error.message}</ErrorPre>
-            </div>
-          ),
-        });
-      });
+      .catch((error: unknown) =>
+        showFailure(error instanceof Error ? error.message : String(error))
+      );
   }
 
   return (
@@ -165,12 +186,30 @@ export const EditTeamSheet = ({
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-x-4">
                     <FormLabel className={'text-right'}>Default Team</FormLabel>
-                    <FormControl>
-                      <SwitchField
-                        className="col-span-3"
-                        fieldName={'isDefault'}
-                      />
-                    </FormControl>
+                    {isRealm ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            {/* A disabled switch swallows pointer events, so the span carries the tooltip. */}
+                            <span tabIndex={0} className="col-span-3">
+                              <FormControl>
+                                <SwitchField fieldName={'isDefault'} disabled />
+                              </FormControl>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {REALM_DEFAULT_TEAM_TOOLTIP}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <FormControl>
+                        <SwitchField
+                          className="col-span-3"
+                          fieldName={'isDefault'}
+                        />
+                      </FormControl>
+                    )}
                     <FormMessage className={'text-right col-span-4'} />
                   </FormItem>
                 )}

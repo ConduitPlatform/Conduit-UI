@@ -153,18 +153,20 @@ export const createTeam = async (
   });
   return res.data;
 };
+/** Returns an `ActionResult`: backend refusals (e.g. a realm as default team) carry their message. */
 export const updateTeam = async (data: {
   _id: string;
   name?: string;
   isDefault?: boolean;
-}): Promise<Team> => {
-  const res = await (
-    await getApiClient()
-  ).patch(`/authentication/teams/${data._id}`, {
-    ...data,
+}): Promise<ActionResult<Team>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).patch<Team>(`/authentication/teams/${data._id}`, {
+      ...data,
+    });
+    return res.data;
   });
-  return res.data;
-};
 export const deleteTeam = async (teamId: string) => {
   const res = await (
     await getApiClient()
