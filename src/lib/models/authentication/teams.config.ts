@@ -1,3 +1,9 @@
+export type RealmsConfig = {
+  enabled: boolean;
+  cacheTtlMs: number;
+  allowEmailDiscovery: boolean;
+};
+
 export type TeamsConfig = {
   teams: {
     enabled: boolean;
@@ -10,5 +16,7 @@ export type TeamsConfig = {
       sendEmail: boolean;
       inviteUrl: string;
     };
+    /** Absent on backends that predate authentication realms. */
+    realms?: RealmsConfig;
   };
 };
