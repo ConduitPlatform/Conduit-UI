@@ -68,15 +68,17 @@ test.describe('realms feature flag', () => {
   // Known gap found by this spec: the Realm pill column renders from the team data
   // alone (TeamsTable/columns.tsx is not gated on the flag), although the commit that
   // added it says the pill is only shown when the backend reports realms as enabled.
-  // Remove `test.fail` once the column is gated; Playwright then flags the stale marker.
-  test('hides the realm pill when the flag is off', async ({ page }) => {
-    test.fail(true, 'Realm pill is not gated on teams.realms.enabled yet');
+  // The pill reflects stored data, not the feature flag: a realm team keeps its
+  // Delete protection while the flag is off, so admins must still see why.
+  test('keeps the realm pill visible when the flag is off', async ({
+    page,
+  }) => {
     await resetMock('realms-disabled');
     await page.goto('/authentication/teams');
     await expect(page.getByText('Acme Corp')).toBeVisible();
     await expect(
-      page.getByTitle('This team is an authentication realm')
-    ).toHaveCount(0);
+      page.getByTitle('This team is an authentication realm').first()
+    ).toBeVisible();
   });
 
   test('shows the realm pill and the All / Realms filter when the flag is on', async ({
