@@ -24,12 +24,21 @@ import { ErrorPre } from '@/components/ui/error-pre';
 import { patchAuthenticationSettingsMerged } from '@/lib/api/authentication';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/hooks/use-toast';
+import { formatRealmStrategyCount } from '@/lib/authentication/realms';
 
 export interface StrategyListProps {
   strategies: StrategyInterface[];
+  /** Realms (active ones) that enable each strategy, by strategy key. */
+  realmCounts?: Record<string, number>;
+  /** More realms exist than were counted: the numbers are lower bounds ("100+"). */
+  realmCountsCapped?: boolean;
 }
 
-export const StrategyList: React.FC<StrategyListProps> = ({ strategies }) => {
+export const StrategyList: React.FC<StrategyListProps> = ({
+  strategies,
+  realmCounts = {},
+  realmCountsCapped = false,
+}) => {
   const [open, setOpen] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<StrategyInterface | null>(null);
@@ -112,6 +121,14 @@ export const StrategyList: React.FC<StrategyListProps> = ({ strategies }) => {
                         <span>{strategy.name}</span>
                       </CardTitle>
                       <CardDescription>{strategy.description}</CardDescription>
+                      {(realmCounts[strategy.key as string] ?? 0) > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          {`Enabled by ${formatRealmStrategyCount(
+                            realmCounts[strategy.key as string],
+                            realmCountsCapped
+                          )}`}
+                        </p>
+                      )}
                     </CardHeader>
                   </Card>
                 ))

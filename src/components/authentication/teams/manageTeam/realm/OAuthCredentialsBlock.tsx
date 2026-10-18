@@ -2,6 +2,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
@@ -12,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/ui/password-input';
 import { SecretTextarea } from '@/components/ui/secret-textarea';
 import { RealmSwitchRow } from '@/components/authentication/teams/manageTeam/realm/RealmSwitchRow';
-import { hasOwnCredentials } from '@/lib/authentication/realms';
+import { hasOwnOverrides } from '@/lib/authentication/realms';
 import {
   isCredentialDraftIncomplete,
   type OAuthCredentialDraft,
@@ -109,6 +110,7 @@ export function OAuthCredentialsBlock({
   errors,
   showErrors,
   disabled,
+  globalAccountLinking = true,
   onChange,
 }: Readonly<{
   provider: OAuthProviderKey;
@@ -119,6 +121,8 @@ export function OAuthCredentialsBlock({
   /** Reveal validation messages (after a save attempt). */
   showErrors: boolean;
   disabled?: boolean;
+  /** The global provider's account linking: what the realm inherits without an override. */
+  globalAccountLinking?: boolean;
   onChange: (patch: Partial<OAuthCredentialDraft>) => void;
 }>) {
   const [open, setOpen] = useState(false);
@@ -135,6 +139,11 @@ export function OAuthCredentialsBlock({
 
   const invalid = (field: keyof OAuthCredentialErrors) =>
     visibleErrors?.[field] ? true : undefined;
+  // Links an input to its error message (`<p id={`${id}-error`}>` in `Field`).
+  const describedBy = (field: keyof OAuthCredentialErrors) =>
+    visibleErrors?.[field] ? `${idBase}-${field}-error` : undefined;
+  const overridesLinking = draft.accountLinking !== undefined;
+  const effectiveLinking = draft.accountLinking ?? globalAccountLinking;
 
   return (
     <Collapsible
@@ -180,8 +189,12 @@ export function OAuthCredentialsBlock({
           {draft.mode === 'inherit' ? (
             <p className="text-xs text-muted-foreground">
               This realm uses the global {provider} configuration.
-              {hasOwnCredentials(server) && (
-                <> Saving clears the realm&apos;s own credentials.</>
+              {hasOwnOverrides(server) && (
+                <>
+                  {' '}
+                  Saving clears the realm&apos;s own credentials and account
+                  linking.
+                </>
               )}
             </p>
           ) : (
@@ -196,25 +209,31 @@ export function OAuthCredentialsBlock({
                   value={draft.clientId}
                   disabled={disabled}
                   aria-invalid={invalid('clientId')}
+                  aria-describedby={describedBy('clientId')}
                   onChange={e => onChange({ clientId: e.target.value })}
                 />
               </Field>
-              <Field
-                id={`${idBase}-clientSecret`}
-                label="Client secret"
-                badge={server?.hasClientSecret ? <SetBadge /> : undefined}
-              >
-                <PasswordInput
+              {!isApple && (
+                <Field
                   id={`${idBase}-clientSecret`}
-                  value={draft.clientSecret}
-                  disabled={disabled}
-                  autoComplete="new-password"
-                  placeholder={
-                    server?.hasClientSecret ? SECRET_SET_PLACEHOLDER : ''
-                  }
-                  onChange={e => onChange({ clientSecret: e.target.value })}
-                />
-              </Field>
+                  label="Client secret"
+                  error={visibleErrors?.clientSecret}
+                  badge={server?.hasClientSecret ? <SetBadge /> : undefined}
+                >
+                  <PasswordInput
+                    id={`${idBase}-clientSecret`}
+                    value={draft.clientSecret}
+                    disabled={disabled}
+                    autoComplete="new-password"
+                    aria-invalid={invalid('clientSecret')}
+                    aria-describedby={describedBy('clientSecret')}
+                    placeholder={
+                      server?.hasClientSecret ? SECRET_SET_PLACEHOLDER : ''
+                    }
+                    onChange={e => onChange({ clientSecret: e.target.value })}
+                  />
+                </Field>
+              )}
               <Field
                 id={`${idBase}-redirect_uri`}
                 label="Redirect URI"
@@ -225,6 +244,7 @@ export function OAuthCredentialsBlock({
                   value={draft.redirect_uri}
                   disabled={disabled}
                   aria-invalid={invalid('redirect_uri')}
+                  aria-describedby={describedBy('redirect_uri')}
                   onChange={e => onChange({ redirect_uri: e.target.value })}
                 />
               </Field>
@@ -241,6 +261,7 @@ export function OAuthCredentialsBlock({
                         value={draft.teamId}
                         disabled={disabled}
                         aria-invalid={invalid('teamId')}
+                        aria-describedby={describedBy('teamId')}
                         onChange={e => onChange({ teamId: e.target.value })}
                       />
                     </Field>
@@ -254,6 +275,7 @@ export function OAuthCredentialsBlock({
                         value={draft.keyId}
                         disabled={disabled}
                         aria-invalid={invalid('keyId')}
+                        aria-describedby={describedBy('keyId')}
                         onChange={e => onChange({ keyId: e.target.value })}
                       />
                     </Field>
@@ -269,6 +291,7 @@ export function OAuthCredentialsBlock({
                       value={draft.privateKey}
                       disabled={disabled}
                       aria-invalid={invalid('privateKey')}
+                      aria-describedby={describedBy('privateKey')}
                       placeholder={
                         server?.hasPrivateKey
                           ? `${SECRET_SET_PLACEHOLDER}. Paste a new key to replace it.`
@@ -282,13 +305,33 @@ export function OAuthCredentialsBlock({
               <RealmSwitchRow
                 id={`${idBase}-accountLinking`}
                 label="Account linking"
-                description="Link sign-ins to an existing account with the same email."
-                checked={draft.accountLinking}
+                description={
+                  <>
+                    Link sign-ins to an existing account with the same email.{' '}
+                    {overridesLinking
+                      ? `The global setting is ${globalAccountLinking ? 'on' : 'off'}.`
+                      : `Following the global setting (${globalAccountLinking ? 'on' : 'off'}).`}
+                  </>
+                }
+                checked={effectiveLinking}
                 disabled={disabled}
                 onCheckedChange={checked =>
                   onChange({ accountLinking: checked })
                 }
-              />
+              >
+                {overridesLinking && (
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-auto self-start p-0 text-xs"
+                    disabled={disabled}
+                    onClick={() => onChange({ accountLinking: undefined })}
+                  >
+                    Use global
+                  </Button>
+                )}
+              </RealmSwitchRow>
             </div>
           )}
         </div>
