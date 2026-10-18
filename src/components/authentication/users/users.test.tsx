@@ -258,7 +258,10 @@ describe('EditUserSheet', () => {
   });
 
   it('confirms with a session revocation warning, then moves without force', async () => {
-    api.setUserHomeRealm.mockResolvedValue(user({ homeRealm: 't1' }));
+    api.setUserHomeRealm.mockResolvedValue({
+      ok: true,
+      data: user({ homeRealm: 't1' }),
+    });
     renderSheet();
     chooseOption(screen.getByRole('combobox'), 'acme');
     fireEvent.click(screen.getByRole('button', { name: 'Move home realm' }));
@@ -276,7 +279,10 @@ describe('EditUserSheet', () => {
   });
 
   it('revokes all sessions when forced', async () => {
-    api.setUserHomeRealm.mockResolvedValue(user({ homeRealm: null }));
+    api.setUserHomeRealm.mockResolvedValue({
+      ok: true,
+      data: user({ homeRealm: null }),
+    });
     renderSheet(user({ homeRealm: 't1' }));
     chooseOption(screen.getByRole('combobox'), 'Global');
     fireEvent.click(
@@ -306,7 +312,11 @@ describe('EditUserSheet', () => {
   });
 
   it('toasts when the move fails', async () => {
-    api.setUserHomeRealm.mockRejectedValue(new Error('REALM_NOT_FOUND'));
+    api.setUserHomeRealm.mockResolvedValue({
+      ok: false,
+      code: 'REALM_NOT_FOUND',
+      message: 'Realm not found',
+    });
     renderSheet();
     chooseOption(screen.getByRole('combobox'), 'acme');
     fireEvent.click(screen.getByRole('button', { name: 'Move home realm' }));
@@ -316,7 +326,7 @@ describe('EditUserSheet', () => {
       expect(toastMock).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Failed to move home realm',
-          description: 'REALM_NOT_FOUND',
+          description: 'Realm not found',
         })
       )
     );
