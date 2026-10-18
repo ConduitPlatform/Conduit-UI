@@ -4,6 +4,7 @@ import type { RealmStrategies } from '@/lib/models/Realm';
 import {
   buildPromoteBody,
   buildStrategiesPatch,
+  countRealmsEnablingStrategy,
   formatRealmCounts,
   hasOwnCredentials,
   normalizeRealmSettingsForSave,
@@ -357,3 +358,53 @@ describe('suggestRealmSlug', () => {
 function isValidSuggestion(slug: string) {
   return slugSchema.safeParse(slug).success;
 }
+
+describe('countRealmsEnablingStrategy', () => {
+  const realmWith = (strategies: Partial<RealmStrategies>) => ({
+    settings: {
+      strategies: {
+        local: { enabled: false },
+        username: { enabled: false },
+        magicLink: { enabled: false },
+        phone: { enabled: false },
+        metamask: { enabled: false },
+        biometric: { enabled: false },
+        oauth: {},
+        ...strategies,
+      },
+    },
+  });
+
+  it('maps realm strategy keys onto the global strategy keys', () => {
+    const counts = countRealmsEnablingStrategy([
+      realmWith({
+        local: { enabled: true },
+        magicLink: { enabled: true },
+        phone: { enabled: true },
+        biometric: { enabled: true },
+        oauth: { google: { enabled: true }, github: { enabled: false } },
+      }),
+      realmWith({
+        local: { enabled: true },
+        oauth: { google: { enabled: true }, apple: { enabled: true } },
+      }),
+    ] as never);
+    expect(Object.fromEntries(counts)).toEqual({
+      local: 2,
+      magic_link: 1,
+      phoneAuthentication: 1,
+      biometricAuthentication: 1,
+      google: 2,
+      apple: 1,
+    });
+  });
+
+  it('is empty without realms and ignores strategies with no global card', () => {
+    expect(countRealmsEnablingStrategy([]).size).toBe(0);
+    expect(
+      countRealmsEnablingStrategy([
+        realmWith({ username: { enabled: true }, metamask: { enabled: true } }),
+      ] as never).size
+    ).toBe(0);
+  });
+});

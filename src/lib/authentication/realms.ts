@@ -10,6 +10,7 @@ import {
   type RealmPolicies,
   type RealmRegistration,
   type PromoteRealmBody,
+  type Realm,
   type RealmOAuthStrategy,
   type RealmSettingsPayload,
   type RealmStrategies,
@@ -434,6 +435,42 @@ export function buildStrategiesPatch(
   if (Object.keys(oauth).length > 0) patch.oauth = oauth;
 
   return patch as RealmStrategiesPatch;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Global strategies page: how many realms use each strategy                  */
+/* -------------------------------------------------------------------------- */
+
+/** Global strategy key (see `stategyMap.config.ts`) -> realm simple strategy key. */
+const GLOBAL_TO_REALM_STRATEGY: Record<string, RealmSimpleStrategyKey> = {
+  local: 'local',
+  magic_link: 'magicLink',
+  phoneAuthentication: 'phone',
+  biometricAuthentication: 'biometric',
+};
+
+/**
+ * For each global strategy key, how many of the given realms enable it. OAuth providers
+ * use the same key globally and per realm. Strategies no realm enables are left out.
+ */
+export function countRealmsEnablingStrategy(
+  realms: ReadonlyArray<Pick<Realm, 'settings'>>
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  const bump = (key: string) => counts.set(key, (counts.get(key) ?? 0) + 1);
+  for (const { settings } of realms) {
+    const strategies = settings?.strategies;
+    if (!strategies) continue;
+    for (const [globalKey, realmKey] of Object.entries(
+      GLOBAL_TO_REALM_STRATEGY
+    )) {
+      if (strategies[realmKey]?.enabled === true) bump(globalKey);
+    }
+    for (const provider of OAUTH_PROVIDER_KEYS) {
+      if (strategies.oauth?.[provider]?.enabled === true) bump(provider);
+    }
+  }
+  return counts;
 }
 
 /* -------------------------------------------------------------------------- */

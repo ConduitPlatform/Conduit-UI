@@ -1,6 +1,10 @@
 export const dynamic = 'force-dynamic';
 
-import { getAuthenticationSettings } from '@/lib/api/authentication';
+import { getAuthenticationSettings, getRealms } from '@/lib/api/authentication';
+import {
+  countRealmsEnablingStrategy,
+  realmsEnabled,
+} from '@/lib/authentication/realms';
 import React from 'react';
 import { StrategyCard } from '@/components/authentication/strategies/StrategyCard';
 import strategyMap from '@/components/authentication/strategies/stategyMap.config';
@@ -16,6 +20,17 @@ const strategyKeys = Object.keys(strategyMap);
 
 export default async function Strategies() {
   const { config } = await getAuthenticationSettings();
+
+  // Realms only exist behind the flag: with it off there is no extra request.
+  let realmCounts = new Map<string, number>();
+  if (realmsEnabled(config)) {
+    try {
+      const { realms } = await getRealms(0, 100);
+      realmCounts = countRealmsEnablingStrategy(realms);
+    } catch {
+      // The footnote is informational: never block the page on it.
+    }
+  }
 
   const enabledStrategies = strategyKeys
     .filter(key => isStrategyEnabled(config, key))
@@ -46,6 +61,7 @@ export default async function Strategies() {
               data: config[strategy as keyof typeof config],
               key: strategy,
             }}
+            realmCount={realmCounts.get(strategy) ?? 0}
           />
         ))}
       </div>
