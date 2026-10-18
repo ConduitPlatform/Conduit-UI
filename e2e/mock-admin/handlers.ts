@@ -11,6 +11,7 @@ import {
   PRODUCT_SCHEMA_ID,
   REDACTED_SECRET,
 } from './constants.ts';
+import { handleAuthenticationRequest } from './auth-handlers.ts';
 import { signAdminToken } from './jwt.ts';
 import {
   bearerToken,
@@ -691,6 +692,19 @@ function handleTestControl(
     sendJson(response, 200, { ok: true });
     return true;
   }
+  if (pathname === '/__test__/requests' && method === 'GET') {
+    sendJson(response, 200, { requests: getState().requests });
+    return true;
+  }
+  if (pathname === '/__test__/requests/clear' && method === 'POST') {
+    getState().requests = [];
+    sendJson(response, 200, { ok: true });
+    return true;
+  }
+  if (pathname === '/__test__/auth' && method === 'GET') {
+    sendJson(response, 200, getState().auth);
+    return true;
+  }
   if (pathname === '/__test__/state' && method === 'GET') {
     const state = getState();
     const provider =
@@ -709,6 +723,21 @@ function handleTestControl(
   }
   sendEmpty(response, 404);
   return true;
+}
+
+async function recordRequest(
+  request: IncomingMessage,
+  method: string,
+  pathname: string,
+  search: URLSearchParams
+): Promise<void> {
+  const query: Record<string, string | string[]> = {};
+  for (const key of new Set(search.keys())) {
+    const values = search.getAll(key);
+    query[key] = values.length === 1 ? values[0] : values;
+  }
+  const body = await readJsonBody(request).catch(() => undefined);
+  getState().requests.push({ method, path: pathname, query, body });
 }
 
 export async function handleMockRequest(
@@ -735,6 +764,20 @@ export async function handleMockRequest(
 
   if (pathname === '/login' && method === 'POST') {
     await handleLogin(request, response);
+    return;
+  }
+
+  await recordRequest(request, method, pathname, search);
+
+  if (
+    await handleAuthenticationRequest(
+      method,
+      pathname,
+      search,
+      request,
+      response
+    )
+  ) {
     return;
   }
 

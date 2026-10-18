@@ -39,6 +39,7 @@ import {
   VIEWS_SCHEMA_ID,
   VIEWS_SCHEMA_NAME,
 } from './constants.ts';
+import { createAuthState } from './auth-state.ts';
 import type {
   MockAdminState,
   MockBackfillRun,
@@ -50,6 +51,9 @@ import type {
   MockScenario,
   MockSchema,
 } from './types.ts';
+
+/** Everything the embeddings scenarios define; auth and request log are added on top. */
+type EmbeddingsState = Omit<MockAdminState, 'auth' | 'requests'>;
 
 function emptyQueue(): MockQueueCounts {
   return {
@@ -339,7 +343,7 @@ function readyIndexes() {
   ];
 }
 
-function readyState(enabled: boolean): MockAdminState {
+function readyState(enabled: boolean): EmbeddingsState {
   return {
     scenario: enabled ? 'ready' : 'workers-off',
     modules: coreModules(true, true),
@@ -358,10 +362,13 @@ function readyState(enabled: boolean): MockAdminState {
   };
 }
 
-export function createState(scenario: MockScenario = 'ready'): MockAdminState {
+function createEmbeddingsState(scenario: MockScenario): EmbeddingsState {
   switch (scenario) {
     case 'ready':
-      return readyState(true);
+    case 'realms':
+    case 'realms-disabled':
+    case 'realms-legacy':
+      return { ...readyState(true), scenario };
     case 'workers-off':
       return readyState(false);
     case 'gated':
@@ -445,6 +452,38 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
       return exhaustive;
     }
   }
+}
+
+const REALM_SCENARIO_FLAGS = {
+  realms: 'enabled',
+  'realms-disabled': 'disabled',
+  'realms-legacy': 'absent',
+} as const;
+
+function realmsFlagFor(
+  scenario: MockScenario
+): 'enabled' | 'disabled' | 'absent' {
+  if (scenario in REALM_SCENARIO_FLAGS) {
+    return REALM_SCENARIO_FLAGS[scenario as keyof typeof REALM_SCENARIO_FLAGS];
+  }
+  return 'enabled';
+}
+
+export function createState(scenario: MockScenario = 'ready'): MockAdminState {
+  const base = createEmbeddingsState(scenario);
+  const isRealmScenario = scenario in REALM_SCENARIO_FLAGS;
+  return {
+    ...base,
+    modules: isRealmScenario
+      ? [
+          ...base.modules,
+          { moduleName: 'authentication', url: '0.0.0.0:5513', serving: true },
+          { moduleName: 'authorization', url: '0.0.0.0:5514', serving: true },
+        ]
+      : base.modules,
+    auth: createAuthState(realmsFlagFor(scenario)),
+    requests: [],
+  };
 }
 
 let state: MockAdminState = createState('ready');
