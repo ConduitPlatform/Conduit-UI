@@ -23,6 +23,7 @@ import {
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { HomeRealmCell } from '@/components/authentication/users/homeRealmCell';
 import { getUsers, setUserHomeRealm } from '@/lib/api/authentication';
+import { describeHomeRealmMove } from '@/lib/authentication/homeRealmMove';
 import {
   HOME_REALM_GLOBAL,
   homeRealmSelectionToTeamId,
@@ -30,24 +31,6 @@ import {
 } from '@/lib/authentication/realmMembers';
 import { toast } from '@/lib/hooks/use-toast';
 import type { User } from '@/lib/models/User';
-
-/** Alert text for moving a user; it spells out what happens to their sessions. */
-export function describeHomeRealmMove({
-  email,
-  from,
-  to,
-  force,
-}: {
-  email: string;
-  from: string;
-  to: string;
-  force: boolean;
-}): string {
-  const sessions = force
-    ? 'All of their sessions will be revoked and they will be signed out everywhere.'
-    : 'Existing access tokens keep working until they expire; they can no longer be refreshed at the old realm. Tick "Also sign the user out everywhere" to revoke them now.';
-  return `${email} will sign in at ${to} instead of ${from}. ${sessions}`;
-}
 
 export function EditUserSheet({
   userId,
@@ -109,6 +92,9 @@ export function EditUserSheet({
   );
   const labelOf = (value: string) =>
     value === HOME_REALM_GLOBAL ? 'Global' : realmLabel(value, realmSlugs);
+  // Slug for the confirmation text; `null` is the global scope.
+  const scopeOf = (value: string) =>
+    value === HOME_REALM_GLOBAL ? null : realmLabel(value, realmSlugs);
   const email = user?.email ?? userId;
 
   const move = async () => {
@@ -157,8 +143,8 @@ export function EditUserSheet({
       title: 'Move home realm',
       description: describeHomeRealmMove({
         email,
-        from: labelOf(current),
-        to: labelOf(target),
+        from: scopeOf(current),
+        to: scopeOf(target),
         force,
       }),
       cancelText: 'Cancel',
