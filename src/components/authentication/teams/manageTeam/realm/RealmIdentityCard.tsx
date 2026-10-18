@@ -16,6 +16,7 @@ import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { unwrapActionResult } from '@/lib/api/action-result';
 import { updateRealm } from '@/lib/api/authentication';
 import {
+  effectiveVerificationRequired,
   strategiesToIdentityValues,
   type RealmIdentityValues,
 } from '@/lib/authentication/realms';
@@ -57,6 +58,7 @@ const toFormValues = (
 export function RealmIdentityCard({
   realm,
   globalAccountLinking,
+  globalVerificationRequired = false,
   onChange,
 }: Readonly<{
   realm: Realm;
@@ -65,6 +67,11 @@ export function RealmIdentityCard({
    * until it overrides it. Missing providers default to on, as on the backend.
    */
   globalAccountLinking?: Partial<Record<OAuthProviderKey, boolean>>;
+  /**
+   * The global `local.verification.required`: what the realm inherits while it has no
+   * setting of its own. Absent on the backend means off.
+   */
+  globalVerificationRequired?: boolean;
   onChange: (realm: Realm) => void;
 }>) {
   const router = useRouter();
@@ -171,14 +178,47 @@ export function RealmIdentityCard({
                 className="ml-4 border-l pl-4"
                 label="Require verification"
                 description="New accounts must verify their email before they can sign in."
-                checked={values.local.verificationRequired}
+                checked={effectiveVerificationRequired(
+                  values.local.verificationRequired,
+                  globalVerificationRequired
+                )}
                 disabled={isSaving}
                 onCheckedChange={checked =>
                   setValue('local.verificationRequired', checked, {
                     shouldDirty: true,
                   })
                 }
-              />
+              >
+                <div className="flex flex-row flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                  {values.local.verificationRequired === undefined ? (
+                    <span data-testid="realm-verification-source">
+                      Inherits the global setting (
+                      {globalVerificationRequired ? 'on' : 'off'}).
+                    </span>
+                  ) : (
+                    <>
+                      <span data-testid="realm-verification-source">
+                        Overrides the global setting (
+                        {globalVerificationRequired ? 'on' : 'off'}).
+                      </span>
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        className="h-auto p-0 text-xs"
+                        disabled={isSaving}
+                        onClick={() =>
+                          setValue('local.verificationRequired', undefined, {
+                            shouldDirty: true,
+                          })
+                        }
+                      >
+                        Use global
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </RealmSwitchRow>
             )}
           </div>
         ))}
