@@ -27,10 +27,23 @@ import { ErrorPre } from '@/components/ui/error-pre';
 import { createUser } from '@/lib/api/authentication';
 import { User } from '@/lib/models/User';
 import { useAlerts } from '@/components/providers/AlertProvider';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  HOME_REALM_GLOBAL,
+  homeRealmSelectionToTeamId,
+} from '@/lib/authentication/realmMembers';
 
 const FormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters long'),
+  // Realm team id, or 'global' for a user without a home realm.
+  homeRealm: z.string().optional(),
 });
 
 export const AddUserSheet = ({
@@ -38,8 +51,14 @@ export const AddUserSheet = ({
   defaultOpen,
   onClose,
   onSuccess,
+  realmsEnabled = false,
+  realmSlugs,
 }: {
   children?: ReactNode;
+  /** Shows the optional "Home realm" select. */
+  realmsEnabled?: boolean;
+  /** `teamId -> slug` of every realm; the select offers these plus Global. */
+  realmSlugs?: ReadonlyMap<string, string>;
   onSuccess?: (user: User) => void;
   onClose?: () => void;
   defaultOpen?: boolean;
@@ -48,6 +67,7 @@ export const AddUserSheet = ({
   const { addAlert } = useAlerts();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
+    defaultValues: { email: '', password: '', homeRealm: HOME_REALM_GLOBAL },
   });
   useEffect(() => {
     if (defaultOpen !== undefined) setOpen(defaultOpen);
@@ -87,7 +107,10 @@ export const AddUserSheet = ({
         </div>
       ),
     });
-    createUser(data.email, data.password)
+    const homeRealm = realmsEnabled
+      ? homeRealmSelectionToTeamId(data.homeRealm ?? HOME_REALM_GLOBAL)
+      : null;
+    createUser(data.email, data.password, homeRealm ? { homeRealm } : undefined)
       .then(user => {
         setOpen(false);
         dismiss();
@@ -170,6 +193,38 @@ export const AddUserSheet = ({
                   </FormItem>
                 )}
               />
+              {realmsEnabled && (
+                <FormField
+                  control={form.control}
+                  name="homeRealm"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-x-4">
+                      <FormLabel className={'text-right'}>Home realm</FormLabel>
+                      <Select
+                        value={field.value ?? HOME_REALM_GLOBAL}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={HOME_REALM_GLOBAL}>
+                            Global
+                          </SelectItem>
+                          {Array.from(realmSlugs ?? [], ([id, slug]) => (
+                            <SelectItem key={id} value={id}>
+                              {slug}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className={'text-right col-span-4'} />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
             <SheetFooter>
               <Button type="submit">Save changes</Button>
