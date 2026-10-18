@@ -110,10 +110,33 @@ export function isCandidateEligible(
   return candidateIneligibility(user, context) === undefined;
 }
 
+/**
+ * True when adding `user` to a team of the realm turns a global user into a home user of
+ * it (admin paths): no home realm yet. Users already homed at this realm stay as they are.
+ */
+export function becomesHomeUser(
+  user: Pick<User, 'homeRealm'>,
+  realmTeamId: string | undefined
+): boolean {
+  return Boolean(realmTeamId) && !user.homeRealm;
+}
+
+/** Confirmation text for adding global users into a realm, where they become home users. */
+export function describeHomeConversion(count: number, slug: string): string {
+  const who =
+    count === 1
+      ? '1 user becomes a home user'
+      : `${count} users become home users`;
+  return `${who} of ${slug}. Their global sessions end and they can only sign in at this realm.`;
+}
+
 export type PickerEligibility = {
   selectable: boolean;
-  /** `guest`: shown as a "Will join as guest" badge. */
-  hint?: 'guest';
+  /**
+   * `guest`: shown as a "Will join as guest" badge. `home`: a global user who becomes a
+   * home user of the realm ("Becomes home user").
+   */
+  hint?: 'guest' | 'home';
   /** Why the row is disabled. */
   reason?: string;
 };
@@ -130,6 +153,9 @@ export function getPickerEligibility(
     classifyCandidate(user, context.realmTeamId) === 'guest'
   ) {
     return { selectable: true, hint: 'guest' };
+  }
+  if (becomesHomeUser(user, context.realmTeamId)) {
+    return { selectable: true, hint: 'home' };
   }
   return { selectable: true };
 }

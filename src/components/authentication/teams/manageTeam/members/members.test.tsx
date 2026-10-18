@@ -227,13 +227,15 @@ describe('AddMemberSheet', () => {
 
   type SheetProps = Partial<React.ComponentProps<typeof AddMemberSheet>>;
   const sheet = (props: SheetProps = {}) => (
-    <AddMemberSheet
-      teamId="realm-1"
-      open
-      onOpenChange={vi.fn()}
-      onAdded={vi.fn()}
-      {...props}
-    />
+    <AlertProvider>
+      <AddMemberSheet
+        teamId="realm-1"
+        open
+        onOpenChange={vi.fn()}
+        onAdded={vi.fn()}
+        {...props}
+      />
+    </AlertProvider>
   );
   const renderSheet = (props: SheetProps = {}) => render(sheet(props));
 
@@ -378,9 +380,99 @@ describe('AddMemberSheet', () => {
     expect(elsewhere).toBeDisabled();
     fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
     fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+    // The global user becomes a home user of the realm: confirmed first.
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Add members' })
+    );
     await waitFor(() =>
       expect(api.addTeamMembers).toHaveBeenCalledWith('sub-1', [users[0]])
     );
+  });
+
+  describe('global users becoming home users', () => {
+    const homeText =
+      '1 user becomes a home user of acme. Their global sessions end and they can only sign in at this realm.';
+
+    it('badges global users on a realm team, not guests or other plain teams', async () => {
+      renderSheet({ realmTeamId: 'realm-1', guestPolicy: open });
+      await screen.findByLabelText(/global@test\.dev/);
+      expect(screen.getAllByText('Becomes home user')).toHaveLength(1);
+      expect(screen.getAllByText('Will join as guest')).toHaveLength(1);
+    });
+
+    it('shows no badge outside a realm', async () => {
+      renderSheet();
+      await screen.findByLabelText(/global@test\.dev/);
+      expect(screen.queryByText('Becomes home user')).not.toBeInTheDocument();
+    });
+
+    it('confirms before adding global users, naming the realm', async () => {
+      renderSheet({
+        realmTeamId: 'realm-1',
+        realmSlug: 'acme',
+        guestPolicy: open,
+      });
+      fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      const dialog = await screen.findByRole('alertdialog');
+      expect(dialog).toHaveTextContent(homeText);
+      expect(api.addTeamMembers).not.toHaveBeenCalled();
+      fireEvent.click(
+        within(dialog).getByRole('button', { name: 'Add members' })
+      );
+      await waitFor(() =>
+        expect(api.addTeamMembers).toHaveBeenCalledWith('realm-1', [users[0]])
+      );
+    });
+
+    it('sends nothing when the confirmation is cancelled', async () => {
+      renderSheet({
+        realmTeamId: 'realm-1',
+        realmSlug: 'acme',
+        guestPolicy: open,
+      });
+      fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      const dialog = await screen.findByRole('alertdialog');
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+      expect(api.addTeamMembers).not.toHaveBeenCalled();
+      expect(api.getTeamMembers).not.toHaveBeenCalled();
+    });
+
+    it('does not ask when only guests are selected', async () => {
+      renderSheet({
+        realmTeamId: 'realm-1',
+        realmSlug: 'acme',
+        guestPolicy: open,
+      });
+      fireEvent.click(await screen.findByLabelText(/elsewhere@test\.dev/));
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      await waitFor(() => expect(api.addTeamMembers).toHaveBeenCalled());
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+
+    it('does not ask on a team outside a realm', async () => {
+      renderSheet();
+      fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+      fireEvent.click(screen.getByRole('button', { name: 'Add 1 member' }));
+      await waitFor(() => expect(api.addTeamMembers).toHaveBeenCalled());
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+
+    it('counts only the home-classified users in a mixed selection', async () => {
+      renderSheet({
+        realmTeamId: 'realm-1',
+        realmSlug: 'acme',
+        guestPolicy: open,
+      });
+      fireEvent.click(await screen.findByLabelText(/global@test\.dev/));
+      fireEvent.click(await screen.findByLabelText(/elsewhere@test\.dev/));
+      fireEvent.click(screen.getByRole('button', { name: 'Add 2 members' }));
+      expect(await screen.findByRole('alertdialog')).toHaveTextContent(
+        homeText
+      );
+    });
   });
 
   it('shows the server message when adding is refused', async () => {

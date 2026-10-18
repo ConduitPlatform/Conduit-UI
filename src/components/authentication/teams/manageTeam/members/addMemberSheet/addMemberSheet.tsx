@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useAlerts } from '@/components/providers/AlertProvider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -29,7 +30,9 @@ import {
 } from '@/lib/api/authentication';
 import { getResourceDefinition } from '@/lib/api/authorization';
 import {
+  becomesHomeUser,
   DEFAULT_MEMBER_ROLE,
+  describeHomeConversion,
   getPickerEligibility,
   interpretMembershipLookup,
   isCandidateEligible,
@@ -58,6 +61,7 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 export function AddMemberSheet({
   teamId,
   realmTeamId,
+  realmSlug,
   guestPolicy,
   open,
   onOpenChange,
@@ -70,6 +74,8 @@ export function AddMemberSheet({
    * backend makes users without a home realm home users of it and the others guests.
    */
   realmTeamId?: string;
+  /** The realm's slug, named in the confirmation for users who become home users. */
+  realmSlug?: string;
   /** The realm's `policies.guests`; unknown leaves the decision to the backend. */
   guestPolicy?: GuestPolicy;
   open: boolean;
@@ -78,6 +84,7 @@ export function AddMemberSheet({
   /** Users already shown as members; they cannot be picked again. */
   existingMemberIds?: readonly string[];
 }>) {
+  const { addAlert } = useAlerts();
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
   const [users, setUsers] = useState<User[]>([]);
@@ -223,6 +230,29 @@ export function AddMemberSheet({
       }
       return;
     }
+    // Global users added to a realm become its home users: their global sessions end.
+    const homeCount = picked.filter(user =>
+      becomesHomeUser(user, realmTeamId)
+    ).length;
+    if (homeCount > 0) {
+      addAlert({
+        title: 'Add members',
+        description: describeHomeConversion(
+          homeCount,
+          realmSlug ?? 'this realm'
+        ),
+        cancelText: 'Cancel',
+        actionText: 'Add members',
+        onDecision: cancel => {
+          if (!cancel) void submit(picked);
+        },
+      });
+      return;
+    }
+    await submit(picked);
+  };
+
+  const submit = async (picked: User[]) => {
     setSubmitting(true);
     try {
       const wantsRole =
@@ -368,6 +398,9 @@ export function AddMemberSheet({
                     </Label>
                     {eligibility.hint === 'guest' && (
                       <Badge variant="outline">Will join as guest</Badge>
+                    )}
+                    {eligibility.hint === 'home' && (
+                      <Badge variant="outline">Becomes home user</Badge>
                     )}
                     {eligibility.reason && (
                       <span className="text-xs text-muted-foreground">

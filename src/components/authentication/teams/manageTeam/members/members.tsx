@@ -21,6 +21,7 @@ export default function MembersTable({
   inRealm = false,
   isRealmTeam = false,
   realmTeamId,
+  realmSlug,
   guestPolicy,
 }: Readonly<{
   data: TeamUser[];
@@ -32,6 +33,8 @@ export default function MembersTable({
   isRealmTeam?: boolean;
   /** The realm the team belongs to (the team itself or its top-most ancestor). */
   realmTeamId?: string;
+  /** Slug of that realm, for the home-user confirmation in the picker. */
+  realmSlug?: string;
   /** The realm's `policies.guests`, used to filter who the picker offers. */
   guestPolicy?: GuestPolicy;
 }>) {
@@ -132,6 +135,7 @@ export default function MembersTable({
       <AddMemberSheet
         teamId={teamId}
         realmTeamId={realmTeamId}
+        realmSlug={realmSlug}
         guestPolicy={guestPolicy}
         open={addOpen}
         onOpenChange={setAddOpen}
