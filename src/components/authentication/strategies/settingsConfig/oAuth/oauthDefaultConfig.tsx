@@ -10,13 +10,9 @@ import SwitchField from '@/components/ui/form-inputs/SwitchField';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import { Button } from '@/components/ui/button';
 
-export const oauthDefaultConfig = z.object({
-  enabled: z.boolean().default(false),
-  clientId: z.string().default(''),
-  clientSecret: z.string().default(''),
-  redirect_uri: z.string().default(''),
-  accountLinking: z.boolean().default(true),
-});
+import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig.schema';
+
+export { oauthDefaultConfig };
 
 type authStrategyFormType = z.infer<typeof authStrategySchema>;
 const authStrategySchema = oauthDefaultConfig;
