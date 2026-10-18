@@ -14,9 +14,14 @@ import { StrategySettings } from '@/components/authentication/strategies/Strateg
 
 export interface StrategyCardProps {
   strategy: StrategyInterface;
+  /** Number of realms that also enable this strategy; the footnote shows when > 0. */
+  realmCount?: number;
 }
 
-export const StrategyCard = ({ strategy }: StrategyCardProps) => {
+export const StrategyCard = ({
+  strategy,
+  realmCount = 0,
+}: StrategyCardProps) => {
   return (
     <Card className={'col-span-2 px-0 '} key={`${strategy.name}`}>
       <CardHeader>
@@ -81,8 +86,17 @@ export const StrategyCard = ({ strategy }: StrategyCardProps) => {
           </>
         )}
       </CardContent>
-      <CardFooter className={'flex flex-row justify-end gap-x-2 pb-2'}>
-        <StrategySettings strategy={strategy} />
+      <CardFooter
+        className={'flex flex-row items-center justify-between gap-x-2 pb-2'}
+      >
+        {realmCount > 0 && (
+          <p className={'text-xs text-muted-foreground'}>
+            {`Also enabled by ${realmCount} ${realmCount === 1 ? 'realm' : 'realms'}`}
+          </p>
+        )}
+        <div className={'ml-auto'}>
+          <StrategySettings strategy={strategy} />
+        </div>
       </CardFooter>
     </Card>
   );
