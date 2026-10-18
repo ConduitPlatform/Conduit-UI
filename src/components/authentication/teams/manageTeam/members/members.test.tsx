@@ -224,7 +224,7 @@ describe('AddMemberSheet', () => {
 
   it('adds guests through the realm API', async () => {
     api.getRealm.mockResolvedValue(realmWithGuests(true));
-    api.addRealmGuests.mockResolvedValue({ added: 1 });
+    api.addRealmGuests.mockResolvedValue({ ok: true, data: { added: 1 } });
     const onAdded = vi.fn();
     const onOpenChange = vi.fn();
     render(
@@ -245,6 +245,36 @@ describe('AddMemberSheet', () => {
     expect(api.patchTeamMembersRoles).not.toHaveBeenCalled();
     await waitFor(() => expect(onAdded).toHaveBeenCalled());
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('shows the server message when adding guests fails', async () => {
+    api.getRealm.mockResolvedValue(realmWithGuests(true));
+    api.addRealmGuests.mockResolvedValue({
+      ok: false,
+      code: 'GUESTS_NOT_ALLOWED',
+      message: 'Guests are not allowed',
+    });
+    const onAdded = vi.fn();
+    render(
+      <AddMemberSheet
+        teamId="realm-1"
+        isRealmTeam
+        open
+        onOpenChange={vi.fn()}
+        onAdded={onAdded}
+      />
+    );
+    fireEvent.click(await screen.findByLabelText(/elsewhere@test\.dev/));
+    fireEvent.click(screen.getByRole('button', { name: 'Add 1 guest' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Failed to add guests',
+          description: 'Guests are not allowed',
+        })
+      )
+    );
+    expect(onAdded).not.toHaveBeenCalled();
   });
 
   it('adds members to a plain team and skips the role patch for the default role', async () => {

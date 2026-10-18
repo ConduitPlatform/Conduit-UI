@@ -105,11 +105,20 @@ export function EditUserSheet({
   const move = async () => {
     setMoving(true);
     try {
-      const updated = await setUserHomeRealm(
+      const result = await setUserHomeRealm(
         userId,
         homeRealmSelectionToTeamId(target),
         force
       );
+      if (!result.ok) {
+        toast({
+          title: 'Failed to move home realm',
+          description: result.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+      const updated = result.data;
       setUser(prev => ({
         ...(prev ?? ({ _id: userId } as User)),
         ...updated,

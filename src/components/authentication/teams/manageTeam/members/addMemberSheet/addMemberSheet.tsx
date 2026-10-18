@@ -196,7 +196,16 @@ export function AddMemberSheet({
     setSubmitting(true);
     try {
       if (isRealmTeam) {
-        await addRealmGuests(teamId, ids);
+        const result = await addRealmGuests(teamId, ids);
+        if (!result.ok) {
+          toast({
+            title: `Failed to add ${noun}s`,
+            description: result.message,
+            variant: 'destructive',
+          });
+          setSubmitting(false);
+          return;
+        }
       } else {
         await addTeamMembers(teamId, picked);
       }
