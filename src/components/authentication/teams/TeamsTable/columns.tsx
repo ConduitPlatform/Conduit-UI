@@ -10,12 +10,24 @@ export const columns: ColumnDef<Team>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: cell => {
+      const team = cell.row.original;
       return (
-        <div className={'flex flex-row'}>
+        <div className={'flex flex-row items-center gap-2'}>
           {cell.getValue() as string}
-          {cell.row.original.isDefault && (
+          {team.isDefault && (
             <span className="inline-flex items-center rounded-full bg-callout-success-muted px-2.5 py-0.5 text-xs font-medium text-callout-success-foreground">
               Default
+            </span>
+          )}
+          {team.realm?.enabled && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full bg-callout-info-muted px-2.5 py-0.5 text-xs font-medium text-callout-info-foreground"
+              title="This team is an authentication realm"
+            >
+              Realm
+              {team.realm.slug && (
+                <span className="font-mono">{team.realm.slug}</span>
+              )}
             </span>
           )}
         </div>

@@ -58,13 +58,25 @@ const teamsSchema = z.object({
     sendEmail: z.boolean().default(false),
     inviteUrl: z.string().default('https://mydomain.conduit/invite'),
   }),
+  // Older backends do not report `realms`: the whole object is optional so those configs
+  // still parse and the key is never sent back to a backend that does not know it.
+  realms: z
+    .object({
+      enabled: z.boolean().default(false),
+      allowEmailDiscovery: z.boolean().default(false),
+      cacheTtlMs: z.number().int().min(0).default(5000),
+    })
+    .optional(),
 });
 
 const domainTagSchema = z
   .string()
   .min(1)
   .refine(value => !value.includes('@'), 'Enter a domain, not an email address')
-  .refine(value => !/^https?:\/\//i.test(value), 'Enter a hostname without a scheme')
+  .refine(
+    value => !/^https?:\/\//i.test(value),
+    'Enter a hostname without a scheme'
+  )
   .refine(value => value.includes('.'), 'Enter a domain with at least one dot');
 
 const emailRestrictionsSchema = z.object({
@@ -140,6 +152,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
   });
 
   const { reset, control, handleSubmit, watch } = form;
+  // Backends that predate realms omit `teams.realms`; hide the controls for them.
+  const supportsRealms = data.teams?.realms !== undefined;
 
   const onSubmit = async (formData: formSchema) => {
     const result = await save({
@@ -396,6 +410,50 @@ export const AuthenticationSettings = ({ data }: Props) => {
                         disabled={!edit}
                       />
                     </div>
+                    {supportsRealms && (
+                      <>
+                        <h1 className="text-xl font-medium pt-2">Realms</h1>
+                        <p className="text-sm text-muted-foreground">
+                          Realms turn top-level teams into separate identity
+                          domains, each with its own sign-in methods and
+                          policies. Turning this off hides realm management but
+                          does not remove existing realms.
+                        </p>
+                        <div className={'grid grid-cols-2 gap-4 items-center'}>
+                          <SwitchField
+                            label={'Enabled'}
+                            fieldName={'teams.realms.enabled'}
+                            disabled={!edit}
+                          />
+                        </div>
+                        {form.watch('teams.realms.enabled') && (
+                          <div className={'grid grid-cols-2 gap-4 items-start'}>
+                            <SwitchField
+                              label={'Allow email discovery'}
+                              fieldName={'teams.realms.allowEmailDiscovery'}
+                              disabled={!edit}
+                            />
+                            <InputField
+                              type={'number'}
+                              label={'Cache TTL (ms)'}
+                              fieldName={'teams.realms.cacheTtlMs'}
+                              description={
+                                'How long realm settings are cached before being re-read.'
+                              }
+                              min={0}
+                              onChange={e => {
+                                form.setValue(
+                                  'teams.realms.cacheTtlMs',
+                                  parseInt(e.target.value),
+                                  { shouldDirty: true }
+                                );
+                              }}
+                              disabled={!edit}
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 )}
               </CollapsibleContent>
@@ -532,8 +590,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
                   disabled={!edit}
                 />
                 <p className="text-sm text-muted-foreground">
-                  Applies when an email is accepted (registration, email
-                  change, invites). Existing users can still log in.{' '}
+                  Applies when an email is accepted (registration, email change,
+                  invites). Existing users can still log in.{' '}
                   <code>@anonymous.com</code> is reserved for Conduit anonymous
                   users and cannot be registered.
                 </p>
