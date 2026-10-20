@@ -17,9 +17,13 @@ import {
   USER_ERIN_ID,
   USER_FRANK_ID,
   USER_GINA_ID,
+  USER_SAM_ACME_ID,
+  USER_SAM_STRICT_ID,
+  SHARED_EMAIL_USER,
 } from './constants.ts';
 import type {
   MockAuthState,
+  MockIdentityMode,
   MockRealmMembership,
   MockRealmMembershipType,
   MockRealmOAuthSecrets,
@@ -66,6 +70,10 @@ const CONDUIT_ERRORS = {
     message: 'Home users cannot be removed from their home realm',
   },
   REALMS_DISABLED: { status: 500, message: 'Realms are disabled' },
+  FAILED_PRECONDITION: {
+    status: 500,
+    message: 'Precondition failed',
+  },
 } as const;
 
 export type MockConduitCode = keyof typeof CONDUIT_ERRORS;
@@ -148,8 +156,13 @@ export function defaultRealmSettings() {
       requireTwoFa: false,
       requireVerifiedEmail: false,
       allowedClientIds: [] as string[],
-      guests: { allowed: true, allowedHomeRealms: [] as string[] },
+      guests: {
+        allowed: true,
+        allowedHomeRealms: [] as string[],
+        directSignIn: true,
+      },
     },
+    linking: { inbound: false, outbound: true },
   };
 }
 
@@ -246,21 +259,66 @@ export function authenticationConfig(auth: MockAuthState) {
       enabled: auth.realmsFlag === 'enabled',
       cacheTtlMs: 5000,
       allowEmailDiscovery: false,
+      identityMode: auth.identityMode,
+      discoveryLogin: auth.discoveryLogin,
     };
   }
   return config;
 }
 
-/** `PATCH /config/authentication`: deep merge; `teams.realms.enabled` moves the flag. */
+/**
+ * Identifiers held by more than one account (emails, case-insensitive). Isolated mode
+ * allows these, so switching back to shared must be refused while any exist.
+ */
+export function duplicatedIdentifierCount(auth: MockAuthState): number {
+  const counts = new Map<string, number>();
+  for (const user of auth.users) {
+    const key = user.email.toLowerCase();
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.values()].filter(count => count > 1).length;
+}
+
+/**
+ * `PATCH /config/authentication`: deep merge. `teams.realms` moves the realm flag, the
+ * identity mode and the discovery switch. Isolated -> shared is refused with
+ * FAILED_PRECONDITION while an identifier is held by more than one account; the refusal
+ * is checked before anything is written.
+ */
 export function patchAuthenticationConfig(auth: MockAuthState, body: unknown) {
   const patch = isJson(body) && isJson(body.config) ? body.config : {};
   const { teams, ...rest } = patch;
   let nextTeams: Json | undefined;
+  let realmsPatch: Json | undefined;
   if (isJson(teams)) {
     const { realms, ...teamsRest } = teams;
     nextTeams = teamsRest;
-    if (isJson(realms) && typeof realms.enabled === 'boolean') {
-      auth.realmsFlag = realms.enabled ? 'enabled' : 'disabled';
+    if (isJson(realms)) realmsPatch = realms;
+  }
+  if (
+    realmsPatch?.identityMode === 'shared' &&
+    auth.identityMode === 'isolated'
+  ) {
+    const held = duplicatedIdentifierCount(auth);
+    if (held > 0) {
+      throw conduitError(
+        'FAILED_PRECONDITION',
+        `${held} identifier(s) are held by more than one account; identity mode cannot return to shared`
+      );
+    }
+  }
+  if (realmsPatch) {
+    if (typeof realmsPatch.enabled === 'boolean') {
+      auth.realmsFlag = realmsPatch.enabled ? 'enabled' : 'disabled';
+    }
+    if (
+      realmsPatch.identityMode === 'shared' ||
+      realmsPatch.identityMode === 'isolated'
+    ) {
+      auth.identityMode = realmsPatch.identityMode;
+    }
+    if (typeof realmsPatch.discoveryLogin === 'boolean') {
+      auth.discoveryLogin = realmsPatch.discoveryLogin;
     }
   }
   auth.config = deepMergeClearing(auth.config as Json, {
@@ -280,7 +338,8 @@ export function patchAuthenticationConfig(auth: MockAuthState, body: unknown) {
  *  - gina, a global user who belongs nowhere.
  */
 export function createAuthState(
-  realmsFlag: MockAuthState['realmsFlag']
+  realmsFlag: MockAuthState['realmsFlag'],
+  identityMode: MockIdentityMode = 'shared'
 ): MockAuthState {
   const acmeSettings = seedSettings('65f000000000000000000c01', REALM_ACME_ID, {
     strategies: {
@@ -318,12 +377,15 @@ export function createAuthState(
         requireTwoFa: true,
         requireVerifiedEmail: false,
         allowedClientIds: [],
-        guests: { allowed: false, allowedHomeRealms: [] },
+        guests: { allowed: false, allowedHomeRealms: [], directSignIn: true },
       },
     }
   );
+  const isolated = identityMode === 'isolated';
   return {
     realmsFlag,
+    identityMode,
+    discoveryLogin: false,
     config: baseAuthenticationConfig(),
     teams: [
       seedTeam(REALM_ACME_ID, REALM_ACME_NAME, {
@@ -346,6 +408,13 @@ export function createAuthState(
       seedUser(USER_ERIN_ID, 'erin@global.test', null),
       seedUser(USER_FRANK_ID, 'frank@global.test', null),
       seedUser(USER_GINA_ID, 'gina@global.test', null),
+      // Isolated only: one email, two home accounts, one per realm.
+      ...(isolated
+        ? [
+            seedUser(USER_SAM_ACME_ID, SHARED_EMAIL_USER, REALM_ACME_ID),
+            seedUser(USER_SAM_STRICT_ID, SHARED_EMAIL_USER, REALM_STRICT_ID),
+          ]
+        : []),
     ],
     teamMembers: [
       { team: REALM_ACME_ID, user: USER_ALICE_ID, role: 'admin' },
@@ -356,6 +425,12 @@ export function createAuthState(
       { team: REALM_STRICT_ID, user: USER_DAVE_ID, role: 'member' },
       { team: TEAM_PLATFORM_ID, user: USER_ERIN_ID, role: 'member' },
       { team: TEAM_PLATFORM_ID, user: USER_FRANK_ID, role: 'member' },
+      ...(isolated
+        ? [
+            { team: REALM_ACME_ID, user: USER_SAM_ACME_ID, role: 'member' },
+            { team: REALM_STRICT_ID, user: USER_SAM_STRICT_ID, role: 'member' },
+          ]
+        : []),
     ],
     memberships: [
       membership(
@@ -388,6 +463,22 @@ export function createAuthState(
         REALM_STRICT_ID,
         'home'
       ),
+      ...(isolated
+        ? [
+            membership(
+              '65f000000000000000000d06',
+              USER_SAM_ACME_ID,
+              REALM_ACME_ID,
+              'home'
+            ),
+            membership(
+              '65f000000000000000000d07',
+              USER_SAM_STRICT_ID,
+              REALM_STRICT_ID,
+              'home'
+            ),
+          ]
+        : []),
     ],
     signedOutUserIds: [],
     seq: 0,
@@ -628,9 +719,25 @@ function sanitizeInput(body: unknown): SanitizedInput {
           'policies.guests.allowedHomeRealms'
         );
       }
+      if (body.policies.guests.directSignIn !== undefined) {
+        guests.directSignIn = readBool(
+          body.policies.guests.directSignIn,
+          'policies.guests.directSignIn'
+        );
+      }
       policies.guests = guests;
     }
     settings.policies = policies;
+  }
+  if (body.linking !== undefined) {
+    if (!isJson(body.linking)) throw invalid('linking must be an object');
+    const linking: Json = {};
+    for (const flag of ['inbound', 'outbound'] as const) {
+      if (body.linking[flag] !== undefined) {
+        linking[flag] = readBool(body.linking[flag], `linking.${flag}`);
+      }
+    }
+    settings.linking = linking;
   }
   if (body.strategies !== undefined) {
     if (!isJson(body.strategies)) throw invalid('strategies must be an object');
@@ -750,7 +857,7 @@ function applySecrets(
 
 type SettingsFields = Pick<
   MockRealmSettings,
-  'active' | 'strategies' | 'registration' | 'policies'
+  'active' | 'strategies' | 'registration' | 'policies' | 'linking'
 >;
 
 function pickFields(source: SettingsFields): SettingsFields {
@@ -760,6 +867,7 @@ function pickFields(source: SettingsFields): SettingsFields {
       strategies: source.strategies,
       registration: source.registration,
       policies: source.policies,
+      linking: source.linking,
     })
   ) as SettingsFields;
 }
@@ -1300,6 +1408,21 @@ export function listUsers(
   return { users: page, count: users.length };
 }
 
+/** `GET /authentication/users/:id/realms`: the home realm and every guest realm. */
+export function userRealms(auth: MockAuthState, userId: string) {
+  const user = findUser(auth, userId);
+  const summary = (realmId: string) => {
+    const team = findRealmTeam(auth, realmId);
+    return { _id: team._id, name: team.name, slug: team.realm?.slug ?? '' };
+  };
+  return {
+    home: user.homeRealm ? summary(user.homeRealm) : null,
+    guests: auth.memberships
+      .filter(item => item.user === userId && item.type === 'guest')
+      .map(item => ({ ...summary(item.realm), createdAt: item.createdAt })),
+  };
+}
+
 export function createUser(auth: MockAuthState, body: unknown): MockUser {
   const input = isJson(body) ? body : {};
   const email = typeof input.email === 'string' ? input.email.trim() : '';
@@ -1314,11 +1437,13 @@ export function createUser(auth: MockAuthState, body: unknown): MockUser {
     assertEnabled(auth);
     findRealmTeam(auth, homeRealm);
   }
-  if (
-    auth.users.some(user => user.email.toLowerCase() === email.toLowerCase())
-  ) {
-    throw new MockHttpError(500, 'User already exists');
-  }
+  // Shared: one email deployment-wide. Isolated: once per home realm (global is a scope).
+  const taken = auth.users.some(
+    user =>
+      user.email.toLowerCase() === email.toLowerCase() &&
+      (auth.identityMode === 'shared' || user.homeRealm === homeRealm)
+  );
+  if (taken) throw new MockHttpError(500, 'User already exists');
   const user: MockUser = {
     _id: nextId(auth),
     email,

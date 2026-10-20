@@ -26,6 +26,7 @@ import {
   removeTeamMembers,
   updateRealm,
   updateTeam,
+  userRealms,
   type Paging,
 } from './auth-state.ts';
 import { getState } from './state.ts';
@@ -328,6 +329,14 @@ async function route(
       return true;
     }
     return false;
+  }
+
+  if (
+    (match = /^\/authentication\/users\/([^/]+)\/realms$/.exec(pathname)) &&
+    method === 'GET'
+  ) {
+    sendJson(response, 200, userRealms(auth, match[1]));
+    return true;
   }
 
   if (

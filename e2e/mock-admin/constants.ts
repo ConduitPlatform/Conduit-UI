@@ -78,4 +78,8 @@ export const USER_DAVE_ID = '65f000000000000000000b04';
 export const USER_ERIN_ID = '65f000000000000000000b05';
 export const USER_FRANK_ID = '65f000000000000000000b06';
 export const USER_GINA_ID = '65f000000000000000000b07';
+// Isolated scenario: the same email, one home account in each of two realms.
+export const USER_SAM_ACME_ID = '65f000000000000000000b08';
+export const USER_SAM_STRICT_ID = '65f000000000000000000b09';
+export const SHARED_EMAIL_USER = 'sam@shared.test';
 export const REALM_TEAM_ROLES = ['owner', 'admin', 'member'] as const;

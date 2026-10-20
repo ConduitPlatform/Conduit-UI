@@ -230,7 +230,7 @@ test.describe('promote a team', () => {
 });
 
 test.describe('realm policies', () => {
-  test('toggling a policy saves exactly the policies slice', async ({
+  test('toggling a policy saves the policies and linking sections in one request', async ({
     page,
   }) => {
     await resetMock('realms');
@@ -260,8 +260,9 @@ test.describe('realm policies', () => {
           requireTwoFa: true,
           requireVerifiedEmail: false,
           allowedClientIds: [],
-          guests: { allowed: true, allowedHomeRealms: [] },
+          guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
         },
+        linking: { inbound: false, outbound: true },
       },
     ]);
     await expect(save).toBeDisabled();

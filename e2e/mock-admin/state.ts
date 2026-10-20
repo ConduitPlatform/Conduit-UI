@@ -48,6 +48,7 @@ import type {
   MockEmbeddingsSettings,
   MockModule,
   MockQueueCounts,
+  MockIdentityMode,
   MockScenario,
   MockSchema,
 } from './types.ts';
@@ -368,6 +369,7 @@ function createEmbeddingsState(scenario: MockScenario): EmbeddingsState {
     case 'realms':
     case 'realms-disabled':
     case 'realms-legacy':
+    case 'realms-isolated':
       return { ...readyState(true), scenario };
     case 'workers-off':
       return readyState(false);
@@ -458,7 +460,13 @@ const REALM_SCENARIO_FLAGS = {
   realms: 'enabled',
   'realms-disabled': 'disabled',
   'realms-legacy': 'absent',
+  'realms-isolated': 'enabled',
 } as const;
+
+const REALM_SCENARIO_IDENTITY: Partial<Record<MockScenario, MockIdentityMode>> =
+  {
+    'realms-isolated': 'isolated',
+  };
 
 function realmsFlagFor(
   scenario: MockScenario
@@ -481,7 +489,10 @@ export function createState(scenario: MockScenario = 'ready'): MockAdminState {
           { moduleName: 'authorization', url: '0.0.0.0:5514', serving: true },
         ]
       : base.modules,
-    auth: createAuthState(realmsFlagFor(scenario)),
+    auth: createAuthState(
+      realmsFlagFor(scenario),
+      REALM_SCENARIO_IDENTITY[scenario] ?? 'shared'
+    ),
     requests: [],
   };
 }

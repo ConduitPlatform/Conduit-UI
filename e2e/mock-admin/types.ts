@@ -8,6 +8,8 @@ export const MOCK_SCENARIOS = [
   'realms',
   'realms-disabled',
   'realms-legacy',
+  // Isolated identity mode, with the same email held by one user in each of two realms.
+  'realms-isolated',
 ] as const;
 
 export type MockScenario = (typeof MOCK_SCENARIOS)[number];
@@ -163,8 +165,13 @@ export type MockRealmSettings = {
     requireTwoFa: boolean;
     requireVerifiedEmail: boolean;
     allowedClientIds: string[];
-    guests: { allowed: boolean; allowedHomeRealms: string[] };
+    guests: {
+      allowed: boolean;
+      allowedHomeRealms: string[];
+      directSignIn: boolean;
+    };
   };
+  linking: { inbound: boolean; outbound: boolean };
   /** Never leaves the mock: reads return `has*` flags instead. */
   oauthSecrets: MockRealmOAuthSecrets;
   createdAt: string;
@@ -197,9 +204,15 @@ export type MockRealmMembership = {
   createdAt: string;
 };
 
+export type MockIdentityMode = 'shared' | 'isolated';
+
 export type MockAuthState = {
   /** `absent` reproduces a backend that predates realms (no `teams.realms` key). */
   realmsFlag: 'enabled' | 'disabled' | 'absent';
+  /** `teams.realms.identityMode`. Shared: identifiers are unique deployment-wide. */
+  identityMode: MockIdentityMode;
+  /** `teams.realms.discoveryLogin`. */
+  discoveryLogin: boolean;
   /** Authentication config without `teams.realms` (derived from `realmsFlag`). */
   config: Record<string, unknown>;
   teams: MockTeam[];
