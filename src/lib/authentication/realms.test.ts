@@ -16,6 +16,7 @@ import {
   hasOwnCredentials,
   hasOwnOverrides,
   normalizeRealmSettingsForSave,
+  promoteLinkingDefaults,
   promoteRealmSchema,
   realmIdentityMode,
   realmPoliciesFormSchema,
@@ -80,10 +81,11 @@ describe('realmSettingsSchema', () => {
       allowedClientIds: [],
       guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
     });
-    expect(parsed.linking).toEqual({ inbound: false, outbound: true });
+    // No default for linking: a promotion that does not supply it sends no linking key.
+    expect(parsed.linking).toBeUndefined();
   });
 
-  it('defaults linking and direct sign-in on a server read that predates them', () => {
+  it('leaves linking and direct sign-in absent on a server read that predates them', () => {
     const parsed = realmSettingsSchema.parse({
       policies: {
         requireTwoFa: true,
@@ -93,7 +95,7 @@ describe('realmSettingsSchema', () => {
       },
       linking: { inbound: true },
     });
-    expect(parsed.policies.guests.directSignIn).toBe(true);
+    expect(parsed.policies.guests).not.toHaveProperty('directSignIn');
     expect(parsed.linking).toEqual({ inbound: true, outbound: true });
   });
 
@@ -128,7 +130,7 @@ describe('linking and direct sign-in', () => {
     expect(DEFAULT_REALM_POLICIES.guests.directSignIn).toBe(true);
   });
 
-  it('reads an absent linking block as the defaults, not as off', () => {
+  it('leaves an absent linking block and direct sign-in unset, not defaulted', () => {
     const values = toRealmPoliciesFormValues({
       policies: {
         requireTwoFa: false,
@@ -137,8 +139,53 @@ describe('linking and direct sign-in', () => {
         guests: { allowed: true, allowedHomeRealms: [] },
       },
     });
-    expect(values.linking).toEqual({ inbound: false, outbound: true });
-    expect(values.guests.directSignIn).toBe(true);
+    expect(values.linking).toBeUndefined();
+    expect(values.guests.directSignIn).toBeUndefined();
+  });
+
+  it('builds the PATCH of a legacy realm without linking or direct sign-in', () => {
+    const body = buildRealmPoliciesPatch(
+      toRealmPoliciesFormValues({
+        policies: {
+          requireTwoFa: true,
+          requireVerifiedEmail: false,
+          allowedClientIds: [],
+          guests: { allowed: true, allowedHomeRealms: [] },
+        },
+      })
+    );
+    expect(body).toEqual({
+      policies: {
+        requireTwoFa: true,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [] },
+      },
+    });
+    expect(body).not.toHaveProperty('linking');
+    expect(body.policies?.guests).not.toHaveProperty('directSignIn');
+  });
+
+  it('keeps the linking and direct sign-in keys out of a promotion the backend does not know', () => {
+    const body = buildPromoteBody({
+      slug: 'acme',
+      ...promoteLinkingDefaults(false),
+    });
+    expect(body).not.toHaveProperty('linking');
+    expect(body.policies?.guests).not.toHaveProperty('directSignIn');
+  });
+
+  it('sends the linking defaults and direct sign-in on promotion when the backend reports them', () => {
+    const body = buildPromoteBody({
+      slug: 'acme',
+      ...promoteLinkingDefaults(true),
+    });
+    expect(body.linking).toEqual({ inbound: false, outbound: true });
+    expect(body.policies?.guests).toEqual({
+      allowed: true,
+      allowedHomeRealms: [],
+      directSignIn: true,
+    });
   });
 
   it('reads the stored linking and direct sign-in values', () => {
@@ -190,7 +237,6 @@ describe('linking and direct sign-in', () => {
     expect(body.policies?.guests).toEqual({
       allowed: true,
       allowedHomeRealms: [],
-      directSignIn: true,
     });
   });
 
@@ -241,6 +287,19 @@ describe('realmIdentityMode', () => {
       )
     ).toBe('shared');
     expect(realmIdentityMode(null)).toBe('shared');
+  });
+
+  it('is shared while realms are disabled, even if the config says isolated', () => {
+    expect(
+      realmIdentityMode(
+        configWith({
+          enabled: false,
+          cacheTtlMs: 5000,
+          allowEmailDiscovery: false,
+          identityMode: 'isolated',
+        })
+      )
+    ).toBe('shared');
   });
 });
 

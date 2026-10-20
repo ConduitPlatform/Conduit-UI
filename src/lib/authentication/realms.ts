@@ -33,13 +33,15 @@ export function realmsEnabled(
 }
 
 /**
- * The deployment's identity mode. An absent value (backends that predate isolated mode)
- * is `shared`, the behaviour those backends have.
+ * The identity mode the UI should present. Isolated mode is only visible while realms are
+ * enabled: with the flag off every caller gets `shared`, so the UI is the same as before
+ * isolated mode existed. An absent value (backends that predate isolated mode) is `shared`.
  */
 export function realmIdentityMode(
   config: AuthenticationConfig | null | undefined
 ): RealmIdentityMode {
-  return config?.teams?.realms?.identityMode === 'isolated'
+  return realmsEnabled(config) &&
+    config?.teams?.realms?.identityMode === 'isolated'
     ? 'isolated'
     : 'shared';
 }
@@ -109,8 +111,9 @@ export const realmPoliciesSchema = z.object({
   guests: z.object({
     allowed: z.boolean(),
     allowedHomeRealms: z.array(z.string().min(1)),
-    // Absent on older backends: linked guests keep signing in directly.
-    directSignIn: z.boolean().default(DEFAULT_GUEST_DIRECT_SIGN_IN),
+    // Absent on backends that predate account linking. No default: the key is only
+    // read from, and sent for, a realm whose read reports it.
+    directSignIn: z.boolean().optional(),
   }),
 });
 
@@ -150,18 +153,24 @@ export const DEFAULT_REALM_REGISTRATION: RealmRegistration = {
   allowWithoutInvite: false,
 };
 
-/** Settings shared by promote and edit. `parse({})` yields the server defaults. */
+/**
+ * Settings shared by promote and edit. `linking` has no default: a key is only in the
+ * output when the caller supplied it, so backends that predate linking never receive it.
+ */
 export const realmSettingsSchema = z.object({
   active: z.boolean().default(true),
   strategies: realmStrategiesSchema.default(DEFAULT_REALM_STRATEGIES),
   registration: realmRegistrationSchema.default(DEFAULT_REALM_REGISTRATION),
   policies: realmPoliciesSchema.default(DEFAULT_REALM_POLICIES),
-  linking: realmLinkingSchema.default(DEFAULT_REALM_LINKING),
+  linking: realmLinkingSchema.optional(),
 });
 
-/** Policies card form: the policies plus the account linking switches (both PATCHed together). */
+/**
+ * Policies card form: the policies plus the account linking switches (both PATCHed
+ * together). `linking` is present only when the realm read reports it.
+ */
 export const realmPoliciesFormSchema = realmPoliciesSchema.extend({
-  linking: realmLinkingSchema,
+  linking: realmLinkingSchema.optional(),
 });
 
 export type RealmPoliciesFormValues = z.output<typeof realmPoliciesFormSchema>;
@@ -376,8 +385,9 @@ export function buildRealmPoliciesPatch(
 }
 
 /**
- * Form values for the Policies card, filled from a realm's settings. Fields an older
- * backend does not report take the defaults the server applies.
+ * Form values for the Policies card, filled from a realm's settings. A field the read does
+ * not report stays `undefined`: its switch is not rendered and its key is not sent, so a
+ * backend that predates it never receives it.
  */
 export function toRealmPoliciesFormValues(
   settings: Pick<RealmSettings, 'policies' | 'linking'>
@@ -390,14 +400,31 @@ export function toRealmPoliciesFormValues(
     guests: {
       allowed: policies.guests.allowed,
       allowedHomeRealms: policies.guests.allowedHomeRealms,
-      directSignIn:
-        policies.guests.directSignIn ?? DEFAULT_GUEST_DIRECT_SIGN_IN,
+      directSignIn: policies.guests.directSignIn,
     },
-    linking: {
-      inbound: linking?.inbound ?? DEFAULT_REALM_LINKING.inbound,
-      outbound: linking?.outbound ?? DEFAULT_REALM_LINKING.outbound,
-    },
+    linking: linking
+      ? {
+          inbound: linking.inbound ?? DEFAULT_REALM_LINKING.inbound,
+          outbound: linking.outbound ?? DEFAULT_REALM_LINKING.outbound,
+        }
+      : undefined,
   };
+}
+
+/**
+ * Promotion defaults for the linking keys. A backend that predates account linking would
+ * reject them as unknown, so they are only included when the authentication config reports
+ * `teams.realms.identityMode`.
+ */
+export function promoteLinkingDefaults(
+  supportsLinking: boolean
+): Pick<PromoteRealmFormValues, 'policies' | 'linking'> {
+  if (supportsLinking) {
+    return { policies: DEFAULT_REALM_POLICIES, linking: DEFAULT_REALM_LINKING };
+  }
+  const { directSignIn: _directSignIn, ...guests } =
+    DEFAULT_REALM_POLICIES.guests;
+  return { policies: { ...DEFAULT_REALM_POLICIES, guests } };
 }
 
 /**

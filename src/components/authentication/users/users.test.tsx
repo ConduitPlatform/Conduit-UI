@@ -334,11 +334,107 @@ describe('EditUserSheet', () => {
     });
     renderSheet();
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent("Could not load this user's realms.");
+    expect(alert).toHaveTextContent('Linked realms could not be loaded.');
     fireEvent.click(within(alert).getByRole('button', { name: 'Retry' }));
     expect(
       await screen.findByText('Not linked to any other realm.')
     ).toBeInTheDocument();
+    expect(api.getUserRealms).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the home realm from the user row when the realms cannot be loaded', async () => {
+    api.getUserRealms.mockResolvedValue({
+      ok: false,
+      code: 'INTERNAL',
+      message: 'boom',
+    });
+    renderSheet(user({ homeRealm: 't1' }));
+    const realms = screen.getByRole('region', { name: 'Realms' });
+    const alert = await within(realms).findByRole('alert');
+    expect(alert).toHaveTextContent('Linked realms could not be loaded.');
+    expect(within(alert).getByRole('button', { name: 'Retry' })).toBeEnabled();
+    // The home row comes from the user, labelled with its slug.
+    expect(within(realms).getByText('Home realm')).toBeInTheDocument();
+    expect(within(realms).getByText('acme')).toBeInTheDocument();
+    expect(within(realms).queryByText(/Not linked/)).toBeNull();
+    expect(within(realms).queryByRole('button', { name: /Unlink/ })).toBeNull();
+  });
+
+  it('never offers Unlink for a guest entry that is the home realm', async () => {
+    api.getUserRealms.mockResolvedValue({
+      ok: true,
+      data: {
+        home: { _id: 't2', name: 'Globex', slug: 'globex' },
+        guests: [
+          {
+            _id: 't2',
+            name: 'Globex',
+            slug: 'globex',
+            createdAt: 'now',
+          },
+        ],
+      },
+    });
+    renderSheet(user({ homeRealm: 't2' }));
+    const realms = screen.getByRole('region', { name: 'Realms' });
+    expect(
+      await within(realms).findByText('Not linked to any other realm.')
+    ).toBeInTheDocument();
+    expect(within(realms).queryByRole('button', { name: /Unlink/ })).toBeNull();
+  });
+
+  it('reloads the realms after a failed unlink too', async () => {
+    api.getUserRealms.mockResolvedValue({
+      ok: true,
+      data: {
+        home: null,
+        guests: [
+          { _id: 't2', name: 'Globex', slug: 'globex', createdAt: 'now' },
+        ],
+      },
+    });
+    api.removeRealmGuest.mockResolvedValue({
+      ok: false,
+      code: 'INTERNAL',
+      message: 'Unlink failed',
+    });
+    renderSheet();
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Unlink globex' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Unlink' }));
+    await waitFor(() => expect(api.getUserRealms).toHaveBeenCalledTimes(2));
+    expect(toastMock).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Failed to unlink realm' })
+    );
+  });
+
+  it('reloads the realms after a home realm move, so the new home shows', async () => {
+    api.getUserRealms
+      .mockResolvedValueOnce({
+        ok: true,
+        data: { home: null, guests: [] },
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        data: {
+          home: { _id: 't1', name: 'Acme', slug: 'acme' },
+          guests: [],
+        },
+      });
+    api.setUserHomeRealm.mockResolvedValue({
+      ok: true,
+      data: user({ homeRealm: 't1' }),
+    });
+    renderSheet(user({ homeRealm: null }));
+    chooseOption(screen.getByRole('combobox'), 'acme');
+    fireEvent.click(screen.getByRole('button', { name: 'Move home realm' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Move' }));
+
+    const realms = screen.getByRole('region', { name: 'Realms' });
+    expect(await within(realms).findByText('acme')).toBeInTheDocument();
     expect(api.getUserRealms).toHaveBeenCalledTimes(2);
   });
 

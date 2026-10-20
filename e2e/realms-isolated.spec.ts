@@ -7,9 +7,12 @@ import {
 } from './helpers/mock.ts';
 import { REALM_ACME_ID, USER_CAROL_ID } from './mock-admin/constants.ts';
 
-/** Isolated scenario: one email (sam@shared.test) is held once in acme and once in strict. */
+/**
+ * Isolated scenario: one email (sam@shared.test) is held once in acme and once in strict.
+ * The backend's message may carry a gRPC status prefix, so match the part that matters.
+ */
 const REFUSAL =
-  '1 identifier(s) are held by more than one account; identity mode cannot return to shared';
+  /1 identifier\(s\) are held by more than one account; identity mode cannot return to shared/;
 
 type AuthSnapshot = {
   identityMode: string;
@@ -56,7 +59,8 @@ test.describe('isolated identity mode', () => {
     await expect(
       page.getByText('Failed to save authentication settings', { exact: true })
     ).toBeVisible();
-    await expect(page.getByText(REFUSAL, { exact: true })).toBeVisible();
+    // The toast renders the message in its <pre>; the live region repeats it, so scope to <pre>.
+    await expect(page.locator('pre', { hasText: REFUSAL })).toBeVisible();
 
     const patches = await recordedRequests({
       method: 'PATCH',

@@ -18,6 +18,7 @@ export default function RealmTab({
   memberCount,
   globalAccountLinking,
   globalVerificationRequired,
+  supportsLinking,
 }: Readonly<{
   team: Team;
   /** Loaded by the page when the team is a realm; null if that read failed. */
@@ -27,6 +28,8 @@ export default function RealmTab({
   globalAccountLinking?: Partial<Record<OAuthProviderKey, boolean>>;
   /** Global `local.verification.required`: what a realm inherits for verification. */
   globalVerificationRequired?: boolean;
+  /** The authentication config reports `teams.realms.identityMode` (linking is supported). */
+  supportsLinking?: boolean;
 }>) {
   const [realm, setRealm] = useState<Realm | null>(initialRealm);
   useEffect(() => {
@@ -34,7 +37,13 @@ export default function RealmTab({
   }, [initialRealm]);
 
   if (!team.realm?.enabled) {
-    return <RealmEmptyState team={team} memberCount={memberCount} />;
+    return (
+      <RealmEmptyState
+        team={team}
+        memberCount={memberCount}
+        supportsLinking={supportsLinking}
+      />
+    );
   }
 
   if (!realm) {

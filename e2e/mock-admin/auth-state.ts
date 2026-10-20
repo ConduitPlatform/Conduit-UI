@@ -301,9 +301,11 @@ export function patchAuthenticationConfig(auth: MockAuthState, body: unknown) {
   ) {
     const held = duplicatedIdentifierCount(auth);
     if (held > 0) {
-      throw conduitError(
-        'FAILED_PRECONDITION',
-        `${held} identifier(s) are held by more than one account; identity mode cannot return to shared`
+      // A gRPC refusal: served as a 500 with no conduitCode, and the status name travels
+      // in the message, as the backend's FAILED_PRECONDITION errors do.
+      throw new MockHttpError(
+        500,
+        `9 FAILED_PRECONDITION: ${held} identifier(s) are held by more than one account; identity mode cannot return to shared`
       );
     }
   }

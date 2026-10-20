@@ -89,6 +89,19 @@ const realm: Realm = {
   },
 };
 
+/** The same realm read by a backend that reports account linking. */
+const reportingRealm: Realm = {
+  ...realm,
+  settings: {
+    ...realm.settings,
+    policies: {
+      ...realm.settings.policies,
+      guests: { ...realm.settings.policies.guests, directSignIn: true },
+    },
+    linking: { inbound: false, outbound: true },
+  },
+};
+
 beforeEach(() => {
   // Radix switches measure themselves; jsdom has no ResizeObserver.
   vi.stubGlobal(
@@ -129,14 +142,15 @@ describe('RealmTab', () => {
     expect(screen.getByText('Policies')).toBeInTheDocument();
   });
 
-  it('saves policies and linking in one request', async () => {
-    render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
+  it('saves policies and linking in one request when the realm reports them', async () => {
+    render(
+      <RealmTab team={realmTeam} realm={reportingRealm} memberCount={12} />
+    );
     fireEvent.click(screen.getByLabelText('Require 2FA'));
     const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
     await waitFor(() => expect(save).toBeEnabled());
     fireEvent.click(save);
     await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
-    // The fixture predates linking: the defaults are what gets sent.
     expect(api.updateRealm).toHaveBeenCalledWith('t1', {
       policies: {
         requireTwoFa: true,
@@ -146,6 +160,44 @@ describe('RealmTab', () => {
       },
       linking: { inbound: false, outbound: true },
     });
+  });
+
+  it('sends no linking or direct sign-in keys for a realm that predates them', async () => {
+    render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
+    expect(screen.queryByText('Linking')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Accept connected accounts from other realms')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Connected accounts can sign in here directly')
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Require 2FA'));
+    const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(api.updateRealm).toHaveBeenCalledWith('t1', {
+      policies: {
+        requireTwoFa: true,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [] },
+      },
+    });
+  });
+
+  it('shows the Linking switches only for a realm that reports them', () => {
+    render(
+      <RealmTab team={realmTeam} realm={reportingRealm} memberCount={12} />
+    );
+    expect(screen.getByText('Linking')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Accept connected accounts from other realms')
+    ).not.toBeChecked();
+    expect(
+      screen.getByLabelText('Connected accounts can sign in here directly')
+    ).toBeChecked();
   });
 
   it('saves identity as a patch of the changed switches only', async () => {
@@ -336,10 +388,14 @@ describe('RealmTab unsaved state and the Active kill-switch', () => {
 });
 
 describe('PromoteRealmSheet', () => {
-  const openSheet = async () => {
+  const openSheet = async (supportsLinking = true) => {
     render(
       withAlerts(
-        <PromoteRealmSheet team={team} memberCount={4}>
+        <PromoteRealmSheet
+          team={team}
+          memberCount={4}
+          supportsLinking={supportsLinking}
+        >
           <button type="button">Open promote</button>
         </PromoteRealmSheet>
       )
@@ -383,6 +439,27 @@ describe('PromoteRealmSheet', () => {
       linking: { inbound: false, outbound: true },
     });
     await waitFor(() => expect(refresh).toHaveBeenCalled());
+  });
+
+  it('leaves the linking keys out when the backend does not report identity mode', async () => {
+    api.promoteTeamToRealm.mockResolvedValueOnce(ok(realm));
+    const submit = await openSheet(false);
+    fireEvent.click(submit);
+    fireEvent.click(await screen.findByRole('button', { name: 'Make realm' }));
+    await waitFor(() =>
+      expect(api.promoteTeamToRealm).toHaveBeenCalledTimes(1)
+    );
+    const [, body] = api.promoteTeamToRealm.mock.calls[0] as [
+      string,
+      Record<string, unknown>,
+    ];
+    expect(body).not.toHaveProperty('linking');
+    expect(body.policies).toEqual({
+      requireTwoFa: false,
+      requireVerifiedEmail: false,
+      allowedClientIds: [],
+      guests: { allowed: true, allowedHomeRealms: [] },
+    });
   });
 
   it('shows REALM_SLUG_TAKEN on the slug field', async () => {

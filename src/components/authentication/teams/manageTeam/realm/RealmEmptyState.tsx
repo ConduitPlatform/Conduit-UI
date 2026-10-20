@@ -13,9 +13,11 @@ export const DEFAULT_TEAM_REALM_NOTE =
 export function RealmEmptyState({
   team,
   memberCount,
+  supportsLinking,
 }: Readonly<{
   team: Team;
   memberCount: number;
+  supportsLinking?: boolean;
 }>) {
   return (
     <Card>
@@ -36,7 +38,11 @@ export function RealmEmptyState({
                 </p>
               </div>
             ) : (
-              <PromoteRealmSheet team={team} memberCount={memberCount}>
+              <PromoteRealmSheet
+                team={team}
+                memberCount={memberCount}
+                supportsLinking={supportsLinking}
+              >
                 <Button>Make this team a realm</Button>
               </PromoteRealmSheet>
             )

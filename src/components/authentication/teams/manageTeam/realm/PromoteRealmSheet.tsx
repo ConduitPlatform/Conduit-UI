@@ -32,10 +32,9 @@ import { rhfZodResolver } from '@/lib/zod-form';
 import { promoteTeamToRealm } from '@/lib/api/authentication';
 import {
   buildPromoteBody,
-  DEFAULT_REALM_LINKING,
-  DEFAULT_REALM_POLICIES,
   DEFAULT_REALM_REGISTRATION,
   DEFAULT_REALM_STRATEGIES,
+  promoteLinkingDefaults,
   promoteRealmSchema,
   REALM_SLUG_MESSAGE,
   suggestRealmSlug,
@@ -51,10 +50,13 @@ import { RealmSwitchRow } from '@/components/authentication/teams/manageTeam/rea
 export function PromoteRealmSheet({
   team,
   memberCount,
+  supportsLinking = false,
   children,
 }: Readonly<{
   team: Team;
   memberCount: number;
+  /** The authentication config reports `teams.realms.identityMode`: send linking keys. */
+  supportsLinking?: boolean;
   children: ReactNode;
 }>) {
   const [open, setOpen] = useState(false);
@@ -77,8 +79,7 @@ export function PromoteRealmSheet({
         ),
       },
       registration: DEFAULT_REALM_REGISTRATION,
-      policies: DEFAULT_REALM_POLICIES,
-      linking: DEFAULT_REALM_LINKING,
+      ...promoteLinkingDefaults(supportsLinking),
     },
   });
   const { control, watch, handleSubmit, formState } = form;

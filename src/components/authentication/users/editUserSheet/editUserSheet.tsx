@@ -20,6 +20,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useAlerts } from '@/components/providers/AlertProvider';
+import { HomeRealmCell } from '@/components/authentication/users/homeRealmCell';
 import {
   getUserRealms,
   getUsers,
@@ -120,6 +121,9 @@ export function EditUserSheet({
   const scopeOf = (value: string) =>
     value === HOME_REALM_GLOBAL ? null : realmLabel(value, realmSlugs);
   const email = user?.email ?? userId;
+  // A guest entry that is the home realm itself is not a link: it is never offered Unlink.
+  const linkedRealms =
+    realms?.guests.filter(guest => guest._id !== realms.home?._id) ?? [];
 
   const move = async () => {
     setMoving(true);
@@ -150,6 +154,8 @@ export function EditUserSheet({
           ? `${email} now belongs to ${labelOf(target)} and was signed out everywhere.`
           : `${email} now belongs to ${labelOf(target)}.`,
       });
+      // The move changes which realm is home, so the linked list is read again.
+      await loadRealms();
       router.refresh();
     } catch (e: unknown) {
       toast({
@@ -166,18 +172,19 @@ export function EditUserSheet({
     setUnlinking(guest._id);
     try {
       const result = await removeRealmGuest(guest._id, userId);
-      if (!result.ok) {
+      if (result.ok) {
+        toast({
+          title: 'Realm unlinked',
+          description: `${email} was unlinked from ${guest.slug}.`,
+        });
+      } else {
         toast({
           title: 'Failed to unlink realm',
           description: result.message,
           variant: 'destructive',
         });
-        return;
       }
-      toast({
-        title: 'Realm unlinked',
-        description: `${email} was unlinked from ${guest.slug}.`,
-      });
+      // Reload on both paths: a failed request may still have changed what the server holds.
       await loadRealms();
     } finally {
       setUnlinking(null);
@@ -239,7 +246,7 @@ export function EditUserSheet({
               role="alert"
               className="flex items-center justify-between gap-2 text-sm text-destructive"
             >
-              <span>Could not load this user&apos;s realms.</span>
+              <span>Linked realms could not be loaded.</span>
               <Button
                 type="button"
                 variant="outline"
@@ -250,22 +257,32 @@ export function EditUserSheet({
               </Button>
             </div>
           )}
-          {realmsStatus === 'loaded' && realms && (
+          {realmsStatus !== 'loading' && (
             <ul className="flex flex-col divide-y divide-border rounded-md border border-border">
               <li className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
                 <span className="text-muted-foreground">Home realm</span>
-                {realms.home ? (
-                  <span
-                    className="inline-flex items-center rounded-full bg-callout-info-muted px-2.5 py-0.5 font-mono text-xs font-medium text-callout-info-foreground"
-                    title="Home realm"
-                  >
-                    {realms.home.slug}
-                  </span>
+                {realmsStatus === 'loaded' && realms ? (
+                  realms.home ? (
+                    <span
+                      className="inline-flex items-center rounded-full bg-callout-info-muted px-2.5 py-0.5 font-mono text-xs font-medium text-callout-info-foreground"
+                      title="Home realm"
+                    >
+                      {realms.home.slug}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">Global</span>
+                  )
                 ) : (
-                  <span className="text-muted-foreground">Global</span>
+                  // Realms did not load: the home realm still comes from the user row.
+                  user && (
+                    <HomeRealmCell
+                      homeRealm={user.homeRealm}
+                      realmSlugs={realmSlugs}
+                    />
+                  )
                 )}
               </li>
-              {realms.guests.map(guest => (
+              {linkedRealms.map(guest => (
                 <li
                   key={guest._id}
                   className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
@@ -292,7 +309,7 @@ export function EditUserSheet({
                   </Button>
                 </li>
               ))}
-              {realms.guests.length === 0 && (
+              {realmsStatus === 'loaded' && linkedRealms.length === 0 && (
                 <li className="px-3 py-2 text-sm text-muted-foreground">
                   Not linked to any other realm.
                 </li>

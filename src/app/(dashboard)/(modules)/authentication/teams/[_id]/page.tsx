@@ -144,6 +144,9 @@ export default async function Teams(
   // Isolated mode: the picker shows each candidate's home realm, so the same email in two
   // realms stays distinguishable. Slugs are loaded only for that mode.
   const identityMode = realmIdentityMode(settings?.config);
+  // Linking keys are sent on promotion only to a backend that reports identity mode.
+  const supportsLinking =
+    settings?.config?.teams?.realms?.identityMode !== undefined;
   const pickerRealmSlugs =
     showRealms && identityMode === 'isolated'
       ? buildRealmSlugMap(
@@ -237,6 +240,7 @@ export default async function Teams(
               globalVerificationRequired={globalVerificationRequired(
                 settings?.config
               )}
+              supportsLinking={supportsLinking}
             />
           </TabsContent>
         )}

@@ -27,8 +27,9 @@ vi.mock('@/lib/hooks/use-toast', () => ({ toast: toastMock }));
 
 import { AuthenticationSettings } from '@/components/authentication/strategies/settings';
 
+// The backend refusal: a gRPC status prefix, and no conduitCode (the status is 500).
 const REFUSAL =
-  '2 identifier(s) are held by more than one account; identity mode cannot return to shared';
+  '9 FAILED_PRECONDITION: 2 identifier(s) are held by more than one account; identity mode cannot return to shared';
 
 /** A complete authentication config with the realms block set as the test needs. */
 function configWith(realms: Record<string, unknown> | undefined) {
@@ -148,7 +149,7 @@ describe('Realms block in the authentication settings', () => {
   it('shows the server refusal message in the toast when isolated cannot go back to shared', async () => {
     api.updateAuthenticationSettings.mockResolvedValue({
       ok: false,
-      code: 'FAILED_PRECONDITION',
+      code: 'INTERNAL',
       message: REFUSAL,
       status: 500,
     });
@@ -185,6 +186,72 @@ describe('Realms block in the authentication settings', () => {
           realms: expect.objectContaining({ identityMode: 'shared' }),
         }),
       })
+    );
+  });
+
+  it('hides identity mode and discovery login for a realms block that lacks them', async () => {
+    const legacy = {
+      enabled: true,
+      allowEmailDiscovery: false,
+      cacheTtlMs: 5000,
+    };
+    render(<AuthenticationSettings data={configWith(legacy)} />);
+    openTeamsAndEdit();
+    // The rest of the realms block still renders.
+    expect(
+      screen.getByRole('switch', { name: 'Allow email discovery' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('combobox', { name: 'Identity mode' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/The same email or phone can exist/)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('switch', { name: 'Discovery login' })
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() =>
+      expect(api.updateAuthenticationSettings).toHaveBeenCalledTimes(1)
+    );
+    const [body] = api.updateAuthenticationSettings.mock.calls[0] as [
+      { teams: { realms: Record<string, unknown> } },
+    ];
+    expect(body.teams.realms).toMatchObject(legacy);
+    expect(body.teams.realms).not.toHaveProperty('identityMode');
+    expect(body.teams.realms).not.toHaveProperty('discoveryLogin');
+  });
+
+  it('saves through the action result, reports success and leaves edit mode', async () => {
+    render(<AuthenticationSettings data={configWith(isolatedRealms)} />);
+    openTeamsAndEdit();
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Authentication settings saved' })
+      )
+    );
+    const success = toastMock.mock.calls
+      .map(([args]) => args)
+      .find(args => args.title === 'Authentication settings saved');
+    expect(success?.variant).toBeUndefined();
+    expect(api.updateAuthenticationSettings).toHaveBeenCalledTimes(1);
+    expect(api.updateAuthenticationSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        teams: expect.objectContaining({
+          realms: expect.objectContaining({
+            identityMode: 'isolated',
+            discoveryLogin: false,
+          }),
+        }),
+      })
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: 'Submit' })
+      ).not.toBeInTheDocument()
     );
   });
 });

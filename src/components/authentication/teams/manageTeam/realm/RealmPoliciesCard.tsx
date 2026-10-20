@@ -45,6 +45,11 @@ export function RealmPoliciesCard({
   const { save, isSaving } = useSettingsSave('Realm policies');
   const [realmOptions, setRealmOptions] = useState<RealmOption[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
+  // Backends that predate account linking do not report these keys: their switches are
+  // not rendered, and the keys are left out of the PATCH.
+  const supportsLinking = realm.settings.linking !== undefined;
+  const supportsDirectSignIn =
+    realm.settings.policies.guests.directSignIn !== undefined;
 
   // Policies and linking are saved together, so both are part of the form's baseline.
   const savedKey = JSON.stringify({
@@ -199,64 +204,77 @@ export function RealmPoliciesCard({
                 )}
               />
             </div>
-            <Separator />
-            <section
-              className="flex flex-col gap-3"
-              aria-labelledby="realm-policy-linking"
-            >
-              <div className="flex flex-col gap-0.5">
-                <h3 id="realm-policy-linking" className="text-sm font-medium">
-                  Linking
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  Connected accounts link a user&apos;s account in one realm to
-                  another realm, so they can sign in there with their own
-                  credentials.
-                </p>
-              </div>
-              <Controller
-                control={control}
-                name="linking.inbound"
-                render={({ field }) => (
-                  <RealmSwitchRow
-                    id="realm-linking-inbound"
-                    label="Accept connected accounts from other realms"
-                    description="Users with an account in another realm can connect it to this realm."
-                    checked={field.value}
-                    disabled={busy}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="linking.outbound"
-                render={({ field }) => (
-                  <RealmSwitchRow
-                    id="realm-linking-outbound"
-                    label="Let this realm's accounts connect to other realms"
-                    description="Users of this realm can connect their account to another realm that accepts it."
-                    checked={field.value}
-                    disabled={busy}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="guests.directSignIn"
-                render={({ field }) => (
-                  <RealmSwitchRow
-                    id="realm-policy-direct-sign-in"
-                    label="Connected accounts can sign in here directly"
-                    description="Linked guests sign in to this realm with their own account and password, without going through their home realm."
-                    checked={field.value}
-                    disabled={busy}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-            </section>
+            {(supportsLinking || supportsDirectSignIn) && (
+              <>
+                <Separator />
+                <section
+                  className="flex flex-col gap-3"
+                  aria-labelledby="realm-policy-linking"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <h3
+                      id="realm-policy-linking"
+                      className="text-sm font-medium"
+                    >
+                      Linking
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Connected accounts link a user&apos;s account in one realm
+                      to another realm, so they can sign in there with their own
+                      credentials.
+                    </p>
+                  </div>
+                  {supportsLinking && (
+                    <>
+                      <Controller
+                        control={control}
+                        name="linking.inbound"
+                        render={({ field }) => (
+                          <RealmSwitchRow
+                            id="realm-linking-inbound"
+                            label="Accept connected accounts from other realms"
+                            description="Users with an account in another realm can connect it to this realm."
+                            checked={field.value === true}
+                            disabled={busy}
+                            onCheckedChange={field.onChange}
+                          />
+                        )}
+                      />
+                      <Controller
+                        control={control}
+                        name="linking.outbound"
+                        render={({ field }) => (
+                          <RealmSwitchRow
+                            id="realm-linking-outbound"
+                            label="Let this realm's accounts connect to other realms"
+                            description="Users of this realm can connect their account to another realm that accepts it."
+                            checked={field.value === true}
+                            disabled={busy}
+                            onCheckedChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </>
+                  )}
+                  {supportsDirectSignIn && (
+                    <Controller
+                      control={control}
+                      name="guests.directSignIn"
+                      render={({ field }) => (
+                        <RealmSwitchRow
+                          id="realm-policy-direct-sign-in"
+                          label="Connected accounts can sign in here directly"
+                          description="Linked guests sign in to this realm with their own account and password, without going through their home realm."
+                          checked={field.value === true}
+                          disabled={busy}
+                          onCheckedChange={field.onChange}
+                        />
+                      )}
+                    />
+                  )}
+                </section>
+              </>
+            )}
           </CardContent>
           <CardFooter className="justify-end gap-2">
             <Button
