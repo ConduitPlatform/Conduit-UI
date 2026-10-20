@@ -15,6 +15,7 @@ import {
   Realm,
   RealmMembershipType,
   UpdateRealmBody,
+  UserRealms,
 } from '@/lib/models/Realm';
 
 export const getUsers = async (
@@ -190,6 +191,22 @@ export const patchAuthenticationSettings = async (
     config: { ...data },
   });
 };
+
+/**
+ * Settings save that reports failures as an `ActionResult`, so the backend's refusal
+ * message (e.g. an identity mode that cannot return to shared) reaches the UI. Use
+ * `unwrapActionResult` to throw it into `useSettingsSave`.
+ */
+export const updateAuthenticationSettings = async (
+  data: Partial<AuthenticationConfig>
+): Promise<ActionResult<void>> =>
+  runAction(async () => {
+    await (
+      await getApiClient()
+    ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
+      config: { ...data },
+    });
+  });
 
 /** Read–modify–write: merges `partial` into current config before PATCH (safe for strategy-only updates). */
 export const patchAuthenticationSettingsMerged = async (
@@ -417,6 +434,17 @@ export const removeRealmGuest = async (
  * `null` moves the user to global; the backend's param parser rejects JSON null for
  * string params, so it travels as an empty string.
  */
+/** Home realm and every realm the user is linked into. Branch on `result.code`. */
+export const getUserRealms = async (
+  userId: string
+): Promise<ActionResult<UserRealms>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).get<UserRealms>(`/authentication/users/${userId}/realms`);
+    return res.data;
+  });
+
 export const setUserHomeRealm = async (
   userId: string,
   realmTeamId: string | null,

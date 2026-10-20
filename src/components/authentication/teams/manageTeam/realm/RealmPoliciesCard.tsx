@@ -20,10 +20,12 @@ import { unwrapActionResult } from '@/lib/api/action-result';
 import { getRealms, updateRealm } from '@/lib/api/authentication';
 import { MAX_REALMS_IN_FILTERS } from '@/lib/authentication/realmMembers';
 import {
-  normalizeRealmSettingsForSave,
-  realmPoliciesSchema,
+  buildRealmPoliciesPatch,
+  realmPoliciesFormSchema,
+  toRealmPoliciesFormValues,
+  type RealmPoliciesFormValues,
 } from '@/lib/authentication/realms';
-import type { Realm, RealmPolicies } from '@/lib/models/Realm';
+import type { Realm } from '@/lib/models/Realm';
 import { RealmSwitchRow } from '@/components/authentication/teams/manageTeam/realm/RealmSwitchRow';
 import {
   TrustedRealmsSelect,
@@ -44,15 +46,21 @@ export function RealmPoliciesCard({
   const [realmOptions, setRealmOptions] = useState<RealmOption[]>([]);
   const [loadingRealms, setLoadingRealms] = useState(true);
 
-  const saved = realm.settings.policies;
-  const savedKey = JSON.stringify(saved);
+  // Policies and linking are saved together, so both are part of the form's baseline.
+  const savedKey = JSON.stringify({
+    policies: realm.settings.policies,
+    linking: realm.settings.linking,
+  });
   const defaults = useMemo(
-    () => JSON.parse(savedKey) as RealmPolicies,
+    () =>
+      toRealmPoliciesFormValues(
+        JSON.parse(savedKey) as Pick<Realm['settings'], 'policies' | 'linking'>
+      ),
     [savedKey]
   );
 
-  const form = useForm<RealmPolicies>({
-    resolver: rhfZodResolver(realmPoliciesSchema),
+  const form = useForm<RealmPoliciesFormValues>({
+    resolver: rhfZodResolver(realmPoliciesFormSchema),
     defaultValues: defaults,
   });
   const { control, reset, watch, handleSubmit, formState } = form;
@@ -91,16 +99,17 @@ export function RealmPoliciesCard({
 
   const guestsAllowed = watch('guests.allowed');
 
-  const onSubmit = async (values: RealmPolicies) => {
-    const { policies } = normalizeRealmSettingsForSave({ policies: values });
+  const onSubmit = async (values: RealmPoliciesFormValues) => {
+    // One PATCH: `policies` and `linking` travel together.
+    const body = buildRealmPoliciesPatch(values);
     const result = await save({
       successMessage: 'Realm policies saved',
       action: async () =>
-        unwrapActionResult(await updateRealm(realm.team._id, { policies })),
+        unwrapActionResult(await updateRealm(realm.team._id, body)),
     });
     if (result.ok) {
       onChange(result.result);
-      reset(result.result.settings.policies);
+      reset(toRealmPoliciesFormValues(result.result.settings));
     }
   };
 
@@ -190,6 +199,64 @@ export function RealmPoliciesCard({
                 )}
               />
             </div>
+            <Separator />
+            <section
+              className="flex flex-col gap-3"
+              aria-labelledby="realm-policy-linking"
+            >
+              <div className="flex flex-col gap-0.5">
+                <h3 id="realm-policy-linking" className="text-sm font-medium">
+                  Linking
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Connected accounts link a user&apos;s account in one realm to
+                  another realm, so they can sign in there with their own
+                  credentials.
+                </p>
+              </div>
+              <Controller
+                control={control}
+                name="linking.inbound"
+                render={({ field }) => (
+                  <RealmSwitchRow
+                    id="realm-linking-inbound"
+                    label="Accept connected accounts from other realms"
+                    description="Users with an account in another realm can connect it to this realm."
+                    checked={field.value}
+                    disabled={busy}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="linking.outbound"
+                render={({ field }) => (
+                  <RealmSwitchRow
+                    id="realm-linking-outbound"
+                    label="Let this realm's accounts connect to other realms"
+                    description="Users of this realm can connect their account to another realm that accepts it."
+                    checked={field.value}
+                    disabled={busy}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="guests.directSignIn"
+                render={({ field }) => (
+                  <RealmSwitchRow
+                    id="realm-policy-direct-sign-in"
+                    label="Connected accounts can sign in here directly"
+                    description="Linked guests sign in to this realm with their own account and password, without going through their home realm."
+                    checked={field.value}
+                    disabled={busy}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+            </section>
           </CardContent>
           <CardFooter className="justify-end gap-2">
             <Button

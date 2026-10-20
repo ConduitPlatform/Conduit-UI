@@ -32,6 +32,7 @@ import { rhfZodResolver } from '@/lib/zod-form';
 import { promoteTeamToRealm } from '@/lib/api/authentication';
 import {
   buildPromoteBody,
+  DEFAULT_REALM_LINKING,
   DEFAULT_REALM_POLICIES,
   DEFAULT_REALM_REGISTRATION,
   DEFAULT_REALM_STRATEGIES,
@@ -77,6 +78,7 @@ export function PromoteRealmSheet({
       },
       registration: DEFAULT_REALM_REGISTRATION,
       policies: DEFAULT_REALM_POLICIES,
+      linking: DEFAULT_REALM_LINKING,
     },
   });
   const { control, watch, handleSubmit, formState } = form;

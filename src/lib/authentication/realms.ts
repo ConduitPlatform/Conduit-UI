@@ -1,17 +1,20 @@
 import { z } from 'zod';
 import { oauthDefaultConfig } from '@/components/authentication/strategies/settingsConfig/oAuth/oauthDefaultConfig.schema';
 import type { AuthenticationConfig } from '@/lib/models/authentication';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 import {
   OAUTH_CREDENTIAL_FIELDS,
   OAUTH_PROVIDER_KEYS,
   type DeepPartial,
   type OAuthProviderKey,
   type RealmCounts,
+  type RealmLinking,
   type RealmPolicies,
   type RealmRegistration,
   type PromoteRealmBody,
   type Realm,
   type RealmOAuthStrategy,
+  type RealmSettings,
   type RealmSettingsPayload,
   type RealmStrategies,
   type RealmStrategiesPatch,
@@ -27,6 +30,18 @@ export function realmsEnabled(
   config: AuthenticationConfig | null | undefined
 ): boolean {
   return config?.teams?.realms?.enabled === true;
+}
+
+/**
+ * The deployment's identity mode. An absent value (backends that predate isolated mode)
+ * is `shared`, the behaviour those backends have.
+ */
+export function realmIdentityMode(
+  config: AuthenticationConfig | null | undefined
+): RealmIdentityMode {
+  return config?.teams?.realms?.identityMode === 'isolated'
+    ? 'isolated'
+    : 'shared';
 }
 
 /* -------------------------------------------------------------------------- */
@@ -63,6 +78,15 @@ export const realmOAuthStrategySchema = oauthDefaultConfig.extend({
   keyId: z.string().optional(),
 });
 
+/** Linked guests of a realm can sign in there with their own credentials. */
+export const DEFAULT_GUEST_DIRECT_SIGN_IN = true;
+
+/** Inbound off (other realms cannot connect in), outbound on (this realm's accounts can connect out). */
+export const DEFAULT_REALM_LINKING: RealmLinking = {
+  inbound: false,
+  outbound: true,
+};
+
 const enabledOnly = z.object({ enabled: z.boolean() });
 
 export const realmStrategiesSchema = z.object({
@@ -85,7 +109,14 @@ export const realmPoliciesSchema = z.object({
   guests: z.object({
     allowed: z.boolean(),
     allowedHomeRealms: z.array(z.string().min(1)),
+    // Absent on older backends: linked guests keep signing in directly.
+    directSignIn: z.boolean().default(DEFAULT_GUEST_DIRECT_SIGN_IN),
   }),
+});
+
+export const realmLinkingSchema = z.object({
+  inbound: z.boolean().default(DEFAULT_REALM_LINKING.inbound),
+  outbound: z.boolean().default(DEFAULT_REALM_LINKING.outbound),
 });
 
 export const realmRegistrationSchema = z.object({
@@ -104,11 +135,15 @@ export const DEFAULT_REALM_STRATEGIES: z.output<typeof realmStrategiesSchema> =
     oauth: {},
   };
 
-export const DEFAULT_REALM_POLICIES: RealmPolicies = {
+export const DEFAULT_REALM_POLICIES: z.output<typeof realmPoliciesSchema> = {
   requireTwoFa: false,
   requireVerifiedEmail: false,
   allowedClientIds: [],
-  guests: { allowed: true, allowedHomeRealms: [] },
+  guests: {
+    allowed: true,
+    allowedHomeRealms: [],
+    directSignIn: DEFAULT_GUEST_DIRECT_SIGN_IN,
+  },
 };
 
 export const DEFAULT_REALM_REGISTRATION: RealmRegistration = {
@@ -121,7 +156,15 @@ export const realmSettingsSchema = z.object({
   strategies: realmStrategiesSchema.default(DEFAULT_REALM_STRATEGIES),
   registration: realmRegistrationSchema.default(DEFAULT_REALM_REGISTRATION),
   policies: realmPoliciesSchema.default(DEFAULT_REALM_POLICIES),
+  linking: realmLinkingSchema.default(DEFAULT_REALM_LINKING),
 });
+
+/** Policies card form: the policies plus the account linking switches (both PATCHed together). */
+export const realmPoliciesFormSchema = realmPoliciesSchema.extend({
+  linking: realmLinkingSchema,
+});
+
+export type RealmPoliciesFormValues = z.output<typeof realmPoliciesFormSchema>;
 
 /** Promotion form: the shared settings plus the slug. */
 export const promoteRealmSchema = realmSettingsSchema.extend({
@@ -260,9 +303,20 @@ function normalizePolicies(
     }
     const homeRealms = cleanStringList(policies.guests.allowedHomeRealms);
     if (homeRealms) guests.allowedHomeRealms = homeRealms;
+    if (typeof policies.guests.directSignIn === 'boolean') {
+      guests.directSignIn = policies.guests.directSignIn;
+    }
     out.guests = guests;
   }
   return out as DeepPartial<RealmPolicies>;
+}
+
+function normalizeLinking(linking: unknown): Partial<RealmLinking> | undefined {
+  if (!isRecord(linking)) return undefined;
+  const out: Partial<RealmLinking> = {};
+  if (typeof linking.inbound === 'boolean') out.inbound = linking.inbound;
+  if (typeof linking.outbound === 'boolean') out.outbound = linking.outbound;
+  return out;
 }
 
 /**
@@ -300,7 +354,50 @@ export function normalizeRealmSettingsForSave(
   const policies = normalizePolicies(source.policies);
   if (policies) out.policies = policies;
 
+  const linking = normalizeLinking(source.linking);
+  if (linking) out.linking = linking;
+
   return out;
+}
+
+/**
+ * Policies card body: the policies and the linking switches in one payload, so one PATCH
+ * carries both (`policies` and `linking` are sibling sections of the realm settings).
+ */
+export function buildRealmPoliciesPatch(
+  values: RealmPoliciesFormValues
+): Omit<RealmSettingsPayload, 'slug'> {
+  const { linking, ...policies } = values;
+  const { slug: _slug, ...body } = normalizeRealmSettingsForSave({
+    policies,
+    linking,
+  });
+  return body;
+}
+
+/**
+ * Form values for the Policies card, filled from a realm's settings. Fields an older
+ * backend does not report take the defaults the server applies.
+ */
+export function toRealmPoliciesFormValues(
+  settings: Pick<RealmSettings, 'policies' | 'linking'>
+): RealmPoliciesFormValues {
+  const { policies, linking } = settings;
+  return {
+    requireTwoFa: policies.requireTwoFa,
+    requireVerifiedEmail: policies.requireVerifiedEmail,
+    allowedClientIds: policies.allowedClientIds,
+    guests: {
+      allowed: policies.guests.allowed,
+      allowedHomeRealms: policies.guests.allowedHomeRealms,
+      directSignIn:
+        policies.guests.directSignIn ?? DEFAULT_GUEST_DIRECT_SIGN_IN,
+    },
+    linking: {
+      inbound: linking?.inbound ?? DEFAULT_REALM_LINKING.inbound,
+      outbound: linking?.outbound ?? DEFAULT_REALM_LINKING.outbound,
+    },
+  };
 }
 
 /**

@@ -3,8 +3,11 @@ import type { AuthenticationConfig } from '@/lib/models/authentication';
 import type { RealmStrategies } from '@/lib/models/Realm';
 import {
   buildPromoteBody,
+  buildRealmPoliciesPatch,
   buildStrategiesPatch,
   countRealmsEnablingStrategy,
+  DEFAULT_REALM_LINKING,
+  DEFAULT_REALM_POLICIES,
   effectiveVerificationRequired,
   formatRealmCounts,
   formatRealmStrategyCount,
@@ -14,11 +17,14 @@ import {
   hasOwnOverrides,
   normalizeRealmSettingsForSave,
   promoteRealmSchema,
+  realmIdentityMode,
+  realmPoliciesFormSchema,
   realmSettingsSchema,
   realmsEnabled,
   slugSchema,
   strategiesToIdentityValues,
   suggestRealmSlug,
+  toRealmPoliciesFormValues,
 } from '@/lib/authentication/realms';
 
 const configWith = (realms: unknown) =>
@@ -72,8 +78,23 @@ describe('realmSettingsSchema', () => {
       requireTwoFa: false,
       requireVerifiedEmail: false,
       allowedClientIds: [],
-      guests: { allowed: true, allowedHomeRealms: [] },
+      guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
     });
+    expect(parsed.linking).toEqual({ inbound: false, outbound: true });
+  });
+
+  it('defaults linking and direct sign-in on a server read that predates them', () => {
+    const parsed = realmSettingsSchema.parse({
+      policies: {
+        requireTwoFa: true,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [] },
+      },
+      linking: { inbound: true },
+    });
+    expect(parsed.policies.guests.directSignIn).toBe(true);
+    expect(parsed.linking).toEqual({ inbound: true, outbound: true });
   });
 
   it('requires a valid slug when promoting', () => {
@@ -98,6 +119,128 @@ describe('realmSettingsSchema', () => {
     });
     expect(parsed.strategies.oauth.google?.enabled).toBe(true);
     expect(parsed.strategies.oauth.google?.accountLinking).toBeUndefined();
+  });
+});
+
+describe('linking and direct sign-in', () => {
+  it('uses the spec defaults: inbound off, outbound on, direct sign-in on', () => {
+    expect(DEFAULT_REALM_LINKING).toEqual({ inbound: false, outbound: true });
+    expect(DEFAULT_REALM_POLICIES.guests.directSignIn).toBe(true);
+  });
+
+  it('reads an absent linking block as the defaults, not as off', () => {
+    const values = toRealmPoliciesFormValues({
+      policies: {
+        requireTwoFa: false,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [] },
+      },
+    });
+    expect(values.linking).toEqual({ inbound: false, outbound: true });
+    expect(values.guests.directSignIn).toBe(true);
+  });
+
+  it('reads the stored linking and direct sign-in values', () => {
+    const values = toRealmPoliciesFormValues({
+      policies: {
+        requireTwoFa: false,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [], directSignIn: false },
+      },
+      linking: { inbound: true, outbound: false },
+    });
+    expect(values.linking).toEqual({ inbound: true, outbound: false });
+    expect(values.guests.directSignIn).toBe(false);
+  });
+
+  it('sends policies and linking in one payload, with direct sign-in inside guests', () => {
+    const body = buildRealmPoliciesPatch({
+      requireTwoFa: false,
+      requireVerifiedEmail: true,
+      allowedClientIds: ['web'],
+      guests: { allowed: true, allowedHomeRealms: [], directSignIn: false },
+      linking: { inbound: true, outbound: false },
+    });
+    expect(body).toEqual({
+      policies: {
+        requireTwoFa: false,
+        requireVerifiedEmail: true,
+        allowedClientIds: ['web'],
+        guests: { allowed: true, allowedHomeRealms: [], directSignIn: false },
+      },
+      linking: { inbound: true, outbound: false },
+    });
+    expect(body).not.toHaveProperty('slug');
+  });
+
+  it('keeps linking out of policies, so the two sections stay siblings', () => {
+    const body = buildRealmPoliciesPatch(
+      realmPoliciesFormSchema.parse({
+        requireTwoFa: false,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [] },
+        linking: {},
+      })
+    );
+    expect(body.policies).not.toHaveProperty('linking');
+    expect(body.linking).toEqual({ inbound: false, outbound: true });
+    expect(body.policies?.guests).toEqual({
+      allowed: true,
+      allowedHomeRealms: [],
+      directSignIn: true,
+    });
+  });
+
+  it('keeps a linking switch that is off, instead of dropping it', () => {
+    const body = normalizeRealmSettingsForSave({
+      linking: { inbound: false, outbound: false },
+    });
+    expect(body).toEqual({ linking: { inbound: false, outbound: false } });
+  });
+
+  it('drops a non-boolean linking value', () => {
+    const body = normalizeRealmSettingsForSave({
+      linking: { inbound: 'yes', outbound: true },
+    });
+    expect(body).toEqual({ linking: { outbound: true } });
+  });
+});
+
+describe('realmIdentityMode', () => {
+  it('reads isolated, and treats shared or an absent value as shared', () => {
+    expect(
+      realmIdentityMode(
+        configWith({
+          enabled: true,
+          cacheTtlMs: 5000,
+          allowEmailDiscovery: false,
+          identityMode: 'isolated',
+        })
+      )
+    ).toBe('isolated');
+    expect(
+      realmIdentityMode(
+        configWith({
+          enabled: true,
+          cacheTtlMs: 5000,
+          allowEmailDiscovery: false,
+          identityMode: 'shared',
+        })
+      )
+    ).toBe('shared');
+    expect(
+      realmIdentityMode(
+        configWith({
+          enabled: true,
+          cacheTtlMs: 5000,
+          allowEmailDiscovery: false,
+        })
+      )
+    ).toBe('shared');
+    expect(realmIdentityMode(null)).toBe('shared');
   });
 });
 
@@ -166,6 +309,13 @@ describe('normalizeRealmSettingsForSave', () => {
       active: false,
     });
     expect(normalizeRealmSettingsForSave({})).toEqual({});
+  });
+
+  it('passes direct sign-in through policies.guests when it is a boolean', () => {
+    const body = normalizeRealmSettingsForSave({
+      policies: { guests: { directSignIn: false } },
+    });
+    expect(body.policies).toEqual({ guests: { directSignIn: false } });
   });
 });
 

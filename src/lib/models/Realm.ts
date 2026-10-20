@@ -76,7 +76,21 @@ export type RealmPolicies = {
     allowed: boolean;
     /** Realm team ids. `[]` = any home realm, including global. */
     allowedHomeRealms: string[];
+    /**
+     * Linked guests can sign in here with their own credentials. Absent on backends that
+     * predate account linking (treated as `true`).
+     */
+    directSignIn?: boolean;
   };
+};
+
+/**
+ * Account linking across realms. `inbound`: accounts from other realms may connect into
+ * this realm. `outbound`: this realm's accounts may connect into other realms.
+ */
+export type RealmLinking = {
+  inbound: boolean;
+  outbound: boolean;
 };
 
 export type RealmRegistration = {
@@ -91,6 +105,8 @@ export type RealmSettings = {
   strategies: RealmStrategies;
   registration: RealmRegistration;
   policies: RealmPolicies;
+  /** Absent on backends that predate account linking (treated as the defaults). */
+  linking?: RealmLinking;
   createdAt: string;
   updatedAt: string;
 };
@@ -154,6 +170,7 @@ export type RealmSettingsPayload = {
   strategies?: RealmStrategiesPatch;
   policies?: DeepPartial<RealmPolicies>;
   registration?: Partial<RealmRegistration>;
+  linking?: Partial<RealmLinking>;
 };
 
 /** Body of `POST /authentication/teams/:teamId/realm`. The server fills anything omitted. */
@@ -174,4 +191,18 @@ export type UpdateRealmBody =
 export type DemoteRealmResponse = {
   message: string;
   blockedUsers: number;
+};
+
+/** A realm as the user-realms endpoint names it. */
+export type UserRealmSummary = {
+  _id: string;
+  name: string;
+  slug: string;
+};
+
+/** `GET /authentication/users/:id/realms`: the home realm and every realm the user is linked into. */
+export type UserRealms = {
+  /** `null` for a global user (no home realm). */
+  home: UserRealmSummary | null;
+  guests: (UserRealmSummary & { createdAt: string })[];
 };

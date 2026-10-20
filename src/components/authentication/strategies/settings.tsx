@@ -10,9 +10,11 @@ import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { EmailRestrictions } from '@/lib/models/authentication/base.config';
-import { patchAuthenticationSettings } from '@/lib/api/authentication';
+import { updateAuthenticationSettings } from '@/lib/api/authentication';
+import { unwrapActionResult } from '@/lib/api/action-result';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
+import SelectField from '@/components/ui/form-inputs/SelectField';
 import {
   Collapsible,
   CollapsibleContent,
@@ -67,6 +69,10 @@ const teamsSchema = z.object({
       enabled: z.boolean().default(false),
       allowEmailDiscovery: z.boolean().default(false),
       cacheTtlMs: z.number().int().min(0).default(DEFAULT_REALM_CACHE_TTL_MS),
+      // Optional, with no default: an absent value stays absent in the save, so backends
+      // that predate these settings never receive them. Absent identity mode is `shared`.
+      identityMode: z.enum(['shared', 'isolated']).optional(),
+      discoveryLogin: z.boolean().optional(),
     })
     .optional(),
 });
@@ -159,7 +165,10 @@ export const AuthenticationSettings = ({ data }: Props) => {
 
   const onSubmit = async (formData: formSchema) => {
     const result = await save({
-      action: () => patchAuthenticationSettings(formData),
+      // The backend's refusal (e.g. an identity mode that cannot go back to shared) is
+      // carried in the ActionResult; unwrapping throws it with that message to the toast.
+      action: async () =>
+        unwrapActionResult(await updateAuthenticationSettings(formData)),
     });
     if (result.ok) {
       setEdit(false);
@@ -429,35 +438,74 @@ export const AuthenticationSettings = ({ data }: Props) => {
                           />
                         </div>
                         {form.watch('teams.realms.enabled') && (
-                          <div className={'grid grid-cols-2 gap-4 items-start'}>
+                          <div className={'flex flex-col gap-4'}>
+                            <div className={'flex flex-col gap-2'}>
+                              <SelectField
+                                label={'Identity mode'}
+                                fieldName={'teams.realms.identityMode'}
+                                placeholder={'Shared'}
+                                options={[
+                                  {
+                                    label:
+                                      'Shared: one account per person across realms',
+                                    value: 'shared',
+                                  },
+                                  {
+                                    label:
+                                      'Isolated: each realm has its own accounts',
+                                    value: 'isolated',
+                                  },
+                                ]}
+                                disabled={!edit}
+                              />
+                              <p className={'text-xs text-muted-foreground'}>
+                                {form.watch('teams.realms.identityMode') ===
+                                'isolated'
+                                  ? 'Each realm has its own accounts. The same email or phone can exist once per realm, each with its own password. Switching back to shared is refused while any identifier is held twice.'
+                                  : 'One account per person across realms. An email or phone can exist only once in the deployment, and people join other realms by connecting their account.'}
+                              </p>
+                            </div>
                             <SwitchField
-                              label={'Allow email discovery'}
-                              fieldName={'teams.realms.allowEmailDiscovery'}
-                              disabled={!edit}
-                            />
-                            <InputField
-                              type={'number'}
-                              label={'Cache TTL (ms)'}
-                              fieldName={'teams.realms.cacheTtlMs'}
-                              description={
-                                'How long realm settings are cached before being re-read.'
+                              label={'Discovery login'}
+                              fieldName={'teams.realms.discoveryLogin'}
+                              checked={
+                                form.watch('teams.realms.discoveryLogin') ===
+                                true
                               }
-                              min={0}
-                              onChange={e => {
-                                form.setValue(
-                                  'teams.realms.cacheTtlMs',
-                                  // A cleared field yields NaN: fall back to the default.
-                                  Number.isFinite(e.target.valueAsNumber)
-                                    ? Math.max(
-                                        0,
-                                        Math.trunc(e.target.valueAsNumber)
-                                      )
-                                    : DEFAULT_REALM_CACHE_TTL_MS,
-                                  { shouldDirty: true }
-                                );
-                              }}
                               disabled={!edit}
                             />
+                            <div
+                              className={'grid grid-cols-2 gap-4 items-start'}
+                            >
+                              <SwitchField
+                                label={'Allow email discovery'}
+                                fieldName={'teams.realms.allowEmailDiscovery'}
+                                disabled={!edit}
+                              />
+                              <InputField
+                                type={'number'}
+                                label={'Cache TTL (ms)'}
+                                fieldName={'teams.realms.cacheTtlMs'}
+                                description={
+                                  'How long realm settings are cached before being re-read.'
+                                }
+                                min={0}
+                                onChange={e => {
+                                  form.setValue(
+                                    'teams.realms.cacheTtlMs',
+                                    // A cleared field yields NaN: fall back to the default.
+                                    Number.isFinite(e.target.valueAsNumber)
+                                      ? Math.max(
+                                          0,
+                                          Math.trunc(e.target.valueAsNumber)
+                                        )
+                                      : DEFAULT_REALM_CACHE_TTL_MS,
+                                    { shouldDirty: true }
+                                  );
+                                }}
+                                disabled={!edit}
+                              />
+                            </div>
                           </div>
                         )}
                       </>

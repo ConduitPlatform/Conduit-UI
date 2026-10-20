@@ -129,20 +129,22 @@ describe('RealmTab', () => {
     expect(screen.getByText('Policies')).toBeInTheDocument();
   });
 
-  it('saves policies independently with a partial body', async () => {
+  it('saves policies and linking in one request', async () => {
     render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
     fireEvent.click(screen.getByLabelText('Require 2FA'));
     const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
     await waitFor(() => expect(save).toBeEnabled());
     fireEvent.click(save);
     await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    // The fixture predates linking: the defaults are what gets sent.
     expect(api.updateRealm).toHaveBeenCalledWith('t1', {
       policies: {
         requireTwoFa: true,
         requireVerifiedEmail: false,
         allowedClientIds: [],
-        guests: { allowed: true, allowedHomeRealms: [] },
+        guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
       },
+      linking: { inbound: false, outbound: true },
     });
   });
 
@@ -376,8 +378,9 @@ describe('PromoteRealmSheet', () => {
         requireTwoFa: false,
         requireVerifiedEmail: false,
         allowedClientIds: [],
-        guests: { allowed: true, allowedHomeRealms: [] },
+        guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
       },
+      linking: { inbound: false, outbound: true },
     });
     await waitFor(() => expect(refresh).toHaveBeenCalled());
   });
