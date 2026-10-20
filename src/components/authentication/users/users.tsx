@@ -27,6 +27,7 @@ import {
   withHomeRealmFilter,
   MAX_REALMS_IN_FILTERS,
 } from '@/lib/authentication/realmMembers';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 
 const NO_REALMS: ReadonlyMap<string, string> = new Map();
 
@@ -36,6 +37,7 @@ export default function UsersTable({
   realmsEnabled = false,
   realmSlugs = NO_REALMS,
   realmsTruncated = false,
+  identityMode = 'shared',
 }: Readonly<{
   data: User[];
   count: number;
@@ -45,6 +47,8 @@ export default function UsersTable({
   realmSlugs?: ReadonlyMap<string, string>;
   /** There are more realms than `realmSlugs` holds; the filter lists only the first ones. */
   realmsTruncated?: boolean;
+  /** Isolated mode: the same email can appear once per realm, which the table says. */
+  identityMode?: RealmIdentityMode;
 }>) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -124,6 +128,7 @@ export default function UsersTable({
         <AddUserSheet
           realmsEnabled={realmsEnabled}
           realmSlugs={realmSlugs}
+          identityMode={identityMode}
           onSuccess={(user: User) => {
             setUsers([...users, user]);
           }}
@@ -134,6 +139,11 @@ export default function UsersTable({
       {realmsEnabled && realmsTruncated && (
         <p className={'pb-2 text-xs text-muted-foreground'}>
           Showing the first {MAX_REALMS_IN_FILTERS} realms in filters
+        </p>
+      )}
+      {identityMode === 'isolated' && (
+        <p className={'pb-2 text-xs text-muted-foreground'}>
+          Isolated identity mode: the same email can appear once per realm
         </p>
       )}
       <DataTable columns={columns} data={users} count={count}>

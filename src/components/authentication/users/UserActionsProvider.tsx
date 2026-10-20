@@ -6,6 +6,7 @@ import { EditUserSheet } from '@/components/authentication/users/editUserSheet/e
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { blockUnblockUser, deleteUser } from '@/lib/api/authentication';
 import { toast } from '@/lib/hooks/use-toast';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 import type { User } from '@/lib/models/User';
 
 type UserActionsProvider = {
@@ -44,12 +45,14 @@ export function UserActionsProvider({
   children,
   realmsEnabled = false,
   realmSlugs = NO_REALMS,
+  identityMode = 'shared',
 }: Readonly<{
   children: React.ReactNode;
   /** Realm UI (home realm select, edit sheet) renders only when enabled. */
   realmsEnabled?: boolean;
   /** `teamId -> slug` of every realm. */
   realmSlugs?: ReadonlyMap<string, string>;
+  identityMode?: RealmIdentityMode;
 }>) {
   const { addAlert } = useAlerts();
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
@@ -171,6 +174,7 @@ export function UserActionsProvider({
         onClose={() => setUserAdd(false)}
         realmsEnabled={realmsEnabled}
         realmSlugs={realmSlugs}
+        identityMode={identityMode}
       />
       {realmsEnabled ? (
         userEdit && (

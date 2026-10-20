@@ -36,9 +36,11 @@ import {
   getPickerEligibility,
   interpretMembershipLookup,
   isCandidateEligible,
+  realmLabel,
   type GuestPolicy,
   type MembershipLookup,
 } from '@/lib/authentication/realmMembers';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 import {
   TEAM_RESOURCE_NAME,
   teamMemberRolesAllowedForUser,
@@ -67,6 +69,8 @@ export function AddMemberSheet({
   onOpenChange,
   onAdded,
   existingMemberIds,
+  identityMode = 'shared',
+  realmSlugs,
 }: Readonly<{
   teamId: string;
   /**
@@ -83,6 +87,10 @@ export function AddMemberSheet({
   onAdded?: () => void;
   /** Users already shown as members; they cannot be picked again. */
   existingMemberIds?: readonly string[];
+  /** Isolated mode: each candidate shows its home realm, since emails can repeat. */
+  identityMode?: RealmIdentityMode;
+  /** `teamId -> slug`, to label a candidate's home realm. */
+  realmSlugs?: ReadonlyMap<string, string>;
 }>) {
   const { addAlert } = useAlerts();
   const [search, setSearch] = useState('');
@@ -389,8 +397,20 @@ export function AddMemberSheet({
                       htmlFor={id}
                       className="flex min-w-0 flex-1 flex-col gap-0.5 font-normal"
                     >
-                      <span className="truncate text-sm">
-                        {user.email || user._id}
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="truncate text-sm">
+                          {user.email || user._id}
+                        </span>
+                        {identityMode === 'isolated' && (
+                          <span
+                            className="shrink-0 font-mono text-xs text-muted-foreground"
+                            title="Home realm"
+                          >
+                            {user.homeRealm
+                              ? realmLabel(user.homeRealm, realmSlugs)
+                              : 'Global'}
+                          </span>
+                        )}
                       </span>
                       <span className="truncate font-mono text-xs text-muted-foreground">
                         {user._id}

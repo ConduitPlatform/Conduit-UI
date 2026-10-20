@@ -29,6 +29,8 @@ const api = vi.hoisted(() => ({
   getUsers: vi.fn(),
   createUser: vi.fn(),
   setUserHomeRealm: vi.fn(),
+  getUserRealms: vi.fn(),
+  removeRealmGuest: vi.fn(),
   deleteUser: vi.fn(),
   blockUnblockUser: vi.fn(),
 }));
@@ -87,6 +89,10 @@ beforeEach(() => {
   polyfillSelect();
   nav.search = '';
   api.getUsers.mockResolvedValue({ users: [], count: 0 });
+  api.getUserRealms.mockResolvedValue({
+    ok: true,
+    data: { home: null, guests: [] },
+  });
 });
 
 afterEach(() => {
@@ -270,16 +276,160 @@ describe('EditUserSheet', () => {
       </AlertProvider>
     );
 
-  it('shows the home realm and points to the Members tab for guest memberships', () => {
+  it('lists the home realm and each linked realm from the user realms endpoint', async () => {
+    api.getUserRealms.mockResolvedValue({
+      ok: true,
+      data: {
+        home: { _id: 't1', name: 'Acme', slug: 'acme' },
+        guests: [
+          {
+            _id: 't2',
+            name: 'Globex',
+            slug: 'globex',
+            createdAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+      },
+    });
     renderSheet(user({ homeRealm: 't1' }));
     const realms = screen.getByRole('region', { name: 'Realms' });
-    expect(within(realms).getByText('acme')).toBeInTheDocument();
+    expect(await within(realms).findByText('acme')).toBeInTheDocument();
+    expect(within(realms).getByText('globex')).toBeInTheDocument();
     expect(
-      within(realms).getByText(/managed from each realm's Members tab/)
+      within(realms).getByRole('button', { name: 'Unlink globex' })
+    ).toBeEnabled();
+    expect(api.getUserRealms).toHaveBeenCalledWith('u1');
+  });
+
+  it('says so when the user is linked to no other realm', async () => {
+    renderSheet(user({ homeRealm: null }));
+    const realms = screen.getByRole('region', { name: 'Realms' });
+    expect(
+      await within(realms).findByText('Not linked to any other realm.')
     ).toBeInTheDocument();
+    expect(within(realms).getByText('Global')).toBeInTheDocument();
+    expect(within(realms).queryByRole('button', { name: /Unlink/ })).toBeNull();
+  });
+
+  it('shows a loading state until the realms arrive', async () => {
+    let resolve: (value: unknown) => void = () => undefined;
+    api.getUserRealms.mockReturnValue(
+      new Promise(done => {
+        resolve = done;
+      })
+    );
+    renderSheet();
+    expect(screen.getByText('Loading realms…')).toBeInTheDocument();
+    resolve({ ok: true, data: { home: null, guests: [] } });
     expect(
-      within(realms).getByRole('link', { name: 'Go to Teams' })
-    ).toHaveAttribute('href', '/authentication/teams?realm=true');
+      await screen.findByText('Not linked to any other realm.')
+    ).toBeInTheDocument();
+  });
+
+  it('shows an error with a retry that reloads the realms', async () => {
+    api.getUserRealms.mockResolvedValueOnce({
+      ok: false,
+      code: 'NOT_FOUND',
+      message: 'User does not exist',
+    });
+    renderSheet();
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent("Could not load this user's realms.");
+    fireEvent.click(within(alert).getByRole('button', { name: 'Retry' }));
+    expect(
+      await screen.findByText('Not linked to any other realm.')
+    ).toBeInTheDocument();
+    expect(api.getUserRealms).toHaveBeenCalledTimes(2);
+  });
+
+  it('unlinks only after the confirmation, then reloads the list', async () => {
+    api.getUserRealms
+      .mockResolvedValueOnce({
+        ok: true,
+        data: {
+          home: null,
+          guests: [
+            { _id: 't2', name: 'Globex', slug: 'globex', createdAt: 'now' },
+          ],
+        },
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        data: { home: null, guests: [] },
+      });
+    api.removeRealmGuest.mockResolvedValue({ ok: true, data: 'OK' });
+    renderSheet();
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Unlink globex' })
+    );
+
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toHaveTextContent(
+      'ann@acme.test will no longer be able to sign in at globex. Sessions at globex end.'
+    );
+    expect(api.removeRealmGuest).not.toHaveBeenCalled();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Unlink' }));
+    await waitFor(() =>
+      expect(api.removeRealmGuest).toHaveBeenCalledWith('t2', 'u1')
+    );
+    expect(
+      await screen.findByText('Not linked to any other realm.')
+    ).toBeInTheDocument();
+    expect(api.getUserRealms).toHaveBeenCalledTimes(2);
+    expect(toastMock).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Realm unlinked' })
+    );
+  });
+
+  it('does not unlink when the confirmation is cancelled', async () => {
+    api.getUserRealms.mockResolvedValue({
+      ok: true,
+      data: {
+        home: null,
+        guests: [
+          { _id: 't2', name: 'Globex', slug: 'globex', createdAt: 'now' },
+        ],
+      },
+    });
+    renderSheet();
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Unlink globex' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(api.removeRealmGuest).not.toHaveBeenCalled();
+  });
+
+  it('toasts the server message when the unlink fails', async () => {
+    api.getUserRealms.mockResolvedValue({
+      ok: true,
+      data: {
+        home: null,
+        guests: [
+          { _id: 't2', name: 'Globex', slug: 'globex', createdAt: 'now' },
+        ],
+      },
+    });
+    api.removeRealmGuest.mockResolvedValue({
+      ok: false,
+      code: 'HOME_USER_REMOVAL',
+      message: 'Home users cannot be removed from their home realm',
+    });
+    renderSheet();
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Unlink globex' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Unlink' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Failed to unlink realm',
+          description: 'Home users cannot be removed from their home realm',
+        })
+      )
+    );
   });
 
   it('only enables the move once a different realm is chosen', () => {
@@ -393,7 +543,7 @@ describe('EditUserSheet loading the user', () => {
       })
     );
     renderLookup();
-    expect(screen.getByRole('status')).toHaveTextContent('Loading user');
+    expect(screen.getByText('Loading user…')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Move home realm' })
     ).toBeDisabled();
@@ -470,6 +620,47 @@ describe('UserActionsProvider', () => {
     expect(
       await screen.findByRole('heading', { name: 'Edit user' })
     ).toBeInTheDocument();
+  });
+});
+
+describe('Isolated identity mode affordances', () => {
+  it('shows the isolated note above the table', () => {
+    render(
+      <UsersTable data={[]} count={0} realmsEnabled identityMode="isolated" />
+    );
+    expect(
+      screen.getByText(
+        'Isolated identity mode: the same email can appear once per realm'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('shows no isolated note in shared mode', () => {
+    render(<UsersTable data={[]} count={0} realmsEnabled />);
+    expect(
+      screen.queryByText(/Isolated identity mode/)
+    ).not.toBeInTheDocument();
+  });
+
+  it('explains the same-email rule in the add user sheet only when isolated', () => {
+    const { unmount } = render(
+      <AddUserSheet
+        defaultOpen
+        realmsEnabled
+        realmSlugs={slugs}
+        identityMode="isolated"
+      />
+    );
+    expect(
+      screen.getByText(
+        'In isolated mode the same email can exist once per realm'
+      )
+    ).toBeInTheDocument();
+    unmount();
+    render(<AddUserSheet defaultOpen realmsEnabled realmSlugs={slugs} />);
+    expect(
+      screen.queryByText(/In isolated mode the same email/)
+    ).not.toBeInTheDocument();
   });
 });
 

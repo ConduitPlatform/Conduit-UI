@@ -13,6 +13,7 @@ import { DataTable } from '@/components/ui/data-table';
 import EmptyTeamMembers from '@/components/authentication/teams/manageTeam/members/emptyTeamMembers';
 import { toast } from '@/lib/hooks/use-toast';
 import type { GuestPolicy } from '@/lib/authentication/realmMembers';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 
 export default function MembersTable({
   data,
@@ -23,6 +24,8 @@ export default function MembersTable({
   realmTeamId,
   realmSlug,
   guestPolicy,
+  identityMode = 'shared',
+  realmSlugs,
 }: Readonly<{
   data: TeamUser[];
   count: number;
@@ -37,6 +40,10 @@ export default function MembersTable({
   realmSlug?: string;
   /** The realm's `policies.guests`, used to filter who the picker offers. */
   guestPolicy?: GuestPolicy;
+  /** Isolated mode: the picker labels each candidate with its home realm. */
+  identityMode?: RealmIdentityMode;
+  /** `teamId -> slug` of every realm, for those labels. */
+  realmSlugs?: ReadonlyMap<string, string>;
 }>) {
   const searchParams = useSearchParams();
   const [addOpen, setAddOpen] = useState(false);
@@ -137,6 +144,8 @@ export default function MembersTable({
         realmTeamId={realmTeamId}
         realmSlug={realmSlug}
         guestPolicy={guestPolicy}
+        identityMode={identityMode}
+        realmSlugs={realmSlugs}
         open={addOpen}
         onOpenChange={setAddOpen}
         onAdded={refreshMembers}

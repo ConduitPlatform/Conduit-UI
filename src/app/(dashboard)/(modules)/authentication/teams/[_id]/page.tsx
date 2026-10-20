@@ -1,6 +1,7 @@
 import {
   getAuthenticationSettings,
   getRealm,
+  getRealms,
   getTeam,
   getTeamInvites,
   getTeamMembers,
@@ -9,9 +10,14 @@ import {
 import {
   globalAccountLinkingDefaults,
   globalVerificationRequired,
+  realmIdentityMode,
   realmsEnabled,
 } from '@/lib/authentication/realms';
-import { toGuestPolicy } from '@/lib/authentication/realmMembers';
+import {
+  buildRealmSlugMap,
+  MAX_REALMS_IN_FILTERS,
+  toGuestPolicy,
+} from '@/lib/authentication/realmMembers';
 import { Team } from '@/lib/models/Team';
 import RealmTab from '@/components/authentication/teams/manageTeam/realm/RealmTab';
 import { RealmInheritedBanner } from '@/components/authentication/teams/manageTeam/realm/RealmInheritedBanner';
@@ -135,6 +141,17 @@ export default async function Teams(
       : null);
   const guestPolicy = toGuestPolicy(memberRealm?.settings?.policies?.guests);
 
+  // Isolated mode: the picker shows each candidate's home realm, so the same email in two
+  // realms stays distinguishable. Slugs are loaded only for that mode.
+  const identityMode = realmIdentityMode(settings?.config);
+  const pickerRealmSlugs =
+    showRealms && identityMode === 'isolated'
+      ? buildRealmSlugMap(
+          (await getRealms(0, MAX_REALMS_IN_FILTERS).catch(() => null))
+            ?.realms ?? []
+        )
+      : undefined;
+
   return (
     <div className={'flex flex-col w-full gap-y-2'}>
       <TeamProfile
@@ -188,6 +205,8 @@ export default async function Teams(
               isRealmTeam ? team.realm?.slug : realmAncestor?.realm?.slug
             }
             guestPolicy={guestPolicy}
+            identityMode={identityMode}
+            realmSlugs={pickerRealmSlugs}
           />
         </TabsContent>
         <TabsContent value="subteams">

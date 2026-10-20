@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,8 +20,12 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useAlerts } from '@/components/providers/AlertProvider';
-import { HomeRealmCell } from '@/components/authentication/users/homeRealmCell';
-import { getUsers, setUserHomeRealm } from '@/lib/api/authentication';
+import {
+  getUserRealms,
+  getUsers,
+  removeRealmGuest,
+  setUserHomeRealm,
+} from '@/lib/api/authentication';
 import { describeHomeRealmMove } from '@/lib/authentication/homeRealmMove';
 import {
   HOME_REALM_GLOBAL,
@@ -30,6 +33,7 @@ import {
   realmLabel,
 } from '@/lib/authentication/realmMembers';
 import { toast } from '@/lib/hooks/use-toast';
+import type { UserRealms } from '@/lib/models/Realm';
 import type { User } from '@/lib/models/User';
 
 export function EditUserSheet({
@@ -57,6 +61,11 @@ export function EditUserSheet({
   const [lookup, setLookup] = useState<'loading' | 'loaded' | 'error'>(
     initialUser ? 'loaded' : 'loading'
   );
+  const [realms, setRealms] = useState<UserRealms | undefined>(undefined);
+  const [realmsStatus, setRealmsStatus] = useState<
+    'loading' | 'loaded' | 'error'
+  >('loading');
+  const [unlinking, setUnlinking] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialUser) return;
@@ -81,6 +90,21 @@ export function EditUserSheet({
       cancelled = true;
     };
   }, [initialUser, userId]);
+
+  const loadRealms = useCallback(async () => {
+    setRealmsStatus('loading');
+    const result = await getUserRealms(userId);
+    if (!result.ok) {
+      setRealmsStatus('error');
+      return;
+    }
+    setRealms(result.data);
+    setRealmsStatus('loaded');
+  }, [userId]);
+
+  useEffect(() => {
+    void loadRealms();
+  }, [loadRealms]);
 
   const current = user?.homeRealm ?? HOME_REALM_GLOBAL;
   const options = useMemo(
@@ -138,6 +162,40 @@ export function EditUserSheet({
     }
   };
 
+  const unlink = async (guest: UserRealms['guests'][number]) => {
+    setUnlinking(guest._id);
+    try {
+      const result = await removeRealmGuest(guest._id, userId);
+      if (!result.ok) {
+        toast({
+          title: 'Failed to unlink realm',
+          description: result.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+      toast({
+        title: 'Realm unlinked',
+        description: `${email} was unlinked from ${guest.slug}.`,
+      });
+      await loadRealms();
+    } finally {
+      setUnlinking(null);
+    }
+  };
+
+  const confirmUnlink = (guest: UserRealms['guests'][number]) => {
+    addAlert({
+      title: 'Unlink realm',
+      description: `${email} will no longer be able to sign in at ${guest.slug}. Sessions at ${guest.slug} end.`,
+      cancelText: 'Cancel',
+      actionText: 'Unlink',
+      onDecision: cancel => {
+        if (!cancel) void unlink(guest);
+      },
+    });
+  };
+
   const confirmMove = () => {
     addAlert({
       title: 'Move home realm',
@@ -167,28 +225,80 @@ export function EditUserSheet({
           <h3 id="user-realms" className="text-sm font-medium">
             Realms
           </h3>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Home realm</span>
-            {user ? (
-              <HomeRealmCell
-                homeRealm={user.homeRealm}
-                realmSlugs={realmSlugs}
-              />
-            ) : (
-              <span className="text-muted-foreground">
-                {lookup === 'loading' ? 'Loading…' : 'Unknown'}
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Guest memberships are managed from each realm&apos;s Members tab.{' '}
-            <Link
-              href="/authentication/teams?realm=true"
-              className="underline underline-offset-2"
+          {realmsStatus === 'loading' && (
+            <p
+              role="status"
+              className="flex items-center gap-2 text-sm text-muted-foreground"
             >
-              Go to Teams
-            </Link>
-          </p>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              Loading realms…
+            </p>
+          )}
+          {realmsStatus === 'error' && (
+            <div
+              role="alert"
+              className="flex items-center justify-between gap-2 text-sm text-destructive"
+            >
+              <span>Could not load this user&apos;s realms.</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void loadRealms()}
+              >
+                Retry
+              </Button>
+            </div>
+          )}
+          {realmsStatus === 'loaded' && realms && (
+            <ul className="flex flex-col divide-y divide-border rounded-md border border-border">
+              <li className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
+                <span className="text-muted-foreground">Home realm</span>
+                {realms.home ? (
+                  <span
+                    className="inline-flex items-center rounded-full bg-callout-info-muted px-2.5 py-0.5 font-mono text-xs font-medium text-callout-info-foreground"
+                    title="Home realm"
+                  >
+                    {realms.home.slug}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">Global</span>
+                )}
+              </li>
+              {realms.guests.map(guest => (
+                <li
+                  key={guest._id}
+                  className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Linked</span>
+                    <span className="font-mono text-xs">{guest.slug}</span>
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label={`Unlink ${guest.slug}`}
+                    disabled={unlinking !== null}
+                    onClick={() => confirmUnlink(guest)}
+                  >
+                    {unlinking === guest._id && (
+                      <Loader2
+                        className="mr-2 h-4 w-4 animate-spin"
+                        aria-hidden
+                      />
+                    )}
+                    Unlink
+                  </Button>
+                </li>
+              ))}
+              {realms.guests.length === 0 && (
+                <li className="px-3 py-2 text-sm text-muted-foreground">
+                  Not linked to any other realm.
+                </li>
+              )}
+            </ul>
+          )}
         </section>
 
         <section

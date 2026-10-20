@@ -38,6 +38,7 @@ import {
   HOME_REALM_GLOBAL,
   homeRealmSelectionToTeamId,
 } from '@/lib/authentication/realmMembers';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 
 const FormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -53,12 +54,15 @@ export const AddUserSheet = ({
   onSuccess,
   realmsEnabled = false,
   realmSlugs,
+  identityMode = 'shared',
 }: {
   children?: ReactNode;
   /** Shows the optional "Home realm" select. */
   realmsEnabled?: boolean;
   /** `teamId -> slug` of every realm; the select offers these plus Global. */
   realmSlugs?: ReadonlyMap<string, string>;
+  /** Isolated mode: the email may already exist in another realm. */
+  identityMode?: RealmIdentityMode;
   onSuccess?: (user: User) => void;
   onClose?: () => void;
   defaultOpen?: boolean;
@@ -177,6 +181,11 @@ export const AddUserSheet = ({
                         {...field}
                       />
                     </FormControl>
+                    {identityMode === 'isolated' && (
+                      <p className="col-span-3 col-start-2 text-xs text-muted-foreground">
+                        In isolated mode the same email can exist once per realm
+                      </p>
+                    )}
                     <FormMessage className={'text-right col-span-4'} />
                   </FormItem>
                 )}
