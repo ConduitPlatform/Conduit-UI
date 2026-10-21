@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -201,6 +202,27 @@ describe('RealmTab', () => {
       },
       registration: { allowWithoutInvite: true },
     });
+  });
+
+  it('discards an unsaved sign-up switch on Reset without sending a PATCH', async () => {
+    render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
+    const signUp = screen.getByLabelText('Allow sign-up without an invite');
+    fireEvent.click(signUp);
+    expect(signUp).toBeChecked();
+
+    const policiesCard = signUp.closest('form') as HTMLElement;
+    const reset = within(policiesCard).getByRole('button', { name: 'Reset' });
+    const save = within(policiesCard).getByRole('button', {
+      name: 'Save changes',
+    });
+    await waitFor(() => expect(reset).toBeEnabled());
+    fireEvent.click(reset);
+
+    expect(
+      screen.getByLabelText('Allow sign-up without an invite')
+    ).not.toBeChecked();
+    expect(save).toBeDisabled();
+    expect(api.updateRealm).not.toHaveBeenCalled();
   });
 
   it('sends no linking or direct sign-in keys for a realm that predates them', async () => {

@@ -155,7 +155,7 @@ export const DEFAULT_REALM_REGISTRATION: RealmRegistration = {
 
 /** Helper text of the sign-up switch, shared by the Policies card and the promote sheet. */
 export const REALM_SIGN_UP_DESCRIPTION =
-  'When off, people need an invite to a team in this realm to create an account here or to connect an existing one.';
+  'When off, people need an invite to create an account here or to connect an existing one.';
 
 /**
  * Settings shared by promote and edit. `linking` has no default: a key is only in the
