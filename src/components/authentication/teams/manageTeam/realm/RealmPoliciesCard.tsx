@@ -21,6 +21,7 @@ import { getRealms, updateRealm } from '@/lib/api/authentication';
 import { MAX_REALMS_IN_FILTERS } from '@/lib/authentication/realmMembers';
 import {
   buildRealmPoliciesPatch,
+  REALM_SIGN_UP_DESCRIPTION,
   realmPoliciesFormSchema,
   toRealmPoliciesFormValues,
   type RealmPoliciesFormValues,
@@ -51,15 +52,20 @@ export function RealmPoliciesCard({
   const supportsDirectSignIn =
     realm.settings.policies.guests.directSignIn !== undefined;
 
-  // Policies and linking are saved together, so both are part of the form's baseline.
+  // Policies, sign-up and linking are saved together, so all three are part of the form's
+  // baseline.
   const savedKey = JSON.stringify({
     policies: realm.settings.policies,
+    registration: realm.settings.registration,
     linking: realm.settings.linking,
   });
   const defaults = useMemo(
     () =>
       toRealmPoliciesFormValues(
-        JSON.parse(savedKey) as Pick<Realm['settings'], 'policies' | 'linking'>
+        JSON.parse(savedKey) as Pick<
+          Realm['settings'],
+          'policies' | 'registration' | 'linking'
+        >
       ),
     [savedKey]
   );
@@ -105,7 +111,7 @@ export function RealmPoliciesCard({
   const guestsAllowed = watch('guests.allowed');
 
   const onSubmit = async (values: RealmPoliciesFormValues) => {
-    // One PATCH: `policies` and `linking` travel together.
+    // One PATCH: `policies`, `registration` and `linking` travel together.
     const body = buildRealmPoliciesPatch(values);
     const result = await save({
       successMessage: 'Realm policies saved',
@@ -204,6 +210,29 @@ export function RealmPoliciesCard({
                 )}
               />
             </div>
+            <Separator />
+            <section
+              className="flex flex-col gap-3"
+              aria-labelledby="realm-policy-sign-up"
+            >
+              <h3 id="realm-policy-sign-up" className="text-sm font-medium">
+                Sign-up
+              </h3>
+              <Controller
+                control={control}
+                name="registration.allowWithoutInvite"
+                render={({ field }) => (
+                  <RealmSwitchRow
+                    id="realm-registration-allow-without-invite"
+                    label="Allow sign-up without an invite"
+                    description={REALM_SIGN_UP_DESCRIPTION}
+                    checked={field.value === true}
+                    disabled={busy}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+            </section>
             {(supportsLinking || supportsDirectSignIn) && (
               <>
                 <Separator />

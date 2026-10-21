@@ -127,6 +127,7 @@ test.describe('isolated identity mode', () => {
             directSignIn: false,
           },
         },
+        registration: { allowWithoutInvite: false },
         linking: { inbound: true, outbound: false },
       },
     ]);

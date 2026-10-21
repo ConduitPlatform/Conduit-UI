@@ -153,6 +153,10 @@ export const DEFAULT_REALM_REGISTRATION: RealmRegistration = {
   allowWithoutInvite: false,
 };
 
+/** Helper text of the sign-up switch, shared by the Policies card and the promote sheet. */
+export const REALM_SIGN_UP_DESCRIPTION =
+  'When off, people need an invite to a team in this realm to create an account here or to connect an existing one.';
+
 /**
  * Settings shared by promote and edit. `linking` has no default: a key is only in the
  * output when the caller supplied it, so backends that predate linking never receive it.
@@ -166,10 +170,11 @@ export const realmSettingsSchema = z.object({
 });
 
 /**
- * Policies card form: the policies plus the account linking switches (both PATCHed
- * together). `linking` is present only when the realm read reports it.
+ * Policies card form: the policies, the sign-up switch and the account linking switches
+ * (all PATCHed together). `linking` is present only when the realm read reports it.
  */
 export const realmPoliciesFormSchema = realmPoliciesSchema.extend({
+  registration: realmRegistrationSchema.default(DEFAULT_REALM_REGISTRATION),
   linking: realmLinkingSchema.optional(),
 });
 
@@ -370,29 +375,32 @@ export function normalizeRealmSettingsForSave(
 }
 
 /**
- * Policies card body: the policies and the linking switches in one payload, so one PATCH
- * carries both (`policies` and `linking` are sibling sections of the realm settings).
+ * Policies card body: the policies, the sign-up switch and the linking switches in one
+ * payload, so one PATCH carries them all (they are sibling sections of the realm settings).
  */
 export function buildRealmPoliciesPatch(
   values: RealmPoliciesFormValues
 ): Omit<RealmSettingsPayload, 'slug'> {
-  const { linking, ...policies } = values;
+  const { registration, linking, ...policies } = values;
   const { slug: _slug, ...body } = normalizeRealmSettingsForSave({
     policies,
+    registration,
     linking,
   });
   return body;
 }
 
 /**
- * Form values for the Policies card, filled from a realm's settings. A field the read does
- * not report stays `undefined`: its switch is not rendered and its key is not sent, so a
- * backend that predates it never receives it.
+ * Form values for the Policies card, filled from a realm's settings. The sign-up switch is
+ * always set (false when the read does not report it). A linking field the read does not
+ * report stays `undefined`: its switch is not rendered and its key is not sent, so a backend
+ * that predates it never receives it.
  */
 export function toRealmPoliciesFormValues(
-  settings: Pick<RealmSettings, 'policies' | 'linking'>
+  settings: Pick<RealmSettings, 'policies' | 'linking'> &
+    Partial<Pick<RealmSettings, 'registration'>>
 ): RealmPoliciesFormValues {
-  const { policies, linking } = settings;
+  const { policies, registration, linking } = settings;
   return {
     requireTwoFa: policies.requireTwoFa,
     requireVerifiedEmail: policies.requireVerifiedEmail,
@@ -401,6 +409,9 @@ export function toRealmPoliciesFormValues(
       allowed: policies.guests.allowed,
       allowedHomeRealms: policies.guests.allowedHomeRealms,
       directSignIn: policies.guests.directSignIn,
+    },
+    registration: {
+      allowWithoutInvite: registration?.allowWithoutInvite === true,
     },
     linking: linking
       ? {

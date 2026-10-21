@@ -158,7 +158,48 @@ describe('RealmTab', () => {
         allowedClientIds: [],
         guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
       },
+      registration: { allowWithoutInvite: false },
       linking: { inbound: false, outbound: true },
+    });
+  });
+
+  it('reflects a read that allows sign-up without an invite', () => {
+    render(
+      <RealmTab
+        team={realmTeam}
+        realm={{
+          ...realm,
+          settings: {
+            ...realm.settings,
+            registration: { allowWithoutInvite: true },
+          },
+        }}
+        memberCount={12}
+      />
+    );
+    expect(
+      screen.getByLabelText('Allow sign-up without an invite')
+    ).toBeChecked();
+  });
+
+  it('saves the sign-up switch in the same PATCH as the policies', async () => {
+    render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
+    expect(
+      screen.getByLabelText('Allow sign-up without an invite')
+    ).not.toBeChecked();
+    fireEvent.click(screen.getByLabelText('Allow sign-up without an invite'));
+    const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(api.updateRealm).toHaveBeenCalledWith('t1', {
+      policies: {
+        requireTwoFa: false,
+        requireVerifiedEmail: false,
+        allowedClientIds: [],
+        guests: { allowed: true, allowedHomeRealms: [] },
+      },
+      registration: { allowWithoutInvite: true },
     });
   });
 
@@ -184,6 +225,7 @@ describe('RealmTab', () => {
         allowedClientIds: [],
         guests: { allowed: true, allowedHomeRealms: [] },
       },
+      registration: { allowWithoutInvite: false },
     });
   });
 
@@ -439,6 +481,25 @@ describe('PromoteRealmSheet', () => {
       linking: { inbound: false, outbound: true },
     });
     await waitFor(() => expect(refresh).toHaveBeenCalled());
+  });
+
+  it('sends the sign-up switch as set, and off by default', async () => {
+    api.promoteTeamToRealm.mockResolvedValueOnce(ok(realm));
+    const submit = await openSheet();
+    expect(
+      screen.getByLabelText('Allow sign-up without an invite')
+    ).not.toBeChecked();
+    fireEvent.click(screen.getByLabelText('Allow sign-up without an invite'));
+    fireEvent.click(submit);
+    fireEvent.click(await screen.findByRole('button', { name: 'Make realm' }));
+    await waitFor(() =>
+      expect(api.promoteTeamToRealm).toHaveBeenCalledTimes(1)
+    );
+    const [, body] = api.promoteTeamToRealm.mock.calls[0] as [
+      string,
+      Record<string, unknown>,
+    ];
+    expect(body.registration).toEqual({ allowWithoutInvite: true });
   });
 
   it('leaves the linking keys out when the backend does not report identity mode', async () => {

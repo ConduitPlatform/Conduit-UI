@@ -20,6 +20,10 @@ type AuthSnapshot = {
   teams: Array<{ _id: string; realm?: { enabled: boolean; slug?: string } }>;
   users: Array<{ _id: string; active: boolean; homeRealm: string | null }>;
   memberships: Array<{ user: string; realm: string; type: string }>;
+  realmSettings: Array<{
+    team: string;
+    registration: { allowWithoutInvite: boolean };
+  }>;
   signedOutUserIds: string[];
 };
 
@@ -262,10 +266,49 @@ test.describe('realm policies', () => {
           allowedClientIds: [],
           guests: { allowed: true, allowedHomeRealms: [], directSignIn: true },
         },
+        registration: { allowWithoutInvite: false },
         linking: { inbound: false, outbound: true },
       },
     ]);
     await expect(save).toBeDisabled();
+  });
+
+  test('the sign-up switch is saved in the same policies request', async ({
+    page,
+  }) => {
+    await resetMock('realms');
+    await openRealmTab(page, REALM_ACME_ID);
+    await expect(page.locator('code', { hasText: 'acme' })).toBeVisible();
+
+    const policies = page.locator('form').filter({
+      has: page.getByRole('switch', { name: 'Require 2FA' }),
+    });
+    const save = policies.getByRole('button', { name: 'Save changes' });
+    const signUp = policies.getByRole('switch', {
+      name: 'Allow sign-up without an invite',
+    });
+    await expect(signUp).not.toBeChecked();
+    await signUp.click();
+    await expect(save).toBeEnabled();
+    await clearRecordedRequests();
+    await save.click();
+    await expect(
+      page.getByText('Realm policies saved', { exact: true })
+    ).toBeVisible();
+
+    const patches = await recordedRequests({
+      method: 'PATCH',
+      path: `/authentication/teams/${REALM_ACME_ID}/realm`,
+    });
+    expect(JSON.stringify(bodyOf(patches))).toContain(
+      '"registration":{"allowWithoutInvite":true}'
+    );
+
+    const auth = await inspectAuth<AuthSnapshot>();
+    expect(
+      auth.realmSettings.find(item => item.team === REALM_ACME_ID)?.registration
+    ).toEqual({ allowWithoutInvite: true });
+    await expect(signUp).toBeChecked();
   });
 });
 

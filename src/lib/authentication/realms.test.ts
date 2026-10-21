@@ -161,9 +161,28 @@ describe('linking and direct sign-in', () => {
         allowedClientIds: [],
         guests: { allowed: true, allowedHomeRealms: [] },
       },
+      registration: { allowWithoutInvite: false },
     });
     expect(body).not.toHaveProperty('linking');
     expect(body.policies?.guests).not.toHaveProperty('directSignIn');
+  });
+
+  it('reads the sign-up switch, and treats an unreported one as off', () => {
+    const policies = {
+      requireTwoFa: false,
+      requireVerifiedEmail: false,
+      allowedClientIds: [],
+      guests: { allowed: true, allowedHomeRealms: [] },
+    };
+    expect(
+      toRealmPoliciesFormValues({
+        policies,
+        registration: { allowWithoutInvite: true },
+      }).registration
+    ).toEqual({ allowWithoutInvite: true });
+    expect(toRealmPoliciesFormValues({ policies }).registration).toEqual({
+      allowWithoutInvite: false,
+    });
   });
 
   it('keeps the linking and direct sign-in keys out of a promotion the backend does not know', () => {
@@ -208,6 +227,7 @@ describe('linking and direct sign-in', () => {
       requireVerifiedEmail: true,
       allowedClientIds: ['web'],
       guests: { allowed: true, allowedHomeRealms: [], directSignIn: false },
+      registration: { allowWithoutInvite: true },
       linking: { inbound: true, outbound: false },
     });
     expect(body).toEqual({
@@ -217,6 +237,7 @@ describe('linking and direct sign-in', () => {
         allowedClientIds: ['web'],
         guests: { allowed: true, allowedHomeRealms: [], directSignIn: false },
       },
+      registration: { allowWithoutInvite: true },
       linking: { inbound: true, outbound: false },
     });
     expect(body).not.toHaveProperty('slug');

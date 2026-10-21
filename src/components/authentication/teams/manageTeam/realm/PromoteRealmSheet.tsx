@@ -36,6 +36,7 @@ import {
   DEFAULT_REALM_STRATEGIES,
   promoteLinkingDefaults,
   promoteRealmSchema,
+  REALM_SIGN_UP_DESCRIPTION,
   REALM_SLUG_MESSAGE,
   suggestRealmSlug,
   type PromoteRealmFormValues,
@@ -286,6 +287,19 @@ export function PromoteRealmSheet({
                     label="Allow guests"
                     description="Users whose home is elsewhere can be added as guests."
                     checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="registration.allowWithoutInvite"
+                render={({ field }) => (
+                  <RealmSwitchRow
+                    id="promote-registration-allow-without-invite"
+                    label="Allow sign-up without an invite"
+                    description={REALM_SIGN_UP_DESCRIPTION}
+                    checked={field.value === true}
                     onCheckedChange={field.onChange}
                   />
                 )}
