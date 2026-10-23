@@ -13,16 +13,13 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/lib/hooks/use-toast';
-import { getCommunicationTemplates } from '@/lib/api/communications/templates';
+import { loadCommunicationTemplates } from '@/lib/api/communications/templates';
 import {
-  getExternalTemplates,
-  getTemplates,
+  loadEmailTemplates,
+  loadExternalTemplates,
   syncTemplates,
 } from '@/lib/api/email';
-import {
-  formatCommunicationsApiError,
-  formatEmailTemplatesApiError,
-} from '@/lib/logic/api-error';
+import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import { RefreshCw } from 'lucide-react';
 import { isNil } from 'lodash';
 import { mergeTemplateRows } from '@/lib/logic/merge-template-rows';
@@ -107,15 +104,15 @@ export function CommunicationTemplatesDashboard({
     };
 
     const [unifiedResult, emailResult, externalResult] = await Promise.all([
-      getCommunicationTemplates(fetchArgs).catch(err => ({ err })),
-      getTemplates(fetchArgs).catch(err => ({ err })),
-      getExternalTemplates({
+      loadCommunicationTemplates(fetchArgs),
+      loadEmailTemplates(fetchArgs),
+      loadExternalTemplates({
         limit: TEMPLATE_LIST_LIMIT,
         sortByName: true,
-      }).catch(() => null),
+      }),
     ]);
 
-    if ('err' in unifiedResult) {
+    if (!unifiedResult.ok) {
       setUnifiedApiAvailable(false);
       setCommunicationTemplates(EMPTY_UNIFIED);
     } else {
@@ -123,9 +120,9 @@ export function CommunicationTemplatesDashboard({
       setCommunicationTemplates(unifiedResult);
     }
 
-    if ('err' in emailResult) {
+    if (!emailResult.ok) {
       setEmailTemplates(EMPTY_EMAIL);
-      setEmailTemplatesError(formatEmailTemplatesApiError(emailResult.err));
+      setEmailTemplatesError(emailResult.message);
     } else {
       setEmailTemplates(emailResult);
       setEmailTemplatesError(null);
@@ -215,7 +212,12 @@ export function CommunicationTemplatesDashboard({
       );
   };
 
-  if (!isLoading && emailTemplatesError) {
+  const nothingLoaded =
+    !unifiedApiAvailable &&
+    externalTemplates === null &&
+    emailTemplates.templateDocuments.length === 0;
+
+  if (!isLoading && emailTemplatesError && nothingLoaded) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
@@ -237,6 +239,24 @@ export function CommunicationTemplatesDashboard({
 
   return (
     <div className="space-y-6">
+      {emailTemplatesError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Could not load email templates</AlertTitle>
+          <AlertDescription className="space-y-3">
+            <p>{emailTemplatesError}</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={loadTemplates}
+            >
+              Try again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {!unifiedApiAvailable && (
         <Alert variant="warning">
           <Info className="h-4 w-4" />

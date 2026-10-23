@@ -1,6 +1,6 @@
 'use client';
 
-import { getTemplates } from '@/lib/api/email';
+import { loadEmailTemplates } from '@/lib/api/email';
 import { migrateFromEmailTemplate } from '@/lib/api/communications/templates';
 import { formatCommunicationsApiError } from '@/lib/logic/api-error';
 import React, { useEffect, useState } from 'react';
@@ -34,9 +34,17 @@ export function EmailTemplateDetail({
   const { toast } = useToast();
 
   const loadTemplate = async (id: string) => {
-    const templateData = await getTemplates({ search: id });
-    if (templateData.templateDocuments.length > 0) {
-      setTemplate(templateData.templateDocuments[0]);
+    const result = await loadEmailTemplates({ search: id });
+    if (!result.ok) {
+      setTemplate(null);
+      toast({
+        title: 'Communications',
+        description: result.message,
+      });
+      return;
+    }
+    if (result.templateDocuments.length > 0) {
+      setTemplate(result.templateDocuments[0]);
     } else {
       setTemplate(null);
     }

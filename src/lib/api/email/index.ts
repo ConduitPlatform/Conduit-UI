@@ -15,6 +15,25 @@ import {
   extractModuleConfigFromCommunications,
   buildCommunicationsPatchPayload,
 } from '@/lib/utils/config-utils';
+import {
+  formatEmailTemplatesApiError,
+  getAxiosResponseStatus,
+  rethrowNextControlFlowError,
+} from '@/lib/logic/api-error';
+
+export type EmailTemplateList = {
+  templateDocuments: EmailTemplate[];
+  count: number;
+};
+
+export type ExternalTemplateList = {
+  templateDocuments: ExternalTemplate[];
+  count: number;
+};
+
+export type LoadedEmailTemplates =
+  | ({ ok: true } & EmailTemplateList)
+  | { ok: false; status?: number; message: string };
 
 export const getEmailSettings = async (): Promise<EmailConfigResponse> => {
   const res = await (
@@ -41,19 +60,41 @@ export const patchEmailSettings = async (
   return afterPatchServing(options);
 };
 
+export const loadEmailTemplates = async (args: {
+  skip?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+}): Promise<LoadedEmailTemplates> => {
+  try {
+    const data = await (await getApiClient())
+      .get<EmailTemplateList>('/email/templates', { params: args })
+      .then(res => res.data);
+    return { ok: true, ...data };
+  } catch (err) {
+    rethrowNextControlFlowError(err);
+    return {
+      ok: false,
+      status: getAxiosResponseStatus(err),
+      message: formatEmailTemplatesApiError(err),
+    };
+  }
+};
+
 export const getTemplates = async (args: {
   skip?: number;
   limit?: number;
   sort?: string;
   search?: string;
-}) => {
-  type Response = {
-    templateDocuments: EmailTemplate[];
-    count: number;
+}): Promise<EmailTemplateList> => {
+  const result = await loadEmailTemplates(args);
+  if (!result.ok) {
+    throw new Error(result.message);
+  }
+  return {
+    templateDocuments: result.templateDocuments,
+    count: result.count,
   };
-  return (await getApiClient())
-    .get<Response>('/email/templates', { params: args })
-    .then(res => res.data);
 };
 
 export const createTemplate = async (data: {
@@ -95,18 +136,33 @@ export const patchTemplates = async (
     .then(res => res.data);
 };
 
+export const loadExternalTemplates = async (args: {
+  skip?: number;
+  limit?: number;
+  sortByName?: boolean;
+}): Promise<ExternalTemplateList | null> => {
+  try {
+    return await (await getApiClient())
+      .get<ExternalTemplateList>('/email/templates/external', { params: args })
+      .then(res => res.data);
+  } catch (err) {
+    rethrowNextControlFlowError(err);
+    return null;
+  }
+};
+
 export const getExternalTemplates = async (args: {
   skip?: number;
   limit?: number;
   sortByName?: boolean;
-}) => {
-  type Response = {
-    templateDocuments: ExternalTemplate[];
-    count: number;
-  };
-  return (await getApiClient())
-    .get<Response>('/email/templates/external', { params: args })
-    .then(res => res.data);
+}): Promise<ExternalTemplateList> => {
+  const templates = await loadExternalTemplates(args);
+  if (!templates) {
+    throw new Error(
+      'External templates are unavailable for this email provider'
+    );
+  }
+  return templates;
 };
 
 export const syncTemplates = async () => {
