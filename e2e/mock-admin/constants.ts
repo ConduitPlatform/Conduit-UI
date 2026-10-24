@@ -58,3 +58,28 @@ export const READY_INDEX_NAME = 'Product_embedding_v2';
 export const PENDING_INDEX_NAME = 'Product_embedding_v1';
 
 export const FIXED_NOW = '2026-01-15T12:00:00.000Z';
+
+// Authentication realms. Ids are 24 hex characters: the members search only matches
+// users by id for that shape.
+export const REALM_ACME_ID = '65f000000000000000000a01';
+export const REALM_ACME_SLUG = 'acme';
+export const REALM_ACME_NAME = 'Acme Corp';
+export const REALM_STRICT_ID = '65f000000000000000000a02';
+export const REALM_STRICT_SLUG = 'strict';
+export const REALM_STRICT_NAME = 'Strict Inc';
+export const TEAM_ACME_ENGINEERING_ID = '65f000000000000000000a03';
+export const TEAM_ACME_ENGINEERING_NAME = 'Acme Engineering';
+export const TEAM_PLATFORM_ID = '65f000000000000000000a04';
+export const TEAM_PLATFORM_NAME = 'Platform Team';
+export const USER_ALICE_ID = '65f000000000000000000b01';
+export const USER_BOB_ID = '65f000000000000000000b02';
+export const USER_CAROL_ID = '65f000000000000000000b03';
+export const USER_DAVE_ID = '65f000000000000000000b04';
+export const USER_ERIN_ID = '65f000000000000000000b05';
+export const USER_FRANK_ID = '65f000000000000000000b06';
+export const USER_GINA_ID = '65f000000000000000000b07';
+// Isolated scenario: the same email, one home account in each of two realms.
+export const USER_SAM_ACME_ID = '65f000000000000000000b08';
+export const USER_SAM_STRICT_ID = '65f000000000000000000b09';
+export const SHARED_EMAIL_USER = 'sam@shared.test';
+export const REALM_TEAM_ROLES = ['owner', 'admin', 'member'] as const;

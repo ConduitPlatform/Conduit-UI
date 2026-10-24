@@ -2,13 +2,17 @@
 import * as React from 'react';
 import { useCallback, useContext, useMemo } from 'react';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
+import { EditUserSheet } from '@/components/authentication/users/editUserSheet/editUserSheet';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { blockUnblockUser, deleteUser } from '@/lib/api/authentication';
 import { toast } from '@/lib/hooks/use-toast';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
+import type { User } from '@/lib/models/User';
 
 type UserActionsProvider = {
   openUserAdd: () => void;
-  openUserEdit: (userId: string) => void;
+  /** `user` is the row being edited; when omitted the sheet looks it up by id. */
+  openUserEdit: (userId: string, user?: User) => void;
   deleteUser: (userId: string) => void;
   blockUser: (userId: string) => void;
   unblockUser: (userId: string) => void;
@@ -18,7 +22,7 @@ const initialState: UserActionsProvider = {
   openUserAdd: () => {
     throw new Error('Not implemented');
   },
-  openUserEdit: (userId: string) => {
+  openUserEdit: () => {
     throw new Error('Not implemented');
   },
   deleteUser: (userId: string) => {
@@ -35,19 +39,31 @@ const initialState: UserActionsProvider = {
 const UserActionsContext = React.createContext(initialState);
 export const useUserActions = () => useContext(UserActionsContext);
 
+const NO_REALMS: ReadonlyMap<string, string> = new Map();
+
 export function UserActionsProvider({
   children,
+  realmsEnabled = false,
+  realmSlugs = NO_REALMS,
+  identityMode = 'shared',
 }: Readonly<{
   children: React.ReactNode;
+  /** Realm UI (home realm select, edit sheet) renders only when enabled. */
+  realmsEnabled?: boolean;
+  /** `teamId -> slug` of every realm. */
+  realmSlugs?: ReadonlyMap<string, string>;
+  identityMode?: RealmIdentityMode;
 }>) {
   const { addAlert } = useAlerts();
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
-  const [userEdit, setUserEdit] = React.useState<string | undefined>(undefined);
+  const [userEdit, setUserEdit] = React.useState<
+    { id: string; user?: User } | undefined
+  >(undefined);
   const openUserAdd = () => {
     setUserAdd(true);
   };
-  const openUserEdit = (userId: string) => {
-    setUserEdit(userId);
+  const openUserEdit = (userId: string, user?: User) => {
+    setUserEdit({ id: userId, user });
   };
   const _deleteUser = useCallback(
     (userId: string) => {
@@ -153,11 +169,32 @@ export function UserActionsProvider({
 
   return (
     <UserActionsContext.Provider value={contextValues}>
-      <AddUserSheet defaultOpen={userAdd} onClose={() => setUserAdd(false)} />
       <AddUserSheet
-        defaultOpen={userEdit !== undefined}
-        onClose={() => setUserEdit(undefined)}
+        defaultOpen={userAdd}
+        onClose={() => setUserAdd(false)}
+        realmsEnabled={realmsEnabled}
+        realmSlugs={realmSlugs}
+        identityMode={identityMode}
       />
+      {realmsEnabled ? (
+        userEdit && (
+          <EditUserSheet
+            key={userEdit.id}
+            userId={userEdit.id}
+            user={userEdit.user}
+            open
+            onOpenChange={open => {
+              if (!open) setUserEdit(undefined);
+            }}
+            realmSlugs={realmSlugs}
+          />
+        )
+      ) : (
+        <AddUserSheet
+          defaultOpen={userEdit !== undefined}
+          onClose={() => setUserEdit(undefined)}
+        />
+      )}
       {children}
     </UserActionsContext.Provider>
   );

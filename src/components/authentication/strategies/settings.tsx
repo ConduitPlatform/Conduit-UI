@@ -10,9 +10,11 @@ import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { EmailRestrictions } from '@/lib/models/authentication/base.config';
-import { patchAuthenticationSettings } from '@/lib/api/authentication';
+import { updateAuthenticationSettings } from '@/lib/api/authentication';
+import { unwrapActionResult } from '@/lib/api/action-result';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
+import SelectField from '@/components/ui/form-inputs/SelectField';
 import {
   Collapsible,
   CollapsibleContent,
@@ -47,6 +49,8 @@ const clientsSchema = z.object({
   multipleUserSessions: z.boolean().default(false),
   multipleClientLogins: z.boolean().default(true),
 });
+const DEFAULT_REALM_CACHE_TTL_MS = 5000;
+
 const teamsSchema = z.object({
   enabled: z.boolean().default(false),
   enableDefaultTeam: z.boolean().default(false),
@@ -58,13 +62,29 @@ const teamsSchema = z.object({
     sendEmail: z.boolean().default(false),
     inviteUrl: z.string().default('https://mydomain.conduit/invite'),
   }),
+  // Older backends do not report `realms`: the whole object is optional so those configs
+  // still parse and the key is never sent back to a backend that does not know it.
+  realms: z
+    .object({
+      enabled: z.boolean().default(false),
+      allowEmailDiscovery: z.boolean().default(false),
+      cacheTtlMs: z.number().int().min(0).default(DEFAULT_REALM_CACHE_TTL_MS),
+      // Optional, with no default: an absent value stays absent in the save, so backends
+      // that predate these settings never receive them. Absent identity mode is `shared`.
+      identityMode: z.enum(['shared', 'isolated']).optional(),
+      discoveryLogin: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 const domainTagSchema = z
   .string()
   .min(1)
   .refine(value => !value.includes('@'), 'Enter a domain, not an email address')
-  .refine(value => !/^https?:\/\//i.test(value), 'Enter a hostname without a scheme')
+  .refine(
+    value => !/^https?:\/\//i.test(value),
+    'Enter a hostname without a scheme'
+  )
   .refine(value => value.includes('.'), 'Enter a domain with at least one dot');
 
 const emailRestrictionsSchema = z.object({
@@ -140,10 +160,20 @@ export const AuthenticationSettings = ({ data }: Props) => {
   });
 
   const { reset, control, handleSubmit, watch } = form;
+  // Backends that predate realms omit `teams.realms`; hide the controls for them.
+  const supportsRealms = data.teams?.realms !== undefined;
+  // Older realm blocks omit these keys: their controls are hidden, and the keys stay out
+  // of the save (an absent field is never registered with a value).
+  const supportsIdentityMode = data.teams?.realms?.identityMode !== undefined;
+  const supportsDiscoveryLogin =
+    data.teams?.realms?.discoveryLogin !== undefined;
 
   const onSubmit = async (formData: formSchema) => {
     const result = await save({
-      action: () => patchAuthenticationSettings(formData),
+      // The backend's refusal (e.g. an identity mode that cannot go back to shared) is
+      // carried in the ActionResult; unwrapping throws it with that message to the toast.
+      action: async () =>
+        unwrapActionResult(await updateAuthenticationSettings(formData)),
     });
     if (result.ok) {
       setEdit(false);
@@ -396,6 +426,99 @@ export const AuthenticationSettings = ({ data }: Props) => {
                         disabled={!edit}
                       />
                     </div>
+                    {supportsRealms && (
+                      <>
+                        <h1 className="text-xl font-medium pt-2">Realms</h1>
+                        <p className="text-sm text-muted-foreground">
+                          Realms turn top-level teams into separate identity
+                          domains, each with its own sign-in methods and
+                          policies. Turning this off hides realm management but
+                          does not remove existing realms.
+                        </p>
+                        <div className={'grid grid-cols-2 gap-4 items-center'}>
+                          <SwitchField
+                            label={'Enabled'}
+                            fieldName={'teams.realms.enabled'}
+                            disabled={!edit}
+                          />
+                        </div>
+                        {form.watch('teams.realms.enabled') && (
+                          <div className={'flex flex-col gap-4'}>
+                            {supportsIdentityMode && (
+                              <div className={'flex flex-col gap-2'}>
+                                <SelectField
+                                  label={'Identity mode'}
+                                  fieldName={'teams.realms.identityMode'}
+                                  placeholder={'Shared'}
+                                  options={[
+                                    {
+                                      label:
+                                        'Shared: one account per person across realms',
+                                      value: 'shared',
+                                    },
+                                    {
+                                      label:
+                                        'Isolated: each realm has its own accounts',
+                                      value: 'isolated',
+                                    },
+                                  ]}
+                                  disabled={!edit}
+                                />
+                                <p className={'text-xs text-muted-foreground'}>
+                                  {form.watch('teams.realms.identityMode') ===
+                                  'isolated'
+                                    ? 'Each realm has its own accounts. The same email or phone can exist once per realm, each with its own password. Switching back to shared is refused while any identifier is held twice.'
+                                    : 'One account per person across realms. An email or phone can exist only once in the deployment, and people join other realms by connecting their account.'}
+                                </p>
+                              </div>
+                            )}
+                            {supportsDiscoveryLogin && (
+                              <SwitchField
+                                label={'Discovery login'}
+                                fieldName={'teams.realms.discoveryLogin'}
+                                checked={
+                                  form.watch('teams.realms.discoveryLogin') ===
+                                  true
+                                }
+                                disabled={!edit}
+                              />
+                            )}
+                            <div
+                              className={'grid grid-cols-2 gap-4 items-start'}
+                            >
+                              <SwitchField
+                                label={'Allow email discovery'}
+                                fieldName={'teams.realms.allowEmailDiscovery'}
+                                disabled={!edit}
+                              />
+                              <InputField
+                                type={'number'}
+                                label={'Cache TTL (ms)'}
+                                fieldName={'teams.realms.cacheTtlMs'}
+                                description={
+                                  'How long realm settings are cached before being re-read.'
+                                }
+                                min={0}
+                                onChange={e => {
+                                  form.setValue(
+                                    'teams.realms.cacheTtlMs',
+                                    // A cleared field yields NaN: fall back to the default.
+                                    Number.isFinite(e.target.valueAsNumber)
+                                      ? Math.max(
+                                          0,
+                                          Math.trunc(e.target.valueAsNumber)
+                                        )
+                                      : DEFAULT_REALM_CACHE_TTL_MS,
+                                    { shouldDirty: true }
+                                  );
+                                }}
+                                disabled={!edit}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 )}
               </CollapsibleContent>
@@ -532,8 +655,8 @@ export const AuthenticationSettings = ({ data }: Props) => {
                   disabled={!edit}
                 />
                 <p className="text-sm text-muted-foreground">
-                  Applies when an email is accepted (registration, email
-                  change, invites). Existing users can still log in.{' '}
+                  Applies when an email is accepted (registration, email change,
+                  invites). Existing users can still log in.{' '}
                   <code>@anonymous.com</code> is reserved for Conduit anonymous
                   users and cannot be registered.
                 </p>

@@ -1,26 +1,70 @@
 'use client';
-import { columns } from '@/components/authentication/users/columns';
+import { getUserColumns } from '@/components/authentication/users/columns';
 import { User } from '@/lib/models/User';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 // @ts-ignore
 import { useDebounce } from '@uidotdev/usehooks';
 import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getUsers } from '@/lib/api/authentication';
 import { DataTable } from '@/components/ui/data-table';
 import EmptyUsers from '@/components/authentication/users/emptyUsers';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  HOME_REALM_ALL,
+  HOME_REALM_GLOBAL,
+  homeRealmFilterToParam,
+  homeRealmParamToFilter,
+  withHomeRealmFilter,
+  MAX_REALMS_IN_FILTERS,
+} from '@/lib/authentication/realmMembers';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
+
+const NO_REALMS: ReadonlyMap<string, string> = new Map();
 
 export default function UsersTable({
   data,
   count: initialCount,
+  realmsEnabled = false,
+  realmSlugs = NO_REALMS,
+  realmsTruncated = false,
+  identityMode = 'shared',
 }: Readonly<{
   data: User[];
   count: number;
+  /** Shows the Home realm column, filter and select. */
+  realmsEnabled?: boolean;
+  /** `teamId -> slug` of every realm. */
+  realmSlugs?: ReadonlyMap<string, string>;
+  /** There are more realms than `realmSlugs` holds; the filter lists only the first ones. */
+  realmsTruncated?: boolean;
+  /** Isolated mode: the same email can appear once per realm, which the table says. */
+  identityMode?: RealmIdentityMode;
 }>) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const homeRealmFilter = realmsEnabled
+    ? homeRealmParamToFilter(searchParams.get('homeRealm'))
+    : HOME_REALM_ALL;
+  const homeRealmParam = homeRealmFilterToParam(homeRealmFilter);
+  const columns = useMemo(
+    () => getUserColumns({ showHomeRealm: realmsEnabled, realmSlugs }),
+    [realmsEnabled, realmSlugs]
+  );
+  const onHomeRealmFilterChange = (value: string) => {
+    const params = withHomeRealmFilter(searchParams, value);
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const [count, setCount] = useState<number>(initialCount);
   const [users, setUsers] = useState<User[]>(data);
@@ -42,11 +86,10 @@ export default function UsersTable({
     window.history.pushState(null, '', `?${params.toString()}`);
     const skip = parseInt(searchParams.get('skip') ?? '0');
     const limit = parseInt(searchParams.get('limit') ?? '10');
-    getUsers(
-      skip,
-      limit,
-      debouncedSearchTerm ? { search: debouncedSearchTerm } : {}
-    ).then(data => {
+    getUsers(skip, limit, {
+      ...(debouncedSearchTerm ? { search: debouncedSearchTerm } : {}),
+      ...(homeRealmParam ? { homeRealm: homeRealmParam } : {}),
+    }).then(data => {
       setCount(data.count);
       setUsers(data.users);
     });
@@ -55,13 +98,37 @@ export default function UsersTable({
   return (
     <>
       <div className={'flex flex-row justify-between pb-2'}>
-        <Input
-          placeholder={'Search'}
-          className={'w-44'}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+        <div className={'flex flex-row items-center gap-3'}>
+          <Input
+            placeholder={'Search'}
+            className={'w-44'}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          {realmsEnabled && (
+            <Select
+              value={homeRealmFilter}
+              onValueChange={onHomeRealmFilterChange}
+            >
+              <SelectTrigger className={'w-44'} aria-label="Home realm filter">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={HOME_REALM_ALL}>All home realms</SelectItem>
+                <SelectItem value={HOME_REALM_GLOBAL}>Global</SelectItem>
+                {Array.from(realmSlugs, ([id, slug]) => (
+                  <SelectItem key={id} value={id}>
+                    {slug}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
         <AddUserSheet
+          realmsEnabled={realmsEnabled}
+          realmSlugs={realmSlugs}
+          identityMode={identityMode}
           onSuccess={(user: User) => {
             setUsers([...users, user]);
           }}
@@ -69,6 +136,16 @@ export default function UsersTable({
           <Button variant="outline">Add User</Button>
         </AddUserSheet>
       </div>
+      {realmsEnabled && realmsTruncated && (
+        <p className={'pb-2 text-xs text-muted-foreground'}>
+          Showing the first {MAX_REALMS_IN_FILTERS} realms in filters
+        </p>
+      )}
+      {identityMode === 'isolated' && (
+        <p className={'pb-2 text-xs text-muted-foreground'}>
+          Isolated identity mode: the same email can appear once per realm
+        </p>
+      )}
       <DataTable columns={columns} data={users} count={count}>
         <EmptyUsers userAdd={openUserAdd} />
       </DataTable>

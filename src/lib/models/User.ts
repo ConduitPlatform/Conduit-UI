@@ -1,3 +1,5 @@
+import type { RealmMembershipType } from '@/lib/models/Realm';
+
 export type User = {
   _id: string;
   email: string;
@@ -15,6 +17,8 @@ export type User = {
   twoFaMethod: string;
   phoneNumber?: string;
   isAnonymous?: boolean;
+  /** Realm team id the user authenticates at; null/absent = global user. */
+  homeRealm?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -26,6 +30,8 @@ interface AuthProviderBase {
 }
 export type TeamUser = User & {
   role: string;
+  /** Present when the team is inside a realm. */
+  membershipType?: RealmMembershipType;
 };
 
 export type Admin = {

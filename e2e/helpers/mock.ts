@@ -56,3 +56,52 @@ export async function inspectMock(): Promise<MockInspectState> {
   }
   return (await response.json()) as MockInspectState;
 }
+
+export type RecordedRequest = {
+  method: string;
+  path: string;
+  query: Record<string, string | string[]>;
+  body: unknown;
+};
+
+/** Requests the mock served since the last reset or `clearRecordedRequests`. */
+export async function recordedRequests(
+  filter: { method?: string; path?: string | RegExp } = {}
+): Promise<RecordedRequest[]> {
+  const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/requests`, {
+    headers: testControlHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(`Mock requests failed: ${response.status}`);
+  }
+  const { requests } = (await response.json()) as {
+    requests: RecordedRequest[];
+  };
+  return requests.filter(request => {
+    if (filter.method && request.method !== filter.method) return false;
+    if (typeof filter.path === 'string') return request.path === filter.path;
+    if (filter.path) return filter.path.test(request.path);
+    return true;
+  });
+}
+
+export async function clearRecordedRequests(): Promise<void> {
+  const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/requests/clear`, {
+    method: 'POST',
+    headers: testControlHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(`Mock clear failed: ${response.status}`);
+  }
+}
+
+/** The authentication state of the mock (teams, users, memberships, ...). */
+export async function inspectAuth<T = Record<string, any>>(): Promise<T> {
+  const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/auth`, {
+    headers: testControlHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(`Mock auth inspect failed: ${response.status}`);
+  }
+  return (await response.json()) as T;
+}

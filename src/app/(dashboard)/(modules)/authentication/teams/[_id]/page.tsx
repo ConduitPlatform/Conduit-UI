@@ -1,12 +1,28 @@
 import {
+  getAuthenticationSettings,
+  getRealm,
+  getRealms,
   getTeam,
   getTeamInvites,
   getTeamMembers,
   getTeams,
 } from '@/lib/api/authentication';
+import {
+  globalAccountLinkingDefaults,
+  globalVerificationRequired,
+  realmIdentityMode,
+  realmsEnabled,
+} from '@/lib/authentication/realms';
+import {
+  buildRealmSlugMap,
+  MAX_REALMS_IN_FILTERS,
+  toGuestPolicy,
+} from '@/lib/authentication/realmMembers';
+import { Team } from '@/lib/models/Team';
+import RealmTab from '@/components/authentication/teams/manageTeam/realm/RealmTab';
+import { RealmInheritedBanner } from '@/components/authentication/teams/manageTeam/realm/RealmInheritedBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
-import { MemberActionsProvider } from '@/components/authentication/teams/manageTeam/members/MemberActionsProvider';
 import MembersTable from '@/components/authentication/teams/manageTeam/members/members';
 import TeamProfile from '@/components/authentication/teams/manageTeam/teamProfile';
 import { TeamActionsProvider } from '@/components/authentication/teams/TeamActionsProvider';
@@ -14,6 +30,21 @@ import TeamsTable from '@/components/authentication/teams/teams';
 import InvitesTable from '@/components/authentication/teams/manageTeam/invites/invites';
 
 export const dynamic = 'force-dynamic';
+
+const MAX_ANCESTOR_DEPTH = 10;
+
+/** Walks up from `team` and returns the top-most ancestor (or `team` itself). */
+async function getTopAncestor(team: Team): Promise<Team> {
+  let top = team;
+  for (let depth = 0; top.parentTeam && depth < MAX_ANCESTOR_DEPTH; depth++) {
+    try {
+      top = await getTeam(top.parentTeam);
+    } catch {
+      break;
+    }
+  }
+  return top;
+}
 
 export default async function Teams(
   props: Readonly<{
@@ -38,6 +69,23 @@ export default async function Teams(
   if (team.parentTeam) {
     parentTeam = await getTeam(team.parentTeam);
   }
+
+  // All realm UI is gated on the backend reporting realms as enabled; older backends
+  // (or a failed settings read) get today's page.
+  const settings = await getAuthenticationSettings().catch(() => null);
+  const showRealms = realmsEnabled(settings?.config);
+  const isTopLevel = !team.parentTeam;
+  const showRealmTab = showRealms && isTopLevel;
+  // Sub-teams inherit the identity and policies of the realm at the top of their tree.
+  let realmAncestor: Team | undefined;
+  if (showRealms && parentTeam) {
+    const top = await getTopAncestor(parentTeam);
+    if (top.realm?.enabled) realmAncestor = top;
+  }
+
+  // Members carry a Home / Guest type when the team is a realm or sits inside one.
+  const isRealmTeam = showRealms && team.realm?.enabled === true;
+  const inRealm = isRealmTeam || realmAncestor !== undefined;
 
   const data = await getTeams(skip ?? 0, limit ?? 10, {
     ...queryParams,
@@ -72,7 +120,40 @@ export default async function Teams(
       ? 'subteams'
       : searchParams.mode === 'invites'
         ? 'invites'
-        : 'members';
+        : searchParams.mode === 'realm' && showRealmTab
+          ? 'realm'
+          : 'members';
+
+  // Loaded whenever the team is a realm (not only on ?mode=realm): the tabs switch
+  // client-side before the navigation lands, and the tab must not flash an error.
+  const realm =
+    showRealmTab && team.realm?.enabled
+      ? await getRealm(team._id).catch(() => null)
+      : null;
+
+  // The member picker follows the realm the team belongs to: this team when it is the
+  // realm, the top-most ancestor for a sub-team. Its guest policy filters who is offered.
+  const memberRealmTeamId = isRealmTeam ? team._id : realmAncestor?._id;
+  const memberRealm =
+    realm ??
+    (realmAncestor
+      ? await getRealm(realmAncestor._id).catch(() => null)
+      : null);
+  const guestPolicy = toGuestPolicy(memberRealm?.settings?.policies?.guests);
+
+  // Isolated mode: the picker shows each candidate's home realm, so the same email in two
+  // realms stays distinguishable. Slugs are loaded only for that mode.
+  const identityMode = realmIdentityMode(settings?.config);
+  // Linking keys are sent on promotion only to a backend that reports identity mode.
+  const supportsLinking =
+    settings?.config?.teams?.realms?.identityMode !== undefined;
+  const pickerRealmSlugs =
+    showRealms && identityMode === 'isolated'
+      ? buildRealmSlugMap(
+          (await getRealms(0, MAX_REALMS_IN_FILTERS).catch(() => null))
+            ?.realms ?? []
+        )
+      : undefined;
 
   return (
     <div className={'flex flex-col w-full gap-y-2'}>
@@ -81,9 +162,17 @@ export default async function Teams(
         parentTeam={parentTeam}
         subTeamCount={data.count}
         memberCount={userData.count}
+        realmsEnabled={showRealms}
       />
+      {realmAncestor && <RealmInheritedBanner realmTeam={realmAncestor} />}
       <Tabs defaultValue={activeTab}>
-        <TabsList className="grid grid-cols-3 w-[500px]">
+        <TabsList
+          className={
+            showRealmTab
+              ? 'grid grid-cols-4 w-[660px]'
+              : 'grid grid-cols-3 w-[500px]'
+          }
+        >
           <TabsTrigger value="members" asChild>
             <Link href={`/authentication/teams/${params._id}?mode=members`}>
               Members
@@ -99,15 +188,29 @@ export default async function Teams(
               Invites
             </Link>
           </TabsTrigger>
+          {showRealmTab && (
+            <TabsTrigger value="realm" asChild>
+              <Link href={`/authentication/teams/${params._id}?mode=realm`}>
+                Realm
+              </Link>
+            </TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="members">
-          <MemberActionsProvider>
-            <MembersTable
-              data={userData.members}
-              count={userData.count}
-              teamId={team._id}
-            />
-          </MemberActionsProvider>
+          <MembersTable
+            data={userData.members}
+            count={userData.count}
+            teamId={team._id}
+            inRealm={inRealm}
+            isRealmTeam={isRealmTeam}
+            realmTeamId={memberRealmTeamId}
+            realmSlug={
+              isRealmTeam ? team.realm?.slug : realmAncestor?.realm?.slug
+            }
+            guestPolicy={guestPolicy}
+            identityMode={identityMode}
+            realmSlugs={pickerRealmSlugs}
+          />
         </TabsContent>
         <TabsContent value="subteams">
           <TeamActionsProvider>
@@ -125,6 +228,22 @@ export default async function Teams(
             teamId={team._id}
           />
         </TabsContent>
+        {showRealmTab && (
+          <TabsContent value="realm">
+            <RealmTab
+              team={team}
+              realm={realm}
+              memberCount={userData.count}
+              globalAccountLinking={globalAccountLinkingDefaults(
+                settings?.config
+              )}
+              globalVerificationRequired={globalVerificationRequired(
+                settings?.config
+              )}
+              supportsLinking={supportsLinking}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

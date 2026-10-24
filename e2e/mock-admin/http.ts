@@ -6,7 +6,9 @@ export function isRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export async function readJsonBody(request: IncomingMessage): Promise<unknown> {
+const bodies = new WeakMap<IncomingMessage, Promise<unknown>>();
+
+async function parseJsonBody(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
   for await (const chunk of request) {
     chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
@@ -15,6 +17,19 @@ export async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   const raw = Buffer.concat(chunks).toString('utf8').trim();
   if (!raw) return undefined;
   return JSON.parse(raw) as unknown;
+}
+
+/**
+ * The stream can only be consumed once, so the parsed body is cached per request:
+ * the request recorder and the route handler both read it.
+ */
+export function readJsonBody(request: IncomingMessage): Promise<unknown> {
+  let body = bodies.get(request);
+  if (!body) {
+    body = parseJsonBody(request);
+    bodies.set(request, body);
+  }
+  return body;
 }
 
 export function sendJson(
