@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.16.0-alpha.0...v0.16.0) (2026-10-24)
+
+
+### Features
+
+* authorization UI ([#239](https://github.com/ConduitPlatform/Conduit-UI/issues/239)) ([a099e4f](https://github.com/ConduitPlatform/Conduit-UI/commit/a099e4ff760cdaa22d155733b5be47f1cf872a81))
+* endpoint input JSON ([#242](https://github.com/ConduitPlatform/Conduit-UI/issues/242)) ([21a29a3](https://github.com/ConduitPlatform/Conduit-UI/commit/21a29a36f7a665087eff969cf52ee965aa3cecf7))
+* router graph visualization ([#240](https://github.com/ConduitPlatform/Conduit-UI/issues/240)) ([bbfe254](https://github.com/ConduitPlatform/Conduit-UI/commit/bbfe254294a253b564d27104521fc4e6b19468b3))
+* silent in send notifications form ([#241](https://github.com/ConduitPlatform/Conduit-UI/issues/241)) ([0b88ca5](https://github.com/ConduitPlatform/Conduit-UI/commit/0b88ca56b13837493675e35fb3b5c87b6616d7c0))
+
+
+### Bug Fixes
+
+* error issues in proxy ([7059eaf](https://github.com/ConduitPlatform/Conduit-UI/commit/7059eaf3a937dff8fa30eac586c8a8e15ddb2c79))
+* github/gitlab config ([f2a1536](https://github.com/ConduitPlatform/Conduit-UI/commit/f2a1536caf7fa624a2ec51d0aca27ea3c359e884))
+
 ## [0.16.0-alpha.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.15.12...v0.16.0-alpha.0) (2023-06-02)
 
 
