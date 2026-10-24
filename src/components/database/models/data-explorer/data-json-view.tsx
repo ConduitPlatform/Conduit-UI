@@ -13,13 +13,12 @@ import { Button } from '@/components/ui/button';
 import { Check, Copy } from 'lucide-react';
 import { toast } from '@/lib/hooks/use-toast';
 import { DataExplorerPagination } from './data-explorer-pagination';
-import { filterDocumentsByQuickSearch } from './data-explorer.utils';
 
 type ExpandMode = 'nested' | 'all';
 
 type DataJsonViewProps = {
   documents: any[];
-  quickSearch: string;
+  hasDocumentSearch: boolean;
   currentPage: number;
   pageSize: number;
   totalCount: number;
@@ -68,7 +67,7 @@ function expandDocumentsOnly(level: number): boolean {
 
 export function DataJsonView({
   documents,
-  quickSearch,
+  hasDocumentSearch,
   currentPage,
   pageSize,
   totalCount,
@@ -80,19 +79,12 @@ export function DataJsonView({
   const [expandMode, setExpandMode] = React.useState<ExpandMode>('nested');
   const [copied, setCopied] = React.useState(false);
 
-  const filteredDocuments = React.useMemo(
-    () => filterDocumentsByQuickSearch(documents, quickSearch),
-    [documents, quickSearch]
-  );
-
   const styles =
     resolvedTheme === 'dark' ? customDarkStyles : customLightStyles;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(
-        JSON.stringify(filteredDocuments, null, 2)
-      );
+      await navigator.clipboard.writeText(JSON.stringify(documents, null, 2));
       setCopied(true);
       toast({ title: 'JSON copied to clipboard' });
       setTimeout(() => setCopied(false), 2000);
@@ -122,7 +114,7 @@ export function DataJsonView({
           variant="outline"
           size="sm"
           onClick={handleCopy}
-          disabled={filteredDocuments.length === 0}
+          disabled={documents.length === 0}
           className="gap-1.5"
         >
           {copied ? (
@@ -135,15 +127,15 @@ export function DataJsonView({
       </div>
 
       <div className="flex-1 overflow-auto p-4">
-        {filteredDocuments.length === 0 ? (
+        {documents.length === 0 ? (
           <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-            {quickSearch
+            {hasDocumentSearch
               ? 'No documents match your search'
               : 'No documents found'}
           </div>
         ) : (
           <JsonView
-            data={filteredDocuments}
+            data={documents}
             shouldExpandNode={
               expandMode === 'all' ? allExpanded : expandDocumentsOnly
             }

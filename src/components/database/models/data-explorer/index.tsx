@@ -37,6 +37,17 @@ import {
   analyzeModelDataPermissions,
   getExtensionFieldNames,
 } from './permissions';
+import {
+  ALL_DOCUMENT_FIELDS,
+  listSearchableFields,
+} from './data-explorer.utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type DataExplorerProps = {
   schema: DeclaredSchema;
@@ -60,9 +71,13 @@ export type SortConfig = {
 
 type DataViewMode = 'table' | 'json';
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 export function DataExplorer({ schema, documents }: DataExplorerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const urlQuery = searchParams.get('q') ?? '';
+  const urlField = searchParams.get('qf') ?? '';
 
   const [filters, setFilters] = React.useState<FilterCondition[]>([]);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
@@ -71,11 +86,64 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
     null
   );
   const [isCreatingNew, setIsCreatingNew] = React.useState(false);
-  const [quickSearch, setQuickSearch] = React.useState('');
+  const [quickSearch, setQuickSearch] = React.useState(urlQuery);
+  const searchableFields = React.useMemo(
+    () => listSearchableFields(schema),
+    [schema]
+  );
+  const selectedSearchField = searchableFields.some(
+    field => field.path === urlField
+  )
+    ? urlField
+    : ALL_DOCUMENT_FIELDS;
   const permissions = React.useMemo(
     () => analyzeModelDataPermissions(schema),
     [schema]
   );
+  React.useEffect(() => {
+    setQuickSearch(urlQuery);
+  }, [urlQuery]);
+
+  const replaceSearchParams = React.useCallback(
+    (patch: Record<string, string | null>, refresh = true) => {
+      const params = new URLSearchParams(searchParams.toString());
+      for (const [key, value] of Object.entries(patch)) {
+        if (value === null || value === '') {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      }
+      const query = params.toString();
+      router.replace(query ? `?${query}` : '?', { scroll: false });
+      if (refresh) router.refresh();
+    },
+    [router, searchParams]
+  );
+
+  React.useEffect(() => {
+    const trimmed = quickSearch.trim();
+    if (trimmed === urlQuery.trim()) return;
+    const handle = window.setTimeout(() => {
+      replaceSearchParams({
+        q: trimmed || null,
+        pageIndex: null,
+      });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(handle);
+  }, [quickSearch, urlQuery, replaceSearchParams]);
+
+  const handleSearchFieldChange = (field: string) => {
+    const hasTerm = quickSearch.trim().length > 0 || urlQuery.trim().length > 0;
+    replaceSearchParams(
+      {
+        qf: field === ALL_DOCUMENT_FIELDS ? null : field,
+        ...(hasTerm ? { pageIndex: null } : {}),
+      },
+      hasTerm
+    );
+  };
+
   const liveEnabled = schema.modelOptions?.conduit?.realtime?.enabled === true;
   const liveUpdates = useDatabaseLiveUpdates({
     schemaName: schema.name,
@@ -277,15 +345,51 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
         {/* Toolbar */}
         <div className="flex items-center justify-between px-6 py-3 border-b bg-muted/30">
           <div className="flex items-center gap-3">
-            {/* Quick Search */}
+            <Select
+              value={selectedSearchField}
+              onValueChange={handleSearchFieldChange}
+            >
+              <SelectTrigger
+                aria-label="Search field"
+                className="h-8 w-40 text-[13px]"
+              >
+                <SelectValue placeholder="All fields" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectItem value={ALL_DOCUMENT_FIELDS}>All fields</SelectItem>
+                {searchableFields.map(field => (
+                  <SelectItem key={field.path} value={field.path}>
+                    {field.path}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Quick search..."
+                aria-label="Search documents"
+                placeholder={
+                  selectedSearchField === ALL_DOCUMENT_FIELDS
+                    ? 'Search all documents'
+                    : `Search ${selectedSearchField}`
+                }
                 value={quickSearch}
                 onChange={e => setQuickSearch(e.target.value)}
-                className="pl-9 w-64"
+                className="w-64 pl-9 pr-8"
               />
+              {quickSearch ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
+                  aria-label="Clear search"
+                  onClick={() => setQuickSearch('')}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              ) : null}
             </div>
 
             {/* Filter Button */}
@@ -435,7 +539,7 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
               selectedRows={selectedRows}
               onSelectRows={setSelectedRows}
               onRowClick={handleRowClick}
-              quickSearch={quickSearch}
+              hasDocumentSearch={urlQuery.trim().length > 0}
               currentPage={currentPage}
               pageSize={pageSize}
               totalCount={documents.count}
@@ -446,7 +550,7 @@ export function DataExplorer({ schema, documents }: DataExplorerProps) {
           ) : (
             <DataJsonView
               documents={documents.documents}
-              quickSearch={quickSearch}
+              hasDocumentSearch={urlQuery.trim().length > 0}
               currentPage={currentPage}
               pageSize={pageSize}
               totalCount={documents.count}

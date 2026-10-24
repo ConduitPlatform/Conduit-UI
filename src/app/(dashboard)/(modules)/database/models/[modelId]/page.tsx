@@ -11,6 +11,7 @@ import {
 } from '@/components/database/models/models-page';
 import { getResourceDefinition } from '@/lib/api/authorization';
 import { ResourceDefinition } from '@/lib/models/authorization';
+import { buildDocumentListQuery } from '@/components/database/models/data-explorer/data-explorer.utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,8 @@ type PageProps = {
   }>;
   searchParams: Promise<{
     search?: string;
+    q?: string;
+    qf?: string;
     pageIndex?: string;
     limit?: string;
     tab?: string;
@@ -40,11 +43,18 @@ export default async function ModelDetailPage(props: Readonly<PageProps>) {
   ]);
 
   // Fetch documents for the selected schema
+  const filterQuery = searchParams?.search
+    ? JSON.parse(searchParams.search)
+    : undefined;
+  const documentQuery = buildDocumentListQuery({
+    filter: filterQuery,
+    term: searchParams?.q,
+    field: searchParams?.qf,
+    schema,
+  });
   const docs = await getSchemaDocs(
     schema.name,
-    searchParams?.search
-      ? { query: JSON.parse(searchParams.search) }
-      : undefined,
+    { query: documentQuery },
     {
       skip: searchParams?.pageIndex
         ? Number(searchParams.pageIndex) * Number(searchParams?.limit ?? 20)

@@ -30,7 +30,6 @@ import {
 } from '@/lib/database/format-display-value';
 import type { ModelDataPermissions } from './permissions';
 import { DataExplorerPagination } from './data-explorer-pagination';
-import { filterDocumentsByQuickSearch } from './data-explorer.utils';
 
 type DataGridProps = {
   documents: any[];
@@ -40,7 +39,7 @@ type DataGridProps = {
   selectedRows: string[];
   onSelectRows: (rows: string[]) => void;
   onRowClick: (document: any) => void;
-  quickSearch: string;
+  hasDocumentSearch: boolean;
   currentPage: number;
   pageSize: number;
   totalCount: number;
@@ -172,7 +171,7 @@ export function DataGrid({
   selectedRows,
   onSelectRows,
   onRowClick,
-  quickSearch,
+  hasDocumentSearch,
   currentPage,
   pageSize,
   totalCount,
@@ -181,11 +180,6 @@ export function DataGrid({
   onPageSizeChange,
 }: DataGridProps) {
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
-
-  const filteredDocuments = React.useMemo(
-    () => filterDocumentsByQuickSearch(documents, quickSearch),
-    [documents, quickSearch]
-  );
 
   // Get all unique columns from documents
   const columns = React.useMemo(() => {
@@ -206,7 +200,7 @@ export function DataGrid({
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      onSelectRows(filteredDocuments.map(doc => doc._id));
+      onSelectRows(documents.map(doc => doc._id));
     } else {
       onSelectRows([]);
     }
@@ -237,12 +231,12 @@ export function DataGrid({
   };
 
   const allSelected =
-    filteredDocuments.length > 0 &&
-    filteredDocuments.every(doc => selectedRows.includes(doc._id));
+    documents.length > 0 &&
+    documents.every(doc => selectedRows.includes(doc._id));
   const someSelected =
     selectedRows.length > 0 &&
     !allSelected &&
-    filteredDocuments.some(doc => selectedRows.includes(doc._id));
+    documents.some(doc => selectedRows.includes(doc._id));
 
   return (
     <div className="flex flex-col h-full">
@@ -275,19 +269,19 @@ export function DataGrid({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredDocuments.length === 0 ? (
+            {documents.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length + 1}
                   className="h-32 text-center text-muted-foreground"
                 >
-                  {quickSearch
+                  {hasDocumentSearch
                     ? 'No documents match your search'
                     : 'No documents found'}
                 </TableCell>
               </TableRow>
             ) : (
-              filteredDocuments.map(doc => (
+              documents.map(doc => (
                 <TableRow
                   key={doc._id}
                   className={cn(
