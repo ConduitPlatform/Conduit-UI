@@ -1,28 +1,43 @@
-FROM node:fermium as base
-
-COPY . /app
-
-WORKDIR /app
-RUN yarn
-
-RUN npx lerna run build
-
-RUN npx lerna clean -y && rm -rf node_modules
-
-
-FROM node:fermium-alpine
-
+FROM node:24-alpine AS deps
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
 WORKDIR /app
 
-COPY --from=base /app/libraries/ui-components /app/libraries/ui-components
-COPY --from=base /app/package.json .
-COPY --from=base /app/yarn.lock .
-COPY --from=base /app/apps/Conduit-UI /app/apps/Conduit-UI
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-RUN yarn install --production --pure-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
+FROM node:24-alpine AS builder
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
+WORKDIR /app
 
-WORKDIR /app/apps/Conduit-UI
+COPY --from=deps /app/node_modules ./node_modules
 
-EXPOSE 8080
+COPY . .
 
-CMD ["yarn", "start"]
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN pnpm build
+
+FROM node:24-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+
+CMD ["node", "server.js"]

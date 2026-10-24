@@ -1,0 +1,45 @@
+---
+description: Project design context for Conduit-UI. Guides Quintessential rule application to this existing admin panel codebase.
+globs: "**/*.{tsx,jsx,ts,js,css}"
+alwaysApply: true
+---
+
+# Design Context -- Conduit-UI
+
+This is an existing Next.js 16 admin panel. Apply Quintessential standards with awareness of what's already built.
+
+## Current Design Language (preserve)
+- Font: Inter via next/font/google -- keep
+- Color system: 26 semantic CSS variables in @theme with :root/:dark HSL channels -- extend, don't replace
+- Component library: 56 shadcn/ui + Radix primitives in src/components/ui/ -- extend, don't replace
+- Class merging: cn() (clsx + twMerge) -- use consistently
+- Variants: cva for multi-variant components -- follow this pattern for new components
+- Spacing: Tailwind v4 default 4px-based scale -- stay on-scale
+- Radius: Tokenized via --radius (0.5rem) with derived md/sm -- use radius tokens, not arbitrary values
+- Theme: next-themes with class="dark" toggle -- respect both modes
+- Overlays: Radix Dialog/Sheet + Vaul Drawer -- use for new overlays
+
+## Migration Targets (improve incrementally)
+- Typography: Add antialiased to body, text-wrap: balance on headings, tabular-nums on data columns
+- Colors: Extract hardcoded chart/viz hex values to --color-chart-* tokens
+- Colors: Define --popover and --card in :root (aligned with light theme)
+- Shadows: Use --shadow-1 through --shadow-4 layered scale; prefer shadow tokens over arbitrary shadow-[...] values
+- Animation: prefers-reduced-motion support in globals
+- Animation: Standardize on one primary easing curve where practical
+- Components: Prefer shared DataTable in src/components/ui/data-table.tsx for TanStack table UIs
+- Components: Align Textarea styling with Input (text-sm, ring-2)
+- Interaction: Add keyboard shortcut hints to tooltips where relevant
+- Interaction: Guard hover-only affordances with @media (hover: hover) where appropriate
+
+## Rules of Engagement
+- Apply Quintessential standards to ALL new code
+- When modifying existing files, improve what you touch
+- Do NOT refactor untouched code unprompted
+- Do NOT rewrite working components for style alone
+- When you spot a major violation in code you're editing, fix it silently
+- When you spot a major violation in code you're NOT editing, leave a brief comment noting the opportunity
+- Always use cn() for class merging
+- Always use cva for components with more than 2 variant axes
+- Always add both light and dark mode styles
+- Always use CSS variable colors for theme-bound UI; use chart tokens for charts/viz
+- Always respect the spacing scale -- no arbitrary pixel values

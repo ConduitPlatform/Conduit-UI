@@ -29,16 +29,37 @@ Learn more: [Website](https://getconduit.dev)
 
 # Requirements ⚡
 
-- NodeJS > 14 or Docker
+- **Node.js 24+** (see `engines` in [package.json](package.json); use [.nvmrc](.nvmrc) with `nvm use`)
 - A running Conduit instance
 - Desire to create something awesome
 
-# Quickstart
-This script uses docker compose to spin up some basic modules for you to test.
+# Quickstart (local)
+
+From the repository root:
+
+```bash
+pnpm install
+pnpm build
+pnpm start
 ```
-yarn install && npx lerna run build 
+
+The app listens on **port 8080** by default (`pnpm start` runs `next start -p 8080`). For development with hot reload:
+
+```bash
+pnpm dev
 ```
+
+Configure environment variables via `.env` / `.env.local` (see [EnvManager](src/lib/logic/EnvManager.ts) and project docs for required keys).
+
+Open http://localhost:8080 for the admin panel (use credentials from your Conduit setup).
+
+# Docker
+
+Build and run the production image:
+
+```bash
+pnpm build:docker
+docker run -p 3000:3000 ghcr.io/conduitplatform/conduit-ui:latest
 ```
-cd ./apps/Conduit-UI && yarn start 
-```
-Open http://localhost:8080 to check the admin panel (username:admin, password: admin)
+
+The container exposes port **3000** (see [Dockerfile](Dockerfile)).

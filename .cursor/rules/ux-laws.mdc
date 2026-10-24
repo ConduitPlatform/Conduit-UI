@@ -1,0 +1,65 @@
+---
+description: Apply UX psychology laws when building or reviewing any user interface element.
+globs: "**/*.{tsx,jsx,ts,js,css,scss,html,vue,svelte}"
+alwaysApply: true
+---
+
+# Quintessential Design Wiki -- UX Laws
+
+These 23 laws govern how users perceive and interact with interfaces. Apply them when building or reviewing any UI.
+
+## Target Sizing (Fitts's Law)
+
+- `ux-fitts-target-size` -- Interactive elements must be at least 32px. Larger targets are easier to click.
+- `ux-fitts-hit-area` -- Expand hit areas beyond visible bounds using pseudo-elements or invisible padding.
+
+## Decision Reduction (Hick's Law)
+
+- `ux-hicks-minimize-choices` -- Minimize visible choices to reduce decision time. Use progressive disclosure.
+
+## Memory Limits (Miller's Law)
+
+- `ux-millers-chunking` -- Chunk data into groups of 5-9 items for scannability.
+
+## Response Time (Doherty Threshold)
+
+- `ux-doherty-under-400ms` -- Interactions must respond within 400ms to feel instant.
+- `ux-doherty-perceived-speed` -- When actual speed isn't possible, fake it with skeletons, optimistic UI, or progress indicators.
+
+## Input Tolerance (Postel's Law)
+
+- `ux-postels-accept-messy-input` -- Accept messy human input, normalize and output clean data.
+
+## Complexity Management
+
+- `ux-progressive-disclosure` -- Show what matters now, reveal complexity incrementally as needed.
+- `ux-teslers-complexity` -- Move irreducible complexity to the system, not the user.
+- `ux-cognitive-load-reduce` -- Remove anything that doesn't help the user complete their task.
+
+## Familiarity
+
+- `ux-jakobs-familiar-patterns` -- Use familiar UI patterns users know from other sites. Deviations must be intentional improvements.
+
+## Visual Perception (Gestalt)
+
+- `ux-proximity-grouping` -- Group related elements spatially with tighter spacing within groups, larger spacing between.
+- `ux-similarity-consistency` -- Elements that function the same must look the same.
+- `ux-common-region-boundaries` -- Use boundaries (cards, sections, dividers) to group related content.
+- `ux-uniform-connectedness` -- Visually connect related elements with lines, color, or frames.
+- `ux-pragnanz-simplify` -- Simplify complex visuals into the clearest possible forms.
+
+## Emphasis & Hierarchy
+
+- `ux-von-restorff-emphasis` -- Make the most important element visually distinct from its surroundings.
+- `ux-serial-position` -- Place key items first or last in sequences -- users remember edges best.
+- `ux-aesthetic-usability` -- Visual polish increases perceived usability. Small details compound into trust.
+
+## Progress & Completion
+
+- `ux-peak-end-finish-strong` -- End experiences with clear, satisfying success states.
+- `ux-goal-gradient-progress` -- Show progress toward completion to accelerate user behavior.
+- `ux-zeigarnik-show-incomplete` -- Show incomplete state to drive completion.
+
+## Prioritization
+
+- `ux-pareto-prioritize-features` -- 80% of users use 20% of features. Optimize the critical path first.

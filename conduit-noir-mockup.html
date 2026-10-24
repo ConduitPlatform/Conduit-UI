@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conduit Noir — Dashboard Mockup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg-base: hsl(225 16% 7%);
+        --bg-surface-1: hsl(224 14% 10%);
+        --bg-surface-2: hsl(222 12% 14%);
+        --bg-sidebar: hsl(225 18% 6%);
+        --bg-muted: hsl(220 14% 18%);
+
+        --text-primary: hsl(210 20% 93%);
+        --text-secondary: hsl(215 16% 55%);
+        --text-tertiary: hsl(215 14% 40%);
+
+        --border: hsl(220 12% 16%);
+        --border-subtle: hsl(220 12% 13%);
+
+        --cyan: hsl(192 91% 43%);
+        --cyan-dim: hsl(192 91% 43% / 0.15);
+        --cyan-text: hsl(192 75% 55%);
+
+        --green: hsl(142 72% 55%);
+        --amber: hsl(38 92% 55%);
+        --red: hsl(0 80% 58%);
+        --gray-dot: hsl(220 10% 45%);
+
+        --chart-grid: hsl(220 12% 16%);
+
+        --radius: 8px;
+        --radius-sm: 6px;
+      }
+
+      body {
+        font-family:
+          'Inter',
+          -apple-system,
+          sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background: var(--bg-base);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-variant-numeric: tabular-nums;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      .app {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        width: 52px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px 0;
+        gap: 2px;
+        flex-shrink: 0;
+        overflow-y: auto;
+      }
+
+      .sidebar-logo {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar-logo svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .sidebar-item {
+        width: 36px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        color: var(--text-tertiary);
+        cursor: pointer;
+        transition:
+          background 100ms,
+          color 100ms;
+        position: relative;
+      }
+
+      .sidebar-item:hover {
+        background: var(--bg-muted);
+        color: var(--text-secondary);
+      }
+
+      .sidebar-item.active {
+        color: var(--cyan);
+        background: var(--cyan-dim);
+      }
+
+      .sidebar-item.active::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 6px;
+        bottom: 6px;
+        width: 2px;
+        background: var(--cyan);
+        border-radius: 1px;
+      }
+
+      .sidebar-item svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .sidebar-divider {
+        width: 24px;
+        height: 1px;
+        background: var(--border-subtle);
+        margin: 8px 0;
+      }
+
+      .sidebar-spacer {
+        flex: 1;
+      }
+
+      /* ── Main ── */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+      }
+
+      /* ── Status Strip ── */
+      .status-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        height: 36px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+        background: var(--bg-base);
+      }
+
+      .status-strip-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+
+      .status-strip-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .dot-green {
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+      }
+      .dot-amber {
+        background: var(--amber);
+      }
+      .dot-red {
+        background: var(--red);
+      }
+      .dot-gray {
+        background: var(--gray-dot);
+      }
+
+      .dot-sm {
+        width: 6px;
+        height: 6px;
+      }
+
+      .status-text {
+        color: var(--text-secondary);
+      }
+
+      .metrics-badge {
+        color: var(--cyan-text);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .metrics-badge .status-dot {
+        width: 5px;
+        height: 5px;
+        background: var(--cyan);
+        box-shadow: 0 0 4px var(--cyan);
+      }
+
+      /* ── Content ── */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 20px 32px;
+      }
+
+      .content::-webkit-scrollbar {
+        width: 3px;
+      }
+      .content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .content::-webkit-scrollbar-thumb {
+        background: hsl(220 10% 30%);
+        border-radius: 3px;
+      }
+
+      /* ── Section ── */
+      .section {
+        margin-bottom: 16px;
+      }
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+      }
+
+      /* ── Module Grid ── */
+      .module-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+
+      .module-card {
+        background: var(--bg-surface-1);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition:
+          border-color 100ms,
+          background 100ms;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .module-card:hover {
+        border-color: hsl(192 91% 43% / 0.3);
+        background: hsl(224 14% 11%);
+      }
+
+      .module-card.inactive {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      .module-card.inactive:hover {
+        border-color: var(--border);
+        background: var(--bg-surface-1);
+      }
+
+      .module-card-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .module-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: var(--bg-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .module-icon svg {
+        width: 14px;
+        height: 14px;
+        color: var(--text-secondary);
+      }
+
+      .module-name {
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .module-card-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .module-rate {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .module-inactive-label {
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+
+      /* ── Bottom Split ── */
+      .bottom-split {
+        display: grid;
+        grid-template-columns: 2fr 3fr;
+        gap: 8px;
+      }
+
+      /* ── Metrics List ── */
+      .metrics-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .metric-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        transition: background 100ms;
+        cursor: default;
+      }
+
+      .metric-row:hover {
+        background: hsl(220 14% 12%);
+      }
+
+      .metric-label {
+        font-size: 13px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .metric-label svg {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+      }
+
+      .metric-value {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .metric-value.highlight {
+        color: var(--cyan-text);
+      }
+
+      /* ── Chart Card ── */
+      .chart-card {
+        background: var(--bg-surface-1);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .chart-title {
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .chart-title svg {
+        width: 14px;
+        height: 14px;
+        color: var(--text-secondary);
+      }
+
+      .chart-updated {
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+
+      .chart-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 14px;
+        border-bottom: 1px solid hsl(220 12% 13%);
+      }
+
+      .chart-tabs {
+        display: flex;
+        gap: 0;
+      }
+
+      .chart-tab {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition:
+          color 100ms,
+          background 100ms;
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+
+      .chart-tab:hover {
+        color: var(--text-primary);
+      }
+      .chart-tab.active {
+        color: var(--cyan-text);
+        background: var(--cyan-dim);
+      }
+
+      .chart-ranges {
+        display: flex;
+        gap: 2px;
+        margin-left: auto;
+      }
+
+      .chart-range {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        transition:
+          background 100ms,
+          color 100ms;
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+
+      .chart-range:hover {
+        color: var(--text-secondary);
+        background: var(--bg-muted);
+      }
+      .chart-range.active {
+        color: var(--text-primary);
+        background: var(--bg-surface-2);
+      }
+
+      .chart-body {
+        padding: 12px 14px 8px;
+        height: 200px;
+        position: relative;
+      }
+
+      /* ── SVG Chart ── */
+      .chart-svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .chart-grid-line {
+        stroke: var(--chart-grid);
+        stroke-width: 1;
+      }
+
+      .chart-line {
+        fill: none;
+        stroke: var(--cyan);
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .chart-area {
+        fill: url(#cyanGradient);
+      }
+
+      .chart-y-label,
+      .chart-x-label {
+        font-size: 10px;
+        fill: var(--text-tertiary);
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* ── Keyboard Hint ── */
+      kbd {
+        display: inline-flex;
+        align-items: center;
+        padding: 1px 5px;
+        font-size: 10px;
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-muted);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        color: var(--text-tertiary);
+        line-height: 1.4;
+      }
+
+      /* ── Command Palette Hint ── */
+      .cmd-hint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        margin: 0 20px 0;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-tertiary);
+        font-size: 12px;
+        justify-content: center;
+        flex-shrink: 0;
+        height: 32px;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 1024px) {
+        .module-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .bottom-split {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .module-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="sidebar-logo">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="color: var(--cyan)"
+          >
+            <path
+              d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
+            />
+          </svg>
+        </div>
+
+        <a class="sidebar-item active" title="Dashboard">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+            <path
+              d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+            />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Authentication">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Authorization">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Database">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+            <path d="M3 12A9 3 0 0 0 21 12" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Storage">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="22" x2="2" y1="12" y2="12" />
+            <path
+              d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+            />
+            <line x1="6" x2="6.01" y1="16" y2="16" />
+            <line x1="10" x2="10.01" y1="16" y2="16" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Chat">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z" />
+          </svg>
+        </a>
+
+        <div class="sidebar-divider"></div>
+
+        <a class="sidebar-item" title="Email">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="SMS">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+            <path d="M12 18h.01" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Notifications">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Functions">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Router">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="14" width="20" height="8" rx="2" />
+            <path d="M6.01 18H6" />
+            <path d="M10.01 18H10" />
+            <path d="M15 10v4" />
+            <path d="M17.84 7.17a4 4 0 0 0-5.66 0" />
+            <path d="M20.66 4.34a8 8 0 0 0-11.31 0" />
+          </svg>
+        </a>
+        <a class="sidebar-item" title="Payments">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="20" height="14" x="2" y="5" rx="2" />
+            <line x1="2" x2="22" y1="10" y2="10" />
+          </svg>
+        </a>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-divider"></div>
+        <a class="sidebar-item" title="Settings">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+            />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </a>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="main">
+        <!-- Status Strip -->
+        <div class="status-strip">
+          <div class="status-strip-left">
+            <span class="status-dot dot-green"></span>
+            <span class="status-text">All systems operational</span>
+          </div>
+          <div class="status-strip-right">
+            <span>8 / 12 modules</span>
+            <span>12d 4h 23m</span>
+            <span class="metrics-badge"
+              ><span class="status-dot"></span> Metrics</span
+            >
+          </div>
+        </div>
+
+        <!-- Command palette hint -->
+        <div style="padding: 10px 20px 0">
+          <div class="cmd-hint">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            Search or jump to...
+            <kbd>⌘K</kbd>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- Modules -->
+          <div class="section">
+            <div class="section-title">Modules</div>
+            <div class="module-grid">
+              <a class="module-card">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </div>
+                  <span class="module-name">Authentication</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-rate">1.2k/h</span>
+                  <span class="status-dot dot-sm dot-green"></span>
+                </div>
+              </a>
+
+              <a
+                class="module-card"
+                style="border-color: hsl(192 91% 43% / 0.35)"
+              >
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <ellipse cx="12" cy="5" rx="9" ry="3" />
+                      <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                      <path d="M3 12A9 3 0 0 0 21 12" />
+                    </svg>
+                  </div>
+                  <span class="module-name">Database</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-rate">890/h</span>
+                  <span class="status-dot dot-sm dot-green"></span>
+                </div>
+              </a>
+
+              <a class="module-card">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <line x1="22" x2="2" y1="12" y2="12" />
+                      <path
+                        d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+                      />
+                    </svg>
+                  </div>
+                  <span class="module-name">Storage</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-rate">340/h</span>
+                  <span class="status-dot dot-sm dot-green"></span>
+                </div>
+              </a>
+
+              <a class="module-card">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z" />
+                    </svg>
+                  </div>
+                  <span class="module-name">Chat</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-rate">120/h</span>
+                  <span class="status-dot dot-sm dot-green"></span>
+                </div>
+              </a>
+
+              <a class="module-card">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                    </svg>
+                  </div>
+                  <span class="module-name">Push</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-rate">45/h</span>
+                  <span class="status-dot dot-sm dot-green"></span>
+                </div>
+              </a>
+
+              <a class="module-card">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="2" y="14" width="20" height="8" rx="2" />
+                      <path d="M6.01 18H6" />
+                      <path d="M10.01 18H10" />
+                      <path d="M15 10v4" />
+                      <path d="M17.84 7.17a4 4 0 0 0-5.66 0" />
+                      <path d="M20.66 4.34a8 8 0 0 0-11.31 0" />
+                    </svg>
+                  </div>
+                  <span class="module-name">Router</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-rate">&mdash;</span>
+                  <span class="status-dot dot-sm dot-green"></span>
+                </div>
+              </a>
+
+              <a class="module-card inactive">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect width="20" height="16" x="2" y="4" rx="2" />
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                    </svg>
+                  </div>
+                  <span class="module-name">Email</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-inactive-label">Inactive</span>
+                  <span class="status-dot dot-sm dot-gray"></span>
+                </div>
+              </a>
+
+              <a class="module-card inactive">
+                <div class="module-card-left">
+                  <div class="module-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+                      <path d="M12 18h.01" />
+                    </svg>
+                  </div>
+                  <span class="module-name">SMS</span>
+                </div>
+                <div class="module-card-right">
+                  <span class="module-inactive-label">Inactive</span>
+                  <span class="status-dot dot-sm dot-gray"></span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Bottom Split -->
+          <div class="section">
+            <div class="bottom-split">
+              <!-- Metrics Column -->
+              <div>
+                <div class="section-title">Metrics</div>
+                <div class="metrics-list">
+                  <div class="metric-row">
+                    <span class="metric-label">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                      >
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                      </svg>
+                      Total Requests
+                    </span>
+                    <span class="metric-value highlight">12,482</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      Avg Latency
+                    </span>
+                    <span class="metric-value">45ms</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                      >
+                        <path
+                          d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"
+                        />
+                        <path d="M12 9v4" />
+                        <path d="M12 17h.01" />
+                      </svg>
+                      Error Rate
+                    </span>
+                    <span class="metric-value">0.02%</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                      >
+                        <path
+                          d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+                        />
+                        <path d="m9 12 2 2 4-4" />
+                      </svg>
+                      Uptime
+                    </span>
+                    <span class="metric-value">99.99%</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                      >
+                        <ellipse cx="12" cy="5" rx="9" ry="3" />
+                        <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                      </svg>
+                      DB Connections
+                    </span>
+                    <span class="metric-value">24</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chart Column -->
+              <div>
+                <div class="section-title" style="visibility: hidden">_</div>
+                <div class="chart-card">
+                  <div class="chart-header">
+                    <span class="chart-title">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <line x1="8" x2="16" y1="21" y2="21" />
+                        <line x1="12" x2="12" y1="17" y2="21" />
+                      </svg>
+                      Performance
+                    </span>
+                    <span class="chart-updated">14:32:08</span>
+                  </div>
+                  <div class="chart-controls">
+                    <div class="chart-tabs">
+                      <button class="chart-tab active">Requests</button>
+                      <button class="chart-tab">Response</button>
+                      <button class="chart-tab">Errors</button>
+                      <button class="chart-tab">Resources</button>
+                    </div>
+                    <div class="chart-ranges">
+                      <button class="chart-range active">1h</button>
+                      <button class="chart-range">6h</button>
+                      <button class="chart-range">24h</button>
+                      <button class="chart-range">7d</button>
+                    </div>
+                  </div>
+                  <div class="chart-body">
+                    <svg
+                      class="chart-svg"
+                      viewBox="0 0 600 180"
+                      preserveAspectRatio="none"
+                    >
+                      <defs>
+                        <linearGradient
+                          id="cyanGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stop-color="hsl(192 91% 43%)"
+                            stop-opacity="0.2"
+                          />
+                          <stop
+                            offset="100%"
+                            stop-color="hsl(192 91% 43%)"
+                            stop-opacity="0.01"
+                          />
+                        </linearGradient>
+                      </defs>
+
+                      <!-- Grid lines -->
+                      <line
+                        class="chart-grid-line"
+                        x1="40"
+                        y1="10"
+                        x2="590"
+                        y2="10"
+                      />
+                      <line
+                        class="chart-grid-line"
+                        x1="40"
+                        y1="52"
+                        x2="590"
+                        y2="52"
+                      />
+                      <line
+                        class="chart-grid-line"
+                        x1="40"
+                        y1="95"
+                        x2="590"
+                        y2="95"
+                      />
+                      <line
+                        class="chart-grid-line"
+                        x1="40"
+                        y1="137"
+                        x2="590"
+                        y2="137"
+                      />
+                      <line
+                        class="chart-grid-line"
+                        x1="40"
+                        y1="165"
+                        x2="590"
+                        y2="165"
+                      />
+
+                      <!-- Y-axis labels -->
+                      <text
+                        class="chart-y-label"
+                        x="35"
+                        y="14"
+                        text-anchor="end"
+                      >
+                        400k
+                      </text>
+                      <text
+                        class="chart-y-label"
+                        x="35"
+                        y="56"
+                        text-anchor="end"
+                      >
+                        300k
+                      </text>
+                      <text
+                        class="chart-y-label"
+                        x="35"
+                        y="99"
+                        text-anchor="end"
+                      >
+                        200k
+                      </text>
+                      <text
+                        class="chart-y-label"
+                        x="35"
+                        y="141"
+                        text-anchor="end"
+                      >
+                        100k
+                      </text>
+                      <text
+                        class="chart-y-label"
+                        x="35"
+                        y="169"
+                        text-anchor="end"
+                      >
+                        0
+                      </text>
+
+                      <!-- X-axis labels -->
+                      <text class="chart-x-label" x="60" y="180">13:30</text>
+                      <text class="chart-x-label" x="155" y="180">13:35</text>
+                      <text class="chart-x-label" x="250" y="180">13:40</text>
+                      <text class="chart-x-label" x="345" y="180">13:45</text>
+                      <text class="chart-x-label" x="440" y="180">13:50</text>
+                      <text class="chart-x-label" x="535" y="180">13:55</text>
+
+                      <!-- Area fill -->
+                      <path
+                        class="chart-area"
+                        d="M60,130 C90,125 110,110 140,105 C170,100 190,120 220,115 C250,110 270,85 300,80 C330,75 350,90 380,85 C410,80 430,60 460,55 C490,50 510,70 540,65 C555,62 565,58 575,55 L575,165 L60,165 Z"
+                      />
+
+                      <!-- Line -->
+                      <path
+                        class="chart-line"
+                        d="M60,130 C90,125 110,110 140,105 C170,100 190,120 220,115 C250,110 270,85 300,80 C330,75 350,90 380,85 C410,80 430,60 460,55 C490,50 510,70 540,65 C555,62 565,58 575,55"
+                      />
+
+                      <!-- Current value dot -->
+                      <circle
+                        cx="575"
+                        cy="55"
+                        r="3.5"
+                        fill="var(--cyan)"
+                        stroke="var(--bg-surface-1)"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

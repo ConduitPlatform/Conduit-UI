@@ -1,0 +1,126 @@
+'use server';
+import { LogsData, LokiLogsData } from '@/lib/models/logs-viewer';
+import { escapeLogqlString } from '@/lib/models/logs-viewer/utils';
+import { getLokiClient } from '@/lib/loki/index';
+import { _getEnv } from '@/lib/logic/EnvManager';
+import { getLokiAvailabilityCore } from '@/lib/observability/lokiAvailabilityCore';
+import { isLokiReady } from '@/lib/observability/guards';
+
+export const getLogsLevels = async (
+  startDate?: number,
+  endDate?: number
+): Promise<string[]> => {
+  const availability = await getLokiAvailabilityCore();
+  if (!isLokiReady(availability)) {
+    return [];
+  }
+  const res = await (
+    await getLokiClient()
+  ).get('/loki/api/v1/label/level/values', {
+    params: {
+      start: startDate,
+      end: endDate,
+    },
+  });
+  return res.data.data;
+};
+
+export const getModules = async (
+  startDate?: number,
+  endDate?: number
+): Promise<string[]> => {
+  const availability = await getLokiAvailabilityCore();
+  if (!isLokiReady(availability)) {
+    return [];
+  }
+  const { namespace } = await _getEnv();
+  let query;
+  if (namespace && namespace.length > 0) {
+    query = `{namespace="${namespace}"}`;
+  }
+  const res = await (
+    await getLokiClient()
+  ).get('/loki/api/v1/label/module/values', {
+    params: {
+      start: startDate,
+      end: endDate,
+      query: query,
+    },
+  });
+  return res.data.data;
+};
+
+export const getLogsQueryRange = async (data: {
+  modules?: string[] | string;
+  searchTerm?: string;
+  levels?: string[];
+  startDate?: number;
+  endDate?: number;
+  limit?: string;
+}): Promise<LogsData[]> => {
+  const availability = await getLokiAvailabilityCore();
+  if (!isLokiReady(availability)) {
+    return [];
+  }
+  let query = '{';
+  const queryParts = [];
+  let normalizedModules: string[] = [];
+  const { modules, levels, startDate, endDate, limit, searchTerm } = data;
+
+  if (typeof modules === 'string') {
+    normalizedModules = [modules];
+  }
+
+  if (Array.isArray(modules)) {
+    normalizedModules = modules;
+  }
+  const { namespace } = await _getEnv();
+  if (namespace && namespace.length > 0) {
+    queryParts.push(`namespace="${namespace}"`);
+  }
+
+  if (normalizedModules.length) {
+    const selectedModuleStr = normalizedModules.join('|');
+    queryParts.push(`module=~"${selectedModuleStr}"`);
+  }
+
+  if (levels?.length) {
+    const selectedLevelsStr = levels.join('|');
+    queryParts.push(`level=~"${selectedLevelsStr}"`);
+  }
+
+  query += queryParts.join(',') + '}';
+
+  const trimmedSearch = searchTerm?.trim();
+  if (trimmedSearch) {
+    query += ` |= "${escapeLogqlString(trimmedSearch)}"`;
+  }
+  const res = await (
+    await getLokiClient()
+  ).get(`/loki/api/v1/query_range`, {
+    params: {
+      query: query,
+      start: startDate,
+      end: endDate,
+      limit: limit,
+    },
+  });
+
+  const logs: LogsData[] = [];
+
+  if (res.data.data.result) {
+    res.data.data.result.forEach((item: LokiLogsData) =>
+      item?.values?.forEach(value => {
+        logs.push({
+          timestamp: value?.[0],
+          message: value?.[1],
+          level: item?.stream?.level,
+          instance: item?.stream?.instance,
+          module: item?.stream?.module,
+        });
+      })
+    );
+    logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  }
+  return logs;
+};

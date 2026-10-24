@@ -1,0 +1,49 @@
+name: Embeddings UI
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - 'src/app/(dashboard)/(modules)/embeddings/**'
+      - 'src/app/(dashboard)/template.tsx'
+      - 'src/components/embeddings/**'
+      - 'src/components/dashboard/ActiveModuleGrid.tsx'
+      - 'src/components/dashboard/ModuleDashboard.tsx'
+      - 'src/components/navigation/navList.config.ts'
+      - 'src/lib/models/embeddings/**'
+      - 'src/lib/api/embeddings/**'
+      - 'src/lib/api/database/**'
+      - 'src/lib/utils/module-utils.ts'
+      - 'src/lib/utils/module-utils.test.ts'
+      - 'src/lib/utils/breadcrumbs.ts'
+      - 'src/lib/utils/breadcrumbs.test.ts'
+      - 'src/test/**'
+      - 'e2e/**'
+      - 'playwright.config.ts'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'vitest.config.mts'
+      - '.github/workflows/embeddings-ui.yml'
+
+jobs:
+  unit-lint-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Enable Corepack
+        run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm lint
+      - run: pnpm exec tsc --noEmit
+      - run: CI=false pnpm build
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e

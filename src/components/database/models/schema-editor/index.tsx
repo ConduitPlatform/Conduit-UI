@@ -1,0 +1,404 @@
+'use client';
+
+import * as React from 'react';
+import { DeclaredSchema } from '@/lib/models/database';
+import { createSchema, putSchema } from '@/lib/api/database';
+import { FieldsTable, FormField, transformFieldsForApi } from './fields-table';
+import { SchemaPreview } from './schema-preview';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Save, Code, AlertCircle, Info, Loader2 } from 'lucide-react';
+import { toast } from '@/lib/hooks/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import { extractSchemaEditorFields } from '@/lib/database/schema-editor-fields';
+import { validateSchemaFields } from '@/lib/database/schema-field-validation';
+
+type SchemaEditorProps = {
+  schema: DeclaredSchema | null;
+  availableModels: string[];
+  onSave?: (schema?: DeclaredSchema) => void;
+  onCancel?: () => void;
+  created?: boolean;
+  onOpenSettings?: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
+};
+
+export function extractFieldsFromSchema(schemaFields: any): FormField[] {
+  return extractSchemaEditorFields(schemaFields) as FormField[];
+}
+
+export function SchemaEditor({
+  schema,
+  availableModels,
+  onSave,
+  onCancel,
+  created = false,
+  onOpenSettings,
+  onDirtyChange,
+}: SchemaEditorProps) {
+  const isNewSchema = !schema;
+  const [schemaName, setSchemaName] = React.useState(schema?.name || '');
+  const [fields, setFields] = React.useState<FormField[]>(() =>
+    schema ? extractFieldsFromSchema(schema.fields) : []
+  );
+  const [initialSignature, setInitialSignature] = React.useState(() =>
+    JSON.stringify(transformFieldsForApi(fields))
+  );
+  const [showPreview, setShowPreview] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [saveShortcutLabel, setSaveShortcutLabel] = React.useState('Ctrl+S');
+  const [removedFieldsToConfirm, setRemovedFieldsToConfirm] = React.useState<
+    string[]
+  >([]);
+
+  React.useEffect(() => {
+    const nextFields = schema ? extractFieldsFromSchema(schema.fields) : [];
+    setSchemaName(schema?.name || '');
+    setFields(nextFields);
+    setInitialSignature(JSON.stringify(transformFieldsForApi(nextFields)));
+  }, [schema]);
+
+  const currentSignature = React.useMemo(
+    () => JSON.stringify(transformFieldsForApi(fields)),
+    [fields]
+  );
+
+  const hasChanges = isNewSchema
+    ? Boolean(schemaName.trim()) || fields.length > 0
+    : currentSignature !== initialSignature;
+
+  React.useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
+
+  // Check if schema is extension-only
+  const isExtensionOnly = Boolean(
+    schema && schema.ownerModule !== 'database' && schema.ownerModule !== ''
+  );
+  const committedFieldNames = React.useMemo(
+    () => (schema?.fields ? Object.keys(schema.fields) : []),
+    [schema]
+  );
+
+  const handleFieldsChange = (newFields: FormField[]) => {
+    setFields(newFields);
+  };
+
+  const getRemovedFieldNames = React.useCallback(() => {
+    if (!schema) return [];
+
+    const initialNames = new Set(Object.keys(schema.fields || {}));
+    const currentNames = new Set(fields.map(field => field.name));
+
+    return Array.from(initialNames).filter(name => !currentNames.has(name));
+  }, [fields, schema]);
+
+  const performSave = React.useCallback(async () => {
+    if (!schemaName.trim()) {
+      toast({ title: 'Schema name is required', variant: 'destructive' });
+      return;
+    }
+
+    if (fields.length === 0) {
+      toast({
+        title: 'At least one field is required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const validationError = validateSchemaFields(fields);
+    if (validationError) {
+      toast({
+        title: 'Fix schema fields before saving',
+        description: validationError,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const fieldsObject = transformFieldsForApi(fields);
+
+      if (isNewSchema) {
+        const result = await createSchema({
+          name: schemaName,
+          fields: fieldsObject,
+          conduitOptions: {
+            cms: {
+              enabled: true,
+              crudOperations: {
+                create: { enabled: true, authenticated: false },
+                read: { enabled: true, authenticated: false },
+                update: { enabled: true, authenticated: false },
+                delete: { enabled: true, authenticated: false },
+              },
+            },
+          },
+        });
+        toast({ title: 'Schema created successfully' });
+        onSave?.(result);
+      } else {
+        await putSchema(schema._id, {
+          fields: fieldsObject,
+        });
+        toast({ title: 'Schema updated successfully' });
+        setInitialSignature(JSON.stringify(fieldsObject));
+        onSave?.();
+      }
+    } catch (error: any) {
+      toast({
+        title: error.message || 'Failed to save schema',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }, [fields, isNewSchema, onSave, schema?._id, schemaName]);
+
+  const handleSave = React.useCallback(async () => {
+    const removedFields = getRemovedFieldNames();
+    if (!isNewSchema && removedFields.length > 0) {
+      setRemovedFieldsToConfirm(removedFields);
+      return;
+    }
+
+    await performSave();
+  }, [getRemovedFieldNames, isNewSchema, performSave]);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isSaveShortcut =
+        (event.metaKey || event.ctrlKey) && event.key === 's';
+      if (!isSaveShortcut) return;
+
+      event.preventDefault();
+      if (!isSaving && hasChanges) {
+        void handleSave();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [hasChanges, handleSave, isSaving]);
+
+  React.useEffect(() => {
+    const platform = navigator.platform || navigator.userAgent;
+    setSaveShortcutLabel(
+      /Mac|iPhone|iPad|iPod/i.test(platform) ? '⌘S' : 'Ctrl+S'
+    );
+  }, []);
+
+  return (
+    <TooltipProvider delayDuration={250}>
+      <div className="flex h-full min-w-0">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="flex shrink-0 items-center justify-between gap-4 border-b bg-muted/30 px-6 py-3">
+            <div className="min-w-0">
+              {isNewSchema ? (
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="schemaName" className="sr-only">
+                    Schema Name
+                  </Label>
+                  <Input
+                    id="schemaName"
+                    placeholder="Enter schema name..."
+                    value={schemaName}
+                    onChange={e => setSchemaName(e.target.value)}
+                    className="w-64 font-medium"
+                  />
+                </div>
+              ) : (
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-semibold tracking-wide text-balance">
+                      Schema fields
+                    </h2>
+                    {hasChanges && (
+                      <Badge variant="secondary" className="font-normal">
+                        Unsaved changes
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Define field names, types, and constraints. Save to apply
+                    them to this model.
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPreview(!showPreview)}
+                    className="gap-2"
+                    aria-pressed={showPreview}
+                    aria-label={
+                      showPreview ? 'Hide JSON preview' : 'Show JSON preview'
+                    }
+                  >
+                    <Code className="h-4 w-4" />
+                    {showPreview ? 'Hide' : 'Show'} JSON
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Preview the schema as JSON</p>
+                </TooltipContent>
+              </Tooltip>
+              {onCancel && (
+                <Button variant="ghost" size="sm" onClick={onCancel}>
+                  Cancel
+                </Button>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={isSaving || (!hasChanges && !isNewSchema)}
+                    className="gap-2"
+                  >
+                    {isSaving ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    {isSaving
+                      ? 'Saving...'
+                      : isNewSchema
+                        ? 'Create Schema'
+                        : 'Save Changes'}
+                    {!isSaving && hasChanges && (
+                      <kbd className="ml-1 rounded border bg-primary-foreground/20 px-1.5 py-0.5 font-mono text-[10px]">
+                        {saveShortcutLabel}
+                      </kbd>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {hasChanges
+                      ? `Save schema changes ${saveShortcutLabel}`
+                      : 'No unsaved changes'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+
+          {created && (
+            <Alert className="mx-6 mt-4 border-primary/30 bg-primary/5">
+              <Info className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between gap-3">
+                <span>
+                  Model created. Define the fields your data needs, then
+                  configure CRUD and authorization before opening it up.
+                </span>
+                {onOpenSettings && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onOpenSettings}
+                    className="shrink-0"
+                  >
+                    Open Settings
+                  </Button>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {isExtensionOnly && schema && (
+            <Alert className="mx-6 mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                This schema is owned by {schema.ownerModule}. Field edits belong
+                on the Extensions tab.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="flex min-h-0 min-w-0 flex-1">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-6">
+              <FieldsTable
+                fields={fields}
+                onFieldsChange={handleFieldsChange}
+                availableModels={availableModels}
+                disabled={isExtensionOnly}
+                depth={0}
+                className="min-h-0 flex-1"
+                committedFieldNames={committedFieldNames}
+                fillHeight
+              />
+            </div>
+
+            {showPreview && (
+              <div className="flex w-80 min-h-0 shrink-0 flex-col overflow-hidden border-l bg-muted/30 lg:w-96">
+                <SchemaPreview
+                  schemaName={schemaName}
+                  fields={transformFieldsForApi(fields)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <AlertDialog
+          open={removedFieldsToConfirm.length > 0}
+          onOpenChange={open => {
+            if (!open) setRemovedFieldsToConfirm([]);
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Remove fields from this model?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Saving will remove{' '}
+                <strong>{removedFieldsToConfirm.join(', ')}</strong> from the
+                schema. Existing documents may no longer expose values stored in
+                those fields.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  setRemovedFieldsToConfirm([]);
+                  void performSave();
+                }}
+              >
+                Save and remove fields
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </TooltipProvider>
+  );
+}

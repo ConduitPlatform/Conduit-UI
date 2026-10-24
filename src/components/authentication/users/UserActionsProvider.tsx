@@ -1,0 +1,201 @@
+'use client';
+import * as React from 'react';
+import { useCallback, useContext, useMemo } from 'react';
+import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
+import { EditUserSheet } from '@/components/authentication/users/editUserSheet/editUserSheet';
+import { useAlerts } from '@/components/providers/AlertProvider';
+import { blockUnblockUser, deleteUser } from '@/lib/api/authentication';
+import { toast } from '@/lib/hooks/use-toast';
+import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
+import type { User } from '@/lib/models/User';
+
+type UserActionsProvider = {
+  openUserAdd: () => void;
+  /** `user` is the row being edited; when omitted the sheet looks it up by id. */
+  openUserEdit: (userId: string, user?: User) => void;
+  deleteUser: (userId: string) => void;
+  blockUser: (userId: string) => void;
+  unblockUser: (userId: string) => void;
+};
+
+const initialState: UserActionsProvider = {
+  openUserAdd: () => {
+    throw new Error('Not implemented');
+  },
+  openUserEdit: () => {
+    throw new Error('Not implemented');
+  },
+  deleteUser: (userId: string) => {
+    throw new Error('Not implemented');
+  },
+  blockUser: (userId: string) => {
+    throw new Error('Not implemented');
+  },
+  unblockUser: (userId: string) => {
+    throw new Error('Not implemented');
+  },
+};
+
+const UserActionsContext = React.createContext(initialState);
+export const useUserActions = () => useContext(UserActionsContext);
+
+const NO_REALMS: ReadonlyMap<string, string> = new Map();
+
+export function UserActionsProvider({
+  children,
+  realmsEnabled = false,
+  realmSlugs = NO_REALMS,
+  identityMode = 'shared',
+}: Readonly<{
+  children: React.ReactNode;
+  /** Realm UI (home realm select, edit sheet) renders only when enabled. */
+  realmsEnabled?: boolean;
+  /** `teamId -> slug` of every realm. */
+  realmSlugs?: ReadonlyMap<string, string>;
+  identityMode?: RealmIdentityMode;
+}>) {
+  const { addAlert } = useAlerts();
+  const [userAdd, setUserAdd] = React.useState<boolean>(false);
+  const [userEdit, setUserEdit] = React.useState<
+    { id: string; user?: User } | undefined
+  >(undefined);
+  const openUserAdd = () => {
+    setUserAdd(true);
+  };
+  const openUserEdit = (userId: string, user?: User) => {
+    setUserEdit({ id: userId, user });
+  };
+  const _deleteUser = useCallback(
+    (userId: string) => {
+      addAlert({
+        title: 'Delete User',
+        description:
+          'Are you sure you want to delete this user? This action cannot be undone.',
+        cancelText: 'Cancel',
+        actionText: 'Delete',
+        onDecision: cancel => {
+          if (cancel) return;
+          deleteUser(userId)
+            .then(() => {
+              toast({
+                title: 'User deleted',
+                description: 'The user has been deleted successfully.',
+                variant: 'default',
+              });
+            })
+            .catch(() => {
+              toast({
+                title: 'Failed',
+                description: 'User could not be deleted.',
+                variant: 'destructive',
+              });
+            });
+        },
+      });
+    },
+    [addAlert]
+  );
+  const blockUser = useCallback(
+    (userId: string) => {
+      addAlert({
+        title: 'Block User',
+        description:
+          "Are you sure you want to block this user? They won't be able to login until you unblock them.",
+        cancelText: 'Cancel',
+        actionText: 'Block',
+        onDecision: cancel => {
+          if (cancel) return;
+          blockUnblockUser(userId, true)
+            .then(() => {
+              toast({
+                title: 'User blocked',
+                description: 'The user has been blocked successfully.',
+                variant: 'default',
+              });
+            })
+            .catch(() => {
+              toast({
+                title: 'Failed',
+                description: 'User could not be blocked.',
+                variant: 'destructive',
+              });
+            });
+        },
+      });
+    },
+    [addAlert]
+  );
+  const unblockUser = useCallback(
+    (userId: string) => {
+      addAlert({
+        title: 'Unblock User',
+        description:
+          'Are you sure you want to unblock this user? They will be able to login.',
+        cancelText: 'Cancel',
+        actionText: 'Unblock',
+        onDecision: cancel => {
+          if (cancel) return;
+          blockUnblockUser(userId, false)
+            .then(() => {
+              toast({
+                title: 'User unblocked',
+                description: 'The user has been unblocked successfully.',
+                variant: 'default',
+              });
+            })
+            .catch(() => {
+              toast({
+                title: 'Failed',
+                description: 'User could not be unblocked.',
+                variant: 'destructive',
+              });
+            });
+        },
+      });
+    },
+    [addAlert]
+  );
+
+  const contextValues = useMemo(
+    () => ({
+      openUserAdd,
+      openUserEdit,
+      deleteUser: _deleteUser,
+      blockUser,
+      unblockUser,
+    }),
+    [_deleteUser, blockUser, unblockUser]
+  );
+
+  return (
+    <UserActionsContext.Provider value={contextValues}>
+      <AddUserSheet
+        defaultOpen={userAdd}
+        onClose={() => setUserAdd(false)}
+        realmsEnabled={realmsEnabled}
+        realmSlugs={realmSlugs}
+        identityMode={identityMode}
+      />
+      {realmsEnabled ? (
+        userEdit && (
+          <EditUserSheet
+            key={userEdit.id}
+            userId={userEdit.id}
+            user={userEdit.user}
+            open
+            onOpenChange={open => {
+              if (!open) setUserEdit(undefined);
+            }}
+            realmSlugs={realmSlugs}
+          />
+        )
+      ) : (
+        <AddUserSheet
+          defaultOpen={userEdit !== undefined}
+          onClose={() => setUserEdit(undefined)}
+        />
+      )}
+      {children}
+    </UserActionsContext.Provider>
+  );
+}

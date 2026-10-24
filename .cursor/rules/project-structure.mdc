@@ -1,0 +1,77 @@
+---
+alwaysApply: true
+description: Project structure and architecture guidelines for Conduit UI
+---
+
+# Project Structure & Architecture Guide
+
+## Overview
+Conduit UI is a Next.js 16 admin panel for the Conduit Platform with React Server Components, built with TypeScript, Tailwind CSS, and shadcn/ui components.
+
+## Directory Structure
+
+### Core Application Structure
+- [src/app](mdc:src/app) - Next.js App Router pages and layouts
+  - [src/app/(dashboard)](mdc:src/app/(dashboard)) - Dashboard layout group
+  - [src/app/(dashboard)/(modules)](mdc:src/app/(dashboard)/(modules)) - Module-specific pages
+  - [src/app/login](mdc:src/app/login) - Authentication pages
+- [src/components](mdc:src/components) - Reusable React components organized by feature
+- [src/lib](mdc:src/lib) - Utility functions, API clients, and business logic
+- [src/contexts](mdc:src/contexts) - React context providers
+- [src/types](mdc:src/types) - TypeScript type definitions
+
+### Module Organization
+Each module follows a consistent structure under `src/components/[module-name]/`:
+- Dashboard components
+- Feature-specific components (users, settings, etc.)
+- Form components
+- Table components
+- Dialog/modal components
+
+### Key Configuration Files
+- [package.json](mdc:package.json) - Dependencies and scripts (Node.js 24+ required)
+- [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration with path mapping
+- [tailwind.config.js](mdc:tailwind.config.js) - Tailwind CSS with custom design system
+- [next.config.ts](mdc:next.config.ts) - Next.js configuration (env from `.env*` files, loaded by Next)
+- [components.json](mdc:components.json) - shadcn/ui component configuration
+
+## Architecture Patterns
+
+### Component Architecture
+- Use React Server Components for data fetching where possible
+- Client components marked with 'use client' directive
+- Custom UI components extend shadcn/ui base components
+- Form components use react-hook-form with Zod validation
+
+### API Layer
+- [src/lib/api/api.ts](mdc:src/lib/api/api.ts) - Central API client with axios
+- Module-specific API functions in `src/lib/api/[module]/`
+- Server actions marked with 'use server' directive
+- Environment-aware API client with cookie-based auth
+
+### State Management
+- React Context for global state ([src/contexts](mdc:src/contexts))
+- React Hook Form for form state
+- URL state for navigation and filters
+- Server state via API calls
+
+### Styling System
+- Tailwind CSS with custom design tokens
+- CSS variables for theming (light/dark mode support)
+- Component variants using class-variance-authority (cva)
+- Consistent spacing and typography scale
+
+## Module Pattern
+Each Conduit module (Authentication, Database, Email, etc.) follows:
+1. Main dashboard page at `/[module]`
+2. Feature pages at `/[module]/[feature]`
+3. Settings page at `/[module]/settings`
+4. Components organized in `src/components/[module]/`
+5. API functions in `src/lib/api/[module]/`
+6. Type definitions in `src/lib/models/[module]/`
+
+## Navigation Structure
+- Sidebar navigation defined in [src/components/navigation/navList.config.ts](mdc:src/components/navigation/navList.config.ts)
+- Module-based routing with consistent URL patterns
+- Breadcrumb navigation for deep pages
+- Environment switching capability
