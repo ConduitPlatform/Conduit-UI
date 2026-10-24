@@ -1,10 +1,39 @@
+type AxiosResponseBody =
+  | { message?: string; error?: string; name?: string }
+  | string;
+
 type AxiosLikeError = {
   response?: {
     status?: number;
-    data?: { message?: string; error?: string; name?: string };
+    data?: AxiosResponseBody;
   };
   message?: string;
 };
+
+function readResponseBody(
+  err: unknown
+): { status?: number; data?: AxiosResponseBody } | undefined {
+  for (const candidate of collectErrorChain(err)) {
+    if (!isAxiosLikeError(candidate) || !candidate.response) continue;
+    return candidate.response;
+  }
+  return undefined;
+}
+
+function readResponseMessage(
+  data: AxiosResponseBody | undefined
+): string | undefined {
+  if (!data || typeof data === 'string') return undefined;
+  if (data.message) return data.message;
+  if (data.error) return data.error;
+  return undefined;
+}
+
+function isRouterHtmlNotFound(data: AxiosResponseBody | undefined): boolean {
+  return (
+    typeof data === 'string' && /Cannot (GET|POST|PATCH|DELETE)/.test(data)
+  );
+}
 
 export function isAxiosLikeError(err: unknown): err is AxiosLikeError {
   return Boolean(err && typeof err === 'object' && 'response' in err);
@@ -93,9 +122,9 @@ export function rethrowNextControlFlowError(err: unknown): void {
 export function formatAdminApiError(err: unknown): string {
   if (isAxiosLikeError(err)) {
     const data = err.response?.data;
-    if (data?.message) return data.message;
-    if (data?.error) return data.error;
-    if (data?.name && err.response?.status) {
+    const message = readResponseMessage(data);
+    if (message) return message;
+    if (data && typeof data !== 'string' && data.name && err.response?.status) {
       return `${data.name} (${err.response.status})`;
     }
     return err.message ?? 'Request failed';
@@ -112,20 +141,42 @@ export async function withAdminApiError<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
+const MISSING_TEMPLATE_ROUTE_MESSAGE =
+  'Template routes returned 404. They are served by the Admin API when the communications module is running.';
+
+function formatMissingTemplateRoute(
+  err: unknown,
+  fallback: string
+): string | undefined {
+  if (getAxiosResponseStatus(err) !== 404) return undefined;
+  const data = readResponseBody(err)?.data;
+  if (isRouterHtmlNotFound(data)) return MISSING_TEMPLATE_ROUTE_MESSAGE;
+  const apiMessage = readResponseMessage(data);
+  if (apiMessage) return apiMessage;
+  return fallback;
+}
+
 export function formatCommunicationsApiError(err: unknown): string {
+  const missingRoute = formatMissingTemplateRoute(
+    err,
+    'Unified templates API unavailable. This Conduit build needs CommunicationTemplate admin routes.'
+  );
+  if (missingRoute) return missingRoute;
   if (isAxiosLikeError(err)) {
-    if (err.response?.status === 404) {
-      return 'Unified templates API not available — upgrade Conduit to a build that includes CommunicationTemplate CRUD';
-    }
     return formatAdminApiError(err);
   }
   return err instanceof Error ? err.message : 'Request failed';
 }
 
 export function formatEmailTemplatesApiError(err: unknown): string {
+  const missingRoute = formatMissingTemplateRoute(
+    err,
+    'The Admin API returned 404 for GET /email/templates. The communications module needs to be serving email template routes.'
+  );
+  if (missingRoute) return missingRoute;
   if (isAxiosLikeError(err)) {
     return (
-      err.response?.data?.message ??
+      readResponseMessage(err.response?.data) ??
       err.message ??
       'Failed to load email templates'
     );

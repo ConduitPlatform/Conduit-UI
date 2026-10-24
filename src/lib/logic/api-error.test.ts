@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatAdminApiError,
+  formatCommunicationsApiError,
+  formatEmailTemplatesApiError,
   isAxiosNotFoundError,
   isNextNavigationError,
   withAdminApiError,
@@ -35,6 +37,48 @@ describe('formatAdminApiError', () => {
         },
       })
     ).toBe('Admin validation failed: username: Path `username` is required.');
+  });
+});
+
+describe('formatEmailTemplatesApiError', () => {
+  it('explains a Router HTML 404', () => {
+    expect(
+      formatEmailTemplatesApiError({
+        response: {
+          status: 404,
+          data: '<pre>Cannot GET /email/templates</pre>',
+        },
+      })
+    ).toContain('Admin API');
+  });
+
+  it('explains an admin route 404 that has no API message', () => {
+    expect(
+      formatEmailTemplatesApiError({
+        response: { status: 404, data: '' },
+      })
+    ).toContain('GET /email/templates');
+  });
+
+  it('keeps a JSON 404 message from the API', () => {
+    expect(
+      formatEmailTemplatesApiError({
+        response: {
+          status: 404,
+          data: { message: 'Template does not exist' },
+        },
+      })
+    ).toBe('Template does not exist');
+  });
+
+  it('reads a 404 nested on the error cause', () => {
+    expect(
+      formatCommunicationsApiError(
+        Object.assign(new Error('Server Components render'), {
+          cause: { response: { status: 404, data: '' } },
+        })
+      )
+    ).toContain('CommunicationTemplate');
   });
 });
 

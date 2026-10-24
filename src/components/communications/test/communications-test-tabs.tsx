@@ -9,8 +9,7 @@ import { TestSendForm } from '@/components/notifications/testSend/testSendForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getTemplates } from '@/lib/api/email';
-import { formatEmailTemplatesApiError } from '@/lib/logic/api-error';
+import { getTemplates, loadEmailTemplates } from '@/lib/api/email';
 import { NotificationToken } from '@/lib/models/notification/NotificationToken';
 
 const TEST_TABS = ['email', 'sms', 'push'] as const;
@@ -47,20 +46,19 @@ export function CommunicationsTestTabs({
       setIsLoadingTemplates(true);
       setTemplatesError(null);
 
-      try {
-        const data = await getTemplates({});
-        if (!cancelled) {
-          setTemplates(data);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setTemplates(null);
-          setTemplatesError(formatEmailTemplatesApiError(err));
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoadingTemplates(false);
-        }
+      const result = await loadEmailTemplates({});
+      if (cancelled) return;
+      if (!result.ok) {
+        setTemplates(null);
+        setTemplatesError(result.message);
+      } else {
+        setTemplates({
+          templateDocuments: result.templateDocuments,
+          count: result.count,
+        });
+      }
+      if (!cancelled) {
+        setIsLoadingTemplates(false);
       }
     };
 
