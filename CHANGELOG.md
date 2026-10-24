@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.0-alpha.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.16.0...v0.17.0-alpha.0) (2026-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace admin panel with the rewritten Conduit UI (#349)
+
+### Features
+
+* replace admin panel with the rewritten Conduit UI ([#349](https://github.com/ConduitPlatform/Conduit-UI/issues/349)) ([d79fa9f](https://github.com/ConduitPlatform/Conduit-UI/commit/d79fa9f5b2bdb4de90c068cd497a6ecfdb8e524f)), closes [#247](https://github.com/ConduitPlatform/Conduit-UI/issues/247) [#248](https://github.com/ConduitPlatform/Conduit-UI/issues/248) [#249](https://github.com/ConduitPlatform/Conduit-UI/issues/249) [#250](https://github.com/ConduitPlatform/Conduit-UI/issues/250) [#251](https://github.com/ConduitPlatform/Conduit-UI/issues/251) [#252](https://github.com/ConduitPlatform/Conduit-UI/issues/252) [#253](https://github.com/ConduitPlatform/Conduit-UI/issues/253) [#254](https://github.com/ConduitPlatform/Conduit-UI/issues/254) [#256](https://github.com/ConduitPlatform/Conduit-UI/issues/256) [#255](https://github.com/ConduitPlatform/Conduit-UI/issues/255) [#257](https://github.com/ConduitPlatform/Conduit-UI/issues/257) [#258](https://github.com/ConduitPlatform/Conduit-UI/issues/258) [#261](https://github.com/ConduitPlatform/Conduit-UI/issues/261)
+
 ## [0.16.0](https://github.com/ConduitPlatform/Conduit-UI/compare/v0.16.0-alpha.0...v0.16.0) (2026-10-24)
 
 
