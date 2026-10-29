@@ -7,6 +7,11 @@ import {
   AuthenticationConfig,
   AuthenticationConfigResponse,
 } from '@/lib/models/authentication';
+import {
+  authenticationConfigFromMonoResponse,
+  explainMissingConfigRoute,
+} from '@/lib/api/authentication/module-config';
+import { isAxiosNotFoundError } from '@/lib/logic/api-error';
 import { Team } from '@/lib/models/Team';
 import { TeamInvite } from '@/lib/models/TeamInvite';
 import {
@@ -176,20 +181,35 @@ export const deleteTeam = async (teamId: string) => {
 };
 export const getAuthenticationSettings =
   async (): Promise<AuthenticationConfigResponse> => {
-    const res = await (
-      await getApiClient()
-    ).get<AuthenticationConfigResponse>('config/authentication');
-    return res.data;
+    const client = await getApiClient();
+    try {
+      const res = await client.get<AuthenticationConfigResponse>(
+        '/config/authentication'
+      );
+      return res.data;
+    } catch (error) {
+      // Some cores serve module config only from GET /config. Express then
+      // answers the per-module route with "Cannot GET /config/authentication".
+      if (!isAxiosNotFoundError(error)) throw error;
+      const res = await client.get('/config');
+      const config = authenticationConfigFromMonoResponse(res.data);
+      if (!config) throw error;
+      return { config };
+    }
   };
 
 export const patchAuthenticationSettings = async (
   data: Partial<AuthenticationConfig>
 ) => {
-  await (
-    await getApiClient()
-  ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
-    config: { ...data },
-  });
+  try {
+    await (
+      await getApiClient()
+    ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
+      config: { ...data },
+    });
+  } catch (error) {
+    explainMissingConfigRoute(error);
+  }
 };
 
 /**
@@ -201,11 +221,15 @@ export const updateAuthenticationSettings = async (
   data: Partial<AuthenticationConfig>
 ): Promise<ActionResult<void>> =>
   runAction(async () => {
-    await (
-      await getApiClient()
-    ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
-      config: { ...data },
-    });
+    try {
+      await (
+        await getApiClient()
+      ).patch<AuthenticationConfigResponse>(`/config/authentication`, {
+        config: { ...data },
+      });
+    } catch (error) {
+      explainMissingConfigRoute(error);
+    }
   });
 
 /** Read–modify–write: merges `partial` into current config before PATCH (safe for strategy-only updates). */
