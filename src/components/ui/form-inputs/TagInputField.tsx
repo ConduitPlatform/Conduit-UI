@@ -22,13 +22,15 @@ export interface UrlTagInputProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'name' | 'defaultValue'
-  > {
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'name' | 'defaultValue'
+> {
   name: TName;
   label?: string;
   description?: string;
   placeholder?: string;
+  /** Space commits a tag. Turn off when values can contain spaces. */
+  commitOnSpace?: boolean;
 }
 
 export function UrlTagInput<
@@ -39,6 +41,7 @@ export function UrlTagInput<
   label,
   description,
   placeholder = 'Add URL and press Enter or Space...',
+  commitOnSpace = true,
   className,
   disabled,
   ...props
@@ -61,6 +64,7 @@ export function UrlTagInput<
             {...field}
             disabled={disabled}
             placeholder={placeholder}
+            commitOnSpace={commitOnSpace}
             {...props}
           />
         )}
@@ -71,13 +75,13 @@ export function UrlTagInput<
   );
 }
 
-interface UrlTagInputFieldProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'onChange'
-  > {
+interface UrlTagInputFieldProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'onChange'
+> {
   value: string[];
   onChange: (value: string[]) => void;
+  commitOnSpace?: boolean;
 }
 
 function UrlTagInputField({
@@ -85,6 +89,7 @@ function UrlTagInputField({
   onChange,
   placeholder,
   disabled,
+  commitOnSpace = true,
   ...props
 }: Readonly<UrlTagInputFieldProps>) {
   const [inputValue, setInputValue] = React.useState('');
@@ -96,8 +101,8 @@ function UrlTagInputField({
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Add tag on Enter or Space
-    if ((e.key === 'Enter' || e.key === ' ') && inputValue.trim()) {
+    const commit = e.key === 'Enter' || (commitOnSpace && e.key === ' ');
+    if (commit && inputValue.trim()) {
       e.preventDefault();
       addTag(inputValue.trim());
       setInputValue('');
