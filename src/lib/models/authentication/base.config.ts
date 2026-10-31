@@ -1,3 +1,5 @@
+export const DEFAULT_TWO_FA_ISSUER = 'conduit';
+
 export type EmailRestrictions = {
   enabled: boolean;
   blockDisposableEmails: boolean;
@@ -16,6 +18,9 @@ export type BaseAuthenticationSettings = {
       sms: boolean;
       authenticator: boolean;
     };
+    // Absent on backends that predate these settings. The form fills the defaults.
+    issuer?: string;
+    allowedIssuers?: string[];
     backUpCodes: {
       enabled: boolean;
     };

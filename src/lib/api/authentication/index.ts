@@ -1,5 +1,5 @@
 'use server';
-import merge from 'lodash/merge';
+import mergeWith from 'lodash/mergeWith';
 import { getApiClient } from '@/lib/api';
 import { type ActionResult, runAction } from '@/lib/api/action-result';
 import { TeamUser, User } from '@/lib/models/User';
@@ -208,12 +208,33 @@ export const updateAuthenticationSettings = async (
     });
   });
 
+function definedConfig<T>(value: T): T {
+  if (Array.isArray(value))
+    return value.map(entry => definedConfig(entry)) as T;
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).flatMap(
+        ([key, entry]) =>
+          entry === undefined ? [] : [[key, definedConfig(entry)]]
+      )
+    ) as T;
+  }
+  return value;
+}
+
 /** Read–modify–write: merges `partial` into current config before PATCH (safe for strategy-only updates). */
 export const patchAuthenticationSettingsMerged = async (
   partial: Partial<AuthenticationConfig>
 ) => {
   const { config } = await getAuthenticationSettings();
-  const merged = merge({}, config, partial) as AuthenticationConfig;
+  // Replace lists and drop undefined. Index-merging an allowlist keeps removed names.
+  const merged = mergeWith(
+    {},
+    config,
+    definedConfig(partial),
+    (_current: unknown, incoming: unknown) =>
+      Array.isArray(incoming) ? incoming.slice() : undefined
+  ) as AuthenticationConfig;
   await patchAuthenticationSettings(merged);
 };
 
