@@ -205,7 +205,7 @@ function baseAuthenticationConfig(): Record<string, unknown> {
     twoFa: {
       enabled: true,
       methods: { sms: true, authenticator: true },
-      issuer: 'conduit',
+      issuer: 'Conduit',
       allowedIssuers: [],
       backUpCodes: { enabled: false },
     },

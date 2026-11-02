@@ -1,4 +1,4 @@
-export const DEFAULT_TWO_FA_ISSUER = 'conduit';
+export const DEFAULT_TWO_FA_ISSUER = 'Conduit';
 
 export type EmailRestrictions = {
   enabled: boolean;
