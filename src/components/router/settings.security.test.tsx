@@ -105,6 +105,38 @@ describe('router security settings', () => {
     expect(JSON.stringify(body)).not.toContain(REDACTED_CONFIG_VALUE);
   });
 
+  it('omits an empty encryption key from the submitted config', async () => {
+    render(
+      <Settings
+        data={routerSettings({
+          clientSecretEncryptionKey: REDACTED_CONFIG_VALUE,
+          clientSignaturePathPrefix: '/api',
+        })}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.change(screen.getByLabelText(/Client secret encryption key/i), {
+      target: { value: '' },
+    });
+    expect(screen.getByLabelText(/Client secret encryption key/i)).toHaveValue(
+      ''
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(api.patchRouterSettings).toHaveBeenCalledTimes(1);
+    });
+    const body = api.patchRouterSettings.mock.calls[0][0];
+    expect(body.security).toEqual({
+      clientValidation: true,
+      clientSignaturePathPrefix: '/api',
+    });
+    expect(body.security).not.toHaveProperty('clientSecretEncryptionKey');
+    expect(JSON.stringify(body)).not.toContain('clientSecretEncryptionKey');
+    expect(JSON.stringify(body)).not.toContain(REDACTED_CONFIG_VALUE);
+  });
+
   it('sends a generated 32-byte key and then shows the redacted marker', async () => {
     render(
       <Settings

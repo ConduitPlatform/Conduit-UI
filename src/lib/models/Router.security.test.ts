@@ -47,10 +47,9 @@ describe('securitySettingsPatch', () => {
     });
   });
 
-  it('sends an empty string when the field was cleared', () => {
-    expect(
-      securitySettingsPatch(security(''), true).clientSecretEncryptionKey
-    ).toBe('');
+  it('omits an empty key even after the field was edited', () => {
+    const patch = securitySettingsPatch(security(''), true);
+    expect(patch).not.toHaveProperty('clientSecretEncryptionKey');
   });
 });
 

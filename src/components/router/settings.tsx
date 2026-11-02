@@ -500,10 +500,11 @@ export const Settings = ({ data }: Props) => {
                     <FormLabel>Client secret encryption key</FormLabel>
                     <FormDescription>
                       Write-only. A saved key is shown as [REDACTED] and is not
-                      sent again unless you type or generate a new value.
-                      Clearing the field and saving removes the key. Generate
-                      uses 32 random bytes as standard base64. Changing a saved
-                      key makes every stored client secret unreadable.
+                      sent again unless you type or generate a new value. An
+                      empty field is left out of the save, so the stored key
+                      stays. Generate uses 32 random bytes as standard base64.
+                      Changing a saved key makes every stored client secret
+                      unreadable.
                     </FormDescription>
                     <div className="flex gap-2">
                       <FormControl>

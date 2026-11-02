@@ -62,7 +62,7 @@ export type RouterSettingsPatch = Omit<RouterSettings, 'security'> & {
 
 /**
  * Keep the stored encryption key unless the operator typed or generated a replacement.
- * `[REDACTED]` is never submitted. An edited empty string is submitted and clears the key.
+ * An empty field and `[REDACTED]` are omitted so the stored key stays.
  */
 export function securitySettingsPatch(
   security: SecuritySettings,
@@ -79,6 +79,7 @@ export function securitySettingsPatch(
   };
   if (
     encryptionKeyEdited &&
+    clientSecretEncryptionKey !== '' &&
     clientSecretEncryptionKey !== REDACTED_CONFIG_VALUE
   ) {
     patch.clientSecretEncryptionKey = clientSecretEncryptionKey;
