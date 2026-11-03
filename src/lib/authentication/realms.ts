@@ -14,6 +14,7 @@ import {
   type PromoteRealmBody,
   type Realm,
   type RealmOAuthStrategy,
+  type RealmSessionPolicy,
   type RealmSettings,
   type RealmSettingsPayload,
   type RealmStrategies,
@@ -117,6 +118,27 @@ export const realmPoliciesSchema = z.object({
   }),
 });
 
+/**
+ * Realm refresh-token overrides. `null` = inherit the global value. A realm can only
+ * tighten the global settings; the backend enforces that, the UI only says so.
+ */
+const sessionMs = z
+  .number({ error: 'Enter a number of milliseconds' })
+  .int('Enter a whole number of milliseconds')
+  .positive('Must be greater than 0');
+
+export const realmSessionSchema = z.object({
+  refreshTokens: z.object({
+    expiryPeriod: sessionMs.nullable(),
+    extendable: z.boolean().nullable(),
+    maxLifetime: sessionMs.nullable(),
+  }),
+});
+
+export const DEFAULT_REALM_SESSION: z.output<typeof realmSessionSchema> = {
+  refreshTokens: { expiryPeriod: null, extendable: null, maxLifetime: null },
+};
+
 export const realmLinkingSchema = z.object({
   inbound: z.boolean().default(DEFAULT_REALM_LINKING.inbound),
   outbound: z.boolean().default(DEFAULT_REALM_LINKING.outbound),
@@ -176,6 +198,9 @@ export const realmSettingsSchema = z.object({
 export const realmPoliciesFormSchema = realmPoliciesSchema.extend({
   registration: realmRegistrationSchema.default(DEFAULT_REALM_REGISTRATION),
   linking: realmLinkingSchema.optional(),
+  // Absent on backends that predate configurable refresh tokens: the section is not
+  // rendered and `policies.session` is never sent.
+  session: realmSessionSchema.optional(),
 });
 
 export type RealmPoliciesFormValues = z.output<typeof realmPoliciesFormSchema>;
@@ -297,6 +322,22 @@ function normalizeStrategies(
   return out as RealmStrategiesPatch;
 }
 
+/** Keeps `null` (inherit) as is: it is a value the backend must receive. */
+function normalizeSession(session: unknown): RealmSessionPolicy | undefined {
+  if (!isRecord(session) || !isRecord(session.refreshTokens)) return undefined;
+  const source = session.refreshTokens;
+  const numberOrNull = (value: unknown) =>
+    typeof value === 'number' && Number.isFinite(value) ? value : null;
+  return {
+    refreshTokens: {
+      expiryPeriod: numberOrNull(source.expiryPeriod),
+      extendable:
+        typeof source.extendable === 'boolean' ? source.extendable : null,
+      maxLifetime: numberOrNull(source.maxLifetime),
+    },
+  };
+}
+
 function normalizePolicies(
   policies: unknown
 ): DeepPartial<RealmPolicies> | undefined {
@@ -322,6 +363,8 @@ function normalizePolicies(
     }
     out.guests = guests;
   }
+  const session = normalizeSession(policies.session);
+  if (session) out.session = session;
   return out as DeepPartial<RealmPolicies>;
 }
 
@@ -410,6 +453,15 @@ export function toRealmPoliciesFormValues(
       allowedHomeRealms: policies.guests.allowedHomeRealms,
       directSignIn: policies.guests.directSignIn,
     },
+    session: policies.session
+      ? {
+          refreshTokens: {
+            expiryPeriod: policies.session.refreshTokens?.expiryPeriod ?? null,
+            extendable: policies.session.refreshTokens?.extendable ?? null,
+            maxLifetime: policies.session.refreshTokens?.maxLifetime ?? null,
+          },
+        }
+      : undefined,
     registration: {
       allowWithoutInvite: registration?.allowWithoutInvite === true,
     },

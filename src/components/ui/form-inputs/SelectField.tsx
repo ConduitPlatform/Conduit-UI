@@ -14,6 +14,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import * as React from 'react';
 import { ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { Option } from '@/lib/models/logs-viewer';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,9 @@ interface SelectFieldProps extends SelectProps {
   placeholder?: string;
   options: any[] | Option[];
   className?: string;
+  /** Id of the trigger of the non-form variant, so the label can point at it. */
+  triggerId?: string;
+  triggerProps?: React.ComponentProps<typeof SelectTrigger>;
   classNames?: {
     selectItem?: string;
     selectValue?: string;
@@ -42,6 +46,8 @@ const SelectField = ({
   label,
   description,
   className,
+  triggerId,
+  triggerProps,
   placeholder = 'Select one option',
   options,
   classNames: {
@@ -57,9 +63,15 @@ const SelectField = ({
 }: SelectFieldProps) => {
   const SelectInput = () => (
     <div className={className}>
-      <Label className={labelClassName}>{label}</Label>
+      <Label htmlFor={triggerId} className={labelClassName}>
+        {label}
+      </Label>
       <Select {...restProps}>
-        <SelectTrigger className={selectTriggerClassName}>
+        <SelectTrigger
+          id={triggerId}
+          className={selectTriggerClassName}
+          {...triggerProps}
+        >
           <SelectValue
             placeholder={placeholder}
             className={selectValueClassName}

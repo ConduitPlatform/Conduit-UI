@@ -82,6 +82,25 @@ export type RealmPolicies = {
      */
     directSignIn?: boolean;
   };
+  /**
+   * Session overrides. Absent on backends that predate configurable refresh tokens.
+   * `null` means inherit the global value; a realm can only tighten it (shorter expiry,
+   * lower cap, extension disabled), which the backend enforces.
+   */
+  session?: RealmSessionPolicy;
+};
+
+export type RealmRefreshTokenPolicy = {
+  /** ms; `null` inherits `refreshTokens.expiryPeriod`. */
+  expiryPeriod: number | null;
+  /** `null` inherits `refreshTokens.extendable`; `false` disables extension. */
+  extendable: boolean | null;
+  /** ms; `null` inherits `refreshTokens.maxLifetime`. */
+  maxLifetime: number | null;
+};
+
+export type RealmSessionPolicy = {
+  refreshTokens: RealmRefreshTokenPolicy;
 };
 
 /**

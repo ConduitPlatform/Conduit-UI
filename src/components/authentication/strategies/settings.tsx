@@ -5,12 +5,31 @@ import { z } from 'zod';
 import { rhfZodResolver } from '@/lib/zod-form';
 import { Form } from '@/components/ui/form';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { formatDuration } from '@/lib/authentication/formatDuration';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { AuthenticationConfig } from '@/lib/models/authentication';
 import { EmailRestrictions } from '@/lib/models/authentication/base.config';
-import { updateAuthenticationSettings } from '@/lib/api/authentication';
+import {
+  rotateSigningKey,
+  updateAuthenticationSettings,
+} from '@/lib/api/authentication';
+import { toast } from '@/lib/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { unwrapActionResult } from '@/lib/api/action-result';
 import { InputField } from '@/components/ui/form-inputs/InputField';
 import SwitchField from '@/components/ui/form-inputs/SwitchField';
@@ -31,16 +50,53 @@ const tokensSchema = z.object({
   path: z.string().default(''),
   sameSite: z.string().default('Lax'),
 });
+// `tokenVersion` and `signing` are deliberately not part of the schema: they are
+// backend-managed, so they are stripped from the save (the signing key rotates through
+// its own action, and the private key is never read back).
 const accessTokenSchema = z.object({
-  jwtSecret: z.string().default('S3CR3T'),
+  // Optional, no default: an older backend that does not report these never receives them.
+  mode: z.enum(['session', 'jwt']).optional(),
+  jwtSecret: z.string().default(''),
   expiryPeriod: z.number().default(3600000),
+  strictRevocation: z.boolean().optional(),
   setCookie: z.boolean().default(false),
   cookieOptions: tokensSchema,
 });
 
+const MINUTE_MS = 60_000;
+const SESSION_DEFAULT_EXPIRY_MS = 3_600_000;
+const JWT_DEFAULT_EXPIRY_MS = 5 * MINUTE_MS;
+const JWT_EXPIRY_MINUTES = [1, 2, 3, 4, 5] as const;
+const JWT_EXPIRY_OPTIONS = JWT_EXPIRY_MINUTES.map(minutes => ({
+  label: `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`,
+  value: String(minutes),
+}));
+const MODE_OPTIONS = [
+  { label: 'Stateful sessions', value: 'session' },
+  { label: 'Stateless JWT', value: 'jwt' },
+];
+const MODE_DESCRIPTIONS: Record<'session' | 'jwt', string> = {
+  session: 'Access tokens are stored server-side and revoked instantly.',
+  jwt: 'Short-lived signed tokens verified by each module. Logout revokes the refresh token; access tokens remain valid until they expire unless strict revocation is on.',
+};
+const JWT_EXPIRY_MESSAGE =
+  'In JWT mode the expiry must be between 1 and 5 minutes (60000 to 300000 ms).';
+const DEFAULT_REFRESH_MAX_LIFETIME_MS = 86400000 * 30;
+
+const isJwtExpiryInRange = (ms: unknown) =>
+  typeof ms === 'number' && ms >= MINUTE_MS && ms <= 5 * MINUTE_MS;
+
+const isJwtExpiry = (ms: unknown) =>
+  typeof ms === 'number' &&
+  ms >= MINUTE_MS &&
+  ms <= 5 * MINUTE_MS &&
+  ms % MINUTE_MS === 0;
+
 const refreshTokenSchema = z.object({
   enabled: z.boolean().default(true),
   expiryPeriod: z.number().default(86400000 * 7),
+  extendable: z.boolean().optional(),
+  maxLifetime: z.number().optional(),
   setCookie: z.boolean().default(false),
   cookieOptions: tokensSchema,
 });
@@ -111,34 +167,47 @@ const defaultEmailRestrictions: EmailRestrictions = {
   allowedDomains: [],
 };
 
-const FormSchema = z.object({
-  captcha: z.object({
-    enabled: z.boolean().default(false),
-    routes: z.object({
-      login: z.boolean().default(false),
-      register: z.boolean().default(false),
-      oAuth2: z.boolean().default(false),
+const FormSchema = z
+  .object({
+    captcha: z.object({
+      enabled: z.boolean().default(false),
+      routes: z.object({
+        login: z.boolean().default(false),
+        register: z.boolean().default(false),
+        oAuth2: z.boolean().default(false),
+      }),
+      acceptablePlatform: z.object({
+        android: z.boolean().default(false),
+        web: z.boolean().default(true),
+      }),
     }),
-    acceptablePlatform: z.object({
-      android: z.boolean().default(false),
-      web: z.boolean().default(true),
+    redirectUris: z.object({
+      allowAny: z.boolean().default(false),
+      whitelistedUris: z.array(
+        z.string().url({ message: 'Please enter a valid URL' })
+      ),
     }),
-  }),
-  redirectUris: z.object({
-    allowAny: z.boolean().default(false),
-    whitelistedUris: z.array(
-      z.string().url({ message: 'Please enter a valid URL' })
-    ),
-  }),
-  anonymousUsers: z.object({
-    enabled: z.boolean().default(false),
-  }),
-  emailRestrictions: emailRestrictionsSchema,
-  teams: teamsSchema,
-  clients: clientsSchema,
-  accessTokens: accessTokenSchema,
-  refreshTokens: refreshTokenSchema,
-});
+    anonymousUsers: z.object({
+      enabled: z.boolean().default(false),
+    }),
+    emailRestrictions: emailRestrictionsSchema,
+    teams: teamsSchema,
+    clients: clientsSchema,
+    accessTokens: accessTokenSchema,
+    refreshTokens: refreshTokenSchema,
+  })
+  .superRefine((value, ctx) => {
+    if (
+      value.accessTokens.mode === 'jwt' &&
+      !isJwtExpiryInRange(value.accessTokens.expiryPeriod)
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['accessTokens', 'expiryPeriod'],
+        message: JWT_EXPIRY_MESSAGE,
+      });
+    }
+  });
 
 interface Props {
   data: AuthenticationConfig;
@@ -146,6 +215,28 @@ interface Props {
 
 export const AuthenticationSettings = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
+  const [signingKid, setSigningKid] = useState<string>(
+    data.accessTokens?.signing?.kid ?? ''
+  );
+  const [rotating, setRotating] = useState(false);
+  const router = useRouter();
+  // Backends that predate the mode report none: they have no mode controls at all.
+  const supportsMode = data.accessTokens?.mode !== undefined;
+  const supportsStrictRevocation =
+    data.accessTokens?.strictRevocation !== undefined;
+  const supportsExtendable = data.refreshTokens?.extendable !== undefined;
+  const supportsMaxLifetime = data.refreshTokens?.maxLifetime !== undefined;
+  const [savedMode, setSavedMode] = useState<'session' | 'jwt'>(
+    data.accessTokens?.mode ?? 'session'
+  );
+  // Expiry remembered per mode, so switching away and back restores it.
+  const expiryByMode = useRef<{ session?: number; jwt?: number }>({
+    [savedMode]: data.accessTokens?.expiryPeriod,
+  });
+  const incomingKid = data.accessTokens?.signing?.kid ?? '';
+  useEffect(() => {
+    setSigningKid(incomingKid);
+  }, [incomingKid]);
   const { save, isSaving } = useSettingsSave('Authentication');
   type formSchema = z.infer<typeof FormSchema>;
   const form = useForm<formSchema>({
@@ -168,6 +259,64 @@ export const AuthenticationSettings = ({ data }: Props) => {
   const supportsDiscoveryLogin =
     data.teams?.realms?.discoveryLogin !== undefined;
 
+  const mode = watch('accessTokens.mode') ?? 'session';
+  const isJwt = mode === 'jwt';
+  const expiryMs = watch('accessTokens.expiryPeriod');
+  const maxLifetimeText = formatDuration(watch('refreshTokens.maxLifetime'));
+  const jwtExpiryKnown = isJwtExpiry(expiryMs);
+  const expiryError = form.formState.errors.accessTokens?.expiryPeriod?.message;
+
+  const changeMode = (next: string) => {
+    const nextMode = next === 'jwt' ? 'jwt' : 'session';
+    const outgoing = form.getValues('accessTokens.mode') ?? 'session';
+    if (nextMode === outgoing) return;
+    expiryByMode.current[outgoing] = form.getValues(
+      'accessTokens.expiryPeriod'
+    );
+    form.setValue('accessTokens.mode', nextMode, { shouldDirty: true });
+    const remembered = expiryByMode.current[nextMode];
+    // jwt mode only accepts 1-5 minutes, so a missing or invalid memory falls back.
+    const nextExpiry =
+      nextMode === 'jwt'
+        ? isJwtExpiry(remembered)
+          ? (remembered as number)
+          : JWT_DEFAULT_EXPIRY_MS
+        : typeof remembered === 'number' && !isJwtExpiryInRange(remembered)
+          ? remembered
+          : SESSION_DEFAULT_EXPIRY_MS;
+    form.setValue('accessTokens.expiryPeriod', nextExpiry, {
+      shouldDirty: true,
+    });
+  };
+
+  const onRotate = async () => {
+    setRotating(true);
+    try {
+      const result = await rotateSigningKey();
+      if (result.ok) {
+        setSigningKid(result.data.kid);
+        toast({
+          title: 'Signing key rotated',
+          description: `New key id: ${result.data.kid}`,
+        });
+      } else {
+        toast({
+          title: 'Failed to rotate signing key',
+          description: result.message,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Failed to rotate signing key',
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    } finally {
+      setRotating(false);
+    }
+  };
+
   const onSubmit = async (formData: formSchema) => {
     const result = await save({
       // The backend's refusal (e.g. an identity mode that cannot go back to shared) is
@@ -176,7 +325,16 @@ export const AuthenticationSettings = ({ data }: Props) => {
         unwrapActionResult(await updateAuthenticationSettings(formData)),
     });
     if (result.ok) {
+      // The saved values become the baseline, so Cancel and the mode warning follow them.
+      reset(formData);
+      setSavedMode(formData.accessTokens.mode ?? 'session');
+      expiryByMode.current = {
+        [formData.accessTokens.mode ?? 'session']:
+          formData.accessTokens.expiryPeriod,
+      };
       setEdit(false);
+      // Re-read the config: a first jwt save generates the signing key.
+      router.refresh();
     }
   };
 
@@ -202,6 +360,62 @@ export const AuthenticationSettings = ({ data }: Props) => {
               </p>
             </div>
 
+            {supportsMode && (
+              <Collapsible
+                key={`session-mode`}
+                className="border rounded-md overflow-hidden mb-4"
+              >
+                <div className="flex items-center justify-between p-3 bg-muted/30">
+                  <div className="flex items-center space-x-2 grow">
+                    <CollapsibleTrigger className="flex items-center space-x-2 grow text-left">
+                      <ChevronDown className="h-4 w-4 shrink-0 transition-transform ui-open:rotate-180" />
+                      <span className="font-medium truncate text-xl">
+                        Session mode
+                      </span>
+                    </CollapsibleTrigger>
+                  </div>
+                </div>
+
+                <CollapsibleContent className={'p-4'}>
+                  <div className={'flex flex-col space-y-4'}>
+                    <SelectField
+                      label={'Mode'}
+                      fieldName={'accessTokens.mode'}
+                      options={MODE_OPTIONS}
+                      onValueChange={changeMode}
+                      disabled={!edit}
+                    />
+                    <p className={'text-xs text-muted-foreground'}>
+                      {MODE_DESCRIPTIONS[isJwt ? 'jwt' : 'session']}
+                    </p>
+                    {mode !== savedMode && (
+                      <p
+                        role="alert"
+                        className={
+                          'text-sm rounded-md border border-destructive/50 bg-destructive/10 p-3 text-destructive'
+                        }
+                      >
+                        Saving will log every user out.
+                      </p>
+                    )}
+                    {isJwt && supportsStrictRevocation && (
+                      <div className={'flex flex-col gap-2'}>
+                        <SwitchField
+                          label={'Strict revocation'}
+                          fieldName={'accessTokens.strictRevocation'}
+                          disabled={!edit}
+                        />
+                        <p className={'text-xs text-muted-foreground'}>
+                          Check the session registry on every request so logout
+                          and blocks take effect immediately, at the cost of one
+                          Redis read per request.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
             <Collapsible
               key={`access-tokens`}
               className="border rounded-md overflow-hidden mb-4"
@@ -219,27 +433,130 @@ export const AuthenticationSettings = ({ data }: Props) => {
 
               <CollapsibleContent className={'p-4'}>
                 <div className={'flex flex-col space-y-4 '}>
-                  <div className={'flex flex-row space-x-4'}>
-                    <InputField
-                      label={'JWT Secret'}
-                      fieldName={'accessTokens.jwtSecret'}
-                      defaultValue={'S3CR3T'}
-                      disabled={!edit}
-                    />
-                    <InputField
-                      type={'number'}
-                      label={'Expiry Period (ms)'}
-                      fieldName={'accessTokens.expiryPeriod'}
-                      defaultValue={3600000}
-                      onChange={e => {
-                        form.setValue(
-                          'accessTokens.expiryPeriod',
-                          parseInt(e.target.value)
-                        );
-                      }}
-                      disabled={!edit}
-                    />
-                  </div>
+                  {isJwt ? (
+                    <div className={'flex flex-row space-x-4 items-end'}>
+                      <div className={'flex w-full flex-col gap-1.5'}>
+                        <SelectField
+                          label={'Expiry Period'}
+                          triggerId={'jwt-expiry-period'}
+                          triggerProps={{
+                            'aria-invalid': Boolean(expiryError),
+                            'aria-describedby': expiryError
+                              ? 'jwt-expiry-error'
+                              : undefined,
+                          }}
+                          options={
+                            jwtExpiryKnown || typeof expiryMs !== 'number'
+                              ? JWT_EXPIRY_OPTIONS
+                              : [
+                                  ...JWT_EXPIRY_OPTIONS,
+                                  {
+                                    label: `Custom (${expiryMs / 1000} s)`,
+                                    value: 'custom',
+                                  },
+                                ]
+                          }
+                          value={
+                            jwtExpiryKnown
+                              ? String((expiryMs as number) / MINUTE_MS)
+                              : typeof expiryMs === 'number'
+                                ? 'custom'
+                                : undefined
+                          }
+                          onValueChange={value => {
+                            if (value === 'custom') return;
+                            form.setValue(
+                              'accessTokens.expiryPeriod',
+                              Number(value) * MINUTE_MS,
+                              { shouldDirty: true, shouldValidate: true }
+                            );
+                          }}
+                          disabled={!edit}
+                        />
+                        {expiryError && (
+                          <p
+                            id="jwt-expiry-error"
+                            role="alert"
+                            className={'text-xs text-destructive'}
+                          >
+                            {expiryError}
+                          </p>
+                        )}
+                      </div>
+                      <div className={'flex w-full flex-col gap-1.5'}>
+                        <Label id="signing-kid-label">Signing key id</Label>
+                        <div className={'flex flex-row items-center gap-2'}>
+                          <code
+                            role="textbox"
+                            aria-readonly="true"
+                            aria-labelledby="signing-kid-label"
+                            data-testid="signing-kid"
+                            className={
+                              'grow rounded-md border bg-muted/30 px-3 py-2 text-sm truncate'
+                            }
+                          >
+                            {signingKid || '-'}
+                          </code>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                disabled={rotating || savedMode !== 'jwt'}
+                              >
+                                Rotate signing key
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Rotate signing key?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  New tokens are signed with a new key. Tokens
+                                  signed with the current key keep verifying
+                                  until they expire.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={onRotate}>
+                                  Rotate
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                        {savedMode !== 'jwt' && (
+                          <p className={'text-xs text-muted-foreground'}>
+                            A signing key is generated when you save JWT mode.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={'flex flex-row space-x-4'}>
+                      <InputField
+                        label={'JWT Secret'}
+                        fieldName={'accessTokens.jwtSecret'}
+                        defaultValue={''}
+                        disabled={!edit}
+                      />
+                      <InputField
+                        type={'number'}
+                        label={'Expiry Period (ms)'}
+                        fieldName={'accessTokens.expiryPeriod'}
+                        defaultValue={3600000}
+                        onChange={e => {
+                          form.setValue(
+                            'accessTokens.expiryPeriod',
+                            parseInt(e.target.value)
+                          );
+                        }}
+                        disabled={!edit}
+                      />
+                    </div>
+                  )}
                   <SwitchField
                     label={'Use Cookies'}
                     fieldName={'accessTokens.setCookie'}
@@ -320,6 +637,36 @@ export const AuthenticationSettings = ({ data }: Props) => {
                         disabled={!edit}
                       />
                     </div>
+                    {supportsExtendable && (
+                      <SwitchField
+                        label={'Allow extension'}
+                        fieldName={'refreshTokens.extendable'}
+                        disabled={!edit}
+                      />
+                    )}
+                    {supportsMaxLifetime && (
+                      <div className={'flex flex-col gap-1'}>
+                        <InputField
+                          type={'number'}
+                          label={'Max lifetime (ms)'}
+                          fieldName={'refreshTokens.maxLifetime'}
+                          onChange={e => {
+                            form.setValue(
+                              'refreshTokens.maxLifetime',
+                              // A cleared field yields NaN: fall back to the default.
+                              Number.isFinite(e.target.valueAsNumber)
+                                ? Math.trunc(e.target.valueAsNumber)
+                                : DEFAULT_REFRESH_MAX_LIFETIME_MS,
+                              { shouldDirty: true }
+                            );
+                          }}
+                          disabled={!edit}
+                        />
+                        <p className={'text-xs text-muted-foreground pl-1'}>
+                          {maxLifetimeText && `= ${maxLifetimeText}`}
+                        </p>
+                      </div>
+                    )}
                     <SwitchField
                       label={'Use Cookies'}
                       fieldName={'refreshTokens.setCookie'}

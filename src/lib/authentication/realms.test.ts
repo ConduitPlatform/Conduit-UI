@@ -820,3 +820,86 @@ describe('formatRealmStrategyCount', () => {
     expect(formatRealmStrategyCount(100, true)).toBe('100+ realms');
   });
 });
+
+describe('realm session overrides', () => {
+  const basePolicies = {
+    requireTwoFa: false,
+    requireVerifiedEmail: false,
+    allowedClientIds: [],
+    guests: { allowed: true, allowedHomeRealms: [] },
+  };
+
+  it('leaves session unset for a backend that omits policies.session', () => {
+    const values = toRealmPoliciesFormValues({ policies: basePolicies });
+    expect(values.session).toBeUndefined();
+    const body = buildRealmPoliciesPatch(values);
+    expect(body.policies).not.toHaveProperty('session');
+  });
+
+  it('round trips nulls (inherit) through the form values and the patch', () => {
+    const session = {
+      refreshTokens: {
+        expiryPeriod: null,
+        extendable: null,
+        maxLifetime: null,
+      },
+    };
+    const values = toRealmPoliciesFormValues({
+      policies: { ...basePolicies, session },
+    });
+    expect(values.session).toEqual(session);
+    expect(realmPoliciesFormSchema.parse(values).session).toEqual(session);
+    expect(buildRealmPoliciesPatch(values).policies?.session).toEqual(session);
+  });
+
+  it('round trips concrete overrides and mixed inherit', () => {
+    const session = {
+      refreshTokens: {
+        expiryPeriod: 3600000,
+        extendable: false,
+        maxLifetime: null,
+      },
+    };
+    const values = toRealmPoliciesFormValues({
+      policies: { ...basePolicies, session },
+    });
+    expect(buildRealmPoliciesPatch(values).policies?.session).toEqual(session);
+  });
+
+  it('does not enforce tightening client-side', () => {
+    // Any positive value passes: the backend rejects loosening, the UI only explains it.
+    const parsed = realmPoliciesFormSchema.parse({
+      ...basePolicies,
+      session: {
+        refreshTokens: {
+          expiryPeriod: 999999999999,
+          extendable: true,
+          maxLifetime: 999999999999,
+        },
+      },
+    });
+    expect(buildRealmPoliciesPatch(parsed).policies?.session).toEqual({
+      refreshTokens: {
+        expiryPeriod: 999999999999,
+        extendable: true,
+        maxLifetime: 999999999999,
+      },
+    });
+  });
+
+  it('rejects a non-positive override number', () => {
+    const result = realmPoliciesFormSchema.safeParse({
+      ...basePolicies,
+      session: {
+        refreshTokens: { expiryPeriod: 0, extendable: null, maxLifetime: null },
+      },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('keeps the session block out of the promote settings', () => {
+    expect(realmSettingsSchema.parse({}).policies).not.toHaveProperty(
+      'session'
+    );
+  });
+});

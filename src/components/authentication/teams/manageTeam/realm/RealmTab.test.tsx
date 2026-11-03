@@ -707,3 +707,186 @@ describe('DemoteRealmDialog', () => {
     expect(forceButton).toBeDisabled();
   });
 });
+
+describe('RealmPoliciesCard session overrides', () => {
+  const sessionRealm = (
+    refreshTokens: NonNullable<
+      Realm['settings']['policies']['session']
+    >['refreshTokens']
+  ): Realm => ({
+    ...realm,
+    settings: {
+      ...realm.settings,
+      policies: { ...realm.settings.policies, session: { refreshTokens } },
+    },
+  });
+  const inheriting = sessionRealm({
+    expiryPeriod: null,
+    extendable: null,
+    maxLifetime: null,
+  });
+
+  it('does not render the Session section for a backend without policies.session', () => {
+    render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
+    expect(screen.queryByText('Session')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Inherit Refresh token expiry (ms)')
+    ).not.toBeInTheDocument();
+  });
+
+  it('sends no session key in the PATCH for a backend without policies.session', async () => {
+    render(<RealmTab team={realmTeam} realm={realm} memberCount={12} />);
+    fireEvent.click(screen.getByLabelText('Require 2FA'));
+    const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    const [, body] = api.updateRealm.mock.calls[0] as [
+      string,
+      { policies: Record<string, unknown> },
+    ];
+    expect(body.policies).not.toHaveProperty('session');
+  });
+
+  it('lets the user clear the input and type a new number without flipping to inherit', async () => {
+    render(
+      <RealmTab
+        team={realmTeam}
+        realm={sessionRealm({
+          expiryPeriod: 600000,
+          extendable: null,
+          maxLifetime: null,
+        })}
+        memberCount={12}
+      />
+    );
+    const input = screen.getByLabelText('Refresh token expiry (ms)');
+    expect(screen.getByText('= 10 minutes')).toBeInTheDocument();
+    fireEvent.change(input, { target: { value: '' } });
+    expect(input).toBeEnabled();
+    expect(
+      screen.getByLabelText('Inherit Refresh token expiry (ms)')
+    ).not.toBeChecked();
+    fireEvent.change(input, { target: { value: '1200000' } });
+    expect(input).toHaveValue(1200000);
+    expect(screen.getByText('= 20 minutes')).toBeInTheDocument();
+
+    const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(api.updateRealm).toHaveBeenCalledWith(
+      't1',
+      expect.objectContaining({
+        policies: expect.objectContaining({
+          session: {
+            refreshTokens: {
+              expiryPeriod: 1200000,
+              extendable: null,
+              maxLifetime: null,
+            },
+          },
+        }),
+      })
+    );
+  });
+
+  it('shows an error under a field with an invalid value and blocks the save', async () => {
+    render(
+      <RealmTab
+        team={realmTeam}
+        realm={sessionRealm({
+          expiryPeriod: 600000,
+          extendable: null,
+          maxLifetime: null,
+        })}
+        memberCount={12}
+      />
+    );
+    const input = screen.getByLabelText('Refresh token expiry (ms)');
+    fireEvent.change(input, { target: { value: '0' } });
+    const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    const message = await screen.findByText('Must be greater than 0');
+    expect(message).toHaveAttribute('role', 'alert');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input.getAttribute('aria-describedby')).toContain(message.id);
+    expect(api.updateRealm).not.toHaveBeenCalled();
+  });
+
+  it('renders every field as inherited, with the tighten-only helper text', () => {
+    render(<RealmTab team={realmTeam} realm={inheriting} memberCount={12} />);
+    expect(screen.getByText('Session')).toBeInTheDocument();
+    expect(
+      screen.getByText(/can only tighten the global ones/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Inherit Refresh token expiry (ms)')
+    ).toBeChecked();
+    expect(screen.getByLabelText('Inherit Max lifetime (ms)')).toBeChecked();
+    expect(screen.getByLabelText('Refresh token expiry (ms)')).toBeDisabled();
+    expect(
+      screen.getByRole('combobox', { name: 'Extension allowed' })
+    ).toHaveTextContent('Inherit');
+  });
+
+  it('shows stored overrides', () => {
+    render(
+      <RealmTab
+        team={realmTeam}
+        realm={sessionRealm({
+          expiryPeriod: 600000,
+          extendable: false,
+          maxLifetime: 7200000,
+        })}
+        memberCount={12}
+      />
+    );
+    expect(screen.getByLabelText('Refresh token expiry (ms)')).toHaveValue(
+      600000
+    );
+    expect(screen.getByLabelText('Max lifetime (ms)')).toHaveValue(7200000);
+    expect(
+      screen.getByRole('combobox', { name: 'Extension allowed' })
+    ).toHaveTextContent('Disabled');
+  });
+
+  it('saves an override and returning to inherit as null', async () => {
+    api.updateRealm.mockImplementation(async () => ok(inheriting));
+    render(
+      <RealmTab
+        team={realmTeam}
+        realm={sessionRealm({
+          expiryPeriod: 600000,
+          extendable: null,
+          maxLifetime: null,
+        })}
+        memberCount={12}
+      />
+    );
+    fireEvent.click(screen.getByLabelText('Inherit Refresh token expiry (ms)'));
+    fireEvent.click(screen.getByLabelText('Inherit Max lifetime (ms)'));
+    fireEvent.change(screen.getByLabelText('Max lifetime (ms)'), {
+      target: { value: '3600000' },
+    });
+    const [, save] = screen.getAllByRole('button', { name: 'Save changes' });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(api.updateRealm).toHaveBeenCalledTimes(1));
+    expect(api.updateRealm).toHaveBeenCalledWith(
+      't1',
+      expect.objectContaining({
+        policies: expect.objectContaining({
+          session: {
+            refreshTokens: {
+              expiryPeriod: null,
+              extendable: null,
+              maxLifetime: 3600000,
+            },
+          },
+        }),
+      })
+    );
+  });
+});

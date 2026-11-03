@@ -193,6 +193,22 @@ export const patchAuthenticationSettings = async (
 };
 
 /**
+ * Rotates the JWT signing key. Returns an `ActionResult`; the previous key keeps
+ * verifying tokens until it is retired.
+ */
+export const rotateSigningKey = async (): Promise<
+  ActionResult<{ kid: string; previousKid: string }>
+> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<{ kid: string; previousKid: string }>(
+      `/authentication/signing-keys/rotate`
+    );
+    return res.data;
+  });
+
+/**
  * Settings save that reports failures as an `ActionResult`, so the backend's refusal
  * message (e.g. an identity mode that cannot return to shared) reaches the UI. Use
  * `unwrapActionResult` to throw it into `useSettingsSave`.
