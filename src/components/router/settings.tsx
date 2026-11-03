@@ -22,10 +22,19 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { Copy } from 'lucide-react';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
+import { toast } from '@/lib/hooks/use-toast';
 import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
-import { CaptchaProvider, RouterSettings } from '@/lib/models/Router';
+import { Button } from '@/components/ui/button';
+import {
+  CaptchaProvider,
+  generateClientSecretEncryptionKey,
+  REDACTED_CONFIG_VALUE,
+  RouterSettings,
+  securitySettingsPatch,
+} from '@/lib/models/Router';
 import { patchRouterSettings } from '@/lib/api/router';
 
 const FormSchema = z
@@ -56,6 +65,8 @@ const FormSchema = z
     }),
     security: z.object({
       clientValidation: z.boolean(),
+      clientSecretEncryptionKey: z.string(),
+      clientSignaturePathPrefix: z.string(),
     }),
   })
   .refine(
@@ -74,19 +85,40 @@ interface Props {
   data: RouterSettings;
 }
 
+function settingsFormValues(data: RouterSettings): z.infer<typeof FormSchema> {
+  return {
+    ...data,
+    security: {
+      clientValidation: data.security?.clientValidation ?? false,
+      clientSecretEncryptionKey: data.security?.clientSecretEncryptionKey ?? '',
+      clientSignaturePathPrefix: data.security?.clientSignaturePathPrefix ?? '',
+    },
+  };
+}
+
 export const Settings = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
+  const encryptionKeyEdited = useRef(false);
   const { save, isSaving } = useSettingsSave('Router');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
-    defaultValues: data,
+    defaultValues: settingsFormValues(data),
   });
 
-  const { reset, control, handleSubmit, watch } = form;
+  const { reset, control, handleSubmit, watch, setValue } = form;
+  const encryptionKeyValue = watch('security.clientSecretEncryptionKey');
+  const canCopyEncryptionKey =
+    encryptionKeyValue.length > 0 &&
+    encryptionKeyValue !== REDACTED_CONFIG_VALUE;
 
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const security = securitySettingsPatch(
+      formData.security,
+      encryptionKeyEdited.current
+    );
     const dataToSubmit = {
       ...formData,
+      security,
       cors: {
         ...formData.cors,
         maxAge: formData.cors.maxAge as number,
@@ -96,7 +128,43 @@ export const Settings = ({ data }: Props) => {
       action: () => patchRouterSettings(dataToSubmit),
     });
     if (result.ok) {
+      const displayedKey =
+        security.clientSecretEncryptionKey === undefined
+          ? formData.security.clientSecretEncryptionKey
+          : security.clientSecretEncryptionKey === ''
+            ? ''
+            : REDACTED_CONFIG_VALUE;
+      encryptionKeyEdited.current = false;
+      reset({
+        ...formData,
+        security: {
+          ...formData.security,
+          clientSecretEncryptionKey: displayedKey,
+        },
+      });
       setEdit(false);
+    }
+  };
+
+  const generateEncryptionKey = () => {
+    encryptionKeyEdited.current = true;
+    setValue(
+      'security.clientSecretEncryptionKey',
+      generateClientSecretEncryptionKey(),
+      { shouldDirty: true, shouldValidate: true }
+    );
+  };
+
+  const copyEncryptionKey = async () => {
+    if (!canCopyEncryptionKey) return;
+    try {
+      await navigator.clipboard.writeText(encryptionKeyValue);
+      toast({ title: 'Encryption key copied' });
+    } catch {
+      toast({
+        title: 'Failed to copy encryption key',
+        variant: 'destructive',
+      });
     }
   };
   return (
@@ -416,12 +484,92 @@ export const Settings = ({ data }: Props) => {
                 </FormItem>
               )}
             />
-            <div className="mt-2 mb-4">
+            <div className="mt-2 mb-4 flex flex-col gap-4">
               <p className="text-sm text-muted-foreground">
                 When enabled, the router will validate security clients for all
                 requests. This requires security clients to be configured in the
-                Security section.
+                Security section. Non-web clients must sign each request, and
+                existing non-web clients must be recreated. A bcrypt secret will
+                not verify.
               </p>
+              <FormField
+                control={control}
+                name="security.clientSecretEncryptionKey"
+                render={({ field }) => (
+                  <FormItem className="max-w-xl">
+                    <FormLabel>Client secret encryption key</FormLabel>
+                    <FormDescription>
+                      Write-only. A saved key is shown as [REDACTED] and is not
+                      sent again unless you type or generate a new value. An
+                      empty field is left out of the save, so the stored key
+                      stays. Generate uses 32 random bytes as standard base64.
+                      Changing a saved key makes every stored client secret
+                      unreadable.
+                    </FormDescription>
+                    <div className="flex gap-2">
+                      <FormControl>
+                        <Input
+                          disabled={!edit}
+                          title="Client secret encryption key"
+                          autoComplete="off"
+                          spellCheck={false}
+                          placeholder="Not set"
+                          className="font-mono text-accent-foreground"
+                          {...field}
+                          onChange={event => {
+                            encryptionKeyEdited.current = true;
+                            field.onChange(event);
+                          }}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={!edit}
+                        onClick={generateEncryptionKey}
+                      >
+                        Generate
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={!canCopyEncryptionKey}
+                        onClick={() => {
+                          void copyEncryptionKey();
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="security.clientSignaturePathPrefix"
+                render={({ field }) => (
+                  <FormItem className="w-4/12">
+                    <FormLabel>Signature path prefix</FormLabel>
+                    <FormDescription>
+                      Saved with the router settings and prepended to the path
+                      used when signatures are verified. A proxy that strips
+                      /api is fixed by /api.
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        title="Signature path prefix"
+                        placeholder="/api"
+                        className="font-mono text-accent-foreground"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <Separator className={'my-3'} />
             <FormField
@@ -500,6 +648,7 @@ export const Settings = ({ data }: Props) => {
             isSaving={isSaving}
             onEdit={() => setEdit(true)}
             onCancel={() => {
+              encryptionKeyEdited.current = false;
               reset();
               setEdit(false);
             }}

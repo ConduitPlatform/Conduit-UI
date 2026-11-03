@@ -53,6 +53,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {
+  AlertTriangle,
+  Check,
+  Copy,
   Plus,
   Edit,
   Trash2,
@@ -61,10 +64,12 @@ import {
   Smartphone,
   Monitor,
 } from 'lucide-react';
+import { useToast } from '@/lib/hooks/use-toast';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
 import {
   SecurityClientsResponse,
   SecurityClient,
+  CreatedSecurityClient,
   CreateSecurityClientRequest,
   UpdateSecurityClientRequest,
 } from '@/lib/models/Router';
@@ -89,13 +94,135 @@ const UpdateClientSchema = z.object({
   notes: z.string().optional(),
 });
 
+const DOMAIN_FIELD_DESCRIPTION =
+  '*.example.com does not cover example.com. localhost and IP addresses are allowed, including a port and [::1].';
+
+type RevealedClientSecret = {
+  clientId: string;
+  clientSecret: string;
+  platform: string;
+};
+
+function storedClient(
+  client: SecurityClient & { clientSecret?: string }
+): SecurityClient {
+  const stored = { ...client };
+  delete stored.clientSecret;
+  return stored;
+}
+
+function storedClientList(clients: unknown): SecurityClient[] {
+  if (!Array.isArray(clients)) return [];
+  return clients.map(client =>
+    storedClient(client as SecurityClient & { clientSecret?: string })
+  );
+}
+
+function DomainFieldDescription() {
+  return <FormDescription>{DOMAIN_FIELD_DESCRIPTION}</FormDescription>;
+}
+
+function ClientSecretDialog({
+  secret,
+  onClose,
+}: {
+  secret: RevealedClientSecret | null;
+  onClose: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+  const nonWeb = secret != null && secret.platform.toUpperCase() !== 'WEB';
+
+  const copySecret = async () => {
+    if (!secret) return;
+    try {
+      await navigator.clipboard.writeText(secret.clientSecret);
+      setCopied(true);
+      toast({
+        title: 'Copied',
+        description: 'Client secret copied to clipboard',
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to copy client secret',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleClose = () => {
+    setCopied(false);
+    onClose();
+  };
+
+  return (
+    <Dialog open={secret != null} onOpenChange={open => !open && handleClose()}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Security client created</DialogTitle>
+          <DialogDescription>
+            Copy the secret for client{' '}
+            <span className="font-mono">{secret?.clientId}</span> before you
+            close this dialog.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 rounded-lg border border-callout-warning bg-callout-warning-muted p-3">
+            <AlertTriangle className="h-5 w-5 shrink-0 text-callout-warning-foreground" />
+            <p className="text-sm text-callout-warning-foreground">
+              Copy this secret now. You won&apos;t see this again.
+            </p>
+          </div>
+          {nonWeb && (
+            <p className="text-sm text-muted-foreground">
+              This is the HMAC key and it cannot be recovered.
+            </p>
+          )}
+          <div className="flex items-center gap-2">
+            <code className="flex-1 rounded-lg bg-muted p-3 font-mono text-sm break-all">
+              {secret?.clientSecret}
+            </code>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                void copySecret();
+              }}
+              className="shrink-0"
+              aria-label="Copy client secret"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-status-healthy" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="button" onClick={handleClose}>
+            I&apos;ve copied it
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 interface Props {
   data: SecurityClientsResponse;
 }
 
 export const SecurityClients = ({ data }: Props) => {
-  const [clients, setClients] = useState<SecurityClient[]>(data.clients);
+  const [clients, setClients] = useState<SecurityClient[]>(() =>
+    storedClientList(data.clients)
+  );
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [revealedSecret, setRevealedSecret] =
+    useState<RevealedClientSecret | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<SecurityClient | null>(
     null
@@ -165,9 +292,11 @@ export const SecurityClients = ({ data }: Props) => {
   const handleCreateClient = async (formData: CreateSecurityClientRequest) => {
     const result = await save({
       action: async () => {
-        await createSecurityClient(formData);
+        const created: CreatedSecurityClient =
+          await createSecurityClient(formData);
         const updatedData = await getSecurityClients();
-        setClients(updatedData.clients);
+        setClients(storedClientList(updatedData.clients));
+        return created;
       },
       successMessage: 'Security client created',
     });
@@ -175,6 +304,13 @@ export const SecurityClients = ({ data }: Props) => {
     if (result.ok) {
       setIsCreateOpen(false);
       createForm.reset();
+      if (result.result.clientSecret) {
+        setRevealedSecret({
+          clientId: result.result.clientId,
+          clientSecret: result.result.clientSecret,
+          platform: result.result.platform || formData.platform,
+        });
+      }
     }
   };
 
@@ -185,7 +321,7 @@ export const SecurityClients = ({ data }: Props) => {
       action: async () => {
         await updateSecurityClient(editingClient._id, formData);
         const updatedData = await getSecurityClients();
-        setClients(updatedData.clients);
+        setClients(storedClientList(updatedData.clients));
       },
       successMessage: 'Security client updated',
     });
@@ -202,7 +338,7 @@ export const SecurityClients = ({ data }: Props) => {
       action: async () => {
         await deleteSecurityClient(clientId);
         const updatedData = await getSecurityClients();
-        setClients(updatedData.clients);
+        setClients(storedClientList(updatedData.clients));
       },
       successMessage: 'Security client deleted',
     });
@@ -286,9 +422,7 @@ export const SecurityClients = ({ data }: Props) => {
                       <FormControl>
                         <Input placeholder="example.com" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        The domain this client will be used for
-                      </FormDescription>
+                      <DomainFieldDescription />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -446,6 +580,7 @@ export const SecurityClients = ({ data }: Props) => {
                                       {...field}
                                     />
                                   </FormControl>
+                                  <DomainFieldDescription />
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -545,6 +680,10 @@ export const SecurityClients = ({ data }: Props) => {
           ))
         )}
       </div>
+      <ClientSecretDialog
+        secret={revealedSecret}
+        onClose={() => setRevealedSecret(null)}
+      />
     </div>
   );
 };

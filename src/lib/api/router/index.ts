@@ -1,12 +1,16 @@
 'use server';
 import { getApiClient } from '@/lib/api';
 import {
+  CreatedSecurityClient,
+  CreateSecurityClientRequest,
   EventRelay,
   EventRelayPreviewInput,
   EventRelayPreviewRemoteResult,
   EventRelaysResponse,
   EventRelayWriteRequest,
   RouterSettings,
+  RouterSettingsPatch,
+  UpdateSecurityClientRequest,
 } from '@/lib/models/Router';
 import {
   buildEventRelayPreviewRequestBody,
@@ -26,7 +30,7 @@ export const getRouterSettings = async () => {
 };
 
 export const patchRouterSettings = async (
-  data: Partial<RouterSettings>,
+  data: RouterSettingsPatch,
   options?: PatchSettingsOptions
 ) => {
   await (
@@ -52,26 +56,18 @@ export const getSecurityClients = async () => {
   return res.data;
 };
 
-export const createSecurityClient = async (data: {
-  platform: string;
-  domain?: string;
-  alias?: string;
-  notes?: string;
-}) => {
+export const createSecurityClient = async (
+  data: CreateSecurityClientRequest
+) => {
   const res = await (
     await getApiClient()
-  ).post(`/router/security/client`, data);
+  ).post<CreatedSecurityClient>(`/router/security/client`, data);
   return res.data;
 };
 
 export const updateSecurityClient = async (
   id: string,
-  data: {
-    platform?: string;
-    domain?: string;
-    alias?: string;
-    notes?: string;
-  }
+  data: UpdateSecurityClientRequest
 ) => {
   const res = await (
     await getApiClient()
