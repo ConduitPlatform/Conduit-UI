@@ -58,14 +58,14 @@ describe('TwoFaConfigForm', () => {
     });
 
     expect(screen.getByRole('textbox', { name: 'Issuer' })).toHaveValue(
-      'conduit'
+      'Conduit'
     );
     expect(
       screen.getByText('Shown in authenticator apps when a user enables TOTP.')
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Client-supplied issuer names the 2FA enable route may accept. An empty list ignores client names.'
+        'Issuer names a client may request on the 2FA enable route. Any other requested issuer is rejected, so an empty list rejects every client-supplied issuer.'
       )
     ).toBeInTheDocument();
     expect(
@@ -80,7 +80,7 @@ describe('TwoFaConfigForm', () => {
       enabled: true,
       methods: { authenticator: true, sms: false },
       backUpCodes: { enabled: false },
-      issuer: 'conduit',
+      issuer: 'Conduit',
       allowedIssuers: [],
     });
     expect(JSON.parse(JSON.stringify(payload))).toEqual(payload);
@@ -109,7 +109,7 @@ describe('TwoFaConfigForm', () => {
       enabled: true,
       methods: { authenticator: true, sms: false },
       backUpCodes: { enabled: true },
-      issuer: 'conduit',
+      issuer: 'Conduit',
       allowedIssuers: ['Old'],
     });
 

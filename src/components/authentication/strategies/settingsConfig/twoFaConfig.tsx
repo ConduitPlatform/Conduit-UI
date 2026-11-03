@@ -107,13 +107,13 @@ export const TwoFaConfigForm: React.FC<
             <InputField
               fieldName="issuer"
               label="Issuer"
-              placeholder="conduit"
+              placeholder="Conduit"
               description="Shown in authenticator apps when a user enables TOTP."
             />
             <UrlTagInput
               name="allowedIssuers"
               label="Allowed issuers"
-              description="Client-supplied issuer names the 2FA enable route may accept. An empty list ignores client names."
+              description="Issuer names a client may request on the 2FA enable route. Any other requested issuer is rejected, so an empty list rejects every client-supplied issuer."
               placeholder="Type an issuer and press Enter..."
               commitOnSpace={false}
             />
