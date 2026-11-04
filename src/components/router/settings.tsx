@@ -30,6 +30,7 @@ import { SettingsFormActions } from '@/components/settings/SettingsFormActions';
 import { Button } from '@/components/ui/button';
 import {
   CaptchaProvider,
+  DEFAULT_SOCKET_SETTINGS,
   generateClientSecretEncryptionKey,
   REDACTED_CONFIG_VALUE,
   RouterSettings,
@@ -63,6 +64,15 @@ const FormSchema = z
       graphql: z.boolean(),
       sockets: z.boolean(),
     }),
+    sockets: z.object({
+      maxHttpBufferSize: z.number().int().positive(),
+      rateLimit: z.object({
+        enabled: z.boolean(),
+        burst: z.number().int().positive(),
+        eventsPerSecond: z.number().positive(),
+      }),
+      disconnectOnTokenExpiry: z.boolean(),
+    }),
     security: z.object({
       clientValidation: z.boolean(),
       clientSecretEncryptionKey: z.string(),
@@ -88,6 +98,14 @@ interface Props {
 function settingsFormValues(data: RouterSettings): z.infer<typeof FormSchema> {
   return {
     ...data,
+    sockets: {
+      ...DEFAULT_SOCKET_SETTINGS,
+      ...data.sockets,
+      rateLimit: {
+        ...DEFAULT_SOCKET_SETTINGS.rateLimit,
+        ...data.sockets?.rateLimit,
+      },
+    },
     security: {
       clientValidation: data.security?.clientValidation ?? false,
       clientSecretEncryptionKey: data.security?.clientSecretEncryptionKey ?? '',
@@ -100,6 +118,8 @@ export const Settings = ({ data }: Props) => {
   const [edit, setEdit] = useState<boolean>(false);
   const encryptionKeyEdited = useRef(false);
   const { save, isSaving } = useSettingsSave('Router');
+  // Only Router versions that return socket settings accept them back.
+  const socketsSupported = data.sockets !== undefined;
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: rhfZodResolver(FormSchema),
     defaultValues: settingsFormValues(data),
@@ -107,6 +127,7 @@ export const Settings = ({ data }: Props) => {
 
   const { reset, control, handleSubmit, watch, setValue } = form;
   const encryptionKeyValue = watch('security.clientSecretEncryptionKey');
+  const socketRateLimitEnabled = watch('sockets.rateLimit.enabled');
   const canCopyEncryptionKey =
     encryptionKeyValue.length > 0 &&
     encryptionKeyValue !== REDACTED_CONFIG_VALUE;
@@ -116,8 +137,10 @@ export const Settings = ({ data }: Props) => {
       formData.security,
       encryptionKeyEdited.current
     );
+    const { sockets, ...rest } = formData;
     const dataToSubmit = {
-      ...formData,
+      ...rest,
+      ...(socketsSupported ? { sockets } : {}),
       security,
       cors: {
         ...formData.cors,
@@ -315,6 +338,156 @@ export const Settings = ({ data }: Props) => {
                 )}
               />
             </div>
+            {socketsSupported && (
+              <>
+                <Separator className={'my-3'} />
+                <h1 className="text-2xl font-medium pt-2">Socket settings</h1>
+                <div className={'grid grid-cols-2 gap-4'}>
+                  <FormField
+                    control={control}
+                    name="sockets.rateLimit.enabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">
+                            Event rate limit
+                          </FormLabel>
+                          <FormDescription className={'pr-2'}>
+                            Limit how many events each socket can send. Excess
+                            events are dropped.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            disabled={!edit}
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="sockets.disconnectOnTokenExpiry"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-md border px-3 py-2">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">
+                            Disconnect on token expiry
+                          </FormLabel>
+                          <FormDescription className={'pr-2'}>
+                            Disconnect sockets when their access token expires.
+                            Clients must refresh the token and reconnect.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            disabled={!edit}
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className={'flex flex-row space-x-4'}>
+                  <FormField
+                    control={control}
+                    name="sockets.rateLimit.burst"
+                    render={({ field }) => (
+                      <FormItem className={'w-1/3'}>
+                        <FormLabel>Burst</FormLabel>
+                        <FormDescription className={'pr-2'}>
+                          Events a socket may send at once before the per-second
+                          rate applies.
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            disabled={!edit || !socketRateLimitEnabled}
+                            type={'number'}
+                            title={'Burst'}
+                            placeholder={'eg. 100'}
+                            className={'text-accent-foreground'}
+                            {...field}
+                            onChange={e =>
+                              field.onChange(
+                                Number.isFinite(e.target.valueAsNumber)
+                                  ? Math.trunc(e.target.valueAsNumber)
+                                  : 0
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="sockets.rateLimit.eventsPerSecond"
+                    render={({ field }) => (
+                      <FormItem className={'w-1/3'}>
+                        <FormLabel>Events per second</FormLabel>
+                        <FormDescription className={'pr-2'}>
+                          Sustained events per second once the burst is spent.
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            disabled={!edit || !socketRateLimitEnabled}
+                            type={'number'}
+                            title={'Events per second'}
+                            placeholder={'eg. 30'}
+                            className={'text-accent-foreground'}
+                            {...field}
+                            onChange={e =>
+                              field.onChange(
+                                Number.isFinite(e.target.valueAsNumber)
+                                  ? e.target.valueAsNumber
+                                  : 0
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="sockets.maxHttpBufferSize"
+                    render={({ field }) => (
+                      <FormItem className={'w-1/3'}>
+                        <FormLabel>Max message size (bytes)</FormLabel>
+                        <FormDescription className={'pr-2'}>
+                          Largest single message a socket client may send.
+                          Applies to new connections.
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            disabled={!edit}
+                            type={'number'}
+                            title={'Max message size (bytes)'}
+                            placeholder={'eg. 1000000'}
+                            className={'text-accent-foreground'}
+                            {...field}
+                            onChange={e =>
+                              field.onChange(
+                                Number.isFinite(e.target.valueAsNumber)
+                                  ? Math.trunc(e.target.valueAsNumber)
+                                  : 0
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </>
+            )}
             <Separator className={'my-3'} />
             <FormField
               control={control}
