@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
+import { formatDuration } from '@/lib/authentication/formatDuration';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +13,15 @@ import {
 } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { UrlTagInput } from '@/components/ui/form-inputs/TagInputField';
 import { useSettingsSave } from '@/lib/hooks/use-settings-save';
@@ -34,6 +44,102 @@ import {
 } from '@/components/authentication/teams/manageTeam/realm/TrustedRealmsSelect';
 
 /**
+ * A number override that can be handed back to the global value (`null`). Only the
+ * Inherit checkbox sets `null`; the typed text is held locally, so clearing the input
+ * while typing never flips the field to inherit. An empty or invalid text is `NaN`,
+ * which the form schema rejects with a message.
+ */
+function InheritableNumberField({
+  id,
+  label,
+  description,
+  value,
+  onChange,
+  error,
+  disabled,
+}: Readonly<{
+  id: string;
+  label: string;
+  description: string;
+  value: number | null;
+  onChange: (value: number | null) => void;
+  error?: string;
+  disabled?: boolean;
+}>) {
+  const inherited = value === null;
+  const [text, setText] = useState(
+    value === null || Number.isNaN(value) ? '' : String(value)
+  );
+  // Follow outside changes (reset, save) without fighting the user's typing.
+  useEffect(() => {
+    if (value === null) setText('');
+    else if (!Number.isNaN(value)) {
+      setText(current => (Number(current) === value ? current : String(value)));
+    }
+  }, [value]);
+  const duration = inherited ? '' : formatDuration(value);
+  const describedBy = [`${id}-description`, error ? `${id}-error` : null]
+    .filter(Boolean)
+    .join(' ');
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id} className="text-sm font-medium">
+        {label}
+      </Label>
+      <div className="flex flex-row flex-wrap items-center gap-3">
+        <Input
+          id={id}
+          type="number"
+          className="max-w-48"
+          placeholder={inherited ? 'Inherited' : undefined}
+          value={inherited ? '' : text}
+          disabled={disabled || inherited}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          onChange={e => {
+            setText(e.target.value);
+            const next = e.target.valueAsNumber;
+            onChange(Number.isFinite(next) ? Math.trunc(next) : Number.NaN);
+          }}
+        />
+        {duration && (
+          <span className="text-xs text-muted-foreground">= {duration}</span>
+        )}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id={`${id}-inherit`}
+            aria-label={`Inherit ${label}`}
+            checked={inherited}
+            disabled={disabled}
+            onCheckedChange={checked =>
+              // Unchecking needs a concrete number to edit: start from a day.
+              onChange(checked === true ? null : 86_400_000)
+            }
+          />
+          <Label htmlFor={`${id}-inherit`} className="text-sm">
+            Inherit
+          </Label>
+        </div>
+      </div>
+      <p id={`${id}-description`} className="text-xs text-muted-foreground">
+        {description}
+      </p>
+      {error && (
+        <p id={`${id}-error`} role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+const EXTENDABLE_OPTIONS = [
+  { value: 'inherit', label: 'Inherit' },
+  { value: 'allowed', label: 'Allowed' },
+  { value: 'disabled', label: 'Disabled' },
+];
+
+/**
  * Policies: apply to EVERY session entering the realm, home users and guests alike.
  */
 export function RealmPoliciesCard({
@@ -49,6 +155,8 @@ export function RealmPoliciesCard({
   // Backends that predate account linking do not report these keys: their switches are
   // not rendered, and the keys are left out of the PATCH.
   const supportsLinking = realm.settings.linking !== undefined;
+  // Backends that predate configurable refresh tokens omit `policies.session`.
+  const supportsSession = realm.settings.policies.session !== undefined;
   const supportsDirectSignIn =
     realm.settings.policies.guests.directSignIn !== undefined;
 
@@ -233,6 +341,111 @@ export function RealmPoliciesCard({
                 )}
               />
             </section>
+            {supportsSession && (
+              <>
+                <Separator />
+                <section
+                  className="flex flex-col gap-3"
+                  aria-labelledby="realm-policy-session"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <h3
+                      id="realm-policy-session"
+                      className="text-sm font-medium"
+                    >
+                      Session
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Refresh token overrides for this realm. Realm values can
+                      only tighten the global ones: a shorter expiry, a lower
+                      lifetime cap, or extension turned off. Unticking Inherit
+                      starts from one day; set a value below the global one.
+                    </p>
+                  </div>
+                  <Controller
+                    control={control}
+                    name="session.refreshTokens.expiryPeriod"
+                    render={({ field, fieldState }) => (
+                      <InheritableNumberField
+                        id="realm-session-expiry"
+                        label="Refresh token expiry (ms)"
+                        description="Inherit uses the global refresh token expiry."
+                        value={field.value ?? null}
+                        disabled={busy}
+                        error={fieldState.error?.message}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="session.refreshTokens.maxLifetime"
+                    render={({ field, fieldState }) => (
+                      <InheritableNumberField
+                        id="realm-session-max-lifetime"
+                        label="Max lifetime (ms)"
+                        description="Inherit uses the global maximum lifetime."
+                        value={field.value ?? null}
+                        disabled={busy}
+                        error={fieldState.error?.message}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="session.refreshTokens.extendable"
+                    render={({ field }) => (
+                      <div className="flex flex-col gap-1.5">
+                        <Label
+                          id="realm-session-extendable-label"
+                          className="text-sm font-medium"
+                        >
+                          Extension allowed
+                        </Label>
+                        <Select
+                          value={
+                            field.value === null || field.value === undefined
+                              ? 'inherit'
+                              : field.value
+                                ? 'allowed'
+                                : 'disabled'
+                          }
+                          onValueChange={value =>
+                            field.onChange(
+                              value === 'inherit' ? null : value === 'allowed'
+                            )
+                          }
+                          disabled={busy}
+                        >
+                          <SelectTrigger
+                            className="max-w-48"
+                            aria-labelledby="realm-session-extendable-label"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background">
+                            {EXTENDABLE_OPTIONS.map(option => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Whether refreshing extends the refresh token. A realm
+                          can disable extension but cannot enable it when the
+                          global setting has it off.
+                        </p>
+                      </div>
+                    )}
+                  />
+                </section>
+              </>
+            )}
             {(supportsLinking || supportsDirectSignIn) && (
               <>
                 <Separator />

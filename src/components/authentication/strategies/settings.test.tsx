@@ -11,8 +11,20 @@ import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AuthenticationConfig } from '@/lib/models/authentication';
 
-const api = vi.hoisted(() => ({ updateAuthenticationSettings: vi.fn() }));
+const api = vi.hoisted(() => ({
+  updateAuthenticationSettings: vi.fn(),
+  rotateSigningKey: vi.fn(),
+}));
 vi.mock('@/lib/api/authentication', () => api);
+
+const routerRefresh = vi.hoisted(() => vi.fn());
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    refresh: routerRefresh,
+    push: vi.fn(),
+    replace: vi.fn(),
+  }),
+}));
 
 const toastMock = vi.hoisted(() =>
   vi.fn(
@@ -106,6 +118,10 @@ beforeEach(() => {
   api.updateAuthenticationSettings.mockResolvedValue({
     ok: true,
     data: undefined,
+  });
+  api.rotateSigningKey.mockResolvedValue({
+    ok: true,
+    data: { kid: 'kid-2', previousKid: 'kid-1' },
   });
 });
 
@@ -253,5 +269,322 @@ describe('Realms block in the authentication settings', () => {
         screen.queryByRole('button', { name: 'Submit' })
       ).not.toBeInTheDocument()
     );
+  });
+});
+
+const signing = {
+  kid: 'kid-1',
+  publicKey: 'pub',
+  privateKey: '[REDACTED]',
+  previousKid: '',
+  previousPublicKey: '',
+  previousRetiredAt: 0,
+};
+
+/** A config in the given token mode; jwt mode carries the new refresh and signing keys. */
+function tokenConfig(mode: 'session' | 'jwt', expiryPeriod?: number) {
+  const base = configWith(undefined) as unknown as {
+    accessTokens: Record<string, unknown>;
+    refreshTokens: Record<string, unknown>;
+  };
+  return {
+    ...base,
+    accessTokens: {
+      ...base.accessTokens,
+      mode,
+      strictRevocation: false,
+      tokenVersion: 4,
+      signing,
+      ...(expiryPeriod === undefined ? {} : { expiryPeriod }),
+    },
+    refreshTokens: {
+      ...base.refreshTokens,
+      extendable: true,
+      maxLifetime: 2592000000,
+    },
+  } as unknown as AuthenticationConfig;
+}
+
+const open = (name: RegExp) =>
+  fireEvent.click(screen.getByRole('button', { name }));
+
+const expiryCombobox = () =>
+  screen.getByRole('combobox', { name: 'Expiry Period' });
+
+const kid = () => screen.getByRole('textbox', { name: 'Signing key id' });
+
+/** Opens a Radix select and picks an option by its visible name. */
+const pick = (trigger: HTMLElement, option: string) => {
+  fireEvent.keyDown(trigger, { key: 'Enter' });
+  fireEvent.keyDown(screen.getByRole('option', { name: option }), {
+    key: 'Enter',
+  });
+};
+
+describe('Session mode', () => {
+  it('renders the access token page as before in session mode', () => {
+    render(<AuthenticationSettings data={tokenConfig('session')} />);
+    open(/Session mode/);
+    open(/Access Token settings/);
+    open(/Refresh Token settings/);
+    expect(screen.getByLabelText('JWT Secret')).toBeInTheDocument();
+    // Access and refresh token expiry inputs.
+    expect(screen.getAllByLabelText('Expiry Period (ms)')).toHaveLength(2);
+    expect(
+      screen.queryByRole('switch', { name: 'Strict revocation' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Rotate signing key' })
+    ).not.toBeInTheDocument();
+    // Refresh extension settings are mode-independent.
+    expect(
+      screen.getByRole('switch', { name: 'Allow extension' })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Max lifetime (ms)')).toBeInTheDocument();
+    expect(screen.getByText('= 30 days')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('switching to jwt shows the jwt controls, hides the secret and warns', () => {
+    render(<AuthenticationSettings data={tokenConfig('session')} />);
+    open(/Session mode/);
+    open(/Access Token settings/);
+    open(/Refresh Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+    pick(screen.getByRole('combobox', { name: 'Mode' }), 'Stateless JWT');
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Saving will log every user out'
+    );
+    expect(
+      screen.getByRole('switch', { name: 'Strict revocation' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Check the session registry on every request/)
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText('JWT Secret')).not.toBeInTheDocument();
+    // Only the refresh token expiry input is left.
+    expect(screen.getAllByLabelText('Expiry Period (ms)')).toHaveLength(1);
+    // An out-of-range session expiry is moved to the longest accepted one.
+    expect(expiryCombobox()).toHaveTextContent('5 minutes');
+    expect(
+      screen.getByRole('switch', { name: 'Allow extension' })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Max lifetime (ms)')).toHaveValue(2592000000);
+
+    // Back to the saved mode: the warning goes and the session controls return.
+    pick(screen.getByRole('combobox', { name: 'Mode' }), 'Stateful sessions');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('JWT Secret')).toBeInTheDocument();
+    expect(screen.getAllByLabelText('Expiry Period (ms)')[0]).toHaveValue(
+      3600000
+    );
+  });
+
+  it('maps the expiry select to milliseconds on save', async () => {
+    render(<AuthenticationSettings data={tokenConfig('jwt', 180000)} />);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    expect(expiryCombobox()).toHaveTextContent('3 minutes');
+
+    pick(expiryCombobox(), '2 minutes');
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() =>
+      expect(api.updateAuthenticationSettings).toHaveBeenCalledTimes(1)
+    );
+    const [body] = api.updateAuthenticationSettings.mock.calls[0] as [
+      { accessTokens: Record<string, unknown> },
+    ];
+    expect(body.accessTokens).toMatchObject({
+      mode: 'jwt',
+      expiryPeriod: 120000,
+      strictRevocation: false,
+    });
+    // Backend-managed keys are never sent back.
+    expect(body.accessTokens).not.toHaveProperty('signing');
+    expect(body.accessTokens).not.toHaveProperty('tokenVersion');
+  });
+
+  it('sends the refresh extension settings in jwt mode', async () => {
+    render(<AuthenticationSettings data={tokenConfig('jwt', 300000)} />);
+    open(/Refresh Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'Allow extension' }));
+    fireEvent.change(screen.getByLabelText('Max lifetime (ms)'), {
+      target: { value: '3600000' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() =>
+      expect(api.updateAuthenticationSettings).toHaveBeenCalledTimes(1)
+    );
+    expect(api.updateAuthenticationSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        refreshTokens: expect.objectContaining({
+          extendable: false,
+          maxLifetime: 3600000,
+        }),
+      })
+    );
+  });
+
+  it('rotates the signing key after confirmation and shows the new key id', async () => {
+    render(<AuthenticationSettings data={tokenConfig('jwt', 300000)} />);
+    open(/Access Token settings/);
+    expect(kid()).toHaveTextContent('kid-1');
+    expect(screen.queryByLabelText('JWT Secret')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Rotate signing key' }));
+    expect(api.rotateSigningKey).not.toHaveBeenCalled();
+    fireEvent.click(await screen.findByRole('button', { name: 'Rotate' }));
+
+    await waitFor(() => expect(api.rotateSigningKey).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(kid()).toHaveTextContent('kid-2'));
+    expect(toastMock).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Signing key rotated' })
+    );
+  });
+
+  it('reports a failed rotation without changing the key id', async () => {
+    api.rotateSigningKey.mockResolvedValue({
+      ok: false,
+      code: 'INTERNAL',
+      message: 'boom',
+    });
+    render(<AuthenticationSettings data={tokenConfig('jwt', 300000)} />);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Rotate signing key' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Rotate' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Failed to rotate signing key',
+          variant: 'destructive',
+        })
+      )
+    );
+    expect(kid()).toHaveTextContent('kid-1');
+  });
+
+  it('after a save the mode warning clears, Rotate enables and Cancel keeps the saved mode', async () => {
+    render(<AuthenticationSettings data={tokenConfig('session')} />);
+    open(/Session mode/);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    pick(screen.getByRole('combobox', { name: 'Mode' }), 'Stateless JWT');
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Rotate signing key' })
+    ).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() => expect(routerRefresh).toHaveBeenCalledTimes(1));
+    // The save carries the new mode and the expiry picked for it.
+    expect(api.updateAuthenticationSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accessTokens: expect.objectContaining({
+          mode: 'jwt',
+          expiryPeriod: 300000,
+        }),
+      })
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    );
+    expect(
+      screen.getByRole('button', { name: 'Rotate signing key' })
+    ).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('combobox', { name: 'Mode' })).toHaveTextContent(
+      'Stateless JWT'
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('keeps Rotate disabled while the saved mode is session', () => {
+    render(<AuthenticationSettings data={tokenConfig('session')} />);
+    open(/Session mode/);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    pick(screen.getByRole('combobox', { name: 'Mode' }), 'Stateless JWT');
+    expect(
+      screen.getByRole('button', { name: 'Rotate signing key' })
+    ).toBeDisabled();
+    expect(
+      screen.getByText(/generated when you save JWT mode/)
+    ).toBeInTheDocument();
+  });
+
+  it('restores the saved jwt expiry when switching jwt, session, jwt', () => {
+    render(<AuthenticationSettings data={tokenConfig('jwt', 120000)} />);
+    open(/Session mode/);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    pick(screen.getByRole('combobox', { name: 'Mode' }), 'Stateful sessions');
+    pick(screen.getByRole('combobox', { name: 'Mode' }), 'Stateless JWT');
+    expect(expiryCombobox()).toHaveTextContent('2 minutes');
+  });
+
+  it('offers a custom option for a non-minute expiry and blocks saving an out-of-range one', async () => {
+    render(<AuthenticationSettings data={tokenConfig('jwt', 30000)} />);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    expect(expiryCombobox()).toHaveTextContent('Custom (30 s)');
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    expect(
+      await screen.findByText(/between 1 and 5 minutes/)
+    ).toBeInTheDocument();
+    expect(api.updateAuthenticationSettings).not.toHaveBeenCalled();
+  });
+
+  it('shows a failure toast when the rotate call itself rejects', async () => {
+    api.rotateSigningKey.mockRejectedValue(new Error('network down'));
+    render(<AuthenticationSettings data={tokenConfig('jwt', 300000)} />);
+    open(/Access Token settings/);
+    fireEvent.click(screen.getByRole('button', { name: 'Rotate signing key' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Rotate' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Failed to rotate signing key',
+          variant: 'destructive',
+        })
+      )
+    );
+  });
+
+  it('shows no mode controls and sends no new keys to a backend that predates them', async () => {
+    render(<AuthenticationSettings data={configWith(undefined)} />);
+    expect(
+      screen.queryByRole('button', { name: /Session mode/ })
+    ).not.toBeInTheDocument();
+    open(/Refresh Token settings/);
+    expect(
+      screen.queryByRole('switch', { name: 'Allow extension' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Max lifetime (ms)')
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() =>
+      expect(api.updateAuthenticationSettings).toHaveBeenCalledTimes(1)
+    );
+    const [body] = api.updateAuthenticationSettings.mock.calls[0] as [
+      {
+        accessTokens: Record<string, unknown>;
+        refreshTokens: Record<string, unknown>;
+      },
+    ];
+    for (const key of ['mode', 'strictRevocation', 'signing', 'tokenVersion']) {
+      expect(body.accessTokens).not.toHaveProperty(key);
+    }
+    for (const key of ['extendable', 'maxLifetime']) {
+      expect(body.refreshTokens).not.toHaveProperty(key);
+    }
   });
 });
