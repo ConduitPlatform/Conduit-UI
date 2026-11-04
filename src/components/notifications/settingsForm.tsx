@@ -15,6 +15,7 @@ import {
 import { Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
+import { SecretTextarea } from '@/components/ui/secret-textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { NotificationSettings } from '@/lib/models/Notification';
@@ -181,11 +182,14 @@ export const SettingsForm = ({
                   <FormItem>
                     <FormLabel>Private Key</FormLabel>
                     <FormControl>
-                      <PasswordInput
+                      <SecretTextarea
                         disabled={!edit}
                         title={'private key'}
-                        placeholder={'Enter a value'}
-                        className={'text-accent-foreground'}
+                        placeholder={
+                          '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'
+                        }
+                        rows={4}
+                        className={'text-accent-foreground font-mono text-xs'}
                         {...field}
                       />
                     </FormControl>
