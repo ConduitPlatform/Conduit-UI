@@ -116,7 +116,7 @@
     "standard-version": "^9.5.0",
     "turbo": "^2.9.3",
     "typescript": "^6.0.0",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.5"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
