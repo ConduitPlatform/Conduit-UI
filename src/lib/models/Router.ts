@@ -5,6 +5,8 @@ export type RouterSettings = {
   transports: TransportSettings;
   rateLimit: RateLimitSettings;
   security: SecuritySettings;
+  /** Socket limits. Missing on Router versions without socket settings. */
+  sockets?: SocketSettings;
 };
 
 export type CaptchaProvider = 'recaptcha' | 'hcaptcha' | 'turnstile';
@@ -34,6 +36,23 @@ type TransportSettings = {
 type RateLimitSettings = {
   maxRequests: number;
   resetInterval: number;
+};
+
+export type SocketSettings = {
+  /** Max size in bytes of a single message a socket client may send. */
+  maxHttpBufferSize: number;
+  rateLimit: {
+    enabled: boolean;
+    burst: number;
+    eventsPerSecond: number;
+  };
+  disconnectOnTokenExpiry: boolean;
+};
+
+export const DEFAULT_SOCKET_SETTINGS: SocketSettings = {
+  maxHttpBufferSize: 1000000,
+  rateLimit: { enabled: true, burst: 100, eventsPerSecond: 30 },
+  disconnectOnTokenExpiry: true,
 };
 
 export type SecuritySettings = {
