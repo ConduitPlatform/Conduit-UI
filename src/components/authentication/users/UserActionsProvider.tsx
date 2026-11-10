@@ -1,20 +1,24 @@
 'use client';
 import * as React from 'react';
 import { useCallback, useContext, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 import { EditUserSheet } from '@/components/authentication/users/editUserSheet/editUserSheet';
-import { useAlerts } from '@/components/providers/AlertProvider';
 import { useSetUserVerified } from '@/components/authentication/users/useSetUserVerified';
-import { blockUnblockUser, deleteUser } from '@/lib/api/authentication';
+import { blockUserResult, deleteUserResult } from '@/lib/api/authentication';
+import {
+  LEGACY_CAPABILITIES,
+  type UserAdminCapabilities,
+} from '@/lib/authentication/userCapabilities';
 import type { UserVerificationTarget } from '@/lib/authentication/userVerification';
-import { toast } from '@/lib/hooks/use-toast';
 import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 import type { User } from '@/lib/models/User';
+import { useUserMutation } from '@/components/authentication/users/useUserMutation';
 
 type UserActionsProvider = {
   openUserAdd: () => void;
-  /** `user` is the row being edited; when omitted the sheet looks it up by id. */
-  openUserEdit: (userId: string, user?: User) => void;
+  /** Opens the edit sheet for this user. The row is read from the current page. */
+  openUserEdit: (userId: string) => void;
   deleteUser: (userId: string) => void;
   blockUser: (userId: string) => void;
   unblockUser: (userId: string) => void;
@@ -23,6 +27,9 @@ type UserActionsProvider = {
     user: UserVerificationTarget,
     isVerified: boolean
   ) => Promise<boolean>;
+  capabilities: UserAdminCapabilities;
+  bulkRunning: boolean;
+  setBulkRunning: (running: boolean) => void;
 };
 
 const initialState: UserActionsProvider = {
@@ -44,6 +51,9 @@ const initialState: UserActionsProvider = {
   setUserVerified: () => {
     throw new Error('Not implemented');
   },
+  capabilities: LEGACY_CAPABILITIES,
+  bulkRunning: false,
+  setBulkRunning: () => undefined,
 };
 
 const UserActionsContext = React.createContext(initialState);
@@ -56,6 +66,9 @@ export function UserActionsProvider({
   realmsEnabled = false,
   realmSlugs = NO_REALMS,
   identityMode = 'shared',
+  capabilities = LEGACY_CAPABILITIES,
+  teamsEnabled = false,
+  users = [],
 }: Readonly<{
   children: React.ReactNode;
   /** Realm UI (home realm select, edit sheet) renders only when enabled. */
@@ -63,108 +76,95 @@ export function UserActionsProvider({
   /** `teamId -> slug` of every realm. */
   realmSlugs?: ReadonlyMap<string, string>;
   identityMode?: RealmIdentityMode;
+  capabilities?: UserAdminCapabilities;
+  teamsEnabled?: boolean;
+  /** Current page, so the edit sheet follows a refresh without copying the row. */
+  users?: readonly User[];
 }>) {
-  const { addAlert } = useAlerts();
+  const router = useRouter();
   const setUserVerified = useSetUserVerified();
+  const { run } = useUserMutation();
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
-  const [userEdit, setUserEdit] = React.useState<
-    { id: string; user?: User } | undefined
-  >(undefined);
+  const [editingId, setEditingId] = React.useState<string | undefined>();
+  const [bulkRunning, setBulkRunningState] = React.useState(false);
+  const setBulkRunning = useCallback((running: boolean) => {
+    setBulkRunningState(running);
+  }, []);
   const openUserAdd = () => {
     setUserAdd(true);
   };
-  const openUserEdit = (userId: string, user?: User) => {
-    setUserEdit({ id: userId, user });
+  const openUserEdit = (userId: string) => {
+    setEditingId(userId);
   };
+  const editingUser = editingId
+    ? users.find(user => user._id === editingId)
+    : undefined;
   const _deleteUser = useCallback(
     (userId: string) => {
-      addAlert({
-        title: 'Delete User',
-        description:
-          'Are you sure you want to delete this user? This action cannot be undone.',
-        cancelText: 'Cancel',
-        actionText: 'Delete',
-        onDecision: cancel => {
-          if (cancel) return;
-          deleteUser(userId)
-            .then(() => {
-              toast({
-                title: 'User deleted',
-                description: 'The user has been deleted successfully.',
-                variant: 'default',
-              });
-            })
-            .catch(() => {
-              toast({
-                title: 'Failed',
-                description: 'User could not be deleted.',
-                variant: 'destructive',
-              });
-            });
+      void run({
+        confirm: {
+          title: 'Delete User',
+          description:
+            'Are you sure you want to delete this user? This action cannot be undone.',
+          actionText: 'Delete',
+          variant: 'destructive',
+        },
+        perform: () => deleteUserResult(userId),
+        success: {
+          title: 'User deleted',
+          description: 'The user has been deleted successfully.',
+        },
+        failure: {
+          title: 'Failed',
+          description: 'User could not be deleted.',
         },
       });
     },
-    [addAlert]
+    [run]
   );
   const blockUser = useCallback(
     (userId: string) => {
-      addAlert({
-        title: 'Block User',
-        description:
-          "Are you sure you want to block this user? They won't be able to login until you unblock them.",
-        cancelText: 'Cancel',
-        actionText: 'Block',
-        onDecision: cancel => {
-          if (cancel) return;
-          blockUnblockUser(userId, true)
-            .then(() => {
-              toast({
-                title: 'User blocked',
-                description: 'The user has been blocked successfully.',
-                variant: 'default',
-              });
-            })
-            .catch(() => {
-              toast({
-                title: 'Failed',
-                description: 'User could not be blocked.',
-                variant: 'destructive',
-              });
-            });
+      void run({
+        confirm: {
+          title: 'Block User',
+          description:
+            "Are you sure you want to block this user? They won't be able to login until you unblock them.",
+          actionText: 'Block',
+        },
+        perform: () => blockUserResult(userId, true),
+        success: {
+          title: 'User blocked',
+          description: 'The user has been blocked successfully.',
+        },
+        failure: {
+          title: 'Failed',
+          description: 'User could not be blocked.',
         },
       });
     },
-    [addAlert]
+    [run]
   );
   const unblockUser = useCallback(
     (userId: string) => {
-      addAlert({
-        title: 'Unblock User',
-        description:
-          'Are you sure you want to unblock this user? They will be able to login.',
-        cancelText: 'Cancel',
-        actionText: 'Unblock',
-        onDecision: cancel => {
-          if (cancel) return;
-          blockUnblockUser(userId, false)
-            .then(() => {
-              toast({
-                title: 'User unblocked',
-                description: 'The user has been unblocked successfully.',
-                variant: 'default',
-              });
-            })
-            .catch(() => {
-              toast({
-                title: 'Failed',
-                description: 'User could not be unblocked.',
-                variant: 'destructive',
-              });
-            });
+      void run({
+        confirm: {
+          title: 'Unblock User',
+          description:
+            'Are you sure you want to unblock this user? They will be able to login.',
+          actionText: 'Unblock',
+        },
+        perform: () => blockUserResult(userId, false),
+        success: {
+          title: 'User unblocked',
+          description: 'The user has been unblocked successfully.',
+        },
+        failure: {
+          title: 'Failed',
+          description: 'User could not be unblocked.',
         },
       });
     },
-    [addAlert]
+    [run]
   );
 
   const contextValues = useMemo(
@@ -175,8 +175,19 @@ export function UserActionsProvider({
       blockUser,
       unblockUser,
       setUserVerified,
+      capabilities,
+      bulkRunning,
+      setBulkRunning,
     }),
-    [_deleteUser, blockUser, setUserVerified, unblockUser]
+    [
+      _deleteUser,
+      blockUser,
+      bulkRunning,
+      capabilities,
+      setBulkRunning,
+      setUserVerified,
+      unblockUser,
+    ]
   );
 
   return (
@@ -187,24 +198,22 @@ export function UserActionsProvider({
         realmsEnabled={realmsEnabled}
         realmSlugs={realmSlugs}
         identityMode={identityMode}
+        onSuccess={() => router.refresh()}
       />
-      {realmsEnabled ? (
-        userEdit && (
-          <EditUserSheet
-            key={userEdit.id}
-            userId={userEdit.id}
-            user={userEdit.user}
-            open
-            onOpenChange={open => {
-              if (!open) setUserEdit(undefined);
-            }}
-            realmSlugs={realmSlugs}
-          />
-        )
-      ) : (
-        <AddUserSheet
-          defaultOpen={userEdit !== undefined}
-          onClose={() => setUserEdit(undefined)}
+      {editingId && (
+        <EditUserSheet
+          key={editingId}
+          userId={editingId}
+          user={editingUser}
+          open
+          onOpenChange={open => {
+            if (!open) setEditingId(undefined);
+          }}
+          realmSlugs={realmSlugs}
+          realmsEnabled={realmsEnabled}
+          capabilities={capabilities}
+          teamsEnabled={teamsEnabled}
+          bulkRunning={bulkRunning}
         />
       )}
       {children}

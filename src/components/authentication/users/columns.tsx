@@ -1,10 +1,13 @@
 'use client';
+
 import { ColumnDef } from '@tanstack/react-table';
-import { User } from '@/lib/models/User';
 import {
   BadgeCheck,
   BadgeX,
   CheckIcon,
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
   Clipboard,
   Pencil,
   Trash,
@@ -12,59 +15,194 @@ import {
   XIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { useUserActions } from '@/components/authentication/users/UserActionsProvider';
 import { HomeRealmCell } from '@/components/authentication/users/homeRealmCell';
+import {
+  formatRegistered,
+  registeredTitle,
+  statusLabel,
+} from '@/lib/authentication/userColumns';
+import type { UserSortField } from '@/lib/authentication/userListParams';
+import { User } from '@/lib/models/User';
 
-const baseColumns: ColumnDef<User>[] = [
-  {
-    accessorKey: '_id',
-    header: 'User ID',
-    cell: cell => {
-      return (
-        <div className={'flex flex-row group'}>
-          {cell.getValue() as string}
-          <Clipboard
-            className={
-              'w-4 h-4 ml-2 invisible group-hover:visible cursor-pointer '
-            }
-            onClick={() => {
-              navigator.clipboard.writeText(cell.getValue() as string);
-            }}
-          />
+function SortHeader({
+  label,
+  field,
+  sort,
+  onSort,
+}: Readonly<{
+  label: string;
+  field: UserSortField;
+  sort?: string;
+  onSort: (field: UserSortField) => void;
+}>) {
+  const descending = sort === `-${field}`;
+  const active = sort === field || descending;
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      className="-ml-2 h-8 gap-1 px-2 font-medium"
+      onClick={() => onSort(field)}
+    >
+      {label}
+      {active ? (
+        descending ? (
+          <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+        ) : (
+          <ChevronUp className="h-3.5 w-3.5" aria-hidden />
+        )
+      ) : (
+        <ChevronsUpDown
+          className="h-3.5 w-3.5 text-muted-foreground"
+          aria-hidden
+        />
+      )}
+    </Button>
+  );
+}
+
+function selectionColumn(): ColumnDef<User> {
+  return {
+    id: 'select',
+    enableSorting: false,
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected()
+            ? true
+            : table.getIsSomePageRowsSelected()
+              ? 'indeterminate'
+              : false
+        }
+        onCheckedChange={value =>
+          table.toggleAllPageRowsSelected(value === true)
+        }
+        aria-label="Select all users"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={value => row.toggleSelected(value === true)}
+        aria-label={`Select ${row.original.email || row.original._id}`}
+      />
+    ),
+  };
+}
+
+function dataColumns(
+  sort: string | undefined,
+  onSort: (field: UserSortField) => void
+): ColumnDef<User>[] {
+  return [
+    {
+      accessorKey: '_id',
+      enableSorting: false,
+      header: 'User ID',
+      cell: cell => {
+        return (
+          <div className={'flex flex-row group'}>
+            {cell.getValue() as string}
+            <Clipboard
+              className={
+                'w-4 h-4 ml-2 invisible group-hover:visible cursor-pointer '
+              }
+              onClick={() => {
+                navigator.clipboard.writeText(cell.getValue() as string);
+              }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'email',
+      enableSorting: true,
+      header: () => (
+        <SortHeader label="Email" field="email" sort={sort} onSort={onSort} />
+      ),
+      cell: ({ row }) => (
+        <div className="max-w-56 truncate" title={row.original.email}>
+          {row.original.email || '—'}
         </div>
-      );
+      ),
     },
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-  },
-  {
-    accessorKey: 'isVerified',
-    header: 'Verified',
-    cell: ({ row }) => {
-      const verified = row.original.isVerified;
-      return (
-        <span className="inline-flex">
-          {verified ? (
-            <CheckIcon className="h-4 w-4" aria-hidden />
-          ) : (
-            <XIcon className="h-4 w-4" aria-hidden />
-          )}
-          <span className="sr-only">
-            {verified ? 'Verified' : 'Not verified'}
+    {
+      id: 'active',
+      accessorKey: 'active',
+      enableSorting: true,
+      header: () => (
+        <SortHeader label="Status" field="active" sort={sort} onSort={onSort} />
+      ),
+      cell: ({ row }) => {
+        const label = statusLabel(row.original.active);
+        return (
+          <Badge variant={row.original.active ? 'secondary' : 'destructive'}>
+            {label}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'isVerified',
+      enableSorting: true,
+      header: () => (
+        <SortHeader
+          label="Verified"
+          field="isVerified"
+          sort={sort}
+          onSort={onSort}
+        />
+      ),
+      cell: ({ row }) => {
+        const verified = row.original.isVerified;
+        return (
+          <span className="inline-flex">
+            {verified ? (
+              <CheckIcon className="h-4 w-4" aria-hidden />
+            ) : (
+              <XIcon className="h-4 w-4" aria-hidden />
+            )}
+            <span className="sr-only">
+              {verified ? 'Verified' : 'Not verified'}
+            </span>
           </span>
-        </span>
-      );
+        );
+      },
     },
-  },
-];
+    {
+      accessorKey: 'createdAt',
+      enableSorting: true,
+      header: () => (
+        <SortHeader
+          label="Registered"
+          field="createdAt"
+          sort={sort}
+          onSort={onSort}
+        />
+      ),
+      cell: ({ row }) => (
+        <span
+          className="tabular-nums text-muted-foreground"
+          title={registeredTitle(row.original.createdAt)}
+        >
+          {formatRegistered(row.original.createdAt)}
+        </span>
+      ),
+    },
+  ];
+}
 
 function actionsColumn(
   onVerified?: (userId: string, isVerified: boolean) => void
 ): ColumnDef<User> {
   return {
     id: 'actions',
+    enableSorting: false,
     cell: function CellComponent({ row }) {
       const user = row.original;
       const {
@@ -85,7 +223,7 @@ function actionsColumn(
             variant="ghost"
             size="sm"
             title="edit"
-            onClick={() => openUserEdit(user._id, user)}
+            onClick={() => openUserEdit(user._id)}
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -146,18 +284,22 @@ export function getUserColumns({
   showHomeRealm,
   realmSlugs,
   onVerified,
+  sort,
+  onSort,
 }: {
   showHomeRealm: boolean;
   realmSlugs?: ReadonlyMap<string, string>;
   /** Called after verification is saved, so the row updates before the refresh lands. */
   onVerified?: (userId: string, isVerified: boolean) => void;
+  sort?: string;
+  onSort: (field: UserSortField) => void;
 }): ColumnDef<User>[] {
   const actions = actionsColumn(onVerified);
-  if (!showHomeRealm) return [...baseColumns, actions];
-  return [
-    ...baseColumns,
-    {
+  const columns = [...dataColumns(sort, onSort)];
+  if (showHomeRealm) {
+    columns.push({
       accessorKey: 'homeRealm',
+      enableSorting: false,
       header: 'Home realm',
       cell: ({ row }) => (
         <HomeRealmCell
@@ -165,7 +307,7 @@ export function getUserColumns({
           realmSlugs={realmSlugs}
         />
       ),
-    },
-    actions,
-  ];
+    });
+  }
+  return [selectionColumn(), ...columns, actions];
 }

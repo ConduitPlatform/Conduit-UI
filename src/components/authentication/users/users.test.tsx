@@ -32,10 +32,26 @@ const api = vi.hoisted(() => ({
   getUserRealms: vi.fn(),
   removeRealmGuest: vi.fn(),
   deleteUser: vi.fn(),
+  deleteUserResult: vi.fn(),
   blockUnblockUser: vi.fn(),
+  blockUserResult: vi.fn(),
   patchUser: vi.fn(),
+  updateUser: vi.fn(),
+  setUserPassword: vi.fn(),
+  sendUserPasswordReset: vi.fn(),
+  resetUserTwoFa: vi.fn(),
+  getUserTeams: vi.fn(),
+  getTeams: vi.fn(),
+  addTeamMemberIds: vi.fn(),
+  removeTeamMembers: vi.fn(),
+  patchTeamMembersRoles: vi.fn(),
 }));
 vi.mock('@/lib/api/authentication', () => api);
+
+const authz = vi.hoisted(() => ({
+  getResourceDefinition: vi.fn(),
+}));
+vi.mock('@/lib/api/authorization', () => authz);
 
 const toastMock = vi.hoisted(() =>
   vi.fn(() => ({ id: 't', dismiss: vi.fn(), update: vi.fn() }))
@@ -46,6 +62,7 @@ import UsersTable from '@/components/authentication/users/users';
 import { EditUserSheet } from '@/components/authentication/users/editUserSheet/editUserSheet';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 import { AlertProvider } from '@/components/providers/AlertProvider';
+import { USER_ADMIN_CAPABILITIES_V1 } from '@/lib/authentication/userCapabilities';
 import {
   UserActionsProvider,
   useUserActions,
@@ -93,6 +110,24 @@ beforeEach(() => {
   api.getUserRealms.mockResolvedValue({
     ok: true,
     data: { home: null, guests: [] },
+  });
+  api.updateUser.mockResolvedValue({ ok: true, data: {} });
+  api.deleteUserResult.mockResolvedValue({ ok: true, data: 'OK' });
+  api.blockUserResult.mockResolvedValue({ ok: true, data: 'OK' });
+  api.setUserPassword.mockResolvedValue({ ok: true, data: 'OK' });
+  api.sendUserPasswordReset.mockResolvedValue({ ok: true, data: 'OK' });
+  api.resetUserTwoFa.mockResolvedValue({ ok: true, data: 'OK' });
+  api.getUserTeams.mockResolvedValue({
+    ok: true,
+    data: { teams: [], count: 0 },
+  });
+  api.getTeams.mockResolvedValue({ teams: [], count: 0 });
+  api.addTeamMemberIds.mockResolvedValue({ ok: true, data: 'OK' });
+  api.removeTeamMembers.mockResolvedValue({ ok: true, data: 'OK' });
+  api.patchTeamMembersRoles.mockResolvedValue({ ok: true, data: 'OK' });
+  authz.getResourceDefinition.mockResolvedValue({
+    name: 'Team',
+    relations: { member: ['User'], owner: ['User'] },
   });
 });
 
@@ -165,9 +200,15 @@ describe('UsersTable', () => {
     expect(
       screen.getByRole('combobox', { name: 'Home realm filter' })
     ).toHaveTextContent('acme');
-    await waitFor(() =>
-      expect(api.getUsers).toHaveBeenCalledWith(0, 10, { homeRealm: 't1' })
-    );
+    fireEvent.change(screen.getByRole('textbox', { name: 'Search users' }), {
+      target: { value: 'ann' },
+    });
+    await waitFor(() => expect(nav.replace).toHaveBeenCalled());
+    const url = nav.replace.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(url.split('?')[1]);
+    expect(params.get('homeRealm')).toBe('t1');
+    expect(params.get('search')).toBe('ann');
+    expect(api.getUsers).not.toHaveBeenCalled();
   });
 });
 
@@ -251,6 +292,25 @@ describe('AddUserSheet', () => {
       .map(call => JSON.stringify(call))
       .join('');
     expect(failure).toContain('Email is taken');
+  });
+
+  it('rejects a password shorter than 8 characters', async () => {
+    render(
+      <AlertProvider>
+        <AddUserSheet defaultOpen />
+      </AlertProvider>
+    );
+    fireEvent.change(screen.getByPlaceholderText('mail@conduit.com'), {
+      target: { value: 'new@acme.test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('very secret'), {
+      target: { value: 'secret' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(
+      await screen.findByText(/at least 8 characters/)
+    ).toBeInTheDocument();
+    expect(api.createUser).not.toHaveBeenCalled();
   });
 
   it('has no home realm select when realms are disabled', () => {
@@ -708,7 +768,7 @@ describe('verification', () => {
   };
 
   it('verifies from the row after confirmation and updates the action', async () => {
-    api.patchUser.mockResolvedValue({});
+    api.updateUser.mockResolvedValue({ ok: true, data: {} });
     const row = user({
       isVerified: false,
       hasTwoFA: true,
@@ -722,10 +782,10 @@ describe('verification', () => {
     expect(dialog).toHaveTextContent(
       'Are you sure you want to verify ann@acme.test?'
     );
-    expect(api.patchUser).not.toHaveBeenCalled();
+    expect(api.updateUser).not.toHaveBeenCalled();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Verify' }));
     await waitFor(() =>
-      expect(api.patchUser).toHaveBeenCalledWith('u1', {
+      expect(api.updateUser).toHaveBeenCalledWith('u1', {
         email: 'ann@acme.test',
         isVerified: true,
         hasTwoFA: true,
@@ -748,14 +808,14 @@ describe('verification', () => {
     );
     const dialog = await screen.findByRole('alertdialog');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
-    expect(api.patchUser).not.toHaveBeenCalled();
+    expect(api.updateUser).not.toHaveBeenCalled();
     expect(
       screen.getByRole('button', { name: 'Verify ann@acme.test' })
     ).toBeInTheDocument();
   });
 
   it('unverifies a verified user', async () => {
-    api.patchUser.mockResolvedValue({});
+    api.updateUser.mockResolvedValue({ ok: true, data: {} });
     renderRow(user({ isVerified: true, hasTwoFA: false }));
     fireEvent.click(
       screen.getByRole('button', { name: 'Unverify ann@acme.test' })
@@ -763,7 +823,7 @@ describe('verification', () => {
     const dialog = await screen.findByRole('alertdialog');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Unverify' }));
     await waitFor(() =>
-      expect(api.patchUser).toHaveBeenCalledWith('u1', {
+      expect(api.updateUser).toHaveBeenCalledWith('u1', {
         email: 'ann@acme.test',
         isVerified: false,
         hasTwoFA: false,
@@ -775,7 +835,7 @@ describe('verification', () => {
   });
 
   it('leaves the row unverified when the request fails', async () => {
-    api.patchUser.mockRejectedValue(new Error('nope'));
+    api.updateUser.mockRejectedValue(new Error('nope'));
     renderRow(user({ isVerified: false }));
     fireEvent.click(
       screen.getByRole('button', { name: 'Verify ann@acme.test' })
@@ -797,7 +857,7 @@ describe('verification', () => {
   });
 
   it('toggles verification from the edit sheet', async () => {
-    api.patchUser.mockResolvedValue({});
+    api.updateUser.mockResolvedValue({ ok: true, data: {} });
     render(
       <AlertProvider>
         <EditUserSheet
@@ -813,10 +873,10 @@ describe('verification', () => {
     expect(toggle).not.toBeChecked();
     fireEvent.click(toggle);
     const dialog = await screen.findByRole('alertdialog');
-    expect(api.patchUser).not.toHaveBeenCalled();
+    expect(api.updateUser).not.toHaveBeenCalled();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Verify' }));
     await waitFor(() => expect(toggle).toBeChecked());
-    expect(api.patchUser).toHaveBeenCalledWith('u1', {
+    expect(api.updateUser).toHaveBeenCalledWith('u1', {
       email: 'ann@acme.test',
       isVerified: true,
       hasTwoFA: false,
@@ -841,7 +901,7 @@ describe('verification', () => {
     fireEvent.click(toggle);
     const dialog = await screen.findByRole('alertdialog');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
-    expect(api.patchUser).not.toHaveBeenCalled();
+    expect(api.updateUser).not.toHaveBeenCalled();
     await waitFor(() => expect(toggle).toBeEnabled());
     expect(toggle).toBeChecked();
   });
@@ -851,13 +911,13 @@ describe('UserActionsProvider', () => {
   function EditTrigger() {
     const { openUserEdit } = useUserActions();
     return (
-      <button type="button" onClick={() => openUserEdit('u1', user({}))}>
+      <button type="button" onClick={() => openUserEdit('u1')}>
         edit
       </button>
     );
   }
 
-  it('opens the Add User sheet for the edit action when realms are disabled', async () => {
+  it('opens the Edit user sheet for the edit action when realms are disabled', async () => {
     render(
       <AlertProvider>
         <UserActionsProvider>
@@ -865,12 +925,22 @@ describe('UserActionsProvider', () => {
         </UserActionsProvider>
       </AlertProvider>
     );
-    expect(screen.queryByText('Add User')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Edit user' })
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'edit' }));
     expect(
-      await screen.findByRole('heading', { name: 'Add User' })
+      await screen.findByRole('heading', { name: 'Edit user' })
     ).toBeInTheDocument();
-    expect(screen.queryByText('Edit user')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('switch', { name: 'Verified' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Add User' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('region', { name: 'Realms' })
+    ).not.toBeInTheDocument();
   });
 
   it('opens the Edit user sheet when realms are enabled', async () => {
@@ -948,5 +1018,391 @@ describe('Users page realm filter note', () => {
   it('shows no note otherwise', () => {
     render(<UsersTable data={[]} count={0} realmsEnabled realmSlugs={slugs} />);
     expect(screen.queryByText(/Showing the first/)).not.toBeInTheDocument();
+  });
+});
+
+describe('user list controls', () => {
+  const registered = '2026-01-15T12:00:00.000Z';
+
+  it('renders Status and Registered', () => {
+    render(
+      <UsersTable
+        data={[
+          user({
+            active: false,
+            createdAt: registered,
+            updatedAt: registered,
+          }),
+        ]}
+        count={1}
+      />
+    );
+    expect(
+      screen.getByRole('columnheader', { name: 'Status' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('columnheader', { name: 'Registered' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Blocked')).toBeInTheDocument();
+    expect(screen.getByTitle(registered)).toHaveTextContent(/\d/);
+  });
+
+  it('cycles the Registered header to a descending sort', () => {
+    const { rerender } = render(<UsersTable data={[]} count={0} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Registered' }));
+    let url = nav.replace.mock.calls.at(-1)?.[0] as string;
+    expect(new URLSearchParams(url.split('?')[1]).get('sort')).toBe(
+      'createdAt'
+    );
+    nav.search = 'sort=createdAt';
+    rerender(<UsersTable data={[]} count={0} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Registered' }));
+    url = nav.replace.mock.calls.at(-1)?.[0] as string;
+    expect(new URLSearchParams(url.split('?')[1]).get('sort')).toBe(
+      '-createdAt'
+    );
+  });
+
+  it('writes status to the URL and hides Verified without that capability', () => {
+    render(<UsersTable data={[]} count={0} />);
+    expect(
+      screen.queryByRole('combobox', { name: 'Verified' })
+    ).not.toBeInTheDocument();
+    chooseOption(screen.getByRole('combobox', { name: 'Status' }), 'Blocked');
+    const url = nav.replace.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(url.split('?')[1]);
+    expect(params.get('isActive')).toBe('false');
+    expect(params.has('isVerified')).toBe(false);
+  });
+
+  it('writes the verified filter when the backend allows it', () => {
+    render(
+      <UsersTable
+        data={[]}
+        count={0}
+        capabilities={USER_ADMIN_CAPABILITIES_V1}
+      />
+    );
+    chooseOption(
+      screen.getByRole('combobox', { name: 'Verified' }),
+      'Unverified'
+    );
+    const url = nav.replace.mock.calls.at(-1)?.[0] as string;
+    expect(new URLSearchParams(url.split('?')[1]).get('isVerified')).toBe(
+      'false'
+    );
+  });
+
+  it('asks for the delete phrase and keeps only the failed rows selected', async () => {
+    const rows = Array.from({ length: 7 }, (_, index) =>
+      user({
+        _id: `id-${index}`,
+        email: `user${index}@x.test`,
+        active: true,
+      })
+    );
+    api.deleteUserResult.mockImplementation(async (id: string) =>
+      id === 'id-0' || id === 'id-1'
+        ? { ok: false, code: 'INTERNAL', message: 'no' }
+        : { ok: true, data: 'OK' }
+    );
+    render(
+      <AlertProvider>
+        <UsersTable data={rows} count={7} />
+      </AlertProvider>
+    );
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select all users' }));
+    const bulk = screen.getByRole('region', { name: 'Bulk actions' });
+    fireEvent.click(within(bulk).getByRole('button', { name: 'Delete' }));
+    const dialog = await screen.findByRole('alertdialog');
+    const confirm = within(dialog).getByRole('button', {
+      name: 'Delete 7 users',
+    });
+    expect(confirm).toBeDisabled();
+    fireEvent.change(
+      within(dialog).getByLabelText('Type delete 7 users to confirm'),
+      {
+        target: { value: 'delete 7 users' },
+      }
+    );
+    expect(confirm).toBeEnabled();
+    fireEvent.click(confirm);
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: '5 of 7 users deleted. 2 failed',
+        })
+      )
+    );
+    expect(
+      screen.getByRole('checkbox', { name: 'Select user0@x.test' })
+    ).toBeChecked();
+    expect(
+      screen.getByRole('checkbox', { name: 'Select user1@x.test' })
+    ).toBeChecked();
+    expect(
+      screen.getByRole('checkbox', { name: 'Select user2@x.test' })
+    ).not.toBeChecked();
+  });
+
+  it('skips users who are already blocked', async () => {
+    const rows = [
+      user({ _id: 'open', email: 'open@x.test', active: true }),
+      user({ _id: 'shut', email: 'shut@x.test', active: false }),
+    ];
+    render(
+      <AlertProvider>
+        <UsersTable data={rows} count={2} />
+      </AlertProvider>
+    );
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select all users' }));
+    const bulk = screen.getByRole('region', { name: 'Bulk actions' });
+    fireEvent.click(within(bulk).getByRole('button', { name: 'Block' }));
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toHaveTextContent('already blocked will be skipped');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Block 1 user' })
+    );
+    await waitFor(() =>
+      expect(api.blockUserResult).toHaveBeenCalledWith('open', true)
+    );
+    expect(api.blockUserResult).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('account editing', () => {
+  const renderAccount = (
+    row: User,
+    options?: {
+      capabilities?: typeof USER_ADMIN_CAPABILITIES_V1;
+      teams?: boolean;
+    }
+  ) =>
+    render(
+      <AlertProvider>
+        <EditUserSheet
+          userId={row._id}
+          user={row}
+          open
+          onOpenChange={vi.fn()}
+          realmSlugs={slugs}
+          capabilities={options?.capabilities}
+          teamsEnabled={options?.teams}
+        />
+      </AlertProvider>
+    );
+
+  it('validates an email change and sends only authentication fields', async () => {
+    const row = user({ hasTwoFA: false, phoneNumber: '+15551212' });
+    (row as User & { customField: string }).customField = 'x';
+    renderAccount(row);
+    expect(screen.queryByDisplayValue('x')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.change(screen.getByLabelText('New email'), {
+      target: { value: 'not-an-email' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save email' }));
+    expect(
+      await screen.findByText('Enter a valid email address')
+    ).toBeInTheDocument();
+    expect(api.updateUser).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText('New email'), {
+      target: { value: 'other@acme.test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save email' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Change email' })
+    );
+    await waitFor(() =>
+      expect(api.updateUser).toHaveBeenCalledWith('u1', {
+        email: 'other@acme.test',
+        isVerified: true,
+        hasTwoFA: false,
+        phoneNumber: '+15551212',
+      })
+    );
+  });
+
+  it('maps a duplicate email onto the field', async () => {
+    api.updateUser.mockResolvedValue({
+      ok: false,
+      code: 'INVALID_ARGUMENT',
+      message: 'User already exists',
+    });
+    renderAccount(user({ hasTwoFA: false }));
+    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.change(screen.getByLabelText('New email'), {
+      target: { value: 'taken@acme.test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save email' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Change email' })
+    );
+    expect(
+      await screen.findByText(
+        'Another account in this scope already uses this email'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('rejects a phone number that is not E.164', async () => {
+    renderAccount(user({ phoneNumber: '' }));
+    fireEvent.change(screen.getByLabelText('Phone'), {
+      target: { value: '6912345678' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(
+      await screen.findByText('Use international format, e.g. +306912345678')
+    ).toBeInTheDocument();
+    expect(api.updateUser).not.toHaveBeenCalled();
+  });
+
+  it('disables phone removal while SMS two-factor is on', () => {
+    renderAccount(
+      user({
+        hasTwoFA: true,
+        twoFaMethod: 'sms',
+        phoneNumber: '+306912345678',
+      }),
+      { capabilities: USER_ADMIN_CAPABILITIES_V1 }
+    );
+    const account = screen.getByRole('region', { name: 'Account' });
+    expect(
+      within(account).getByRole('button', { name: 'Remove' })
+    ).toBeDisabled();
+  });
+
+  it('disables 2FA with a patch when reset is unavailable', async () => {
+    renderAccount(user({ hasTwoFA: true, twoFaMethod: 'authenticator' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Disable 2FA' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Disable 2FA' })
+    );
+    await waitFor(() =>
+      expect(api.updateUser).toHaveBeenCalledWith('u1', {
+        email: 'ann@acme.test',
+        hasTwoFA: false,
+      })
+    );
+    expect(api.resetUserTwoFa).not.toHaveBeenCalled();
+  });
+
+  it('disables 2FA through the reset route when that capability exists', async () => {
+    renderAccount(user({ hasTwoFA: true, twoFaMethod: 'sms' }), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Disable 2FA' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Disable 2FA' })
+    );
+    await waitFor(() => expect(api.resetUserTwoFa).toHaveBeenCalledWith('u1'));
+    expect(api.updateUser).not.toHaveBeenCalled();
+  });
+
+  it('hides the password section on a legacy backend', () => {
+    renderAccount(user({}));
+    expect(
+      screen.queryByRole('region', { name: 'Password' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('checks the new password before saving it', async () => {
+    renderAccount(user({}), { capabilities: USER_ADMIN_CAPABILITIES_V1 });
+    fireEvent.click(screen.getByRole('button', { name: 'Set password' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Set password' });
+    fireEvent.change(within(dialog).getByLabelText('New password'), {
+      target: { value: 'short' },
+    });
+    fireEvent.change(within(dialog).getByLabelText('Confirm password'), {
+      target: { value: 'short' },
+    });
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Set password' })
+    );
+    expect(
+      await within(dialog).findByText(/at least 8 characters/)
+    ).toBeInTheDocument();
+    expect(api.setUserPassword).not.toHaveBeenCalled();
+
+    fireEvent.change(within(dialog).getByLabelText('New password'), {
+      target: { value: 'longenough' },
+    });
+    fireEvent.change(within(dialog).getByLabelText('Confirm password'), {
+      target: { value: 'different1' },
+    });
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Set password' })
+    );
+    expect(
+      await within(dialog).findByText('Passwords do not match')
+    ).toBeInTheDocument();
+
+    fireEvent.change(within(dialog).getByLabelText('Confirm password'), {
+      target: { value: 'longenough' },
+    });
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Set password' })
+    );
+    await waitFor(() =>
+      expect(api.setUserPassword).toHaveBeenCalledWith('u1', 'longenough', true)
+    );
+    expect(toastMock).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Password updated' })
+    );
+  });
+
+  it('lists teams, changes a role, and surfaces a home-user removal error', async () => {
+    api.getUserTeams.mockResolvedValue({
+      ok: true,
+      data: {
+        teams: [
+          {
+            _id: 'team-1',
+            name: 'Acme',
+            roles: ['member'],
+            membershipType: 'home',
+          },
+        ],
+        count: 1,
+      },
+    });
+    api.removeTeamMembers.mockResolvedValue({
+      ok: false,
+      code: 'HOME_USER_REMOVAL',
+      message: 'Home users cannot be removed from their home team',
+    });
+    renderAccount(user({}), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+      teams: true,
+    });
+    const teams = await screen.findByRole('region', { name: 'Teams' });
+    expect(await within(teams).findByText('Acme')).toBeInTheDocument();
+    expect(within(teams).getByText('Home')).toBeInTheDocument();
+    chooseOption(
+      within(teams).getByRole('combobox', { name: 'Role in Acme' }),
+      'owner'
+    );
+    await waitFor(() =>
+      expect(api.patchTeamMembersRoles).toHaveBeenCalledWith(
+        'team-1',
+        ['u1'],
+        'owner'
+      )
+    );
+    fireEvent.click(within(teams).getByRole('button', { name: 'Remove' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remove' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          description: 'Home users cannot be removed from their home team',
+        })
+      )
+    );
   });
 });

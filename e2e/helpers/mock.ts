@@ -95,6 +95,33 @@ export async function clearRecordedRequests(): Promise<void> {
   }
 }
 
+/** 404 `GET /authentication/users/capabilities` when `legacy` is true. */
+export async function setLegacyUserAdmin(legacy: boolean): Promise<void> {
+  const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/auth/legacy`, {
+    method: 'POST',
+    headers: testControlHeaders({ 'content-type': 'application/json' }),
+    body: JSON.stringify({ legacy }),
+  });
+  if (!response.ok) {
+    throw new Error(`Mock legacy toggle failed: ${response.status}`);
+  }
+}
+
+/** The next delete of this user fails. Other users in the same bulk still succeed. */
+export async function failUserOperation(
+  op: 'delete',
+  id: string
+): Promise<void> {
+  const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/auth/fail`, {
+    method: 'POST',
+    headers: testControlHeaders({ 'content-type': 'application/json' }),
+    body: JSON.stringify({ op, id }),
+  });
+  if (!response.ok) {
+    throw new Error(`Mock fail toggle failed: ${response.status}`);
+  }
+}
+
 /** The authentication state of the mock (teams, users, memberships, ...). */
 export async function inspectAuth<T = Record<string, any>>(): Promise<T> {
   const response = await fetch(`${MOCK_ADMIN_ORIGIN}/__test__/auth`, {

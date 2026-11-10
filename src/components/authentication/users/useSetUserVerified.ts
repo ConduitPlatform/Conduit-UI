@@ -1,14 +1,12 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAlerts } from '@/components/providers/AlertProvider';
-import { patchUser } from '@/lib/api/authentication';
+import { updateUser } from '@/lib/api/authentication';
 import {
   userVerificationPatch,
   type UserVerificationTarget,
 } from '@/lib/authentication/userVerification';
-import { toast } from '@/lib/hooks/use-toast';
+import { useUserMutation } from '@/components/authentication/users/useUserMutation';
 
 type VerificationPrompt = {
   title: string;
@@ -45,44 +43,29 @@ function verificationPrompt(
 
 /** Confirms, then `PATCH /authentication/users/:id` with `isVerified`. Resolves true when the user was updated. */
 export function useSetUserVerified() {
-  const { addAlert } = useAlerts();
-  const router = useRouter();
+  const { run } = useUserMutation();
 
   return useCallback(
-    (user: UserVerificationTarget, isVerified: boolean) =>
-      new Promise<boolean>(resolve => {
-        const prompt = verificationPrompt(user.email, isVerified);
-        addAlert({
+    (user: UserVerificationTarget, isVerified: boolean) => {
+      const prompt = verificationPrompt(user.email || user._id, isVerified);
+      return run({
+        confirm: {
           title: prompt.title,
           description: prompt.description,
-          cancelText: 'Cancel',
           actionText: prompt.action,
-          onDecision: cancel => {
-            if (cancel) {
-              resolve(false);
-              return;
-            }
-            patchUser(user._id, userVerificationPatch(user, isVerified))
-              .then(() => {
-                toast({
-                  title: prompt.successTitle,
-                  description: prompt.successDescription,
-                  variant: 'default',
-                });
-                router.refresh();
-                resolve(true);
-              })
-              .catch(() => {
-                toast({
-                  title: 'Failed',
-                  description: prompt.failureDescription,
-                  variant: 'destructive',
-                });
-                resolve(false);
-              });
-          },
-        });
-      }),
-    [addAlert, router]
+        },
+        perform: () =>
+          updateUser(user._id, userVerificationPatch(user, isVerified)),
+        success: {
+          title: prompt.successTitle,
+          description: prompt.successDescription,
+        },
+        failure: {
+          title: 'Failed',
+          description: prompt.failureDescription,
+        },
+      }).then(outcome => outcome.ok);
+    },
+    [run]
   );
 }

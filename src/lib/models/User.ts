@@ -3,7 +3,7 @@ import type { RealmMembershipType } from '@/lib/models/Realm';
 export type User = {
   _id: string;
   email: string;
-  hashedPassword?: string;
+  username?: string;
   google?: AuthProviderBase;
   facebook?: AuthProviderBase;
   twitch?: AuthProviderBase;
@@ -11,6 +11,16 @@ export type User = {
   figma?: AuthProviderBase;
   microsoft?: AuthProviderBase;
   github?: AuthProviderBase;
+  apple?: AuthProviderBase;
+  bitbucket?: AuthProviderBase;
+  gitlab?: AuthProviderBase;
+  linkedin?: AuthProviderBase;
+  reddit?: AuthProviderBase;
+  twitter?: AuthProviderBase;
+  metamask?: {
+    ethPublicAddress?: string;
+    nonce?: string;
+  };
   active: boolean;
   isVerified: boolean;
   hasTwoFA: boolean;
@@ -19,14 +29,26 @@ export type User = {
   isAnonymous?: boolean;
   /** Realm team id the user authenticates at; null/absent = global user. */
   homeRealm?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 };
+
+/** One team the user belongs to, as `GET /authentication/users/:id/teams` returns it. */
+export type UserTeamMembership = {
+  _id: string;
+  name: string;
+  parentTeam?: string;
+  isDefault?: boolean;
+  realm?: { enabled?: boolean; slug?: string };
+  roles: string[];
+  membershipType?: RealmMembershipType;
+};
+
 interface AuthProviderBase {
   id: string;
   token: string;
   tokenExpires?: Date;
-  data: { [key: string]: any };
+  data: { [key: string]: unknown };
 }
 export type TeamUser = User & {
   role: string;

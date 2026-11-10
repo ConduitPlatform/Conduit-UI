@@ -38,11 +38,12 @@ import {
   HOME_REALM_GLOBAL,
   homeRealmSelectionToTeamId,
 } from '@/lib/authentication/realmMembers';
+import { adminPasswordSchema } from '@/lib/authentication/userValidation';
 import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 
 const FormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  password: adminPasswordSchema(),
   // Realm team id, or 'global' for a user without a home realm.
   homeRealm: z.string().optional(),
 });
