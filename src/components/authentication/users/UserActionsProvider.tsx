@@ -4,7 +4,9 @@ import { useCallback, useContext, useMemo } from 'react';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
 import { EditUserSheet } from '@/components/authentication/users/editUserSheet/editUserSheet';
 import { useAlerts } from '@/components/providers/AlertProvider';
+import { useSetUserVerified } from '@/components/authentication/users/useSetUserVerified';
 import { blockUnblockUser, deleteUser } from '@/lib/api/authentication';
+import type { UserVerificationTarget } from '@/lib/authentication/userVerification';
 import { toast } from '@/lib/hooks/use-toast';
 import type { RealmIdentityMode } from '@/lib/models/authentication/teams.config';
 import type { User } from '@/lib/models/User';
@@ -16,6 +18,11 @@ type UserActionsProvider = {
   deleteUser: (userId: string) => void;
   blockUser: (userId: string) => void;
   unblockUser: (userId: string) => void;
+  /** Resolves true when `isVerified` was saved. */
+  setUserVerified: (
+    user: UserVerificationTarget,
+    isVerified: boolean
+  ) => Promise<boolean>;
 };
 
 const initialState: UserActionsProvider = {
@@ -32,6 +39,9 @@ const initialState: UserActionsProvider = {
     throw new Error('Not implemented');
   },
   unblockUser: (userId: string) => {
+    throw new Error('Not implemented');
+  },
+  setUserVerified: () => {
     throw new Error('Not implemented');
   },
 };
@@ -55,6 +65,7 @@ export function UserActionsProvider({
   identityMode?: RealmIdentityMode;
 }>) {
   const { addAlert } = useAlerts();
+  const setUserVerified = useSetUserVerified();
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
   const [userEdit, setUserEdit] = React.useState<
     { id: string; user?: User } | undefined
@@ -163,8 +174,9 @@ export function UserActionsProvider({
       deleteUser: _deleteUser,
       blockUser,
       unblockUser,
+      setUserVerified,
     }),
-    [_deleteUser, blockUser, unblockUser]
+    [_deleteUser, blockUser, setUserVerified, unblockUser]
   );
 
   return (

@@ -63,6 +63,7 @@ export default defineConfig({
         /search\.spec\.ts/,
         /settings\.spec\.ts/,
         /realms.*\.spec\.ts/,
+        /users\.spec\.ts/,
         /session\.spec\.ts/,
         /keyboard\.spec\.ts/,
         /smoke\.spec\.ts/,

@@ -1,7 +1,7 @@
 'use client';
 import { getUserColumns } from '@/components/authentication/users/columns';
 import { User } from '@/lib/models/User';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AddUserSheet } from '@/components/authentication/users/addUserSheet/addUserSheet';
@@ -57,27 +57,56 @@ export default function UsersTable({
     ? homeRealmParamToFilter(searchParams.get('homeRealm'))
     : HOME_REALM_ALL;
   const homeRealmParam = homeRealmFilterToParam(homeRealmFilter);
+  const [count, setCount] = useState<number>(initialCount);
+  const [users, setUsers] = useState<User[]>(data);
+  const [search, setSearch] = useState<string>(
+    searchParams.get('search') ?? ''
+  );
+  // Saved verification, shown until the next server list replaces it.
+  const [verifiedById, setVerifiedById] = useState<
+    ReadonlyMap<string, boolean>
+  >(() => new Map());
+  // A newer list (server refresh or a later search) wins over an in-flight fetch.
+  const listGeneration = useRef(0);
+  const onVerified = useCallback((userId: string, isVerified: boolean) => {
+    setVerifiedById(current => {
+      const next = new Map(current);
+      next.set(userId, isVerified);
+      return next;
+    });
+  }, []);
+  const rows = useMemo(
+    () =>
+      users.map(item => {
+        const isVerified = verifiedById.get(item._id);
+        return isVerified === undefined ? item : { ...item, isVerified };
+      }),
+    [users, verifiedById]
+  );
   const columns = useMemo(
-    () => getUserColumns({ showHomeRealm: realmsEnabled, realmSlugs }),
-    [realmsEnabled, realmSlugs]
+    () =>
+      getUserColumns({
+        showHomeRealm: realmsEnabled,
+        realmSlugs,
+        onVerified,
+      }),
+    [onVerified, realmsEnabled, realmSlugs]
   );
   const onHomeRealmFilterChange = (value: string) => {
     const params = withHomeRealmFilter(searchParams, value);
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const [count, setCount] = useState<number>(initialCount);
-  const [users, setUsers] = useState<User[]>(data);
-  const [search, setSearch] = useState<string>(
-    searchParams.get('search') ?? ''
-  );
   const { openUserAdd } = useUserActions();
   useEffect(() => {
+    listGeneration.current += 1;
     setUsers(data);
     setCount(initialCount);
+    setVerifiedById(new Map());
   }, [data, initialCount]);
   const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
+    const generation = ++listGeneration.current;
     const params = new URLSearchParams(searchParams.toString());
     params.set('search', search);
     if (debouncedSearchTerm === '') {
@@ -89,9 +118,10 @@ export default function UsersTable({
     getUsers(skip, limit, {
       ...(debouncedSearchTerm ? { search: debouncedSearchTerm } : {}),
       ...(homeRealmParam ? { homeRealm: homeRealmParam } : {}),
-    }).then(data => {
-      setCount(data.count);
-      setUsers(data.users);
+    }).then(result => {
+      if (generation !== listGeneration.current) return;
+      setCount(result.count);
+      setUsers(result.users);
     });
   }, [debouncedSearchTerm]);
 
@@ -146,7 +176,7 @@ export default function UsersTable({
           Isolated identity mode: the same email can appear once per realm
         </p>
       )}
-      <DataTable columns={columns} data={users} count={count}>
+      <DataTable columns={columns} data={rows} count={count}>
         <EmptyUsers userAdd={openUserAdd} />
       </DataTable>
     </>

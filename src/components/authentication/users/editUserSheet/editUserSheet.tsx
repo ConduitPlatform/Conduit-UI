@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ import {
 } from '@/components/ui/sheet';
 import { useAlerts } from '@/components/providers/AlertProvider';
 import { HomeRealmCell } from '@/components/authentication/users/homeRealmCell';
+import { useSetUserVerified } from '@/components/authentication/users/useSetUserVerified';
 import {
   getUserRealms,
   getUsers,
@@ -36,6 +38,8 @@ import {
 import { toast } from '@/lib/hooks/use-toast';
 import type { UserRealms } from '@/lib/models/Realm';
 import type { User } from '@/lib/models/User';
+
+type VerificationStatus = 'idle' | 'saving';
 
 export function EditUserSheet({
   userId,
@@ -53,6 +57,9 @@ export function EditUserSheet({
 }>) {
   const router = useRouter();
   const { addAlert } = useAlerts();
+  const setUserVerified = useSetUserVerified();
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus>('idle');
   const [user, setUser] = useState<User | undefined>(initialUser);
   const [target, setTarget] = useState(
     initialUser?.homeRealm ?? HOME_REALM_GLOBAL
@@ -203,6 +210,23 @@ export function EditUserSheet({
     });
   };
 
+  const changeVerification = (isVerified: boolean) => {
+    if (
+      !user ||
+      user.isVerified === isVerified ||
+      verificationStatus === 'saving'
+    ) {
+      return;
+    }
+    setVerificationStatus('saving');
+    void setUserVerified(user, isVerified)
+      .then(saved => {
+        if (!saved) return;
+        setUser(current => (current ? { ...current, isVerified } : current));
+      })
+      .finally(() => setVerificationStatus('idle'));
+  };
+
   const confirmMove = () => {
     addAlert({
       title: 'Move home realm',
@@ -227,6 +251,33 @@ export function EditUserSheet({
           <SheetTitle>Edit user</SheetTitle>
           <SheetDescription>{email}</SheetDescription>
         </SheetHeader>
+
+        <section
+          className="flex flex-col gap-3"
+          aria-labelledby="user-verification"
+        >
+          <h3 id="user-verification" className="text-sm font-medium">
+            Verification
+          </h3>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="user-verified">Verified</Label>
+              <p
+                id="user-verified-hint"
+                className="text-pretty text-sm text-muted-foreground"
+              >
+                The account email is confirmed.
+              </p>
+            </div>
+            <Switch
+              id="user-verified"
+              checked={user?.isVerified === true}
+              disabled={!user || verificationStatus === 'saving'}
+              aria-describedby="user-verified-hint"
+              onCheckedChange={checked => changeVerification(checked === true)}
+            />
+          </div>
+        </section>
 
         <section className="flex flex-col gap-3" aria-labelledby="user-realms">
           <h3 id="user-realms" className="text-sm font-medium">

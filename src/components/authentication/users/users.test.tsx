@@ -33,6 +33,7 @@ const api = vi.hoisted(() => ({
   removeRealmGuest: vi.fn(),
   deleteUser: vi.fn(),
   blockUnblockUser: vi.fn(),
+  patchUser: vi.fn(),
 }));
 vi.mock('@/lib/api/authentication', () => api);
 
@@ -675,6 +676,174 @@ describe('EditUserSheet loading the user', () => {
     expect(
       screen.getByRole('button', { name: 'Move home realm' })
     ).toBeDisabled();
+  });
+
+  it('keeps the verification switch off until the user is loaded', async () => {
+    let resolve!: (value: { users: User[]; count: number }) => void;
+    api.getUsers.mockReturnValue(
+      new Promise(r => {
+        resolve = r;
+      })
+    );
+    renderLookup();
+    expect(screen.getByRole('switch', { name: 'Verified' })).toBeDisabled();
+    resolve({ users: [user({ isVerified: false })], count: 1 });
+    await waitFor(() =>
+      expect(screen.getByRole('switch', { name: 'Verified' })).toBeEnabled()
+    );
+    expect(screen.getByRole('switch', { name: 'Verified' })).not.toBeChecked();
+  });
+});
+
+describe('verification', () => {
+  const renderRow = (row: User) => {
+    api.getUsers.mockResolvedValue({ users: [row], count: 1 });
+    return render(
+      <AlertProvider>
+        <UserActionsProvider>
+          <UsersTable data={[row]} count={1} />
+        </UserActionsProvider>
+      </AlertProvider>
+    );
+  };
+
+  it('verifies from the row after confirmation and updates the action', async () => {
+    api.patchUser.mockResolvedValue({});
+    const row = user({
+      isVerified: false,
+      hasTwoFA: true,
+      phoneNumber: '+15551212',
+    });
+    renderRow(row);
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Verify ann@acme.test' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toHaveTextContent(
+      'Are you sure you want to verify ann@acme.test?'
+    );
+    expect(api.patchUser).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Verify' }));
+    await waitFor(() =>
+      expect(api.patchUser).toHaveBeenCalledWith('u1', {
+        email: 'ann@acme.test',
+        isVerified: true,
+        hasTwoFA: true,
+        phoneNumber: '+15551212',
+      })
+    );
+    expect(
+      await screen.findByRole('button', { name: 'Unverify ann@acme.test' })
+    ).toBeInTheDocument();
+    expect(nav.refresh).toHaveBeenCalled();
+    expect(toastMock).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'User verified' })
+    );
+  });
+
+  it('does not verify when the confirmation is cancelled', async () => {
+    renderRow(user({ isVerified: false }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Verify ann@acme.test' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(api.patchUser).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole('button', { name: 'Verify ann@acme.test' })
+    ).toBeInTheDocument();
+  });
+
+  it('unverifies a verified user', async () => {
+    api.patchUser.mockResolvedValue({});
+    renderRow(user({ isVerified: true, hasTwoFA: false }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Unverify ann@acme.test' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Unverify' }));
+    await waitFor(() =>
+      expect(api.patchUser).toHaveBeenCalledWith('u1', {
+        email: 'ann@acme.test',
+        isVerified: false,
+        hasTwoFA: false,
+      })
+    );
+    expect(
+      await screen.findByRole('button', { name: 'Verify ann@acme.test' })
+    ).toBeInTheDocument();
+  });
+
+  it('leaves the row unverified when the request fails', async () => {
+    api.patchUser.mockRejectedValue(new Error('nope'));
+    renderRow(user({ isVerified: false }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Verify ann@acme.test' })
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Verify' }));
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Failed',
+          description: 'User could not be verified.',
+        })
+      )
+    );
+    expect(
+      screen.getByRole('button', { name: 'Verify ann@acme.test' })
+    ).toBeInTheDocument();
+    expect(nav.refresh).not.toHaveBeenCalled();
+  });
+
+  it('toggles verification from the edit sheet', async () => {
+    api.patchUser.mockResolvedValue({});
+    render(
+      <AlertProvider>
+        <EditUserSheet
+          userId="u1"
+          user={user({ isVerified: false, hasTwoFA: false })}
+          open
+          onOpenChange={vi.fn()}
+          realmSlugs={slugs}
+        />
+      </AlertProvider>
+    );
+    const toggle = screen.getByRole('switch', { name: 'Verified' });
+    expect(toggle).not.toBeChecked();
+    fireEvent.click(toggle);
+    const dialog = await screen.findByRole('alertdialog');
+    expect(api.patchUser).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Verify' }));
+    await waitFor(() => expect(toggle).toBeChecked());
+    expect(api.patchUser).toHaveBeenCalledWith('u1', {
+      email: 'ann@acme.test',
+      isVerified: true,
+      hasTwoFA: false,
+    });
+    expect(nav.refresh).toHaveBeenCalled();
+  });
+
+  it('keeps the edit sheet switch unchanged when verification is cancelled', async () => {
+    render(
+      <AlertProvider>
+        <EditUserSheet
+          userId="u1"
+          user={user({ isVerified: true })}
+          open
+          onOpenChange={vi.fn()}
+          realmSlugs={slugs}
+        />
+      </AlertProvider>
+    );
+    const toggle = screen.getByRole('switch', { name: 'Verified' });
+    expect(toggle).toBeChecked();
+    fireEvent.click(toggle);
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(api.patchUser).not.toHaveBeenCalled();
+    await waitFor(() => expect(toggle).toBeEnabled());
+    expect(toggle).toBeChecked();
   });
 });
 

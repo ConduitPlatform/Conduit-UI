@@ -2,6 +2,8 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { User } from '@/lib/models/User';
 import {
+  BadgeCheck,
+  BadgeX,
   CheckIcon,
   Clipboard,
   Pencil,
@@ -40,79 +42,118 @@ const baseColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'isVerified',
     header: 'Verified',
-    cell: cell => {
-      return cell.getValue() ? (
-        <CheckIcon className={'w-4 h-4'} />
-      ) : (
-        <XIcon className={'w-4 h-4'} />
+    cell: ({ row }) => {
+      const verified = row.original.isVerified;
+      return (
+        <span className="inline-flex">
+          {verified ? (
+            <CheckIcon className="h-4 w-4" aria-hidden />
+          ) : (
+            <XIcon className="h-4 w-4" aria-hidden />
+          )}
+          <span className="sr-only">
+            {verified ? 'Verified' : 'Not verified'}
+          </span>
+        </span>
       );
     },
   },
 ];
 
-const actionsColumn: ColumnDef<User> = {
-  id: 'actions',
-  cell: function CellComponent({ row }) {
-    const user = row.original;
-    const { openUserEdit, deleteUser, blockUser, unblockUser } =
-      useUserActions();
+function actionsColumn(
+  onVerified?: (userId: string, isVerified: boolean) => void
+): ColumnDef<User> {
+  return {
+    id: 'actions',
+    cell: function CellComponent({ row }) {
+      const user = row.original;
+      const {
+        openUserEdit,
+        deleteUser,
+        blockUser,
+        unblockUser,
+        setUserVerified,
+      } = useUserActions();
+      const nextVerified = !user.isVerified;
+      const verifyLabel = nextVerified
+        ? `Verify ${user.email}`
+        : `Unverify ${user.email}`;
 
-    return (
-      <div className={'flex flex-row'}>
-        <Button
-          variant={'ghost'}
-          size={'sm'}
-          title="edit"
-          onClick={() => openUserEdit(user._id, user)}
-        >
-          <Pencil className={'w-4 h-4'} />
-        </Button>
-        {user.active ? (
+      return (
+        <div className="flex flex-row">
           <Button
-            variant={'ghost'}
-            size={'sm'}
-            title="block"
-            onClick={() => blockUser(user._id)}
+            variant="ghost"
+            size="sm"
+            title="edit"
+            onClick={() => openUserEdit(user._id, user)}
           >
-            <XCircle className={'w-4 h-4'} />
+            <Pencil className="h-4 w-4" />
           </Button>
-        ) : (
           <Button
-            variant={'ghost'}
-            size={'sm'}
-            title="unblock"
-            onClick={() => unblockUser(user._id)}
+            variant="ghost"
+            size="sm"
+            title={verifyLabel}
+            aria-label={verifyLabel}
+            onClick={() => {
+              void setUserVerified(user, nextVerified).then(saved => {
+                if (saved) onVerified?.(user._id, nextVerified);
+              });
+            }}
           >
-            <CheckIcon className={'w-4 h-4'} />
+            {nextVerified ? (
+              <BadgeCheck className="h-4 w-4" aria-hidden />
+            ) : (
+              <BadgeX className="h-4 w-4" aria-hidden />
+            )}
           </Button>
-        )}
+          {user.active ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              title="block"
+              onClick={() => blockUser(user._id)}
+            >
+              <XCircle className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              title="unblock"
+              onClick={() => unblockUser(user._id)}
+            >
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+          )}
 
-        <Button
-          variant={'ghost'}
-          size={'sm'}
-          className={'text-destructive'}
-          title="delete"
-          onClick={() => deleteUser(user._id)}
-        >
-          <Trash className={'w-4 h-4'} />
-        </Button>
-      </div>
-    );
-  },
-};
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-destructive"
+            title="delete"
+            onClick={() => deleteUser(user._id)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
+      );
+    },
+  };
+}
 
-/** Plain columns, exactly as before realms existed. */
-export const columns: ColumnDef<User>[] = [...baseColumns, actionsColumn];
-
-/** Columns with the "Home realm" column inserted before the row actions. */
+/** Columns for the users table. Home realm is inserted before the row actions. */
 export function getUserColumns({
   showHomeRealm,
   realmSlugs,
+  onVerified,
 }: {
   showHomeRealm: boolean;
   realmSlugs?: ReadonlyMap<string, string>;
+  /** Called after verification is saved, so the row updates before the refresh lands. */
+  onVerified?: (userId: string, isVerified: boolean) => void;
 }): ColumnDef<User>[] {
-  if (!showHomeRealm) return columns;
+  const actions = actionsColumn(onVerified);
+  if (!showHomeRealm) return [...baseColumns, actions];
   return [
     ...baseColumns,
     {
@@ -125,6 +166,6 @@ export function getUserColumns({
         />
       ),
     },
-    actionsColumn,
+    actions,
   ];
 }
