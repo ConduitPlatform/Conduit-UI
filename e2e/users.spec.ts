@@ -40,11 +40,7 @@ test.describe('user verification', () => {
       method: 'PATCH',
       path: `/authentication/users/${USER_ALICE_ID}`,
     });
-    expect(unverified.at(-1)?.body).toMatchObject({
-      email: 'alice@acme.test',
-      isVerified: false,
-      hasTwoFA: false,
-    });
+    expect(unverified.at(-1)?.body).toEqual({ isVerified: false });
 
     await alice.getByRole('button', { name: 'Verify alice@acme.test' }).click();
     await page
@@ -90,10 +86,7 @@ test.describe('user verification', () => {
       method: 'PATCH',
       path: `/authentication/users/${USER_ALICE_ID}`,
     });
-    expect(patches.at(-1)?.body).toMatchObject({
-      email: 'alice@acme.test',
-      isVerified: false,
-    });
+    expect(patches.at(-1)?.body).toEqual({ isVerified: false });
   });
 });
 
@@ -277,11 +270,8 @@ test.describe('user management', () => {
     expect(patches[0]?.body).toEqual({
       email: 'new-alice@acme.test',
       isVerified: true,
-      hasTwoFA: false,
     });
     expect(patches.at(-1)?.body).toEqual({
-      email: 'new-alice@acme.test',
-      hasTwoFA: false,
       phoneNumber: '+306912345678',
     });
   });
