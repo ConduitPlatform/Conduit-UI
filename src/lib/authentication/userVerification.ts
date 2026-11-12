@@ -1,5 +1,9 @@
 import type { User } from '@/lib/models/User';
-import { userPatch, type UserAuthPatch } from '@/lib/authentication/userPatch';
+import {
+  userPatch,
+  type UserAuthPatch,
+  type UserPatchOptions,
+} from '@/lib/authentication/userPatch';
 
 /** Fields the verify action needs from a user row. */
 export type UserVerificationTarget = Pick<
@@ -13,7 +17,8 @@ export type UserVerificationTarget = Pick<
  */
 export function userVerificationPatch(
   user: Pick<User, 'email' | 'hasTwoFA' | 'phoneNumber'>,
-  isVerified: boolean
+  isVerified: boolean,
+  options?: UserPatchOptions
 ): UserAuthPatch {
-  return userPatch(user, { isVerified });
+  return userPatch(user, { isVerified }, options);
 }

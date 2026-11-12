@@ -47,7 +47,10 @@ function membershipLabel(team: UserTeamMembership): string | undefined {
 }
 
 export function TeamsSection({ userId }: Readonly<{ userId: string }>) {
-  const { status, teams, roles, message, reload } = useUserTeams(userId, true);
+  const { status, teams, count, roles, message, reload } = useUserTeams(
+    userId,
+    true
+  );
   const { run } = useUserMutation();
   const [memberStatus, setMemberStatus] = useState<MemberStatus>({
     kind: 'idle',
@@ -256,6 +259,11 @@ export function TeamsSection({ userId }: Readonly<{ userId: string }>) {
             );
           })}
         </ul>
+      )}
+      {status === 'ready' && count > teams.length && (
+        <p className="text-pretty text-xs text-muted-foreground">
+          Showing the first {teams.length} of {count} teams.
+        </p>
       )}
       {roles.length === 0 && status === 'ready' && (
         <p className="text-pretty text-xs text-muted-foreground">

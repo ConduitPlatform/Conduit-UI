@@ -73,6 +73,7 @@ export function PasswordSection({
 }>) {
   const canSet = hasAction(capabilities, 'setPassword');
   const canReset = hasAction(capabilities, 'sendPasswordReset');
+  const hasEmail = (user.email ?? '').trim() !== '';
   const router = useRouter();
   const { status: resetStatus, run } = useUserMutation();
   const [status, setStatus] = useState<PasswordStatus>({ kind: 'closed' });
@@ -140,7 +141,12 @@ export function PasswordSection({
             type="button"
             variant="outline"
             size="sm"
-            disabled={resetStatus === 'confirming' || resetStatus === 'saving'}
+            disabled={
+              !hasEmail ||
+              resetStatus === 'confirming' ||
+              resetStatus === 'saving'
+            }
+            title={hasEmail ? undefined : 'This user has no email address'}
             onClick={sendReset}
           >
             Send reset email

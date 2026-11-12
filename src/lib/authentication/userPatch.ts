@@ -20,6 +20,31 @@ export type UserPatchChanges = {
   phoneNumber?: string;
 };
 
+export type UserPatchOptions = {
+  /**
+   * Send only `changes`. For backends that patch just the fields they are sent:
+   * a resent `hasTwoFA` or `phoneNumber` there is re-validated and rewrites the
+   * 2FA method, which fails or alters accounts the change never touched.
+   */
+  changesOnly?: boolean;
+};
+
+function changesOnlyPatch(changes: UserPatchChanges): UserAuthPatch {
+  const body: UserAuthPatch = {};
+  if (typeof changes.email === 'string') {
+    const normalized = changes.email.trim().toLowerCase();
+    if (normalized) body.email = normalized;
+  }
+  if (typeof changes.isVerified === 'boolean') {
+    body.isVerified = changes.isVerified;
+  }
+  if (typeof changes.hasTwoFA === 'boolean') body.hasTwoFA = changes.hasTwoFA;
+  if (typeof changes.phoneNumber === 'string') {
+    body.phoneNumber = changes.phoneNumber;
+  }
+  return body;
+}
+
 /**
  * Explicit allow-list for an admin user patch.
  * Email is resent when the account has one, because older handlers read
@@ -29,8 +54,10 @@ export type UserPatchChanges = {
  */
 export function userPatch(
   user: UserPatchSource,
-  changes: UserPatchChanges = {}
+  changes: UserPatchChanges = {},
+  options: UserPatchOptions = {}
 ): UserAuthPatch {
+  if (options.changesOnly) return changesOnlyPatch(changes);
   const body: UserAuthPatch = {};
   const email = changes.email !== undefined ? changes.email : user.email;
   if (typeof email === 'string') {

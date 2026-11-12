@@ -3,6 +3,11 @@
 import { useCallback } from 'react';
 import { updateUser } from '@/lib/api/authentication';
 import {
+  LEGACY_CAPABILITIES,
+  patchesOnlySentFields,
+  type UserAdminCapabilities,
+} from '@/lib/authentication/userCapabilities';
+import {
   userVerificationPatch,
   type UserVerificationTarget,
 } from '@/lib/authentication/userVerification';
@@ -42,8 +47,11 @@ function verificationPrompt(
 }
 
 /** Confirms, then `PATCH /authentication/users/:id` with `isVerified`. Resolves true when the user was updated. */
-export function useSetUserVerified() {
+export function useSetUserVerified(
+  capabilities: UserAdminCapabilities = LEGACY_CAPABILITIES
+) {
   const { run } = useUserMutation();
+  const changesOnly = patchesOnlySentFields(capabilities);
 
   return useCallback(
     (user: UserVerificationTarget, isVerified: boolean) => {
@@ -55,7 +63,10 @@ export function useSetUserVerified() {
           actionText: prompt.action,
         },
         perform: () =>
-          updateUser(user._id, userVerificationPatch(user, isVerified)),
+          updateUser(
+            user._id,
+            userVerificationPatch(user, isVerified, { changesOnly })
+          ),
         success: {
           title: prompt.successTitle,
           description: prompt.successDescription,
@@ -66,6 +77,6 @@ export function useSetUserVerified() {
         },
       }).then(outcome => outcome.ok);
     },
-    [run]
+    [changesOnly, run]
   );
 }

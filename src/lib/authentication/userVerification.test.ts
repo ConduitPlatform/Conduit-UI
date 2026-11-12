@@ -30,4 +30,10 @@ describe('userVerificationPatch', () => {
       hasTwoFA: false,
     });
   });
+
+  it('sends isVerified alone when the backend patches only what it is sent', () => {
+    expect(userVerificationPatch(user, true, { changesOnly: true })).toEqual({
+      isVerified: true,
+    });
+  });
 });

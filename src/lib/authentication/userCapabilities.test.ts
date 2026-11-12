@@ -4,6 +4,8 @@ import {
   hasAction,
   hasFilter,
   normalizeCapabilities,
+  patchesOnlySentFields,
+  USER_ADMIN_CAPABILITIES_V1,
 } from '@/lib/authentication/userCapabilities';
 
 describe('user capabilities', () => {
@@ -30,5 +32,10 @@ describe('user capabilities', () => {
     expect(hasFilter(capabilities, 'hasTwoFA')).toBe(false);
     expect(hasAction(capabilities, 'setPassword')).toBe(true);
     expect(hasAction(capabilities, 'clearPhone')).toBe(false);
+  });
+
+  it('resends unchanged fields only to a legacy backend', () => {
+    expect(patchesOnlySentFields(LEGACY_CAPABILITIES)).toBe(false);
+    expect(patchesOnlySentFields(USER_ADMIN_CAPABILITIES_V1)).toBe(true);
   });
 });

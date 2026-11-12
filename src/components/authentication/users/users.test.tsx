@@ -884,6 +884,27 @@ describe('verification', () => {
     expect(nav.refresh).toHaveBeenCalled();
   });
 
+  it('sends only isVerified to a backend that patches what it is sent', async () => {
+    render(
+      <AlertProvider>
+        <EditUserSheet
+          userId="u1"
+          user={user({ isVerified: false, hasTwoFA: true })}
+          open
+          onOpenChange={vi.fn()}
+          realmSlugs={slugs}
+          capabilities={USER_ADMIN_CAPABILITIES_V1}
+        />
+      </AlertProvider>
+    );
+    fireEvent.click(screen.getByRole('switch', { name: 'Verified' }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Verify' }));
+    await waitFor(() =>
+      expect(api.updateUser).toHaveBeenCalledWith('u1', { isVerified: true })
+    );
+  });
+
   it('keeps the edit sheet switch unchanged when verification is cancelled', async () => {
     render(
       <AlertProvider>
@@ -1045,6 +1066,20 @@ describe('user list controls', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Blocked')).toBeInTheDocument();
     expect(screen.getByTitle(registered)).toHaveTextContent(/\d/);
+  });
+
+  it('steps back to the last page when the current one was emptied', () => {
+    nav.search = 'skip=20&isActive=true';
+    render(<UsersTable data={[]} count={20} />);
+    expect(nav.replace).toHaveBeenCalledWith(
+      '/authentication/users?skip=10&isActive=true'
+    );
+  });
+
+  it('stays put on an empty result that is not past the end', () => {
+    nav.search = 'isActive=true';
+    render(<UsersTable data={[]} count={0} />);
+    expect(nav.replace).not.toHaveBeenCalled();
   });
 
   it('cycles the Registered header to a descending sort', () => {
@@ -1273,6 +1308,135 @@ describe('account editing', () => {
     expect(
       within(account).getByRole('button', { name: 'Remove' })
     ).toBeDisabled();
+  });
+
+  it('disables phone removal for two-factor without a stored method', () => {
+    renderAccount(user({ hasTwoFA: true, phoneNumber: '+306912345678' }), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+    });
+    const account = screen.getByRole('region', { name: 'Account' });
+    expect(
+      within(account).getByRole('button', { name: 'Remove' })
+    ).toBeDisabled();
+  });
+
+  it('keeps phone removal available with authenticator two-factor', () => {
+    renderAccount(
+      user({
+        hasTwoFA: true,
+        twoFaMethod: 'authenticator',
+        phoneNumber: '+306912345678',
+      }),
+      { capabilities: USER_ADMIN_CAPABILITIES_V1 }
+    );
+    const account = screen.getByRole('region', { name: 'Account' });
+    expect(
+      within(account).getByRole('button', { name: 'Remove' })
+    ).toBeEnabled();
+  });
+
+  it('saves a phone number without resending other fields on a v1 backend', async () => {
+    renderAccount(user({ hasTwoFA: true }), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+    });
+    fireEvent.change(screen.getByLabelText('Phone'), {
+      target: { value: '+30 691 234 5678' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(api.updateUser).toHaveBeenCalledWith('u1', {
+        phoneNumber: '+306912345678',
+      })
+    );
+  });
+
+  it('disables the reset email for a user without an email address', () => {
+    renderAccount(user({ email: '' }), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+    });
+    expect(
+      screen.getByRole('button', { name: 'Send reset email' })
+    ).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Set password' })).toBeEnabled();
+  });
+
+  it('hides the reset email when the backend does not list it', () => {
+    renderAccount(user({}), {
+      capabilities: {
+        ...USER_ADMIN_CAPABILITIES_V1,
+        actions: USER_ADMIN_CAPABILITIES_V1.actions.filter(
+          action => action !== 'sendPasswordReset'
+        ),
+      },
+    });
+    expect(
+      screen.getByRole('button', { name: 'Set password' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Send reset email' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('loads every page of the user teams', async () => {
+    const firstPage = Array.from({ length: 50 }, (_, index) => ({
+      _id: `team-${index}`,
+      name: `Team ${index}`,
+      roles: ['member'],
+    }));
+    api.getUserTeams.mockImplementation(
+      async (_id: string, params?: { skip?: number }) => ({
+        ok: true,
+        data:
+          (params?.skip ?? 0) === 0
+            ? { teams: firstPage, count: 51 }
+            : {
+                teams: [
+                  { _id: 'team-50', name: 'Last team', roles: ['owner'] },
+                ],
+                count: 51,
+              },
+      })
+    );
+    renderAccount(user({}), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+      teams: true,
+    });
+    const teams = await screen.findByRole('region', { name: 'Teams' });
+    expect(await within(teams).findByText('Last team')).toBeInTheDocument();
+    expect(within(teams).getByText('Team 0')).toBeInTheDocument();
+    expect(api.getUserTeams).toHaveBeenCalledTimes(2);
+    expect(api.getUserTeams).toHaveBeenNthCalledWith(1, 'u1', {
+      skip: 0,
+      limit: 50,
+    });
+    expect(api.getUserTeams).toHaveBeenNthCalledWith(2, 'u1', {
+      skip: 50,
+      limit: 50,
+    });
+  });
+
+  it('shows the teams error when a later page fails', async () => {
+    api.getUserTeams
+      .mockResolvedValueOnce({
+        ok: true,
+        data: {
+          teams: [{ _id: 'team-1', name: 'Acme', roles: ['member'] }],
+          count: 2,
+        },
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        code: 'INTERNAL',
+        message: 'Teams are unavailable',
+      });
+    renderAccount(user({}), {
+      capabilities: USER_ADMIN_CAPABILITIES_V1,
+      teams: true,
+    });
+    const teams = await screen.findByRole('region', { name: 'Teams' });
+    expect(
+      await within(teams).findByText('Teams are unavailable')
+    ).toBeInTheDocument();
   });
 
   it('disables 2FA with a patch when reset is unavailable', async () => {

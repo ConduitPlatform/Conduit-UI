@@ -162,6 +162,28 @@ export default function UsersTable({
     urlSearch,
   ]);
 
+  // Deleting the last rows of the last page leaves `skip` past the end.
+  useEffect(() => {
+    if (data.length > 0 || count <= 0 || query.skip <= 0) return;
+    const lastPageSkip = Math.floor((count - 1) / query.limit) * query.limit;
+    if (lastPageSkip >= query.skip) return;
+    const params = applyUserListPatch(
+      searchParams,
+      { skip: lastPageSkip },
+      capabilities
+    );
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [
+    capabilities,
+    count,
+    data.length,
+    pathname,
+    query.limit,
+    query.skip,
+    router,
+    searchParams,
+  ]);
+
   useEffect(() => {
     setBulkRunning(running);
     return () => setBulkRunning(false);

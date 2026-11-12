@@ -47,4 +47,23 @@ describe('userPatch', () => {
       phoneNumber: '',
     });
   });
+
+  it('sends only the changed fields to a backend that patches what it is sent', () => {
+    expect(
+      userPatch(user, { isVerified: false }, { changesOnly: true })
+    ).toEqual({ isVerified: false });
+    expect(
+      userPatch(
+        user,
+        { email: ' New@Acme.TEST ', isVerified: true },
+        { changesOnly: true }
+      )
+    ).toEqual({ email: 'new@acme.test', isVerified: true });
+    expect(userPatch(user, { phoneNumber: '' }, { changesOnly: true })).toEqual(
+      { phoneNumber: '' }
+    );
+    expect(userPatch(user, { hasTwoFA: false }, { changesOnly: true })).toEqual(
+      { hasTwoFA: false }
+    );
+  });
 });

@@ -407,7 +407,15 @@ async function route(
     (match = /^\/authentication\/users\/([^/]+)\/teams$/.exec(pathname)) &&
     method === 'GET'
   ) {
-    sendJson(response, 200, listUserTeams(auth, match[1]));
+    sendJson(
+      response,
+      200,
+      listUserTeams(auth, match[1], {
+        skip: number(search.get('skip'), 0),
+        limit: number(search.get('limit'), 25),
+        search: text(search.get('search')),
+      })
+    );
     return true;
   }
 

@@ -46,6 +46,16 @@ export function normalizeCapabilities(value: unknown): UserAdminCapabilities {
   };
 }
 
+/**
+ * A v1 backend patches only the fields it is sent. Older handlers need the
+ * email and 2FA fields resent on every patch.
+ */
+export function patchesOnlySentFields(
+  capabilities: UserAdminCapabilities
+): boolean {
+  return capabilities.version >= 1;
+}
+
 export function hasAction(
   capabilities: UserAdminCapabilities,
   action: string

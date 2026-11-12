@@ -25,6 +25,7 @@ import {
 import { updateUser } from '@/lib/api/authentication';
 import {
   hasAction,
+  patchesOnlySentFields,
   type UserAdminCapabilities,
 } from '@/lib/authentication/userCapabilities';
 import { userPatch } from '@/lib/authentication/userPatch';
@@ -77,7 +78,9 @@ export function AccountSection({
   });
   const busy = status === 'confirming' || status === 'saving';
   const hasEmail = user.email.trim() !== '';
-  const smsTwoFa = user.hasTwoFA && user.twoFaMethod === 'sms';
+  // The backend counts 2FA without an authenticator method as SMS.
+  const smsTwoFa = user.hasTwoFA && user.twoFaMethod !== 'authenticator';
+  const patchOptions = { changesOnly: patchesOnlySentFields(capabilities) };
   const canClearPhone = hasAction(capabilities, 'clearPhone');
 
   const saveEmail = form.handleSubmit(async values => {
@@ -94,7 +97,11 @@ export function AccountSection({
       perform: () =>
         updateUser(
           user._id,
-          userPatch(user, { email: values.email, isVerified: values.verified })
+          userPatch(
+            user,
+            { email: values.email, isVerified: values.verified },
+            patchOptions
+          )
         ),
       success: {
         title: 'Email updated',
@@ -133,7 +140,7 @@ export function AccountSection({
     setPhoneStatus({ kind: 'saving' });
     const result = await updateUser(
       user._id,
-      userPatch(user, { phoneNumber: parsed.data })
+      userPatch(user, { phoneNumber: parsed.data }, patchOptions)
     );
     if (!result.ok) {
       setPhoneStatus({ kind: 'error', message: result.message });
@@ -152,7 +159,11 @@ export function AccountSection({
         actionText: 'Remove',
         variant: 'destructive',
       },
-      perform: () => updateUser(user._id, userPatch(user, { phoneNumber: '' })),
+      perform: () =>
+        updateUser(
+          user._id,
+          userPatch(user, { phoneNumber: '' }, patchOptions)
+        ),
       success: { title: 'Phone number removed' },
       failure: {
         title: 'Could not remove phone number',

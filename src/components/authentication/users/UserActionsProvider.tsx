@@ -82,7 +82,7 @@ export function UserActionsProvider({
   users?: readonly User[];
 }>) {
   const router = useRouter();
-  const setUserVerified = useSetUserVerified();
+  const setUserVerified = useSetUserVerified(capabilities);
   const { run } = useUserMutation();
   const [userAdd, setUserAdd] = React.useState<boolean>(false);
   const [editingId, setEditingId] = React.useState<string | undefined>();

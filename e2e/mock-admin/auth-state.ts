@@ -1452,26 +1452,40 @@ export function listUsers(
 }
 
 /** Teams one user belongs to, grouped from membership rows. */
-export function listUserTeams(auth: MockAuthState, userId: string) {
+export function listUserTeams(
+  auth: MockAuthState,
+  userId: string,
+  options: { skip?: number; limit?: number; search?: string } = {}
+) {
   findUser(auth, userId);
-  const teams = auth.teamMembers
-    .filter(member => member.user === userId)
-    .map(member => {
-      const team = auth.teams.find(item => item._id === member.team);
+  const byTeam = new Map<string, string[]>();
+  for (const member of auth.teamMembers) {
+    if (member.user !== userId) continue;
+    const roles = byTeam.get(member.team) ?? [];
+    if (!roles.includes(member.role)) roles.push(member.role);
+    byTeam.set(member.team, roles);
+  }
+  const needle = options.search?.toLowerCase();
+  const teams = [...byTeam.entries()]
+    .map(([teamId, roles]) => {
+      const team = auth.teams.find(item => item._id === teamId);
       const realmMembership = auth.memberships.find(
-        item => item.user === userId && item.realm === member.team
+        item => item.user === userId && item.realm === teamId
       );
       return {
-        _id: member.team,
-        name: team?.name ?? member.team,
-        roles: [member.role],
+        _id: teamId,
+        name: team?.name ?? teamId,
+        roles,
         ...(team?.parentTeam ? { parentTeam: team.parentTeam } : {}),
         ...(team?.isDefault !== undefined ? { isDefault: team.isDefault } : {}),
         ...(team?.realm ? { realm: team.realm } : {}),
         ...(realmMembership ? { membershipType: realmMembership.type } : {}),
       };
-    });
-  return { teams, count: teams.length };
+    })
+    .filter(team => !needle || team.name.toLowerCase().includes(needle));
+  const skip = options.skip ?? 0;
+  const limit = options.limit ?? 25;
+  return { teams: teams.slice(skip, skip + limit), count: teams.length };
 }
 
 /** `GET /authentication/users/:id/realms`: the home realm and every guest realm. */
