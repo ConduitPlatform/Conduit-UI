@@ -1610,6 +1610,45 @@ describe('account editing', () => {
     );
   });
 
+  it('explains typed set-password failures', async () => {
+    const cases: [string, number, string][] = [
+      [
+        'PASSWORD_AUTH_NOT_AVAILABLE',
+        403,
+        'This user does not sign in with a password',
+      ],
+      ['ANONYMOUS_USER_NOT_ELIGIBLE', 403, 'Anonymous users have no password'],
+      // a typed 404 is a missing user, not an old Conduit
+      ['USER_NOT_FOUND', 404, 'This user no longer exists'],
+    ];
+    for (const [code, status, text] of cases) {
+      api.setUserPassword.mockResolvedValueOnce({
+        ok: false,
+        code,
+        status,
+        message: 'server text',
+      });
+      const { unmount } = renderAccount(user({}), {
+        capabilities: USER_ADMIN_CAPABILITIES_V1,
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Set password' }));
+      const dialog = await screen.findByRole('dialog', {
+        name: 'Set password',
+      });
+      fireEvent.change(within(dialog).getByLabelText('New password'), {
+        target: { value: 'longenough' },
+      });
+      fireEvent.change(within(dialog).getByLabelText('Confirm password'), {
+        target: { value: 'longenough' },
+      });
+      fireEvent.click(
+        within(dialog).getByRole('button', { name: 'Set password' })
+      );
+      expect(await within(dialog).findByText(text)).toBeInTheDocument();
+      unmount();
+    }
+  });
+
   it('lists teams, changes a role, and surfaces a home-user removal error', async () => {
     api.getUserTeams.mockResolvedValue({
       ok: true,

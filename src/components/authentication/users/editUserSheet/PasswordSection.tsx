@@ -53,9 +53,21 @@ type PasswordStatus =
   | { kind: 'error'; message: string };
 
 function passwordFailure(failure: ActionFailure): string {
+  // typed codes first: a typed 404 means the user is gone, not an old Conduit
+  switch (failure.code) {
+    case 'USER_NOT_FOUND':
+      return 'This user no longer exists';
+    case 'PASSWORD_AUTH_NOT_AVAILABLE':
+      return 'This user does not sign in with a password';
+    case 'ANONYMOUS_USER_NOT_ELIGIBLE':
+      return 'Anonymous users have no password';
+    case 'USER_EMAIL_MISSING':
+      return 'This user has no email address';
+  }
   if (failure.status === 404 || failure.code === 'NOT_FOUND') {
     return 'Not supported by this Conduit version';
   }
+  // older Conduit versions answered without a typed code
   if (failure.code === 'FAILED_PRECONDITION') {
     return failure.message && failure.message !== 'Precondition failed'
       ? failure.message

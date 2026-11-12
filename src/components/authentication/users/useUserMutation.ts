@@ -39,6 +39,10 @@ function failureDescription(
   description: RunOptions['failure']['description'],
   unsupportedOn404: boolean
 ): string {
+  // a typed USER_NOT_FOUND is a 404 from a route that exists: the user is gone
+  if (failure.code === 'USER_NOT_FOUND') {
+    return 'This user no longer exists';
+  }
   if (
     unsupportedOn404 &&
     (failure.status === 404 || failure.code === 'NOT_FOUND')
