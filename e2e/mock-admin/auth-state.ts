@@ -124,7 +124,8 @@ function seedTeam(
 function seedUser(
   id: string,
   email: string,
-  homeRealm: string | null
+  homeRealm: string | null,
+  extra: Partial<MockUser> = {}
 ): MockUser {
   return {
     _id: id,
@@ -136,6 +137,7 @@ function seedUser(
     homeRealm,
     createdAt: FIXED_NOW,
     updatedAt: FIXED_NOW,
+    ...extra,
   };
 }
 
@@ -209,7 +211,7 @@ function baseAuthenticationConfig(): Record<string, unknown> {
       allowedIssuers: [],
       backUpCodes: { enabled: false },
     },
-    phoneAuthentication: { enabled: false },
+    phoneAuthentication: { enabled: true },
     biometricAuthentication: { enabled: false },
     captcha: {
       enabled: false,
@@ -236,6 +238,7 @@ function baseAuthenticationConfig(): Record<string, unknown> {
       verification: { required: false, send_email: false, redirect_uri: '' },
       forgot_password_redirect_uri: '',
     },
+    google: { enabled: true },
     teams: {
       enabled: true,
       enableDefaultTeam: false,
@@ -406,12 +409,19 @@ export function createAuthState(
     realmSettings: [acmeSettings, strictSettings],
     users: [
       seedUser(USER_ALICE_ID, 'alice@acme.test', REALM_ACME_ID),
-      seedUser(USER_BOB_ID, 'bob@acme.test', REALM_ACME_ID),
-      seedUser(USER_CAROL_ID, 'carol@strict.test', REALM_STRICT_ID),
+      seedUser(USER_BOB_ID, 'bob@acme.test', REALM_ACME_ID, {
+        active: false,
+        createdAt: '2026-06-01T00:00:00.000Z',
+      }),
+      seedUser(USER_CAROL_ID, 'carol@strict.test', REALM_STRICT_ID, {
+        google: { id: 'carol-google' },
+      }),
       seedUser(USER_DAVE_ID, 'dave@strict.test', REALM_STRICT_ID),
-      seedUser(USER_ERIN_ID, 'erin@global.test', null),
+      seedUser(USER_ERIN_ID, 'erin@global.test', null, { isVerified: false }),
       seedUser(USER_FRANK_ID, 'frank@global.test', null),
-      seedUser(USER_GINA_ID, 'gina@global.test', null),
+      seedUser(USER_GINA_ID, 'gina@global.test', null, {
+        phoneNumber: '+306912345678',
+      }),
       // Isolated only: one email, two home accounts, one per realm.
       ...(isolated
         ? [
@@ -485,6 +495,8 @@ export function createAuthState(
         : []),
     ],
     signedOutUserIds: [],
+    legacyUserAdmin: false,
+    failDeleteUserIds: [],
     seq: 0,
   };
 }
@@ -1377,9 +1389,21 @@ export function removeGuest(
 export type UserFilters = {
   search?: string;
   isActive?: boolean;
+  isVerified?: boolean;
+  isAnonymous?: boolean;
+  hasTwoFA?: boolean;
+  provider?: string;
   homeRealm?: string;
   realm?: string;
 };
+
+function matchesProvider(user: MockUser, provider: string): boolean {
+  if (provider === 'phone') return Boolean(user.phoneNumber);
+  if (provider === 'local')
+    return !user.phoneNumber && user.google === undefined;
+  if (provider === 'google') return user.google !== undefined;
+  return false;
+}
 
 export function listUsers(
   auth: MockAuthState,
@@ -1391,6 +1415,21 @@ export function listUsers(
   );
   if (filters.isActive !== undefined) {
     users = users.filter(user => user.active === filters.isActive);
+  }
+  if (filters.isVerified !== undefined) {
+    users = users.filter(user => user.isVerified === filters.isVerified);
+  }
+  if (filters.hasTwoFA !== undefined) {
+    users = users.filter(user => user.hasTwoFA === filters.hasTwoFA);
+  }
+  if (filters.isAnonymous === true) {
+    users = users.filter(user => user.isAnonymous === true);
+  } else if (filters.isAnonymous === false) {
+    users = users.filter(user => user.isAnonymous !== true);
+  }
+  if (filters.provider) {
+    const provider = filters.provider;
+    users = users.filter(user => matchesProvider(user, provider));
   }
   if (filters.homeRealm !== undefined) {
     const target = filters.homeRealm === 'global' ? null : filters.homeRealm;
@@ -1410,6 +1449,43 @@ export function listUsers(
     (user, field) => (user as unknown as Json)[field]
   );
   return { users: page, count: users.length };
+}
+
+/** Teams one user belongs to, grouped from membership rows. */
+export function listUserTeams(
+  auth: MockAuthState,
+  userId: string,
+  options: { skip?: number; limit?: number; search?: string } = {}
+) {
+  findUser(auth, userId);
+  const byTeam = new Map<string, string[]>();
+  for (const member of auth.teamMembers) {
+    if (member.user !== userId) continue;
+    const roles = byTeam.get(member.team) ?? [];
+    if (!roles.includes(member.role)) roles.push(member.role);
+    byTeam.set(member.team, roles);
+  }
+  const needle = options.search?.toLowerCase();
+  const teams = [...byTeam.entries()]
+    .map(([teamId, roles]) => {
+      const team = auth.teams.find(item => item._id === teamId);
+      const realmMembership = auth.memberships.find(
+        item => item.user === userId && item.realm === teamId
+      );
+      return {
+        _id: teamId,
+        name: team?.name ?? teamId,
+        roles,
+        ...(team?.parentTeam ? { parentTeam: team.parentTeam } : {}),
+        ...(team?.isDefault !== undefined ? { isDefault: team.isDefault } : {}),
+        ...(team?.realm ? { realm: team.realm } : {}),
+        ...(realmMembership ? { membershipType: realmMembership.type } : {}),
+      };
+    })
+    .filter(team => !needle || team.name.toLowerCase().includes(needle));
+  const skip = options.skip ?? 0;
+  const limit = options.limit ?? 25;
+  return { teams: teams.slice(skip, skip + limit), count: teams.length };
 }
 
 /** `GET /authentication/users/:id/realms`: the home realm and every guest realm. */

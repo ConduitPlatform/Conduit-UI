@@ -705,6 +705,23 @@ function handleTestControl(
     sendJson(response, 200, getState().auth);
     return true;
   }
+  if (pathname === '/__test__/auth/legacy' && method === 'POST') {
+    return readJsonBody(request).then(body => {
+      getState().auth.legacyUserAdmin = isRecord(body) && body.legacy === true;
+      sendJson(response, 200, { ok: true });
+      return true;
+    });
+  }
+  if (pathname === '/__test__/auth/fail' && method === 'POST') {
+    return readJsonBody(request).then(body => {
+      const id = isRecord(body) && typeof body.id === 'string' ? body.id : '';
+      if (id && isRecord(body) && body.op === 'delete') {
+        getState().auth.failDeleteUserIds.push(id);
+      }
+      sendJson(response, 200, { ok: true });
+      return true;
+    });
+  }
   if (pathname === '/__test__/state' && method === 'GET') {
     const state = getState();
     const provider =

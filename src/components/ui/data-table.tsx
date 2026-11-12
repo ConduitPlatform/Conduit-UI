@@ -5,6 +5,9 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  type OnChangeFn,
+  type RowSelectionState,
+  type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 import {
@@ -36,6 +39,12 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   count?: number;
   children?: React.ReactNode;
+  /** Server-side sort. Omit it and the table keeps today's unsorted rows. */
+  sorting?: SortingState;
+  onSortingChange?: OnChangeFn<SortingState>;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+  getRowId?: (row: TData, index: number) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +52,11 @@ export function DataTable<TData, TValue>({
   data,
   count,
   children,
+  sorting,
+  onSortingChange,
+  rowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: Readonly<DataTableProps<TData, TValue>>) {
   const isServerPaginated = count !== undefined;
 
@@ -66,6 +80,23 @@ export function DataTable<TData, TValue>({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId,
+    enableSorting: sorting !== undefined,
+    ...(sorting !== undefined
+      ? {
+          manualSorting: true,
+          onSortingChange: onSortingChange ?? (() => undefined),
+        }
+      : {}),
+    ...(rowSelection !== undefined
+      ? {
+          onRowSelectionChange: onRowSelectionChange ?? (() => undefined),
+        }
+      : {}),
+    state: {
+      ...(sorting !== undefined ? { sorting } : {}),
+      ...(rowSelection !== undefined ? { rowSelection } : {}),
+    },
     ...(isServerPaginated
       ? {
           manualPagination: true,
@@ -128,16 +159,27 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map(header => {
+                  const sorted = header.column.getIsSorted();
+                  const ariaSort =
+                    sorting !== undefined && header.column.getCanSort()
+                      ? sorted === 'asc'
+                        ? 'ascending'
+                        : sorted === 'desc'
+                          ? 'descending'
+                          : 'none'
+                      : undefined;
+                  return (
+                    <TableHead key={header.id} aria-sort={ariaSort}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>

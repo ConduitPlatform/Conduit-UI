@@ -186,6 +186,9 @@ export type MockUser = {
   hasTwoFA: boolean;
   twoFaMethod: string;
   homeRealm: string | null;
+  phoneNumber?: string;
+  isAnonymous?: boolean;
+  google?: { id: string };
   createdAt: string;
   updatedAt: string;
 };
@@ -222,6 +225,10 @@ export type MockAuthState = {
   memberships: MockRealmMembership[];
   /** Users whose tokens were deleted (force demote, force home-realm move). */
   signedOutUserIds: string[];
+  /** 404 the capabilities route, as a backend from before admin user management. */
+  legacyUserAdmin: boolean;
+  /** User ids whose `DELETE /users/:id` fails. */
+  failDeleteUserIds: string[];
   seq: number;
 };
 

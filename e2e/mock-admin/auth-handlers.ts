@@ -16,6 +16,7 @@ import {
   listRealms,
   listTeamMembers,
   listTeams,
+  listUserTeams,
   listUsers,
   MockHttpError,
   moveHomeRealm,
@@ -312,6 +313,10 @@ async function route(
         listUsers(auth, paging(search), {
           search: text(search.get('search')),
           isActive: flag(search.get('isActive')),
+          isVerified: flag(search.get('isVerified')),
+          isAnonymous: flag(search.get('isAnonymous')),
+          hasTwoFA: flag(search.get('hasTwoFA')),
+          provider: text(search.get('provider')),
           homeRealm: text(search.get('homeRealm')),
           realm: text(search.get('realm')),
         })
@@ -329,6 +334,90 @@ async function route(
       return true;
     }
     return false;
+  }
+
+  if (pathname === '/authentication/users/capabilities' && method === 'GET') {
+    if (auth.legacyUserAdmin) {
+      throw new MockHttpError(404, 'Not found');
+    }
+    sendJson(response, 200, {
+      version: 1,
+      filters: [
+        'isVerified',
+        'hasTwoFA',
+        'isAnonymousExclusive',
+        'providerPhone',
+      ],
+      sort: ['email', 'createdAt', 'updatedAt', 'active', 'isVerified'],
+      actions: [
+        'setPassword',
+        'sendPasswordReset',
+        'resetTwoFa',
+        'clearPhone',
+        'bulkDeleteFull',
+        'bulkToggleFixed',
+        'userTeams',
+        'getUserById',
+      ],
+    });
+    return true;
+  }
+
+  if (
+    (match = /^\/authentication\/users\/([^/]+)\/password$/.exec(pathname)) &&
+    method === 'POST'
+  ) {
+    findUser(auth, match[1]);
+    const input = await body(request);
+    const password =
+      isRecord(input) && typeof input.password === 'string'
+        ? input.password
+        : '';
+    if (password.length < 8) {
+      throw new MockHttpError(400, 'Password must be at least 8 characters');
+    }
+    sendJson(response, 200, 'OK');
+    return true;
+  }
+
+  if (
+    (match = /^\/authentication\/users\/([^/]+)\/password-reset$/.exec(
+      pathname
+    )) &&
+    method === 'POST'
+  ) {
+    findUser(auth, match[1]);
+    sendJson(response, 200, 'OK');
+    return true;
+  }
+
+  if (
+    (match = /^\/authentication\/users\/([^/]+)\/two-fa\/reset$/.exec(
+      pathname
+    )) &&
+    method === 'POST'
+  ) {
+    const user = findUser(auth, match[1]);
+    user.hasTwoFA = false;
+    user.twoFaMethod = '';
+    sendJson(response, 200, 'OK');
+    return true;
+  }
+
+  if (
+    (match = /^\/authentication\/users\/([^/]+)\/teams$/.exec(pathname)) &&
+    method === 'GET'
+  ) {
+    sendJson(
+      response,
+      200,
+      listUserTeams(auth, match[1], {
+        skip: number(search.get('skip'), 0),
+        limit: number(search.get('limit'), 25),
+        search: text(search.get('search')),
+      })
+    );
+    return true;
   }
 
   if (
@@ -359,6 +448,14 @@ async function route(
   }
 
   if ((match = /^\/authentication\/users\/([^/]+)$/.exec(pathname))) {
+    if (method === 'GET') {
+      // `/users/capabilities` is answered above and never reaches this route.
+      if (auth.legacyUserAdmin) {
+        throw new MockHttpError(404, 'Not found');
+      }
+      sendJson(response, 200, findUser(auth, match[1]));
+      return true;
+    }
     if (method === 'PATCH') {
       const user = findUser(auth, match[1]);
       const patch = await body(request);
@@ -368,6 +465,9 @@ async function route(
     }
     if (method === 'DELETE') {
       const user = findUser(auth, match[1]);
+      if (auth.failDeleteUserIds.includes(user._id)) {
+        throw new MockHttpError(500, 'delete failed');
+      }
       auth.users = auth.users.filter(item => item !== user);
       sendJson(response, 200, 'OK');
       return true;

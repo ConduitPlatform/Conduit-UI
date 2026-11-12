@@ -2,7 +2,12 @@
 import mergeWith from 'lodash/mergeWith';
 import { getApiClient } from '@/lib/api';
 import { type ActionResult, runAction } from '@/lib/api/action-result';
-import { TeamUser, User } from '@/lib/models/User';
+import { TeamUser, User, UserTeamMembership } from '@/lib/models/User';
+import type { UserAuthPatch } from '@/lib/authentication/userPatch';
+import {
+  normalizeCapabilities,
+  type UserAdminCapabilities,
+} from '@/lib/authentication/userCapabilities';
 import {
   AuthenticationConfig,
   AuthenticationConfigResponse,
@@ -25,6 +30,9 @@ export const getUsers = async (
     sort?: string;
     search?: string;
     isActive?: boolean;
+    isVerified?: boolean;
+    isAnonymous?: boolean;
+    hasTwoFA?: boolean;
     provider?: string;
     /** Realm team id, or `'global'` for users without a home realm. */
     homeRealm?: string;
@@ -254,21 +262,134 @@ export const patchAuthenticationSettingsMerged = async (
   await patchAuthenticationSettings(merged);
 };
 
-export const patchUser = async (
-  userId: string,
-  data: Partial<{
-    email: string;
-    isVerified: boolean;
-    hasTwoFA: boolean;
-    phoneNumber: string;
-    twoFaMethod: string;
-  }>
-) => {
+export const patchUser = async (userId: string, data: UserAuthPatch) => {
   const res = await (
     await getApiClient()
   ).patch<User>(`/authentication/users/${userId}`, data);
   return res.data;
 };
+
+/** `ActionResult` variant of `patchUser`. The body is an explicit allow-list. */
+export const updateUser = async (
+  userId: string,
+  data: UserAuthPatch
+): Promise<ActionResult<User>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).patch<User>(`/authentication/users/${userId}`, data);
+    return res.data;
+  });
+
+/**
+ * `GET /authentication/users/:id`. Call it only when the backend advertises
+ * `getUserById`. A missing user comes back as `NOT_FOUND`.
+ */
+export const getUserById = async (
+  userId: string
+): Promise<ActionResult<User>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).get<User>(`/authentication/users/${encodeURIComponent(userId)}`);
+    return res.data;
+  });
+/** 404 or any failure means a legacy backend. Callers hide every gated control. */
+export const getUserAdminCapabilities = async (): Promise<
+  ActionResult<UserAdminCapabilities>
+> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).get<unknown>('/authentication/users/capabilities');
+    return normalizeCapabilities(res.data);
+  });
+
+export const deleteUserResult = async (
+  userId: string
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).delete<string>(`/authentication/users/${userId}`);
+    return res.data;
+  });
+
+export const blockUserResult = async (
+  userId: string,
+  block: boolean
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<string>(
+      `/authentication/users/${userId}/${block ? 'block' : 'unblock'}`
+    );
+    return res.data;
+  });
+
+export const setUserPassword = async (
+  userId: string,
+  password: string,
+  revokeSessions = true
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<string>(`/authentication/users/${userId}/password`, {
+      password,
+      revokeSessions,
+    });
+    return res.data;
+  });
+
+export const sendUserPasswordReset = async (
+  userId: string
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<string>(`/authentication/users/${userId}/password-reset`);
+    return res.data;
+  });
+
+export const resetUserTwoFa = async (
+  userId: string
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<string>(`/authentication/users/${userId}/two-fa/reset`);
+    return res.data;
+  });
+
+export const getUserTeams = async (
+  userId: string,
+  params?: { skip?: number; limit?: number; search?: string }
+): Promise<ActionResult<{ teams: UserTeamMembership[]; count: number }>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).get<{ teams: UserTeamMembership[]; count: number }>(
+      `/authentication/users/${userId}/teams`,
+      { params }
+    );
+    return res.data;
+  });
+
+/** Adds members by id. `addTeamMembers` takes full user rows. */
+export const addTeamMemberIds = async (
+  teamId: string,
+  memberIds: string[]
+): Promise<ActionResult<string>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).post<string>(`/authentication/teams/${teamId}/members`, {
+      members: memberIds,
+    });
+    return res.data;
+  });
 
 export const deleteUsers = async (ids: string[]) => {
   const res = await (
