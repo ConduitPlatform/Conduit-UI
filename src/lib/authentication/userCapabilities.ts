@@ -26,6 +26,7 @@ export const USER_ADMIN_CAPABILITIES_V1: UserAdminCapabilities = {
     'bulkDeleteFull',
     'bulkToggleFixed',
     'userTeams',
+    'getUserById',
   ],
 };
 
@@ -61,6 +62,11 @@ export function hasAction(
   action: string
 ): boolean {
   return capabilities.actions.includes(action);
+}
+
+/** `GET /authentication/users/:id` exists. Older backends only find a user through the list search. */
+export function canGetUserById(capabilities: UserAdminCapabilities): boolean {
+  return hasAction(capabilities, 'getUserById');
 }
 
 export function hasFilter(

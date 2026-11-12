@@ -27,6 +27,7 @@ vi.mock('next/navigation', () => ({
 
 const api = vi.hoisted(() => ({
   getUsers: vi.fn(),
+  getUserById: vi.fn(),
   createUser: vi.fn(),
   setUserHomeRealm: vi.fn(),
   getUserRealms: vi.fn(),
@@ -752,6 +753,95 @@ describe('EditUserSheet loading the user', () => {
       expect(screen.getByRole('switch', { name: 'Verified' })).toBeEnabled()
     );
     expect(screen.getByRole('switch', { name: 'Verified' })).not.toBeChecked();
+  });
+});
+
+describe('EditUserSheet loading the user by id', () => {
+  const renderLookup = (
+    capabilities: typeof USER_ADMIN_CAPABILITIES_V1,
+    userId = 'u1'
+  ) =>
+    render(
+      <AlertProvider>
+        <EditUserSheet
+          userId={userId}
+          open
+          onOpenChange={vi.fn()}
+          realmSlugs={slugs}
+          capabilities={capabilities}
+        />
+      </AlertProvider>
+    );
+
+  it('uses the id route when the backend advertises it', async () => {
+    const id = '0b9f6c1e-7a52-4d0b-9a3e-5f1c2d3e4f50';
+    api.getUserById.mockResolvedValue({
+      ok: true,
+      data: user({ _id: id, isVerified: true }),
+    });
+    renderLookup(USER_ADMIN_CAPABILITIES_V1, id);
+    await waitFor(() =>
+      expect(screen.getByRole('switch', { name: 'Verified' })).toBeEnabled()
+    );
+    expect(screen.getByRole('switch', { name: 'Verified' })).toBeChecked();
+    expect(api.getUserById).toHaveBeenCalledWith(id);
+    expect(api.getUsers).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the list search when the route is not advertised', async () => {
+    api.getUsers.mockResolvedValue({
+      users: [user({ isVerified: true })],
+      count: 1,
+    });
+    renderLookup({
+      ...USER_ADMIN_CAPABILITIES_V1,
+      actions: USER_ADMIN_CAPABILITIES_V1.actions.filter(
+        action => action !== 'getUserById'
+      ),
+    });
+    await waitFor(() =>
+      expect(screen.getByRole('switch', { name: 'Verified' })).toBeEnabled()
+    );
+    expect(api.getUsers).toHaveBeenCalledWith(0, 5, { search: 'u1' });
+    expect(api.getUserById).not.toHaveBeenCalled();
+  });
+
+  it('treats a 404 from the id route as a missing user', async () => {
+    api.getUserById.mockResolvedValue({
+      ok: false,
+      code: 'NOT_FOUND',
+      message: 'User does not exist',
+      status: 404,
+    });
+    renderLookup(USER_ADMIN_CAPABILITIES_V1);
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Could not load this user'
+    );
+    expect(
+      screen.getByRole('button', { name: 'Move home realm' })
+    ).toBeDisabled();
+    expect(api.getUsers).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when the id route fails', async () => {
+    api.getUserById.mockResolvedValue({
+      ok: false,
+      code: 'INTERNAL',
+      message: 'boom',
+      status: 500,
+    });
+    renderLookup(USER_ADMIN_CAPABILITIES_V1);
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Could not load this user'
+    );
+    expect(screen.getByRole('switch', { name: 'Verified' })).toBeDisabled();
+    expect(api.getUsers).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when the id route rejects', async () => {
+    api.getUserById.mockRejectedValue(new Error('boom'));
+    renderLookup(USER_ADMIN_CAPABILITIES_V1);
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
   });
 });
 

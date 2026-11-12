@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   LEGACY_CAPABILITIES,
+  canGetUserById,
   hasAction,
   hasFilter,
   normalizeCapabilities,
@@ -37,5 +38,20 @@ describe('user capabilities', () => {
   it('resends unchanged fields only to a legacy backend', () => {
     expect(patchesOnlySentFields(LEGACY_CAPABILITIES)).toBe(false);
     expect(patchesOnlySentFields(USER_ADMIN_CAPABILITIES_V1)).toBe(true);
+  });
+
+  it('loads a user by id only when the backend advertises the route', () => {
+    expect(canGetUserById(LEGACY_CAPABILITIES)).toBe(false);
+    expect(
+      canGetUserById(
+        normalizeCapabilities({ version: 1, actions: ['setPassword'] })
+      )
+    ).toBe(false);
+    expect(
+      canGetUserById(
+        normalizeCapabilities({ version: 1, actions: ['getUserById'] })
+      )
+    ).toBe(true);
+    expect(canGetUserById(USER_ADMIN_CAPABILITIES_V1)).toBe(true);
   });
 });

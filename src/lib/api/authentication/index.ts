@@ -281,6 +281,19 @@ export const updateUser = async (
     return res.data;
   });
 
+/**
+ * `GET /authentication/users/:id`. Call it only when the backend advertises
+ * `getUserById`. A missing user comes back as `NOT_FOUND`.
+ */
+export const getUserById = async (
+  userId: string
+): Promise<ActionResult<User>> =>
+  runAction(async () => {
+    const res = await (
+      await getApiClient()
+    ).get<User>(`/authentication/users/${encodeURIComponent(userId)}`);
+    return res.data;
+  });
 /** 404 or any failure means a legacy backend. Callers hide every gated control. */
 export const getUserAdminCapabilities = async (): Promise<
   ActionResult<UserAdminCapabilities>

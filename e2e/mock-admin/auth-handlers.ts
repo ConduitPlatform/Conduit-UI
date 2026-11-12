@@ -357,6 +357,7 @@ async function route(
         'bulkDeleteFull',
         'bulkToggleFixed',
         'userTeams',
+        'getUserById',
       ],
     });
     return true;
@@ -447,6 +448,14 @@ async function route(
   }
 
   if ((match = /^\/authentication\/users\/([^/]+)$/.exec(pathname))) {
+    if (method === 'GET') {
+      // `/users/capabilities` is answered above and never reaches this route.
+      if (auth.legacyUserAdmin) {
+        throw new MockHttpError(404, 'Not found');
+      }
+      sendJson(response, 200, findUser(auth, match[1]));
+      return true;
+    }
     if (method === 'PATCH') {
       const user = findUser(auth, match[1]);
       const patch = await body(request);

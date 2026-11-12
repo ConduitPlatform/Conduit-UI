@@ -55,7 +55,7 @@ export function EditUserSheet({
   teamsEnabled?: boolean;
   bulkRunning?: boolean;
 }>) {
-  const lookup = useUserById(userId, userProp);
+  const lookup = useUserById(userId, userProp, capabilities);
   const setUserVerified = useSetUserVerified(capabilities);
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>('idle');
