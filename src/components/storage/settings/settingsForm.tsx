@@ -1,11 +1,13 @@
 import { StorageSettings } from '@/lib/models/storage';
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import {
@@ -471,6 +473,82 @@ export const SettingsForm = ({
             </>
           )}
         </div>
+        {data?.rateLimits?.write && (
+          <>
+            <Separator className={'my-3'} />
+            <h1 className="text-2xl font-medium pt-2">
+              Write Rate Limit settings
+            </h1>
+            <p className={'text-xs text-muted-foreground'}>
+              Limits the file write routes (create, upload and update) per
+              client IP. Changes apply without a restart.
+            </p>
+            <div className={'flex flex-row space-x-4'}>
+              <FormField
+                control={control}
+                name="rateLimits.write.maxRequests"
+                render={({ field }) => (
+                  <FormItem className={'w-1/2'}>
+                    <FormLabel>Max Requests</FormLabel>
+                    <FormDescription className={'pr-2'}>
+                      The maximum number of file write requests allowed within
+                      the specified interval.
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'number'}
+                        title={'Max Requests'}
+                        placeholder={'eg. 60'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                        onChange={e =>
+                          field.onChange(
+                            Number.isFinite(e.target.valueAsNumber)
+                              ? e.target.valueAsNumber
+                              : 0
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="rateLimits.write.resetInterval"
+                render={({ field }) => (
+                  <FormItem className={'w-1/2'}>
+                    <FormLabel>Interval</FormLabel>
+                    <FormDescription className={'pr-2'}>
+                      The interval in seconds after which the rate limit counter
+                      will be reset.
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        disabled={!edit}
+                        type={'number'}
+                        title={'Interval'}
+                        placeholder={'eg. 3600'}
+                        className={'text-accent-foreground'}
+                        {...field}
+                        onChange={e =>
+                          field.onChange(
+                            Number.isFinite(e.target.valueAsNumber)
+                              ? e.target.valueAsNumber
+                              : 0
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        )}
       </div>
       <SettingsFormActions
         edit={edit}

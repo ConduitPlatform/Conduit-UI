@@ -12,6 +12,19 @@ export type StorageSettings = {
   aliyun: Aliyun;
   local: LocalSettings;
   suffixOnNameConflict?: boolean;
+  /** Absent on servers that do not support a configurable write rate limit. */
+  rateLimits?: StorageRateLimits;
+};
+
+export type StorageRateLimit = {
+  /** Maximum requests per client IP within resetInterval. */
+  maxRequests: number;
+  /** Window of the limit, in seconds. */
+  resetInterval: number;
+};
+
+type StorageRateLimits = {
+  write: StorageRateLimit;
 };
 
 type AuthorizationProps = {

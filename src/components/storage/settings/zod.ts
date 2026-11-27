@@ -1,6 +1,18 @@
 import { z } from 'zod';
 import { StorageProvider } from '@/lib/models/storage';
 
+const positiveInteger = z
+  .number({ error: 'Enter a number' })
+  .int('Must be a whole number')
+  .positive('Must be greater than 0');
+
+export const RateLimitsSchema = z.object({
+  write: z.object({
+    maxRequests: positiveInteger,
+    resetInterval: positiveInteger,
+  }),
+});
+
 export const BaseSchema = z.object({
   provider: z
     .union([
@@ -16,6 +28,8 @@ export const BaseSchema = z.object({
   }),
   defaultContainer: z.string().min(1),
   allowContainerCreation: z.boolean(),
+  // optional: older servers do not return (or accept) rateLimits
+  rateLimits: RateLimitsSchema.optional(),
 });
 
 const GoogleSchema = z.object({
