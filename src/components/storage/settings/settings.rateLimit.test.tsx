@@ -101,6 +101,61 @@ describe('storage write rate limit settings', () => {
     expect(api.patchStorageSettings).not.toHaveBeenCalled();
   });
 
+  it('rejects values above the maximums', async () => {
+    render(<Settings data={storageSettings()} authzAvailable={false} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.change(screen.getByLabelText('Max Requests'), {
+      target: { value: '1000001' },
+    });
+    fireEvent.change(screen.getByLabelText('Interval'), {
+      target: { value: '86401' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    expect(
+      await screen.findByText('Must be at most 1000000')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Must be at most 86400 seconds (24 hours)')
+    ).toBeInTheDocument();
+    expect(api.patchStorageSettings).not.toHaveBeenCalled();
+  });
+
+  it('accepts the maximums', async () => {
+    render(<Settings data={storageSettings()} authzAvailable={false} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.change(screen.getByLabelText('Max Requests'), {
+      target: { value: '1000000' },
+    });
+    fireEvent.change(screen.getByLabelText('Interval'), {
+      target: { value: '86400' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(api.patchStorageSettings).toHaveBeenCalledTimes(1);
+    });
+    expect(api.patchStorageSettings.mock.calls[0][0].rateLimits).toEqual({
+      write: { maxRequests: 1000000, resetInterval: 86400 },
+    });
+  });
+
+  it('shows the section whenever the server returns rateLimits', () => {
+    render(
+      <Settings
+        data={storageSettings({
+          rateLimits: {} as StorageSettings['rateLimits'],
+        })}
+        authzAvailable={false}
+      />
+    );
+
+    expect(screen.getByLabelText('Max Requests')).toBeInTheDocument();
+    expect(screen.getByLabelText('Interval')).toBeInTheDocument();
+  });
+
   it('hides the section and sends no rateLimits for older servers', async () => {
     render(
       <Settings

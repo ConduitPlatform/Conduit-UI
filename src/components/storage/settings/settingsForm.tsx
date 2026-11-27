@@ -473,7 +473,7 @@ export const SettingsForm = ({
             </>
           )}
         </div>
-        {data?.rateLimits?.write && (
+        {data?.rateLimits !== undefined && (
           <>
             <Separator className={'my-3'} />
             <h1 className="text-2xl font-medium pt-2">
@@ -492,7 +492,7 @@ export const SettingsForm = ({
                     <FormLabel>Max Requests</FormLabel>
                     <FormDescription className={'pr-2'}>
                       The maximum number of file write requests allowed within
-                      the specified interval.
+                      the specified interval, from 1 to 1000000.
                     </FormDescription>
                     <FormControl>
                       <Input
@@ -523,7 +523,7 @@ export const SettingsForm = ({
                     <FormLabel>Interval</FormLabel>
                     <FormDescription className={'pr-2'}>
                       The interval in seconds after which the rate limit counter
-                      will be reset.
+                      will be reset, from 1 to 86400 (24 hours).
                     </FormDescription>
                     <FormControl>
                       <Input

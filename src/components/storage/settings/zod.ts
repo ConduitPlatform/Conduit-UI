@@ -1,15 +1,27 @@
 import { z } from 'zod';
 import { StorageProvider } from '@/lib/models/storage';
 
-const positiveInteger = z
-  .number({ error: 'Enter a number' })
-  .int('Must be a whole number')
-  .positive('Must be greater than 0');
+// Same bounds as the storage module (STORAGE_WRITE_MAX, ConduitPlatform/Conduit#1691)
+const WRITE_RATE_LIMIT_MAX_REQUESTS = 1_000_000;
+const WRITE_RATE_LIMIT_MAX_INTERVAL = 86_400;
+
+const positiveInteger = (max: number, maxMessage: string) =>
+  z
+    .number({ error: 'Enter a number' })
+    .int('Must be a whole number')
+    .positive('Must be greater than 0')
+    .max(max, maxMessage);
 
 export const RateLimitsSchema = z.object({
   write: z.object({
-    maxRequests: positiveInteger,
-    resetInterval: positiveInteger,
+    maxRequests: positiveInteger(
+      WRITE_RATE_LIMIT_MAX_REQUESTS,
+      'Must be at most 1000000'
+    ),
+    resetInterval: positiveInteger(
+      WRITE_RATE_LIMIT_MAX_INTERVAL,
+      'Must be at most 86400 seconds (24 hours)'
+    ),
   }),
 });
 
